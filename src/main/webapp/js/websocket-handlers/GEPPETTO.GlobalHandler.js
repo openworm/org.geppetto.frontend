@@ -53,6 +53,7 @@ define(function (require) {
             GEPPETTO_VERSION: "geppetto_version",
             READ_URL_PARAMS: "read_url_parameters",
             SCRIPT_FETCHED: "script_fetched",
+            DATASOURCE_FETCHED: "data_source_results_fetched",
             SERVER_AVAILABLE: "server_available",
             SERVER_UNAVAILABLE: "server_unavailable",
         };
@@ -123,6 +124,11 @@ define(function (require) {
 
         messageHandler[messageTypes.SCRIPT_FETCHED] = function (payload) {
             GEPPETTO.ScriptRunner.runScript(payload.script_fetched);
+        };
+        
+        messageHandler[messageTypes.DATASOURCE_FETCHED] = function (payload) {
+        	var message = JSON.parse(payload.data_source_results_fetched)
+        	GEPPETTO.Spotlight.updateDataSourceResults(message.data_source_name,JSON.parse(message.results));
         };
 
         // Simulation server became available

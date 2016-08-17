@@ -209,13 +209,7 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             setActive: function () {
-                G.unSelectAll();
-                GEPPETTO.ExperimentsController.closeCurrentExperiment();
-                var parameters = {};
-                parameters["experimentId"] = this.id;
-                parameters["projectId"] = this.getParent().getId();
-                GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                GEPPETTO.trigger(Events.Experiment_active);
+            	GEPPETTO.ExperimentsController.setActive(this);
             },
 
             /**
@@ -331,6 +325,19 @@ define(function (require) {
                 }
             },
 
+            /**
+             * Clones and experiment
+             *
+             * @command ExperimentNode.clone()
+             * @returns {ExperimentNode} Creates a new ExperimentNode
+             */
+            clone: function () {
+                var parameters = {};
+                parameters["projectId"] = this.getParent().getId();
+                parameters["experimentId"] = this.id;
+                GEPPETTO.MessageSocket.send("clone_experiment", parameters);
+            },
+            
             deleteExperiment: function () {
                 var parameters =
                 {};

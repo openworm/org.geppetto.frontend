@@ -129,6 +129,7 @@ require.config({
 var jqueryLib = [];
 jqueryLib.push("jquery");
 jqueryLib.push("geppetto");
+jqueryLib.push("backbone");
 jqueryLib.push("three");
 jqueryLib.push("d3");
 jqueryLib.push("vendor/THREEx.KeyboardState");

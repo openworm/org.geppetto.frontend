@@ -44,7 +44,6 @@
 		</script>
         <link rel="stylesheet/less" type="text/css" href="geppetto/less/main.less" />
         <script src="geppetto/js/vendor/less.min.js" type="text/javascript"></script>
-        <script src="geppetto/js/vendor/babel.min.js" charset="utf-8"></script>
         <script data-main="geppetto/js/main.js" src="geppetto/js/vendor/require.js"></script>
     /build -->
 
@@ -81,6 +80,7 @@
     <div id="geppettologo" ></div>
     <div id="spotlight" ></div>
     <div id="controlpanel" ></div>
+    <div id="querybuilder" ></div>
     <div id="sim"></div>
 
     <div id="footer">
@@ -93,23 +93,7 @@
 
 				 <div class="tab-content">
     					<div role="tabpanel" class="tab-pane active" id="console">Console Loading...</div>
-    					<div role="tabpanel" id="experiments" class="tab-pane panel panel-default">
-            					<div class="col-lg-6 experimentsResults panel-body experimentsResultsOutput" id="experimentsOutput">
-									<table id="experimentsTable" class="table table-condensed experimentsTable" style="border-collapse:collapse;">
-										<thead class="experimentsTableColumn">
-        									<tr><th style="width:10%;text-align:center">Status</th>
-            								<th style="width:30%;">Name</th>
-            								<th style="width:15%;">Date</th>
-            								<th style="width:25%;"><div class="new_experiment" id="new_experiment" tile="New experiment"><i class='new_experiment_icon fa fa-plus fa-lg'></i></div></th>
-        									</tr>
-    									</thead>
-
-    								<tbody>
-    								</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
+    					<div role="tabpanel" id="experiments" class="tab-pane panel panel-default"></div>
  				 </div>
             </div>
 

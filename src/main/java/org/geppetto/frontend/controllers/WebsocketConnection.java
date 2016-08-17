@@ -194,6 +194,16 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.newExperiment(requestID, projectId);
 				break;
 			}
+			case CLONE_EXPERIMENT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				connectionHandler.cloneExperiment(requestID, projectId,experimentId);
+				break;
+			}
 			case LOAD_PROJECT_FROM_URL:
 			{
 				connectionHandler.loadProjectFromURL(requestID, gmsg.data);
@@ -257,9 +267,31 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				URL url = null;
 				try
 				{
+
 					url = URLReader.getURL(urlString);
 
 					connectionHandler.sendScriptData(requestID, url, this);
+
+				}
+				catch(MalformedURLException e)
+				{
+					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
+				}
+				break;
+			}
+			case GET_DATA_SOURCE_RESULTS:
+			{
+				URL url = null;
+				String dataSourceName;
+				try
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+							{
+							}.getType());
+					url = URLReader.getURL(parameters.get("url"));
+					dataSourceName = parameters.get("data_source_name");
+
+					connectionHandler.sendDataSourceResults(requestID,dataSourceName, url, this);
 
 				}
 				catch(MalformedURLException e)
@@ -407,13 +439,25 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case FETCH_VARIABLE:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.dataSourceId, receivedObject.variableId);
+				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.dataSourceId, receivedObject.variableId);
 				break;
 			}
 			case RESOLVE_IMPORT_TYPE:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.path);
+				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.paths);
+				break;
+			}
+			case RUN_QUERY:
+			{
+				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+				connectionHandler.runQuery(requestID, receivedObject.projectId, receivedObject.runnableQueries);
+				break;
+			}
+			case RUN_QUERY_COUNT:
+			{
+				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+				connectionHandler.runQueryCount(requestID, receivedObject.projectId, receivedObject.runnableQueries);
 				break;
 			}
 			default:
@@ -465,7 +509,14 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Long projectId;
 		Long experimentId;
 		String dataSourceId;
-		String path;
+		List<String> paths;
+		String variableId;
+		List<RunnableQueryParameters> runnableQueries;
+	}
+	
+	class RunnableQueryParameters
+	{
+		String queryId;
 		String variableId;
 	}
 

@@ -38,130 +38,68 @@
  * @author Giovanni Idili
  */
 define(function (require) {
+
     var Instance = require('model/Instance');
 
-    return Instance.extend({
-        index: null,
+    function ArrayElementInstance(options) {
+        Instance.prototype.constructor.call(this, options);
+        this.index = options.index;
+    };
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"index": options.index});
 
-            // inherited
-            this.set({"variable": options.variable});
-            this.set({"parent": options.parent});
-            this.set({"children": (options.children != undefined) ? options.children : []});
-            this.set({"id": options.id});
-            this.set({"name": options.name});
-            this.set({"_metaType": options._metaType});
+    ArrayElementInstance.prototype = Object.create(Instance.prototype);
+    ArrayElementInstance.prototype.constructor = ArrayElementInstance;
 
-            // capability list is for private use
-            this.set({"capabilities": []});
-            this.set({"connections": []});
-        },
+    ArrayElementInstance.prototype.getIndex = function () {
+        return this.index;
+    };
 
-        /**
-         * Get index of this instance element in its parent array
-         *
-         * @command ArrayElementInstance.getIndex()
-         *
-         * @returns {Integer} - integer index of the element in the parent array
-         *
-         */
-        getIndex: function () {
-            return this.get('index');
-        },
-
-        /**
-         * Get instance path
-         *
-         * @command ArrayElementInstance.getInstancePath()
-         *
-         * @returns {String} - Instance path
-         *
-         */
-        getInstancePath: function () {
-            var parent = this.get("parent");
-            var parentPath = "";
-            var parentId = "";
-
-            if (parent != null && parent != undefined) {
-                parentPath = parent.getInstancePath();
-                parentId = parent.getId();
-            }
-
-            var path = parentPath.replace(parentId, this.getId());
-
-            return (parentPath != "") ? path : this.getId();
-        },
-
-        /**
-         *
-         * @returns {*}
-         */
-        getPosition: function () {
-
-            if ((this.getVariable().getType().getDefaultValue().elements != undefined) &&
-                (this.getVariable().getType().getDefaultValue().elements[this.getIndex()] != undefined)) {
-                return this.getVariable().getType().getDefaultValue().elements[this.getIndex()].position;
-            }
-
-        },
-
-        /**
-         * Synonym of get instance path
-         *
-         * @command ArrayElementInstance.getPath()
-         *
-         * @returns {String} - Instance path
-         *
-         */
-        getPath: function () {
-            return this.getInstancePath();
-        },
-
-        /**
-         * Get the type for this instance
-         *
-         * @command ArrayElementInstance.getTypes()
-         *
-         * @returns {List<Type>} - array of types
-         *
-         */
-        getTypes: function () {
-            return [this.getVariable().getType().getType()];
-        },
-
-        /**
-         * Get the type of this variable, return a list if it has more than one
-         *
-         * @command ArrayElementInstance.getType()
-         *
-         * @returns List<Type>} - array of types
-         *
-         */
-        getType: function () {
-            var types = this.getTypes();
-            if (types.length == 1) {
-                return types[0];
-            }
-            else return types;
-        },
-
-        /**
-         * Deletes instance
-         */
-        delete: function(){
-            var children = [].concat(this.getChildren());
-            for(var c=0; c < children.length; c++){
-                children[c].delete();
-            }
-
-            GEPPETTO.ModelFactory.deleteInstance(this);
+    ArrayElementInstance.prototype.delete = function () {
+        var children = [].concat(this.getChildren());
+        for (var c = 0; c < children.length; c++) {
+            children[c].delete();
         }
-    });
+
+        GEPPETTO.ModelFactory.deleteInstance(this);
+    };
+
+
+    ArrayElementInstance.prototype.getInstancePath = function () {
+        var parent = this.getParent();
+        var parentPath = "";
+        var parentId = "";
+
+        if (parent != null && parent != undefined) {
+            parentPath = parent.getInstancePath();
+            parentId = parent.getId();
+        }
+
+        var path = parentPath.replace(parentId, this.getId());
+
+        return (parentPath != "") ? path : this.getId();
+    };
+
+    ArrayElementInstance.prototype.getPosition = function () {
+
+        if ((this.getVariable().getType().getDefaultValue().elements != undefined) &&
+            (this.getVariable().getType().getDefaultValue().elements[this.getIndex()] != undefined)) {
+            return this.getVariable().getType().getDefaultValue().elements[this.getIndex()].position;
+        }
+
+    };
+
+    ArrayElementInstance.prototype.getTypes = function () {
+        return [this.getVariable().getType().getType()];
+    };
+
+    ArrayElementInstance.prototype.getType = function () {
+        var types = this.getTypes();
+        if (types.length == 1) {
+            return types[0];
+        }
+        else return types;
+    };
+
+    return ArrayElementInstance;
 });
+

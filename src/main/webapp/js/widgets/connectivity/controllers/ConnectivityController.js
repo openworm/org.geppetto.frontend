@@ -49,11 +49,17 @@ define(function (require) {
     return AWidgetController.View.extend({
 
         initialize: function () {
-            this.widgets = [];
+            this.widgets = Array();
+            this.history = [];
+        },
+
+
+        configureConnectivityWidget: function () {
+            Connectivity.prototype.configViaGUI();
         },
 
         /**
-         * Adds a new TreeVisualizer3D Widget to Geppetto
+         * Adds a new Connectivity Widget to Geppetto
          */
         addConnectivityWidget: function () {
             //look for a name and id for the new widget
@@ -62,7 +68,7 @@ define(function (require) {
 
 
             //create tree visualiser widget
-            var cnt = window[name] = new Connectivity({id: id, name: name, visible: false, width: 500, height: 500});
+            var cnt = window[name] = new Connectivity({id: id, name: name, visible: false, width: 500, height: 500, controller: this});
 
             //create help command for connw
             cnt.help = function () {

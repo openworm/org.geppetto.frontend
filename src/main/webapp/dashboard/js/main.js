@@ -81,19 +81,8 @@ require([
     _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
 });
 
+
 //endswith function to string class
 String.prototype.endsWith = function(suffix) {
     return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
-
-// Change link from blank to self for embedded environments
-if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
-	handleRequest = function(e) {
-	  if(window.EMBEDDEDURL.indexOf(e.origin)) {
-		  // This is where we have to create the API
-		  //$('#footer').hide();
-	  };
-	};
-	// we have to listen for 'message'
-	window.addEventListener('message', handleRequest, false);
-}

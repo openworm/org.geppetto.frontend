@@ -96,18 +96,25 @@ define(function (require) {
 
             /**
              *
-             * Different status an experiment can be on
+             * Different status an experiment can be on and descriptions
              *
              * @enum
              */
             ExperimentStatus: {
                 DESIGN: "DESIGN",
+                DESIGN_DESCRIPTION: "The experiment is in <b>DESIGN</b> status. Parameters can be set and state variables can be recorded before running the experiment.",
                 CANCELED: "CANCELED",
+                CANCELED_DESCRIPTION: "The experiment has been <b>CANCELED</b>.",
                 QUEUED: "QUEUED",
+                QUEUED_DESCRIPTION: "The experiment is <b>QUEUED</b> for running.",
                 RUNNING: "RUNNING",
+                RUNNING_DESCRIPTION: "The experiment is currently <b>RUNNING</b>.",
                 ERROR: "ERROR",
+                ERROR_DESCRIPTION: "The experiment caused an <b>ERROR</b> while running.",
                 COMPLETED: "COMPLETED",
+                COMPLETED_DESCRIPTION: "The experiment is <b>COMPLETED</b>. The state variables that were recorded can now be plotted.",
                 DELETED: "DELETED",
+                DELETED_DESCRIPTION: "The experiment is <b>DELETED</b>... and you shouldn't be seeing this message!"
             },
 
             GeometryTypes: {
@@ -133,6 +140,8 @@ define(function (require) {
             IMPORT_TYPE_RESOLVED: "An import type has been resolved to a full type and swapped into the Geppetto model",
 
             EXPERIMENT_CREATED: "New experiment created",
+            
+            EXPERIMENT_CLONED: "Experiment cloned",
 
             EXPERIMENT_DELETED: "Experiment Deleted",
 
@@ -147,7 +156,9 @@ define(function (require) {
             LOADING_PROJECT: "Loading Project",
 
             LOADING_EXPERIMENT: "Loading Experiment",
-
+            
+            RESOLVING_TYPES: "Resolving types",
+                        
             PARSING_MODEL: "Parsing model",
 
             CREATING_MODEL: "Creating model",
@@ -490,7 +501,7 @@ define(function (require) {
             // COMMMON TYPE PATHS
             STATE_VARIABLE_TYPE_PATH: 'Model.common.StateVariable',
             PARAMETER_TYPE_PATH: 'Model.common.Parameter',
-            MODEL_PREFIX_CLIENT: 'Model.',
+            MODEL_PREFIX_CLIENT: 'Model',
             // CONTROL PANEL
             CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:'
         }

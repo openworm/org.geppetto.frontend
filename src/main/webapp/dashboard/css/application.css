@@ -4,12 +4,16 @@ html {
 }
 
 body {
-	margin-bottom: 60px;
 	padding-top: 50px;
 	font-weight: 200;
 	-webkit-font-smoothing: antialiased;
+	background-color: #f5f5f5;
 }
 
+.dashboardAlert{
+    margin-top: 10px;
+    margin-bottom:0px;
+}
 .footer {
 	background-color: #f5f5f5;
 	bottom: 0;
@@ -62,7 +66,7 @@ code {
 
 .projects {
 	overflow: auto;
-	height: 85vh;
+	height: 100vh;
 }
 
 #page {

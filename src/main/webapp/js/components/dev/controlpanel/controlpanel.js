@@ -1,3 +1,35 @@
+/*******************************************************************************
+ *
+ * Copyright (c) 2011, 2016 OpenWorm.
+ * http://openworm.org
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *      OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
+
 define(function (require) {
 
     function loadCss(url) {
@@ -61,7 +93,7 @@ define(function (require) {
                             var displayText = item.split('.')[item.split('.').length - 1];
                             var action = function (e) {
                                 e.preventDefault();
-                                var actionStr = that.props.metadata.action;
+                                var actionStr = that.props.metadata.actions;
                                 actionStr = actionStr.replace(/\$entity\$/gi, item);
                                 GEPPETTO.Console.executeCommand(actionStr);
                             };
@@ -222,7 +254,11 @@ define(function (require) {
                             // run action
                             if (actionStr != '' && actionStr != undefined) {
                                 GEPPETTO.Console.executeCommand(actionStr);
-                                eval(that.props.metadata.action.replace(/\$entity\$/gi, path));
+                                // check custom action to run after configured command
+                                if(that.props.metadata.actions != '' && that.props.metadata.actions != undefined) {
+                                    // straight up eval as we don't want this to show on the geppetto console
+                                    eval(that.props.metadata.actions.replace(/\$entity\$/gi, path));
+                                }
                             }
 
                             // if conditional, swap icon with the other condition outcome
@@ -286,7 +322,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
-            "action": "G.addWidget(3).setData($entity$).setName('$entity$')"
+            "actions": "G.addWidget(3).setData($entity$).setName('$entity$')"
         },
         {
             "columnName": "controls",
@@ -296,7 +332,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": "",
-            "action": "GEPPETTO.FE.refresh();"
+            "actions": "GEPPETTO.ControlPanel.refresh();"
         }
     ];
 
@@ -346,17 +382,7 @@ define(function (require) {
                 "tooltip": "Zoom"
             }
         },
-        "Common": {
-            "info": {
-                "id": "info",
-                "actions": [
-                    "G.addWidget(1).setData($instance$)"
-                ],
-                "icon": "fa-info-circle",
-                "label": "Info",
-                "tooltip": "Info"
-            }
-        }
+        "Common": {}
     };
 
     var ControlPanel = React.createClass({
@@ -376,7 +402,7 @@ define(function (require) {
             return {
                 columns: ['name', 'type', 'controls'],
                 data: [],
-                controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility', 'zoom']},
+                controls: {"Common": [], "VisualCapability": ['color', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration,
                 dataFilter: defaultDataFilter,
             };
@@ -385,7 +411,7 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 "tableClassName": 'control-panel-table',
-                "columnMeta": null
+                "columnMeta": controlPanelColumnMeta
             };
         },
 
@@ -395,13 +421,87 @@ define(function (require) {
 
         setColumnMeta: function (colMeta) {
             // if the user sets meta - NUKE everything and rebuild
-            // NOTE: griddle does not pickup metadata for eventual new columns
+            // NOTE: griddle does not pickup metadata for eventual new columns (fixed in newer versions)
             ReactDOM.unmountComponentAtNode(document.getElementById("controlpanel"));
             // re-instantiate the control panel in its entirety with the new column meta
             ReactDOM.render(
                 React.createElement(ControlPanel, {columnMeta: colMeta}),
                 document.getElementById("controlpanel")
             );
+        },
+
+        addData: function(instances){
+        	if(instances!= undefined && instances.length>0){
+        		
+	            var columnMeta = this.props.columnMeta;
+	
+	            // filter new records with data filter
+	            var records = this.state.dataFilter(instances);
+	
+	            // grab existing input
+	            var gridInput = this.state.data;
+	
+	            for (var i = 0; i < records.length; i++) {
+	                var gridRecord = {};
+                    var entityPath = records[i].getPath();
+
+                    // check for duplicates
+                    var isDuplicate = false;
+                    for(var k=0; k<gridInput.length; k++){
+                        if(gridInput[k].path == entityPath){
+                            isDuplicate = true;
+                        }
+                    }
+
+                    if(!isDuplicate) {
+                        // loop column meta and grab column names + source
+                        for (var j = 0; j < columnMeta.length; j++) {
+                            var sourceActionStr = columnMeta[j].source;
+
+                            // replace token with path from input entity
+                            sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
+
+                            // eval result - empty string by default so griddle doesn't complain
+                            var result = '';
+
+                            try {
+                                if (sourceActionStr != "") {
+                                    result = eval(sourceActionStr);
+                                }
+                            } catch (e) {
+                                GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                            }
+
+                            gridRecord[columnMeta[j].columnName] = result;
+                        }
+
+                        gridInput.push(gridRecord);
+                    }
+	            }
+	
+	            // set state to refresh grid
+	            this.setState({data: gridInput});
+        	}
+        },
+
+        deleteData: function(instancePaths){
+            if(instancePaths!= undefined && instancePaths.length>0){
+                // grab existing input
+                var gridInput = this.state.data;
+                var newGridInput = [];
+
+                // remove unwanted instances from grid input
+                for(var i=0; i<instancePaths.length; i++){
+                    for(var j=0; j<gridInput.length; j++){
+                        if(instancePaths[i] != gridInput[j].path){
+                            newGridInput.push(gridInput[j]);
+                        }
+                    }
+                }
+
+                // set state to refresh grid
+                this.setState({data: newGridInput});
+            }
         },
 
         setData: function (records) {
@@ -467,6 +567,11 @@ define(function (require) {
         componentWillMount: function () {
             GEPPETTO.ControlPanel = this;
         },
+
+        open: function () {
+            // hide control panel
+            $("#controlpanel").show();
+        },
         
         close: function () {
             // hide any color picker that is still visible
@@ -520,8 +625,5 @@ define(function (require) {
         }
     });
 
-    ReactDOM.render(
-        React.createElement(ControlPanel, {columnMeta: controlPanelColumnMeta}),
-        document.getElementById("controlpanel")
-    );
+    return ControlPanel;
 });

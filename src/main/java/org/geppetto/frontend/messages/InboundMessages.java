@@ -40,6 +40,7 @@ public enum InboundMessages {
 	GEPPETTO_VERSION("geppetto_version"),
 	NOTIFY_USER("notify_user"),
 	GET_SCRIPT("get_script"),
+	GET_DATA_SOURCE_RESULTS("get_data_source_results"),
 	
 	//PROJECT MESSAGES
 	LOAD_PROJECT_FROM_URL("load_project_from_url"), 
@@ -50,6 +51,7 @@ public enum InboundMessages {
 
 	//EXPERIMENT MESSAGES
 	NEW_EXPERIMENT("new_experiment"),
+	CLONE_EXPERIMENT("clone_experiment"),
 	LOAD_EXPERIMENT("load_experiment"),
 	SAVE_EXPERIMENT_PROPERTIES("save_experiment_properties"),
 	DELETE_EXPERIMENT("delete_experiment"),
@@ -72,7 +74,12 @@ public enum InboundMessages {
 	
 	//DATASOURCES
 	FETCH_VARIABLE("fetch_variable"), 
-	RESOLVE_IMPORT_TYPE("resolve_import_type");
+	RESOLVE_IMPORT_TYPE("resolve_import_type"), 
+	
+	//QUERIES
+	RUN_QUERY("run_query"),
+	RUN_QUERY_COUNT("run_query_count"),
+	;
 
 	
 	private InboundMessages(final String text) {

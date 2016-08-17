@@ -96,7 +96,7 @@ define(function (require) {
 
             /**
              *
-             * Different status an experiment can be on
+             * Different status an experiment can be on and descriptions
              *
              * @enum
              */
@@ -108,6 +108,15 @@ define(function (require) {
                 ERROR: "ERROR",
                 COMPLETED: "COMPLETED",
                 DELETED: "DELETED",
+                Descriptions: {
+                    DESIGN: "The experiment is in <b>DESIGN</b> status. Parameters can be set and state variables can be recorded before running the experiment.",
+                    CANCELED: "The experiment has been <b>CANCELED</b>.",
+                    QUEUED: "The experiment is <b>QUEUED</b> for running.",
+                    RUNNING: "The experiment is currently <b>RUNNING</b>.",
+                    ERROR: "The experiment caused an <b>ERROR</b> while running.",
+                    COMPLETED: "The experiment is <b>COMPLETED</b>. The state variables that were recorded can now be plotted.",
+                    DELETED: "The experiment is <b>DELETED</b>... and you shouldn't be seeing this message!"
+                }
             },
 
             GeometryTypes: {
@@ -382,7 +391,7 @@ define(function (require) {
             BATCH_HIGHLIGHT_CONNECTIONS: "Batch highlight connections performed",
             BATCH_SHOW_CONNECTIONS_LINES: "Batch show/hide connection lines performed",
             OPERATION_NOT_SUPPORTED: "Operation not supported: ",
-            WRITE_PRIVILEGES_NOT_SUPPORTED : "User doesn't have WRITE privileges",
+			WRITE_PRIVILEGES_NOT_SUPPORTED : "User doesn't have WRITE privileges",
             DOWNLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have DOWNLOAD privileges",
             RUN_PRIVILEGES_NOT_SUPPORTED : "User doesn't have RUN_EXPERIMENT privileges",
             UPLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have UPLOAD privileges",

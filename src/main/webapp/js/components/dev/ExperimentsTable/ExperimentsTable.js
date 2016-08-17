@@ -8,6 +8,8 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var GEPPETTO = require('geppetto');
 
+    $.widget.bridge('uitooltip', $.ui.tooltip);
+
     /**
      * Creates a table row html element <tr>, used to display an Experiment's
      * information (name, lastModified) and controls.
@@ -237,43 +239,41 @@ define(function (require) {
      * Creates <td> element to display the status of an experiment
      */
     var StatusElement = React.createClass({
+        attachTooltip: function(){
+            $('div[rel="tooltip"]').uitooltip({
+                position: { my: "left+15 center", at: "right center" },
+                tooltipClass: "tooltip-container-status",
+                show: {
+                    effect: "slide",
+                    direction: "left",
+                    delay: 200
+                },
+                hide: {
+                    effect: "slide",
+                    direction: "left",
+                    delay: 200
+                },
+                content: function () {
+                    return $(this).attr("data-custom-title");
+                },
+            });
+        },
+
+        componentDidMount: function(){
+            this.attachTooltip();
+        },
+
         render: function () {
             var experiment = this.props.experiment;
-            // create element in row for showing status
-            var tdStatus;
-            // keep track if status is in design
-            var design = false;
 
-            if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle COMPLETED center-block" title="COMPLETED"></div>
-                </td>;
-            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle DELETED center-block" title="DELETED"></div>
-                </td>;
-            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle RUNNING center-block" title="RUNNING"></div>
-                </td>;
-            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle DESIGN center-block" title="DESIGN"></div>
-                </td>;
-                design = true;
-            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle QUEUED center-block" title="QUEUED"></div>
-                </td>;
-            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle CANCELED center-block" title="CANCELED"></div>
-                </td>;
-            } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                tdStatus = <td id="statusIcon">
-                    <div className="circle ERROR center-block" title="ERROR"></div>
-                </td>;
-            }
+            // IMPORTANT NOTE: empty title tag in the markup below is needed or the tooltip stops working
+            var tdStatus = <td className="statusIcon">
+                <div className={"circle center-block " + experiment.getStatus()}
+                     data-status={experiment.getStatus()}
+                     title=""
+                     data-custom-title={GEPPETTO.Resources.ExperimentStatus.Descriptions[experiment.getStatus()]}
+                     rel="tooltip"></div>
+            </td>;
 
             return (tdStatus);
         }
@@ -355,10 +355,7 @@ define(function (require) {
             e.nativeEvent.stopImmediatePropagation();
         },
 
-        componentDidMount: function () {
-        	//hide download icons 
-        	$(".downloadModelsIcon").hide();
-            $(".downloadResultsIcon").hide();
+        updateIconsState : function(){
         	var self = this;
 
         	var experiment = self.props.experiment;  
@@ -375,6 +372,24 @@ define(function (require) {
         	}
 
         	self.setState({activeIconVisible:login, deleteIconVisible : deleteVisible, cloneIconVisible: cloneVisible});
+        },
+        
+        componentDidMount: function () {
+        	//hide download icons 
+        	$(".downloadModelsIcon").hide();
+            $(".downloadResultsIcon").hide();
+        	var self = this;
+        	self.updateIconsState();
+        	
+        	GEPPETTO.on(Events.Check_project_persisted, function () {
+        		self.updateIconsState();
+            });
+        	
+        	GEPPETTO.on(Events.Project_persisted, function () {
+        		self.updateIconsState();
+            });
+        	
+        	
         },
         
         render: function () {
@@ -462,6 +477,10 @@ define(function (require) {
                 GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
             });
             
+            GEPPETTO.on(Events.Check_project_persisted, function () {
+            	self.updateNewExperimentState();
+            });
+            
             $("#experiments").resizable({
                 handles: 'n',
                 minHeight: 100,
@@ -478,6 +497,27 @@ define(function (require) {
             });
         },
 
+        updateNewExperimentState : function(){
+        	var self = this;
+            var experiments = this.state.experiments;
+        	var experiment = experiments[0];
+    		var projectPersisted = false;
+
+    		var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+    		var login = GEPPETTO.UserController.isLogin();
+
+    		var iconVisible = true;
+    		
+    		if(experiment!=null || undefined){
+    			projectPersisted = experiment.getParent().persisted;
+    		}
+
+    		if(!writePermission || !projectPersisted || !login){
+    			iconVisible = false;
+    		}
+			self.setState({newExperimentIconVisible: iconVisible});
+        },
+        
         newExperiment: function (experiment) {
             var experiments = this.state.experiments;
             var rows = [];
@@ -570,61 +610,44 @@ define(function (require) {
                     var experiment = experiments[e];
                     if (this.id == ("#" + experiment.getId()) || this.id == (experiment.getId())) {
                         var tdStatus = $(this).find(".circle");
-                        var tdStatusTitle = tdStatus.attr("title");
-                        // keep track if status is in design
-                        if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                            tdStatus.removeClass(tdStatusTitle);
-                            tdStatus.addClass("COMPLETED");
-                            tdStatus.attr("title", "COMPLETED");
-                            if(active!=null){
-                            	if(active.getId() == experiment.getId()){
-                                    var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
-                            		if(downloadPermission){
-                                		$("#downloadResultsIcon-" + experiment.getId()).show();
+                        var tdStatusId = tdStatus.attr("data-status");
+
+                        if (tdStatusId != experiment.getStatus()) {
+                            tdStatus.removeClass(tdStatusId);
+                            tdStatus.addClass(experiment.getStatus());
+                            tdStatus.attr("data-status", experiment.getStatus());
+                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.Descriptions[experiment.getStatus()]);
+
+                            // make the tooltip pop-out for a bit to attract attention
+                            tdStatus.mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+
+                            if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                                if (active != null) {
+                                    if (active.getId() == experiment.getId()) {
+										var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
+                            			if(downloadPermission){
+                                			$("#downloadResultsIcon-" + experiment.getId()).show();
+                                    	}	
+                                    }	
+                                }
+                                var editableFields = $(this).find(".configurationTD");
+                                for (var i = 0; i < editableFields.length; i++) {
+                                    if (editableFields[i].getAttribute("contentEditable") != "false") {
+                                        var td = editableFields[i].setAttribute("contentEditable", false);
                                     }
-                            	}
+                                }
                             }
-                            var editableFields = $(this).find(".configurationTD");
-                            for(var i =0; i<editableFields.length; i++){
-                           	 if(editableFields[i].getAttribute("contentEditable") != "false"){
-                           		 var td = editableFields[i].setAttribute("contentEditable", false);
-                           	 }
-                            }
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
-                            tdStatus.removeClass(tdStatusTitle);
-                            tdStatus.addClass("DELETED");
-                            tdStatus.attr("title", "DELETED");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                            tdStatus.removeClass(tdStatusTitle);
-                            tdStatus.addClass("RUNNING");
-                            tdStatus.attr("title", "RUNNING");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                            tdStatus.removeClass(tdStatusTitle);
-                            tdStatus.addClass("DESIGN");
-                            tdStatus.attr("title", "DESIGN");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
-                            tdStatus.removeClass(tdStatusTitle);
-                            tdStatus.addClass("QUEUED");
-                            tdStatus.attr("title", "QUEUED");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
-                            tdStatus.removeClass(tdStatusTitle);
-                            tdStatus.addClass("CANCELED");
-                            tdStatus.attr("title", "CANCELED");
-                        } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                            tdStatus.removeClass(tdStatusTitle);
-                            tdStatus.addClass("ERROR");
-                            tdStatus.attr("title", "ERROR");
-                        } 
+                        }
                     }
-                    if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-"+ experiment.getId())) {
-                    	 if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                             var editableFields = $(this).find(".configurationTD");
-                             for(var i =0; i<editableFields.length; i++){
-                            	 if(editableFields[i].getAttribute("contentEditable") != "false"){
-                            		 var td = editableFields[i].setAttribute("contentEditable", false);
-                            	 }
-                             }
-                         } 
+                    if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-" + experiment.getId())) {
+                        if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                            var editableFields = $(this).find(".configurationTD");
+                            for (var i = 0; i < editableFields.length; i++) {
+                                if (editableFields[i].getAttribute("contentEditable") != "false") {
+                                    var td = editableFields[i].setAttribute("contentEditable", false);
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -646,19 +669,7 @@ define(function (require) {
 
             self.setState({experiments: rows});
 
-        	var experiment = experiments[0];
-    		var projectPersisted = false;
-
-    		var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-    		var login = GEPPETTO.UserController.isLogin();
-
-    		if(experiment!=null || undefined){
-    			projectPersisted = experiment.getParent().persisted;
-    		}
-
-    		if(!writePermission || !projectPersisted || !login){
-    			self.setState({newExperimentIconVisible: false});
-    		}
+            self.updateNewExperimentState();
         },
 
         getInitialState: function () {

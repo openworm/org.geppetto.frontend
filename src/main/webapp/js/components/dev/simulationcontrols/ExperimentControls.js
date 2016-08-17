@@ -88,6 +88,17 @@ define(function (require) {
                 }
             });
 
+            GEPPETTO.on(Events.Check_project_persisted, function () {
+            	var experiment = window.Project.getActiveExperiment();
+                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
+                var login = GEPPETTO.UserController.isLogin();
+                
+                if(experiment!=null || undefined){
+        			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
+                }
+            });
+            
             GEPPETTO.on(Events.Project_persisted, function () {
                 var experiment = window.Project.getActiveExperiment();
                 var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
@@ -123,8 +134,16 @@ define(function (require) {
                 self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
             });
 
-            GEPPETTO.on(Events.Experiment_play, function () {
-                self.setState({disableRun: true, disablePlay: true, disablePause: false, disableStop: false});
+            GEPPETTO.on(Events.Experiment_play, function (options) {
+            	if(options!=null||undefined){
+            		if(options.playAll){
+                		self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
+            		}else{
+                        self.setState({disableRun: true, disablePlay: true, disablePause: false, disableStop: false});
+            		}
+            	}else{
+                    self.setState({disableRun: true, disablePlay: true, disablePause: false, disableStop: false});
+            	}
             });
 
             GEPPETTO.on(Events.Experiment_resume, function () {
@@ -135,8 +154,16 @@ define(function (require) {
                 self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: false});
             });
 
-            GEPPETTO.on(Events.Experiment_stop, function () {
-                self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
+            GEPPETTO.on(Events.Experiment_stop, function (options) {
+            	if(options!=null||undefined){
+            		if(options.playAll){
+                		self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
+            		}else{
+                        self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
+            		}
+            	}else{
+                    self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
+            	}
             });
             
             GEPPETTO.on(Events.Experiment_deleted, function () {

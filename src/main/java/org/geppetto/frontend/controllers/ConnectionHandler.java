@@ -193,6 +193,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			setConnectionProject(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, projectJSON);
 
+			boolean persisted = !geppettoProject.isVolatile();
+			String update = "{\"persisted\":" + persisted + ",\"projectId\":" + geppettoProject.getId()  +"}";
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTENCE_STATE, update);
+					
 			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager) geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel(), true);
 			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_MODEL_LOADED, geppettoModelJSON);
 

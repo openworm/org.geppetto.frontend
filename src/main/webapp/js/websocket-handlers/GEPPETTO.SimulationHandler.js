@@ -166,6 +166,8 @@ define(function (require) {
         	if(window.Project.getId()==projectId){
         		window.Project.persisted=persisted;
         	}
+        	
+        	GEPPETTO.trigger(Events.Check_project_persisted);
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function (payload) {

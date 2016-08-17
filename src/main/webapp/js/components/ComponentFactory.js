@@ -51,7 +51,7 @@ define(function (require) {
 		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
 		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
 		var shareComp = require('jsx!./dev/share/share');
-		var queryComp = require('jsx!./dev/query/query');
+		//var queryComp = require('jsx!./dev/query/query');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -135,13 +135,6 @@ define(function (require) {
 	                var dialogParent = dialog.parent();
 	                var that = this;
 	
-	                //add history
-	                dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='fa fa-history historyIcon'></div>");
-	                dialogParent.find("div.historyIcon").click(function (event) {
-	                    that.showHistoryMenu(event);
-	                    event.stopPropagation();
-	                });
-	
 	                //remove the jQuery UI icon
 	                dialogParent.find("button.ui-dialog-titlebar-close").html("");
 	                dialogParent.find("button").append("<i class='fa fa-close'></i>");
@@ -149,6 +142,7 @@ define(function (require) {
 	
 	                //Take focus away from close button
 	                dialogParent.find("button.ui-dialog-titlebar-close").blur();	
+	                dialogParent.css("z-index","10");
 	                
 	                container = dialog.get(0);
 				}

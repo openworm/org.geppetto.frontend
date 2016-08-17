@@ -46,6 +46,10 @@
 	color: #fc6320;
 }
 
+.popup p {
+	color: #fc6320;
+}
+
 .popup a:hover {
 	color: #fc401a;
 	text-decoration: none;

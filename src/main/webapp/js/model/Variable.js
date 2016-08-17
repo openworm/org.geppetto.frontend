@@ -38,191 +38,196 @@
  * @author Giovanni Idili
  */
 define(function (require) {
+
     var ObjectWrapper = require('model/ObjectWrapper');
 
-    return ObjectWrapper.Model.extend({
-        anonymousTypes: [],
-        types: [],
-        pointerValue: null,
-        capabilities: [],
+    function Variable(options) {
+        ObjectWrapper.prototype.constructor.call(this, options);
+        this.anonymousTypes = (options.anonymousTypes != undefined) ? options.anonymousTypes : [];
+        this.types = (options.types != undefined) ? options.types : [];
+        this.pointerValue = options.pointerValue;
+        this.capabilities = [];
+    };
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"anonymousTypes": (options.anonymousTypes != undefined) ? options.anonymousTypes : []});
-            this.set({"types": (options.types != undefined) ? options.types : []});
-            this.set({"pointerValue": options.pointerValue});
-            this.set({"wrappedObj": options.wrappedObj});
-            this.set({"parent": options.parent});
-
-            // capability list is for private use
-            this.set({"capabilities": []});
-        },
-
-        /**
-         * Get the list of types for this variable
-         *
-         * @command Variable.getTypes()
-         *
-         * @returns {List<Type>} - array of types
-         *
-         */
-        getTypes: function () {
-            var types = (this.get('types') != undefined) ? this.get('types') : [];
-            var anonTypes = (this.get('anonymousTypes') != undefined) ? this.get('anonymousTypes') : [];
-            var allTypes = types.concat(anonTypes);
-            return allTypes;
-        },
-
-        /**
-         * Get the list of the anonymous types for this variable
-         *
-         * @command Variable.getAnonymousTypes()
-         *
-         * @returns {List<Type>} - array of types
-         *
-         */
-        getAnonymousTypes: function () {
-            return this.get('anonymousTypes');
-        },
-
-        /**
-         * Get the type of this variable, return a list if it has more than one
-         *
-         * @command Variable.getType()
-         *
-         * @returns List<Type>} - array of types
-         *
-         */
-        getType: function () {
-            var types = this.getTypes();
-            if (types.length == 1) {
-                return types[0];
-            }
-            else return types;
-        },
+    Variable.prototype = Object.create(ObjectWrapper.prototype);
+    Variable.prototype.constructor = Variable;
 
 
-        /**
-         * Get the list of values for this variable
-         *
-         * @command Variable.getInitialValues()
-         *
-         * @returns {List<Value>} - array of values
-         *
-         */
-        getInitialValues: function () {
-            var pointerValue = this.get('pointerValue');
-            var values = this.getWrappedObj().initialValues;
+    /**
+     * Get the list of types for this variable
+     *
+     * @command Variable.getTypes()
+     *
+     * @returns {List<Type>} - array of types
+     *
+     */
+    Variable.prototype.getTypes = function () {
+        var types = (this.types != undefined) ? this.types : [];
+        var anonTypes = (this.anonymousTypes != undefined) ? this.anonymousTypes : [];
+        var allTypes = types.concat(anonTypes);
+        return allTypes;
+    };
 
-            if (values == undefined) {
-                values = [];
-            }
+    /**
+     * Get the list of the anonymous types for this variable
+     *
+     * @command Variable.getAnonymousTypes()
+     *
+     * @returns {List<Type>} - array of types
+     *
+     */
+    Variable.prototype.getAnonymousTypes = function () {
+        return this.anonymousTypes;
+    };
 
-            // if there is a pointer value just return that
-            if (pointerValue != undefined && pointerValue != null) {
-                values = [pointerValue];
-            }
 
+    /**
+     * Get the type of this variable, return a list if it has more than one
+     *
+     * @command Variable.getType()
+     *
+     * @returns List<Type>} - array of types
+     *
+     */
+    Variable.prototype.getType = function () {
+        var types = this.getTypes();
+        if (types.length == 1) {
+            return types[0];
+        }
+        else return types;
+    };
+
+
+    /**
+     * Get the list of values for this variable
+     *
+     * @command Variable.getInitialValues()
+     *
+     * @returns {List<Value>} - array of values
+     *
+     */
+    Variable.prototype.getInitialValues = function () {
+        var pointerValue = this.pointerValue;
+        var values = this.getWrappedObj().initialValues;
+
+        if (values == undefined) {
+            values = [];
+        }
+
+        // if there is a pointer value just return that
+        if (pointerValue != undefined && pointerValue != null) {
+            values = [pointerValue];
+        }
+
+        return values;
+    };
+
+    /**
+     * Get the initial value for this variable, or a list if more than one
+     *
+     * @command Variable.getInitialValue()
+     *
+     * @returns {Value} - array of values
+     *
+     */
+    Variable.prototype.getInitialValue = function () {
+        var pointerValue = this.pointerValue;
+        var values = this.getWrappedObj().initialValues;
+
+        if (values == undefined) {
+            values = [];
+        }
+
+        // if there is a pointer value just return that
+        if (pointerValue != undefined && pointerValue != null) {
+            values = [pointerValue];
+        }
+
+        if (values.length == 1) {
+            return values[0];
+        } else {
             return values;
-        },
+        }
+    };
 
-        /**
-         * Get the initial value for this variable, or a list if more than one
-         *
-         * @command Variable.getInitialValue()
-         *
-         * @returns {Value} - array of values
-         *
-         */
-        getInitialValue: function () {
-            var pointerValue = this.get('pointerValue');
-            var values = this.getWrappedObj().initialValues;
+    /**
+     * Check if the variable is static
+     *
+     * @command Variable.isStatic()
+     *
+     * @returns {bool} - Boolean
+     *
+     */
+    Variable.prototype.isStatic = function () {
+        return this.getWrappedObj().static;
+    };
 
-            if (values == undefined) {
-                values = [];
+    /**
+     * Gets position for the variable
+     *
+     * @command Variable.isStatic()
+     *
+     * @returns {Object} - position for the variable
+     *
+     */
+    Variable.prototype.getPosition = function () {
+        return this.getWrappedObj().position;
+    };
+
+    /**
+     * Get combined children
+     *
+     * @command Variable.getChildren()
+     *
+     * @returns {List<Object>} - List of children
+     *
+     */
+    Variable.prototype.getChildren = function () {
+        // only anonymousTypes as containment == true in the model (they are not references)
+        return this.anonymousTypes;
+    };
+
+    /**
+     * Extends with methods from another object
+     *
+     * @command Variable.extendApi(extensionObj)
+     */
+    Variable.prototype.extendApi = function (extensionObj) {
+        $.extend(this, extensionObj);
+        this.capabilities.push(extensionObj.capabilityId);
+    };
+
+    /**
+     * Checks if the instance has a given capability
+     *
+     * @command Variable.hasCapability(capabilityId)
+     *
+     * @returns {Boolean}
+     */
+    Variable.prototype.hasCapability = function (capabilityId) {
+        var hasCapability = false;
+        var capabilities = this.capabilities;
+
+        for (var i = 0; i < capabilities.length; i++) {
+            if (capabilities[i] === capabilityId) {
+                hasCapability = true;
             }
+        }
 
-            // if there is a pointer value just return that
-            if (pointerValue != undefined && pointerValue != null) {
-                values = [pointerValue];
+        return hasCapability;
+    };
+
+    // Overriding set
+    Variable.prototype.setTypes = function (types) {
+        this.types = types;
+        for (var i = 0; i < types.length; i++) {
+            if (types[i].addVariableReference != undefined) {
+                types[i].addVariableReference(this);
             }
+        }
+        return this;
+    };
 
-            if (values.length == 1) {
-                return values[0];
-            } else {
-                return values;
-            }
-        },
 
-        /**
-         * Check if the variable is static
-         *
-         * @command Variable.isStatic()
-         *
-         * @returns {bool} - Boolean
-         *
-         */
-        isStatic: function () {
-            return this.getWrappedObj().static;
-        },
-
-        /**
-         * Gets position for the variable
-         *
-         * @command Variable.isStatic()
-         *
-         * @returns {Object} - position for the variable
-         *
-         */
-        getPosition: function () {
-            return this.getWrappedObj().position;
-        },
-
-        /**
-         * Get combined children
-         *
-         * @command Variable.getChildren()
-         *
-         * @returns {List<Object>} - List of children
-         *
-         */
-        getChildren: function () {
-            // only anonymousTypes as containment == true in the model (they are not references)
-            return this.get('anonymousTypes');
-        },
-
-        /**
-         * Extends with methods from another object
-         *
-         * @command Variable.extendApi(extensionObj)
-         */
-        extendApi: function (extensionObj) {
-            $.extend(this, extensionObj);
-            this.get("capabilities").push(extensionObj.capabilityId);
-        },
-
-        /**
-         * Checks if the instance has a given capability
-         *
-         * @command Variable.hasCapability(capabilityId)
-         *
-         * @returns {Boolean}
-         */
-        hasCapability: function (capabilityId) {
-            var hasCapability = false;
-            var capabilities = this.get('capabilities');
-
-            for (var i = 0; i < capabilities.length; i++) {
-                if (capabilities[i] === capabilityId) {
-                    hasCapability = true;
-                }
-            }
-
-            return hasCapability;
-        },
-    });
+    return Variable;
 });

@@ -62,6 +62,9 @@ define(function (require) {
         //Buttonbar widget
         require("widgets/buttonBar/config");
 
+        //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
+        //require("widgets/template/config");
+
         loadCss("geppetto/js/widgets/Widget.css");
     };
 });

@@ -198,7 +198,7 @@ define(function (require) {
         	   groups.push(visualGroup);
            }
            
-           if (node.getWrappedObj().get("capabilities") != null && node.getWrappedObj().get("capabilities").length > 0 && node.getWrappedObj().get("capabilities").indexOf('VisualGroupCapability') != -1){
+           if (node.getWrappedObj().capabilities != null && node.getWrappedObj().capabilities.length > 0 && node.getWrappedObj().capabilities.indexOf('VisualGroupCapability') != -1){
         	   var visualGroup = [{
                    label: "Show Visual Groups"
                }];

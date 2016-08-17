@@ -3,12 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.3.0</version> 
+	<version>0.3.1</version> 
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
 		<contextPath>org.geppetto.frontend</contextPath>
 		<spring.version>3.1.3.RELEASE</spring.version>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<profiles>
 		<profile>

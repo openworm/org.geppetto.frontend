@@ -69,19 +69,6 @@
     color: white;
 }
 
-.ui-tooltip {
-    padding: 0px;
-    background: transparent;
-    max-width: 1000px;
-}
-
-.ui-tooltip div {
-    background: rgb(61, 61, 190) !important;
-    color: white;
-    padding: 0px;
-    max-width: 1000px;
-}
-
 .axisLabel {
     position: absolute;
     text-align: center;

@@ -114,7 +114,7 @@ define(function (require) {
                     QUEUED: "The experiment is <b>QUEUED</b> for running.",
                     RUNNING: "The experiment is currently <b>RUNNING</b>.",
                     ERROR: "The experiment caused an <b>ERROR</b> while running.",
-                    COMPLETED: "The experiment is <b>COMPLETED</b>. The state variables that were recorded can now be plotted.",
+                    COMPLETED: "The experiment has successfully <b>COMPLETED</b>. The state variables that were recorded, if any, can now be plotted.",
                     DELETED: "The experiment is <b>DELETED</b>... and you shouldn't be seeing this message!"
                 }
             },

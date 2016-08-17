@@ -98,13 +98,20 @@ define(function (require) {
                             To use this feature add the query string paramater <a className="label label-default">load_project_from_id=PROJECT_ID</a>, where
                             <a className="label label-default">PROJECT_ID</a> corresponds to the ID of the project you want to load.
                             </p>
-                            <h4>Colour code for connections and connected elements</h4>
-
-                            <div className="circle default" ></div><div className="circle-description">The element is Unselected.</div>
-                            <div className="circle selected" ></div><div className="circle-description">The element is Selected.</div>
-                            <div className="circle input" ></div><div className="circle-description">The element is an input to the Selected one.</div>
-                            <div className="circle output" ></div><div className="circle-description">The element is an output to the Selected one.</div>
-                            <div className="circle inputoutput" ></div><div className="circle-description">The element is both an input and an output to the Selected one.</div>
+                            <div className="help-small-spacer help-clearer"></div>
+                            <h4>Colour coding for connections and connected elements</h4>
+                            <div className="circle default help-clearer left-floater" ></div><div className="circle-description left-floater">The element is <b>unselected</b>.</div>
+                            <div className="circle selected help-clearer left-floater" ></div><div className="circle-description left-floater">The element is <b>selected.</b></div>
+                            <div className="circle input help-clearer left-floater" ></div><div className="circle-description left-floater">The element is an <b>input</b> to the selected one.</div>
+                            <div className="circle output help-clearer left-floater" ></div><div className="circle-description left-floater">The element is an <b>output</b> to the selected one.</div>
+                            <div className="circle inputoutput help-clearer left-floater" ></div><div className="circle-description left-floater">The element is both an <b>input and an output</b> to the Selected one.</div>
+                            <div className="help-spacer help-clearer"></div>
+                            <h4>Colour coding for experiment status lifecycle</h4>
+                            <div className="circle design-status help-clearer left-floater"></div><div className="circle-description left-floater">The experiment is in <b>design</b> phase. If available in the model, parameters can be set and state variables can be set to be recorded before running the experiment.</div>
+                            <div className="circle queued-status help-clearer left-floater"></div><div className="circle-description left-floater">The experiment is <b>queued</b> for running on the configured server.</div>
+                            <div className="circle running-status help-clearer left-floater"></div><div className="circle-description left-floater">The experiment is currently <b>running</b> on the designated server.</div>
+                            <div className="circle completed-status help-clearer left-floater"></div><div className="circle-description left-floater">The experiment has successfully <b>completed</b> running. Simulation results (state variables that were recorded, if any) can now be visualized/plotted.</div>
+                            <div className="circle error-status help-clearer left-floater"></div><div className="circle-description left-floater">Bad news! The experiment caused an <b>error</b> while running on the server.</div>
 
                         </div>
                         <div className="modal-footer">

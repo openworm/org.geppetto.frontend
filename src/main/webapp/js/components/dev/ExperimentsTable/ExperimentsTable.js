@@ -540,51 +540,67 @@ define(function (require) {
                         var tdStatusId = tdStatus.attr("data-status");
                         // keep track if status is in design
                         if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                            tdStatus.removeClass(tdStatusId);
-                            tdStatus.addClass("COMPLETED");
-                            tdStatus.attr("data-status", "COMPLETED");
-                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.COMPLETED_DESCRIPTION);
-                            if(active!=null){
-                            	if(active.getId() == experiment.getId()){
-                            		$("#downloadResultsIcon-" + experiment.getId()).show();
-                            	}
-                            }
-                            var editableFields = $(this).find(".configurationTD");
-                            for(var i =0; i<editableFields.length; i++){
-                           	 if(editableFields[i].getAttribute("contentEditable") != "false"){
-                           		 var td = editableFields[i].setAttribute("contentEditable", false);
-                           	 }
-                            }
+                        	if(tdStatus.attr("data-status")!=GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+	                            tdStatus.removeClass(tdStatusId);
+	                            tdStatus.addClass(GEPPETTO.Resources.ExperimentStatus.COMPLETED);
+	                            tdStatus.attr("data-status", GEPPETTO.Resources.ExperimentStatus.COMPLETED);
+	                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.COMPLETED_DESCRIPTION);
+	                            if(active!=null){
+	                            	if(active.getId() == experiment.getId()){
+	                            		$("#downloadResultsIcon-" + experiment.getId()).show();
+	                            	}
+	                            }
+	                            var editableFields = $(this).find(".configurationTD");
+	                            for(var i =0; i<editableFields.length; i++){
+	                            	if(editableFields[i].getAttribute("contentEditable") != "false"){
+	                            		var td = editableFields[i].setAttribute("contentEditable", false);
+	                           	 	}
+	                            }
+                        	}
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DELETED) {
-                            tdStatus.removeClass(tdStatusId);
-                            tdStatus.addClass("DELETED");
-                            tdStatus.attr("data-status", "DELETED");
-                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.DELETED_DESCRIPTION);
+
+                            if(tdStatus.attr("data-status")!=GEPPETTO.Resources.ExperimentStatus.DELETED){
+                                tdStatus.removeClass(tdStatusId);
+                                tdStatus.addClass(GEPPETTO.Resources.ExperimentStatus.DELETED);
+                                tdStatus.attr("data-status", GEPPETTO.Resources.ExperimentStatus.DELETED);
+                                tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.DELETED_DESCRIPTION);
+                            }
+
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                            tdStatus.removeClass(tdStatusId);
-                            tdStatus.addClass("RUNNING");
-                            tdStatus.attr("data-status", "RUNNING");
-                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.RUNNING_DESCRIPTION);
+                            if(tdStatus.attr("data-status")!=GEPPETTO.Resources.ExperimentStatus.RUNNING){
+                                tdStatus.removeClass(tdStatusId);
+                                tdStatus.addClass(GEPPETTO.Resources.ExperimentStatus.RUNNING);
+                                tdStatus.attr("data-status", GEPPETTO.Resources.ExperimentStatus.RUNNING);
+                                tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.RUNNING_DESCRIPTION);
+                            }
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                            tdStatus.removeClass(tdStatusId);
-                            tdStatus.addClass("DESIGN");
-                            tdStatus.attr("data-status", "DESIGN");
-                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.DESIGN_DESCRIPTION);
+                            if(tdStatus.attr("data-status")!=GEPPETTO.Resources.ExperimentStatus.DESIGN){
+                                tdStatus.removeClass(tdStatusId);
+                                tdStatus.addClass(GEPPETTO.Resources.ExperimentStatus.DESIGN);
+                                tdStatus.attr("data-status", GEPPETTO.Resources.ExperimentStatus.DESIGN);
+                                tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.DESIGN_DESCRIPTION);
+                            }
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
-                            tdStatus.removeClass(tdStatusId);
-                            tdStatus.addClass("QUEUED");
-                            tdStatus.attr("data-status", "QUEUED");
-                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.QUEUED_DESCRIPTION);
+                            if(tdStatus.attr("data-status")!=GEPPETTO.Resources.ExperimentStatus.QUEUED){
+                                tdStatus.removeClass(tdStatusId);
+                                tdStatus.addClass(GEPPETTO.Resources.ExperimentStatus.QUEUED);
+                                tdStatus.attr("data-status", GEPPETTO.Resources.ExperimentStatus.QUEUED);
+                                tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.QUEUED_DESCRIPTION);
+                            }
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.CANCELED) {
-                            tdStatus.removeClass(tdStatusId);
-                            tdStatus.addClass("CANCELED");
-                            tdStatus.attr("data-status", "CANCELED");
-                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.CANCELED_DESCRIPTION);
+                            if(tdStatus.attr("data-status")!=GEPPETTO.Resources.ExperimentStatus.CANCELED){
+                                tdStatus.removeClass(tdStatusId);
+                                tdStatus.addClass(GEPPETTO.Resources.ExperimentStatus.CANCELED);
+                                tdStatus.attr("data-status", GEPPETTO.Resources.ExperimentStatus.CANCELED);
+                                tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.CANCELED_DESCRIPTION);
+                            }
                         } else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                            tdStatus.removeClass(tdStatusId);
-                            tdStatus.addClass("ERROR");
-                            tdStatus.attr("data-status", "ERROR");
-                            tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.ERROR_DESCRIPTION);
+                            if(tdStatus.attr("data-status")!=GEPPETTO.Resources.ExperimentStatus.ERROR){
+                                tdStatus.removeClass(tdStatusId);
+                                tdStatus.addClass(GEPPETTO.Resources.ExperimentStatus.ERROR);
+                                tdStatus.attr("data-status", GEPPETTO.Resources.ExperimentStatus.ERROR);
+                                tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.ERROR_DESCRIPTION);
+                            }
                         } 
                     }
                     if (this.id == ("#simulatorRowId-" + experiment.getId()) || this.id == ("simulatorRowId-"+ experiment.getId())) {

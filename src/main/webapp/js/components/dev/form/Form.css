@@ -33,6 +33,7 @@
 .geppettoForm label  {
 	width: 50%;
 	color: white;
+	z-index:10;
 }
 
 .geppettoForm input,

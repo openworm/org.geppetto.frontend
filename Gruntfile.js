@@ -35,7 +35,8 @@ module.exports = function(grunt) {
                     'src/main/webapp/templates/dist/GeppettoFluidDynamicsTests.vm': ['src/main/webapp/templates/GeppettoFluidDynamicsTests.vm'],
                     'src/main/webapp/templates/dist/GeppettoNeuronalCustomTests.vm': ['src/main/webapp/templates/GeppettoNeuronalCustomTests.vm'],
                     'src/main/webapp/templates/dist/GeppettoNeuronalTests.vm': ['src/main/webapp/templates/GeppettoNeuronalTests.vm'],
-                    'src/main/webapp/templates/dist/GeppettoPersistenceTests.vm': ['src/main/webapp/templates/GeppettoPersistenceTests.vm']
+                    'src/main/webapp/templates/dist/GeppettoPersistenceTests.vm': ['src/main/webapp/templates/GeppettoPersistenceTests.vm'],
+            		'src/main/webapp/templates/dist/GeppettoPersistenceTests-alt.vm': ['src/main/webapp/templates/GeppettoPersistenceTests-alt.vm']
                 }
             },
             dev: {
@@ -46,7 +47,8 @@ module.exports = function(grunt) {
                     'src/main/webapp/templates/dist/GeppettoFluidDynamicsTests.vm': ['src/main/webapp/templates/GeppettoFluidDynamicsTests.vm'],
                     'src/main/webapp/templates/dist/GeppettoNeuronalCustomTests.vm': ['src/main/webapp/templates/GeppettoNeuronalCustomTests.vm'],
                     'src/main/webapp/templates/dist/GeppettoNeuronalTests.vm': ['src/main/webapp/templates/GeppettoNeuronalTests.vm'],
-                    'src/main/webapp/templates/dist/GeppettoPersistenceTests.vm': ['src/main/webapp/templates/GeppettoPersistenceTests.vm']
+                    'src/main/webapp/templates/dist/GeppettoPersistenceTests.vm': ['src/main/webapp/templates/GeppettoPersistenceTests.vm'],
+                    'src/main/webapp/templates/dist/GeppettoPersistenceTests-alt.vm': ['src/main/webapp/templates/GeppettoPersistenceTests-alt.vm']
                 }
             }
         }

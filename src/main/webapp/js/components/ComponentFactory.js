@@ -142,6 +142,7 @@ define(function (require) {
 	
 	                //Take focus away from close button
 	                dialogParent.find("button.ui-dialog-titlebar-close").blur();	
+	                dialogParent.css("z-index","10");
 	                
 	                container = dialog.get(0);
 				}

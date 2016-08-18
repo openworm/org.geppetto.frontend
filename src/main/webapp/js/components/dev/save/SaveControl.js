@@ -42,16 +42,16 @@ define(function(require) {
          attachTooltip: function(){
         	 var self = this;
              $('button[rel="tooltip"]').uitooltip({
-                 position: { my: "left center", at: "right center" },
+                 position: { my: "right center", at: "left center" },
                  tooltipClass: "tooltip-persist",
                  show: {
                      effect: "slide",
-                     direction: "left",
+                     direction: "right",
                      delay: 200
                  },
                  hide: {
                      effect: "slide",
-                     direction: "left",
+                     direction: "right",
                      delay: 200
                  },
                  content: function () {

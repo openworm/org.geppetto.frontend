@@ -240,7 +240,7 @@ define(function (require) {
      */
     var StatusElement = React.createClass({
         attachTooltip: function(){
-            $('div[rel="tooltip"]').uitooltip({
+            $('div.circle[rel="tooltip"]').uitooltip({
                 position: { my: "left+15 center", at: "right center" },
                 tooltipClass: "tooltip-container-status",
                 show: {

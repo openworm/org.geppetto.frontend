@@ -13,17 +13,11 @@
 
   .circle {
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     clear: both;
     float: left;
     margin-bottom: 10px;
-  }
-
-  .circle-description {
-    margin-left: 40px;
-    margin-top: 21px;
-    color: white;
   }
 
   .default {
@@ -42,6 +36,22 @@
     background-color: #649615;
   }
 
+  .queued-status {
+    background-color: #0199e8;
+  }
+  .running-status {
+    background-color: #ffcc00;
+  }
+  .design-status {
+    background-color: #ff5a02;
+  }
+  .completed-status {
+    background-color: #649615;
+  }
+  .error-status {
+    background-color: red;
+  }
+
   h4.modal-title {
     text-align: center;
   }
@@ -58,6 +68,33 @@
   .icon-question-sign {
     margin-left: 5px;
     font-size: 20px;
+  }
+
+  .left-floater {
+    float: left;
+  }
+
+  .help-spacer {
+    height: 15px;
+  }
+
+  .help-small-spacer {
+    height: 7.5px;
+  }
+
+  .help-clearer {
+    clear: both;
+  }
+
+  .circle-description {
+    margin-left: 20px;
+    margin-top: 2px;
+    max-width: 500px;
+    color: white;
+  }
+
+  div.circle-description b {
+    color: @orange;
   }
 
 }

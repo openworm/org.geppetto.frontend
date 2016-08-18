@@ -7,9 +7,9 @@
 .osb-notification{
 	position: absolute;
     height: 100px;
-    width: 400px;
-    top: 10px;
-    left: 120px;
-    text-align:center;
+    width: 470px;
+    top: 50px;
+    right: 10px;
+    text-align: center;
     border-radius:0;
 }

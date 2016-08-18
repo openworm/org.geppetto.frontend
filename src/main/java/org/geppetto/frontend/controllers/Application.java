@@ -130,6 +130,12 @@ public class Application
 		return "dist/GeppettoCoreTests";
 	}
 	
+	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
+	public String testExternalSimulator()
+	{
+		return "dist/GeppettoExternalSimulatorTests";
+	}
+	
 	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
 	public String testPersistence()
 	{

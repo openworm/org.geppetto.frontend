@@ -113,7 +113,7 @@ define(function (require) {
          *
          * @param callback
          */
-        getCount: function(callback){
+        getCount: function(){
             var queryDTOs = [];
 
             for(var i=0; i<this.items.length; i++){

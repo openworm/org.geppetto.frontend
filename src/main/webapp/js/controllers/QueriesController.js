@@ -54,7 +54,7 @@ define(function (require) {
             runQuery: function (queries, callback) {
                 var compoundQuery=[];
                 for (var i=0;i<queries.length;i++) {
-                    compoundQuery.push({queries[i].target.getPath(), queries[i].query.getPath()});
+                    compoundQuery.push({target: queries[i].target.getPath(), query: queries[i].query.getPath()});
                 }
 
                 var parameters = {};
@@ -80,7 +80,7 @@ define(function (require) {
             getQueriesCount: function (queries, callback) {
                 var compoundQuery=[];
                 for (var i=0;i<queries.length;i++) {
-                    compoundQuery.push({queries[i].target.getPath(), queries[i].query.getPath()});
+                    compoundQuery.push({target: queries[i].target.getPath(), query: queries[i].query.getPath()});
                 }
 
                 var parameters = {};

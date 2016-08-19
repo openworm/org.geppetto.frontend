@@ -120,7 +120,7 @@ define(function (require) {
                 var selection = this.items[i].selection;
                 if(selection != -1){
                     var queryDTO = {
-                        id: this.items[i].options[selection+1].id,
+                        target: this.items[i].target,
                         queryObj: this.items[i].options[selection+1].queryObj
                     };
 
@@ -846,6 +846,7 @@ define(function (require) {
                 // build item in model-friendly format
                 var queryItem = {
                     term: term,
+                    target: variable,
                     options: []
                 };
 

@@ -121,7 +121,7 @@ define(function (require) {
                 if(selection != -1){
                     var queryDTO = {
                         target: this.items[i].target,
-                        queryObj: this.items[i].options[selection+1].queryObj
+                        query: this.items[i].options[selection+1].queryObj
                     };
 
                     queryDTOs.push(queryDTO);

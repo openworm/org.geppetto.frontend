@@ -770,7 +770,7 @@ define(function (require) {
         runQuery: function(){
             if(this.props.model.items.length > 0) {
 
-                // TODO: check if we already have results for th given compound query
+                // check if we already have results for the given compound query
                 var compoundId = this.getCompoundQueryId(this.props.model.items);
                 var match = false;
 
@@ -781,7 +781,6 @@ define(function (require) {
                 }
 
                 if(!match) {
-                    // TODO: if we already have results for the an identical query switch to results and select the right tab
                     // TODO: build query client object (same as other model objects)
                     var query = {
                         items: this.props.model.items.slice(0)
@@ -810,6 +809,7 @@ define(function (require) {
                     // TODO: run query - probably on datasource client object
                     this.executeQuery(query, queryDoneCallback);
                 } else {
+                    // if we already have results for the an identical query switch to results and select the right tab
                     // set the right results item as the selected tab
                     for(var i=0; i<this.props.model.results.length; i++){
                         if(this.props.model.results[i].id == compoundId){

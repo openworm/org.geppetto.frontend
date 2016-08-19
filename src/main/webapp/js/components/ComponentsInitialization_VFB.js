@@ -91,7 +91,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
-            "actions": "var displayText = '$entity$'.split('.')['$entity$'.split('.').length - 1]; G.addWidget(1).setData($entity$[displayText + '_meta']).setName(displayText).addCustomNodeHandler(customHandler,'click');"
+            "actions": "var displayText = '$entity$'.split('.')['$entity$'.split('.').length - 1]; getTermInfoWidget().setData($entity$[displayText + '_meta']).setName(displayText);"
         }, {
             "columnName": "controls",
             "order": 4,
@@ -216,7 +216,7 @@ define(function (require) {
             "Common": {
                 "info": {
                     "id": "info",
-                    "actions": ["var displayTexxxt = '$instance$'.split('.')['$instance$'.split('.').length - 1]; G.addWidget(1).setData($instance$[displayTexxxt + '_meta']).setName(displayTexxxt).addCustomNodeHandler(customHandler,'click');"],
+                    "actions": ["var displayTexxxt = '$instance$'.split('.')['$instance$'.split('.').length - 1]; getTermInfoWidget().setData($instance$[displayTexxxt + '_meta']).setName(displayTexxxt);"],
                     "icon": "fa-info-circle",
                     "label": "Info",
                     "tooltip": "Info"
@@ -243,7 +243,7 @@ define(function (require) {
                 "CompositeType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(1).setData($variableid$['$variableid$' + '_meta']).setName('$variableid$').addCustomNodeHandler(customHandler,'click');",
+                            "getTermInfoWidget().setData($variableid$['$variableid$' + '_meta']).setName('$variableid$');",
                         ],
                         "icon": "fa-puzzle-piece",
                         "label": "Explore type",
@@ -253,7 +253,7 @@ define(function (require) {
                 "TextType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(1).setText($instance0$).setName('$variableid$')",
+                            "getTermInfoWidget().setText($instance0$).setName('$variableid$')",
                         ],
                         "icon": "fa-eye",
                         "label": "View text",
@@ -263,7 +263,7 @@ define(function (require) {
                 "HTMLType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(1).setHTML($instance0$).setName('$variableid$').addCustomNodeHandler(function(node){G.addWidget(3).setData(node);}, 'click');",
+                            "getTermInfoWidget().setHTML($instance0$).setName('$variableid$');",
                         ],
                         "icon": "fa-eye",
                         "label": "View HTML",
@@ -329,7 +329,7 @@ define(function (require) {
                 explode_arrays: [{field: "synonym", formatting: "$VALUE$ ($LABEL$)[$ID$]"}],
                 type: {
                     "class": {
-                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); G.addWidget(1).setData(instance).setName(instance.getParent().getId()).addCustomNodeHandler(customHandler,'click'); GEPPETTO.Spotlight.close();});"],
+                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); getTermInfoWidget().setData(instance).setName(instance.getParent().getId()); GEPPETTO.Spotlight.close();});"],
                         icon: "fa-dot-circle-o"
                     },
                     individual: {
@@ -435,7 +435,7 @@ define(function (require) {
             };
 
             // init empty term info area
-            G.addWidget(1).setPosition((window.innerWidth - (Math.ceil(window.innerWidth / 5) + 10)), 10).setSize((window.innerHeight - 20), Math.ceil(window.innerWidth / 5)).setName('Click on image to show info').addCustomNodeHandler(customHandler, 'click');
+            window.termInfoPopup = G.addWidget(1).setPosition((window.innerWidth - (Math.ceil(window.innerWidth / 5) + 10)), 10).setSize((window.innerHeight - 20), Math.ceil(window.innerWidth / 5)).setName('Click on image to show info').addCustomNodeHandler(customHandler, 'click');
 
             // show term info on selection
             window.oldSelection = "";
@@ -446,7 +446,7 @@ define(function (require) {
                     if (selection[0].getParent() != oldSelection) {
                         oldSelection = selection[0].getParent();
                         try {
-                            Popup1.setData(selection[0].getParent()[selection[0].getParent().getId() + "_meta"]).setName(selection[0].getParent()[selection[0].getParent().getId() + "_meta"].getName());
+                            getTermInfoWidget().setData(selection[0].getParent()[selection[0].getParent().getId() + "_meta"]).setName(selection[0].getParent()[selection[0].getParent().getId() + "_meta"].getName());
                         } catch (ignore) {
                         }
                     }
@@ -454,7 +454,7 @@ define(function (require) {
             });
 
             window.getTermInfoWidget = function() {
-              return Popup1;
+              return window.termInfoPopup;
             };
         };
     };

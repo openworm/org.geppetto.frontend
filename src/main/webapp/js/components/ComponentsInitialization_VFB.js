@@ -359,6 +359,12 @@ define(function (require) {
                         actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ GEPPETTO.QueryBuilder.addQueryItem({ term: '$LABEL$', id: '$ID$'}); } ); "],
                         icon: "fa-square-o"
                     }
+                },
+                resultsFilters: {
+                    getId: function(record){ return record[0] },
+                    getName: function(record){ return record[0] },
+                    getDescription: function(record){ return record[1] },
+                    getRecords: function(payload){ return payload.results.map(function(item){ return item.values })}
                 }
             }
         };

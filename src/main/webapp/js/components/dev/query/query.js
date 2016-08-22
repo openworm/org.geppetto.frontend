@@ -781,24 +781,35 @@ define(function (require) {
                 }
 
                 if(!match) {
-                    // TODO: build query client object (same as other model objects)
-                    var query = {
-                        items: this.props.model.items.slice(0)
-                    };
+                    // build query items for data transfer
+                    var queryDTOs = [];
+
+                    for(var i=0; i<this.props.model.items.length; i++){
+                        var selection = this.props.model.items[i].selection;
+                        if(selection != -1){
+                            var queryDTO = {
+                                target: this.props.model.items[i].target,
+                                query: this.props.model.items[i].options[selection+1].queryObj
+                            };
+
+                            queryDTOs.push(queryDTO);
+                        }
+                    }
 
                     var that = this;
-                    var queryDoneCallback = function () {
-                        // TODO: store actual results in the model
-                        // store mock results in the model
+                    var queryDoneCallback = function (results) {
+                        // store actual results in the model
                         var queryLabel = "";
                         for (var i = 0; i < that.props.model.items.length; i++) {
                             queryLabel += ((i != 0) ? "/" : "") + that.props.model.items[i].term;
                         }
 
+                        // TODO: add verbose label
                         that.props.model.addResults({
                             id: compoundId,
+                            items: that.props.model.items.slice(0),
                             label: queryLabel,
-                            records: mockResults,
+                            records: results,
                             selected: true
                         });
 
@@ -806,8 +817,8 @@ define(function (require) {
                         that.switchView(true);
                     };
 
-                    // TODO: run query - probably on datasource client object
-                    this.executeQuery(query, queryDoneCallback);
+                    // run query on queries controller
+                    GEPPETTO.QueriesController.runQuery(queryDTOs, queryDoneCallback);
                 } else {
                     // if we already have results for the an identical query switch to results and select the right tab
                     // set the right results item as the selected tab

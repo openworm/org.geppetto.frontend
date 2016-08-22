@@ -362,8 +362,8 @@ define(function (require) {
                 },
                 resultsFilters: {
                     getId: function(record){ return record[0] },
-                    getName: function(record){ return record[0] },
-                    getDescription: function(record){ return record[1] },
+                    getName: function(record){ return record[1] },
+                    getDescription: function(record){ return record[2] },
                     getRecords: function(payload){ return payload.results.map(function(item){ return item.values })}
                 }
             }

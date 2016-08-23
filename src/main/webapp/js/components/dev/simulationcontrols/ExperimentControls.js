@@ -61,10 +61,11 @@ define(function (require) {
                 var experiment = window.Project.getActiveExperiment();
                 var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
                 var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
-                var projectPersisted = experiment.getParent().persisted;
                 var login = GEPPETTO.UserController.isLogin();
                 
                 if(experiment!=null || undefined){
+                    var projectPersisted = experiment.getParent().persisted;
+
                 	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                 		self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
                 	}

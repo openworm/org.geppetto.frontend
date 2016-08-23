@@ -204,6 +204,8 @@ define(function (require) {
             SIMULATION_SET_WATCHED_VARIABLES: "Watch variables requested",
 
             SIMULATION_CLEAR_WATCH: 'Clear watched variables requested',
+            
+            NO_WATCHED_VARIABLES : "No Recorded Variables",
 
             NO_FEATURE: "The feature is not avaialble for the current service",
 

@@ -1314,4 +1314,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void simulationError(String errorMessage, Exception exception) {
 		this.error(exception, errorMessage);
 	}
+
+	@Override
+	public void externalProcessError(String titleMessage, String logMessage, Exception exception) {
+		Error error = new Error(GeppettoErrorCodes.EXCEPTION, titleMessage, logMessage);
+		logger.error(logMessage, exception);
+		websocketConnection.sendMessage(null, OutboundMessages.ERROR, getGson().toJson(error));
+	}	
 }

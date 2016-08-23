@@ -73,12 +73,15 @@ define(function (require) {
 	
 			var formData= {
 					experimentName: Project.getActiveExperiment().getName(),
-					timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),
-					length: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),
-					simulator:Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator(),
 					numberProcessors: 1
 			};
 			
+			if(Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()]!=null||undefined){
+				formData['timeStep']= Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep();
+				formData['length']= Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength();
+				formData['simulator']=Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator();
+			}
+
 			var submitHandler = function(){
 				GEPPETTO.Flows.showSpotlightForRun(formCallback);
 				$("#" + formWidget.props.id + "_container").remove();

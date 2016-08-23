@@ -532,8 +532,10 @@ define(function (require) {
             
             addBrightnessListener: function(instance, modulation, normalizationFunction){
             	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
-                    GEPPETTO.SceneController.lightUpEntity(instance,
-                        normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+            		if(step<stateVariableInstance.getTimeSeries().length){
+            			GEPPETTO.SceneController.lightUpEntity(instance,
+            					normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+            		}
                 });
             },
             

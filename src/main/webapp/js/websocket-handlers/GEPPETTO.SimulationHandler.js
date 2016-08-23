@@ -95,9 +95,11 @@ define(function (require) {
             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
             GEPPETTO.trigger(Events.Experiment_loaded);
-
-            if (window.Project.getActiveExperiment().getScript() != undefined) {
-                G.runScript(window.Project.getActiveExperiment().getScript());
+            
+            if(window.Project.getActiveExperiment()!=null || undefined){
+            	if (window.Project.getActiveExperiment().getScript() != undefined) {
+            		G.runScript(window.Project.getActiveExperiment().getScript());
+            	}
             }
         };
 

@@ -224,16 +224,21 @@ define(function (require) {
                 var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
 
                 if(writePermission && projectPersisted && login && runPermission){
-                	if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
-                		    this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) 
-                		    && activeExperimentId == this.id){
-	                    
-                		GEPPETTO.trigger(Events.Experiment_running);
-	                    var parameters =
-	                    {};
-	                    parameters["experimentId"] = this.id;
-	                    parameters["projectId"] = this.getParent().getId();
-	                    GEPPETTO.MessageSocket.send("run_experiment", parameters);
+                	if(this.simulatorConfigurations!={}){
+                		if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
+                				this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) 
+                				&& activeExperimentId == this.id){
+
+                			GEPPETTO.trigger(Events.Experiment_running);
+                			var parameters =
+                			{};
+                			parameters["experimentId"] = this.id;
+                			parameters["projectId"] = this.getParent().getId();
+                			GEPPETTO.MessageSocket.send("run_experiment", parameters);
+                		}
+                	}else{
+                		var message = "Experiment has no recorded variables. Add some to run a simulation";
+                		GEPPETTO.FE.errorDialog(GEPPETTO.Resources.NO_WATCHED_VARIABLES, message);
                 	}
                 }else{
                 	var message = persistedAndWriteMessage(projectPersisted, writePermission, login);
@@ -384,7 +389,7 @@ define(function (require) {
 
 
             /**
-             * Download results for recording file
+             * Download results Ffor recording file
              *
              * @command ExperimentNode.downloadResults(recording)
              */

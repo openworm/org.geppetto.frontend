@@ -140,6 +140,7 @@ define(function (require) {
                                     <th className="nameHeader"></th>
                                     <th>Aspect</th>
                                     <th>Simulator</th>
+                                    <th>Watched Variables</th>
                                     <th>TimeStep (s)</th>
                                     <th>Length (s)</th>
                                 </tr>
@@ -195,6 +196,8 @@ define(function (require) {
                     case "conversionId":
                         setterStr = "setConversionService";
                         break;
+                    default:
+                    	break;
                 }
 
                 if (setterStr != "") {
@@ -206,6 +209,20 @@ define(function (require) {
                 }
             });
         },
+        
+        watchedVariablesWindow : function(){
+        	if(this.props.experiment.getWatchedVariables()!=null || undefined){
+        		var watchedVariables = "";
+
+        		for(var i =0; i<this.props.experiment.getWatchedVariables().length; i++){
+        			watchedVariables = 
+        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + '\n\n';
+        		}
+
+        		GEPPETTO.FE.infoDialog("Watched Variables ", watchedVariables);
+        	}
+        },
+        
         render: function () {
             var editable = false;
             
@@ -222,12 +239,19 @@ define(function (require) {
             	}
             }
 
+            var watchedVariables = this.props.experiment.getWatchedVariables();
+            var firstWatchedVariable = "None";
+            if(watchedVariables !=null || undefined){
+            	firstWatchedVariable = watchedVariables[0];
+            }
+            
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
             return (
                 <tr id={simulatorRowId}>
                     <td></td>
                     <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
                     <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
+                    <td className="configurationTD" name={'variables'} onClick={this.watchedVariablesWindow}>{firstWatchedVariable}</td>
                     <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
                     <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
                 </tr>
@@ -574,28 +598,30 @@ define(function (require) {
             $(".downloadModelsIcon").hide();
             $(".downloadResultsIcon").hide();
 
-            $("#activeIcon-" + experiment.getId()).hide();        	
-            
-            var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
-            
-            if(downloadPermission){
-            	$("#downloadModelsIcon-" + experiment.getId()).show();
-            	if (experiment.getStatus() == "COMPLETED") {
-            		$("#downloadResultsIcon-" + experiment.getId()).show();
-            	}
-            }
+            if(experiment!=null || undefined){
+            	$("#activeIcon-" + experiment.getId()).hide();        	
 
-            // loop through each row of experiments table
-            $('#experimentsTable tbody tr').each(function () {
-                // id of row matches that of active experiment
-                if (this.id == (experiment.getId()) || this.id == ("collapsable-" + experiment.getId())) {
-                    // add class to make it clear it's active
-                    $(this).addClass("activeExperiment");
-                } else {
-                    // remove class from active experiment
-                    $(this).removeClass("activeExperiment");
-                }
-            });
+            	var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
+
+            	if(downloadPermission){
+            		$("#downloadModelsIcon-" + experiment.getId()).show();
+            		if (experiment.getStatus() == "COMPLETED") {
+            			$("#downloadResultsIcon-" + experiment.getId()).show();
+            		}
+            	}
+
+            	// loop through each row of experiments table
+            	$('#experimentsTable tbody tr').each(function () {
+            		// id of row matches that of active experiment
+            		if (this.id == (experiment.getId()) || this.id == ("collapsable-" + experiment.getId())) {
+            			// add class to make it clear it's active
+            			$(this).addClass("activeExperiment");
+            		} else {
+            			// remove class from active experiment
+            			$(this).removeClass("activeExperiment");
+            		}
+            	});
+            }
         },
 
         /**

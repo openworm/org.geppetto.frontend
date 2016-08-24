@@ -333,7 +333,7 @@ define(function (require) {
                         icon: "fa-dot-circle-o"
                     },
                     individual: {
-                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance);}); }); "],
+                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); Instances.getInstance('$ID$.$ID$_meta'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance);}); }); "],
                         icon: "fa-square-o"
                     }
                 }

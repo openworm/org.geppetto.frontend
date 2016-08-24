@@ -402,7 +402,7 @@ define(function (require) {
                     }
 
                     //trigger event that selection has been changed
-                    GEPPETTO.trigger(Events.Selection);
+                    GEPPETTO.trigger(Events.Select);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
                 }

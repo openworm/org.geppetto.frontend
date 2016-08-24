@@ -290,7 +290,8 @@ define(function (require) {
             "order": 2,
             "locked": false,
             "visible": true,
-            "displayName": "Name"
+            "displayName": "Name",
+            "cssClassName": "query-results-name-column",
         },
         {
             "columnName": "description",
@@ -306,7 +307,8 @@ define(function (require) {
             "visible": true,
             "customComponent": GEPPETTO.QueryResultsControlsComponent,
             "displayName": "Controls",
-            "action": ""
+            "action": "",
+            "cssClassName": "query-results-controls-column"
         }
     ];
 

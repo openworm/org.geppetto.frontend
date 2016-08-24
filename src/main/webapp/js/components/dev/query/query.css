@@ -94,7 +94,7 @@
     margin-right: auto;
     left: 0;
     right: 0;
-    width: 80%;
+    width: 85%;
     top: 20%;
 }
 
@@ -328,4 +328,13 @@
 #querybuilder .griddle button:hover {
     backround: transparent;
     color: #fc4b19;
+}
+
+#querybuilder .query-results-name-column {
+    width: 300px;
+}
+
+#querybuilder .query-results-controls-column {
+    width: 150px;
+    text-align: center !important;
 }

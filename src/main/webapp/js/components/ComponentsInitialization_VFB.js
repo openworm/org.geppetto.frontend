@@ -98,6 +98,7 @@ define(function (require) {
             "locked": false,
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
+            "cssClassName": "controlpanel-controls-column",
             "source": "",
             "actions": "GEPPETTO.FE.refresh();"
         }, {

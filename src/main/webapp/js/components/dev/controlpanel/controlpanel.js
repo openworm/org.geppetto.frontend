@@ -332,7 +332,8 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": "",
-            "actions": "GEPPETTO.ControlPanel.refresh();"
+            "actions": "GEPPETTO.ControlPanel.refresh();",
+            "cssClassName": "controlpanel-controls-column"
         }
     ];
 

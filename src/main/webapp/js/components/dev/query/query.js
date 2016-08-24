@@ -318,7 +318,7 @@ define(function (require) {
             "info": {
                 "id": "info",
                 "actions": [
-                    "GEPPETTO.Console.log('Result ID: $ID$');"
+                    "Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); getTermInfoWidget().setData(instance).setName(instance.getParent().getId());});"
                 ],
                 "icon": "fa-info-circle",
                 "label": "Info",

@@ -387,6 +387,10 @@ define(function (require) {
                     coli = 0;
                 }
                 Instances.getInstance(entityPath).setColor(colours[c], true).setOpacity(0.8, true);
+                try{
+                    Instances.getInstance(entityPath)[entityPath+'_swc'].setOpacity(1.0);
+                } catch (ignore) {
+                }
                 if (c = 0) {
                     Instances.getInstance(entityPath).setOpacity(0.2, true);
                 }

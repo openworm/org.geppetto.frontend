@@ -501,25 +501,4 @@ define(function (require) {
             }
 
         });
-    
-    	function persistedAndWriteMessage(caller){
-    		var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
-    		if(!caller.login){
-    			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
-    		}else{
-    			if(!caller.projectPersisted && caller.writePermission){
-    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
-    							+ GEPPETTO.Resources.PROJECT_NOT_PERSISTED;
-    			}else if(caller.projectPersisted && !caller.writePermission){
-    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
-    							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
-    			}else if(!caller.projectPersisted && !caller.writePermission){
-    				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + 
-    							GEPPETTO.Resources.PROJECT_NOT_PERSISTED + " and " 
-    							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
-    			}
-    		}
-        	    		
-        	return message;
-    	} 
 });

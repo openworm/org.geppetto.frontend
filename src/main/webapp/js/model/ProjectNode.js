@@ -49,6 +49,10 @@ define(['jquery', 'underscore', 'backbone',
         id: "",
         persisted: true,
         runTimeTree: {},
+        writePermission :  null,
+        login : null,
+        runPermission : null,
+        downloadPermission : null,
 
         /**
          * Initializes this project with passed attributes
@@ -70,6 +74,11 @@ define(['jquery', 'underscore', 'backbone',
                 this.name = options.name;
                 this.id = options.id;
             }
+            
+            this.writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            this.login = GEPPETTO.UserController.isLogin();
+            this.runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
+            this.downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
         },
 
         /**
@@ -90,15 +99,11 @@ define(['jquery', 'underscore', 'backbone',
          *
          */
         setName: function (newname) {
-        	var login = GEPPETTO.UserController.isLogin();
-        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-        	var projectPersisted = this.persisted;
-
-        	if(writePermission && projectPersisted && login){
+        	if(this.writePermission && this.persisted && this.login){
                 this.saveProjectProperties({"name": newname});
                 this.name = newname;
         	}else{
-        		return persistedAndWriteMessage(projectPersisted, writePermission, login);
+        		return persistedAndWriteMessage(this);
         	}
         },
 
@@ -148,9 +153,7 @@ define(['jquery', 'underscore', 'backbone',
          * @param {ExperimentNode} experiment - Active Experiment
          */
         setActiveExperiment: function (experiment) {
-        	var login = GEPPETTO.UserController.isLogin();
-
-            if(login){
+            if(this.login){
                 this.activeExperiment = experiment;
             }else{
     			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
@@ -194,16 +197,12 @@ define(['jquery', 'underscore', 'backbone',
          * @returns {ExperimentNode} Creates a new ExperimentNode
          */
         newExperiment: function () {
-        	var login = GEPPETTO.UserController.isLogin();
-        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-        	var projectPersisted = this.persisted;
-
-        	if(writePermission && projectPersisted && login){
+        	if(this.writePermission && this.persisted && this.login){
                 var parameters = {};
                 parameters["projectId"] = this.id;
                 GEPPETTO.MessageSocket.send("new_experiment", parameters);
         	}else{
-        		return persistedAndWriteMessage(projectPersisted, writePermission, login);
+        		return persistedAndWriteMessage(this);
         	}
         },
 
@@ -308,31 +307,23 @@ define(['jquery', 'underscore', 'backbone',
         },
 
         saveProjectProperties: function (properties) {
-        	var login = GEPPETTO.UserController.isLogin();
-        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-        	var projectPersisted = this.persisted;
-
-        	if(writePermission && projectPersisted && login){
+        	if(this.writePermission && this.persisted && this.login){
         		var parameters = {};
         		parameters["projectId"] = this.getId();
         		parameters["properties"] = properties;
         		GEPPETTO.MessageSocket.send("save_project_properties", parameters);
         	}else{
-        		return persistedAndWriteMessage(projectPersisted, writePermission, login);
+        		return persistedAndWriteMessage(this);
         	}
         },
 
         persist: function () {
-        	var login = GEPPETTO.UserController.isLogin();
-        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-        	var projectPersisted = this.persisted;
-        	
-        	if(writePermission && login){
+        	if(this.writePermission && this.login){
         		var parameters = {};
         		parameters["projectId"] = this.id;
         		GEPPETTO.MessageSocket.send("persist_project", parameters);
         	}else{
-        		return persistedAndWriteMessage(projectPersisted, writePermission, login);
+        		return persistedAndWriteMessage(this);
         	}
         },
 
@@ -343,10 +334,7 @@ define(['jquery', 'underscore', 'backbone',
          * * @param {String} name - File format to download
          */
         downloadModel : function(path, format) {
-            var login = GEPPETTO.UserController.isLogin();
-            var downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
-            
-            if(downloadPermission && login){
+            if(this.downloadPermission && this.login){
                 var parameters = {};
                 parameters["experimentId"] = this.getActiveExperiment().getId();
                 parameters["projectId"] = this.getId();
@@ -358,7 +346,7 @@ define(['jquery', 'underscore', 'backbone',
                 return GEPPETTO.Resources.DOWNLOADING_MODEL + formatMessage;
             }else{
             	var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
-        		if(!login){
+        		if(!this.login){
         			return message;
         		}else{
         			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.DOWNLOAD_PRIVILEGES_NOT_SUPPORTED;
@@ -379,25 +367,4 @@ define(['jquery', 'underscore', 'backbone',
                 + "    Properties : " + this.experiments + "\n";
         }
     });
-    
-	function persistedAndWriteMessage(projectPersisted, writePermission, login){
-		var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
-		if(!login){
-			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
-		}else{
-			if(!projectPersisted && writePermission){
-				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
-							+ GEPPETTO.Resources.PROJECT_NOT_PERSISTED;
-			}else if(projectPersisted && !writePermission){
-				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
-							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
-			}else if(!projectPersisted && !writePermission){
-				message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + 
-							GEPPETTO.Resources.PROJECT_NOT_PERSISTED + " and " 
-							+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
-			}
-		}
-    	    		
-    	return message;
-	} 
 });

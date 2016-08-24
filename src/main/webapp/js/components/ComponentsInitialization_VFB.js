@@ -31,14 +31,11 @@
  *******************************************************************************/
 define(function (require) {
     return function (GEPPETTO) {
-
         var link = document.createElement("link");
         link.type = "text/css";
         link.rel = "stylesheet";
         link.href = "geppetto/js/components/VFB.css";
         document.getElementsByTagName("head")[0].appendChild(link);
-        
-        /*ADD COMPONENTS*/
 
         //Logo initialization
         GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-fly'}, document.getElementById("geppettologo"));
@@ -55,9 +52,6 @@ define(function (require) {
         //Camera controls initialization
         GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
 
-        //Query control initialization
-        GEPPETTO.ComponentFactory.addComponent('QUERY', {}, document.getElementById("querybuilder"));
-
         //Loading spinner initialization
         GEPPETTO.on('show_spinner', function (label) {
             GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {
@@ -67,24 +61,25 @@ define(function (require) {
                 logo: "gpt-fly"
             }, document.getElementById("modal-region"));
         });
-
-        /*CONFIGURE COMPONENTS*/
         
         // CONTROLPANEL configuration
         // set column meta - which custom controls to use, source configuration for data, custom actions
-        GEPPETTO.ControlPanel.setColumnMeta([{
+        var controlPanelColMeta = [
+            {
             "columnName": "path",
             "order": 1,
             "locked": false,
             "displayName": "Path",
             "source": "$entity$.getPath()"
-        }, {
+            },
+            {
             "columnName": "name",
             "order": 2,
             "locked": false,
             "displayName": "Name",
             "source": "$entity$.getName()"
-        }, {
+            },
+            {
             "columnName": "type",
             "order": 3,
             "locked": false,
@@ -92,7 +87,8 @@ define(function (require) {
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
             "actions": "var displayText = '$entity$'.split('.')['$entity$'.split('.').length - 1]; getTermInfoWidget().setData($entity$[displayText + '_meta']).setName(displayText);"
-        }, {
+            },
+            {
             "columnName": "controls",
             "order": 4,
             "locked": false,
@@ -101,7 +97,8 @@ define(function (require) {
             "cssClassName": "controlpanel-controls-column",
             "source": "",
             "actions": "GEPPETTO.FE.refresh();"
-        }, {
+            },
+            {
             "columnName": "image",
             "order": 5,
             "locked": false,
@@ -109,7 +106,9 @@ define(function (require) {
             "displayName": "Image",
             "cssClassName": "img-column",
             "source": "GEPPETTO.ModelFactory.getAllVariablesOfMetaType($entity$.$entity$_meta.getType(), 'ImageType')[0].getInitialValues()[0].value.data"
-        }]);
+            }
+        ];
+        GEPPETTO.ControlPanel.setColumnMeta(controlPanelColMeta);
         // which columns to display
         GEPPETTO.ControlPanel.setColumns(['name', 'type', 'controls', 'image']);
         // which instances to display in the control panel
@@ -343,7 +342,62 @@ define(function (require) {
         GEPPETTO.Spotlight.addDataSource(spotlightDataSourceConfig);
 
         // QUERY configuration
-        var queryBuilderConfig = {
+        var queryResultsColMeta = [
+            {
+                "columnName": "id",
+                "order": 1,
+                "locked": false,
+                "visible": true,
+                "displayName": "ID",
+            },
+            {
+                "columnName": "name",
+                "order": 2,
+                "locked": false,
+                "visible": true,
+                "displayName": "Name",
+                "cssClassName": "query-results-name-column",
+            },
+            {
+                "columnName": "description",
+                "order": 3,
+                "locked": false,
+                "visible": true,
+                "displayName": "Definition"
+            },
+            {
+                "columnName": "controls",
+                "order": 4,
+                "locked": false,
+                "visible": true,
+                "customComponent": GEPPETTO.QueryResultsControlsComponent,
+                "displayName": "Controls",
+                "action": "",
+                "cssClassName": "query-results-controls-column"
+            }
+        ];
+        var queryResultsControlConfig = {
+            "Common": {
+                "info": {
+                    "id": "info",
+                    "actions": [
+                        "Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); getTermInfoWidget().setData(instance).setName(instance.getParent().getId());});"
+                    ],
+                    "icon": "fa-info-circle",
+                    "label": "Info",
+                    "tooltip": "Info"
+                }
+            }
+        };
+        // Query control initialization with properties
+        GEPPETTO.ComponentFactory.addComponent('QUERY', {
+            resultsColumns: ['name', 'description', 'controls'],
+            resultsColumnMeta: queryResultsColMeta,
+            resultsControlsConfig: queryResultsControlConfig
+        }, document.getElementById("querybuilder"));
+
+        // add datasource config to query control
+        var queryBuilderDatasourceConfig = {
             VFB: {
                 url: "http://vfbdev.inf.ed.ac.uk/search/select?fl=short_form,label,synonym,id,type,has_narrow_synonym_annotation,has_broad_synonym_annotation&start=0&fq=ontology_name:(fbbt)&fq=is_obsolete:false&fq=shortform_autosuggest:VFB_*%20OR%20shortform_autosuggest:FBbt_*&rows=250&bq=is_defining_ontology:true%5E100.0%20label_s:%22%22%5E2%20synonym_s:%22%22%20in_subset_annotation:BRAINNAME%5E3%20short_form:FBbt_00003982%5E2&q=$SEARCH_TERM$&defType=edismax&qf=label%20synonym%20label_autosuggest_ws%20label_autosuggest_e%20label_autosuggest%20synonym_autosuggest_ws%20synonym_autosuggest_e%20synonym_autosuggest%20shortform_autosuggest%20has_narrow_synonym_annotation%20has_broad_synonym_annotation&wt=json&indent=true",
                 crossDomain: true,
@@ -369,7 +423,7 @@ define(function (require) {
                 }
             }
         };
-        GEPPETTO.QueryBuilder.addDataSource(queryBuilderConfig);
+        GEPPETTO.QueryBuilder.addDataSource(queryBuilderDatasourceConfig);
 
         // VFB initialization routines
         window.initVFB = function () {

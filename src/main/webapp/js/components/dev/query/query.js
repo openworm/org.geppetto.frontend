@@ -276,57 +276,6 @@ define(function (require) {
         }
     });
 
-    // column metadata for display of query results
-    var queryResultsColumnMeta = [
-        {
-            "columnName": "id",
-            "order": 1,
-            "locked": false,
-            "visible": true,
-            "displayName": "ID",
-        },
-        {
-            "columnName": "name",
-            "order": 2,
-            "locked": false,
-            "visible": true,
-            "displayName": "Name",
-            "cssClassName": "query-results-name-column",
-        },
-        {
-            "columnName": "description",
-            "order": 3,
-            "locked": false,
-            "visible": true,
-            "displayName": "Description"
-        },
-        {
-            "columnName": "controls",
-            "order": 4,
-            "locked": false,
-            "visible": true,
-            "customComponent": GEPPETTO.QueryResultsControlsComponent,
-            "displayName": "Controls",
-            "action": "",
-            "cssClassName": "query-results-controls-column"
-        }
-    ];
-
-    // control configuration for query results action
-    var queryResultsControlConfig = {
-        "Common": {
-            "info": {
-                "id": "info",
-                "actions": [
-                    "Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); getTermInfoWidget().setData(instance).setName(instance.getParent().getId());});"
-                ],
-                "icon": "fa-info-circle",
-                "label": "Info",
-                "tooltip": "Info"
-            }
-        }
-    };
-
     var QueryItem = React.createClass({
         displayName: 'QueryItem',
 
@@ -418,9 +367,9 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 model: queryBuilderModel,
-                resultsColumns: ['name', 'description', 'controls'],
-                resultsColumnMeta: queryResultsColumnMeta,
-                resultsControlsConfig: queryResultsControlConfig,
+                resultsColumns: null,
+                resultsColumnMeta: null,
+                resultsControlsConfig: null
             };
         },
 
@@ -440,6 +389,10 @@ define(function (require) {
         close: function () {
             // hide query builder
             $("#querybuilder").hide();
+        },
+
+        setControlsConfig: function(controlsConfig){
+
         },
 
         initTypeahead: function () {
@@ -734,11 +687,6 @@ define(function (require) {
             this.props.model.deleteItem(item);
         },
 
-        // TODO: remove mock query execution - this will probably end up in the datasource
-        executeQuery: function(query, callback){
-            callback();
-        },
-
         getCompoundQueryId: function(queryItems){
             var id = "";
 
@@ -963,9 +911,9 @@ define(function (require) {
 
     var renderQueryComponent = function(){
         ReactDOM.render(
-            <QueryBuilder model={queryBuilderModel}
-                          resultsColumnMeta={queryResultsColumnMeta}
-                          resultsControlsConfig={queryResultsControlConfig} />,
+            <QueryBuilder resultsColumns={GEPPETTO.QueryBuilder.props.resultsColumns}
+                          resultsColumnMeta={GEPPETTO.QueryBuilder.props.resultsColumnMeta}
+                          resultsControlsConfig={GEPPETTO.QueryBuilder.props.resultsControlsConfig} />,
             document.getElementById("querybuilder")
         );
     };

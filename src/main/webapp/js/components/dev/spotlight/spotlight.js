@@ -57,6 +57,7 @@ define(function (require) {
         searchTimeOut : null,
         updateResults : false,
         initialised:false,
+        showToolBar : true,
         
         close : function () {
             $("#spotlight").hide();
@@ -779,10 +780,16 @@ define(function (require) {
             }
         },
 
+        //Updates flag for showing tool bar
+        updateToolBarVisibilityState : function(visible){
+        	this.showToolBar = visible;
+        },
+        
         loadToolbarFor: function (instance) {
-            $(".spotlight-toolbar").remove();
-            $('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance));
-
+        	if(this.showToolBar){
+        		$(".spotlight-toolbar").remove();
+        		$('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance));
+        	}
         },
 
         render: function () {

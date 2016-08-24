@@ -15,6 +15,10 @@ define(function (require) {
      * information (name, lastModified) and controls.
      */
     var ExperimentRow = React.createClass({
+    	updateIcons : function(activeIconVisibility, visible){
+    		this.refs.icons.updateIconsState(activeIconVisibility, visible);
+    	},
+    	
         //Requests element with control icons to become visible
         mouseOver: function () {
             this.refs.icons.show();
@@ -66,26 +70,11 @@ define(function (require) {
                 rowClasses += " nthTr";
             }
 
-            var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-            var projectPersisted = this.props.experiment.getParent().persisted;
-            var login = GEPPETTO.UserController.isLogin();
-            
-            var editable = false;
-            
-            if(!writePermission || !projectPersisted || !login){
-            	editable = false;
-            }else{
-            	if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
-                		this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                    editable = true;
-                }
-            }
-
             return (
                 <tr rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
                     className={rowClasses} id={this.props.experiment.getId()}>
                     <StatusElement experiment={this.props.experiment} key={this.props.experiment.name+"-statusElement"}/>
-                    <td className="configurationTD" name="name" contentEditable={editable}>{this.props.experiment.getName()}</td>
+                    <td className="configurationTD" name="name" contentEditable={this.props.editable}>{this.props.experiment.getName()}</td>
                     <td>{this.props.experiment.getLastModified()}</td>
                     <td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name+"-iconsRow"}/>
                     </td>
@@ -123,7 +112,7 @@ define(function (require) {
                 if (simulator != null) {
                 	var index = 1;
                     rows.push(<SimulatorRow simulator={simulator} experiment={this.props.experiment}
-                                            key={"simulatorRow"+index+"-"+simulator.aspectInstancePath}/>);
+                                editable={this.props.editable} key={"simulatorRow"+index+"-"+simulator.aspectInstancePath}/>);
                     index++;
                 }
             }.bind(this));
@@ -207,29 +196,14 @@ define(function (require) {
             });
         },
         render: function () {
-            var editable = false;
-            
-            var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-            var projectPersisted = this.props.experiment.getParent().persisted;
-            var login = GEPPETTO.UserController.isLogin();
-            
-            if(!writePermission || !projectPersisted || !login){
-            	editable = false;
-            }else{
-            	if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
-            			this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-            		editable = true;
-            	}
-            }
-
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
             return (
                 <tr id={simulatorRowId}>
                     <td></td>
                     <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
-                    <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
-                    <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
-                    <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
+                    <td className="configurationTD" name={'simulatorId'} contentEditable={this.props.editable}>{this.props.simulator["simulatorId"]}</td>
+                    <td className="configurationTD" name={'timeStep'} contentEditable={this.props.editable}>{this.props.simulator["timeStep"]}</td>
+                    <td className="configurationTD" name={'length'} contentEditable={this.props.editable}>{this.props.simulator["length"]}</td>
                 </tr>
             );
         }
@@ -355,41 +329,14 @@ define(function (require) {
             e.nativeEvent.stopImmediatePropagation();
         },
 
-        updateIconsState : function(){
-        	var self = this;
-
-        	var experiment = self.props.experiment;  
-        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-        	var projectPersisted = experiment.getParent().persisted;
-        	var login = GEPPETTO.UserController.isLogin();
-
-        	var deleteVisible = true;
-        	var cloneVisible = true;
-
-        	if(!writePermission || !projectPersisted){
-        		deleteVisible = false;
-        		cloneVisible = false;
-        	}
-
-        	self.setState({activeIconVisible:login, deleteIconVisible : deleteVisible, cloneIconVisible: cloneVisible});
+        updateIconsState : function(activeIconVisibility,visible){
+        	this.setState({activeIconVisible:activeIconVisibility, deleteIconVisible : visible, cloneIconVisible: visible});
         },
         
         componentDidMount: function () {
         	//hide download icons 
         	$(".downloadModelsIcon").hide();
             $(".downloadResultsIcon").hide();
-        	var self = this;
-        	self.updateIconsState();
-        	
-        	GEPPETTO.on(Events.Check_project_persisted, function () {
-        		self.updateIconsState();
-            });
-        	
-        	GEPPETTO.on(Events.Project_persisted, function () {
-        		self.updateIconsState();
-            });
-        	
-        	
         },
         
         render: function () {
@@ -477,10 +424,6 @@ define(function (require) {
                 GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
             });
             
-            GEPPETTO.on(Events.Check_project_persisted, function () {
-            	self.updateNewExperimentState();
-            });
-            
             $("#experiments").resizable({
                 handles: 'n',
                 minHeight: 100,
@@ -497,25 +440,16 @@ define(function (require) {
             });
         },
 
-        updateNewExperimentState : function(){
-        	var self = this;
-            var experiments = this.state.experiments;
-        	var experiment = experiments[0];
-    		var projectPersisted = false;
-
-    		var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-    		var login = GEPPETTO.UserController.isLogin();
-
-    		var iconVisible = true;
-    		
-    		if(experiment!=null || undefined){
-    			projectPersisted = experiment.getParent().persisted;
-    		}
-
-    		if(!writePermission || !projectPersisted || !login){
-    			iconVisible = false;
-    		}
-			self.setState({newExperimentIconVisible: iconVisible});
+        updateNewExperimentState : function(visible){
+			this.setState({newExperimentIconVisible: visible});
+        },
+        
+        updateIconsStatus : function(activeIconVisibility, visible){
+        	for (var property in this.refs) {
+        	    if (this.refs.hasOwnProperty(property)) {
+        	        this.refs[property].updateIcons(activeIconVisibility,visible);
+        	    }
+        	}
         },
         
         newExperiment: function (experiment) {
@@ -668,8 +602,6 @@ define(function (require) {
             self.state.counter = rows.length;
 
             self.setState({experiments: rows});
-
-            self.updateNewExperimentState();
         },
 
         getInitialState: function () {
@@ -691,11 +623,23 @@ define(function (require) {
             var rownumber = 1;
             this.state.experiments.forEach(function (experiment) {
                 if (experiment != null) {
+                    var editablePermissions = GEPPETTO.ComponentsController.permissions();
+                    var editable = false;
+                    
+                    if(!editablePermissions){
+                    	editable = false;
+                    }else{
+                    	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
+                        	experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                            editable = true;
+                        }
+                    }
+                    
                     var expandableRowId = "collapsable-" + experiment.getId();
-                    rows.push(<ExperimentRow experiment={experiment} rowNumber={rownumber}
-                                             key={experiment.name} fnClick={this.onClick.bind(this,expandableRowId)}/>);
+                    rows.push(<ExperimentRow experiment={experiment} rowNumber={rownumber} editable={editable}
+                    				ref={expandableRowId} key={experiment.name} fnClick={this.onClick.bind(this,expandableRowId)}/>);
                     rows.push(<ExperimentExpandableRow experiment={experiment} rowNumber={rownumber}
-                                                       key={expandableRowId}/>);
+                                     key={expandableRowId} editable={editable}/>);
                     rownumber++;
                 }
             }.bind(this));

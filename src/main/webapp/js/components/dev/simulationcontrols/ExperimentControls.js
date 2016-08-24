@@ -54,15 +54,16 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-
+        	var experiment = window.Project.getActiveExperiment();
+            var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+            var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
+            var projectPersisted = false;
+            var login = GEPPETTO.UserController.isLogin();
             var self = this;
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
-                var experiment = window.Project.getActiveExperiment();
-                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-                var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
-                var projectPersisted = experiment.getParent().persisted;
-                var login = GEPPETTO.UserController.isLogin();
+            	experiment = window.Project.getActiveExperiment();
+                projectPersisted = experiment.getParent().persisted;
                 
                 if(experiment!=null || undefined){
                 	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
@@ -90,21 +91,14 @@ define(function (require) {
 
             GEPPETTO.on(Events.Check_project_persisted, function () {
             	var experiment = window.Project.getActiveExperiment();
-                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-                var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
-                var login = GEPPETTO.UserController.isLogin();
-                
                 if(experiment!=null || undefined){
         			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
                 }
             });
             
             GEPPETTO.on(Events.Project_persisted, function () {
-                var experiment = window.Project.getActiveExperiment();
-                var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-                var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
-                var projectPersisted = experiment.getParent().persisted;
-                var login = GEPPETTO.UserController.isLogin();
+                experiment = window.Project.getActiveExperiment();
+                projectPersisted = experiment.getParent().persisted;
                 
                 if(experiment!=null || undefined){
                 	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {

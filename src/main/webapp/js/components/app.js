@@ -8,6 +8,7 @@ define(function(require) {
 		utils = require('./utils');
 	
 	require('./ComponentFactory')(GEPPETTO);
+	require('./ComponentsController')(GEPPETTO);
 	//require('./ComponentsInitialization_OSB')(GEPPETTO);
 	//require('./ComponentsInitialization_VFB')(GEPPETTO);
 	require('./ComponentsInitialization')(GEPPETTO);

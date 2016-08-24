@@ -77,12 +77,7 @@ define(function(require) {
            	 	$('button[rel="tooltip"]').uitooltip({content: "Project Persisted Succesfully."});
             	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
             	self.setState({disableSave: true});
-            });
-            
-            GEPPETTO.on(Events.Volatile_project_loaded, function(){
-                self.setState({disableSave:false});
-            });
-            
+            });            
         	self.attachTooltip();
         },
 

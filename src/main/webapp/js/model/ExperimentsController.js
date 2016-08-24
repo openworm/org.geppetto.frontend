@@ -159,20 +159,23 @@ define(function (require) {
                     watchedVariables.push(variables[i].getInstancePath());
                     variables[i].setWatched(watch, false);
                 }
-                if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                    var parameters = {};
-                    parameters["experimentId"] = Project.getActiveExperiment().id;
-                    parameters["projectId"] = Project.getId();
-                    parameters["variables"] = watchedVariables;
-                    parameters["watch"] = watch;
-                    GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
+                if(Project.getActiveExperiment()!=null){
+                	if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                		var parameters = {};
+                		parameters["experimentId"] = Project.getActiveExperiment().id;
+                		parameters["projectId"] = Project.getId();
+                		parameters["variables"] = watchedVariables;
+                		parameters["watch"] = watch;
+                		GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
+                	}
                 }
 
-
                 for (var v = 0; v < variables.length; v++) {
-                    if (Project.getActiveExperiment().variables.indexOf(variables[v]) == -1) {
-                        Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
-                    }
+                	if(Project.getActiveExperiment()!=null){
+                		if (Project.getActiveExperiment().variables.indexOf(variables[v]) == -1) {
+                			Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
+                		}
+                	}
                 }
             },
 

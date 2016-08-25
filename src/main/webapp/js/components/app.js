@@ -29,11 +29,9 @@ define(function(require) {
 		$(document).ready(
 			function() {
 				if (expParam) {
-					GEPPETTO.Console.executeCommand(command + '("'
-							+ simParam + '", "'+expParam+'")');
+					GEPPETTO.Console.executeCommand(command + '("' + simParam + '", "'+expParam+'")');
 				} else {
-					GEPPETTO.Console.executeCommand(command + '("'
-							+ simParam + '")');
+					GEPPETTO.Console.executeCommand(command + '("' + simParam + '")');
 				}
 			});
 	}

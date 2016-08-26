@@ -1189,7 +1189,9 @@ define(function (require) {
                             topLevelInstances.push(arrayInstance);
                         }
 
-                    } else {
+                    } else if (!variable.isStatic()) {
+                        // NOTE: only create instances if variable is NOT static
+
                         // create simple instance for this variable
                         var options = {
                             id: variable.getId(),
@@ -1601,6 +1603,13 @@ define(function (require) {
              * Build list of potential instance paths (excluding connection instances)
              */
             fetchAllPotentialInstancePaths: function (node, allPotentialPaths, allPotentialPathsForIndexing, parentPath) {
+                // add path and keep recursing only if we are dealing with a NON-static variable - return otherwise
+                if(node instanceof Variable && node.isStatic()){
+                    // we do not create instances for static vars, so there is no potential instance path to be found
+                    // NOTE: return here is kind of an anti-pattern but more readable than wrapping the entire logic in an if
+                    return;
+                }
+
                 // build new path
                 var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
 

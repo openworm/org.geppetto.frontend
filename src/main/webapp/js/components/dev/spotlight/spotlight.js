@@ -45,6 +45,9 @@ define(function (require) {
         handlebars = require('handlebars'),
         GEPPETTO = require('geppetto');
 
+    var Instance = require('model/Instance');
+    var Variable = require('model/Variable');
+
     var Spotlight = React.createClass({
         mixins: [
             require('jsx!mixins/bootstrap/modal')
@@ -257,9 +260,18 @@ define(function (require) {
                 
                 //check the instances
                 if (!suggestionFound) {
-                	try{
-                		window._spotlightInstance = Instances.getInstance([item]);
-                		if (window._spotlightInstance) {
+                	//try{
+                        // try a straight up eval - if it doesn't exist, do get instance (could be potential instance)
+                        var entity = undefined;
+                        try{
+                            var entity = eval(item);
+                        } catch(e){
+                            // eval didn't work - keep going, could be a potential instance
+                        }
+
+                        window._spotlightInstance = (entity != undefined)? entity : Instances.getInstance([item]);
+
+                		if (window._spotlightInstance != undefined) {
                 			this.loadToolbarFor(window._spotlightInstance);
 
                 			if ($(".spotlight-toolbar").length == 0) {
@@ -270,10 +282,10 @@ define(function (require) {
                 			$(".spotlight-button").eq(0).focus();
                 			$(".spotlight-input").eq(0).focus();
                 		}
-                	}catch (e){
-                		//TODO: Simulation Handler throws error when not finding an instance, should probably
-                		//be handled different for Spotlight
-                	}
+                	/*}catch (e){
+                		// TODO: Simulation Handler throws error when not finding an instance, should probably be handled different for Spotlight
+                        console.log('spotlight could not find entity: ' + item);
+                	}*/
                 }
             }
         },
@@ -349,7 +361,7 @@ define(function (require) {
         openToInstance: function (instance) {
             $("#spotlight").show();
             $("#typeahead").focus();
-            $(".typeahead").typeahead('val', instance.getInstancePath());
+            $(".typeahead").typeahead('val', instance.getPath());
             $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
         },
 
@@ -607,11 +619,10 @@ define(function (require) {
             getCommand: function (action, instance, value) {
                 var label="";
                 var processed="";
-                if($.isArray(instance)){
+                if($.isArray(instance) && instance[0] instanceof Instance){
                     if (instance.length == 1) {
-                        label = instance[0].getInstancePath();
-                    }
-                    else {
+                        label = instance[0].getPath();
+                    } else {
                         label = "Multiple instances of " + instance[0].getVariable().getId();
                     }
                     processed = action.split("$instances$").join("_spotlightInstance");
@@ -621,14 +632,20 @@ define(function (require) {
                     processed = processed.split("$type$").join(instance[0].getType().getPath());
                     processed = processed.split("$typeid$").join(instance[0].getType().getId());
                     processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
-                }
-                else{
-                    processed = action.split("$instances$").join(instance.getInstancePath());
-                    processed = processed.split("$label$").join(instance.getInstancePath());
+                } else if (instance instanceof Instance) {
+                    processed = action.split("$instances$").join(instance.getPath());
+                    processed = processed.split("$label$").join(instance.getPath());
                     processed = processed.split("$value$").join(value);
                     processed = processed.split("$type$").join(instance.getType().getPath());
                     processed = processed.split("$typeid$").join(instance.getType().getId());
                     processed = processed.split("$variableid$").join(instance.getVariable().getId());
+                } else if (instance instanceof Variable) {
+                    processed = action.split("$instances$").join(instance.getPath());
+                    processed = processed.split("$label$").join(instance.getPath());
+                    processed = processed.split("$value$").join(value);
+                    processed = processed.split("$type$").join(instance.getType().getPath());
+                    processed = processed.split("$typeid$").join(instance.getType().getId());
+                    processed = processed.split("$variableid$").join(instance.getId());
                 }
 
                 return processed;
@@ -659,10 +676,14 @@ define(function (require) {
                 }
                 else if (element.hasOwnProperty("inputValue")) {
                     //an input box
+
+                    // check if we are dealing with an array - cannot assume because we are working with variables too
+                    var entity = (instance instanceof Array) ? instance[0] : instance;
+
                     if(!(instance.length>1)){
                         var uiElement=$("<div>");
-                        var value=eval(this.getCommand(element.inputValue, instance[0]));
-                        var unit=eval(this.getCommand(element.label, instance[0]));
+                        var value=eval(this.getCommand(element.inputValue, entity));
+                        var unit=eval(this.getCommand(element.label, entity));
                         label = $("<div class='spotlight-input-label'>").html(unit);
                         var staticLabel=$("<div class='spotlight-input-label-info'>").html("This parameter is declared as <span class='code'>STATIC</span> in the underlying model, changing it will affect all of its instances.");
                         var input = $('<input>')
@@ -670,18 +691,19 @@ define(function (require) {
                             .attr('value', value)
                             .on('change', function() {
                                 var value=$("#" + name + " .spotlight-input").val();
-                                GEPPETTO.Console.executeCommand(that.getCommand(element.onChange, instance[0],value));
+                                GEPPETTO.Console.executeCommand(that.getCommand(element.onChange, entity,value));
                             })
                             .css("width",((value.length + 1) * 14) + 'px')
                             .on('keyup',function() {
                                 this.style.width = ((this.value.length + 1) * 14) + 'px';
                             });
-                        if(instance[0].getVariable().isStatic()){
+
+                        if(entity instanceof Variable && entity.isStatic()){
                             uiElement.append(staticLabel);
                         }
+
                         uiElement.append(input);
                         uiElement.append(label);
-
                     }
                 }
                 else {

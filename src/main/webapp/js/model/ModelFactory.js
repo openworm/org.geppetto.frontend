@@ -1603,15 +1603,16 @@ define(function (require) {
              * Build list of potential instance paths (excluding connection instances)
              */
             fetchAllPotentialInstancePaths: function (node, allPotentialPaths, allPotentialPathsForIndexing, parentPath) {
-                // add path and keep recursing only if we are dealing with a NON-static variable - return otherwise
-                if(node instanceof Variable && node.isStatic()){
-                    // we do not create instances for static vars, so there is no potential instance path to be found
-                    // NOTE: return here is kind of an anti-pattern but more readable than wrapping the entire logic in an if
-                    return;
-                }
-
                 // build new path
-                var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+                var path = '';
+
+                if (node instanceof Variable && node.isStatic()){
+                    // NOTE: for static variables, we add the variable path to the indexing list as ...
+                    // NOTE: it's the only way to access the variable since there are no instances for static variables
+                    path = node.getPath();
+                } else {
+                    path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+                }
 
                 var entry = {path: path, metaType: node.getType().getMetaType(), type: node.getType().getPath()};
                 allPotentialPaths.push(entry);
@@ -1621,8 +1622,8 @@ define(function (require) {
                 }
 
                 var potentialParentPaths = [];
-                // check meta type - we are only interested in variables
-                if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE) {
+                // check meta type - we are only interested in NON-static variables
+                if (node instanceof Variable && !node.isStatic()) {
                     var allTypes = node.getTypes();
 
                     var arrayType = undefined;

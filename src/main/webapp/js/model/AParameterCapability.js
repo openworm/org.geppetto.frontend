@@ -142,10 +142,6 @@ define(function (require) {
                 updateServer = true;
             }
 
-            if((this instanceof Instance) && this.getVariable().isStatic()) {
-                this.getVariable().value = value;
-            }
-
             // always set this regardless of variable vs instance (so the value will be in the call below)
             this.value = value;
 

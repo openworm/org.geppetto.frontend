@@ -441,7 +441,7 @@ define(function (require) {
                 if (coli > 199) {
                     coli = 0;
                 }
-                Instances.getInstance(entityPath).setColor(colours[c], true).setOpacity(0.8, true);
+                Instances.getInstance(entityPath).setColor(colours[c], true).setOpacity(0.3, true);
                 try{
                     Instances.getInstance(entityPath)[entityPath+'_swc'].setOpacity(1.0);
                 } catch (ignore) {

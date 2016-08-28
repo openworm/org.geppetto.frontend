@@ -58,7 +58,11 @@ define(function (require) {
                 unselected_transparent: true
             },
             highlightedConnections: [],
-
+            timeWidget : null,
+            timeWidgetVisible : false,
+            recordedVariablesWidget : null,
+            recordedVariablesPlot : false,
+            
             addWidget: function (type) {
                 var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
                 return newWidget;
@@ -659,6 +663,32 @@ define(function (require) {
              */
             setPlayLoop: function (loop) {
                 GEPPETTO.getVARS().playLoop = loop;
+            },
+            
+            showTime : function(){
+            	if(time!=null || undefined){
+            		if(!this.timeWidgetVisible){
+            			this.timeWidget = G.addWidget(5).setVariable(time);
+            			this.timeWidgetVisible = true;
+            		}else{
+            			this.timeWidget.close();
+            			this.timeWidgetVisible = false;
+            		}
+            	}
+            },
+            
+            plotRecordedVariables : function(){
+            	if(Project.getActiveExperiment()!=null||undefined){
+            		if(!this.recordedVariablesPlot){
+            			this.recordedVariablesWidget=G.addWidget(0).setName('Recorded Variables');
+            			$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
+            					function(index,value){p.plotData(value)});
+            			this.recordedVariablesPlot = true;
+            		}else{
+            			this.recordedVariablesWidget.close();
+            			this.recordedVariablesPlot = false;
+            		}
+            	}
             },
 
             /**

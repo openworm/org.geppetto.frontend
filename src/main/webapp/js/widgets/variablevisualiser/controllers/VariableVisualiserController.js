@@ -91,7 +91,7 @@ define(function (require) {
 
             //update widgets
             else if (event == Events.Experiment_update) {
-                var step = parameters.steps;
+                var step = parameters.step;
                 for (var i = 0; i < this.widgets.length; i++) {
                     this.widgets[i].updateVariable(step);
                 }

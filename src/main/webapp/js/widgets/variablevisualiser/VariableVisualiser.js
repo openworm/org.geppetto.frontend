@@ -44,7 +44,7 @@ define(function (require) {
         root: null,
         variable: null,
         options: null,
-        default_width: 250,
+        default_width: 350,
         default_height: 150,
 
         /**
@@ -114,7 +114,7 @@ define(function (require) {
         updateVariable: function (step) {
             this.setHeader(this.variable.name);
             if (typeof step != 'undefined') {
-                this.setBody(this.variable.state.getTimeSeries()[step].getValue().toFixed(4) + " " + this.variable.state.getUnit());
+                this.setBody(this.variable.state.getTimeSeries()[step].toFixed(4) + " " + this.variable.state.getUnit());
             }
         },
 

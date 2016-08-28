@@ -46,6 +46,7 @@ define(function (require) {
     var SpotlightButton = require('./buttons/SpotlightButton');
     var ControlPanelButton = require('./buttons/ControlPanelButton');
     var QueryBuilderButton = require('./buttons/QueryBuilderButton');
+    var DropDownButton = require('./buttons/DropDownButton');
 
     var GEPPETTO = require('geppetto');
 
@@ -53,7 +54,8 @@ define(function (require) {
 
     	getInitialState: function () {
             return {
-                disableSpotlight: true
+                disableSpotlight: true,
+                showDropDown : false
             }
         },
         
@@ -79,14 +81,17 @@ define(function (require) {
         render: function () {
             var spotlightBtn = GEPPETTO.Spotlight != undefined ? React.createFactory(SpotlightButton)({disabled: this.state.disableSpotlight}) : '';
             var controlPanelBtn = GEPPETTO.ControlPanel != undefined ? React.createFactory(ControlPanelButton)({}) : '';
-            var queryBuilderlBtn = GEPPETTO.QueryBuilder != undefined ? React.createFactory(QueryBuilderButton)({}) : '';
+            var queryBuilderBtn = GEPPETTO.QueryBuilder != undefined ? React.createFactory(QueryBuilderButton)({}) : '';
+            var dropDownBtn = GEPPETTO.DropDownPanel != undefined ? React.createFactory(DropDownButton)({iconOn : this.props.iconOn, iconOff : this.props.iconOff}):'';
 
             return <div className={'foreground-controls'}>
                 {controlPanelBtn}
                 <br/>
                 {spotlightBtn}
-                <br />
-                {queryBuilderlBtn}
+                {queryBuilderBtn==""? '': <br />}
+                {queryBuilderBtn}
+                {dropDownBtn==""? '': <br />}
+                {dropDownBtn}
             </div>
         }
     });

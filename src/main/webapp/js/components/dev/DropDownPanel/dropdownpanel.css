@@ -1,0 +1,61 @@
+.dropDownButton {
+  position: fixed;
+  height:27px
+}
+
+.dropDownButton:disabled{
+	background:0;
+	color:@orange;
+}
+
+#dropDownPanel {
+    position: fixed;
+    top : 400px;
+    left: 60px;
+    background: rgba(66, 59, 59, 0.90) !important;
+    display: none;
+    z-index: 3;
+    height: auto;
+    width: auto;    
+    border-radius: 0px;
+}
+
+.dropDownTable {
+	color : #fd6808;
+	font-size : 20px;
+	color: #fd6808;
+    float: left;
+    padding-right: 10px;
+    white-space: nowrap;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+.dropDownTable label {
+    float: left;
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    font-size : 18px;
+}
+
+.dropDownItem {
+	display : inline-block;
+}
+
+.selectedStatus{
+	width : 50px;
+	padding: 5px 20px 5px 15px;
+}
+
+.dropDownLabel {
+	padding: 5px 20px 5px 0;	
+}
+
+.dropDownTable tr:nth-child(2) {
+	background:#272222;
+}

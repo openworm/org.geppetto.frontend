@@ -138,8 +138,21 @@ define(function (require) {
 		//Spotlight initialization
 		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
 
+		var actions = [{
+			label: "Plot All Recorded Variables",
+			action: "G.plotRecordedVariables()"
+		}, {
+			label: "Enable Color Plotting",
+			action: "G.enableColorPlotting()"
+		}, {
+			label: "Show Time",
+			action: "G.showTime()"
+		}];
+
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {list : actions, openedByDefault : false}, document.getElementById("dropDownPanel"));
+		
 		//Foreground initialization
-		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {}, document.getElementById("foreground-toolbar"));
+		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("foreground-toolbar"));
 
 		//Experiments table initialization
 		GEPPETTO.ComponentFactory.addComponent('EXPERIMENTSTABLE', {}, document.getElementById("experiments"));

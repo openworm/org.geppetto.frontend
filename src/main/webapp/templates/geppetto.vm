@@ -80,6 +80,7 @@
     <div id="geppettologo" ></div>
     <div id="spotlight" ></div>
     <div id="controlpanel" ></div>
+   	<div id="dropDownPanel" ></div>
     <div id="querybuilder" ></div>
     <div id="sim"></div>
 

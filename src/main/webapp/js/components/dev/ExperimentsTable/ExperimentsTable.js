@@ -141,6 +141,7 @@ define(function (require) {
                                     <th>Aspect</th>
                                     <th>Simulator</th>
                                     <th>Watched Variables</th>
+                                    <th>Parameters</th>
                                     <th>TimeStep (s)</th>
                                     <th>Length (s)</th>
                                 </tr>
@@ -223,6 +224,19 @@ define(function (require) {
         	}
         },
         
+        parametersWindow : function(){
+        	if(this.props.experiment.getWatchedVariables()!=null || undefined){
+        		var watchedVariables = "";
+
+        		for(var i =0; i<this.props.experiment.getWatchedVariables().length; i++){
+        			watchedVariables = 
+        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + '\n\n';
+        		}
+
+        		GEPPETTO.FE.infoDialog("Watched Variables ", watchedVariables);
+        	}
+        },
+        
         render: function () {
             var editable = false;
             
@@ -245,6 +259,16 @@ define(function (require) {
             	firstWatchedVariable = watchedVariables[0];
             }
             
+            var parameters = this.props.simulator["aspectInstancePath"];
+            var firstParameter = "None";
+            if(parameters !=null || undefined){
+            	for (var key in parameters) {
+            		if (parameters.hasOwnProperty(key)) {
+            			firstParameter = parameters[0];
+            		}
+            	}
+            }
+            
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
             return (
                 <tr id={simulatorRowId}>
@@ -252,6 +276,7 @@ define(function (require) {
                     <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
                     <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
                     <td className="configurationTD" name={'variables'} onClick={this.watchedVariablesWindow}>{firstWatchedVariable}</td>
+                    <td className="configurationTD" name={'parameters'} onClick={this.parametersWindow}>{firstParameter}</td>
                     <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
                     <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
                 </tr>

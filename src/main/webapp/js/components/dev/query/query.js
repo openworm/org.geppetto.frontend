@@ -360,7 +360,8 @@ define(function (require) {
 
         getInitialState: function () {
             return {
-                resultsView: false
+                resultsView: false,
+                errorMsg: ''
             };
         },
 
@@ -679,11 +680,15 @@ define(function (require) {
         },
 
         queryOptionSelected: function(item, value){
+            this.clearErrorMessage();
+
             // Option has been selected
             this.props.model.itemSelectionChanged(item, value);
         },
 
         queryItemDeleted: function(item){
+            this.clearErrorMessage();
+
             this.props.model.deleteItem(item);
         },
 
@@ -698,86 +703,104 @@ define(function (require) {
         },
 
         runQuery: function(){
+            this.clearErrorMessage();
             if(this.props.model.items.length > 0) {
 
-                // check if we already have results for the given compound query
-                var compoundId = this.getCompoundQueryId(this.props.model.items);
-                var match = false;
-
-                for(var i=0; i<this.props.model.results.length; i++){
-                    if(this.props.model.results[i].id == compoundId){
-                        match = true;
+                var allSelected = true;
+                for(var i=0; i<this.props.model.items.length; i++){
+                    if(this.props.model.items[i].selection == -1){
+                        allSelected = false;
+                        break;
                     }
                 }
 
-                if(!match) {
-                    // build query items for data transfer
-                    var queryDTOs = [];
+                if(allSelected) {
 
-                    for(var i=0; i<this.props.model.items.length; i++){
-                        var selection = this.props.model.items[i].selection;
-                        if(selection != -1){
-                            var queryDTO = {
-                                target: this.props.model.items[i].target,
-                                query: this.props.model.items[i].options[selection+1].queryObj
-                            };
+                    // check if we already have results for the given compound query
+                    var compoundId = this.getCompoundQueryId(this.props.model.items);
+                    var match = false;
 
-                            queryDTOs.push(queryDTO);
+                    for (var i = 0; i < this.props.model.results.length; i++) {
+                        if (this.props.model.results[i].id == compoundId) {
+                            match = true;
                         }
                     }
 
-                    var that = this;
-                    var queryDoneCallback = function (jsonResults) {
+                    if (!match) {
+                        // build query items for data transfer
+                        var queryDTOs = [];
 
-                        // TODO: also add verbose label
-                        var queryLabel = "";
-                        for (var i = 0; i < that.props.model.items.length; i++) {
-                            queryLabel += ((i != 0) ? "/" : "") + that.props.model.items[i].term;
+                        for (var i = 0; i < this.props.model.items.length; i++) {
+                            var selection = this.props.model.items[i].selection;
+                            if (selection != -1) {
+                                var queryDTO = {
+                                    target: this.props.model.items[i].target,
+                                    query: this.props.model.items[i].options[selection + 1].queryObj
+                                };
+
+                                queryDTOs.push(queryDTO);
+                            }
                         }
 
-                        // NOTE: assumption we only have one datasource configured
-                        var datasourceConfig = that.configuration.DataSources[Object.keys(that.configuration.DataSources)[0]];
-                        var recordsDatasourceFormat = datasourceConfig.resultsFilters.getRecords(JSON.parse(jsonResults));
-                        var formattedRecords = recordsDatasourceFormat.map(function(record){
-                            return {
-                                id: datasourceConfig.resultsFilters.getId(record),
-                                name: datasourceConfig.resultsFilters.getName(record),
-                                description: datasourceConfig.resultsFilters.getDescription(record),
-                                controls: ''
-                            }
-                        });
+                        var that = this;
+                        var queryDoneCallback = function (jsonResults) {
 
-                        that.props.model.addResults({
-                            id: compoundId,
-                            items: that.props.model.items.slice(0),
-                            label: queryLabel,
-                            records: formattedRecords,
-                            selected: true
-                        });
+                            // TODO: also add verbose label
+                            var queryLabel = "";
+                            for (var i = 0; i < that.props.model.items.length; i++) {
+                                queryLabel += ((i != 0) ? "/" : "") + that.props.model.items[i].term;
+                            }
+
+                            // NOTE: assumption we only have one datasource configured
+                            var datasourceConfig = that.configuration.DataSources[Object.keys(that.configuration.DataSources)[0]];
+                            var recordsDatasourceFormat = datasourceConfig.resultsFilters.getRecords(JSON.parse(jsonResults));
+                            var formattedRecords = recordsDatasourceFormat.map(function (record) {
+                                return {
+                                    id: datasourceConfig.resultsFilters.getId(record),
+                                    name: datasourceConfig.resultsFilters.getName(record),
+                                    description: datasourceConfig.resultsFilters.getDescription(record),
+                                    controls: ''
+                                }
+                            });
+
+                            that.props.model.addResults({
+                                id: compoundId,
+                                items: that.props.model.items.slice(0),
+                                label: queryLabel,
+                                records: formattedRecords,
+                                selected: true
+                            });
+
+                            // change state to switch to results view
+                            that.switchView(true);
+                        };
+
+                        // run query on queries controller
+                        GEPPETTO.QueriesController.runQuery(queryDTOs, queryDoneCallback);
+                    } else {
+                        // if we already have results for the an identical query switch to results and select the right tab
+                        // set the right results item as the selected tab
+                        for (var i = 0; i < this.props.model.results.length; i++) {
+                            if (this.props.model.results[i].id == compoundId) {
+                                this.props.model.results[i].selected = true;
+                            } else {
+                                this.props.model.results[i].selected = false;
+                            }
+                        }
+
+                        // trigger refresh
+                        this.props.model.notifyChange();
 
                         // change state to switch to results view
-                        that.switchView(true);
-                    };
-
-                    // run query on queries controller
-                    GEPPETTO.QueriesController.runQuery(queryDTOs, queryDoneCallback);
-                } else {
-                    // if we already have results for the an identical query switch to results and select the right tab
-                    // set the right results item as the selected tab
-                    for(var i=0; i<this.props.model.results.length; i++){
-                        if(this.props.model.results[i].id == compoundId){
-                            this.props.model.results[i].selected = true;
-                        }else {
-                            this.props.model.results[i].selected = false;
-                        }
+                        this.switchView(true);
                     }
-
-                    // trigger refresh
-                    this.props.model.notifyChange();
-
-                    // change state to switch to results view
-                    this.switchView(true);
+                } else {
+                    // show error message for unselected query items
+                    this.setErrorMessage('Please select an option for all query items.');
                 }
+            } else {
+                // show error message for empty query
+                this.setErrorMessage('Please add query items to run a query.');
             }
         },
 
@@ -787,6 +810,8 @@ define(function (require) {
          * @param queryItem - Object with term and variable id properties
          */
         addQueryItem: function(queryItemParam){
+            this.clearErrorMessage();
+
             // retrieve variable from queryItem.id
             var label = queryItemParam.term;
             var variable = GEPPETTO.ModelFactory.getTopLevelVariablesById([queryItemParam.id])[0];
@@ -832,12 +857,20 @@ define(function (require) {
                 // add query item to model
                 this.props.model.addItem(queryItem);
             } else {
-                // TODO: notify no queries available for the selected term
-                alert("No queries available for the selected term.");
+                // notify no queries available for the selected term
+                this.setErrorMessage("No queries available for the selected term.");
             }
 
             // init datasource results to avoid duplicates
             this.dataSourceResults.clear();
+        },
+
+        setErrorMessage: function(message){
+            this.setState({errorMsg : message});
+        },
+
+        clearErrorMessage: function(){
+            this.setErrorMessage('');
         },
 
         render: function () {
@@ -901,6 +934,7 @@ define(function (require) {
                             <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                         </div>
                         <QueryFooter count={this.props.model.count} onRun={this.runQuery} />
+                        <div id="query-error-message">{this.state.errorMsg}</div>
                     </div>
                 );
             }

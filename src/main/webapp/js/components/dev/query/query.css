@@ -115,7 +115,7 @@
 
 #querybuilder-footer {
     clear: both;
-    position: absolute !important;
+    position: relative !important;
     margin-left: auto;
     margin-right: auto;
     margin-top: 25px;
@@ -129,6 +129,13 @@
     font-size: 15px;
     text-align: center;
     color: #fd6808;
+}
+
+#query-error-message {
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    color: #fd2821;
 }
 
 /*Search box*/

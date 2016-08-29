@@ -860,7 +860,7 @@ define(function (require) {
                     return (
                         <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
                             <Griddle columns={this.props.resultsColumns} results={this.props.model.results[focusTabIndex - 1].records}
-                            showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={400}
+                            showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={450}
                             useGriddleStyles={false} columnMetadata={this.props.resultsColumnMeta} />
                         </Tabs.Panel>
                     );

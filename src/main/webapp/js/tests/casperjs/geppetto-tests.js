@@ -1,5 +1,5 @@
 
-casper.test.begin('Geppetto basic tests', 9, function suite(test) {
+casper.test.begin('Geppetto basic tests', 11, function suite(test) {
     casper.start("http://docker-x2go-development-1.02489874.cont.dockerapp.io:8080/org.geppetto.frontend", function() {
       this.waitForSelector('div[id="logo"]', function() {
         this.echo("I waited for the logo to load.");
@@ -25,13 +25,28 @@ casper.test.begin('Geppetto basic tests', 9, function suite(test) {
     });
 
     casper.thenOpen("http://docker-x2go-development-1.02489874.cont.dockerapp.io:8080/org.geppetto.frontend/geppetto?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json",function() {
-        this.waitForSelector('div.modal-header', function() {
+        this.echo("Loading an external model that is not persisted")
+        this.waitUntilVisible('div.modal-content', function() {
           this.echo("I've waited for the popup message to load up");
           test.assertVisible('h3.text-center', "Error message correctly pops up");
           test.assertSelectorHasText('h3.text-center', 'Message', "Error message correctly pops up with the message header");
           this.mouseEvent('click','button.btn', "closing error message");
-          test.assertNotVisible('h3.text-center', "Correctly closed error message");
-      }, null, 30000);
+          this.waitWhileVisible('h3.text-center', function () {
+            test.assertNotVisible('h3.text-center', "Correctly closed error message");
+          }, null, 30000);
+
+          this.assertVisible('button.SaveButton', "Persist button is present");
+
+          test.assertEvalEquals(function() {
+            return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
+          }, null, "The persist button is correctly active.");
+
+          this.mouseEvent('click','button.SaveButton', "attempting to persist");
+
+          test.assertEvalEquals(function() {
+            return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
+          }, true, "The persist button is correctly active.");
+      }, null, 100000);
     });
 
     //TODO: Open experiment console.  Check things

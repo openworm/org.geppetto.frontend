@@ -1,5 +1,5 @@
 
-casper.test.begin('Geppetto basic tests', 11, function suite(test) {
+casper.test.begin('Geppetto basic tests', 12, function suite(test) {
     casper.start("http://docker-x2go-development-1.02489874.cont.dockerapp.io:8080/org.geppetto.frontend", function() {
       this.waitForSelector('div[id="logo"]', function() {
         this.echo("I waited for the logo to load.");
@@ -35,6 +35,9 @@ casper.test.begin('Geppetto basic tests', 11, function suite(test) {
             test.assertNotVisible('h3.text-center', "Correctly closed error message");
           }, null, 30000);
 
+          //TODO: Open experiment console.  Check presence of buttons, recording variables, setting parameters
+
+          //TODO: Click persist button. Check things again
           this.assertVisible('button.SaveButton', "Persist button is present");
 
           test.assertEvalEquals(function() {
@@ -43,15 +46,18 @@ casper.test.begin('Geppetto basic tests', 11, function suite(test) {
 
           this.mouseEvent('click','button.SaveButton', "attempting to persist");
 
-          test.assertEvalEquals(function() {
-            return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
-          }, true, "The persist button is correctly active.");
+          this.waitForSelector('button.SaveButton[disabled]', function() {
+            test.assertEvalEquals(function() {
+              return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
+            }, true, "The persist button is now correctly inactive");
+          });
+
+          //TODO: logout
       }, null, 100000);
     });
 
-    //TODO: Open experiment console.  Check things
-    //TODO: Click persist button. Check things again
-    //TODO: logout, log back in as other users. Check more things
+    //TODO: log back in as other users. Check more things
+    //TODO: exercise the run loop, check the changing experiment status, try to make experiment fail
 
     casper.run(function() {
         test.done();

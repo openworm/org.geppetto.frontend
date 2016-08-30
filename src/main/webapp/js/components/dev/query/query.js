@@ -692,6 +692,10 @@ define(function (require) {
             this.props.model.deleteItem(item);
         },
 
+        queryResultDeleted: function(resultsItem){
+            this.props.model.deleteResults(resultsItem);
+        },
+
         getCompoundQueryId: function(queryItems){
             var id = "";
 
@@ -877,7 +881,7 @@ define(function (require) {
             var markup = null;
 
             // figure out if we are in results view or query builder view
-            if(this.state.resultsView){
+            if(this.state.resultsView && this.props.model.results.length > 0){
                 // if results view, build results markup based on results in the model
                 // figure out focus tab index (1 based index)
                 var focusTabIndex = 1;
@@ -892,6 +896,10 @@ define(function (require) {
                 var tabs = this.props.model.results.map(function (resultsItem) {
                     return (
                         <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
+                            <button className="fa fa-times-circle-o querybuilder-button-small delete-result-button"
+                                    title="Delete result set"  onClick={this.queryResultDeleted.bind(null, resultsItem)}>
+                            </button>
+                            <div className="clearer"></div>
                             <Griddle columns={this.props.resultsColumns} results={this.props.model.results[focusTabIndex - 1].records}
                             showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={450}
                             useGriddleStyles={false} columnMetadata={this.props.resultsColumnMeta} />
@@ -904,14 +912,17 @@ define(function (require) {
                         <Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>
-                        <button id="switch-view-btn"
-                                className="fa fa-hand-o-left querybuilder-button"
+                        <button id="switch-view-btn" className="fa fa-hand-o-left querybuilder-button"
                                 title="back to query" onClick={this.switchView.bind(null, false)}>
                         </button>
                     </div>
                 );
 
             } else {
+                // if we ended up in query builder rendering make sure the state flag is synced up
+                // NOTE: this could happen if we were in resultsView and the user deleted all the results
+                this.state.resultsView = false;
+
                 // build QueryItem list
                 var queryItems = this.props.model.items.map(function (item) {
                     return (

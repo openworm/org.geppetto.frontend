@@ -20,6 +20,21 @@
     border: 0 !important;
 }
 
+#querybuilder .querybuilder-button-small {
+    height: 30px;
+    width: 40px;
+    margin: 0px;
+    background: none !important;
+    color: #fd6808;
+    font-size: 30px !important;
+    border: 0 !important;
+}
+
+#querybuilder .delete-result-button {
+    float: right;
+    margin-bottom: 10px;
+}
+
 #querybuilder .query-item-label {
     font-weight: bold;
     font-size: 20px;

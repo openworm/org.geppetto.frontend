@@ -40,7 +40,7 @@ define(function (require) {
 
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
-
+	var anchorme = require('anchorme');
 	/**
 	 * Private function to hookup custom event handlers
 	 *
@@ -165,6 +165,7 @@ define(function (require) {
 		 * @command setData(anyInstance)
 		 * @param {Object} anyInstance - An instance of any type
 		 */
+		
 		setData: function (anyInstance) {
 			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
 
@@ -193,6 +194,19 @@ define(function (require) {
 		 * @returns {string}
 		 */
 		getHTML: function (anyInstance, id) {
+			var anchorOptions = {
+			  "attributes":{
+			    "target": "_blank",
+			    "style" : "color:#00008B;"
+			  },
+			  "html":true,
+			  ips:false,
+			  emails:true,
+			  urls:true,
+			  TLDs:20,
+			  truncate:0,
+			  defaultProtocol:"http://"
+			};
 			var type = anyInstance.getType();
 			var html = "";
 			if (type.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
@@ -209,7 +223,7 @@ define(function (require) {
 			}
 			else if (type.getMetaType() == GEPPETTO.Resources.TEXT_TYPE) {
 				var value = this.getVariable(anyInstance).getInitialValues()[0].value;
-				html += "<div id='" + id + "' class='collapse in popup-text'>" + value.text + "</div>";
+				html += "<div id='" + id + "' class='collapse in popup-text'>" + anchorme.js(value.text, anchorOptions) + "</div>";
 			}
 			else if (type.getMetaType() == GEPPETTO.Resources.IMAGE_TYPE) {
 				var value = this.getVariable(anyInstance).getInitialValues()[0].value;

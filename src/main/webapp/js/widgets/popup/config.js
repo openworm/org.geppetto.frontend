@@ -40,12 +40,14 @@
 
 require.config({
     paths: {
-        "slick": "widgets/popup/vendor/slick.min"
+        "slick": "widgets/popup/vendor/slick.min",
+        "anchorme": "widgets/popup/vendor/anchorme.min"
     }
 });
 
 var reqs = [];
 reqs.push("slick");
+reqs.push("anchorme");
 
 
 require(reqs, function () {

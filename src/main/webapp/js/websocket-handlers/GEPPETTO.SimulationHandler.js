@@ -432,15 +432,8 @@ define(function (require) {
                 var rawModel = JSON.parse(payload.import_value_resolved);
 
                 // STEP 1: merge model - expect a fully formed Geppetto model to be merged into current one
-                var diffReport = GEPPETTO.ModelFactory.mergeModel(rawModel, true);
+                var diffReport = GEPPETTO.ModelFactory.mergeValue(rawModel, true);
 
-                // STEP 2: add new instances for new types if any
-                var newInstances = GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
-
-                // STEP 3: update scene
-                GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
-
-                // STEP: 4 update control panel
                 GEPPETTO.FE.refresh();
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_VALUE_RESOLVED);

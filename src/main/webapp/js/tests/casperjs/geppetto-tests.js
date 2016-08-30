@@ -38,7 +38,7 @@ casper.test.begin('Geppetto basic tests', 12, function suite(test) {
           //TODO: Open experiment console.  Check presence of buttons, recording variables, setting parameters
 
           //TODO: Click persist button. Check things again
-          this.assertVisible('button.SaveButton', "Persist button is present");
+          test.assertVisible('button.SaveButton', "Persist button is present");
 
           test.assertEvalEquals(function() {
             return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
@@ -47,10 +47,8 @@ casper.test.begin('Geppetto basic tests', 12, function suite(test) {
           this.mouseEvent('click','button.SaveButton', "attempting to persist");
 
           this.waitForSelector('button.SaveButton[disabled]', function() {
-            test.assertEvalEquals(function() {
-              return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
-            }, true, "The persist button is now correctly inactive");
-          });
+            test.assertExists("button.SaveButton[disabled]", "The persist button is now correctly inactive");
+          }, null, 5000);
 
           //TODO: logout
       }, null, 100000);

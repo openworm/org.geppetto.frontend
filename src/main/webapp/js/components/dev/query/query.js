@@ -748,11 +748,14 @@ define(function (require) {
 
                         var that = this;
                         var queryDoneCallback = function (jsonResults) {
-
-                            // TODO: also add verbose label
                             var queryLabel = "";
+                            var verboseLabel = "";
                             for (var i = 0; i < that.props.model.items.length; i++) {
-                                queryLabel += ((i != 0) ? "/" : "") + that.props.model.items[i].term;
+                                queryLabel += ((i != 0) ? "/" : "")
+                                    + that.props.model.items[i].term;
+                                verboseLabel += ((i != 0) ? "<span> / </span>" : "")
+                                    + "<span>" + that.props.model.items[i].term + "</span>: "
+                                    + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
                             }
 
                             // NOTE: assumption we only have one datasource configured
@@ -771,6 +774,7 @@ define(function (require) {
                                 id: compoundId,
                                 items: that.props.model.items.slice(0),
                                 label: queryLabel,
+                                verboseLabel: verboseLabel,
                                 records: formattedRecords,
                                 selected: true
                             });
@@ -894,14 +898,19 @@ define(function (require) {
                 // set data for each tab based on results from the model
                 // for each tab put a Griddle configured with appropriate column meta
                 var tabs = this.props.model.results.map(function (resultsItem) {
+                    var getVerboseLabelMarkup = function() {
+                          return {__html: resultsItem.verboseLabel};
+                    };
+
                     return (
                         <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
+                            <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <button className="fa fa-times-circle-o querybuilder-button-small delete-result-button"
                                     title="Delete result set"  onClick={this.queryResultDeleted.bind(null, resultsItem)}>
                             </button>
                             <div className="clearer"></div>
                             <Griddle columns={this.props.resultsColumns} results={this.props.model.results[focusTabIndex - 1].records}
-                            showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={450}
+                            showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={425}
                             useGriddleStyles={false} columnMetadata={this.props.resultsColumnMeta} />
                         </Tabs.Panel>
                     );

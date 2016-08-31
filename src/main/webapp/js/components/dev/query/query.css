@@ -35,6 +35,20 @@
     margin-bottom: 10px;
 }
 
+#querybuilder .result-verbose-label {
+    float: left;
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 10px;
+    text-align: left;
+    width: 95%;
+}
+
+#querybuilder .result-verbose-label span {
+    color: #fd6808;
+}
+
 #querybuilder .query-item-label {
     font-weight: bold;
     font-size: 20px;
@@ -109,8 +123,8 @@
     margin-right: auto;
     left: 0;
     right: 0;
-    width: 85%;
-    top: 13%;
+    width: 88%;
+    top: 10%;
 }
 
 #add-query-btn {
@@ -353,7 +367,7 @@
 }
 
 #querybuilder .query-results-name-column {
-    width: 300px;
+    width: 280px;
 }
 
 #querybuilder .query-results-controls-column {

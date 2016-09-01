@@ -343,6 +343,10 @@ define(function (require) {
                     },
                     queryTokenizer: function (q) {
                         return Bloodhound.tokenizers.nonword(q.replace('_', ' '));
+                    },
+                    sorter: function (a, b) {
+                        var term = $('#typeahead').val();
+                        return customSorter(a, b, term);
                     }
                 }
             }
@@ -435,6 +439,10 @@ define(function (require) {
                     },
                     queryTokenizer: function (q) {
                         return Bloodhound.tokenizers.nonword(q.replace('_', ' '));
+                    },
+                    sorter: function (a, b) {
+                        var term = $("#query-typeahead").val();
+                        return customSorter(a, b, term);
                     }
                 }
             }
@@ -532,6 +540,81 @@ define(function (require) {
                     }
                 }
             });
+
+            window.customSorter = function(a, b, InputString){
+                //move exact matches to top
+                if (InputString == a.label) {
+                    return -1;
+                }
+                if (InputString == b.label) {
+                    return 1;
+                }
+                //close match without case matching
+                if (InputString.toLowerCase() == a.label.toLowerCase()) {
+                    return -1;
+                }
+                if (InputString.toLowerCase() == b.label.toLowerCase()) {
+                    return 1;
+                }
+                //match ignoring joinging nonwords
+                Bloodhound.tokenizers.nonword("test thing-here12 34f").join(' ');
+                if (Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ') == Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ')) {
+                    return -1;
+                }
+                if (Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ') == Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ')) {
+                    return 1;
+                }
+                //match against id
+                if (InputString.toLowerCase() == a.id.toLowerCase()) {
+                    return -1;
+                }
+                if (InputString.toLowerCase() == b.id.toLowerCase()) {
+                    return 1;
+                }
+                //pick up any match without nonword join character match
+                if (Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ')) < 0 && Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ')) > -1) {
+                    return 1;
+                }
+                if (Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ')) < 0 && Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ')) > -1) {
+                    return -1;
+                }
+                //also with underscores ignored
+                if (Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ').replace('_', ' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ').replace('_', ' ')) < 0 && Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ').replace('_', ' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ').replace('_', ' ')) > -1) {
+                    return 1;
+                }
+                if (Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ').replace('_', ' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ').replace('_', ' ')) < 0 && Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ').replace('_', ' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ').replace('_', ' ')) > -1) {
+                    return -1;
+                }
+                //if not found in one then advance the other
+                if (a.label.toLowerCase().indexOf(InputString.toLowerCase()) < 0 && b.label.toLowerCase().indexOf(InputString.toLowerCase()) > -1) {
+                    return 1;
+                }
+                if (b.label.toLowerCase().indexOf(InputString.toLowerCase()) < 0 && a.label.toLowerCase().indexOf(InputString.toLowerCase()) > -1) {
+                    return -1;
+                }
+                // if the match is closer to start than the other move up
+                if (a.label.toLowerCase().indexOf(InputString.toLowerCase()) > -1 && a.label.toLowerCase().indexOf(InputString.toLowerCase()) < b.label.toLowerCase().indexOf(InputString.toLowerCase())) {
+                    return -1;
+                }
+                if (b.label.toLowerCase().indexOf(InputString.toLowerCase()) > -1 && b.label.toLowerCase().indexOf(InputString.toLowerCase()) < a.label.toLowerCase().indexOf(InputString.toLowerCase())) {
+                    return 1;
+                }
+                // if the match in the id is closer to start then move up
+                if (a.id.toLowerCase().indexOf(InputString.toLowerCase()) > -1 && a.id.toLowerCase().indexOf(InputString.toLowerCase()) < b.id.toLowerCase().indexOf(InputString.toLowerCase())) {
+                    return -1;
+                }
+                if (b.id.toLowerCase().indexOf(InputString.toLowerCase()) > -1 && b.id.toLowerCase().indexOf(InputString.toLowerCase()) < a.id.toLowerCase().indexOf(InputString.toLowerCase())) {
+                    return 1;
+                }
+                // move the shorter synonyms to the top
+                if (a.label < b.label) {
+                    return -1;
+                }
+                else if (a.label > b.label) {
+                    return 1;
+                }
+                else return 0; // if nothing found then do nothing.
+            }
 
             window.getTermInfoWidget = function() {
               return window.termInfoPopup;

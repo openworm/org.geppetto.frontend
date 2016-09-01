@@ -526,7 +526,11 @@ define(function (require) {
                         this.configuration.DataSources[key] = obj;
 
                         if(obj.bloodhoundConfig) {
-                            this.initDataSourceResults(obj.bloodhoundConfig.datumTokenizer, obj.bloodhoundConfig.queryTokenizer);
+                            this.initDataSourceResults(
+                                obj.bloodhoundConfig.datumTokenizer,
+                                obj.bloodhoundConfig.queryTokenizer,
+                                obj.bloodhoundConfig.sorter
+                            );
                         }
                     }
                 }

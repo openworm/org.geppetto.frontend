@@ -160,13 +160,7 @@ define(function (require) {
             	}
             });
 
-            this.dataSourceResults = new Bloodhound({
-            	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
-            	queryTokenizer: Bloodhound.tokenizers.whitespace,
-            	identify: function (obj) {
-            		return obj.label;
-            	}
-            });
+            this.initDataSourceResults();
 
             Handlebars.registerHelper('geticonFromMetaType', function (metaType) {
                 if (metaType) {
@@ -397,23 +391,38 @@ define(function (require) {
             $("#typeahead").typeahead('val', "");
         },
 
+        initDataSourceResults: function(datumToken, sorter){
+            this.dataSourceResults = new Bloodhound({
+                datumTokenizer: (datumToken != undefined) ? datumToken : Bloodhound.tokenizers.obj.whitespace('label'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                identify: function (obj) {
+                    return obj.label;
+                },
+                sorter: sorter
+            });
+        },
+
         /**
-         * Requests external data sources. 
-         * 
+         * Requests external data sources.
+         *
          */
         addDataSource : function(sources){
-        	try {
-        		for (var key in sources) {
-        			  if (sources.hasOwnProperty(key)) {
-        			    var obj = sources[key];
-        			    var key = this.generateDataSourceKey(key, 0);
-        			    this.configuration.SpotlightBar.DataSources[key] = obj;
-        			  }
-        		}
-        	}
-        	catch (err) {
-        		throw ("Error parsing data sources " + err);
-        	}
+            try {
+                for (var key in sources) {
+                    if (sources.hasOwnProperty(key)) {
+                        var obj = sources[key];
+                        var key = this.generateDataSourceKey(key, 0);
+                        this.configuration.SpotlightBar.DataSources[key] = obj;
+
+                        if(obj.bloodhoundConfig) {
+                            this.initDataSourceResults(obj.bloodhoundConfig.datumTokenizer);
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                throw ("Error parsing data sources " + err);
+            }
         },
         
         /**

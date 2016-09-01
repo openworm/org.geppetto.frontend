@@ -336,6 +336,11 @@ define(function (require) {
                         actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); var meta = Instances.getInstance('$ID$.$ID$_meta'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance); getTermInfoWidget().setData(meta).setName(meta.getParent().getId());}); }); "],
                         icon: "fa-square-o"
                     }
+                },
+                bloodhoundConfig: {
+                    datumTokenizer: function(d) {
+                        return Bloodhound.tokenizers.nonword(d.label.replace('_', ' '));
+                    }
                 }
             }
         };
@@ -420,6 +425,11 @@ define(function (require) {
                     getName: function(record){ return record[1] },
                     getDescription: function(record){ return record[2] },
                     getRecords: function(payload){ return payload.results.map(function(item){ return item.values })}
+                },
+                bloodhoundConfig: {
+                    datumTokenizer: function(d) {
+                        return Bloodhound.tokenizers.nonword(d.label.replace('_', ' '));
+                    }
                 }
             }
         };

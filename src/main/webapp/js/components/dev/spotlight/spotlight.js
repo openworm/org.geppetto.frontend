@@ -387,14 +387,14 @@ define(function (require) {
 
             $("#spotlight").show();
             $("#typeahead").focus();
-            $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+            $("#typeahead").typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
             $("#typeahead").typeahead('val', "");
         },
 
-        initDataSourceResults: function(datumToken, sorter){
+        initDataSourceResults: function(datumToken, queryToken, sorter){
             this.dataSourceResults = new Bloodhound({
                 datumTokenizer: (datumToken != undefined) ? datumToken : Bloodhound.tokenizers.obj.whitespace('label'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                queryTokenizer: (queryToken != undefined) ? queryToken : Bloodhound.tokenizers.nonword,
                 identify: function (obj) {
                     return obj.label;
                 },
@@ -415,7 +415,7 @@ define(function (require) {
                         this.configuration.SpotlightBar.DataSources[key] = obj;
 
                         if(obj.bloodhoundConfig) {
-                            this.initDataSourceResults(obj.bloodhoundConfig.datumTokenizer);
+                            this.initDataSourceResults(obj.bloodhoundConfig.datumTokenizer, obj.bloodhoundConfig.queryTokenizer);
                         }
                     }
                 }
@@ -488,7 +488,7 @@ define(function (require) {
 			//updated results
 			if(this.updateResults){
 				var value = $("#typeahead").val();
-				$("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+				$("#typeahead").typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
                 $("#typeahead").typeahead('val', value);
 			}
         },

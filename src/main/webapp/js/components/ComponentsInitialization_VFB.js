@@ -340,6 +340,9 @@ define(function (require) {
                 bloodhoundConfig: {
                     datumTokenizer: function(d) {
                         return Bloodhound.tokenizers.nonword(d.label.replace('_', ' '));
+                    },
+                    queryTokenizer: function (q) {
+                        return Bloodhound.tokenizers.nonword(q.replace('_', ' '));
                     }
                 }
             }
@@ -429,6 +432,9 @@ define(function (require) {
                 bloodhoundConfig: {
                     datumTokenizer: function(d) {
                         return Bloodhound.tokenizers.nonword(d.label.replace('_', ' '));
+                    },
+                    queryTokenizer: function (q) {
+                        return Bloodhound.tokenizers.nonword(q.replace('_', ' '));
                     }
                 }
             }
@@ -515,8 +521,7 @@ define(function (require) {
             // show term info on selection
             window.oldSelection = "";
             GEPPETTO.on(Events.Select, function () {
-                selection = G.getSelection();
-                message = "";
+                var selection = G.getSelection();
                 if (selection.length > 0) {
                     if (selection[0].getParent() != oldSelection) {
                         oldSelection = selection[0].getParent();

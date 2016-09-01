@@ -86,7 +86,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
-            "actions": "var displayText = '$entity$'.split('.')['$entity$'.split('.').length - 1]; getTermInfoWidget().setData($entity$[displayText + '_meta']).setName(displayText);"
+            "actions": "var displayText = '$entity$'.split('.')['$entity$'.split('.').length - 1]; setTermInfo($entity$[displayText + '_meta'], displayText);"
             },
             {
             "columnName": "controls",
@@ -216,7 +216,7 @@ define(function (require) {
             "Common": {
                 "info": {
                     "id": "info",
-                    "actions": ["var displayTexxxt = '$instance$'.split('.')['$instance$'.split('.').length - 1]; getTermInfoWidget().setData($instance$[displayTexxxt + '_meta']).setName(displayTexxxt);"],
+                    "actions": ["var displayTexxxt = '$instance$'.split('.')['$instance$'.split('.').length - 1]; setTermInfo($instance$[displayTexxxt + '_meta'],displayTexxxt);"],
                     "icon": "fa-info-circle",
                     "label": "Info",
                     "tooltip": "Info"
@@ -243,7 +243,7 @@ define(function (require) {
                 "CompositeType": {
                     "type": {
                         "actions": [
-                            "getTermInfoWidget().setData($variableid$['$variableid$' + '_meta']).setName('$variableid$');",
+                            "setTermInfo($variableid$['$variableid$' + '_meta'],'$variableid$');",
                         ],
                         "icon": "fa-puzzle-piece",
                         "label": "Explore type",
@@ -329,11 +329,11 @@ define(function (require) {
                 explode_arrays: [{field: "synonym", formatting: "$VALUE$ ($LABEL$)[$ID$]"}],
                 type: {
                     "class": {
-                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); getTermInfoWidget().setData(instance).setName(instance.getParent().getId()); GEPPETTO.Spotlight.close();});"],
+                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); setTermInfo(instance, instance.getParent().getId()); GEPPETTO.Spotlight.close();});"],
                         icon: "fa-dot-circle-o"
                     },
                     individual: {
-                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); var meta = Instances.getInstance('$ID$.$ID$_meta'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance); getTermInfoWidget().setData(meta).setName(meta.getParent().getId());}); }); "],
+                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); var meta = Instances.getInstance('$ID$.$ID$_meta'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance); setTermInfo(meta, meta.getParent().getId());}); }); "],
                         icon: "fa-square-o"
                     }
                 },
@@ -393,7 +393,7 @@ define(function (require) {
                 "info": {
                     "id": "info",
                     "actions": [
-                        "Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); getTermInfoWidget().setData(instance).setName(instance.getParent().getId());});"
+                        "Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); setTermInfo(instance, instance.getParent().getId());});"
                     ],
                     "icon": "fa-info-circle",
                     "label": "Info",
@@ -534,7 +534,7 @@ define(function (require) {
                     if (selection[0].getParent() != oldSelection) {
                         oldSelection = selection[0].getParent();
                         try {
-                            getTermInfoWidget().setData(selection[0].getParent()[selection[0].getParent().getId() + "_meta"]).setName(selection[0].getParent()[selection[0].getParent().getId() + "_meta"].getName());
+                            setTermInfo(selection[0].getParent()[selection[0].getParent().getId() + "_meta"], selection[0].getParent()[selection[0].getParent().getId() + "_meta"].getName());
                         } catch (ignore) {
                         }
                     }
@@ -617,7 +617,11 @@ define(function (require) {
             }
 
             window.getTermInfoWidget = function() {
-              return window.termInfoPopup;
+                return window.termInfoPopup;
+            };
+
+            window.setTermInfo = function(data, name) {
+                getTermInfoWidget().setData(data).setName(name);
             };
         };
     };

@@ -668,10 +668,15 @@ define(function (require) {
             showTime : function(){
             	if(time!=null || undefined){
             		if(!this.timeWidgetVisible){
-            			this.timeWidget = G.addWidget(5).setVariable(time);
+            			if(this.timeWidget == null || undefined){
+            				this.timeWidget = G.addWidget(5);
+            				this.timeWidget.setVariable(time);
+            			}else{
+            				this.timeWidget.show();
+            			}
             			this.timeWidgetVisible = true;
             		}else{
-            			this.timeWidget.close();
+            			this.timeWidget.hide();
             			this.timeWidgetVisible = false;
             		}
             	}
@@ -680,12 +685,18 @@ define(function (require) {
             plotRecordedVariables : function(){
             	if(Project.getActiveExperiment()!=null||undefined){
             		if(!this.recordedVariablesPlot){
-            			this.recordedVariablesWidget=G.addWidget(0).setName('Recorded Variables');
-            			$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
-            					function(index,value){p.plotData(value)});
+            			if(this.recordedVariablesWidget == null || undefined){
+            				var varWidget =G.addWidget(0)
+            				varWidget.setName('Recorded Variables');
+            				this.recordedVariablesWidget = varWidget;
+                			$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
+                					function(index,value){varWidget.plotData(value)});
+            			}else{
+            				this.recordedVariablesWidget.show();
+            			}
             			this.recordedVariablesPlot = true;
             		}else{
-            			this.recordedVariablesWidget.close();
+            			this.recordedVariablesWidget.hide();
             			this.recordedVariablesPlot = false;
             		}
             	}

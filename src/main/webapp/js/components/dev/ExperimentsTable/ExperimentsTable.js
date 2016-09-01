@@ -225,18 +225,27 @@ define(function (require) {
         },
         
         parametersWindow : function(){
-        	if(this.props.experiment.getWatchedVariables()!=null || undefined){
-        		var watchedVariables = "";
-
-        		for(var i =0; i<this.props.experiment.getWatchedVariables().length; i++){
-        			watchedVariables = 
-        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + '\n\n';
+        	var modifiedParameters = "";
+       		var parameters =[];
+        	var i=0;
+        	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
+        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
+        				GEPPETTO.Resources.PARAMETER_TYPE){
+        			parameters[i] = GEPPETTO.ModelFactory.allPathsIndexing[key]; 
+        			i++;
         		}
-
-        		GEPPETTO.FE.infoDialog("Watched Variables ", watchedVariables);
         	}
+
+        	for(var i=0; i<parameters.length; i++){
+        		var instance = Instances.getInstance([parameters[i].path]);
+        		if(instance[0].modified){
+        			modifiedParameters += instance[0].getPath()+'\n\n';
+        		}
+        	}
+        	
+        	GEPPETTO.FE.infoDialog("Modified Parameters ", modifiedParameters);
         },
-        
+
         render: function () {
             var editable = false;
             
@@ -259,16 +268,25 @@ define(function (require) {
             	firstWatchedVariable = watchedVariables[0];
             }
             
-            var parameters = this.props.simulator["aspectInstancePath"];
-            var firstParameter = "None";
-            if(parameters !=null || undefined){
-            	for (var key in parameters) {
-            		if (parameters.hasOwnProperty(key)) {
-            			firstParameter = parameters[0];
-            		}
-            	}
-            }
-            
+            var parameters = [];
+            var firstParameter = "None";            
+        	var i=0;
+        	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
+        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
+        				GEPPETTO.Resources.PARAMETER_TYPE){
+        			parameters[i] = GEPPETTO.ModelFactory.allPathsIndexing[key]; 
+        			i++;
+        		}
+        	}
+        	
+        	for(var i=0; i<parameters.length; i++){
+        		var instance = Instances.getInstance([parameters[i].path]);
+        		if(instance[0].modified){
+        			firstParameter = instance[0].getPath();
+        			break;
+        		}
+        	}
+        	
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
             return (
                 <tr id={simulatorRowId}>

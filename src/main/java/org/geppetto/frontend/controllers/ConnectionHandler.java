@@ -190,13 +190,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			// serialize project prior to sending it to client
 			Gson gson = new Gson();
 			String projectJSON = gson.toJson(geppettoProject);
-			setConnectionProject(geppettoProject);
-			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, projectJSON);
+			boolean persisted = geppettoProject.isVolatile();
+			String update = "{\"persisted\":" + !persisted + ",\"project\":" + projectJSON  +"}";
 
-			boolean persisted = !geppettoProject.isVolatile();
-			String update = "{\"persisted\":" + persisted + ",\"projectId\":" + geppettoProject.getId()  +"}";
-			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTENCE_STATE, update);
-					
+			setConnectionProject(geppettoProject);
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, update);
+
 			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager) geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel(), true);
 			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_MODEL_LOADED, geppettoModelJSON);
 
@@ -884,28 +883,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 
 	}
-	/**
-	 * @param requestID
-	 * @param projectId
-	 */
-	public void isPersisted(String requestID, long projectId)
-	{
-
-		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-
-		if(geppettoProject != null)
-		{
-			boolean persisted = !geppettoProject.isVolatile();
-			String update = "{\"persisted\":" + persisted + ",\"projectId\":" + projectId  +"}";
-			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_PERSISTENCE_STATE, update);
-		
-		}
-		else
-		{
-			error(null, "Error checking project persistence: Project doesn't exist  " + projectId + ".");
-		}
-
-	}
 	
 	/**
 	 * @param requestID
@@ -1298,7 +1275,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void checkUserPriviledges(String requestID){
 		String userName = this.geppettoManager.getUser().getLogin();
 		String update = "{\"userName\":" + '"' + userName + '"' +
-						",\"login\":" + this.geppettoManager.isLogin() + ",\"privileges\":[";
+						",\"login\":" + this.isLogin() + ",\"privileges\":[";
 		List<UserPrivileges> privileges = this.geppettoManager.getUser().getUserGroup().getPrivileges();
 		for(UserPrivileges up : privileges){
 			update = update.concat('"'+up.toString()+'"'+",");
@@ -1310,6 +1287,18 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		websocketConnection.sendMessage(requestID, OutboundMessages.USER_PRIVILEGES, update);
 	}
 
+	public boolean isLogin(){
+		boolean login = false;
+		try {
+			login =
+					!AuthServiceCreator.getService().isDefault() && this.geppettoManager.getUser()!=null;
+		} catch (GeppettoInitializationException e) {
+			this.error(e,"Can't verify login");
+		}	
+		
+		return login;
+	}
+	
 	@Override
 	public void simulationError(String errorMessage, Exception exception) {
 		this.error(exception, errorMessage);

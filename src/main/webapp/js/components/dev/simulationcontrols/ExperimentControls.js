@@ -88,13 +88,6 @@ define(function (require) {
                 	}
                 }
             });
-
-            GEPPETTO.on(Events.Check_project_persisted, function () {
-            	var experiment = window.Project.getActiveExperiment();
-                if(experiment!=null || undefined){
-        			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
-                }
-            });
             
             GEPPETTO.on(Events.Project_persisted, function () {
                 experiment = window.Project.getActiveExperiment();

@@ -84,7 +84,6 @@ public class Login
 			try
 			{
 				geppettoManager.setUser((IUser) currentUser.getPrincipal());
-				geppettoManager.setLogin(true);
 			}
 			catch(GeppettoExecutionException e)
 			{

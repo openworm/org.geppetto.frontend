@@ -72,7 +72,7 @@ define(function (require) {
 					}
 					else if (type == 'SPOTLIGHT'){
 						this.componentsMap[type] = component;
-						GEPPETTO.on(Events.Check_project_persisted, function () {
+						GEPPETTO.on(Events.Project_loaded, function () {
 							//Hides or Shows tool bar depending on login user permissions
 							component.updateToolBarVisibilityState(self.permissions());
 						});
@@ -84,7 +84,7 @@ define(function (require) {
 					}
 					else if (type == 'EXPERIMENTSTABLE'){
 						this.componentsMap[type] = component;
-						GEPPETTO.on(Events.Check_project_persisted, function () {
+						GEPPETTO.on(Events.Project_loaded, function () {
 							var visible = self.permissions();
 							component.updateNewExperimentState(visible);
 							component.updateIconsStatus(self.login, visible);

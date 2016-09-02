@@ -51,7 +51,6 @@ define(function (require) {
             parameters: null,
             script: "",
             writePermission :  null,
-            projectPersisted : null,
             login : null,
             runPermission : null,
             downloadPermission : null,
@@ -97,7 +96,7 @@ define(function (require) {
              *
              */
             setDescription: function (newdescription) {   
-            	if(this.writePermission && this.projectPersisted && this.login){
+            	if(this.writePermission && this.getParent().persisted && this.login){
             		this.saveExperimentProperties(
                             {
                                 "description": newdescription
@@ -148,7 +147,7 @@ define(function (require) {
              *
              */
             setScript: function (script) { 
-                if(this.writePermission && this.projectPersisted && this.login){
+                if(this.writePermission && this.getParent().persisted && this.login){
             		this.saveExperimentProperties(
                             {
                                 "script": script
@@ -166,7 +165,7 @@ define(function (require) {
              *
              */
             setName: function (newname) {
-            	if(this.writePermission && this.projectPersisted && this.login){
+            	if(this.writePermission && this.getParent().persisted && this.login){
             		this.saveExperimentProperties(
             				{
             					"name": newname
@@ -189,7 +188,6 @@ define(function (require) {
 
             setParent: function (parent) {
                 this.parent = parent;
-                this.projectPersisted = this.getParent().persisted;
             },
 
             getParent: function () {
@@ -218,7 +216,7 @@ define(function (require) {
             run: function () {
                 var activeExperimentId = window.Project.getActiveExperiment().getId();
                 
-                if(this.writePermission && this.projectPersisted && this.login && this.runPermission){
+                if(this.writePermission && this.getParent().persisted && this.login && this.runPermission){
                 	if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
                 		    this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) 
                 		    && activeExperimentId == this.id){
@@ -319,7 +317,7 @@ define(function (require) {
 
 
             saveExperimentProperties: function (properties) {
-                if(this.writePermission && this.projectPersisted && this.login){
+                if(this.writePermission && this.getParent().persisted && this.login){
                 	var parameters =
                     {};
                     parameters["experimentId"] = this.id;
@@ -417,7 +415,7 @@ define(function (require) {
              * @returns {ExperimentNode} Creates a new ExperimentNode
              */
             clone: function () {
-                if(this.writePermission && this.projectPersisted && this.login){
+                if(this.writePermission && this.getParent().persisted && this.login){
                     var parameters = {};
                     parameters["projectId"] = this.getParent().getId();
                     parameters["experimentId"] = this.id;
@@ -428,7 +426,7 @@ define(function (require) {
             },
             
             deleteExperiment: function () {
-                if(this.writePermission && this.projectPersisted && this.login){
+                if(this.writePermission && this.getParent().persisted && this.login){
                     var parameters =
                     {};
                     parameters["experimentId"] = this.id;
@@ -442,7 +440,7 @@ define(function (require) {
             },
 
             uploadModel: function (aspectPath, format) {
-            	if(this.writePermission && this.projectPersisted && this.login){
+            	if(this.writePermission && this.getParent().persisted && this.login){
             		if (this == window.Project.getActiveExperiment()) {
             			if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
             				var parameters =
@@ -466,7 +464,7 @@ define(function (require) {
             },
 
             uploadResults: function (aspectPath, format) {
-                if(this.writePermission && this.projectPersisted && this.login){
+                if(this.writePermission && this.getParent().persisted && this.login){
                 	if (this == window.Project.getActiveExperiment()) {
                 		if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                 			var parameters =

@@ -157,18 +157,6 @@ define(function (require) {
         messageHandler[messageTypes.PROJECT_PERSISTED] = function (payload) {
             GEPPETTO.SimulationHandler.persistProject(payload);
         };
-        
-        messageHandler[messageTypes.PROJECT_PERSISTENCE_STATE] = function (payload) {
-        	var project_persistence_state = JSON.parse(payload.project_persistence_state);
-        	var persisted =project_persistence_state.persisted;
-        	var projectId =project_persistence_state.projectId;
-        	
-        	if(window.Project.getId()==projectId){
-        		window.Project.persisted=persisted;
-        	}
-        	
-        	GEPPETTO.trigger(Events.Check_project_persisted);
-        };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function (payload) {
             GEPPETTO.trigger('project:configloaded', payload.configuration);
@@ -272,9 +260,10 @@ define(function (require) {
                     Project.initialize();
                 }
                 GEPPETTO.G.listeners = [];
-                var project = JSON.parse(payload.project_loaded);
-
-                window.Project = GEPPETTO.ProjectFactory.createProjectNode(project);
+                var update = JSON.parse(payload.project_loaded);
+                var project = update.project;
+                var persisted = update.persisted;
+                window.Project = GEPPETTO.ProjectFactory.createProjectNode(project, persisted);
                 
                 GEPPETTO.Init.initEventListeners();
                 GEPPETTO.trigger(Events.Project_loaded);

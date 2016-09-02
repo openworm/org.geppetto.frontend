@@ -193,15 +193,6 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.checkUserPriviledges(requestID);
 				break;
 			}
-			case PROJECT_PERSISTENCE_STATE:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-						{
-						}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.isPersisted(requestID,projectId);
-				break;
-			}
 			case NEW_EXPERIMENT:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()

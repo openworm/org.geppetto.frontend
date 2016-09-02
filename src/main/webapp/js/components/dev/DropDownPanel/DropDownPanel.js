@@ -18,7 +18,9 @@ define(function(require) {
 				selected : false,
 				icon : "",
 				checked : "fa fa-check-circle",
-				unchecked : ""
+				unchecked : "", 
+				topPosition : 400,
+				leftPosition : 60
 			};
 		},
 		
@@ -92,12 +94,14 @@ define(function(require) {
 
 		close : function () {
 			this.setState({visible : false});
-			$("#dropDownPanel").hide()
+			$("#dropDownPanel").hide("fold", {horizFirst: true}, 250)
 		},
 
 		open: function() {
-			this.setState({visible : true});
-			$( "#dropDownPanel" ).show("fold", {horizFirst: true}, 500);
+			var self = this;
+			self.setState({visible : true});
+			$( "#dropDownPanel" ).show("fold", {horizFirst: true}, 250);
+			$("#dropDownPanel").css({top: self.state.topPosition, left: self.state.leftPosition, position:'fixed'});
 		},
 
 		isOpen : function(){

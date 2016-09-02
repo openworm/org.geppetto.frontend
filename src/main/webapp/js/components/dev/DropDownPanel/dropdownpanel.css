@@ -12,12 +12,14 @@
     position: fixed;
     top : 400px;
     left: 60px;
-    background: rgba(66, 59, 59, 0.90) !important;
     display: none;
-    z-index: 3;
+    z-index: 99;
     height: auto;
     width: auto;    
     border-radius: 0px;
+    border-style: solid;
+    border-color: #fd6808;
+    border-width: 2px;
 }
 
 .dropDownTable {
@@ -40,7 +42,7 @@
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
-    font-size : 18px;
+    font-size : 16px;
 }
 
 .dropDownItem {
@@ -49,7 +51,7 @@
 
 .selectedStatus{
 	width : 50px;
-	padding: 5px 20px 5px 15px;
+	padding-left: 15px;
 }
 
 .dropDownLabel {

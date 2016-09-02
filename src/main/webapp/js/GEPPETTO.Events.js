@@ -120,11 +120,13 @@ define(function (require) {
                 GEPPETTO.on(Events.Experiment_update, function (parameters) {
                     if (parameters.playAll != null || parameters.step != undefined) {
                         //update scene brightness
-                        for (var key in GEPPETTO.G.listeners) {
-                            for (var i = 0; i < GEPPETTO.G.listeners[key].length; i++) {
-                                GEPPETTO.G.listeners[key][i](Instances.getInstance(key), parameters.step);
-                            }
-                        }
+                    	for (var key in GEPPETTO.G.listeners) {
+                    		if(GEPPETTO.G.listeners[key]!=null || undefined){
+                    			for (var i = 0; i < GEPPETTO.G.listeners[key].length; i++) {
+                    				GEPPETTO.G.listeners[key][i](Instances.getInstance(key), parameters.step);
+                    			}
+                    		}
+                    	}
                     }
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);

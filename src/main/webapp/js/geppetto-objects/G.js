@@ -58,10 +58,11 @@ define(function (require) {
                 unselected_transparent: true
             },
             highlightedConnections: [],
-            timeWidget : null,
+            timeWidget : {},
             timeWidgetVisible : false,
-            recordedVariablesWidget : null,
+            recordedVariablesWidget : {},
             recordedVariablesPlot : false,
+            enableColorPlottingActive : false,
             
             addWidget: function (type) {
                 var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
@@ -502,6 +503,17 @@ define(function (require) {
             },
 
             /**
+             * Removes brightness functions 
+             * 
+             * @param {Instance} instance - The instance to be lit
+             */
+            removeBrightnessFunctionBulkSimplified: function (instances) {
+            	for (var index in instances){
+            		this.clearBrightnessFunctions(instances[index]);
+            	}
+            },
+
+            /**
              * Modulates the brightness of an aspect visualization, given a watched node
              * and a normalization function. The normalization function should receive
              * the value of the watched node and output a number between 0 and 1,
@@ -668,7 +680,7 @@ define(function (require) {
             showTime : function(){
             	if(time!=null || undefined){
             		if(!this.timeWidgetVisible){
-            			if(this.timeWidget == null || undefined){
+            			if(window[this.timeWidget.id] == null || undefined){
             				this.timeWidget = G.addWidget(5);
             				this.timeWidget.setVariable(time);
             			}else{
@@ -679,18 +691,20 @@ define(function (require) {
             			this.timeWidget.hide();
             			this.timeWidgetVisible = false;
             		}
+            	}else{
+            		return GEPPETTO.Resources.TIME_VARIABLE_NOT_DEFINED;
             	}
             },
-            
+
             plotRecordedVariables : function(){
             	if(Project.getActiveExperiment()!=null||undefined){
             		if(!this.recordedVariablesPlot){
-            			if(this.recordedVariablesWidget == null || undefined){
+            			if(window[this.recordedVariablesWidget.id] == null || undefined){
             				var varWidget =G.addWidget(0)
             				varWidget.setName('Recorded Variables');
             				this.recordedVariablesWidget = varWidget;
-                			$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
-                					function(index,value){varWidget.plotData(value)});
+            				$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
+            						function(index,value){varWidget.plotData(value)});
             			}else{
             				this.recordedVariablesWidget.show();
             			}
@@ -699,7 +713,24 @@ define(function (require) {
             			this.recordedVariablesWidget.hide();
             			this.recordedVariablesPlot = false;
             		}
+            	}else{
+            		return GEPPETTO.Resources.NO_WATCHED_VARIABLES;
             	}
+            },
+
+            enableColorPlotting : function(){
+            	var message = "";
+            	if(!this.enableColorPlottingActive){
+            		G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});
+            		this.enableColorPlottingActive = true;
+            		message = GEPPETTO.Resources.ENABLED_COLOR_PLOTTING;
+            	}else{
+            		G.removeBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false));
+            		this.enableColorPlottingActive = false;
+            		message = GEPPETTO.Resources.DISABLED_COLOR_PLOTTING;
+            	}
+            	
+            	return message;
             },
 
             /**

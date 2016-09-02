@@ -208,6 +208,12 @@ define(function (require) {
             NO_WATCHED_VARIABLES : "No Recorded Variables",
 
             NO_FEATURE: "The feature is not avaialble for the current service",
+            
+            TIME_VARIABLE_NOT_DEFINED : "Time Variable not defined, can't show time",
+            
+            DISABLED_COLOR_PLOTTING : "Color Plotting Disabled",
+            
+            ENABLED_COLOR_PLOTTING : "Color Plotting Enabled",
 
             /**
              * Object G resources

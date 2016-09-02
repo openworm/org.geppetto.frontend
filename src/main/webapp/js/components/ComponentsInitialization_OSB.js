@@ -149,7 +149,9 @@ define(function (require) {
 			action: "G.showTime()"
 		}];
 
-		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {list : actions, openedByDefault : false}, document.getElementById("dropDownPanel"));
+		var position = {top : 200, left : 200};
+		
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {list : actions, position : position, openedByDefault : false}, document.getElementById("dropDownPanel"));
 		
 		//Foreground initialization
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("foreground-toolbar"));

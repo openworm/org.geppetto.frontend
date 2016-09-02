@@ -85,7 +85,7 @@ define(function (require) {
             //reset widget's datasets
             else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
                 for (var i = 0; i < this.widgets.length; i++) {
-                    this.widgets[i].clearVariable();
+                    this.widgets[i].clearVariable(parameters.playAll);
                 }
             }
 
@@ -93,7 +93,7 @@ define(function (require) {
             else if (event == Events.Experiment_update) {
                 var step = parameters.step;
                 for (var i = 0; i < this.widgets.length; i++) {
-                    this.widgets[i].updateVariable(step);
+                    this.widgets[i].updateVariable(step,parameters.playAll);
                 }
             }
         }

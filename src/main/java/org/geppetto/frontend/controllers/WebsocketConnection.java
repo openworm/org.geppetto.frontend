@@ -38,6 +38,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,8 @@ import org.geppetto.frontend.messaging.DefaultMessageSenderFactory;
 import org.geppetto.frontend.messaging.MessageSender;
 import org.geppetto.frontend.messaging.MessageSenderEvent;
 import org.geppetto.frontend.messaging.MessageSenderListener;
+import org.geppetto.model.GeppettoFactory;
+import org.geppetto.model.RunnableQuery;
 import org.geppetto.simulation.manager.ExperimentRunManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -451,13 +454,13 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case RUN_QUERY:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.runQuery(requestID, receivedObject.projectId, receivedObject.runnableQueries);
+				connectionHandler.runQuery(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
 				break;
 			}
 			case RUN_QUERY_COUNT:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.runQueryCount(requestID, receivedObject.projectId, receivedObject.runnableQueries);
+				connectionHandler.runQueryCount(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
 				break;
 			}
 			default:
@@ -465,6 +468,23 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				// NOTE: no other messages expected for now
 			}
 		}
+	}
+
+	/**
+	 * @param runnableQueries
+	 * @return A list based on the EMF class. It's not possible to use directly the EMF class as Gson requires fields with public access modifiers which breaks EMF encapsulation
+	 */
+	private List<RunnableQuery> convertRunnableQueriesDataTransferModel(List<RunnableQueryDT> runnableQueries)
+	{
+		List<RunnableQuery> runnableQueriesEMF=new ArrayList<RunnableQuery>();
+
+		for(RunnableQueryDT dt:runnableQueries){
+			RunnableQuery rqEMF=GeppettoFactory.eINSTANCE.createRunnableQuery();
+			rqEMF.setQueryPath(dt.queryPath);
+			rqEMF.setTargetVariablePath(dt.targetVariablePath);
+			runnableQueriesEMF.add(rqEMF);
+		}
+		return runnableQueriesEMF;
 	}
 
 	/**
@@ -511,13 +531,14 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		String dataSourceId;
 		List<String> paths;
 		String variableId;
-		List<RunnableQueryParameters> runnableQueries;
+		List<RunnableQueryDT> runnableQueries;
 	}
 	
-	class RunnableQueryParameters
-	{
-		String queryId;
-		String variableId;
+	class RunnableQueryDT{
+		String targetVariablePath;
+		String queryPath;
 	}
+	
+
 
 }

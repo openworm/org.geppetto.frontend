@@ -54,12 +54,14 @@ define(function (require) {
             runQuery: function (queries, callback) {
                 var compoundQuery=[];
                 for (var i=0;i<queries.length;i++) {
-                    compoundQuery.push({target: queries[i].target.getPath(), query: queries[i].query.getPath()});
+                    compoundQuery.push({
+                    	targetVariablePath: queries[i].target.getPath().replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".", ''), 
+                    	queryPath: queries[i].query.getPath().replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".", '')});
                 }
 
                 var parameters = {};
                 parameters["projectId"] = Project.getId();
-                parameters["query"] = compoundQuery;
+                parameters["runnableQueries"] = compoundQuery;
 
                 var c=callback;
                 GEPPETTO.MessageSocket.send("run_query", parameters, function(data){
@@ -80,12 +82,14 @@ define(function (require) {
             getQueriesCount: function (queries, callback) {
                 var compoundQuery=[];
                 for (var i=0;i<queries.length;i++) {
-                    compoundQuery.push({target: queries[i].target.getPath(), query: queries[i].query.getPath()});
+                    compoundQuery.push({
+                    	targetVariablePath: queries[i].target.getPath().replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".", ''), 
+                    	queryPath: queries[i].query.getPath().replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".", '')});
                 }
 
                 var parameters = {};
                 parameters["projectId"] = Project.getId();
-                parameters["query"] = compoundQuery;
+                parameters["runnableQueries"] = compoundQuery;
 
                 var c=callback;
                 GEPPETTO.MessageSocket.send("run_query_count", parameters, function(data){

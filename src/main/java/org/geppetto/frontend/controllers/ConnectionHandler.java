@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +65,6 @@ import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
-import org.geppetto.frontend.controllers.WebsocketConnection.RunnableQueryParameters;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.model.ExperimentState;
 import org.geppetto.model.GeppettoModel;
@@ -398,37 +396,19 @@ public class ConnectionHandler
 
 	}
 
-	/**
-	 * @param geppettoProject
-	 * @param runnableQueries
-	 * @return
-	 */
-	private List<RunnableQuery> getRunnableQuery(IGeppettoProject geppettoProject, List<RunnableQueryParameters> runnableQueryParameters)
-	{
-		List<RunnableQuery> runnableQueries = new ArrayList<RunnableQuery>();
-		if(runnableQueryParameters != null)
-		{
-			for(RunnableQueryParameters rqp : runnableQueryParameters)
-			{
-				// geppettoProject.
-			}
-		}
-		return runnableQueries;
-
-	}
-
+	
 	/**
 	 * @param requestID
 	 * @param projectId
 	 * @param runnableQueryParameters
 	 */
-	public void runQuery(String requestID, Long projectId, List<RunnableQueryParameters> runnableQueryParameters)
+	public void runQuery(String requestID, Long projectId, List<RunnableQuery> runnableQueries)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		QueryResults results;
 		try
 		{
-			results = geppettoManager.runQuery(getRunnableQuery(geppettoProject, runnableQueryParameters), geppettoProject);
+			results = geppettoManager.runQuery(runnableQueries, geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.RETURN_QUERY_RESULTS, GeppettoSerializer.serializeToJSON(results, true));
 		}
 		catch(GeppettoDataSourceException | GeppettoModelException | GeppettoExecutionException | IOException e)
@@ -443,14 +423,14 @@ public class ConnectionHandler
 	 * @param projectId
 	 * @param runnableQueries
 	 */
-	public void runQueryCount(String requestID, Long projectId, List<RunnableQueryParameters> runnableQueryParameters)
+	public void runQueryCount(String requestID, Long projectId, List<RunnableQuery> runnableQueries)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		int count;
 		try
 		{
-			count = geppettoManager.runQueryCount(null, geppettoProject);
-			// websocketConnection.sendMessage(requestID, OutboundMessages.QUERY_RESULT, GeppettoSerializer.serializeToJSON(geppettoModel, true));
+			count = geppettoManager.runQueryCount(runnableQueries, geppettoProject);
+			//websocketConnection.sendMessage(requestID, OutboundMessages.QUERY_RESULT, GeppettoSerializer.serializeToJSON(geppettoModel, true));
 			websocketConnection.sendMessage(requestID, OutboundMessages.RETURN_QUERY_COUNT, Integer.toString(count));
 		}
 		catch(GeppettoDataSourceException | GeppettoModelException | GeppettoExecutionException e)

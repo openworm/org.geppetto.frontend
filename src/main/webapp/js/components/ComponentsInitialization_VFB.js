@@ -86,7 +86,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
-            "actions": "var displayText = '$entity$'.split('.')['$entity$'.split('.').length - 1]; getTermInfoWidget().setData($entity$[displayText + '_meta']).setName(displayText);"
+            "actions": "var displayText = '$entity$'.split('.')['$entity$'.split('.').length - 1]; setTermInfo($entity$[displayText + '_meta'], displayText);"
             },
             {
             "columnName": "controls",
@@ -216,7 +216,7 @@ define(function (require) {
             "Common": {
                 "info": {
                     "id": "info",
-                    "actions": ["var displayTexxxt = '$instance$'.split('.')['$instance$'.split('.').length - 1]; getTermInfoWidget().setData($instance$[displayTexxxt + '_meta']).setName(displayTexxxt);"],
+                    "actions": ["var displayTexxxt = '$instance$'.split('.')['$instance$'.split('.').length - 1]; setTermInfo($instance$[displayTexxxt + '_meta'],displayTexxxt);"],
                     "icon": "fa-info-circle",
                     "label": "Info",
                     "tooltip": "Info"
@@ -243,7 +243,7 @@ define(function (require) {
                 "CompositeType": {
                     "type": {
                         "actions": [
-                            "getTermInfoWidget().setData($variableid$['$variableid$' + '_meta']).setName('$variableid$');",
+                            "setTermInfo($variableid$['$variableid$' + '_meta'],'$variableid$');",
                         ],
                         "icon": "fa-puzzle-piece",
                         "label": "Explore type",
@@ -329,17 +329,24 @@ define(function (require) {
                 explode_arrays: [{field: "synonym", formatting: "$VALUE$ ($LABEL$)[$ID$]"}],
                 type: {
                     "class": {
-                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); getTermInfoWidget().setData(instance).setName(instance.getParent().getId()); GEPPETTO.Spotlight.close();});"],
+                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); setTermInfo(instance, instance.getParent().getId()); GEPPETTO.Spotlight.close();});"],
                         icon: "fa-dot-circle-o"
                     },
                     individual: {
-                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); var meta = Instances.getInstance('$ID$.$ID$_meta'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance); getTermInfoWidget().setData(meta).setName(meta.getParent().getId());}); }); "],
+                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); var meta = Instances.getInstance('$ID$.$ID$_meta'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance); setTermInfo(meta, meta.getParent().getId());}); }); "],
                         icon: "fa-square-o"
                     }
                 },
                 bloodhoundConfig: {
                     datumTokenizer: function(d) {
                         return Bloodhound.tokenizers.nonword(d.label.replace('_', ' '));
+                    },
+                    queryTokenizer: function (q) {
+                        return Bloodhound.tokenizers.nonword(q.replace('_', ' '));
+                    },
+                    sorter: function (a, b) {
+                        var term = $('#typeahead').val();
+                        return customSorter(a, b, term);
                     }
                 }
             }
@@ -386,7 +393,7 @@ define(function (require) {
                 "info": {
                     "id": "info",
                     "actions": [
-                        "Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); getTermInfoWidget().setData(instance).setName(instance.getParent().getId());});"
+                        "Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); setTermInfo(instance, instance.getParent().getId());});"
                     ],
                     "icon": "fa-info-circle",
                     "label": "Info",
@@ -429,6 +436,13 @@ define(function (require) {
                 bloodhoundConfig: {
                     datumTokenizer: function(d) {
                         return Bloodhound.tokenizers.nonword(d.label.replace('_', ' '));
+                    },
+                    queryTokenizer: function (q) {
+                        return Bloodhound.tokenizers.nonword(q.replace('_', ' '));
+                    },
+                    sorter: function (a, b) {
+                        var term = $("#query-typeahead").val();
+                        return customSorter(a, b, term);
                     }
                 }
             }
@@ -515,21 +529,99 @@ define(function (require) {
             // show term info on selection
             window.oldSelection = "";
             GEPPETTO.on(Events.Select, function () {
-                selection = G.getSelection();
-                message = "";
+                var selection = G.getSelection();
                 if (selection.length > 0) {
                     if (selection[0].getParent() != oldSelection) {
                         oldSelection = selection[0].getParent();
                         try {
-                            getTermInfoWidget().setData(selection[0].getParent()[selection[0].getParent().getId() + "_meta"]).setName(selection[0].getParent()[selection[0].getParent().getId() + "_meta"].getName());
+                            setTermInfo(selection[0].getParent()[selection[0].getParent().getId() + "_meta"], selection[0].getParent()[selection[0].getParent().getId() + "_meta"].getName());
                         } catch (ignore) {
                         }
                     }
                 }
             });
 
+            window.customSorter = function(a, b, InputString){
+                //move exact matches to top
+                if (InputString == a.label) {
+                    return -1;
+                }
+                if (InputString == b.label) {
+                    return 1;
+                }
+                //close match without case matching
+                if (InputString.toLowerCase() == a.label.toLowerCase()) {
+                    return -1;
+                }
+                if (InputString.toLowerCase() == b.label.toLowerCase()) {
+                    return 1;
+                }
+                //match ignoring joinging nonwords
+                Bloodhound.tokenizers.nonword("test thing-here12 34f").join(' ');
+                if (Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ') == Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ')) {
+                    return -1;
+                }
+                if (Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ') == Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ')) {
+                    return 1;
+                }
+                //match against id
+                if (InputString.toLowerCase() == a.id.toLowerCase()) {
+                    return -1;
+                }
+                if (InputString.toLowerCase() == b.id.toLowerCase()) {
+                    return 1;
+                }
+                //pick up any match without nonword join character match
+                if (Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ')) < 0 && Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ')) > -1) {
+                    return 1;
+                }
+                if (Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ')) < 0 && Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ')) > -1) {
+                    return -1;
+                }
+                //also with underscores ignored
+                if (Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ').replace('_', ' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ').replace('_', ' ')) < 0 && Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ').replace('_', ' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ').replace('_', ' ')) > -1) {
+                    return 1;
+                }
+                if (Bloodhound.tokenizers.nonword(b.label.toLowerCase()).join(' ').replace('_', ' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ').replace('_', ' ')) < 0 && Bloodhound.tokenizers.nonword(a.label.toLowerCase()).join(' ').replace('_', ' ').indexOf(Bloodhound.tokenizers.nonword(InputString.toLowerCase()).join(' ').replace('_', ' ')) > -1) {
+                    return -1;
+                }
+                //if not found in one then advance the other
+                if (a.label.toLowerCase().indexOf(InputString.toLowerCase()) < 0 && b.label.toLowerCase().indexOf(InputString.toLowerCase()) > -1) {
+                    return 1;
+                }
+                if (b.label.toLowerCase().indexOf(InputString.toLowerCase()) < 0 && a.label.toLowerCase().indexOf(InputString.toLowerCase()) > -1) {
+                    return -1;
+                }
+                // if the match is closer to start than the other move up
+                if (a.label.toLowerCase().indexOf(InputString.toLowerCase()) > -1 && a.label.toLowerCase().indexOf(InputString.toLowerCase()) < b.label.toLowerCase().indexOf(InputString.toLowerCase())) {
+                    return -1;
+                }
+                if (b.label.toLowerCase().indexOf(InputString.toLowerCase()) > -1 && b.label.toLowerCase().indexOf(InputString.toLowerCase()) < a.label.toLowerCase().indexOf(InputString.toLowerCase())) {
+                    return 1;
+                }
+                // if the match in the id is closer to start then move up
+                if (a.id.toLowerCase().indexOf(InputString.toLowerCase()) > -1 && a.id.toLowerCase().indexOf(InputString.toLowerCase()) < b.id.toLowerCase().indexOf(InputString.toLowerCase())) {
+                    return -1;
+                }
+                if (b.id.toLowerCase().indexOf(InputString.toLowerCase()) > -1 && b.id.toLowerCase().indexOf(InputString.toLowerCase()) < a.id.toLowerCase().indexOf(InputString.toLowerCase())) {
+                    return 1;
+                }
+                // move the shorter synonyms to the top
+                if (a.label < b.label) {
+                    return -1;
+                }
+                else if (a.label > b.label) {
+                    return 1;
+                }
+                else return 0; // if nothing found then do nothing.
+            }
+
             window.getTermInfoWidget = function() {
-              return window.termInfoPopup;
+                return window.termInfoPopup;
+            };
+
+            window.setTermInfo = function(data, name) {
+                getTermInfoWidget().setData(data).setName(name);
             };
         };
     };

@@ -502,10 +502,10 @@ define(function (require) {
             }
         },
 
-        initDataSourceResults: function(datumToken, sorter){
+        initDataSourceResults: function(datumToken, queryToken, sorter){
             this.dataSourceResults = new Bloodhound({
                 datumTokenizer: (datumToken != undefined) ? datumToken : Bloodhound.tokenizers.obj.whitespace('label'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                queryTokenizer: (queryToken != undefined) ? queryToken :Bloodhound.tokenizers.whitespace,
                 identify: function (obj) {
                     return obj.label;
                 },
@@ -526,7 +526,11 @@ define(function (require) {
                         this.configuration.DataSources[key] = obj;
 
                         if(obj.bloodhoundConfig) {
-                            this.initDataSourceResults(obj.bloodhoundConfig.datumTokenizer);
+                            this.initDataSourceResults(
+                                obj.bloodhoundConfig.datumTokenizer,
+                                obj.bloodhoundConfig.queryTokenizer,
+                                obj.bloodhoundConfig.sorter
+                            );
                         }
                     }
                 }
@@ -596,7 +600,7 @@ define(function (require) {
             //If it's an update request to show the drop down menu, this for it to show updated results
             if(this.updateResults){
                 var value = $("#query-typeahead").val();
-                $("#query-typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+                $("#query-typeahead").typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
                 $("#query-typeahead").typeahead('val', value);
             }
         },

@@ -343,7 +343,7 @@ define(function (require) {
         openToInstance: function (instance) {
             $("#spotlight").show();
             $("#typeahead").focus();
-            $(".typeahead").typeahead('val', instance.getInstancePath());
+            $("#typeahead").typeahead('val', instance.getInstancePath());
             $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
         },
 

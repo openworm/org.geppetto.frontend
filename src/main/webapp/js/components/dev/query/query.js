@@ -750,7 +750,13 @@ define(function (require) {
                     }
                 }
 
-                if(allSelected) {
+                if (!allSelected) {
+                    // show error message for unselected query items
+                    this.setErrorMessage('Please select an option for all query items.');
+                } else if (this.props.model.count == 0) {
+                    // show message for no query results
+                    this.setErrorMessage('There are no results for this query.');
+                } else {
                     // check if we already have results for the given compound query
                     var compoundId = this.getCompoundQueryId(this.props.model.items);
                     var match = false;
@@ -839,9 +845,6 @@ define(function (require) {
                         // change state to switch to results view
                         this.switchView(true);
                     }
-                } else {
-                    // show error message for unselected query items
-                    this.setErrorMessage('Please select an option for all query items.');
                 }
             } else {
                 // show error message for empty query

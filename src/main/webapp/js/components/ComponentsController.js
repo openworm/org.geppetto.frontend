@@ -69,6 +69,9 @@ define(function (require) {
 						GEPPETTO.on(Events.Volatile_project_loaded, function(){
 							component.setState({disableSave:!self.writePermission});
 						});
+						GEPPETTO.on(Events.Check_project_persisted, function(){
+							component.setState({disableSave:self.projectPersisted});
+						});
 					}
 					else if (type == 'SPOTLIGHT'){
 						this.componentsMap[type] = component;

@@ -1272,7 +1272,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * Sends to the client login user privileges
 	 * @param requestID
 	 */
-	public void checkUserPriviledges(String requestID){
+	public void checkUserPrivileges(String requestID){
 		String userName = this.geppettoManager.getUser().getLogin();
 		String update = "{\"userName\":" + '"' + userName + '"' +
 						",\"login\":" + this.isLogin() + ",\"privileges\":[";

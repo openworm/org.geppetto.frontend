@@ -61,6 +61,7 @@ var Events = {
     Experiment_created:"experiment:created",
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
+    Check_project_persisted : "project:persisted_state",
     Spotlight_closed: "spotlight:closed",
     Instance_deleted: "instance: deleted"
 };

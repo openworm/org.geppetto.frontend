@@ -123,7 +123,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
 		
 		//User permissions are sent when socket is open
-		this.connectionHandler.checkUserPriviledges(null);
+		this.connectionHandler.checkUserPrivileges(null);
 	}
 
 	@Override
@@ -190,7 +190,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			}
 			case USER_PRIVILEGES:
 			{
-				connectionHandler.checkUserPriviledges(requestID);
+				connectionHandler.checkUserPrivileges(requestID);
 				break;
 			}
 			case NEW_EXPERIMENT:

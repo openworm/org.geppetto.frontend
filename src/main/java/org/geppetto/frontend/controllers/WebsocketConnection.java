@@ -123,7 +123,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
 		
 		//User permissions are sent when socket is open
-		this.connectionHandler.checkUserPriviledges(null);
+		this.connectionHandler.checkUserPrivileges(null);
 	}
 
 	@Override
@@ -190,16 +190,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			}
 			case USER_PRIVILEGES:
 			{
-				connectionHandler.checkUserPriviledges(requestID);
-				break;
-			}
-			case PROJECT_PERSISTENCE_STATE:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-						{
-						}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.isPersisted(requestID,projectId);
+				connectionHandler.checkUserPrivileges(requestID);
 				break;
 			}
 			case NEW_EXPERIMENT:

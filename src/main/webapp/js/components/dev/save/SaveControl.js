@@ -42,16 +42,16 @@ define(function(require) {
          attachTooltip: function(){
         	 var self = this;
              $('button[rel="tooltip"]').uitooltip({
-                 position: { my: "right center", at: "left center" },
+                 position: { my: "left", at: "right" },
                  tooltipClass: "tooltip-persist",
                  show: {
                      effect: "slide",
-                     direction: "right",
+                     direction: "left",
                      delay: 200
                  },
                  hide: {
                      effect: "slide",
-                     direction: "right",
+                     direction: "left",
                      delay: 200
                  },
                  content: function () {
@@ -77,12 +77,7 @@ define(function(require) {
            	 	$('button[rel="tooltip"]').uitooltip({content: "Project Persisted Succesfully."});
             	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
             	self.setState({disableSave: true});
-            });
-            
-            GEPPETTO.on(Events.Volatile_project_loaded, function(){
-                self.setState({disableSave:false});
-            });
-            
+            });            
         	self.attachTooltip();
         },
 

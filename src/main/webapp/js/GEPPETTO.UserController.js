@@ -54,7 +54,7 @@ define(function(require)
             	});
             },
             
-            getUserPriviliges : function(){
+            getUserPrivileges : function(){
             	return this.privileges;
             },
             

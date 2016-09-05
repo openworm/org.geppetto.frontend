@@ -55,6 +55,7 @@ define(function (require) {
 		//var queryComp = require('jsx!./dev/query/query');
 		
 		GEPPETTO.ComponentFactory = {
+						
 			getComponent: function(component, properties){
 				
 				if (component == 'FORM'){
@@ -111,7 +112,9 @@ define(function (require) {
 			},
 			
 			addComponent: function(component, properties, container){
-				return this.renderComponent(this.getComponent(component, properties), container);
+				var renderedComponent = this.renderComponent(this.getComponent(component, properties), container);
+				GEPPETTO.ComponentsController.addEventDispatcher(component, renderedComponent);
+				return renderedComponent;
 			},
 			
 			renderComponent: function(component, container){

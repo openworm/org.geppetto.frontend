@@ -73,7 +73,7 @@ define(function (require) {
             });
         },
 
-        itemSelectionChanged: function (item, selection) {
+        itemSelectionChanged: function (item, selection, callback) {
             for (var i = 0; i < this.items.length; i++) {
                 if (item.id == this.items[i].id) {
                     this.items[i].selection = selection;
@@ -82,17 +82,17 @@ define(function (require) {
             }
 
             // get count triggers notify change once results are fetched
-            this.getCount();
+            this.getCount(callback);
         },
 
-        addItem: function(item){
+        addItem: function(item, callback){
             this.items.push(item);
 
             // get count triggers notify change once results are fetched
-            this.getCount();
+            this.getCount(callback);
         },
 
-        deleteItem: function (item) {
+        deleteItem: function (item, callback) {
             for (var i = 0; i < this.items.length; i++) {
                 if (item.id == this.items[i].id) {
                     this.items.splice(i, 1);
@@ -101,10 +101,10 @@ define(function (require) {
 
             if(this.items.length >0) {
                 // get count triggers notify change once results are fetched
-                this.getCount();
+                this.getCount(callback);
             } else {
                 // set count triggers notify change
-                this.setCount(0);
+                this.setCount(0, callback);
             }
         },
 
@@ -113,7 +113,7 @@ define(function (require) {
          *
          * @param callback
          */
-        getCount: function(){
+        getCount: function(callback){
             var queryDTOs = [];
 
             for(var i=0; i<this.items.length; i++){
@@ -128,19 +128,23 @@ define(function (require) {
                 }
             }
 
-            var that = this;
-            GEPPETTO.QueriesController.getQueriesCount(queryDTOs, that.setCount.bind(that));
+            var getCountDoneCallback = function(count){
+                this.setCount(count, callback);
+            };
+
+            GEPPETTO.QueriesController.getQueriesCount(queryDTOs, getCountDoneCallback.bind(this));
         },
 
-        setCount(count){
+        setCount(count, callback){
             this.count = count;
+            callback();
             this.notifyChange();
         },
 
         addResults: function(results){
             // loop results and unselect all
             for(var i=0; i<this.results.length; i++){
-                this.results.selected = false;
+                this.results[i].selected = false;
             }
 
             this.results.push(results);
@@ -326,13 +330,14 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 "count": 0,
-                "onRun": undefined
+                "onRun": undefined,
+                "containerClass": ''
             };
         },
 
         render: function () {
             return (
-                <div id="querybuilder-footer">
+                <div id="querybuilder-footer" className={this.props.containerClass}>
                     <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={this.props.onRun} />
                     <div id="query-results-label">{this.props.count.toString()} results</div>
                 </div>
@@ -361,7 +366,8 @@ define(function (require) {
         getInitialState: function () {
             return {
                 resultsView: false,
-                errorMsg: ''
+                errorMsg: '',
+                showSpinner: false
             };
         },
 
@@ -380,6 +386,10 @@ define(function (require) {
 
         switchView(resultsView) {
             this.setState({ resultsView: resultsView});
+        },
+
+        showBrentSpiner(spin) {
+            this.setState({ showSpinner: spin});
         },
 
         open: function () {
@@ -690,14 +700,28 @@ define(function (require) {
         queryOptionSelected: function(item, value){
             this.clearErrorMessage();
 
+            var callback = function(){
+                this.showBrentSpiner(false);
+            };
+
+            // hide footer and show spinner
+            this.showBrentSpiner(true);
+
             // Option has been selected
-            this.props.model.itemSelectionChanged(item, value);
+            this.props.model.itemSelectionChanged(item, value, callback.bind(this));
         },
 
         queryItemDeleted: function(item){
             this.clearErrorMessage();
 
-            this.props.model.deleteItem(item);
+            var callback = function(){
+                this.showBrentSpiner(false);
+            };
+
+            // hide footer and show spinner
+            this.showBrentSpiner(true);
+
+            this.props.model.deleteItem(item, callback.bind(this));
         },
 
         queryResultDeleted: function(resultsItem){
@@ -727,7 +751,6 @@ define(function (require) {
                 }
 
                 if(allSelected) {
-
                     // check if we already have results for the given compound query
                     var compoundId = this.getCompoundQueryId(this.props.model.items);
                     var match = false;
@@ -787,9 +810,15 @@ define(function (require) {
                                 selected: true
                             });
 
+                            // stop showing spinner
+                            that.showBrentSpiner(false);
+
                             // change state to switch to results view
                             that.switchView(true);
                         };
+
+                        // hide footer and show spinner
+                        this.showBrentSpiner(true);
 
                         // run query on queries controller
                         GEPPETTO.QueriesController.runQuery(queryDTOs, queryDoneCallback);
@@ -870,8 +899,16 @@ define(function (require) {
                 queryItem.selection = -1;
                 // add default option
                 queryItem.options.splice(0, 0, {name: 'Please select an option', value: -1});
+
+                var callback = function(){
+                    this.showBrentSpiner(false);
+                };
+
+                // hide footer and show spinner
+                this.showBrentSpiner(true);
+
                 // add query item to model
-                this.props.model.addItem(queryItem);
+                this.props.model.addItem(queryItem, callback.bind(this));
             } else {
                 // notify no queries available for the selected term
                 this.setErrorMessage("No queries available for the selected term.");
@@ -952,6 +989,9 @@ define(function (require) {
                     );
                 }, this);
 
+                var spinnerClass = this.state.showSpinner ? 'fa fa-spinner fa-spin' : 'hide';
+                var footerClass = this.state.showSpinner ? 'hide' : '';
+
                 markup = (
                     <div id="query-builder-container">
                         <div id="query-builder-items-container">
@@ -961,7 +1001,8 @@ define(function (require) {
                             <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" />
                             <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                         </div>
-                        <QueryFooter count={this.props.model.count} onRun={this.runQuery} />
+                        <QueryFooter containerClass={footerClass} count={this.props.model.count} onRun={this.runQuery} />
+                        <div id="brent-spiner" className={spinnerClass}></div>
                         <div id="query-error-message">{this.state.errorMsg}</div>
                     </div>
                 );

@@ -96,6 +96,10 @@
     text-align: center;
 }
 
+#querybuilder .hide{
+    display: none;
+}
+
 /*IDs*/
 
 #querybuilder {
@@ -140,6 +144,7 @@
 
 #add-new-query-container {
     height: 40px;
+    text-align: left;
 }
 
 #querybuilder-footer {
@@ -165,6 +170,18 @@
     font-size: 15px;
     text-align: center;
     color: #fd2821;
+}
+
+#brent-spiner {
+    position: relative;
+    left: 35%;
+    height: 50px;
+    width: 50px;
+    background: none !important;
+    color: #fd6808;
+    font-size: 50px !important;
+    border: 0 !important;
+    margin-top: 25px;
 }
 
 /*Search box*/
@@ -367,7 +384,7 @@
 }
 
 #querybuilder .query-results-name-column {
-    width: 280px;
+    width: 150px;
 }
 
 #querybuilder .query-results-controls-column {

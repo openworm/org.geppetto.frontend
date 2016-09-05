@@ -954,7 +954,7 @@ define(function (require) {
                                     title="Delete result set"  onClick={this.queryResultDeleted.bind(null, resultsItem)}>
                             </button>
                             <div className="clearer"></div>
-                            <Griddle columns={this.props.resultsColumns} results={this.props.model.results[focusTabIndex - 1].records}
+                            <Griddle columns={this.props.resultsColumns} results={resultsItem.records}
                             showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={425}
                             useGriddleStyles={false} columnMetadata={this.props.resultsColumnMeta} />
                         </Tabs.Panel>

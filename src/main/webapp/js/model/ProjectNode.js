@@ -50,7 +50,6 @@ define(['jquery', 'underscore', 'backbone',
         persisted: false,
         runTimeTree: {},
         writePermission :  null,
-        login : null,
         runPermission : null,
         downloadPermission : null,
 
@@ -76,7 +75,6 @@ define(['jquery', 'underscore', 'backbone',
             }
             
             this.writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-            this.login = GEPPETTO.UserController.isLogin();
             this.runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
             this.downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
         },
@@ -99,7 +97,7 @@ define(['jquery', 'underscore', 'backbone',
          *
          */
         setName: function (newname) {
-        	if(this.writePermission && this.persisted && this.login){
+        	if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()){
                 this.saveProjectProperties({"name": newname});
                 this.name = newname;
         	}else{
@@ -153,7 +151,7 @@ define(['jquery', 'underscore', 'backbone',
          * @param {ExperimentNode} experiment - Active Experiment
          */
         setActiveExperiment: function (experiment) {
-            if(this.login){
+            if(GEPPETTO.UserController.isLoggedIn()){
                 this.activeExperiment = experiment;
                 GEPPETTO.trigger(Events.Experiment_active);
             }else{
@@ -198,7 +196,7 @@ define(['jquery', 'underscore', 'backbone',
          * @returns {ExperimentNode} Creates a new ExperimentNode
          */
         newExperiment: function () {
-        	if(this.writePermission && this.persisted && this.login){
+        	if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()){
                 var parameters = {};
                 parameters["projectId"] = this.id;
                 GEPPETTO.MessageSocket.send("new_experiment", parameters);
@@ -308,7 +306,7 @@ define(['jquery', 'underscore', 'backbone',
         },
 
         saveProjectProperties: function (properties) {
-        	if(this.writePermission && this.persisted && this.login){
+        	if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()){
         		var parameters = {};
         		parameters["projectId"] = this.getId();
         		parameters["properties"] = properties;
@@ -319,7 +317,7 @@ define(['jquery', 'underscore', 'backbone',
         },
 
         persist: function () {
-        	if(this.writePermission && this.login){
+        	if(this.writePermission && GEPPETTO.UserController.isLoggedIn()){
         		var parameters = {};
         		parameters["projectId"] = this.id;
         		GEPPETTO.MessageSocket.send("persist_project", parameters);
@@ -335,7 +333,7 @@ define(['jquery', 'underscore', 'backbone',
          * * @param {String} name - File format to download
          */
         downloadModel : function(path, format) {
-            if(this.downloadPermission && this.login){
+            if(this.downloadPermission && GEPPETTO.UserController.isLoggedIn()){
                 var parameters = {};
                 parameters["experimentId"] = this.getActiveExperiment().getId();
                 parameters["projectId"] = this.getId();
@@ -347,7 +345,7 @@ define(['jquery', 'underscore', 'backbone',
                 return GEPPETTO.Resources.DOWNLOADING_MODEL + formatMessage;
             }else{
             	var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
-        		if(!this.login){
+        		if(!GEPPETTO.UserController.isLoggedIn()){
         			return message;
         		}else{
         			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.DOWNLOAD_PRIVILEGES_NOT_SUPPORTED;

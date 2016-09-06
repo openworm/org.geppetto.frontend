@@ -163,7 +163,7 @@ define(function (require) {
                             assert.equal(window.Project.getActiveExperiment().getId(), 2, "Active experiment id of loaded project checked");
 
 
-                            var login = GEPPETTO.UserController.isLogin();
+                            var login = GEPPETTO.UserController.isLoggedIn();
                         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
                         	var projectPersisted = window.Project.persisted;
                         	if(writePermission && projectPersisted && login){
@@ -245,7 +245,7 @@ define(function (require) {
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 2, "Active experiment id of loaded project checked");
 
-                            var login = GEPPETTO.UserController.isLogin();
+                            var login = GEPPETTO.UserController.isLoggedIn();
                         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
                         	var projectPersisted = window.Project.persisted;
                         	if(writePermission && projectPersisted && login){
@@ -329,7 +329,7 @@ define(function (require) {
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 2, "Active experiment id of loaded project checked");
 
-                            var login = GEPPETTO.UserController.isLogin();
+                            var login = GEPPETTO.UserController.isLoggedIn();
                         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
                         	var projectPersisted = window.Project.persisted;
                         	if(writePermission && projectPersisted && login){
@@ -426,7 +426,7 @@ define(function (require) {
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Active experiment id of loaded project checked");
                             
-                            var login = GEPPETTO.UserController.isLogin();
+                            var login = GEPPETTO.UserController.isLoggedIn();
                         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
                         	var projectPersisted = window.Project.persisted;
                         	if(writePermission && projectPersisted && login){

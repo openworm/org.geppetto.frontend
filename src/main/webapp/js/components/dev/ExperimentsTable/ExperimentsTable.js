@@ -252,9 +252,8 @@ define(function (require) {
             
             var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
             var projectPersisted = this.props.experiment.getParent().persisted;
-            var login = GEPPETTO.UserController.isLogin();
             
-            if(!writePermission || !projectPersisted || !login){
+            if(!writePermission || !projectPersisted || !(GEPPETTO.UserController.isLoggedIn() && GEPPETTO.UserController.hasPersistence())){
             	editable = false;
             }else{
             	if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
@@ -377,7 +376,7 @@ define(function (require) {
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();
             
-            var login = GEPPETTO.UserController.isLogin();
+            var login = GEPPETTO.UserController.isLoggedIn();
             if(login){
                 GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
             }else{

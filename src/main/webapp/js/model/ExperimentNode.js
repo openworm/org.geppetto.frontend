@@ -73,7 +73,7 @@ define(function (require) {
                 this.script = options.script;
                 
                 this.writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
-                this.login = GEPPETTO.UserController.isLogin();
+                this.login = GEPPETTO.UserController.isLoggedIn();
                 this.runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
                 this.downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
             },

@@ -33,10 +33,10 @@ define(function(require) {
 				self.setState({disabled: newState});
 			});
 			
-			GEPPETTO.on(Events.Experiment_completed, function () {
+			GEPPETTO.on(Events.Experiment_completed, function (experimentID) {
 				var newState = self.state.disabled;
 				var experiment = window.Project.getActiveExperiment();
-				if(experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+				if(experiment.getId() == experimentID){
 					newState = false;
 				}
 				self.setState({disabled: newState});
@@ -62,7 +62,7 @@ define(function(require) {
 					<div className="dropDownButton">
     				<button className="btn squareB DropDownButton pull-right" type="button" title=''
     				onClick={this.clickEvent} disabled={this.state.disabled}>
-    					<i className={this.state.icon}>Results</i>
+    					<i className={this.state.icon}><span className="resultsLabel">Results</span></i>
     				</button>
     			</div>
 			);

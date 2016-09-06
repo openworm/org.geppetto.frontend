@@ -149,10 +149,10 @@ define(function (require) {
 
             // always set this regardless of variable vs instance (so the value will be in the call below)
             this.value = value;
-            this.modified = true;
             
             if (updateServer) {
                 GEPPETTO.ExperimentsController.setParameters([this]);
+                this.modified = true;
             }
 
             GEPPETTO.trigger(Events.Parameter_modified);

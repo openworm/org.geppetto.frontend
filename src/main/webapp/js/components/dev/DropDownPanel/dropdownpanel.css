@@ -11,8 +11,8 @@
 .DropDownButton {
   position: fixed;
   top: 5px;
-  right: 395px;
-  height:29px
+  right: 390px;
+  height:28px
 }
 
 .DropDownButton:disabled{
@@ -81,4 +81,11 @@
 	background: white;
 	opacity: 1;
 	left : 20px;
+}
+
+.resultsLabel {
+	padding-left: 4px;
+    font-size: 14px;
+    /* font-family: inherit; */
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

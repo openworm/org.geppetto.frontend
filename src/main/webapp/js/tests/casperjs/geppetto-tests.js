@@ -1,10 +1,11 @@
 var TARGET_URL = "http://docker-x2go-development-1.02489874.cont.dockerapp.io"
-var EXTERNAL_MODEL_URL = "https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json"
-var EXTERNAL_MODEL_URL_2 = "https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json"
+var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json"
+var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json"
+var PROJECT_URL_SUFFIX_3 = "?load_project_from_id=8"
 
 
 
-casper.test.begin('Geppetto basic tests', 51, function suite(test) {
+casper.test.begin('Geppetto basic tests', 76, function suite(test) {
   casper.options.viewportSize = {
           width: 1340,
           height: 768
@@ -35,11 +36,18 @@ casper.test.begin('Geppetto basic tests', 51, function suite(test) {
   });
 
   casper.then(function() {
-    testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto?load_project_from_url=" + EXTERNAL_MODEL_URL, true, 'hhcell.hhpop[0].v');
+    testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
+    false, 'hhcell.hhpop[0].v');
   });
 
   casper.then(function() {
-    testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto?load_project_from_url=" + EXTERNAL_MODEL_URL_2, false, 'c302_A_Pharyngeal.M1[0].v')
+    testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
+    false, 'c302_A_Pharyngeal.M1[0].v')
+  });
+
+  casper.then(function() {
+    testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
+    true, 'hhcell.hhpop[0].v')
   });
 
   //TODO: log back in as other users. Check more things
@@ -51,61 +59,72 @@ casper.test.begin('Geppetto basic tests', 51, function suite(test) {
 });
 
 
-function testProject(test, url, expect_error, spotlight_search) {
+function testProject(test, url, expect_error, persisted, spotlight_search) {
 
-casper.thenOpen(url,function() {
-    this.echo("Loading an external model that is not persisted at " + url);
+  casper.thenOpen(url,function() {
+      this.echo("Loading an external model that is not persisted at " + url);
 
-    if (expect_error) {
+      if (expect_error) {
+        casper.then(function() {
+          closeErrorMesage(test)
+        });
+      }
+
       casper.then(function() {
-        closeErrorMesage(test)
-      });
-    }
-
-    casper.then(function() {
-      doExperimentTableTest(test);
-    });
-
-    casper.then(function() {
-      this.waitForSelector('tr.experimentsTableColumn:nth-child(1)', function() {
-        test.assertExists('tr.experimentsTableColumn:nth-child(1)', "At least one experiment row exists");
-      }, null, 5000);
-    });
-
-    casper.then(function() {
-      //roll over the experiments row
-      this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-      doPrePersistenceExperimentsTableButtonsCheck(test);
-    });
-
-    casper.then(function() {
-      //TODO: check recording variables, setting parameters
-
-      this.waitForSelector('button.btn.SaveButton', function() {
-        test.assertVisible('button.btn.SaveButton', "Persist button is present");
+        doExperimentTableTest(test);
       });
 
-      //Good pattern for checking the absence of an attribute
-      test.assertEvalEquals(function() {
-        return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
-      }, null, "The persist button is correctly active.");
+      casper.then(function() {
+        this.waitForSelector('tr.experimentsTableColumn:nth-child(1)', function() {
+          test.assertExists('tr.experimentsTableColumn:nth-child(1)', "At least one experiment row exists");
+        }, null, 5000);
+      });
 
-      //Click persist button. Check things again
-      this.mouseEvent('click','button.btn.SaveButton', "attempting to persist");
+      //do checks on the state of the project if it is not persisted
+      if (persisted == false) {
+        casper.then(function() {
+          //roll over the experiments row
+          this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+          doPrePersistenceExperimentsTableButtonsCheck(test);
 
-      test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
+          this.mouseEvent('click','tr.experimentsTableColumn:nth-child(1)', "opening first experiment row");
+          doExperimentsTableRowCheck(test);
+
+          doPrePersistenceSpotlightCheck(test, spotlight_search);
+        });
+
+
+        casper.then(function() {
+
+          this.waitForSelector('button.btn.SaveButton', function() {
+            test.assertVisible('button.btn.SaveButton', "Persist button is present");
+          });
+
+          //Good pattern for checking the absence of an attribute
+          test.assertEvalEquals(function() {
+            return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
+          }, null, "The persist button is correctly active.");
+
+          //Click persist button. Check things again
+          this.mouseEvent('click','button.btn.SaveButton', "attempting to persist");
+
+        });
+
+        //TODO: make this work
+        //this.mouseEvent('click', 'button[data-reactid=".9.4"]', "Running an experiment");
+      }
+
+      casper.then(function() {
+        test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
+
+        //roll over the experiments row
+        this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+        doPostPersistenceExperimentsTableButtonCheck(test);
+
+        doPostPersistenceSpotlightCheck(test, spotlight_search);
+          //TODO: logout
+      });
     });
-
-    casper.then(function() {
-
-      //roll over the experiments row
-      this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-      doPostPersistenceExperimentsTableButtonCheck(test);
-
-      doSpotlightCheck(test, spotlight_search);
-        //TODO: logout
-    });
-  });
 }
 
 function closeErrorMesage(test) {
@@ -132,6 +151,12 @@ function doExperimentTableTest(test) {
   casper.waitUntilVisible('div#experiments', function() {
     test.assertVisible('div#experiments', "The experiment panel is correctly open.");
   }, null, 5000);
+}
+
+function doExperimentsTableRowCheck(test) {
+  test.assertVisible('td[name="parameters"]', "Parameters column content exists");
+
+  test.assertVisible('td[name="variables"]', "Variables column content exists");
 }
 
 function doPrePersistenceExperimentsTableButtonsCheck(test) {
@@ -183,7 +208,40 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
   });
 }
 
-function doSpotlightCheck(test, spotlight_search) {
+function doPrePersistenceSpotlightCheck(test, spotlight_search) {
+  test.assertExists('i.fa-search', "Spotlight button exists")
+  casper.mouseEvent('click','i.fa-search', "attempting to open spotlight");
+
+  casper.waitUntilVisible('div#spotlight', function() {
+    test.assertVisible('div#spotlight', "Spotlight opened");
+
+    //type in the spotlight
+    casper.sendKeys('input#typeahead', spotlight_search, { keepFocus: true });
+    //press enter
+    casper.sendKeys('input#typeahead', casper.page.event.key.Return , {keepFocus: true});
+
+    casper.wait('5000', function() {
+
+      casper.capture("typed.png");
+
+      //TESTS THAT THE VARIABLE IS NOT RECORDABLE
+      test.assertNotVisible('button#watch', "Record variables icon correctly not visible");
+
+      //TODO: check on state of recorded variable and make sure it is accurate.
+      //TODO: check setting parameters
+
+      casper.mouseEvent('click','i.fa-search', "attempting to close spotlight");
+
+      /* TODO: make it work
+      this.waitWhileVisible('div#spotlight', function() {
+        test.assertNotVisible('div#spotlight', "Spotlight closed");
+      }, null, 5000);*/
+    });
+
+  });
+}
+
+function doPostPersistenceSpotlightCheck(test, spotlight_search) {
   test.assertExists('i.fa-search', "Spotlight button exists")
   casper.mouseEvent('click','i.fa-search', "attempting to open spotlight");
 
@@ -200,10 +258,11 @@ function doSpotlightCheck(test, spotlight_search) {
       casper.capture("typed.png");
 
       casper.waitUntilVisible('button#watch', function() {
-        test.assertVisible('button#watch', "Watch variables icon visible");
+        test.assertVisible('button#watch', "Record variables icon correctly visible");
       }, null, 5000);
 
       //TODO: check on state of recorded variable and make sure it is accurate.
+      //TODO: check setting parameters
 
       casper.mouseEvent('click','i.fa-search', "attempting to close spotlight");
 

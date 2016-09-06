@@ -129,9 +129,9 @@ define(function (require) {
                                     <th className="nameHeader"></th>
                                     <th>Aspect</th>
                                     <th>Simulator</th>
-                                    <th>Watched Variables</th>
-                                    <th>Parameters</th>
-                                    <th>TimeStep (s)</th>
+                                    <th>Recorded variables</th>
+                                    <th>Set parameters</th>
+                                    <th>Timestep (s)</th>
                                     <th>Length (s)</th>
                                 </tr>
                                 </thead>
@@ -209,7 +209,7 @@ define(function (require) {
         				watchedVariables + this.props.experiment.getWatchedVariables()[i] + '\n\n';
         		}
 
-        		GEPPETTO.FE.infoDialog("Watched Variables ", watchedVariables);
+        		GEPPETTO.FE.infoDialog("Recorded variables ", watchedVariables);
         	}
         },
         
@@ -232,7 +232,7 @@ define(function (require) {
         		}
         	}
         	
-        	GEPPETTO.FE.infoDialog("Modified Parameters ", modifiedParameters);
+        	GEPPETTO.FE.infoDialog("Set Parameters ", modifiedParameters);
         },
 
         render: function () {
@@ -254,7 +254,7 @@ define(function (require) {
             var watchedVariables = this.props.experiment.getWatchedVariables();
             var variablesMessage = "None";
             if(watchedVariables.length>0){
-        		variablesMessage = watchedVariables.length + " variables recorded (click to view)";
+        		variablesMessage = watchedVariables.length + " variables recorded";
         	}
             
             var parameterMessage = "None";
@@ -271,7 +271,7 @@ define(function (require) {
         	}
         	
         	if(modifiedParamters>0){
-        		parameterMessage = modifiedParamters + " parameters set (click to view)";
+        		parameterMessage = modifiedParamters + " parameters set";
         	}
         	
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
@@ -280,8 +280,8 @@ define(function (require) {
                     <td></td>
                     <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
                     <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
-                    <td className="configurationTD" name={'variables'} onClick={this.watchedVariablesWindow}>{variablesMessage}</td>
-                    <td className="configurationTD" name={'parameters'} onClick={this.parametersWindow}>{parameterMessage}</td>
+                    <td className="configurationTDLink" name={'variables'} onClick={this.watchedVariablesWindow}>{variablesMessage}</td>
+                    <td className="configurationTDLink" name={'parameters'} onClick={this.parametersWindow}>{parameterMessage}</td>
                     <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
                     <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
                 </tr>

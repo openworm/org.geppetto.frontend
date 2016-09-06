@@ -90,7 +90,7 @@ define(function(require) {
 
 		close : function () {
 			this.setState({visible : false});
-			$("#dropDownPanel").hide("fold", {}, 250)
+			$("#dropDownPanel").hide()
 		},
 
 		open: function() {
@@ -98,7 +98,7 @@ define(function(require) {
 			self.setState({visible : true});
 			$("#dropDownPanel").css({top: self.state.position.top, right: self.state.position.right, 
 				bottom: self.state.position.bottom, left: self.state.position.left,position:'fixed'});
-			$( "#dropDownPanel" ).show("fold", {}, 250);
+			$("#dropDownPanel").show();
 		},
 
 		isOpen : function(){

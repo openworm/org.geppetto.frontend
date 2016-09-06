@@ -1,4 +1,4 @@
-.dropDownButtonContainer {
+.dropDownButton {
   position: fixed;
   height:27px
 }
@@ -11,8 +11,8 @@
 .dropDownButton {
   position: fixed;
   top: 5px;
-  right: 395px;
-  height:27px
+  right: 390px;
+  height:28px
 }
 
 .dropDownButton:disabled{
@@ -29,6 +29,7 @@
     border-radius: 0px;
     border-style: solid;
     border-width: 1px;
+    background-color: rgba(66, 59, 59, 0.90);
 }
 
 .dropDownTable {
@@ -65,6 +66,9 @@
 	padding: 5px 20px 5px 0;	
 }
 
+.dropDownTable tr{
+	cursor:pointer;
+}
 .dropDownTable tr:hover {
 	background-color:#fd6808;
 	color:white;

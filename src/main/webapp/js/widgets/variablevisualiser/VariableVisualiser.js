@@ -45,7 +45,7 @@ define(function (require) {
         variable: null,
         options: null,
         default_width: 350,
-        default_height: 150,
+        default_height: 120,
 
         /**
          * Initialises viriables visualiser with a set of options
@@ -119,7 +119,7 @@ define(function (require) {
         		if (typeof step != 'undefined' && 
         				(this.variable.state.getTimeSeries()!=null || undefined)) {
         			if(this.variable.state.getTimeSeries().length>step){
-        				this.setBody(this.variable.state.getTimeSeries()[step].toFixed(4) + " " + this.variable.state.getUnit());
+        				this.setBody(this.variable.state.getTimeSeries()[step].toFixed(4) + this.variable.state.getUnit());
         			}
         		}
         	}else{

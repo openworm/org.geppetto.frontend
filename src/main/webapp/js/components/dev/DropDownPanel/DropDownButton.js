@@ -34,10 +34,10 @@ define(function(require) {
 				self.setState({disabled: newState});
 			});
 			
-			GEPPETTO.on(Events.Experiment_completed, function () {
+			GEPPETTO.on(Events.Experiment_completed, function (experimentID) {
 				var newState = self.state.disabled;
 				var experiment = window.Project.getActiveExperiment();
-				if(experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+				if(experiment.getId() == experimentID){
 					newState = false;
 				}
 				self.setState({disabled: newState});
@@ -56,7 +56,7 @@ define(function(require) {
 					this.setState({open : true, icon : showIcon});
 				}
 			}  	
-		},
+		}, 
 
 		render:  function () {
 			return(

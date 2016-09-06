@@ -139,7 +139,7 @@ define(function (require) {
 		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
 
 		//Home button initialization
-		GEPPETTO.ComponentFactory.addComponent('DROPDOWNBUTTON', {iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("DropDownButton"));
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNBUTTON', {label: ' Results', iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("DropDownButton"));
 
 		var actions = [{
 			label: "Plot All Recorded Variables",
@@ -152,7 +152,8 @@ define(function (require) {
 			action: "G.showTime()"
 		}];
 
-		var position = {top : 40, right : 300};
+		//FIXME Combine the dropdown button and the panel
+		var position = {top : 40, right : 236};
 		
 		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {list : actions, position : position, openedByDefault : false}, document.getElementById("dropDownPanel"));
 		

@@ -682,7 +682,7 @@ define(function (require) {
             		if(!this.timeWidgetVisible){
             			if(window[this.timeWidget.id] == null || undefined){
             				this.timeWidget = G.addWidget(5);
-            				this.timeWidget.setVariable(time);
+            				this.timeWidget.setName("Current simulation time").setVariable(time);
             			}else{
             				this.timeWidget.show();
             			}

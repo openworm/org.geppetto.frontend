@@ -148,8 +148,20 @@ define(function (require) {
      * Creates table row for displaying an experiment's simulator configurations
      */
     var SimulatorRow = React.createClass({
+        refresh: function(){
+        	if (this.props.experiment.getId() == window.Project.getActiveExperiment().getId()){
+                this.forceUpdate();
+        	}
+        },
+        
         componentDidMount: function () {
+        	var self = this;
+        	
             var row = "#simulatorRowId-" + this.props.experiment.getId();
+            
+            GEPPETTO.on(Events.Parameter_modified, function () {
+                self.refresh();
+            });
             
             // Handle edits to editable fields
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
@@ -206,7 +218,7 @@ define(function (require) {
 
         		for(var i =0; i<this.props.experiment.getWatchedVariables().length; i++){
         			watchedVariables = 
-        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + '\n\n';
+        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + "\n\n\n";
         		}
 
         		GEPPETTO.FE.infoDialog("Recorded variables ", watchedVariables);
@@ -252,26 +264,30 @@ define(function (require) {
             }
 
             var watchedVariables = this.props.experiment.getWatchedVariables();
+            var watchedVariablesClick = null;
             var variablesMessage = "None";
             if(watchedVariables.length>0){
         		variablesMessage = watchedVariables.length + " variables recorded";
+        		watchedVariablesClick = this.watchedVariablesWindow;
         	}
             
             var parameterMessage = "None";
-        	var modifiedParamters = 0;
+            var parametersClick =null;
+        	var modifiedParameters = 0;
         	var i=0;
         	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
         		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
         				GEPPETTO.Resources.PARAMETER_TYPE){
         			var instance = Instances.getInstance([GEPPETTO.ModelFactory.allPathsIndexing[key].path]);
             		if(instance[0].modified){
-            			modifiedParamters++;
+            			modifiedParameters++;
             		}
         		}
         	}
         	
-        	if(modifiedParamters>0){
-        		parameterMessage = modifiedParamters + " parameters set";
+        	if(modifiedParameters>0){
+        		parameterMessage = modifiedParameters + " parameters set";
+        		parametersClick = this.parametersClick;
         	}
         	
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
@@ -280,8 +296,8 @@ define(function (require) {
                     <td></td>
                     <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
                     <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
-                    <td className="configurationTDLink" name={'variables'} onClick={this.watchedVariablesWindow}>{variablesMessage}</td>
-                    <td className="configurationTDLink" name={'parameters'} onClick={this.parametersWindow}>{parameterMessage}</td>
+                    <td className="configurationTDLink" name={'variables'} onClick={watchedVariablesClick}>{variablesMessage}</td>
+                    <td className="configurationTDLink" name={'parameters'} onClick={parametersClick}>{parameterMessage}</td>
                     <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
                     <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
                 </tr>
@@ -504,10 +520,6 @@ define(function (require) {
                 GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
             });
 
-            GEPPETTO.on(Events.Parameter_modified, function () {
-                self.refresh();
-            });
-
             $("#experiments").resizable({
                 handles: 'n',
                 minHeight: 100,
@@ -702,10 +714,6 @@ define(function (require) {
             } else {
                 $(targetRowId).show();
             }
-        },
-        
-        refresh: function(){
-            this.forceUpdate();
         },
 
         render: function () {

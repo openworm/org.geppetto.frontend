@@ -252,37 +252,36 @@ define(function (require) {
             }
 
             var watchedVariables = this.props.experiment.getWatchedVariables();
-            var firstWatchedVariable = "None";
-            if(watchedVariables !=null || undefined){
-            	firstWatchedVariable = watchedVariables[0];
-            }
+            var variablesMessage = "None";
+            if(watchedVariables.length>0){
+        		variablesMessage = watchedVariables.length + " variables recorded (click to view)";
+        	}
             
-            var parameters = [];
-            var firstParameter = "None";            
+            var parameterMessage = "None";
+        	var modifiedParamters = 0;
         	var i=0;
         	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
         		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
         				GEPPETTO.Resources.PARAMETER_TYPE){
-        			parameters[i] = GEPPETTO.ModelFactory.allPathsIndexing[key]; 
-        			i++;
+        			var instance = Instances.getInstance([GEPPETTO.ModelFactory.allPathsIndexing[key].path]);
+            		if(instance[0].modified){
+            			modifiedParamters++;
+            		}
         		}
         	}
         	
-        	for(var i=0; i<parameters.length; i++){
-        		var instance = Instances.getInstance([parameters[i].path]);
-        		if(instance[0].modified){
-        			firstParameter = instance[0].getPath();
-        			break;
-        		}
+        	if(modifiedParamters>0){
+        		parameterMessage = modifiedParamters + " parameters set (click to view)";
         	}
+        	
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();
             return (
                 <tr id={simulatorRowId}>
                     <td></td>
                     <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
                     <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
-                    <td className="configurationTD" name={'variables'} onClick={this.watchedVariablesWindow}>{firstWatchedVariable}</td>
-                    <td className="configurationTD" name={'parameters'} onClick={this.parametersWindow}>{firstParameter}</td>
+                    <td className="configurationTD" name={'variables'} onClick={this.watchedVariablesWindow}>{variablesMessage}</td>
+                    <td className="configurationTD" name={'parameters'} onClick={this.parametersWindow}>{parameterMessage}</td>
                     <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
                     <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
                 </tr>
@@ -504,7 +503,11 @@ define(function (require) {
                 self.deleteExperiment(experiment);
                 GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
             });
-            
+
+            GEPPETTO.on(Events.Parameter_modified, function () {
+                self.refresh();
+            });
+
             $("#experiments").resizable({
                 handles: 'n',
                 minHeight: 100,
@@ -699,6 +702,10 @@ define(function (require) {
             } else {
                 $(targetRowId).show();
             }
+        },
+        
+        refresh: function(){
+            this.forceUpdate();
         },
 
         render: function () {

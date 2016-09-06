@@ -158,6 +158,7 @@ define(function (require) {
 
         messageHandler[messageTypes.PROJECT_PERSISTED] = function (payload) {
             GEPPETTO.SimulationHandler.persistProject(payload);
+            GEPPETTO.trigger("stop_spin_persist");
         };
 
         messageHandler[messageTypes.PROJECT_CONFIGURATION] = function (payload) {

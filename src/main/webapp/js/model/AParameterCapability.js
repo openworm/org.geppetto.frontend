@@ -155,6 +155,7 @@ define(function (require) {
                 GEPPETTO.ExperimentsController.setParameters([this]);
             }
 
+            GEPPETTO.trigger(Events.Parameter_modified);
             return this;
         }
     }

@@ -138,6 +138,9 @@ define(function (require) {
 		//Spotlight initialization
 		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
 
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNBUTTON', {iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("DropDownButton"));
+
 		var actions = [{
 			label: "Plot All Recorded Variables",
 			action: "G.plotRecordedVariables()"
@@ -149,12 +152,12 @@ define(function (require) {
 			action: "G.showTime()"
 		}];
 
-		var position = {top : 200, left : 200};
+		var position = {top : 40, right : 300};
 		
 		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {list : actions, position : position, openedByDefault : false}, document.getElementById("dropDownPanel"));
 		
 		//Foreground initialization
-		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("foreground-toolbar"));
+		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {}, document.getElementById("foreground-toolbar"));
 
 		//Experiments table initialization
 		GEPPETTO.ComponentFactory.addComponent('EXPERIMENTSTABLE', {}, document.getElementById("experiments"));

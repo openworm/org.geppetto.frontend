@@ -63,7 +63,8 @@ var Events = {
     Project_persisted: "project:persisted",
     Check_project_persisted : "project:persisted_state",
     Spotlight_closed: "spotlight:closed",
-    Instance_deleted: "instance: deleted"
+    Instance_deleted: "instance: deleted",
+    Parameter_modified : "parameter: modified"
 };
 
 define(function (require) {

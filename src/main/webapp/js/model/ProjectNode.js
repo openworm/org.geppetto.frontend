@@ -155,6 +155,7 @@ define(['jquery', 'underscore', 'backbone',
         setActiveExperiment: function (experiment) {
             if(this.login){
                 this.activeExperiment = experiment;
+                GEPPETTO.trigger(Events.Experiment_active);
             }else{
     			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
             }

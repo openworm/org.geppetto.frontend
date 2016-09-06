@@ -8,10 +8,20 @@
 	color:@orange;
 }
 
+.DropDownButton {
+  position: fixed;
+  top: 5px;
+  right: 395px;
+  height:29px
+}
+
+.DropDownButton:disabled{
+	background:0;
+	color:@orange;
+}
+
 #dropDownPanel {
     position: fixed;
-    top : 400px;
-    left: 60px;
     display: none;
     z-index: 99;
     height: auto;
@@ -60,4 +70,15 @@
 
 .dropDownTable tr:nth-child(2) {
 	background:#272222;
+}
+
+.tooltip-persist {
+	height: 25px;
+	max-width: 800px;
+	border-radius: 5px;
+	border: 1px solid black;
+	padding: 2px 4px 2px 4px;
+	background: white;
+	opacity: 1;
+	left : 20px;
 }

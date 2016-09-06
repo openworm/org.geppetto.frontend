@@ -18,9 +18,7 @@ define(function(require) {
 				selected : false,
 				icon : "",
 				checked : "fa fa-check-circle",
-				unchecked : "", 
-				topPosition : 400,
-				leftPosition : 60
+				unchecked : "" 
 			};
 		},
 		
@@ -50,7 +48,8 @@ define(function(require) {
 			return {
 				visible : this.props.openedByDefault,
 				list : null,
-				tooltipLabel : "Drop Down Options"
+				position : {top : this.props.position.top, right: this.props.position.right, 
+							left: this.props.position.left, bottom : this.props.position.bottom},
 			};
 		},
 
@@ -71,9 +70,6 @@ define(function(require) {
 
 		clickEvent : function(){
 			var self = this;
-			//update contents of what's displayed on tooltip
-			$('button[rel="tooltip"]').uitooltip({content: "Persist Project Requested."});
-			$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
 			self.setState({disableSave: true});
 			GEPPETTO.Console.executeCommand("Project.persist();");        	
 		},
@@ -94,14 +90,15 @@ define(function(require) {
 
 		close : function () {
 			this.setState({visible : false});
-			$("#dropDownPanel").hide("fold", {horizFirst: true}, 250)
+			$("#dropDownPanel").hide("fold", {}, 250)
 		},
 
 		open: function() {
 			var self = this;
 			self.setState({visible : true});
-			$( "#dropDownPanel" ).show("fold", {horizFirst: true}, 250);
-			$("#dropDownPanel").css({top: self.state.topPosition, left: self.state.leftPosition, position:'fixed'});
+			$("#dropDownPanel").css({top: self.state.position.top, right: self.state.position.right, 
+				bottom: self.state.position.bottom, left: self.state.position.left,position:'fixed'});
+			$( "#dropDownPanel" ).show("fold", {}, 250);
 		},
 
 		isOpen : function(){
@@ -109,7 +106,6 @@ define(function(require) {
 		},
 
 		render:  function () {
-
 			return( 
 					<div className={"dropdown-container" + (this.state.visible ? " show" : "")}>
 					<table className="dropDownTable" id="dropDownTable">

@@ -8,6 +8,7 @@ define(function(require) {
 		getInitialState: function() {
 			return {
 				icon : this.props.iconOff,
+				label : this.props.label,
 				iconOn : this.props.iconOn,
 				iconOff : this.props.iconOff,
 				open : false,
@@ -59,10 +60,11 @@ define(function(require) {
 
 		render:  function () {
 			return(
-					<div className="dropDownButton">
-    				<button className="btn squareB DropDownButton pull-right" type="button" title=''
+					<div className="dropDownButtonContainer">
+    				<button className="btn dropDownButton pull-right" type="button" title=''
     				onClick={this.clickEvent} disabled={this.state.disabled}>
-    					<i className={this.state.icon}>Results</i>
+    					<i className={this.state.icon}></i>
+    					{this.state.label}
     				</button>
     			</div>
 			);

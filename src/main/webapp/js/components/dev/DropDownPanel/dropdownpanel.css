@@ -1,21 +1,21 @@
-.dropDownButton {
+.dropDownButtonContainer {
   position: fixed;
   height:27px
 }
 
-.dropDownButton:disabled{
+.dropDownButtonContainer:disabled{
 	background:0;
 	color:@orange;
 }
 
-.DropDownButton {
+.dropDownButton {
   position: fixed;
   top: 5px;
   right: 395px;
-  height:29px
+  height:27px
 }
 
-.DropDownButton:disabled{
+.dropDownButton:disabled{
 	background:0;
 	color:@orange;
 }
@@ -28,13 +28,10 @@
     width: auto;    
     border-radius: 0px;
     border-style: solid;
-    border-color: #fd6808;
-    border-width: 2px;
+    border-width: 1px;
 }
 
 .dropDownTable {
-	color : #fd6808;
-	font-size : 20px;
 	color: #fd6808;
     float: left;
     padding-right: 10px;
@@ -52,7 +49,7 @@
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
-    font-size : 16px;
+    font-size : 14px;
 }
 
 .dropDownItem {
@@ -68,8 +65,9 @@
 	padding: 5px 20px 5px 0;	
 }
 
-.dropDownTable tr:nth-child(2) {
-	background:#272222;
+.dropDownTable tr:hover {
+	background-color:#fd6808;
+	color:white;
 }
 
 .tooltip-persist {

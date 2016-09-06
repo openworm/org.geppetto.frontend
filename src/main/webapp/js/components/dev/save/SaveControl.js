@@ -63,7 +63,7 @@ define(function(require) {
     	getInitialState: function() {
             return {
             	disableSave : true,
-            	tooltipLabel : "Press for Persistence.",
+            	tooltipLabel : "Click here to persist this project!",
             	icon: "fa fa-star"
             };
         },
@@ -82,7 +82,7 @@ define(function(require) {
             });
             
             GEPPETTO.on('spin_persist', function() {
-    			self.setState({icon:"fa fa-spinner fa-spin"});
+    			self.setState({icon:"fa fa-star fa-spin"});
     		}.bind($(".saveButton")));
 
     		GEPPETTO.on('stop_spin_persist', function() {
@@ -96,7 +96,7 @@ define(function(require) {
         clickEvent : function(){
         	var self = this;
         	//update contents of what's displayed on tooltip
-       	 	$('button[rel="tooltip"]').uitooltip({content: "Persist Project Requested."});
+       	 	$('button[rel="tooltip"]').uitooltip({content: "The project is getting persisted..."});
         	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
         	self.setState({disableSave: true});
         	GEPPETTO.Console.executeCommand("Project.persist();");

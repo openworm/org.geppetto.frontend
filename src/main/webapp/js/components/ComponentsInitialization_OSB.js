@@ -163,7 +163,7 @@ define(function (require) {
         ];
 
 		//FIXME Combine the dropdown button and the panel
-		var dropDownPanelPosition = {top : 40, right : 236};
+		var dropDownPanelPosition = {top : 40, right : 244};
 		
 		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {configuration : dropDownPanelConfig, position : dropDownPanelPosition, openByDefault : false}, document.getElementById("dropDownPanel"));
 		

@@ -295,7 +295,7 @@ define(function (require) {
         	
         	if(modifiedParameters>0){
         		parameterMessage = modifiedParameters + " parameters set";
-        		parametersClick = this.parametersClick;
+        		parametersClick = this.parametersWindow;
         	}
         	
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();

@@ -6,20 +6,18 @@
     <link rel="stylesheet" href="geppetto/css/qunit.css">
     <link rel="stylesheet" href="geppetto/css/custom-theme/jquery-ui-1.10.0.custom.css" />
 
-    <!-- build:template
-        <script>
-            var path = "<%= contextPath %>";
-            if(path === "") {
-                window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
-            } else if(path === "/") {
-                window.BUNDLE_CONTEXT_PATH = "";
-            } else {
-                window.BUNDLE_CONTEXT_PATH = path;
-            }
+    <script>
+        var path = "org.geppetto.frontend";
+        if(path === "") {
+            window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
+        } else if(path === "/") {
+            window.BUNDLE_CONTEXT_PATH = "";
+        } else {
+            window.BUNDLE_CONTEXT_PATH = path;
+        }
 
-            window.USE_SSL = <%= useSsl %>;
-        </script>
-    /build -->
+        window.USE_SSL = false;
+    </script>
 
     <script type="text/template" id="tplSandbox">
         <pre class="output"></pre>

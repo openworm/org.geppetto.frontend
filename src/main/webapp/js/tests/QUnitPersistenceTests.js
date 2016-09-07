@@ -120,6 +120,14 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                         case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+                         	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -203,6 +211,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -287,6 +302,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -384,6 +406,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -468,6 +497,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -522,6 +558,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -578,6 +621,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -662,6 +712,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -738,6 +795,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -800,6 +864,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -879,6 +950,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -962,6 +1040,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };
@@ -1045,6 +1130,13 @@ define(function (require) {
                             resetConnection();
 
                             break;
+                        case "error_loading_project":
+                            var payload = JSON.parse(parsedServerMessage.data);	
+	                        assert.ok(false, payload.message);
+	
+	                        done();
+	                        resetConnection();
+                        	break;
                     }
                 }
             };

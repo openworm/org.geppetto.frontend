@@ -7,9 +7,6 @@ define(function (require) {
         getInitialState: function () {
             return {
                 icon: this.props.iconOff,
-                label: this.props.label,
-                iconOn: this.props.iconOn,
-                iconOff: this.props.iconOff,
                 open: false,
                 disabled: true
             };
@@ -41,6 +38,8 @@ define(function (require) {
                 }
                 self.setState({disabled: newState});
             });
+
+
         },
 
         clickEvent: function () {
@@ -48,11 +47,11 @@ define(function (require) {
             if (GEPPETTO.DropDownPanel != undefined) {
                 if (GEPPETTO.DropDownPanel.isOpen()) {
                     GEPPETTO.DropDownPanel.close();
-                    showIcon = this.state.iconOff;
+                    showIcon = this.props.iconOff;
                     this.setState({open: false, icon: showIcon});
                 } else {
                     GEPPETTO.DropDownPanel.open();
-                    showIcon = this.state.iconOn;
+                    showIcon = this.props.iconOn;
                     this.setState({open: true, icon: showIcon});
                 }
             }
@@ -64,7 +63,7 @@ define(function (require) {
                     <button className="btn dropDownButton pull-right" type="button" title=''
                             onClick={this.clickEvent} disabled={this.state.disabled}>
                         <i className={this.state.icon}></i>
-                        {this.state.label}
+                        {this.props.label}
                     </button>
                 </div>
             );

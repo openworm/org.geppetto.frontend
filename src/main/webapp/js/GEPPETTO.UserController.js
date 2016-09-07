@@ -43,11 +43,13 @@ define(function(require)
         {
         	userName : null,
             privileges : null,
-            login : false,
+            loggedIn : false,
+            persistence : false,
             
             setUserPrivileges : function(userPrivileges){
             	this.userName = userPrivileges.userName;
-            	this.login = userPrivileges.login;
+            	this.persistence = userPrivileges.hasPersistence;
+            	this.loggedIn = userPrivileges.loggedIn;
             	
             	this.privileges = $.map(userPrivileges.privileges, function(value, index) {
             	    return [value];
@@ -62,8 +64,12 @@ define(function(require)
             	return this.userName;
             },
             
-            isLogin : function(){
-            	return this.login;
+            isLoggedIn : function(){
+            	return this.loggedIn;
+            },
+
+            hasPersistence : function(){
+            	return this.persistence;
             },
             
             hasPermission : function(privilege){

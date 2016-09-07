@@ -58,7 +58,7 @@ define(function (require) {
             var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
             var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
             var projectPersisted = false;
-            var login = GEPPETTO.UserController.isLogin();
+            var login = GEPPETTO.UserController.isLoggedIn() && GEPPETTO.UserController.hasPersistence();
             var self = this;
 
             GEPPETTO.on(Events.Experiment_loaded, function () {

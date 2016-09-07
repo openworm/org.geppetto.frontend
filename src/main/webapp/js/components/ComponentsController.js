@@ -40,7 +40,7 @@ define(function (require) {
 				componentsMap : {},
 				projectPersisted : false,
 				writePermission : GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT),
-				login : GEPPETTO.UserController.isLogin(),
+				login : GEPPETTO.UserController.isLoggedIn() && GEPPETTO.UserController.hasPersistence(),
 				initialized : false,
 
 				executeAction: function (action) {

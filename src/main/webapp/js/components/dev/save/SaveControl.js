@@ -46,12 +46,12 @@ define(function(require) {
                  tooltipClass: "tooltip-persist",
                  show: {
                      effect: "slide",
-                     direction: "left",
+                     direction: "right",
                      delay: 200
                  },
                  hide: {
                      effect: "slide",
-                     direction: "left",
+                     direction: "right",
                      delay: 200
                  },
                  content: function () {

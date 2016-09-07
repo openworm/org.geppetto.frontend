@@ -132,7 +132,7 @@ define(function (require) {
             var items = [];
             for (var i = 0; i < this.props.configuration.length; i++) {
                 var item = this.props.configuration[i];
-                items.push(<ListItem item={item}/>);
+                items.push(<ListItem key={i} item={item}/>);
             }
             return items;
         },
@@ -165,7 +165,9 @@ define(function (require) {
             return (
                 <div className={"dropdown-container" + (this.state.visible ? " show" : "")}>
                     <table className="dropDownTable" id="dropDownTable">
-                        {this.renderListItems()}
+                        <tbody>
+                            {this.renderListItems()}
+                        </tbody>
                     </table>
                 </div>
             )

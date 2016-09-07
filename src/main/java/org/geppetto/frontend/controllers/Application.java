@@ -142,6 +142,12 @@ public class Application
 		return "dist/GeppettoPersistenceTests";
 	}
 	
+	@RequestMapping(value = "/GeppettoPersistenceTests-alt.html", method = RequestMethod.GET)
+	public String testAltPersistence()
+	{
+		return "dist/GeppettoPersistenceTests-alt";
+	}
+	
 	@RequestMapping(value = "/GeppettoFluidDynamicsTests.html", method = RequestMethod.GET)
 	public String testFluidDynamics()
 	{

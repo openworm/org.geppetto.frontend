@@ -141,7 +141,24 @@ define(function (require) {
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('DROPDOWNBUTTON', {label: ' Results', iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("DropDownButton"));
 
+		window.plotAllRecordedVariables=function(){
+			Project.getActiveExperiment().playAll();
+			var plt=G.addWidget(0).setName('Recorded Variables'); 
+			$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
+				function(index,value){
+					plt.plotData(value)
+			});
+		}
+		
         var dropDownPanelConfig = [
+		    {
+		    	label: "Play step by step",
+		        action: "Project.getActiveExperiment().play({step:1});"
+		    },
+		    {
+		    	label: "Play step by step (100x)",
+		    	action: "Project.getActiveExperiment().play({step:100});"
+		    },
             {
                 label: "Enable color plotting",
                 condition: "GEPPETTO.G.isBrightnessFunctionSet()",
@@ -153,12 +170,12 @@ define(function (require) {
                 }
             },
             {
-                label: "Show Time",
+                label: "Show simulation time",
                 action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
             },
             {
                 label: "Plot all recorded variables",
-                action: "var plt=G.addWidget(0).setName('Recorded Variables'); $.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){plt.plotData(value)});"
+                action: "window.plotAllRecordedVariables();"
             }
         ];
 

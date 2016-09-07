@@ -14,7 +14,7 @@ define(function (require) {
         icons: {
             checked: "fa fa-check-circle-o",
             unchecked: "fa fa-circle-o",
-            default: "fa fa-circle"
+            default: "fa fa-bolt"
         },
 
         getInitialState: function () {

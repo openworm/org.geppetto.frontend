@@ -111,6 +111,10 @@ require.config({
         	exports: 'QUnitExternalSimulatorTests',
             deps: ['geppetto']
         },
+        'QUnitPersistenceTests-alt':{
+        	exports: 'QUnitPersistenceTests-alt',
+            deps: ['geppetto']
+        },
         'QUnitNeuronalTests':{
         	exports: 'QUnitNeuronalTests',
             deps: ['geppetto']

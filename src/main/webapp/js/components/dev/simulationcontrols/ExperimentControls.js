@@ -144,15 +144,7 @@ define(function (require) {
             });
 
             GEPPETTO.on(Events.Experiment_stop, function (options) {
-            	if(options!=null||undefined){
-            		if(options.playAll){
-                		self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
-            		}else{
-                        self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
-            		}
-            	}else{
-                    self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
-            	}
+            	self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
             });
             
             GEPPETTO.on(Events.Experiment_deleted, function () {

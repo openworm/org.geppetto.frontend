@@ -49,6 +49,9 @@ define(function (require) {
             maxSteps: 0,
             paused: false,
 
+            isPlayExperimentReady: function(){
+            	return this.playExperimentReady;
+            },
 
             /** Update the instances of this experiment given the experiment state */
             updateExperiment: function (experiment, experimentState) {
@@ -268,21 +271,25 @@ define(function (require) {
 
             triggerPlayExperiment: function (experiment) {
 
-                GEPPETTO.trigger(Events.Experiment_play, {playAll: this.playOptions.playAll});
-
-                if (this.playOptions.playAll) {
-                    if (this.paused) {
+            	if (this.playOptions.playAll) {
+                	this.stop();
+            	}else{
+                    if (!this.paused) {
                         this.stop();
                     }
+            	}
+            	
+                GEPPETTO.trigger(Events.Experiment_play, this.playOptions);
+                
+                if (this.playOptions.playAll) {
                     GEPPETTO.ExperimentsController.terminateWorker();
                     GEPPETTO.trigger(Events.Experiment_update, {
                         step: this.maxSteps - 1,
                         playAll: true
                     });
-                    GEPPETTO.trigger(Events.Experiment_stop);
+                    this.stop();
                 }
                 else {
-
                     if (this.playOptions.step == null || undefined) {
                         this.playOptions.step = 0;
                     }
@@ -293,14 +300,15 @@ define(function (require) {
                     // tells worker to update each half a second
                     this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
 
+                    var that = this;
                     // receives message from web worker
                     this.worker.onmessage = function (event) {
                         // get current timeSteps to execute from web worker
                         var currentStep = event.data[0];
 
-                        if (currentStep >= this.maxSteps) {
+                        if (currentStep >= that.maxSteps) {
                             this.postMessage(["experiment:loop"]);
-                            GEPPETTO.trigger(Events.Experiment_stop);
+                            that.stop();
                         } else {
                             GEPPETTO.trigger(Events.Experiment_update, {
                                 step: currentStep,

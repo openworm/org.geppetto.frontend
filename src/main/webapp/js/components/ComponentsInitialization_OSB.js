@@ -148,7 +148,7 @@ define(function (require) {
 				function(index,value){
 					plt.plotData(value)
 			});
-		}
+		};
 		
         var dropDownPanelConfig = [
 		    {

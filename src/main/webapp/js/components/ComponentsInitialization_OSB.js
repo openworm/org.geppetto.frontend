@@ -161,12 +161,12 @@ define(function (require) {
 		    },
             {
                 label: "Enable color plotting",
-                condition: "GEPPETTO.DropDownPanel.enableColorPlotting === true",
+                condition: "GEPPETTO.G.isBrightnessFunctionSet()",
                 false: {
-                    action: "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;}); GEPPETTO.DropDownPanel.enableColorPlotting = true;"
+                    action: "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
                 },
                 true: {
-                    action: "G.removeBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false)); GEPPETTO.DropDownPanel.enableColorPlotting = false;"
+                    action: "G.removeBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false));"
                 }
             },
             {

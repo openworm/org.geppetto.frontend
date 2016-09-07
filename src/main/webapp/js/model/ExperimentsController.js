@@ -172,9 +172,12 @@ define(function (require) {
 
                 for (var v = 0; v < variables.length; v++) {
                 	if(Project.getActiveExperiment()!=null){
-                		if (Project.getActiveExperiment().variables.indexOf(variables[v]) == -1) {
+                		if (Project.getActiveExperiment().variables.indexOf(variables[v].getInstancePath()) == -1) {
                 			Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
+                		}else{
+                			Project.getActiveExperiment().variables.pop(variables[v].getInstancePath());
                 		}
+                        GEPPETTO.trigger(Events.Variable_recorded);
                 	}
                 }
             },

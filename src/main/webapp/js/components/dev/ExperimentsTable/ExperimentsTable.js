@@ -163,6 +163,10 @@ define(function (require) {
                 self.refresh();
             });
             
+            GEPPETTO.on(Events.Variable_recorded, function () {
+                self.refresh();
+            });
+            
             // Handle edits to editable fields
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
             	if (e.keyCode == 13) {

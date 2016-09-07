@@ -5,7 +5,7 @@ var PROJECT_URL_SUFFIX_3 = "?load_project_from_id=8"
 
 
 
-casper.test.begin('Geppetto basic tests', 76, function suite(test) {
+casper.test.begin('Geppetto basic tests', 99, function suite(test) {
   casper.options.viewportSize = {
           width: 1340,
           height: 768
@@ -37,17 +37,17 @@ casper.test.begin('Geppetto basic tests', 76, function suite(test) {
 
   casper.then(function() {
     testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
-    false, 'hhcell.hhpop[0].v');
+    false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay');
   });
 
   casper.then(function() {
     testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
-    false, 'c302_A_Pharyngeal.M1[0].v')
+    false, 'c302_A_Pharyngeal.M1[0].v', 'c302_A_Pharyngeal.MI[0].C')
   });
 
   casper.then(function() {
     testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-    true, 'hhcell.hhpop[0].v')
+    true, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay')
   });
 
   //TODO: log back in as other users. Check more things
@@ -59,7 +59,7 @@ casper.test.begin('Geppetto basic tests', 76, function suite(test) {
 });
 
 
-function testProject(test, url, expect_error, persisted, spotlight_search) {
+function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter) {
 
   casper.thenOpen(url,function() {
       this.echo("Loading an external model that is not persisted at " + url);
@@ -89,9 +89,14 @@ function testProject(test, url, expect_error, persisted, spotlight_search) {
 
           this.mouseEvent('click','tr.experimentsTableColumn:nth-child(1)', "opening first experiment row");
           doExperimentsTableRowCheck(test);
-
-          doPrePersistenceSpotlightCheck(test, spotlight_search);
         });
+        casper.then(function() {
+          doPrePersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
+        });
+        casper.then(function() {
+          doPrePersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
+        });
+
 
 
         casper.then(function() {
@@ -123,8 +128,12 @@ function testProject(test, url, expect_error, persisted, spotlight_search) {
         //roll over the experiments row
         this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
         doPostPersistenceExperimentsTableButtonCheck(test);
-
-        doPostPersistenceSpotlightCheck(test, spotlight_search);
+      });
+      casper.then(function() {
+        doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
+      });
+      casper.then(function() {
+        doPostPersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
         //TODO: set a variable to record and a parameter to watch and make sure
         //the experiment table row updates correctly.
           //TODO: logout
@@ -213,9 +222,12 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
   });
 }
 
-function doPrePersistenceSpotlightCheck(test, spotlight_search) {
+
+function doSpotlightCheck(test, spotlight_search, persisted, check_recorded_or_set_parameters) {
   test.assertExists('i.fa-search', "Spotlight button exists")
   casper.mouseEvent('click','i.fa-search', "attempting to open spotlight");
+
+
 
   casper.waitUntilVisible('div#spotlight', function() {
     test.assertVisible('div#spotlight', "Spotlight opened");
@@ -225,54 +237,61 @@ function doPrePersistenceSpotlightCheck(test, spotlight_search) {
     //press enter
     casper.sendKeys('input#typeahead', casper.page.event.key.Return , {keepFocus: true});
 
-    casper.wait('4000', function() {
+    casper.waitUntilVisible('div#spotlight', function() {
 
-      //TESTS THAT THE VARIABLE IS NOT RECORDABLE
-      test.assertNotVisible('button#watch', "Record variables icon correctly not visible");
+      casper.then(function() {
+        this.echo("Taking screenshot");
+        casper.capture('typed.png')
+        if (persisted) {
+          if (check_recorded_or_set_parameters) {
+            this.echo("Waiting to see if the recorded variables button becomes visible");
+            casper.waitUntilVisible('button#watch', function() {
+              test.assertVisible('button#watch', "Record variables icon correctly visible");
+              this.echo("Recorded variables button became visible correctly");
+            }, null, 8000);
+          } else {
+            //TESTS THAT THE PARAMETER IS SETTABLE
+            test.assertVisible('input.spotlight-input', "Parameter input field correctly visible");
+          }
+        } else {
+          if (check_recorded_or_set_parameters) {
+            //TESTS THAT THE VARIABLE IS NOT RECORDABLE
+            test.assertNotVisible('button#watch', "Record variables icon correctly not visible");
+          } else {
+            //TESTS THAT THE PARAMETER IS NOT SETTABLE
+            test.assertNotVisible('input.spotlight-input', "Parameter input field correctly not visible");
+          }
+        }
+      });
 
-      //TODO: check on state of recorded variable and make sure it is accurate.
-      //TODO: check setting parameters
+      casper.then(function() {
+        this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+        casper.mouseEvent('click','div#spotlight', "attempting to close spotlight");
+        this.echo("Clicking to close spotlight");
+        casper.sendKeys('input#typeahead', casper.page.event.key.Escape, {keepFocus: true});
+        this.echo("Hitting escape to close spotlight");
 
-      casper.mouseEvent('click','i.fa-search', "attempting to close spotlight");
-
-      /* TODO: make it work
-      this.waitWhileVisible('div#spotlight', function() {
-        test.assertNotVisible('div#spotlight', "Spotlight closed");
-      }, null, 5000);*/
+        this.waitWhileVisible('div#spotlight', function() {
+          test.assertNotVisible('div#spotlight', "Spotlight closed correctly");
+        }, null, 10000);
+      })
     });
 
   });
 }
 
-function doPostPersistenceSpotlightCheck(test, spotlight_search) {
-  test.assertExists('i.fa-search', "Spotlight button exists")
-  casper.mouseEvent('click','i.fa-search', "attempting to open spotlight");
+function doPrePersistenceSpotlightCheckRecordedVariables(test, spotlight_search) {
+  doSpotlightCheck(test, spotlight_search, false, true);
+}
 
-  casper.waitUntilVisible('div#spotlight', function() {
-    test.assertVisible('div#spotlight', "Spotlight opened");
+function doPrePersistenceSpotlightCheckSetParameters(test, spotlight_search) {
+  doSpotlightCheck(test, spotlight_search, false, false);
+}
 
-    //type in the spotlight
-    casper.sendKeys('input#typeahead', spotlight_search, { keepFocus: true });
-    //press enter
-    casper.sendKeys('input#typeahead', casper.page.event.key.Return , {keepFocus: true});
+function doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_search) {
+  doSpotlightCheck(test, spotlight_search, true, true);
+}
 
-    casper.waitForText(spotlight_search, function() {
-
-      casper.waitUntilVisible('button#watch', function() {
-        test.assertVisible('button#watch', "Record variables icon correctly visible");
-      }, null, 5000);
-
-      //TODO: check on state of recorded variable and make sure it is accurate.
-      //TODO: check setting parameters
-      //casper.sendKeys('input#typeahead', 'hhcell.explicitInput.pulseGen1.delay', { keepFocus: true });
-
-      casper.mouseEvent('click','i.fa-search', "attempting to close spotlight");
-
-      /* TODO: make it work
-      this.waitWhileVisible('div#spotlight', function() {
-        test.assertNotVisible('div#spotlight', "Spotlight closed");
-      }, null, 5000);*/
-    }, null, 10000);
-
-  }, null, 5000);
+function doPostPersistenceSpotlightCheckSetParameters(test, spotlight_search) {
+  doSpotlightCheck(test, spotlight_search, true, false);
 }

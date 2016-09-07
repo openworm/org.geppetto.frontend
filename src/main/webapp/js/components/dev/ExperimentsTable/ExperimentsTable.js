@@ -168,6 +168,10 @@ define(function (require) {
                 self.refresh();
             });
             
+            GEPPETTO.on(Events.Variable_recorded, function () {
+                self.refresh();
+            });
+            
             // Handle edits to editable fields
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
             	if (e.keyCode == 13) {
@@ -291,7 +295,7 @@ define(function (require) {
         	
         	if(modifiedParameters>0){
         		parameterMessage = modifiedParameters + " parameters set";
-        		parametersClick = this.parametersClick;
+        		parametersClick = this.parametersWindow;
         	}
         	
             var simulatorRowId = "simulatorRowId-" + this.props.experiment.getId();

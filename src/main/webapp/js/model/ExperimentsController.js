@@ -175,9 +175,13 @@ define(function (require) {
 
                 for (var v = 0; v < variables.length; v++) {
                 	if(Project.getActiveExperiment()!=null){
-                		if (Project.getActiveExperiment().variables.indexOf(variables[v]) == -1) {
+                		var index = Project.getActiveExperiment().variables.indexOf(variables[v].getInstancePath());
+                		if (index == -1) {
                 			Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
+                		}else{
+                			Project.getActiveExperiment().variables.splice(index,1);
                 		}
+                		GEPPETTO.trigger(Events.Variable_recorded);
                 	}
                 }
             },

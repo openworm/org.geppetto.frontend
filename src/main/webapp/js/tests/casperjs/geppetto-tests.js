@@ -112,6 +112,9 @@ function testProject(test, url, expect_error, persisted, spotlight_search) {
 
         //TODO: make this work
         //this.mouseEvent('click', 'button[data-reactid=".9.4"]', "Running an experiment");
+        //TODO: Test indicator light during experiment run
+        //TODO: test experiment buttons again to see if they are in the right configuration after simulation run
+
       }
 
       casper.then(function() {
@@ -122,6 +125,8 @@ function testProject(test, url, expect_error, persisted, spotlight_search) {
         doPostPersistenceExperimentsTableButtonCheck(test);
 
         doPostPersistenceSpotlightCheck(test, spotlight_search);
+        //TODO: set a variable to record and a parameter to watch and make sure
+        //the experiment table row updates correctly.
           //TODO: logout
       });
     });
@@ -220,9 +225,7 @@ function doPrePersistenceSpotlightCheck(test, spotlight_search) {
     //press enter
     casper.sendKeys('input#typeahead', casper.page.event.key.Return , {keepFocus: true});
 
-    casper.wait('5000', function() {
-
-      casper.capture("typed.png");
+    casper.wait('4000', function() {
 
       //TESTS THAT THE VARIABLE IS NOT RECORDABLE
       test.assertNotVisible('button#watch', "Record variables icon correctly not visible");
@@ -255,14 +258,13 @@ function doPostPersistenceSpotlightCheck(test, spotlight_search) {
 
     casper.waitForText(spotlight_search, function() {
 
-      casper.capture("typed.png");
-
       casper.waitUntilVisible('button#watch', function() {
         test.assertVisible('button#watch', "Record variables icon correctly visible");
       }, null, 5000);
 
       //TODO: check on state of recorded variable and make sure it is accurate.
       //TODO: check setting parameters
+      //casper.sendKeys('input#typeahead', 'hhcell.explicitInput.pulseGen1.delay', { keepFocus: true });
 
       casper.mouseEvent('click','i.fa-search', "attempting to close spotlight");
 

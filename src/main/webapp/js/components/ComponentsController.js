@@ -81,35 +81,35 @@ define(function (require) {
 							component.updateToolBarVisibilityState(self.permissions());
 						});
 						
-						GEPPETTO.on(Events.Experiment_completed, function (experimentId) {
-							if(window.Project.getActiveExperiment()!=null || undefined){
-								if(window.Project.getActiveExperiment().getId() == experimentId){
-									component.updateToolBarVisibilityState(false);
-								}
-							}
-						});
-						
-						GEPPETTO.on(Events.Experiment_running, function () {
-							//Hides or Shows tool bar depending on login user permissions
-							component.updateToolBarVisibilityState(false);
-						});
-						
-						GEPPETTO.on(Events.Experiment_failed, function () {
-							//Hides or Shows tool bar depending on login user permissions
-							component.updateToolBarVisibilityState(true);
-						});
-						
-						GEPPETTO.on(Events.Experiment_active, function () {
-							if(window.Project.getActiveExperiment().getStatus() ==
-								GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-								//Hides or Shows tool bar depending on login user permissions
-								component.updateToolBarVisibilityState(false);
-							}else{
-								//Hides or Shows tool bar depending on login user permissions
-								component.updateToolBarVisibilityState(true);
-							}
-
-						});
+//						GEPPETTO.on(Events.Experiment_completed, function (experimentId) {
+//							if(window.Project.getActiveExperiment()!=null || undefined){
+//								if(window.Project.getActiveExperiment().getId() == experimentId){
+//									component.updateToolBarVisibilityState(false);
+//								}
+//							}
+//						});
+//						
+//						GEPPETTO.on(Events.Experiment_running, function () {
+//							//Hides or Shows tool bar depending on login user permissions
+//							component.updateToolBarVisibilityState(false);
+//						});
+//						
+//						GEPPETTO.on(Events.Experiment_failed, function () {
+//							//Hides or Shows tool bar depending on login user permissions
+//							component.updateToolBarVisibilityState(true);
+//						});
+//						
+//						GEPPETTO.on(Events.Experiment_active, function () {
+//							if(window.Project.getActiveExperiment().getStatus() ==
+//								GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+//								//Hides or Shows tool bar depending on login user permissions
+//								component.updateToolBarVisibilityState(false);
+//							}else{
+//								//Hides or Shows tool bar depending on login user permissions
+//								component.updateToolBarVisibilityState(true);
+//							}
+//
+//						});
 					}
 					else if (type == 'EXPERIMENTSTABLE'){
 						this.componentsMap[type] = component;

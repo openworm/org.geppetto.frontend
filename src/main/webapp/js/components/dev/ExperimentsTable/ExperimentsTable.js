@@ -649,8 +649,12 @@ define(function (require) {
                             tdStatus.attr("data-status", experiment.getStatus());
                             tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.Descriptions[experiment.getStatus()]);
 
-                            // make the tooltip pop-out for a bit to attract attention
-                            tdStatus.mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+                            if($('#experimentsOutput').is(':visible')) {
+                                // make the tooltip pop-out for a bit to attract attention
+                                tdStatus.mouseover().delay(2000).queue(function () {
+                                    $(this).mouseout().dequeue();
+                                });
+                            }
 
                             if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                                 if (active != null) {

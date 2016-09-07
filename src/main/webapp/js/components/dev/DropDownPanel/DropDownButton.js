@@ -3,7 +3,7 @@ define(function (require) {
     var React = require('react');
     var GEPPETTO = require('geppetto');
 
-    var comp = React.createClass({
+    var DropDownButton = React.createClass({
         getInitialState: function () {
             return {
                 icon: this.props.iconOff,
@@ -71,6 +71,5 @@ define(function (require) {
         }
     });
 
-    return comp;
-
+    return DropDownButton;
 });

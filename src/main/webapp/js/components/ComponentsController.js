@@ -38,9 +38,6 @@ define(function (require) {
 		GEPPETTO.ComponentsController =
 		{
 				componentsMap : {},
-				projectPersisted : false,
-				writePermission : GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT),
-				login : GEPPETTO.UserController.isLoggedIn() && GEPPETTO.UserController.hasPersistence(),
 				initialized : false,
 
 				executeAction: function (action) {
@@ -52,8 +49,7 @@ define(function (require) {
 				 */
 				permissions : function(){
 					var visible = true;
-					this.projectPersisted = window.Project.persisted;
-					if(!this.writePermission || !this.projectPersisted || !this.login){
+					if(!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) || !window.Project.persisted || !GEPPETTO.UserController.isLoggedIn()){
 						visible = false;
 					}
 
@@ -67,10 +63,10 @@ define(function (require) {
 					if (type == 'SAVECONTROL'){
 						this.componentsMap[type] = component;
 						GEPPETTO.on(Events.Volatile_project_loaded, function(){
-							component.setState({disableSave:!self.writePermission});
+							component.setState({disableSave:!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)});
 						});
 						GEPPETTO.on(Events.Check_project_persisted, function(){
-							component.setState({disableSave:self.projectPersisted});
+							component.setState({disableSave:GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)});
 						});
 					}
 					else if (type == 'SPOTLIGHT'){
@@ -90,13 +86,13 @@ define(function (require) {
 						GEPPETTO.on(Events.Project_loaded, function () {
 							var visible = self.permissions();
 							component.updateNewExperimentState(visible);
-							component.updateIconsStatus(self.login, visible);
+							component.updateIconsStatus(GEPPETTO.UserController.isLoggedIn(), visible);
 						});
 
 						GEPPETTO.on(Events.Project_persisted, function () {
 							var visible = self.permissions();
 							component.updateNewExperimentState(visible);
-							component.updateIconsStatus(self.login, visible);
+							component.updateIconsStatus(GEPPETTO.UserController.isLoggedIn(), visible);
 						});
 					}
 				},

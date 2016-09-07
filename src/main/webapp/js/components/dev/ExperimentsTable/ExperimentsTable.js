@@ -149,9 +149,14 @@ define(function (require) {
      */
     var SimulatorRow = React.createClass({
         refresh: function(){
-        	if (this.props.experiment.getId() == window.Project.getActiveExperiment().getId()){
-                this.forceUpdate();
+        	if(window.Project.getActiveExperiment()){
+        		if (this.props.experiment.getId() == window.Project.getActiveExperiment().getId()){
+                    this.forceUpdate();
+            	}	
+        	}else{
+        		this.forceUpdate();
         	}
+        	
         },
         
         componentDidMount: function () {

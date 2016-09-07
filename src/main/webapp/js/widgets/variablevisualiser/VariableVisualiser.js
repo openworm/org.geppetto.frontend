@@ -86,6 +86,7 @@ define(function (require) {
                 this.root = $("#" + this.id)
             }
 
+            this.setHeader(this.variable.name);
             this.updateVariable(0, false);
             return "Variable visualisation added to widget";
         },
@@ -98,38 +99,26 @@ define(function (require) {
          *
          * @param {Object} state - geppetto similation variable to remove
          */
-        clearVariable: function (playAll) {
-        	if(!playAll){
-        		if (this.variable == null) {
-        			return;
-        		}
+        clearVariable: function () {
+    		if (this.variable == null) {
+    			return;
+    		}
 
-        		this.variable = null;
-        		this.setHeader("");
-        		this.setBody("");
-        	}
+    		this.variable = null;
+    		this.setHeader("");
+    		this.setBody("");
         },
 
         /**
          * Updates variable values
          */
-        updateVariable: function (step,playAll) {
-        	if(!playAll){
-        		this.setHeader(this.variable.name);
-        		if (typeof step != 'undefined' && 
-        				(this.variable.state.getTimeSeries()!=null || undefined)) {
-        			if(this.variable.state.getTimeSeries().length>step){
-        				this.setBody(this.variable.state.getTimeSeries()[step].toFixed(4) + this.variable.state.getUnit());
-        			}
-        		}
-        	}else{
-        		/*
-        		 * If playAll is true, we show the time step, which is the amount of time passed
-        		 * between each step.
-        		 */
-        		var timeLapse = this.variable.state.getTimeSeries()[1] -this.variable.state.getTimeSeries()[0];
-        		this.setBody(timeLapse.toFixed(4) + " " + this.variable.state.getUnit());
-        	}
+        updateVariable: function (step) {
+			if (typeof step != 'undefined' && (this.variable.state.getTimeSeries()!=null || undefined)) {
+				if(this.variable.state.getTimeSeries().length>step){
+					this.setBody(this.variable.state.getTimeSeries()[step].toFixed(4) + this.variable.state.getUnit());
+				}
+			}
+ 
         },
 
         /**

@@ -300,14 +300,15 @@ define(function (require) {
                     // tells worker to update each half a second
                     this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
 
+                    var that = this;
                     // receives message from web worker
                     this.worker.onmessage = function (event) {
                         // get current timeSteps to execute from web worker
                         var currentStep = event.data[0];
 
-                        if (currentStep >= this.maxSteps) {
+                        if (currentStep >= that.maxSteps) {
                             this.postMessage(["experiment:loop"]);
-                            this.stop();
+                            that.stop();
                         } else {
                             GEPPETTO.trigger(Events.Experiment_update, {
                                 step: currentStep,

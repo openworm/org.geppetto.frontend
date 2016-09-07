@@ -141,21 +141,31 @@ define(function (require) {
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('DROPDOWNBUTTON', {label: ' Results', iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("DropDownButton"));
 
-		var actions = [{
-			label: "Plot All Recorded Variables",
-			action: "G.plotRecordedVariables()"
-		}, {
-			label: "Enable Color Plotting",
-			action: "G.enableColorPlotting()"
-		}, {
-			label: "Show Time",
-			action: "G.showTime()"
-		}];
+        var dropDownPanelConfig = [
+            {
+                label: "Enable color plotting",
+                condition: "GEPPETTO.DropDownPanel.enableColorPlotting === true",
+                false: {
+                    action: "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;}); GEPPETTO.DropDownPanel.enableColorPlotting = true;"
+                },
+                true: {
+                    action: "G.removeBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false)); GEPPETTO.DropDownPanel.enableColorPlotting = false;"
+                }
+            },
+            {
+                label: "Show Time",
+                action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
+            },
+            {
+                label: "Plot all recorded variables",
+                action: "var plt=G.addWidget(0).setName('Recorded Variables'); $.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){plt.plotData(value)});"
+            }
+        ];
 
 		//FIXME Combine the dropdown button and the panel
-		var position = {top : 40, right : 236};
+		var dropDownPanelPosition = {top : 40, right : 236};
 		
-		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {list : actions, position : position, openedByDefault : false}, document.getElementById("dropDownPanel"));
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {configuration : dropDownPanelConfig, position : dropDownPanelPosition, openByDefault : false}, document.getElementById("dropDownPanel"));
 		
 		//Foreground initialization
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {}, document.getElementById("foreground-toolbar"));

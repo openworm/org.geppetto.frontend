@@ -676,62 +676,6 @@ define(function (require) {
             setPlayLoop: function (loop) {
                 GEPPETTO.getVARS().playLoop = loop;
             },
-            
-            showTime : function(){
-            	if(time!=null || undefined){
-            		if(!this.timeWidgetVisible){
-            			if(window[this.timeWidget.id] == null || undefined){
-            				this.timeWidget = G.addWidget(5);
-            				this.timeWidget.setName("Current simulation time").setVariable(time);
-            			}else{
-            				this.timeWidget.show();
-            			}
-            			this.timeWidgetVisible = true;
-            		}else{
-            			this.timeWidget.hide();
-            			this.timeWidgetVisible = false;
-            		}
-            	}else{
-            		return GEPPETTO.Resources.TIME_VARIABLE_NOT_DEFINED;
-            	}
-            },
-
-            plotRecordedVariables : function(){
-            	if(Project.getActiveExperiment()!=null||undefined){
-            		if(!this.recordedVariablesPlot){
-            			if(window[this.recordedVariablesWidget.id] == null || undefined){
-            				var varWidget =G.addWidget(0)
-            				varWidget.setName('Recorded Variables');
-            				this.recordedVariablesWidget = varWidget;
-            				$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
-            						function(index,value){varWidget.plotData(value)});
-            			}else{
-            				this.recordedVariablesWidget.show();
-            			}
-            			this.recordedVariablesPlot = true;
-            		}else{
-            			this.recordedVariablesWidget.hide();
-            			this.recordedVariablesPlot = false;
-            		}
-            	}else{
-            		return GEPPETTO.Resources.NO_WATCHED_VARIABLES;
-            	}
-            },
-
-            enableColorPlotting : function(){
-            	var message = "";
-            	if(!this.enableColorPlottingActive){
-            		G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});
-            		this.enableColorPlottingActive = true;
-            		message = GEPPETTO.Resources.ENABLED_COLOR_PLOTTING;
-            	}else{
-            		G.removeBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false));
-            		this.enableColorPlottingActive = false;
-            		message = GEPPETTO.Resources.DISABLED_COLOR_PLOTTING;
-            	}
-            	
-            	return message;
-            },
 
             /**
              * Set canvas color.

@@ -97,8 +97,6 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
           doPrePersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
         });
 
-
-
         casper.then(function() {
 
           this.waitForSelector('button.btn.SaveButton', function() {
@@ -117,8 +115,11 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
         //TODO: make this work
         //this.mouseEvent('click', 'button[data-reactid=".9.4"]', "Running an experiment");
+
         //TODO: Test indicator light during experiment run
         //TODO: test experiment buttons again to see if they are in the right configuration after simulation run
+
+        //TODO: Clone an experiment and see if it has the right state and changes the state correctly for the other experiment rows
 
       }
 
@@ -154,17 +155,21 @@ function closeErrorMesage(test) {
 }
 
 function doExperimentTableTest(test) {
-  test.assertExists('a[aria-controls="experiments"]', "Experiments tab anchor is present");
+  casper.then(function() {
+    test.assertExists('a[aria-controls="experiments"]', "Experiments tab anchor is present");
 
-  test.assertExists('div#experiments', "Experiments panel is present");
+    test.assertExists('div#experiments', "Experiments panel is present");
 
-  test.assertNotVisible('div#experiments', "The experiment panel is correctly closed.");
+    test.assertNotVisible('div#experiments', "The experiment panel is correctly closed.");
+  });
 
-  casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
+  casper.then(function() {
+    casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
 
-  casper.waitUntilVisible('div#experiments', function() {
-    test.assertVisible('div#experiments', "The experiment panel is correctly open.");
-  }, null, 5000);
+    casper.waitUntilVisible('div#experiments', function() {
+      test.assertVisible('div#experiments', "The experiment panel is correctly open.");
+    }, null, 5000);
+  });
 }
 
 function doExperimentsTableRowCheck(test) {
@@ -227,8 +232,6 @@ function doSpotlightCheck(test, spotlight_search, persisted, check_recorded_or_s
   test.assertExists('i.fa-search', "Spotlight button exists")
   casper.mouseEvent('click','i.fa-search', "attempting to open spotlight");
 
-
-
   casper.waitUntilVisible('div#spotlight', function() {
     test.assertVisible('div#spotlight', "Spotlight opened");
 
@@ -240,8 +243,7 @@ function doSpotlightCheck(test, spotlight_search, persisted, check_recorded_or_s
     casper.waitUntilVisible('div#spotlight', function() {
 
       casper.then(function() {
-        this.echo("Taking screenshot");
-        casper.capture('typed.png')
+
         if (persisted) {
           if (check_recorded_or_set_parameters) {
             this.echo("Waiting to see if the recorded variables button becomes visible");

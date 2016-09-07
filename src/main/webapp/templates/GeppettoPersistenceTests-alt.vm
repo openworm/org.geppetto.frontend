@@ -6,20 +6,18 @@
     <link rel="stylesheet" href="geppetto/css/qunit.css">
     <link rel="stylesheet" href="geppetto/css/custom-theme/jquery-ui-1.10.0.custom.css" />
 
-    <!-- build:template
-        <script>
-            var path = "<%= contextPath %>";
-            if(path === "") {
-                window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
-            } else if(path === "/") {
-                window.BUNDLE_CONTEXT_PATH = "";
-            } else {
-                window.BUNDLE_CONTEXT_PATH = path;
-            }
+    <script>
+        var path = "org.geppetto.frontend";
+        if(path === "") {
+            window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
+        } else if(path === "/") {
+            window.BUNDLE_CONTEXT_PATH = "";
+        } else {
+            window.BUNDLE_CONTEXT_PATH = path;
+        }
 
-            window.USE_SSL = <%= useSsl %>;
-        </script>
-    /build -->
+        window.USE_SSL = false;
+    </script>
 
     <script type="text/template" id="tplSandbox">
         <pre class="output"></pre>
@@ -43,8 +41,9 @@
     <% } %></script>
 
     <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
+	<!-- comment out to try new test framework
     <script data-main="geppetto/js/GeppettoPersistenceTests.js" src="geppetto/js/vendor/require.js"></script>
-
+	-->
 </head>
 <body>
 <div id="qunit"></div>
@@ -52,6 +51,13 @@
     <div id="modal-region"></div>
     <div id="sim"></div>
     <div id="console">Console Loading...</div>
+    <!--new test framework testing -->
+    <script src="https://code.jquery.com/qunit/qunit-2.0.1.js"></script>
+	<!--<script data-main="geppetto/js/GeppettoPersistenceTests.js" src="geppetto/js/vendor/require.js"></script>-->
+    <script data-main="geppetto/js/tests/QUnitPersistenceTests-alt.js" src="geppetto/js/vendor/require.js"></script>
+    
+    <!--<script src="geppetto/js/tests/QUnitPersistenceTests-alt.js"></script>-->
+    <!--end new test framework testing -->
 </div>
 </body>
 </html>

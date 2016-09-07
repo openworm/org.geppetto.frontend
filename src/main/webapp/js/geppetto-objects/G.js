@@ -63,6 +63,11 @@ define(function (require) {
             recordedVariablesWidget : {},
             recordedVariablesPlot : false,
             enableColorPlottingActive : false,
+            brightnessFunctionSet: false,
+
+            isBrightnessFunctionSet: function() {
+                return this.brightnessFunctionSet;
+            },
             
             addWidget: function (type) {
                 var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
@@ -508,9 +513,12 @@ define(function (require) {
              * @param {Instance} instance - The instance to be lit
              */
             removeBrightnessFunctionBulkSimplified: function (instances) {
-            	for (var index in instances){
+                for (var index in instances){
             		this.clearBrightnessFunctions(instances[index]);
             	}
+
+                // update flag
+                this.brightnessFunctionSet = false;
             },
 
             /**
@@ -544,6 +552,9 @@ define(function (require) {
             	for (var index in modulations){
 	                this.addBrightnessListener(modulations[index], stateVariableInstances[index], normalizationFunction);
             	}
+
+                // update flag
+                this.brightnessFunctionSet = true;
             },
             
             addBrightnessListener: function(instance, modulation, normalizationFunction){

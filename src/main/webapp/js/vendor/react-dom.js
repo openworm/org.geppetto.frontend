@@ -1,7 +1,7 @@
 /**
- * ReactDOM v0.14.8
+ * ReactDOM v15.3.1
  *
- * Copyright 2013-2015, Facebook, Inc.
+ * Copyright 2013-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -15,11 +15,11 @@
   if (typeof exports === "object" && typeof module !== "undefined") {
     module.exports = f(require('react'));
 
-  // RequireJS
+    // RequireJS
   } else if (typeof define === "function" && define.amd) {
     define(['react'], f);
 
-  // <script>
+    // <script>
   } else {
     var g;
     if (typeof window !== "undefined") {

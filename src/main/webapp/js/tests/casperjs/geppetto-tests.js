@@ -164,19 +164,15 @@ function doExperimentTableTest(test) {
 
     test.assertNotVisible('div#experiments', "The experiment panel is correctly closed.");
   });
-
+  
   casper.then(function() {
     casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
   });
-
+  
   casper.then(function() {
-  	if(!casper.exists('div#experiments')){
-    	casper.waitUntilVisible('div#experiments', function() {
-      	  test.assertVisible('div#experiments', "The experiment panel is correctly open.");
-    	}, null, 5000);
-    } else {
-    	test.assertVisible('div#experiments', "The experiment panel is correctly open.");	
-    }
+    casper.waitUntilVisible('div#experiments', function() {
+      	test.assertVisible('div#experiments', "The experiment panel is correctly open.");
+    }, null, 5000);
   });
 }
 

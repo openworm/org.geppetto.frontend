@@ -34,6 +34,7 @@
  * Controller responsible for managing actions fired by components
  */
 define(function (require) {
+
 	return function (GEPPETTO) {
 		GEPPETTO.ComponentsController =
 		{
@@ -80,7 +81,7 @@ define(function (require) {
 							//Hides or Shows tool bar depending on login user permissions
 							component.updateToolBarVisibilityState(self.permissions());
 						});
-						
+
 //						GEPPETTO.on(Events.Experiment_completed, function (experimentId) {
 //							if(window.Project.getActiveExperiment()!=null || undefined){
 //								if(window.Project.getActiveExperiment().getId() == experimentId){
@@ -88,17 +89,17 @@ define(function (require) {
 //								}
 //							}
 //						});
-//						
+//
 //						GEPPETTO.on(Events.Experiment_running, function () {
 //							//Hides or Shows tool bar depending on login user permissions
 //							component.updateToolBarVisibilityState(false);
 //						});
-//						
+//
 //						GEPPETTO.on(Events.Experiment_failed, function () {
 //							//Hides or Shows tool bar depending on login user permissions
 //							component.updateToolBarVisibilityState(true);
 //						});
-//						
+//
 //						GEPPETTO.on(Events.Experiment_active, function () {
 //							if(window.Project.getActiveExperiment().getStatus() ==
 //								GEPPETTO.Resources.ExperimentStatus.COMPLETED){

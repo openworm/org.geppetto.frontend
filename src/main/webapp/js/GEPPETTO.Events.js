@@ -65,7 +65,10 @@ var Events = {
     Spotlight_closed: "spotlight:closed",
     Instance_deleted: "instance: deleted",
     Parameter_modified : "parameter: modified",
-    Variable_recorded : "variable: recorded"
+    Variable_recorded : "variable: recorded",
+    Show_Tutorial : "show_tutorial",
+	  Hide_Tutorial : "hide_tutorial"
+
 };
 
 define(function (require) {
@@ -96,8 +99,8 @@ define(function (require) {
                     	GEPPETTO.trigger("hide:spinner");
                     }
                 });
-                GEPPETTO.on(Events.Project_loaded, function () {                    
-                    var projectID = window.Project.getId();                    
+                GEPPETTO.on(Events.Project_loaded, function () {
+                    var projectID = window.Project.getId();
                 	GEPPETTO.Main.startStatusWorker();
                 });
                 GEPPETTO.on(Events.Experiment_over, function (e) {

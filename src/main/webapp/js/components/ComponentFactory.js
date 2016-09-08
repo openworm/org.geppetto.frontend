@@ -31,7 +31,7 @@
  *******************************************************************************/
 
 define(function (require) {
-	
+
 	return function (GEPPETTO) {
 
 		var React = require('react');
@@ -51,14 +51,17 @@ define(function (require) {
 		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
 		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
 		var shareComp = require('jsx!./dev/share/share');
+
 		var dropDownButton = require('jsx!./dev/DropDownPanel/DropDownButton')
 		var dropDownComp = require('jsx!./dev/DropDownPanel/DropDownPanel');
 		//var queryComp = require('jsx!./dev/query/query');
-		
+		var tutorialComp = require('jsx!./dev/tutorial/TutorialModule');
+
+
 		GEPPETTO.ComponentFactory = {
-						
+
 			getComponent: function(component, properties){
-				
+
 				if (component == 'FORM'){
 	    	      	return React.createFactory(formComp)(properties);
 				}
@@ -105,28 +108,31 @@ define(function (require) {
 					return React.createFactory(shareComp)(properties);
 				}
 				else if (component == 'INFOMODAL'){
-                    return React.createFactory(infoModalComp)(properties);
-                }
-                else if (component == 'MDMODAL'){
-                    return React.createFactory(mdModalComp)(properties);
-                }
+            return React.createFactory(infoModalComp)(properties);
+        }
+        else if (component == 'MDMODAL'){
+            return React.createFactory(mdModalComp)(properties);
+        }
 				else if (component == 'QUERY'){
 					return React.createFactory(queryComp)(properties);
 				}
+				else if (component == 'TUTORIAL'){
+					return React.createFactory(tutorialComp)(properties);
+				}
 			},
-			
+
 			addComponent: function(component, properties, container){
 				var renderedComponent = this.renderComponent(this.getComponent(component, properties), container);
 				GEPPETTO.ComponentsController.addEventDispatcher(component, renderedComponent);
 				return renderedComponent;
 			},
-			
+
 			renderComponent: function(component, container){
 				//Let's create a dialog
 				if (container == undefined){
 					var containerId = component.props.id + "_container";
 					var containerName = component.props.name;
-					
+
 					//create the dialog window for the widget
 	                var dialog = $("<div id=" + containerId + " class='dialog' title='" + containerName + "'></div>").dialog(
 	                    {
@@ -142,22 +148,22 @@ define(function (require) {
 	                            }
 	                        }
 	                    });
-	
+
 	                var dialogParent = dialog.parent();
 	                var that = this;
-	
+
 	                //remove the jQuery UI icon
 	                dialogParent.find("button.ui-dialog-titlebar-close").html("");
 	                dialogParent.find("button").append("<i class='fa fa-close'></i>");
-	
-	
+
+
 	                //Take focus away from close button
-	                dialogParent.find("button.ui-dialog-titlebar-close").blur();	
+	                dialogParent.find("button.ui-dialog-titlebar-close").blur();
 	                dialogParent.css("z-index","10");
-	                
+
 	                container = dialog.get(0);
 				}
-				
+
 				return ReactDOM.render(component, container);
 			}
 	    };

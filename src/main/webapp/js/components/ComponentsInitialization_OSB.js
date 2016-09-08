@@ -124,6 +124,9 @@ define(function (require) {
 		//Logo initialization 
 		GEPPETTO.ComponentFactory.addComponent('LOGO',	{logo: 'gpt-osb'}, document.getElementById("geppettologo"));
 		
+		//Tutorial component initialization
+		GEPPETTO.ComponentFactory.addComponent('TUTORIAL', {}, document.getElementById("tutorial"));
+		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {
 			GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, text: label, logo: "gpt-osb"}, document.getElementById("modal-region"));	

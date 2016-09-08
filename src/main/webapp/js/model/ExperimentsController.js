@@ -152,7 +152,7 @@ define(function (require) {
                     parameters["modelParameters"] = modelParameters;
 
                     for (var key in newParameters) {
-                        Project.getActiveExperiment().parameters[key]=newParameters[index].getValue();
+                        Project.getActiveExperiment().getSetParameters()[newParameters[index].getInstancePath()]=newParameters[index].getValue();
                     }
 
                     GEPPETTO.MessageSocket.send("set_parameters", parameters);

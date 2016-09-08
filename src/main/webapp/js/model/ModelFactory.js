@@ -44,6 +44,7 @@ define(function (require) {
         var Type = require('model/Type');
         var Variable = require('model/Variable');
         var Datasource = require('model/Datasource');
+        var Query = require('model/Query');
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');
         var ArrayType = require('model/ArrayType');
@@ -114,9 +115,6 @@ define(function (require) {
                         this.geppettoModel = geppettoModel;
                     }
 
-                    // create datasources
-                    geppettoModel.datasources = this.createDatasources(jsonModel.dataSources, geppettoModel);
-
                     // create variables
                     geppettoModel.variables = this.createVariables(jsonModel.variables, geppettoModel);
 
@@ -129,6 +127,9 @@ define(function (require) {
                             geppettoModel.getLibraries().push(library);
                         }
                     }
+
+                    // create datasources
+                    geppettoModel.datasources = this.createDatasources(jsonModel.dataSources, geppettoModel);
 
                     if (populateRefs) {
                         // traverse everything and build shortcuts to children if composite --> containment == true
@@ -896,7 +897,7 @@ define(function (require) {
                 // add to allPaths and to allPathsIndexing (assumes they are new paths)
                 this.allPaths = this.allPaths.concat(potentialInstancePaths);
                 this.allPathsIndexing = this.allPathsIndexing.concat(potentialInstancePathsForIndexing);
-                this.newPathsIndexing.concat(potentialInstancePathsForIndexing);
+                this.newPathsIndexing = this.newPathsIndexing.concat(potentialInstancePathsForIndexing);
             },
 
             /**
@@ -1749,9 +1750,53 @@ define(function (require) {
                 }
 
                 var d = new Datasource(options);
-                // TODO: set datasource specific stuff as needed
+
+                // set queries
+                var rawQueries = node.queries;
+                if(rawQueries!=undefined) {
+                    for (var i = 0; i < rawQueries.length; i++) {
+                        var q = this.createQuery(rawQueries[i]);
+                        // set datasource as parent
+                        q.parent = d;
+                        // push query to queries array
+                        d.queries.push(q);
+                    }
+                }
 
                 return d;
+            },
+
+            createQuery: function(node, options) {
+                if (options == null || options == undefined) {
+                    options = {wrappedObj: node};
+                }
+
+                var q = new Query(options);
+
+                // set matching criteria
+                var matchingCriteriaRefs = node.matchingCriteria;
+                if(node.matchingCriteria!=undefined){
+	                for(var i=0; i<matchingCriteriaRefs.length; i++){
+	                    // get type ref
+	                    var typeRefs = matchingCriteriaRefs[i].type;
+	                    var typesCriteria = [];
+	                    for(var j=0; j<typeRefs.length; j++)
+	                    {
+	                        // resolve type ref
+	                        var ref = typeRefs[j].$ref;
+	                        var type = this.resolve(ref);
+	
+	                        // push to q.matchingCriteria
+	                        if(type instanceof Type) {
+	                            typesCriteria.push(type);
+	                        }
+	                    }
+	
+	                    q.matchingCriteria.push(typesCriteria);
+	                }
+                }
+
+                return q;
             },
 
             getTypeOptions: function (node, options) {
@@ -1854,7 +1899,7 @@ define(function (require) {
                 }
 
                 if (instance.connections) {
-                    instance.connections.concat(connectionInstances);
+                	instance.connections = instance.connections.concat(connectionInstances);
                 } else {
                     instance.connections = connectionInstances;
                 }
@@ -2305,8 +2350,49 @@ define(function (require) {
 
                 return variables;
             },
+
+            /**
+             * Get top level variables by id
+             *
+             * @param variableIds
+             * @returns {Array}
+             */
+            getTopLevelVariablesById: function(variableIds){
+                var variables = [];
+
+                for(var i=0; i<variableIds.length; i++){
+                  if(window.Model[variableIds[i]]!= undefined){
+                      variables.push(window.Model[variableIds[i]]);
+                  }
+                }
+
+                return variables;
+            },
+
+            /**
+             * Get matching queries given a type
+             *
+             * @param type
+             */
+            getMatchingQueries : function(type){
+                var datasources = window.Model.getDatasources();
+                var matchingQueries = [];
+
+                // iterate datasources
+                for(var i=0; i<datasources.length; i++){
+                    // fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
+                    var queries = datasources[i].getQueries();
+                    for(var j=0; j<queries.length; j++){
+                        if(queries[j].matchesCriteria(type)){
+                            matchingQueries.push(queries[j]);
+                        }
+                    }
+                }
+
+                return matchingQueries;
+            },
             
-            getHTMLVariable : function(typesToSearch, metaType, identifier){
+            getHTMLVariable: function(typesToSearch, metaType, identifier){
             	var variables = this.getAllVariablesOfMetaType(typesToSearch, metaType);
             	for(var i in variables){
             		if(identifier != null && identifier != undefined){
@@ -2342,6 +2428,7 @@ define(function (require) {
              * @param instance
              */
             deleteInstance: function (instance) {
+                var instancePath = instance.getPath();
                 var removeMatchingInstanceFromArray = function (instanceArray, instance) {
                     var index = null;
                     for (var i = 0; i < instanceArray.length; i++) {
@@ -2382,8 +2469,7 @@ define(function (require) {
                 // re-run model shortcuts
                 this.populateChildrenShortcuts(this.geppettoModel);
 
-                // refresh UI components to reflect updated state of model / instances
-                GEPPETTO.FE.refresh();
+                GEPPETTO.trigger(Events.Instance_deleted, instancePath);
             },
 
             /**

@@ -36,7 +36,12 @@ define([ 'jquery', 'underscore', 'backbone',
             	};
             	// we have to listen for 'message'
             	window.addEventListener('message', handleRequest, false);
-            	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                if($.isArray(window.EMBEDDEDURL)){
+            		window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL[0]);	
+                }
+                else{
+                	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                }
             }
 		},
 
@@ -84,7 +89,7 @@ define([ 'jquery', 'underscore', 'backbone',
 
 		renderProjects : function(collection) {
 			// $("#spinner").hide();
-			this.$el.find("#projects").empty();
+			this.$el.find(".project-preview").remove();
 			collection.each(this.appendProjects);
 			this.delegateEvents();
 			return this;

@@ -16,7 +16,7 @@ define(function (require) {
                 className: 'squareB',
                 icon: 'fa fa-list',
                 onClick: function () {
-                    $("#controlpanel").show();
+                    GEPPETTO.ControlPanel.open();
                 }
             };
         }

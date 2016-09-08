@@ -57,6 +57,7 @@ define(function (require) {
         searchTimeOut : null,
         updateResults : false,
         initialised:false,
+        modifiable : true,
         
         close : function () {
             $("#spotlight").hide();
@@ -108,13 +109,13 @@ define(function (require) {
                     clearTimeout(this.searchTimeOut);
                 }
                 this.searchTimeOut = setTimeout(function () {
-                	for (var key in GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources) {
-                	    if (GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources.hasOwnProperty(key)) {
-                	    	var dataSource = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[key];
+                	for (var key in that.configuration.SpotlightBar.DataSources) {
+                	    if (that.configuration.SpotlightBar.DataSources.hasOwnProperty(key)) {
+                	    	var dataSource = that.configuration.SpotlightBar.DataSources[key];
                 	    	var searchQuery = $('#typeahead').val();
                 	    	var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
-                	    	GEPPETTO.Spotlight.updateResults = true;
-                	    	GEPPETTO.Spotlight.requestDataSourceResults(key, url, dataSource.crossDomain);
+                            that.updateResults = true;
+                            that.requestDataSourceResults(key, url, dataSource.crossDomain);
                 	    }
                 	}
                 }, 150);
@@ -192,9 +193,6 @@ define(function (require) {
 
             GEPPETTO.Spotlight = this;
 
-            //TODO: To be removed, just a sample of how to add a suggestion
-            //this.addSuggestion(this.recordSample, GEPPETTO.Resources.RUN_FLOW);
-            //this.addSuggestion(this.lightUpSample, GEPPETTO.Resources.PLAY_FLOW);
             this.addSuggestion(this.plotSample, GEPPETTO.Resources.PLAY_FLOW);
 
             if(GEPPETTO.ForegroundControls != undefined){
@@ -349,6 +347,12 @@ define(function (require) {
             $('.twitter-typeahead').addClass("typeaheadWrapper");
         },
 
+        openToInstance: function (instance) {
+            $("#spotlight").show();
+            $("#typeahead").focus();
+            $(".typeahead").typeahead('val', instance.getInstancePath());
+            $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
+        },
 
         open: function (flowFilter, useSelection) {
             if (useSelection == undefined) {
@@ -379,25 +383,19 @@ define(function (require) {
                     that.suggestions.add(value);
                 });
             }
-            $("#spotlight").show();
-            $("#typeahead").focus();
+
             if (useSelection) {
                 var selection = GEPPETTO.G.getSelection();
                 if (selection.length > 0) {
-                    var instance = selection[selection.length - 1];
-                    $(".typeahead").typeahead('val', instance.getInstancePath());
-                    $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
+                    this.openToInstance(selection[selection.length - 1]);
+                    return;
                 }
-                else {
-                    $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
-                    $("#typeahead").typeahead('val', "");
-                }
-            }
-            else {
-                $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
-                $("#typeahead").typeahead('val', "");
             }
 
+            $("#spotlight").show();
+            $("#typeahead").focus();
+            $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+            $("#typeahead").typeahead('val', "");
         },
 
         /**
@@ -442,6 +440,7 @@ define(function (require) {
          * @param update : False if request for data source is the first time, true for update
          */
         requestDataSourceResults : function(data_source_name, data_source_url, crossDomain){
+            var that = this;
         	//not cross domain, get results via java servlet code
         	if(!crossDomain){
         		var parameters = {};
@@ -455,7 +454,7 @@ define(function (require) {
         			dataType: 'text',
         			url: data_source_url,
         			success: function (responseData, textStatus, jqXHR) {
-        				GEPPETTO.Spotlight.updateDataSourceResults(data_source_name, JSON.parse(responseData));
+        				that.updateDataSourceResults(data_source_name, JSON.parse(responseData));
         			},
         			error: function (responseData, textStatus, errorThrown) {
                 		throw ("Error retrieving data sources " + data_source_name + "  from " + data_source_url);
@@ -463,15 +462,18 @@ define(function (require) {
         		});
         	}
         },
-        
+
         /**
-         * Update the suggestions with results that come back
-         * @param update : False if request for data source is the first time, true for update
+         * Update the datasource results with results that come back
+         *
+         * @param data_source_name
+         * @param results
          */
-        updateDataSourceResults : function(data_source_name,results){
+        updateDataSourceResults : function(data_source_name, results){
+            var that = this;
         	var responses = results.response.docs;
     		responses.forEach(function(response) {
-        		GEPPETTO.Spotlight.formatDataSourceResult(data_source_name,response);
+        		that.formatDataSourceResult(data_source_name, response);
         	});
     		
 			//If it's an update request to show the drop down menu, this for it to show 
@@ -487,20 +489,18 @@ define(function (require) {
          * Format incoming data source results into specified format in configuration script
          */
         formatDataSourceResult : function(data_source_name,response){
-        	var currentInput = $('#typeahead').val();
-        	
         	//create searchable result for main label
-    		var labelTerm = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].label.field;
-    		var idTerm = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].id;
+    		var labelTerm = this.configuration.SpotlightBar.DataSources[data_source_name].label.field;
+    		var idTerm = this.configuration.SpotlightBar.DataSources[data_source_name].id;
     		var mainLabel = response[labelTerm];
     		var id = response[idTerm];
-    		var labelFormatting = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].label.formatting;
+    		var labelFormatting = this.configuration.SpotlightBar.DataSources[data_source_name].label.formatting;
     		var formattedLabel = labelFormatting.replace('$VALUE$', mainLabel);
     		formattedLabel = formattedLabel.replace('$ID$', id);
     		
-    		GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    		this.createDataSourceResult(data_source_name, response, formattedLabel, id);
     		
-    		var explodeFields = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_fields;
+    		var explodeFields = this.configuration.SpotlightBar.DataSources[data_source_name].explode_fields;
     		for(var i =0; i<explodeFields.length; i++){
     			//create searchable result using id as label
     			var idsTerm = explodeFields[i].field;    		
@@ -509,11 +509,10 @@ define(function (require) {
     			formattedLabel = labelFormatting.replace('$VALUE$', idLabel);
     			formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
 
-    			GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    			this.createDataSourceResult(data_source_name, response, formattedLabel, id);
     		}
 
-    		var explodeArrays = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].explode_arrays;
-
+    		var explodeArrays = this.configuration.SpotlightBar.DataSources[data_source_name].explode_arrays;
     		for(var i =0; i<explodeArrays.length; i++){
     			labelFormatting = explodeArrays[i].formatting;
     			//create searchable results using synonyms as labels
@@ -526,7 +525,7 @@ define(function (require) {
     					formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
     					formattedLabel = formattedLabel.replace('$ID$', id);
 
-    					GEPPETTO.Spotlight.createDataSourceResult(data_source_name, response, formattedLabel, id);
+    					this.createDataSourceResult(data_source_name, response, formattedLabel, id);
     				}
     			}
     		}
@@ -542,14 +541,15 @@ define(function (require) {
     		obj["label"] = formattedLabel;
     		obj["id"] = id;
     		//replace $ID$ with one returned from server for actions
-    		var actions = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+    		var actions = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
     		var newActions = actions.slice(0);
     		for(var i=0; i < actions.length; i++) {
-    			 newActions[i] = newActions[i].replace(/\$\ID\$/g, obj["id"]);
+    			 newActions[i] = newActions[i].replace(/\$ID\$/g, obj["id"]);
+    			 newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
     		}
     		obj["actions"] = newActions;
-    		obj["icon"] = GEPPETTO.Spotlight.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
-    		GEPPETTO.Spotlight.dataSourceResults.add(obj);
+    		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
+    		this.dataSourceResults.add(obj);
         },
         
         addSuggestion: function (suggestion, flow) {
@@ -761,7 +761,7 @@ define(function (require) {
                 return bg;
             },
 
-            generateToolbar: function (buttonGroups, instance) {
+            generateToolbar: function (buttonGroups, instance, modifiable) {
                 var that = this;
                 var tbar = $('<div>').addClass('spotlight-toolbar');
                 var instanceToCheck = instance;
@@ -770,24 +770,49 @@ define(function (require) {
                     instanceToCheck = instance[0];
                 }
                 $.each(buttonGroups, function (groupName, groupDef) {
-                    if ((instanceToCheck.getCapabilities().indexOf(groupName) != -1) ||
-                        (instanceToCheck.getType().getMetaType() == groupName)) {
-                        tbar.append(that.createButtonGroup(groupName, groupDef, instance));
-                    }
+                	if ((instanceToCheck.getCapabilities().indexOf(groupName) != -1) ||
+                			(instanceToCheck.getType().getMetaType() == groupName)) {
+                		if(modifiable){
+                			tbar.append(that.createButtonGroup(groupName, groupDef, instance));
+                		}else{
+                			//don't load default toolbar for these two types if modifiable flag set to false,
+                			if(groupName!="StateVariableCapability" 
+                				&& groupName!="ParameterCapability"){
+                				tbar.append(that.createButtonGroup(groupName, groupDef, instance));
+                			}else{
+                				//don't show watch button if no permissions
+                				if(groupName == "StateVariableCapability"){
+                					//make copy since modifying original removes it through session
+                					var copiedObject = jQuery.extend({}, groupDef);
+                   					delete copiedObject["watch"];
+                   					tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
+                				}
+                			}
+                		}
+                	}
                 });
 
                 return tbar;
             }
         },
 
+        //Used to determined if toolbar for paramter and stateve variable can be shown.
+        //Flag set to false if user don't have enough permissions to modify parameters/state variables
+        updateToolBarVisibilityState : function(visible){
+        	this.modifiable = visible;
+        },
+        
         loadToolbarFor: function (instance) {
-            $(".spotlight-toolbar").remove();
-            $('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance));
-
+        	$(".spotlight-toolbar").remove();
+        	$('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance, this.modifiable));
         },
 
         render: function () {
             return <input id = "typeahead" className = "typeahead" type = "text" placeholder = "Lightspeed Search" />
+        },
+
+        setButtonBarConfiguration: function(config){
+            this.configuration = config;
         },
 
         configuration: {
@@ -906,7 +931,6 @@ define(function (require) {
                 }
 
             }
-
         },
     });
 

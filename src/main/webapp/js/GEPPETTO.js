@@ -569,6 +569,7 @@ define(function (require) {
     require('3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
     require('GEPPETTO.Vanilla')(GEPPETTO);
     require('GEPPETTO.FE')(GEPPETTO);
+    require('GEPPETTO.UserController')(GEPPETTO);
     require('GEPPETTO.Flows')(GEPPETTO);
     require('GEPPETTO.ScriptRunner')(GEPPETTO);
     // require('GEPPETTO.SimulationContentEditor')(GEPPETTO);
@@ -586,7 +587,9 @@ define(function (require) {
     require('model/ProjectFactory')(GEPPETTO);
     require('model/ModelFactory')(GEPPETTO);
     require('model/ExperimentsController')(GEPPETTO);
+    require('controllers/QueriesController')(GEPPETTO);
     require('components/ComponentsController')(GEPPETTO);
+
     return GEPPETTO;
 
 });

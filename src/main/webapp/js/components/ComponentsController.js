@@ -34,13 +34,100 @@
  * Controller responsible for managing actions fired by components
  */
 define(function (require) {
-    return function (GEPPETTO) {
-        GEPPETTO.ComponentsController =
-        {
-            executeAction: function (action) {
-                eval(action);
-            }
-        }
-    }
+
+	return function (GEPPETTO) {
+		GEPPETTO.ComponentsController =
+		{
+				componentsMap : {},
+				initialized : false,
+
+				executeAction: function (action) {
+					eval(action);
+				},
+
+				/**
+				 * Returns true if user has permission to write and project is persisted
+				 */
+				permissions : function(){
+					var visible = true;
+					if(!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) || !window.Project.persisted || !GEPPETTO.UserController.isLoggedIn()){
+						visible = false;
+					}
+
+					return visible
+				},
+
+				//Responds to GEPPETTO.Events changes and handle React components needed
+				//as caused of these changes in events
+				addEventDispatcher : function(type,component){
+					var self = this;
+					if (type == 'SAVECONTROL'){
+						this.componentsMap[type] = component;
+						GEPPETTO.on(Events.Volatile_project_loaded, function(){
+							component.setState({disableSave:!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)});
+						});
+						GEPPETTO.on(Events.Check_project_persisted, function(){
+							component.setState({disableSave:GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)});
+						});
+					}
+					else if (type == 'SPOTLIGHT'){
+						this.componentsMap[type] = component;
+						GEPPETTO.on(Events.Project_loaded, function () {
+							//Hides or Shows tool bar depending on login user permissions
+							component.updateToolBarVisibilityState(self.permissions());
+						});
+
+						GEPPETTO.on(Events.Project_persisted, function () {
+							//Hides or Shows tool bar depending on login user permissions
+							component.updateToolBarVisibilityState(self.permissions());
+						});
+
+//						GEPPETTO.on(Events.Experiment_completed, function (experimentId) {
+//							if(window.Project.getActiveExperiment()!=null || undefined){
+//								if(window.Project.getActiveExperiment().getId() == experimentId){
+//									component.updateToolBarVisibilityState(false);
+//								}
+//							}
+//						});
+//
+//						GEPPETTO.on(Events.Experiment_running, function () {
+//							//Hides or Shows tool bar depending on login user permissions
+//							component.updateToolBarVisibilityState(false);
+//						});
+//
+//						GEPPETTO.on(Events.Experiment_failed, function () {
+//							//Hides or Shows tool bar depending on login user permissions
+//							component.updateToolBarVisibilityState(true);
+//						});
+//
+//						GEPPETTO.on(Events.Experiment_active, function () {
+//							if(window.Project.getActiveExperiment().getStatus() ==
+//								GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+//								//Hides or Shows tool bar depending on login user permissions
+//								component.updateToolBarVisibilityState(false);
+//							}else{
+//								//Hides or Shows tool bar depending on login user permissions
+//								component.updateToolBarVisibilityState(true);
+//							}
+//
+//						});
+					}
+					else if (type == 'EXPERIMENTSTABLE'){
+						this.componentsMap[type] = component;
+						GEPPETTO.on(Events.Project_loaded, function () {
+							var visible = self.permissions();
+							component.updateNewExperimentState(visible);
+							component.updateIconsStatus(GEPPETTO.UserController.isLoggedIn(), visible);
+						});
+
+						GEPPETTO.on(Events.Project_persisted, function () {
+							var visible = self.permissions();
+							component.updateNewExperimentState(visible);
+							component.updateIconsStatus(GEPPETTO.UserController.isLoggedIn(), visible);
+						});
+					}
+				},
+		}
+	}
 })
 ;

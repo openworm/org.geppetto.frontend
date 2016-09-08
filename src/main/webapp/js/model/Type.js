@@ -44,14 +44,13 @@ define(function (require) {
     function Type(options) {
         ObjectWrapper.prototype.constructor.call(this, options);
         this.visualType = options.visualType;
-        this.superType = (options.superType != 'undefined') ? options.superType : [];
+        this.superType = (options.superType != undefined) ? options.superType : [];
         this.capabilities = [];
         this.variableReferences = [];
     };
 
     Type.prototype = Object.create(ObjectWrapper.prototype);
     Type.prototype.constructor = Type;
-
 
     /**
      * Gets the default value for this type
@@ -154,6 +153,27 @@ define(function (require) {
         return this.variableReferences;
     };
 
+    Type.prototype.typeOf = function (type){
+        var match = false;
+
+        if(type.getPath() == this.getPath()){
+            // check if it's the same type
+            match = true;
+        } else {
+            // recurse on parents and figure out if there is a type in the inheritance chain
+            var superTypes = type.superType;
+
+            for(var i=0; i<superTypes.length; i++) {
+                match = this.typeOf(superTypes[i]);
+                if(match){
+                    break;
+                }
+            }
+        }
+
+        return match;
+    };
+    
     return Type;
 })
 ;

@@ -67,6 +67,22 @@ define(function (require) {
     };
 
     /**
+     * Get unit of quantity
+     *
+     * @command VisualGroupElement.getUnit()
+     * @returns {String} Unit of quantity
+     */
+    VisualGroupElement.prototype.getUnit = function () {
+        var param = this.wrappedObj.parameter;
+
+        if (param == "" || param == undefined) {
+            return null;
+        }
+
+        return param.unit.unit;
+    };
+    
+    /**
      * Get color of element
      *
      * @command VisualGroupElement.getValue()

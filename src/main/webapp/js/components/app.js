@@ -8,8 +8,10 @@ define(function(require) {
 		utils = require('./utils');
 	
 	require('./ComponentFactory')(GEPPETTO);
-	//require('./ComponentsInitialization_OSB')(GEPPETTO);
-	require('./ComponentsInitialization')(GEPPETTO);
+	require('./ComponentsController')(GEPPETTO);
+	require('./ComponentsInitialization_OSB')(GEPPETTO);
+	//require('./ComponentsInitialization_VFB')(GEPPETTO);
+	//require('./ComponentsInitialization')(GEPPETTO);
 
 	var command = "Project.loadFromURL";
 	var simParam = utils.getQueryStringParameter('load_project_from_url');

@@ -85,6 +85,9 @@ public class TransportMessageFactory {
 				break;	
 			case READ_URL_PARAMETERS:
 				break;
+			case USER_PRIVILEGES:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.USER_PRIVILEGES.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
 			case PROJECT_LOADED:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
@@ -109,12 +112,6 @@ public class TransportMessageFactory {
 			case EXPERIMENT_STATUS:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
-			case EXPERIMENT_LOADED:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.EXPERIMENT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
-				break;
-			case EXPERIMENT_CREATED:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.EXPERIMENT_CREATED.toString(),  (update!=null) ? update : EMPTY_STRING));
-				break;
 			case DOWNLOAD_MODEL:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
@@ -127,37 +124,17 @@ public class TransportMessageFactory {
 			case SIMULATION_CONFIGURATION:
 				params.add(new SimpleEntry<String, String>("configuration", (update!=null) ? update : EMPTY_STRING));
 				break;
-			case GEPPETTO_VERSION:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.GEPPETTO_VERSION.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case SCRIPT_FETCHED:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.SCRIPT_FETCHED.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case DATASOURCE_RESULTS_FETCHED:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.DATASOURCE_RESULTS_FETCHED.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case WATCHED_VARIABLES_SET:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.WATCHED_VARIABLES_SET.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case UPDATE_MODEL_TREE:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.UPDATE_MODEL_TREE.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case GET_SUPPORTED_OUTPUTS:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SUPPORTED_OUTPUTS.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;				
+		
 			case CLIENT_ID:
 				params.add(new SimpleEntry<String, String>("clientID", (update!=null) ? update : EMPTY_STRING));
-				break;
-			case SET_PARAMETERS:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.SET_PARAMETERS.toString(), (update!=null) ? update : EMPTY_STRING));
-				break;
-			case NO_FEATURE:
-				params.add(new SimpleEntry<String, String>(OutboundMessages.NO_FEATURE.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
 			case PROJECT_PERSISTED:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case PROJECT_PROPS_SAVED:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case EXPERIMENT_PROPS_SAVED:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case DROPBOX_LINKED:
@@ -173,6 +150,7 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>(OutboundMessages.MODEL_UPLOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 			default:
+				params.add(new SimpleEntry<String, String>(type.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 		}
 		

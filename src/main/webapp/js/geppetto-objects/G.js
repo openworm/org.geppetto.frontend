@@ -58,7 +58,17 @@ define(function (require) {
                 unselected_transparent: true
             },
             highlightedConnections: [],
+            timeWidget : {},
+            timeWidgetVisible : false,
+            recordedVariablesWidget : {},
+            recordedVariablesPlot : false,
+            enableColorPlottingActive : false,
+            brightnessFunctionSet: false,
 
+            isBrightnessFunctionSet: function() {
+                return this.brightnessFunctionSet;
+            },
+            
             addWidget: function (type) {
                 var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
                 return newWidget;
@@ -513,6 +523,20 @@ define(function (require) {
             },
 
             /**
+             * Removes brightness functions 
+             * 
+             * @param {Instance} instance - The instance to be lit
+             */
+            removeBrightnessFunctionBulkSimplified: function (instances) {
+                for (var index in instances){
+            		this.clearBrightnessFunctions(instances[index]);
+            	}
+
+                // update flag
+                this.brightnessFunctionSet = false;
+            },
+
+            /**
              * Modulates the brightness of an aspect visualization, given a watched node
              * and a normalization function. The normalization function should receive
              * the value of the watched node and output a number between 0 and 1,
@@ -543,12 +567,17 @@ define(function (require) {
             	for (var index in modulations){
 	                this.addBrightnessListener(modulations[index], stateVariableInstances[index], normalizationFunction);
             	}
+
+                // update flag
+                this.brightnessFunctionSet = true;
             },
             
             addBrightnessListener: function(instance, modulation, normalizationFunction){
             	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
-                    GEPPETTO.SceneController.lightUpEntity(instance,
-                        normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+            		if(step<stateVariableInstance.getTimeSeries().length){
+            			GEPPETTO.SceneController.lightUpEntity(instance,
+            					normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+            		}
                 });
             },
             

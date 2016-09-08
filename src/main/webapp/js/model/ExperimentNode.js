@@ -50,6 +50,10 @@ define(function (require) {
             variables: null,
             parameters: null,
             script: "",
+            writePermission :  null,
+            login : null,
+            runPermission : null,
+            downloadPermission : null,
 
             /**
              * Initializes this experiment with passed attributes
@@ -67,6 +71,11 @@ define(function (require) {
                 this.simulatorConfigurations = {};
                 this.parameters = [];
                 this.script = options.script;
+                
+                this.writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+                this.login = GEPPETTO.UserController.isLoggedIn();
+                this.runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
+                this.downloadPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.DOWNLOAD);
             },
 
             /**
@@ -86,12 +95,16 @@ define(function (require) {
              * @command ExperimentNode.setName()
              *
              */
-            setDescription: function (newdescription) {
-                this.saveExperimentProperties(
-                    {
-                        "description": newdescription
-                    });
-                this.description = newdescription;
+            setDescription: function (newdescription) {   
+            	if(this.writePermission && this.getParent().persisted && this.login){
+            		this.saveExperimentProperties(
+                            {
+                                "description": newdescription
+                            });
+                        this.description = newdescription;
+            	}else{
+                	return persistedAndWriteMessage(this);
+            	}
             },
 
             /**
@@ -133,12 +146,16 @@ define(function (require) {
              * @command ExperimentNode.setScript()
              *
              */
-            setScript: function (script) {
-                this.saveExperimentProperties(
-                    {
-                        "script": script
-                    });
-                this.script = script;
+            setScript: function (script) { 
+                if(this.writePermission && this.getParent().persisted && this.login){
+            		this.saveExperimentProperties(
+                            {
+                                "script": script
+                            });
+                     this.script = script;
+            	}else{
+                	return persistedAndWriteMessage(this);
+            	}
             },
 
             /**
@@ -148,11 +165,15 @@ define(function (require) {
              *
              */
             setName: function (newname) {
-                this.saveExperimentProperties(
-                    {
-                        "name": newname
-                    });
-                this.name = newname;
+            	if(this.writePermission && this.getParent().persisted && this.login){
+            		this.saveExperimentProperties(
+            				{
+            					"name": newname
+            				});
+            		this.name = newname;
+            	}else{
+                	return persistedAndWriteMessage(this);
+            	}
             },
 
             /**
@@ -193,13 +214,25 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             run: function () {
-                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                    GEPPETTO.trigger(Events.Experiment_running);
-                    var parameters =
-                    {};
-                    parameters["experimentId"] = this.id;
-                    parameters["projectId"] = this.getParent().getId();
-                    GEPPETTO.MessageSocket.send("run_experiment", parameters);
+                var activeExperimentId = window.Project.getActiveExperiment().getId();
+                if(this.writePermission && this.getParent().persisted && this.login && this.runPermission){
+                	if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
+                		    this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) 
+                		    && activeExperimentId == this.id){
+	                    
+                		GEPPETTO.trigger(Events.Experiment_running);
+	                    var parameters =
+	                    {};
+	                    parameters["experimentId"] = this.id;
+	                    parameters["projectId"] = this.getParent().getId();
+	                    GEPPETTO.MessageSocket.send("run_experiment", parameters);
+                	}
+                }else{
+                	var message = persistedAndWriteMessage(this);
+                	if(!this.runPermission){
+                		message = message + " and " + GEPPETTO.Resources.RUN_PRIVILEGES_NOT_SUPPORTED;
+                	}
+                	return message;
                 }
             },
 
@@ -209,13 +242,7 @@ define(function (require) {
              * @command ExperimentNode.run()
              */
             setActive: function () {
-                G.unSelectAll();
-                GEPPETTO.ExperimentsController.closeCurrentExperiment();
-                var parameters = {};
-                parameters["experimentId"] = this.id;
-                parameters["projectId"] = this.getParent().getId();
-                GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                GEPPETTO.trigger(Events.Experiment_active);
+            	GEPPETTO.ExperimentsController.setActive(this);
             },
 
             /**
@@ -226,41 +253,79 @@ define(function (require) {
              * @command ExperimentNode.play()
              */
             play: function (options) {
-
-                GEPPETTO.ExperimentsController.play(this, options);
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+                        GEPPETTO.ExperimentsController.play(this, options);
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't play experiment that isn't active";
+            		}
+            	}
 
             },
 
             playAll: function () {
-                this.play(
-                    {
-                        playAll: true
-                    });
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+                        this.play(
+                         {
+                              playAll: true
+                         });
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't play experiment that isn't active";
+            		}
+            	}
             },
 
             pause: function () {
-                GEPPETTO.ExperimentsController.pause();
-                return this;
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+            			GEPPETTO.ExperimentsController.pause();
+            			return this;
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't pause experiment that isn't active";
+            		}
+            	}
             },
 
             stop: function () {
-                GEPPETTO.ExperimentsController.stop();
-                return this;
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+                        GEPPETTO.ExperimentsController.stop();
+                        return this;
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't stop experiment that isn't active";
+            		}
+            	}
             },
 
             resume: function () {
-                GEPPETTO.ExperimentsController.resume();
-                return this;
+            	var activeExperiment = window.Project.getActiveExperiment();
+            	if(activeExperiment!=null || undefined){
+            		if(activeExperiment.getId()==this.getId()){
+                        GEPPETTO.ExperimentsController.resume();
+                        return this;
+            		}else{
+            			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't resume experiment that isn't active";
+            		}
+            	}
             },
 
 
             saveExperimentProperties: function (properties) {
-                var parameters =
-                {};
-                parameters["experimentId"] = this.id;
-                parameters["projectId"] = this.getParent().getId();
-                parameters["properties"] = properties;
-                GEPPETTO.MessageSocket.send("save_experiment_properties", parameters);
+                if(this.writePermission && this.getParent().persisted && this.login){
+                	var parameters =
+                    {};
+                    parameters["experimentId"] = this.id;
+                    parameters["projectId"] = this.getParent().getId();
+                    parameters["properties"] = properties;
+                    GEPPETTO.MessageSocket.send("save_experiment_properties", parameters);
+                }else{
+                	return persistedAndWriteMessage(this);
+                }
             },
 
 
@@ -307,27 +372,38 @@ define(function (require) {
 
 
             /**
-             * Download results for recording file
+             * Download results Ffor recording file
              *
              * @command ExperimentNode.downloadResults(recording)
              */
-            downloadResults: function (aspectPath, format) {
-                if (this == window.Project.getActiveExperiment()) {
-                    if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
-                        parameters["format"] = format;
-                        parameters["aspectPath"] = aspectPath;
-                        parameters["experimentId"] = this.id;
-                        parameters["projectId"] = this.getParent().getId();
-                        GEPPETTO.MessageSocket.send("download_results", parameters);
+            downloadResults: function (aspectPath, format) {                
+                if(this.downloadPermission && this.login){
+                	 if (this == window.Project.getActiveExperiment()) {
+                         if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                             var parameters =
+                             {};
+                             parameters["format"] = format;
+                             parameters["aspectPath"] = aspectPath;
+                             parameters["experimentId"] = this.id;
+                             parameters["projectId"] = this.getParent().getId();
+                             GEPPETTO.MessageSocket.send("download_results", parameters);
 
-                        return "Sending request to download results.";
-                    } else {
-                        return "Experiment must be completed before attempting to download results";
-                    }
-                } else {
-                    return "Experiment must be set to active before requesting results";
+                             return "Sending request to download results.";
+                         } else {
+                             return "Experiment must be completed before attempting to download results";
+                         }
+                     } else {
+                         return "Experiment must be set to active before requesting results";
+                     }
+                }else{
+                	var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+            		if(!this.login){
+            			return message;
+            		}else{
+            			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.DOWNLOAD_PRIVILEGES_NOT_SUPPORTED;
+            		}
+                	            		
+                	return message;
                 }
             },
 
@@ -338,59 +414,75 @@ define(function (require) {
              * @returns {ExperimentNode} Creates a new ExperimentNode
              */
             clone: function () {
-                var parameters = {};
-                parameters["projectId"] = this.getParent().getId();
-                parameters["experimentId"] = this.id;
-                GEPPETTO.MessageSocket.send("clone_experiment", parameters);
+                if(this.writePermission && this.getParent().persisted && this.login){
+                    var parameters = {};
+                    parameters["projectId"] = this.getParent().getId();
+                    parameters["experimentId"] = this.id;
+                    GEPPETTO.MessageSocket.send("clone_experiment", parameters);
+                }else{
+                	return persistedAndWriteMessage(this);
+                }
             },
             
             deleteExperiment: function () {
-                var parameters =
-                {};
-                parameters["experimentId"] = this.id;
-                parameters["projectId"] = this.getParent().getId();
-                GEPPETTO.MessageSocket.send("delete_experiment", parameters);
+                if(this.writePermission && this.getParent().persisted && this.login){
+                    var parameters =
+                    {};
+                    parameters["experimentId"] = this.id;
+                    parameters["projectId"] = this.getParent().getId();
+                    GEPPETTO.MessageSocket.send("delete_experiment", parameters);
 
-                return this;
+                    return this;
+                }else{
+                	return persistedAndWriteMessage(this);
+                }
             },
 
             uploadModel: function (aspectPath, format) {
-                if (this == window.Project.getActiveExperiment()) {
-                    if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
-                        parameters["format"] = format;
-                        parameters["aspectPath"] = aspectPath;
-                        parameters["experimentId"] = this.id;
-                        parameters["projectId"] = this.getParent().getId();
-                        GEPPETTO.MessageSocket.send("upload_model", parameters);
+            	if(this.writePermission && this.getParent().persisted && this.login){
+            		if (this == window.Project.getActiveExperiment()) {
+            			if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+            				var parameters =
+            				{};
+            				parameters["format"] = format;
+            				parameters["aspectPath"] = aspectPath;
+            				parameters["experimentId"] = this.id;
+            				parameters["projectId"] = this.getParent().getId();
+            				GEPPETTO.MessageSocket.send("upload_model", parameters);
 
-                        return "Sending request to upload results.";
-                    } else {
-                        return "Unable to upload model for an experimet that hasn't been completed";
-                    }
-                } else {
-                    return "Experiment isn't active, make it active before continuing upload";
+            				return "Sending request to upload results.";
+            			} else {
+            				return "Unable to upload model for an experimet that hasn't been completed";
+            			}
+            		} else {
+            			return "Experiment isn't active, make it active before continuing upload";
+            		}
+            	}else{
+                	return persistedAndWriteMessage(this);
                 }
             },
 
             uploadResults: function (aspectPath, format) {
-                if (this == window.Project.getActiveExperiment()) {
-                    if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
-                        parameters["format"] = format;
-                        parameters["aspectPath"] = aspectPath;
-                        parameters["experimentId"] = this.id;
-                        parameters["projectId"] = this.getParent().getId();
-                        GEPPETTO.MessageSocket.send("upload_results", parameters);
+                if(this.writePermission && this.getParent().persisted && this.login){
+                	if (this == window.Project.getActiveExperiment()) {
+                		if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                			var parameters =
+                			{};
+                			parameters["format"] = format;
+                			parameters["aspectPath"] = aspectPath;
+                			parameters["experimentId"] = this.id;
+                			parameters["projectId"] = this.getParent().getId();
+                			GEPPETTO.MessageSocket.send("upload_results", parameters);
 
-                        return "Sending request to upload results.";
-                    } else {
-                        return GEPPETTO.Resources.EXPERIMENT_NOT_COMPLETED_UPLOAD;
-                    }
-                } else {
-                    return GEPPETTO.Resources.UNACTIVE_EXPERIMENT_UPLOAD;
+                			return "Sending request to upload results.";
+                		} else {
+                			return GEPPETTO.Resources.EXPERIMENT_NOT_COMPLETED_UPLOAD;
+                		}
+                	} else {
+                		return GEPPETTO.Resources.UNACTIVE_EXPERIMENT_UPLOAD;
+                	}
+                }else{
+                	return persistedAndWriteMessage(this);
                 }
             },
 

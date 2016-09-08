@@ -130,9 +130,9 @@ require(jqueryLib, function ($) {
 
     var ProjectNode = require('model/ProjectNode');
     $(function () {
+        window.GEPPETTO = require('geppetto');
         var project = new ProjectNode({name: "Project", id: -1});
         window.Project = project;
-        window.GEPPETTO = require('geppetto');
         //Alias G, Simulation, and help() to global vars for easy access
         window.G = GEPPETTO.G;
         window.Widgets = GEPPETTO.Widgets;

@@ -1,6 +1,15 @@
 .spinner-container .gpt-osb {
-  width: 100px;
-  font-size: 100px;
-  margin: 0 auto;
-  margin-bottom: 30px;
+	width: 100px;
+	font-size: 100px;
+	margin: 0 auto;
+	margin-bottom: 30px;
+}
+.osb-notification{
+	position: absolute;
+    height: 100px;
+    width: 470px;
+    top: 50px;
+    right: 10px;
+    text-align: center;
+    border-radius:0;
 }

@@ -14,6 +14,13 @@ define(function (require) {
 
         GEPPETTO.SceneFactory =
         {
+        	
+        	linesUserInput:false,
+        	linesUserPreference:undefined,
+        	
+        	setLinesUserInput:function(askUser){
+        		GEPPETTO.SceneFactory.linesUserInput=askUser;
+        	},
 
 
             buildVisualInstance: function (instance) {
@@ -241,18 +248,38 @@ define(function (require) {
              */
             visualizationTreeNodeTo3DObj: function (instance, node, id, materials, lines) {
                 var threeObject = null;
-
+                
                 if (lines === undefined) {
                     // Unless it's being forced we use a threshold to decide whether to use lines or cylinders
                     if (!GEPPETTO.SceneController.aboveLinesThreshold) {
                         //Unless we are already above the threshold...
                         GEPPETTO.SceneController.aboveLinesThreshold = GEPPETTO.SceneController.complexity > GEPPETTO.SceneController.linesThreshold;
+                        
                         if (GEPPETTO.SceneController.aboveLinesThreshold) {
-                            //we are over the threshold, we use lines for everything
-                            GEPPETTO.SceneController.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
+
+                        	if(GEPPETTO.SceneFactory.linesUserInput && GEPPETTO.SceneFactory.linesUserPreference==undefined){
+
+								//we need to ask the user
+								GEPPETTO.SceneFactory.linesUserPreference = confirm("The model you are loading has a complex morphology, would you like to render it using lines instead of 3D shapes? Be careful, choosing to use 3D shapes might crash your browser!");
+								
+								if (GEPPETTO.SceneFactory.linesUserPreference) {
+								  GEPPETTO.SceneController.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
+								}	             
+								else{
+								}
+							}
+                        	else{
+								GEPPETTO.SceneController.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
+							}
                         }
+                	}
+                    
+                    if(GEPPETTO.SceneController.aboveLinesThreshold && GEPPETTO.SceneFactory.linesUserInput){
+                    	lines = GEPPETTO.SceneFactory.linesUserPreference;
                     }
-                    lines = GEPPETTO.SceneController.aboveLinesThreshold;
+                    else{
+                    	lines = GEPPETTO.SceneController.aboveLinesThreshold;
+                    }
                 }
 
                 var material = lines ? materials["line"] : materials["mesh"];

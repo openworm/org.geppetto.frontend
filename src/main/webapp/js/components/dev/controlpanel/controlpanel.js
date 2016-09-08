@@ -93,7 +93,7 @@ define(function (require) {
                             var displayText = item.split('.')[item.split('.').length - 1];
                             var action = function (e) {
                                 e.preventDefault();
-                                var actionStr = that.props.metadata.action;
+                                var actionStr = that.props.metadata.actions;
                                 actionStr = actionStr.replace(/\$entity\$/gi, item);
                                 GEPPETTO.Console.executeCommand(actionStr);
                             };
@@ -255,9 +255,9 @@ define(function (require) {
                             if (actionStr != '' && actionStr != undefined) {
                                 GEPPETTO.Console.executeCommand(actionStr);
                                 // check custom action to run after configured command
-                                if(that.props.metadata.action != '' && that.props.metadata.action != undefined) {
+                                if(that.props.metadata.actions != '' && that.props.metadata.actions != undefined) {
                                     // straight up eval as we don't want this to show on the geppetto console
-                                    eval(that.props.metadata.action.replace(/\$entity\$/gi, path));
+                                    eval(that.props.metadata.actions.replace(/\$entity\$/gi, path));
                                 }
                             }
 
@@ -322,7 +322,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
-            "action": "G.addWidget(3).setData($entity$).setName('$entity$')"
+            "actions": "G.addWidget(3).setData($entity$).setName('$entity$')"
         },
         {
             "columnName": "controls",
@@ -332,7 +332,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": "",
-            "action": "GEPPETTO.ControlPanel.refresh();"
+            "actions": "GEPPETTO.ControlPanel.refresh();"
         }
     ];
 
@@ -382,17 +382,7 @@ define(function (require) {
                 "tooltip": "Zoom"
             }
         },
-        "Common": {
-            "info": {
-                "id": "info",
-                "actions": [
-                    "G.addWidget(1).setData($instance$)"
-                ],
-                "icon": "fa-info-circle",
-                "label": "Info",
-                "tooltip": "Info"
-            }
-        }
+        "Common": {}
     };
 
     var ControlPanel = React.createClass({
@@ -412,7 +402,7 @@ define(function (require) {
             return {
                 columns: ['name', 'type', 'controls'],
                 data: [],
-                controls: {"Common": ['info', 'delete'], "VisualCapability": ['color', 'visibility', 'zoom']},
+                controls: {"Common": [], "VisualCapability": ['color', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration,
                 dataFilter: defaultDataFilter,
             };
@@ -492,6 +482,26 @@ define(function (require) {
 	            // set state to refresh grid
 	            this.setState({data: gridInput});
         	}
+        },
+
+        deleteData: function(instancePaths){
+            if(instancePaths!= undefined && instancePaths.length>0){
+                // grab existing input
+                var gridInput = this.state.data;
+                var newGridInput = [];
+
+                // remove unwanted instances from grid input
+                for(var i=0; i<instancePaths.length; i++){
+                    for(var j=0; j<gridInput.length; j++){
+                        if(instancePaths[i] != gridInput[j].path){
+                            newGridInput.push(gridInput[j]);
+                        }
+                    }
+                }
+
+                // set state to refresh grid
+                this.setState({data: newGridInput});
+            }
         },
 
         setData: function (records) {

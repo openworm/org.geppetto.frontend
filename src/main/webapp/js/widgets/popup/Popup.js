@@ -40,6 +40,7 @@ define(function (require) {
 
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
+	var Type = require('model/Type');
 
 	/**
 	 * Private function to hookup custom event handlers
@@ -99,13 +100,6 @@ define(function (require) {
 		},
 
 		/**
-		 * Action events associated with this widget
-		 */
-		events: {
-			'click a': 'manageLeftClickEvent',
-		},
-
-		/**
 		 * Sets the message that is displayed inside the widget
 		 *
 		 * @command setMessage(msg)
@@ -149,12 +143,12 @@ define(function (require) {
 			if($.isArray(htmlNode)){
 				var html = "";
 				for(var i in htmlNode){
-					var values = htmlNode[i].getInitialValues();
+					var values = this.getVariable(htmlNode[i]).getInitialValues();
 					html += values[0].value.html;
 				}
 				this.setMessage(html);
 			}else{
-				this.setMessage(htmlNode.getInitialValues()[0].value.html);
+				this.setMessage(this.getVariable(htmlNode).getInitialValues()[0].value.html);
 			}
 		},
 
@@ -165,10 +159,10 @@ define(function (require) {
 		 * @command setData(anyInstance)
 		 * @param {Object} anyInstance - An instance of any type
 		 */
-		setData: function (anyInstance) {
-			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
+		setData: function (anyInstance, filter) {
+			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance, filter]);
 
-			this.setMessage(this.getHTML(anyInstance));
+			this.setMessage(this.getHTML(anyInstance, "", filter));
 			var changeIcon=function(chevron){
 				if (chevron.hasClass('fa-chevron-circle-down')) {
 					chevron.removeClass("fa-chevron-circle-down").addClass("fa-chevron-circle-up");
@@ -192,15 +186,38 @@ define(function (require) {
 		 * @param anyInstance
 		 * @returns {string}
 		 */
-		getHTML: function (anyInstance, id) {
-			var type = anyInstance.getType();
+		getHTML: function (anyInstance, id, filter) {
+			var type = anyInstance;
+			if(!(type instanceof Type)){
+				type=anyInstance.getType();
+			}
 			var html = "";
+			
+			//let's check the filter
+			if(filter!=undefined && type.getMetaType() != GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
+				if($.inArray(type.getMetaType(), filter)==-1){
+					//this type is not in the filter!
+					return html;
+				}
+			}
+			
 			if (type.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
 				for (var i = 0; i < type.getVariables().length; i++) {
 					var v = type.getVariables()[i];
+					
+					if(filter!=undefined){
+						if($.inArray(v.getType().getMetaType(), filter)==-1){
+							//this type is not in the filter!
+							continue;
+						}
+					}
+
 					var id = this.getId() + "_" + type.getId() + "_el_" + i;
-					html += "<div class='popup-title' data-toggle='collapse' data-target='#" + id + "'>" + v.getName() + "</div><div id='" + id + "_chevron" + "' data-toggle='collapse' data-target='#" + id + "' class='popup-chevron fa fa-chevron-circle-down '></div>"
-					html += this.getHTML(v, id);
+					if(filter==undefined){
+						//Titles are only displayed if there's no filter..maybe random, make it a separate parameter
+						html += "<div class='popup-title' data-toggle='collapse' data-target='#" + id + "'>" + v.getName() + "</div><div id='" + id + "_chevron" + "' data-toggle='collapse' data-target='#" + id + "' class='popup-chevron fa fa-chevron-circle-down '></div>"
+					}
+					html += this.getHTML(v, id, filter);
 				}
 			}
 			else if (type.getMetaType() == GEPPETTO.Resources.HTML_TYPE) {
@@ -244,77 +261,6 @@ define(function (require) {
 			}
 			else {
 				return node;
-			}
-		},
-
-		getTriggeredElement: function(event){
-			if ($(event.target).is('a')){
-				return $(event.target); 
-			}
-			else{
-				return $(event.target).closest('a');
-			}
-		},
-
-		/**
-		 * Register right click event with widget
-		 *
-		 * @param {WIDGET_EVENT_TYPE} event - Handles right click event on widget
-		 */
-		manageLeftClickEvent: function (event) {
-			var aElement = this.getTriggeredElement(event);
-			var nodeInstancePath = aElement[0].getAttribute("instancepath");
-			var type = aElement[0].getAttribute("type");
-			var widget = null;
-			
-			if (nodeInstancePath != null || undefined) {
-				//Type attribute to determine if HTML link is of visual or variable type
-				if(type!=null || undefined){
-					if(type=="variable"){
-						var obj = eval(nodeInstancePath);
-						widget = G.addWidget(Widgets.PLOT).plotFunctionNode(obj);
-					}
-					else if(type=="visual"){
-	                    GEPPETTO.Console.executeCommand(nodeInstancePath+".show(true);");
-					}
-				}else{
-					//remove first part of instance path
-					var id = nodeInstancePath.replace("Model.neuroml.","");
-					var model;
-					var variable;
-					try {
-						//attempt to find variable from id 
-						model = eval(id);
-						model = model.getType();
-						//use found model type to find all HTML variables within
-						variable = 
-							GEPPETTO.ModelFactory.getAllVariablesOfMetaType(model, GEPPETTO.Resources.HTML_TYPE);
-					}
-					catch (e) {
-						//No instance found, look for all HTML Types at root and 
-						//look for unique identifier
-						model = Model.neuroml.getTypes();
-						variable = 
-							GEPPETTO.ModelFactory.getHTMLVariable(model, GEPPETTO.Resources.HTML_TYPE,id);
-					}
-					widget = G.addWidget(1).setName('Information for ' +  id);
-					if(variable!==null && variable != undefined){
-						widget.setHTML(variable);
-					}else{
-						widget.setMessage("No HTML for element " + nodeInstancePath);
-					}
-				}
-				
-				if(widget!=null || undefined){
-					//generate randm position in screen for popup to avoid them showing up in same place
-					var max = screen.height - this.size.height;
-					var min = this.size.height;
-					var x =  Math.floor(Math.random() * (max - min)) + min;
-					max = screen.width - this.size.width;
-					min = this.size.width;
-					var y = Math.floor(Math.random() * (max - min)) + min;
-					widget.setPosition(y,x);
-				}
 			}
 		},
 

@@ -36,16 +36,28 @@ define(function(require) {
     link.rel = "stylesheet";
     link.href = "geppetto/js/components/dev/logo/logo.css";
     document.getElementsByTagName("head")[0].appendChild(link);
-    
+
     var React = require('react');
+
+
 	
-	var logoDiv = React.createClass({
+    var logoDiv = React.createClass({
+    	componentDidMount: function(){
+    		GEPPETTO.on('spin_logo', function(label) {
+    			this.addClass("fa-spin").attr('title', 'Loading data');
+    		}.bind($("." + this.props.logo)));
+
+    		GEPPETTO.on('stop_spin_logo', function(label) {
+    			this.removeClass("fa-spin").attr('title', '');;
+    		}.bind($("." + this.props.logo)));
+    	},
+    	
          render: function(){
              return (
-            		 <div className={this.props.logo}></div>
-             		);
+                     <div className={this.props.logo}></div>
+                     );
          }
      });
-	
-	return logoDiv;
+
+    return logoDiv;
 });

@@ -42,6 +42,9 @@ define(function (require) {
 	    link.href = "geppetto/js/components/OSB.css";
 	    document.getElementsByTagName("head")[0].appendChild(link);
 		
+	    //Change this to prompt the user to switch to lines or not
+	    GEPPETTO.SceneFactory.setLinesUserInput(false);
+	    
 		//This function will be called when the run button is clicked
 		GEPPETTO.showExecutionDialog = function(callback){
 			var formCallback = callback;
@@ -70,12 +73,15 @@ define(function (require) {
 	
 			var formData= {
 					experimentName: Project.getActiveExperiment().getName(),
-					timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),
-					length: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),
-					simulator:Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator(),
 					numberProcessors: 1
 			};
 			
+			if(Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()]!=null||undefined){
+				formData['timeStep']= Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep();
+				formData['length']= Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength();
+				formData['simulator']=Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator();
+			}
+
 			var submitHandler = function(){
 				GEPPETTO.Flows.showSpotlightForRun(formCallback);
 				$("#" + formWidget.props.id + "_container").remove();
@@ -132,6 +138,52 @@ define(function (require) {
 		//Spotlight initialization
 		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
 
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNBUTTON', {label: ' Results', iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("DropDownButton"));
+
+		window.plotAllRecordedVariables=function(){
+			Project.getActiveExperiment().playAll();
+			var plt=G.addWidget(0).setName('Recorded Variables'); 
+			$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
+				function(index,value){
+					plt.plotData(value)
+			});
+		};
+		
+        var dropDownPanelConfig = [
+		    {
+		    	label: "Play step by step",
+		        action: "Project.getActiveExperiment().play({step:1});"
+		    },
+		    {
+		    	label: "Play step by step (100x)",
+		    	action: "Project.getActiveExperiment().play({step:100});"
+		    },
+            {
+                label: "Enable color plotting",
+                condition: "GEPPETTO.G.isBrightnessFunctionSet()",
+                false: {
+                    action: "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
+                },
+                true: {
+                    action: "G.removeBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false));"
+                }
+            },
+            {
+                label: "Show simulation time",
+                action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
+            },
+            {
+                label: "Plot all recorded variables",
+                action: "window.plotAllRecordedVariables();"
+            }
+        ];
+
+		//FIXME Combine the dropdown button and the panel
+		var dropDownPanelPosition = {top : 40, right : 244};
+		
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {configuration : dropDownPanelConfig, position : dropDownPanelPosition, openByDefault : false}, document.getElementById("dropDownPanel"));
+		
 		//Foreground initialization
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {}, document.getElementById("foreground-toolbar"));
 
@@ -146,5 +198,16 @@ define(function (require) {
 
 		//Camera controls initialization
 		GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
+		
+		window.loadConnections = function(){
+			Model.neuroml.resolveAllImportTypes(function(){ $(".osb-notification-text").html(Model.neuroml.importTypes.length+" projections and "+Model.neuroml.connection.getVariableReferences().length+ " connections were successfully loaded.");});
+		};
+		
+        GEPPETTO.on(Events.Model_loaded, function () {
+			if(Model.neuroml!=undefined && Model.neuroml.importTypes!=undefined && Model.neuroml.importTypes.length>0){
+				$('#mainContainer').append('<div class="alert alert-warning osb-notification alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="osb-notification-text">'+Model.neuroml.importTypes.length+' projections in this model have not been loaded yet. <a href="javascript:loadConnections();" class="alert-link">Click here to load the connections.</a> (Note: depending on the size of the network this could take some time).</span></div>');
+			}
+    
+        });
 	};
 });

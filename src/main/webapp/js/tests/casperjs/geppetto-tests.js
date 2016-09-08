@@ -164,14 +164,14 @@ function doExperimentTableTest(test) {
 
     test.assertNotVisible('div#experiments', "The experiment panel is correctly closed.");
   });
-
+  
   casper.then(function() {
     casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
   });
-
+  
   casper.then(function() {
     casper.waitUntilVisible('div#experiments', function() {
-      test.assertVisible('div#experiments', "The experiment panel is correctly open.");
+      	test.assertVisible('div#experiments', "The experiment panel is correctly open.");
     }, null, 5000);
   });
 }
@@ -214,20 +214,22 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
     }, null, 5000);
 
     casper.waitForSelector('a.downloadResultsIcon', function() {
-      test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
+      	test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
     }, null, 5000);
 
-    casper.waitUntilVisible('a.downloadModelsIcon', function() {
-      test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
-    }, null, 5000);
-
-    casper.waitUntilVisible('a.cloneIcon', function() {
-      test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
-    }, null, 5000);
-    
-    
+	casper.mouse.move('a.deleteIcon');
     casper.waitUntilVisible('a.deleteIcon', function() {
-      test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
+      	test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
+    }, null, 5000);
+
+	casper.mouse.move('a.downloadModelsIcon');
+    casper.waitUntilVisible('a.downloadModelsIcon', function() {
+      	test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
+    }, null, 5000);
+
+	casper.mouse.move('a.cloneIcon');
+    casper.waitUntilVisible('a.cloneIcon', function() {
+      	test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
     }, null, 5000);
   });
 }
@@ -253,8 +255,8 @@ function doSpotlightCheck(test, spotlight_search, persisted, check_recorded_or_s
           if (check_recorded_or_set_parameters) {
             this.echo("Waiting to see if the recorded variables button becomes visible");
             casper.waitUntilVisible('button#watch', function() {
-              test.assertVisible('button#watch', "Record variables icon correctly visible");
-              this.echo("Recorded variables button became visible correctly");
+              	test.assertVisible('button#watch', "Record variables icon correctly visible");
+              	this.echo("Recorded variables button became visible correctly");
             }, null, 8000);
           } else {
             //TESTS THAT THE PARAMETER IS SETTABLE

@@ -4,7 +4,7 @@
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function (require) {
-
+  
     var React = require('react'), $ = require('jquery');
     var GEPPETTO = require('geppetto');
 
@@ -226,26 +226,30 @@ define(function (require) {
         
         watchedVariablesWindow : function(){
         	if(this.props.experiment.getWatchedVariables()!=null || undefined){
-        		var watchedVariables = "";
+        		var watchedVariables = "<ul class='listVariables'>";
 
         		for(var i =0; i<this.props.experiment.getWatchedVariables().length; i++){
         			watchedVariables = 
-        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + "\n";
+        				watchedVariables + '<li>'+this.props.experiment.getWatchedVariables()[i] + '</li>';
         		}
+
+				watchedVariables += "</ul>";
 
         		GEPPETTO.FE.infoDialog("Recorded variables ", watchedVariables);
         	}
         },
         
         parametersWindow : function(){
-        	var modifiedParameters = "";
+        	var modifiedParameters = "<ul class='listVariables'>";
        		var parameters = this.props.experiment.getSetParameters();
        		
        		for (var key in parameters) {
        		  if (parameters.hasOwnProperty(key)) {
-       			modifiedParameters += key+"="+parameters[key]+"\n";
+       			modifiedParameters += '<li>'+key+"="+parameters[key]+'</li>';
        		  }
        		}
+       		
+       		modifiedParameters += "</ul>";
         	GEPPETTO.FE.infoDialog("Set Parameters ", modifiedParameters);
         },
 

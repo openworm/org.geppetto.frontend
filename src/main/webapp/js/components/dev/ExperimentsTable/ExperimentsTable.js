@@ -290,8 +290,7 @@ define(function (require) {
             var parametersClick =null;
         	var modifiedParameters = 0;
         	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
-        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
-        				GEPPETTO.Resources.PARAMETER_TYPE){
+        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == GEPPETTO.Resources.PARAMETER_TYPE){
         			var instance = Instances.getInstance([GEPPETTO.ModelFactory.allPathsIndexing[key].path]);
             		if(instance[0].modified){
             			modifiedParameters++;
@@ -484,7 +483,7 @@ define(function (require) {
     /**
      * Creates a table html component used to dipslay the experiments
      */
-    var ExperimentsTable = React.createClass({        
+    var ExperimentsTable = React.createClass({
         componentDidMount: function () {
         	var self = this;
         	// Handles new experiment button click

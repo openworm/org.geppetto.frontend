@@ -47,7 +47,6 @@ define(function (require) {
     return {
         capabilityId: 'ParameterCapability',
         value: null,
-        modified : false,
 
         /**
          * Get the type of tree this is
@@ -152,10 +151,9 @@ define(function (require) {
             
             if (updateServer) {
                 GEPPETTO.ExperimentsController.setParameters([this]);
-                this.modified = true;
             }
 
-            GEPPETTO.trigger(Events.Parameter_modified);
+
             return this;
         }
     }

@@ -171,11 +171,7 @@ define(function (require) {
         	
             var row = "#simulatorRowId-" + this.props.experiment.getId();
             
-            GEPPETTO.on(Events.Parameter_modified, function () {
-                self.refresh();
-            });
-            
-            GEPPETTO.on(Events.Variable_recorded, function () {
+            GEPPETTO.on(Events.Experiment_updated, function () {
                 self.refresh();
             });
             
@@ -234,7 +230,7 @@ define(function (require) {
 
         		for(var i =0; i<this.props.experiment.getWatchedVariables().length; i++){
         			watchedVariables = 
-        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + "\n\n\n";
+        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + "\n";
         		}
 
         		GEPPETTO.FE.infoDialog("Recorded variables ", watchedVariables);
@@ -243,23 +239,13 @@ define(function (require) {
         
         parametersWindow : function(){
         	var modifiedParameters = "";
-       		var parameters =[];
-        	var i=0;
-        	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
-        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
-        				GEPPETTO.Resources.PARAMETER_TYPE){
-        			parameters[i] = GEPPETTO.ModelFactory.allPathsIndexing[key]; 
-        			i++;
-        		}
-        	}
-
-        	for(var i=0; i<parameters.length; i++){
-        		var instance = Instances.getInstance([parameters[i].path]);
-        		if(instance[0].modified){
-        			modifiedParameters += instance[0].getPath()+'\n\n';
-        		}
-        	}
-        	
+       		var parameters = this.props.experiment.getSetParameters();
+       		
+       		for (var key in parameters) {
+       		  if (parameters.hasOwnProperty(key)) {
+       			modifiedParameters += key+"="+parameters[key]+"\n";
+       		  }
+       		}
         	GEPPETTO.FE.infoDialog("Set Parameters ", modifiedParameters);
         },
 
@@ -288,15 +274,7 @@ define(function (require) {
             
             var parameterMessage = "None";
             var parametersClick =null;
-        	var modifiedParameters = 0;
-        	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
-        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == GEPPETTO.Resources.PARAMETER_TYPE){
-        			var instance = Instances.getInstance([GEPPETTO.ModelFactory.allPathsIndexing[key].path]);
-            		if(instance[0].modified){
-            			modifiedParameters++;
-            		}
-        		}
-        	}
+        	var modifiedParameters = Object.keys(this.props.experiment.getSetParameters()).length;
         	
         	if(modifiedParameters>0){
         		parameterMessage = modifiedParameters + " parameters set";

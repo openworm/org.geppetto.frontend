@@ -52,6 +52,7 @@ define(['backbone'], function (require) {
         login: null,
         runPermission: null,
         downloadPermission: null,
+        state : null,
 
         /**
          * Initializes this experiment with passed attributes
@@ -66,10 +67,11 @@ define(['backbone'], function (require) {
             this.description = options.description;
             this.lastModified = options.lastModified;
             this.variables = [];
+            this.setParameters = {};
             this.simulatorConfigurations = {};
             this.parameters = [];
             this.script = options.script;
-
+            this.state=null;
             this.writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
             this.login = GEPPETTO.UserController.isLoggedIn();
             this.runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
@@ -367,7 +369,10 @@ define(['backbone'], function (require) {
 
             return watchedVariables;
         },
-
+        
+        getSetParameters : function(){
+        	return this.setParameters;
+        },
 
         /**
          * Download results Ffor recording file

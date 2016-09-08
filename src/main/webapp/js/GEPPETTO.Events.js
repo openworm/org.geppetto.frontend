@@ -56,6 +56,7 @@ var Events = {
     Experiment_completed: "experiment:completed",
     Experiment_failed: "experiment:failed",
     Experiment_update: "experiment:update",
+    Experiment_updated: "experiment:updated",
     Experiment_deleted: "experiment_deleted",
     Experiment_active: "experiment_active",
     Experiment_created:"experiment:created",
@@ -64,10 +65,8 @@ var Events = {
     Check_project_persisted : "project:persisted_state",
     Spotlight_closed: "spotlight:closed",
     Instance_deleted: "instance: deleted",
-    Parameter_modified : "parameter: modified",
-    Variable_recorded : "variable: recorded",
     Show_Tutorial : "show_tutorial",
-	  Hide_Tutorial : "hide_tutorial"
+    Hide_Tutorial : "hide_tutorial"
 
 };
 

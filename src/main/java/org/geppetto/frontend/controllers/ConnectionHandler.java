@@ -1290,30 +1290,34 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			error(e, "Unable to determine whether persistence services are available or not");
 		}
-		
-		UserPrivilegesDT userPrivileges=new UserPrivilegesDT();
-		if(this.geppettoManager.getUser()!=null){
-			userPrivileges.userName=this.geppettoManager.getUser().getLogin();
-		}
-		userPrivileges.hasPersistence=hasPersistence;
-		userPrivileges.loggedIn=this.geppettoManager.getUser()!=null;
 
-		List<UserPrivileges> privileges = this.geppettoManager.getUser().getUserGroup().getPrivileges();
-		for(UserPrivileges up : privileges)
+		UserPrivilegesDT userPrivileges = new UserPrivilegesDT();
+		if(this.geppettoManager.getUser() != null)
 		{
-			userPrivileges.privileges.add(up.toString());
+			userPrivileges.userName = this.geppettoManager.getUser().getLogin();
 		}
+		userPrivileges.hasPersistence = hasPersistence;
+		userPrivileges.loggedIn = this.geppettoManager.getUser() != null;
 
+		if(this.geppettoManager.getUser() != null)
+		{
+			List<UserPrivileges> privileges = this.geppettoManager.getUser().getUserGroup().getPrivileges();
+			for(UserPrivileges up : privileges)
+			{
+				userPrivileges.privileges.add(up.toString());
+			}
+		}
 		websocketConnection.sendMessage(requestID, OutboundMessages.USER_PRIVILEGES, getGson().toJson(userPrivileges));
 	}
 
-	private class UserPrivilegesDT{
-		public String userName="";
-		public boolean loggedIn=false;
-		public boolean hasPersistence=false;
-		public List<String> privileges=new ArrayList<String>();
+	private class UserPrivilegesDT
+	{
+		public String userName = "";
+		public boolean loggedIn = false;
+		public boolean hasPersistence = false;
+		public List<String> privileges = new ArrayList<String>();
 	}
-	
+
 	@Override
 	public void simulationError(String errorMessage, Exception exception)
 	{

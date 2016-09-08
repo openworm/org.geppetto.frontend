@@ -289,7 +289,6 @@ define(function (require) {
             var parameterMessage = "None";
             var parametersClick =null;
         	var modifiedParameters = 0;
-        	var i=0;
         	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
         		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
         				GEPPETTO.Resources.PARAMETER_TYPE){

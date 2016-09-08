@@ -1,7 +1,7 @@
 var TARGET_URL = "http://127.0.0.1"
 var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json"
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json"
-var PROJECT_URL_SUFFIX_3 = "?load_project_from_id=8"
+var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json"
 
 
 
@@ -20,10 +20,10 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/login?username=guest1&password=guest",function() {
-      this.waitForSelector('div#page', function() {
+      /*this.waitForSelector('div#page', function() {
         this.echo("I've waited for the splash screen to come up.");
         test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
-    }, null, 30000);
+    }, null, 30000);*/
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/",function() {
@@ -126,6 +126,8 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
       casper.then(function() {
         test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
 
+      });
+      casper.then(function() {
         //roll over the experiments row
         this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
         doPostPersistenceExperimentsTableButtonCheck(test);
@@ -165,7 +167,9 @@ function doExperimentTableTest(test) {
 
   casper.then(function() {
     casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
+  });
 
+  casper.then(function() {
     casper.waitUntilVisible('div#experiments', function() {
       test.assertVisible('div#experiments', "The experiment panel is correctly open.");
     }, null, 5000);

@@ -81,7 +81,7 @@ define(function (require) {
                 <tr data-rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
                     className={rowClasses} id={this.props.experiment.getId()}>
                     <StatusElement experiment={this.props.experiment} key={this.props.experiment.name+"-statusElement"}/>
-                    <td className="configurationTD" name="name" contentEditable={this.props.editable}>{this.props.experiment.getName()}</td>
+                    <td className="configurationTD" name="name" contentEditable={this.props.editable} suppressContentEditableWarning ={true}>{this.props.experiment.getName()}</td>
                     <td>{this.props.experiment.getLastModified()}</td>
                     <td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name+"-iconsRow"}/>
                     </td>
@@ -290,11 +290,11 @@ define(function (require) {
                 <tr id={simulatorRowId}>
                     <td></td>
                     <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
-                    <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
+                    <td className="configurationTD" name={'simulatorId'} contentEditable={editable} suppressContentEditableWarning ={true}>{this.props.simulator["simulatorId"]}</td>
                     <td className="configurationTDLink" name={'variables'} onClick={watchedVariablesClick}>{variablesMessage}</td>
                     <td className="configurationTDLink" name={'parameters'} onClick={parametersClick}>{parameterMessage}</td>
-                    <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
-                    <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
+                    <td className="configurationTD" name={'timeStep'} contentEditable={editable} suppressContentEditableWarning ={true}>{this.props.simulator["timeStep"]}</td>
+                    <td className="configurationTD" name={'length'} contentEditable={editable} suppressContentEditableWarning ={true}>{this.props.simulator["length"]}</td>
                 </tr>
             );
         }

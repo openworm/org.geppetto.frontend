@@ -53,21 +53,28 @@ define(function (require) {
             }
         },
 
-        componentDidMount: function () {
+        permissions : function(){
         	var experiment = window.Project.getActiveExperiment();
             var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
             var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
-            var projectPersisted = false;
+            var projectPersisted = experiment.getParent().persisted;
             var login = GEPPETTO.UserController.isLoggedIn() && GEPPETTO.UserController.hasPersistence();
+            
+            if(writePermission && runPermission && projectPersisted && login){
+            	return true;
+            }
+            
+            return false;
+        },
+        
+        componentDidMount: function () {
+        	var experiment = window.Project.getActiveExperiment();
             var self = this;
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
             	experiment = window.Project.getActiveExperiment();
-                projectPersisted = experiment.getParent().persisted;
                 
                 if(experiment!=null || undefined){
-                    var projectPersisted = experiment.getParent().persisted;
-
                 	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                 		self.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});
                 	}
@@ -75,14 +82,14 @@ define(function (require) {
                 		self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
                 	}
                 	else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                		if(writePermission && projectPersisted && login && runPermission){
+                		if(self.permissions()){
                 			self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});
                 		}else{
                 			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
                 		}
                 	}
                 	else if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                		if(writePermission && projectPersisted && login && runPermission){
+                		if(self.permissions()){
                 			self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});
                 		}else{
                 			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
@@ -93,11 +100,10 @@ define(function (require) {
             
             GEPPETTO.on(Events.Project_persisted, function () {
                 experiment = window.Project.getActiveExperiment();
-                projectPersisted = experiment.getParent().persisted;
                 
                 if(experiment!=null || undefined){
                 	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                		if(writePermission && projectPersisted && login && runPermission){
+                		if(self.permissions()){
                 			self.setState({disableRun: false, disablePlay: true, disablePause: true, disableStop: true});
                 		}else{
                 			self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});

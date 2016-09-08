@@ -4,7 +4,7 @@
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function (require) {
-
+  
     var React = require('react'), $ = require('jquery');
     var GEPPETTO = require('geppetto');
 
@@ -223,19 +223,21 @@ define(function (require) {
         
         watchedVariablesWindow : function(){
         	if(this.props.experiment.getWatchedVariables()!=null || undefined){
-        		var watchedVariables = "";
+        		var watchedVariables = "<ul class='listVariables'>";
 
         		for(var i =0; i<this.props.experiment.getWatchedVariables().length; i++){
         			watchedVariables = 
-        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + "\n\n\n";
+        				watchedVariables + '<li>'+this.props.experiment.getWatchedVariables()[i] + '</li>';
         		}
+
+        		watchedVariables += "</ul>";
 
         		GEPPETTO.FE.infoDialog("Recorded variables ", watchedVariables);
         	}
         },
         
         parametersWindow : function(){
-        	var modifiedParameters = "";
+        	var modifiedParameters = "<ul class='listVariables'>";
        		var parameters =[];
         	var i=0;
         	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
@@ -249,9 +251,11 @@ define(function (require) {
         	for(var i=0; i<parameters.length; i++){
         		var instance = Instances.getInstance([parameters[i].path]);
         		if(instance[0].modified){
-        			modifiedParameters += instance[0].getPath()+'\n\n';
+        			modifiedParameters += '<li>' + instance[0].getPath()+'</li>';
         		}
         	}
+        	
+        	modifiedParameters += "</ul>";
         	
         	GEPPETTO.FE.infoDialog("Set Parameters ", modifiedParameters);
         },

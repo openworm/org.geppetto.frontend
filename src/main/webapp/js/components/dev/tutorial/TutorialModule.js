@@ -268,7 +268,7 @@ define(function (require) {
 						<span>{this.state.nextBtnLabel}   <i className={this.state.nextBtnLast ? "fa fa-undo" : "fa fa-arrow-right"} aria-hidden="true"></i></span>
 					</button>
 				</div>
-				<label className={this.state.cookieClass} id="ignoreTutorial"><input type="checkbox" value="" onClick={this.dontShowAtStartup}>Don't show Tutorial at Startup Again.</input></label>
+				<label className={this.state.cookieClass} id="ignoreTutorial"><input type="checkbox" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /></label>
 			</div>
 			</div>
 		}

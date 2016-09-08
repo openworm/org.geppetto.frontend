@@ -37,9 +37,7 @@
  * @module model/ProjectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(['jquery', 'underscore', 'backbone',
-    // Add requirement for Backbone-associations module
-], function (require) {
+define(['backbone'], function (require) {
 
     return Backbone.Model.extend({
         experiments: null,

@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1275,6 +1276,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * 
 	 * @param requestID
 	 */
+	/**
+	 * @param requestID
+	 */
 	public void checkUserPrivileges(String requestID)
 	{
 		boolean hasPersistence = false;
@@ -1284,26 +1288,34 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(GeppettoInitializationException e)
 		{
-			error(e, "Unable to determine whether persistence services are available");
+			error(e, "Unable to determine whether persistence services are available or not");
 		}
-		
-		//FIXME Create an object for this
 
-		String userName = this.geppettoManager.getUser().getLogin();
-		String update = "{\"userName\":" + '"' + userName + '"' + 
-				",\"loggedIn\":" + (this.geppettoManager.getUser()!=null) + 
-				",\"hasPersistence\":" + hasPersistence
-				+ ",\"privileges\":[";
-		List<UserPrivileges> privileges = this.geppettoManager.getUser().getUserGroup().getPrivileges();
-		for(UserPrivileges up : privileges)
+		UserPrivilegesDT userPrivileges = new UserPrivilegesDT();
+		if(this.geppettoManager.getUser() != null)
 		{
-			update = update.concat('"' + up.toString() + '"' + ",");
+			userPrivileges.userName = this.geppettoManager.getUser().getLogin();
 		}
+		userPrivileges.hasPersistence = hasPersistence;
+		userPrivileges.loggedIn = this.geppettoManager.getUser() != null;
 
-		update = update.substring(0, update.length() - 1);
-		update = update.concat("]}");
+		if(this.geppettoManager.getUser() != null)
+		{
+			List<UserPrivileges> privileges = this.geppettoManager.getUser().getUserGroup().getPrivileges();
+			for(UserPrivileges up : privileges)
+			{
+				userPrivileges.privileges.add(up.toString());
+			}
+		}
+		websocketConnection.sendMessage(requestID, OutboundMessages.USER_PRIVILEGES, getGson().toJson(userPrivileges));
+	}
 
-		websocketConnection.sendMessage(requestID, OutboundMessages.USER_PRIVILEGES, update);
+	private class UserPrivilegesDT
+	{
+		public String userName = "";
+		public boolean loggedIn = false;
+		public boolean hasPersistence = false;
+		public List<String> privileges = new ArrayList<String>();
 	}
 
 	@Override

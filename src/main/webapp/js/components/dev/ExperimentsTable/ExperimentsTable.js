@@ -15,6 +15,13 @@ define(function (require) {
      * information (name, lastModified) and controls.
      */
     var ExperimentRow = React.createClass({
+
+        getDefaultProps: function () {
+            return {
+                suppressContentEditableWarning : true
+            };
+        },
+
     	updateIcons : function(activeIconVisibility, visible){
     		this.refs.icons.updateIconsState(activeIconVisibility, visible);
     	},
@@ -71,7 +78,7 @@ define(function (require) {
             }
 
             return (
-                <tr rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
+                <tr data-rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
                     className={rowClasses} id={this.props.experiment.getId()}>
                     <StatusElement experiment={this.props.experiment} key={this.props.experiment.name+"-statusElement"}/>
                     <td className="configurationTD" name="name" contentEditable={this.props.editable}>{this.props.experiment.getName()}</td>
@@ -286,10 +293,8 @@ define(function (require) {
             var parameterMessage = "None";
             var parametersClick =null;
         	var modifiedParameters = 0;
-        	var i=0;
         	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
-        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
-        				GEPPETTO.Resources.PARAMETER_TYPE){
+        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == GEPPETTO.Resources.PARAMETER_TYPE){
         			var instance = Instances.getInstance([GEPPETTO.ModelFactory.allPathsIndexing[key].path]);
             		if(instance[0].modified){
             			modifiedParameters++;
@@ -448,7 +453,6 @@ define(function (require) {
         },
         
         render: function () {
-            var experiment = this.props.experiment;
             //Create IDs for icons
             var activeIconId = "activeIcon-" + this.props.experiment.getId();
             var deleteIconId = "deleteIcon-" + this.props.experiment.getId();
@@ -457,23 +461,23 @@ define(function (require) {
             var cloneIconId = "cloneIcon-" + this.props.experiment.getId();
 
             return (
-                <div onlick="event.cancelBubble=true;" className={(this.state.rowVisible ? "visible " : "")+'iconsDiv'}>
+                <div className={(this.state.rowVisible ? "visible " : "")+'iconsDiv'}>
                     <a className={(this.state.activeIconVisible ? "enabled " : "hide ")+'activeIcon'} onClick={this.activeExperiment}
-                       experimentId={this.props.experiment.getId()} id={activeIconId}>
+                       data-experimentId={this.props.experiment.getId()} id={activeIconId}>
                         <i className='fa fa-check-circle fa-lg' rel='tooltip' title='Activate experiment'></i>
                     </a>
                     <a className={(this.state.deleteIconVisible ? "enabled " : "hide ")+'deleteIcon'} onClick={this.deleteExperiment}
-                       experimentId={this.props.experiment.getId()} id={deleteIconId}>
+                       data-experimentId={this.props.experiment.getId()} id={deleteIconId}>
                         <i className='fa fa-remove fa-lg' rel='tooltip' title='Delete Experiment'></i>
                     </a>
-                    <a className='downloadResultsIcon' onClick={this.downloadResults} experimentId={this.props.experiment.getId()} id={downloadResultsIconId}>
+                    <a className='downloadResultsIcon' onClick={this.downloadResults} data-experimentId={this.props.experiment.getId()} id={downloadResultsIconId}>
                         <i className='fa fa-download fa-lg' rel='tooltip' title='Download Results'></i>
                     </a>
-                    <a className='downloadModelsIcon' onClick={this.downloadModels} experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
+                    <a className='downloadModelsIcon' onClick={this.downloadModels} data-experimentId={this.props.experiment.getId()} id={downloadModelsIconId}>
                         <i className='fa fa-cloud-download fa-lg' rel='tooltip' title='Download Models'></i>
                     </a>
-                    <a className={(this.state.cloneIconVisible ? "enabled " : "hide ")+'cloneIcon'} onClick={this.cloneExperiment} 
-                    	experimentId={this.props.experiment.getId()} id={cloneIconId}>
+                    <a className={(this.state.cloneIconVisible ? "enabled " : "hide ")+'cloneIcon'} onClick={this.cloneExperiment}
+                       data-experimentId={this.props.experiment.getId()} id={cloneIconId}>
                      <i className='fa fa-clone fa-lg' rel='tooltip' title='Clone Experiment'></i>
                  </a>
                 </div>);
@@ -483,7 +487,7 @@ define(function (require) {
     /**
      * Creates a table html component used to dipslay the experiments
      */
-    var ExperimentsTable = React.createClass({        
+    var ExperimentsTable = React.createClass({
         componentDidMount: function () {
         	var self = this;
         	// Handles new experiment button click
@@ -768,7 +772,7 @@ define(function (require) {
                             <th className="tableHeader">Name</th>
                             <th className="tableHeader">Date</th>
                             <th className="tableHeader">
-                                <div className={(this.state.newExperimentIconVisible ? "visible " : "hide ")+"new_experiment"} id="new_experiment" tile="New experiment">
+                                <div className={(this.state.newExperimentIconVisible ? "visible " : "hide ")+"new_experiment"} id="new_experiment" title="New experiment">
                                     <i className='new_experiment_icon fa fa-plus fa-lg'></i>
                                 </div>
                             </th>

@@ -282,6 +282,21 @@ define(function (require) {
                 }
                 return returnMessage;
             },
+            
+            toggleTutorial : function() {
+            	 var returnMessage;
+            	 var modalVisible = $('#tutorial').is(':visible');
+            	 
+                 if (modalVisible) {
+                	 GEPPETTO.trigger(Events.Hide_Tutorial);
+                     returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
+                 }
+                 else {
+                	 GEPPETTO.trigger(Events.Show_Tutorial);
+                     returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
+                 }
+                 return returnMessage;
+            },
 
             /**
              *

@@ -151,6 +151,10 @@ define(function (require) {
 		};
 		
         var dropDownPanelConfig = [
+	        {
+        		label: "Plot all recorded variables",
+    			action: "window.plotAllRecordedVariables();"
+	        },
 		    {
 		    	label: "Play step by step",
 		        action: "Project.getActiveExperiment().play({step:1});"
@@ -160,7 +164,7 @@ define(function (require) {
 		    	action: "Project.getActiveExperiment().play({step:100});"
 		    },
             {
-                label: "Enable color plotting",
+                label: "Apply voltage colouring to morphologies",
                 condition: "GEPPETTO.G.isBrightnessFunctionSet()",
                 false: {
                     action: "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
@@ -172,10 +176,6 @@ define(function (require) {
             {
                 label: "Show simulation time",
                 action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
-            },
-            {
-                label: "Plot all recorded variables",
-                action: "window.plotAllRecordedVariables();"
             }
         ];
 

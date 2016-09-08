@@ -588,6 +588,7 @@ define(function (require) {
     require('model/ModelFactory')(GEPPETTO);
     require('model/ExperimentsController')(GEPPETTO);
     require('controllers/QueriesController')(GEPPETTO);
+    require('components/ComponentsController')(GEPPETTO);
 
     return GEPPETTO;
 

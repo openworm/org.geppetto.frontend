@@ -2,13 +2,13 @@
   "name": "tutorial",
   "version": "0.0.1",
   "authors": [
-    "Jesus Martinez <jesus@metacell.us>"
+    "Matt Olson <mattlolson@gmail.com>"
   ],
   "description": "geppetto tutorial components",
   "moduleType": [
     "amd"
   ],
-  "main":"TutorialModule",
+  "main":"IntroModal",
   "license": "MIT",
   "private": true,
   "ignore": [

@@ -1,7 +1,7 @@
 var TARGET_URL = "http://127.0.0.1"
 var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json"
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json"
-var PROJECT_URL_SUFFIX_3 = "?load_project_from_id=8"
+var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json"
 
 
 
@@ -97,8 +97,6 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
           doPrePersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
         });
 
-
-
         casper.then(function() {
 
           this.waitForSelector('button.btn.SaveButton', function() {
@@ -117,14 +115,19 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
         //TODO: make this work
         //this.mouseEvent('click', 'button[data-reactid=".9.4"]', "Running an experiment");
+
         //TODO: Test indicator light during experiment run
         //TODO: test experiment buttons again to see if they are in the right configuration after simulation run
+
+        //TODO: Clone an experiment and see if it has the right state and changes the state correctly for the other experiment rows
 
       }
 
       casper.then(function() {
         test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
 
+      });
+      casper.then(function() {
         //roll over the experiments row
         this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
         doPostPersistenceExperimentsTableButtonCheck(test);
@@ -154,17 +157,23 @@ function closeErrorMesage(test) {
 }
 
 function doExperimentTableTest(test) {
-  test.assertExists('a[aria-controls="experiments"]', "Experiments tab anchor is present");
+  casper.then(function() {
+    test.assertExists('a[aria-controls="experiments"]', "Experiments tab anchor is present");
 
-  test.assertExists('div#experiments', "Experiments panel is present");
+    test.assertExists('div#experiments', "Experiments panel is present");
 
-  test.assertNotVisible('div#experiments', "The experiment panel is correctly closed.");
-
-  casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
-
-  casper.waitUntilVisible('div#experiments', function() {
-    test.assertVisible('div#experiments', "The experiment panel is correctly open.");
-  }, null, 5000);
+    test.assertNotVisible('div#experiments', "The experiment panel is correctly closed.");
+  });
+  
+  casper.then(function() {
+    casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
+  });
+  
+  casper.then(function() {
+    casper.waitUntilVisible('div#experiments', function() {
+      	test.assertVisible('div#experiments', "The experiment panel is correctly open.");
+    }, null, 5000);
+  });
 }
 
 function doExperimentsTableRowCheck(test) {
@@ -204,20 +213,23 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
       test.assertNotVisible('a.activeIcon', "active button exists and is correctly not enabled");
     }, null, 5000);
 
-    casper.waitUntilVisible('a.deleteIcon', function() {
-      test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
-    }, null, 5000);
-
     casper.waitForSelector('a.downloadResultsIcon', function() {
-      test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
+      	test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
     }, null, 5000);
 
+	casper.mouse.move('a.deleteIcon');
+    casper.waitUntilVisible('a.deleteIcon', function() {
+      	test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
+    }, null, 5000);
+
+	casper.mouse.move('a.downloadModelsIcon');
     casper.waitUntilVisible('a.downloadModelsIcon', function() {
-      test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
+      	test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
     }, null, 5000);
 
+	casper.mouse.move('a.cloneIcon');
     casper.waitUntilVisible('a.cloneIcon', function() {
-      test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
+      	test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
     }, null, 5000);
   });
 }
@@ -226,8 +238,6 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
 function doSpotlightCheck(test, spotlight_search, persisted, check_recorded_or_set_parameters) {
   test.assertExists('i.fa-search', "Spotlight button exists")
   casper.mouseEvent('click','i.fa-search', "attempting to open spotlight");
-
-
 
   casper.waitUntilVisible('div#spotlight', function() {
     test.assertVisible('div#spotlight', "Spotlight opened");
@@ -240,14 +250,13 @@ function doSpotlightCheck(test, spotlight_search, persisted, check_recorded_or_s
     casper.waitUntilVisible('div#spotlight', function() {
 
       casper.then(function() {
-        this.echo("Taking screenshot");
-        casper.capture('typed.png')
+
         if (persisted) {
           if (check_recorded_or_set_parameters) {
             this.echo("Waiting to see if the recorded variables button becomes visible");
             casper.waitUntilVisible('button#watch', function() {
-              test.assertVisible('button#watch', "Record variables icon correctly visible");
-              this.echo("Recorded variables button became visible correctly");
+              	test.assertVisible('button#watch', "Record variables icon correctly visible");
+              	this.echo("Recorded variables button became visible correctly");
             }, null, 8000);
           } else {
             //TESTS THAT THE PARAMETER IS SETTABLE

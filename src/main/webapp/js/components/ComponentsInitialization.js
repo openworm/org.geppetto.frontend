@@ -34,8 +34,11 @@
 
 define(function (require) {
 	return function (GEPPETTO) {
-		//Logo initialization 
+		//Logo initialization
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
+
+		//Tutorial component initialization
+		GEPPETTO.ComponentFactory.addComponent('TUTORIAL', {}, document.getElementById("tutorial"));
 
 		//Control panel initialization
 		GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"));
@@ -52,9 +55,9 @@ define(function (require) {
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
 
-		//Save initialization 
+		//Save initialization
 		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));
-		
+
 		//Simulation controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SIMULATIONCONTROLS', {}, document.getElementById("sim-toolbar"));
 
@@ -63,11 +66,11 @@ define(function (require) {
 
 		//Share controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));
-		
+
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {
-			GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, text: label, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));	
+			GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, text: label, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
 		});
-		
+
 	};
 });

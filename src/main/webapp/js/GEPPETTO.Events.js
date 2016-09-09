@@ -138,12 +138,7 @@ define(function (require) {
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
                 });
-                GEPPETTO.on(Events.Instance_deleted, function (parameters) {
-                    if(GEPPETTO.ControlPanel != undefined){
-                        GEPPETTO.ControlPanel.deleteData([parameters]);
-                    }
-                });
-            },
+            }
         };
     }
 });

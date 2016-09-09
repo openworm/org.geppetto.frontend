@@ -126,7 +126,7 @@ define(function (require) {
 		
 		//Tutorial component initialization
 		GEPPETTO.ComponentFactory.addComponent('TUTORIAL', {}, document.getElementById("tutorial"));		
-		GEPPETTO.Tutorial.setTutorial(Events.Experiment_loaded,"https://www.dropbox.com/s/puwpjdy9u7bfm2s/osb_tutorial.json?dl=1");
+		GEPPETTO.Tutorial.setTutorial(Events.Experiment_loaded,"https://dl.dropboxusercontent.com/s/puwpjdy9u7bfm2s/osb_tutorial.json?dl=1");
 		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {

@@ -72,7 +72,7 @@ define(function (require) {
 				cookieClass : "checkbox-inline cookieTutorial",
 				prevBtnDisabled : true,
 				nextBtnLast : false,
-				nextBtnLabel : "NEXT"
+				nextBtnLabel : ""
 			};
 		},
 
@@ -95,7 +95,7 @@ define(function (require) {
 			var newIconClass = "";
 			if(icon!=null || undefined){
 				if(icon!=""){
-					newIconClass = icon+" fa-2x"; 
+					newIconClass = icon+" fa-3x"; 
 				}
 			}
 			
@@ -107,7 +107,7 @@ define(function (require) {
 
 			var prevDisabled = true;
 			var lastStep = false;
-			var lastStepLabel = "NEXT";
+			var lastStepLabel = "";
 			
 			if(this.stepIndex ==this.totalSteps){
 				lastStep = true;
@@ -256,20 +256,21 @@ define(function (require) {
 					<button className="ui-dialog-titlebar-close" onClick={this.close}><i className="fa fa-close" /></button>
 			</div>
 			<div className="tutorial-message dialog ui-dialog-content ui-widget-content popup">
-			 <i id="tutorialIcon" className={this.state.iconClass}></i>
-			 <span id="message" dangerouslySetInnerHTML={this.createTutorialMessage()}></span>
+			 <div id="tutorialIcon" className={this.state.iconClass}></div>
+			 <p id="message" dangerouslySetInnerHTML={this.createTutorialMessage()}></p>
 			</div>
-			<div className="btn-group" role="group">
+			<div className="btn-group tutorial-buttons" role="group">
 				<div className="tutorial-buttons">
-					<button className="prevBtn btn btn-default btn-lg" disabled={this.state.prevBtnDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.prevStep}>
-						<span><i className="fa fa-arrow-left" aria-hidden="true"></i>   PREV</span>
+					<button className="prevBtn btn btn-default btn-lg" disabled={this.state.prevBtnDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous step" data-container="body" onClick={this.prevStep}>
+						<span><i className="fa fa-arrow-left fa-2x" aria-hidden="true"></i></span>
 					</button>
-					<button className="nextBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Previous tutorial step" container="body" onClick={this.nextStep}>
-						<span>{this.state.nextBtnLabel}   <i className={this.state.nextBtnLast ? "fa fa-undo" : "fa fa-arrow-right"} aria-hidden="true"></i></span>
+					<button className="nextBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Next step" data-container="body" onClick={this.nextStep}>
+						<span>{this.state.nextBtnLabel}   <i className={this.state.nextBtnLast ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
 					</button>
 				</div>
-				<label className={this.state.cookieClass} id="ignoreTutorial"><input type="checkbox" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /></label>
+			<label className={this.state.cookieClass} id="ignoreTutorial"><input type="checkbox" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
 			</div>
+			
 			</div>
 		}
 	});

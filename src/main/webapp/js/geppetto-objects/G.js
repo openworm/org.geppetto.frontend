@@ -441,10 +441,12 @@ define(function (require) {
              * @param {Function} callback - Callback function to be called whenever _variable_ changes
              */
             addOnNodeUpdatedCallback: function (node, callback) {
-                if (!this.listeners[node.getInstancePath()]) {
-                    this.listeners[node.getInstancePath()] = [];
-                }
-                this.listeners[node.getInstancePath()].push(callback);
+            	if(node !=null ||undefined){
+            		if (!this.listeners[node.getInstancePath()]) {
+            			this.listeners[node.getInstancePath()] = [];
+            		}
+            		this.listeners[node.getInstancePath()].push(callback);
+            	}
             },
 
             /**

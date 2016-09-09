@@ -72,11 +72,10 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
       casper.then(function() {
       	// wait for page to finish loading 
-      	// TODO: find a wait to wait for some selector rather than just sleeping
-      	this.echo("Waiting 6s to give time to the project to load");
-      	casper.wait(6000, function() {
-        	doExperimentTableTest(test);
-    	});
+      	this.echo("Waiting for load project logo to stop spinning");
+      	casper.waitWhileSelector('div.spinner-container > div.fa-spin', function() {
+      		doExperimentTableTest(test);
+    	}, null, 20000);
       });
 
       casper.then(function() {

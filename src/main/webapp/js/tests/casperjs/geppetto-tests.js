@@ -47,7 +47,7 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
 
   casper.then(function() {
     testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-    true, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay')
+    false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay')
   });
 
   //TODO: log back in as other users. Check more things
@@ -72,7 +72,9 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
       casper.then(function() {
       	// wait for page to finish loading 
-      	casper.wait(5000, function() {
+      	// TODO: find a wait to wait for some selector rather than just sleeping
+      	this.echo("Waiting 6s to give time to the project to load");
+      	casper.wait(6000, function() {
         	doExperimentTableTest(test);
     	});
       });
@@ -128,12 +130,16 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
       casper.then(function() {
         test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
-
       });
       casper.then(function() {
-        //roll over the experiments row
-        this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-        doPostPersistenceExperimentsTableButtonCheck(test);
+      	// wait - sometimes persistence takes a while depending on project size
+      	// TODO: find a wait to wait for some selector rather than just sleeping
+      	this.echo("Waiting 10s to give time to the project to persist");
+      	casper.wait(10000, function() {
+        	//roll over the experiments row
+        	this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+        	doPostPersistenceExperimentsTableButtonCheck(test);
+    	});
       });
       casper.then(function() {
         doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);

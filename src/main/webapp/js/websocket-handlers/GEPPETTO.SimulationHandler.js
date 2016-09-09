@@ -171,6 +171,7 @@ define(function (require) {
         };
 
         messageHandler[messageTypes.WATCHED_VARIABLES_SET] = function (payload) {
+            GEPPETTO.trigger(Events.Experiment_updated);
             GEPPETTO.Console.log("The list of variables to watch was successfully updated.");
         };
 
@@ -182,6 +183,7 @@ define(function (require) {
 
         //received model tree from server
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function (payload) {
+            GEPPETTO.trigger(Events.Experiment_updated);
             GEPPETTO.Console.log("The model parameters were successfully updated.");
 
         };

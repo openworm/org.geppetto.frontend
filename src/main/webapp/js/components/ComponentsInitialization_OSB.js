@@ -154,6 +154,10 @@ define(function (require) {
 		};
 		
         var dropDownPanelConfig = [
+	        {
+        		label: "Plot all recorded variables",
+    			action: "window.plotAllRecordedVariables();"
+	        },
 		    {
 		    	label: "Play step by step",
 		        action: "Project.getActiveExperiment().play({step:1});"
@@ -163,7 +167,7 @@ define(function (require) {
 		    	action: "Project.getActiveExperiment().play({step:100});"
 		    },
             {
-                label: "Enable color plotting",
+                label: "Apply voltage colouring to morphologies",
                 condition: "GEPPETTO.G.isBrightnessFunctionSet()",
                 false: {
                     action: "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
@@ -175,10 +179,6 @@ define(function (require) {
             {
                 label: "Show simulation time",
                 action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
-            },
-            {
-                label: "Plot all recorded variables",
-                action: "window.plotAllRecordedVariables();"
             }
         ];
 
@@ -211,6 +211,10 @@ define(function (require) {
 				$('#mainContainer').append('<div class="alert alert-warning osb-notification alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span class="osb-notification-text">'+Model.neuroml.importTypes.length+' projections in this model have not been loaded yet. <a href="javascript:loadConnections();" class="alert-link">Click here to load the connections.</a> (Note: depending on the size of the network this could take some time).</span></div>');
 			}
     
+        });
+        
+        GEPPETTO.on(Events.Project_loading, function () {
+				$('.osb-notification').remove();
         });
 	};
 });

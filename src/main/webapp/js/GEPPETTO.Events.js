@@ -42,6 +42,7 @@ var Events = {
     Select: "experiment:selection_changed",
     Focus_changed: "experiment:focus_changed",
     Experiment_over: "experiment:over",
+    Project_loading: "project:loading",
     Project_loaded: "project:loaded",
     Model_loaded: "model:loaded",
     Experiment_loaded: "experiment:loaded",
@@ -56,6 +57,7 @@ var Events = {
     Experiment_completed: "experiment:completed",
     Experiment_failed: "experiment:failed",
     Experiment_update: "experiment:update",
+    Experiment_updated: "experiment:updated",
     Experiment_deleted: "experiment_deleted",
     Experiment_active: "experiment_active",
     Experiment_created:"experiment:created",
@@ -64,10 +66,8 @@ var Events = {
     Check_project_persisted : "project:persisted_state",
     Spotlight_closed: "spotlight:closed",
     Instance_deleted: "instance: deleted",
-    Parameter_modified : "parameter: modified",
-    Variable_recorded : "variable: recorded",
     Show_Tutorial : "show_tutorial",
-	  Hide_Tutorial : "hide_tutorial"
+    Hide_Tutorial : "hide_tutorial"
 
 };
 
@@ -139,12 +139,7 @@ define(function (require) {
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
                 });
-                GEPPETTO.on(Events.Instance_deleted, function (parameters) {
-                    if(GEPPETTO.ControlPanel != undefined){
-                        GEPPETTO.ControlPanel.deleteData([parameters]);
-                    }
-                });
-            },
+            }
         };
     }
 });

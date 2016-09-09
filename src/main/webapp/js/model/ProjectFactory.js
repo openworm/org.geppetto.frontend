@@ -88,6 +88,7 @@ define(function (require) {
                         script: node.script,
                         _metaType: GEPPETTO.Resources.EXPERIMENT_NODE,
                     });
+                
 
                 // create visualization subtree only at first
                 for (var key in node.aspectConfigurations) {
@@ -98,6 +99,13 @@ define(function (require) {
                         for (var key in variables) {
                             e.getWatchedVariables().push(variables[key]);
                         }
+                    }
+                    
+                    var parameters = aC.modelParameters;
+                    if (parameters != null || parameters != undefined) {
+	                    for(var i=0;i<parameters.length;i++){
+	                    	e.getSetParameters()[parameters[i].variable]=parameters[i].value;
+	                    }
                     }
 
                     if (aC.simulatorConfiguration != null) {

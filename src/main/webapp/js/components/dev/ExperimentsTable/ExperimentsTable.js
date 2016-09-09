@@ -4,7 +4,7 @@
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
 define(function (require) {
-
+  
     var React = require('react'), $ = require('jquery');
     var GEPPETTO = require('geppetto');
 
@@ -81,7 +81,7 @@ define(function (require) {
                 <tr data-rowType="main" onClick={this.props.fnClick} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}
                     className={rowClasses} id={this.props.experiment.getId()}>
                     <StatusElement experiment={this.props.experiment} key={this.props.experiment.name+"-statusElement"}/>
-                    <td className="configurationTD" name="name" contentEditable={this.props.editable}>{this.props.experiment.getName()}</td>
+                    <td className="configurationTD" name="name" contentEditable={this.props.editable} suppressContentEditableWarning ={true}>{this.props.experiment.getName()}</td>
                     <td>{this.props.experiment.getLastModified()}</td>
                     <td><IconsElement ref="icons" experiment={this.props.experiment} key={this.props.experiment.name+"-iconsRow"}/>
                     </td>
@@ -171,11 +171,7 @@ define(function (require) {
         	
             var row = "#simulatorRowId-" + this.props.experiment.getId();
             
-            GEPPETTO.on(Events.Parameter_modified, function () {
-                self.refresh();
-            });
-            
-            GEPPETTO.on(Events.Variable_recorded, function () {
+            GEPPETTO.on(Events.Experiment_updated, function () {
                 self.refresh();
             });
             
@@ -230,36 +226,30 @@ define(function (require) {
         
         watchedVariablesWindow : function(){
         	if(this.props.experiment.getWatchedVariables()!=null || undefined){
-        		var watchedVariables = "";
+        		var watchedVariables = "<ul class='listVariables'>";
 
         		for(var i =0; i<this.props.experiment.getWatchedVariables().length; i++){
         			watchedVariables = 
-        				watchedVariables + this.props.experiment.getWatchedVariables()[i] + "\n\n\n";
+        				watchedVariables + '<li>'+this.props.experiment.getWatchedVariables()[i] + '</li>';
         		}
+
+				watchedVariables += "</ul>";
 
         		GEPPETTO.FE.infoDialog("Recorded variables ", watchedVariables);
         	}
         },
         
         parametersWindow : function(){
-        	var modifiedParameters = "";
-       		var parameters =[];
-        	var i=0;
-        	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
-        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
-        				GEPPETTO.Resources.PARAMETER_TYPE){
-        			parameters[i] = GEPPETTO.ModelFactory.allPathsIndexing[key]; 
-        			i++;
-        		}
-        	}
-
-        	for(var i=0; i<parameters.length; i++){
-        		var instance = Instances.getInstance([parameters[i].path]);
-        		if(instance[0].modified){
-        			modifiedParameters += instance[0].getPath()+'\n\n';
-        		}
-        	}
-        	
+        	var modifiedParameters = "<ul class='listVariables'>";
+       		var parameters = this.props.experiment.getSetParameters();
+       		
+       		for (var key in parameters) {
+       		  if (parameters.hasOwnProperty(key)) {
+       			modifiedParameters += '<li>'+key+"="+parameters[key]+'</li>';
+       		  }
+       		}
+       		
+       		modifiedParameters += "</ul>";
         	GEPPETTO.FE.infoDialog("Set Parameters ", modifiedParameters);
         },
 
@@ -288,17 +278,7 @@ define(function (require) {
             
             var parameterMessage = "None";
             var parametersClick =null;
-        	var modifiedParameters = 0;
-        	var i=0;
-        	for(var key =0; key<GEPPETTO.ModelFactory.allPathsIndexing.length;key++){
-        		if(GEPPETTO.ModelFactory.allPathsIndexing[key].metaType == 
-        				GEPPETTO.Resources.PARAMETER_TYPE){
-        			var instance = Instances.getInstance([GEPPETTO.ModelFactory.allPathsIndexing[key].path]);
-            		if(instance[0].modified){
-            			modifiedParameters++;
-            		}
-        		}
-        	}
+        	var modifiedParameters = Object.keys(this.props.experiment.getSetParameters()).length;
         	
         	if(modifiedParameters>0){
         		parameterMessage = modifiedParameters + " parameters set";
@@ -310,11 +290,11 @@ define(function (require) {
                 <tr id={simulatorRowId}>
                     <td></td>
                     <td className="configurationTD" name={'aspect'}>{this.props.simulator["aspectInstancePath"]}</td>
-                    <td className="configurationTD" name={'simulatorId'} contentEditable={editable}>{this.props.simulator["simulatorId"]}</td>
+                    <td className="configurationTD" name={'simulatorId'} contentEditable={editable} suppressContentEditableWarning ={true}>{this.props.simulator["simulatorId"]}</td>
                     <td className="configurationTDLink" name={'variables'} onClick={watchedVariablesClick}>{variablesMessage}</td>
                     <td className="configurationTDLink" name={'parameters'} onClick={parametersClick}>{parameterMessage}</td>
-                    <td className="configurationTD" name={'timeStep'} contentEditable={editable}>{this.props.simulator["timeStep"]}</td>
-                    <td className="configurationTD" name={'length'} contentEditable={editable}>{this.props.simulator["length"]}</td>
+                    <td className="configurationTD" name={'timeStep'} contentEditable={editable} suppressContentEditableWarning ={true}>{this.props.simulator["timeStep"]}</td>
+                    <td className="configurationTD" name={'length'} contentEditable={editable} suppressContentEditableWarning ={true}>{this.props.simulator["length"]}</td>
                 </tr>
             );
         }
@@ -485,7 +465,7 @@ define(function (require) {
     /**
      * Creates a table html component used to dipslay the experiments
      */
-    var ExperimentsTable = React.createClass({        
+    var ExperimentsTable = React.createClass({
         componentDidMount: function () {
         	var self = this;
         	// Handles new experiment button click

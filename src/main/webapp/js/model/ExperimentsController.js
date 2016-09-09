@@ -55,6 +55,7 @@ define(function (require) {
 
             /** Update the instances of this experiment given the experiment state */
             updateExperiment: function (experiment, experimentState) {
+            	
                 this.playExperimentReady = false; //we reset
                 this.maxSteps = 0;
                 for (var i = 0; i < experimentState.recordedVariables.length; i++) {
@@ -89,6 +90,9 @@ define(function (require) {
                     //to update themselves
                     this.triggerPlayExperiment(experiment);
                 }
+                
+
+                GEPPETTO.trigger(Events.Experiment_updated);                
             },
             
             setActive:function(experiment){
@@ -148,7 +152,7 @@ define(function (require) {
                     parameters["modelParameters"] = modelParameters;
 
                     for (var key in newParameters) {
-                        Project.getActiveExperiment().parameters.push(key);
+                        Project.getActiveExperiment().getSetParameters()[newParameters[index].getInstancePath()]=newParameters[index].getValue();
                     }
 
                     GEPPETTO.MessageSocket.send("set_parameters", parameters);
@@ -181,7 +185,6 @@ define(function (require) {
                 		}else{
                 			Project.getActiveExperiment().variables.splice(index,1);
                 		}
-                		GEPPETTO.trigger(Events.Variable_recorded);
                 	}
                 }
             },
@@ -312,7 +315,8 @@ define(function (require) {
 
                         if (currentStep >= that.maxSteps) {
                             this.postMessage(["experiment:loop"]);
-                            that.stop();
+                            Project.getActiveExperiment().stop();
+                            Project.getActiveExperiment().playAll();
                         } else {
                             GEPPETTO.trigger(Events.Experiment_update, {
                                 step: currentStep,

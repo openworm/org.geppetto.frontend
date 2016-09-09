@@ -1,7 +1,7 @@
 var TARGET_URL = "http://127.0.0.1"
 var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json"
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json"
-var PROJECT_URL_SUFFIX_3 = "?load_project_from_id=8"
+var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json"
 
 
 
@@ -20,7 +20,7 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/login?username=guest1&password=guest",function() {
-      this.waitForSelector('div#page', function() {
+    this.waitForSelector('div#page', function() {
         this.echo("I've waited for the splash screen to come up.");
         test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
     }, null, 30000);
@@ -47,7 +47,7 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
 
   casper.then(function() {
     testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-    true, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay')
+    false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay')
   });
 
   //TODO: log back in as other users. Check more things
@@ -71,7 +71,12 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
       }
 
       casper.then(function() {
-        doExperimentTableTest(test);
+      	// wait for page to finish loading 
+      	// TODO: find a wait to wait for some selector rather than just sleeping
+      	this.echo("Waiting 6s to give time to the project to load");
+      	casper.wait(6000, function() {
+        	doExperimentTableTest(test);
+    	});
       });
 
       casper.then(function() {
@@ -125,10 +130,14 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
       casper.then(function() {
         test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
-
-        //roll over the experiments row
-        this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-        doPostPersistenceExperimentsTableButtonCheck(test);
+      });
+      casper.then(function() {
+      	this.echo("Waiting for persist star to stop spinning");
+      	casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function() {
+        	//roll over the experiments row
+        	this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+        	doPostPersistenceExperimentsTableButtonCheck(test);
+    	}, null, 20000);
       });
       casper.then(function() {
         doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
@@ -162,12 +171,12 @@ function doExperimentTableTest(test) {
 
     test.assertNotVisible('div#experiments', "The experiment panel is correctly closed.");
   });
-
+  
   casper.then(function() {
-    casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
-
-    casper.waitUntilVisible('div#experiments', function() {
-      test.assertVisible('div#experiments', "The experiment panel is correctly open.");
+    this.click('a[href="#experiments"]', "Opening experiment console");
+    
+    this.waitUntilVisible('div#experiments', function() {
+      	test.assertVisible('div#experiments', "The experiment panel is correctly open.");
     }, null, 5000);
   });
 }
@@ -209,20 +218,23 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
       test.assertNotVisible('a.activeIcon', "active button exists and is correctly not enabled");
     }, null, 5000);
 
-    casper.waitUntilVisible('a.deleteIcon', function() {
-      test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
-    }, null, 5000);
-
     casper.waitForSelector('a.downloadResultsIcon', function() {
-      test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
+      	test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
     }, null, 5000);
 
+	casper.mouse.move('a.deleteIcon');
+    casper.waitUntilVisible('a.deleteIcon', function() {
+      	test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
+    }, null, 5000);
+
+	casper.mouse.move('a.downloadModelsIcon');
     casper.waitUntilVisible('a.downloadModelsIcon', function() {
-      test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
+      	test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
     }, null, 5000);
 
+	casper.mouse.move('a.cloneIcon');
     casper.waitUntilVisible('a.cloneIcon', function() {
-      test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
+      	test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
     }, null, 5000);
   });
 }
@@ -248,8 +260,8 @@ function doSpotlightCheck(test, spotlight_search, persisted, check_recorded_or_s
           if (check_recorded_or_set_parameters) {
             this.echo("Waiting to see if the recorded variables button becomes visible");
             casper.waitUntilVisible('button#watch', function() {
-              test.assertVisible('button#watch', "Record variables icon correctly visible");
-              this.echo("Recorded variables button became visible correctly");
+              	test.assertVisible('button#watch', "Record variables icon correctly visible");
+              	this.echo("Recorded variables button became visible correctly");
             }, null, 8000);
           } else {
             //TESTS THAT THE PARAMETER IS SETTABLE

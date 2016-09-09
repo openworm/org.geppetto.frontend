@@ -37,9 +37,7 @@
  * @module model/ProjectNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(['jquery', 'underscore', 'backbone',
-    // Add requirement for Backbone-associations module
-], function (require) {
+define(['backbone'], function (require) {
 
     return Backbone.Model.extend({
         experiments: null,
@@ -215,7 +213,7 @@ define(['jquery', 'underscore', 'backbone',
         loadFromID: function (projectID, experimentID) {
 
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-
+            GEPPETTO.trigger(Events.Project_loading);
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
             GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
 
@@ -250,6 +248,7 @@ define(['jquery', 'underscore', 'backbone',
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger(Events.Project_loading);
             GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
 
             var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
@@ -281,6 +280,7 @@ define(['jquery', 'underscore', 'backbone',
          */
         loadFromContent: function (content) {
 
+        	GEPPETTO.trigger(Events.Project_loading);
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 
             console.time(GEPPETTO.Resources.LOADING_PROJECT);

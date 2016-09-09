@@ -20,7 +20,7 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/login?username=guest1&password=guest",function() {
-      this.waitForSelector('div#page', function() {
+    this.waitForSelector('div#page', function() {
         this.echo("I've waited for the splash screen to come up.");
         test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
     }, null, 30000);
@@ -71,7 +71,10 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
       }
 
       casper.then(function() {
-        doExperimentTableTest(test);
+      	// wait for page to finish loading 
+      	casper.wait(5000, function() {
+        	doExperimentTableTest(test);
+    	});
       });
 
       casper.then(function() {
@@ -166,11 +169,9 @@ function doExperimentTableTest(test) {
   });
   
   casper.then(function() {
-    casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
-  });
-  
-  casper.then(function() {
-    casper.waitUntilVisible('div#experiments', function() {
+    this.click('a[href="#experiments"]', "Opening experiment console");
+    
+    this.waitUntilVisible('div#experiments', function() {
       	test.assertVisible('div#experiments', "The experiment panel is correctly open.");
     }, null, 5000);
   });

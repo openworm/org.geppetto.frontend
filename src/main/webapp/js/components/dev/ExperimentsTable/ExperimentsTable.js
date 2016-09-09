@@ -494,7 +494,8 @@ define(function (require) {
             });
 
             GEPPETTO.on(Events.Project_persisted, function () {
-                self.populate();
+                self.forceUpdate();
+                self.updateExperimentStatus();
             });
             
             GEPPETTO.on(Events.Experiment_status_check, function () {

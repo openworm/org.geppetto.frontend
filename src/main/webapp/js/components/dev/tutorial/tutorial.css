@@ -1,11 +1,11 @@
 .tutorial{
-	position: fixed; 
-	height: auto; 
-	width: 300px; 
-	top: 60px;
-	right: 20px;
-	display: 'block';
-	left : inherit;
+    position: absolute;
+    height: 300px;
+    width: 400px;
+    top:160px;
+    left:430px;
+    display: block;
+    z-index:100;
 }
 
 .tutorial-message{
@@ -13,45 +13,40 @@
 	width: auto;
 	minHeight: 0px;
 	maxHeight: none;
-	height: 167px;
+	height: 180px;
 	color: #fc6320;
 }
 
 #ignoreTutorial {
 	width: auto;
-	minHeight: 0px;
-	maxHeight: none;
+	margin-top:15px;
 	color: #fc6320;
 }
 
 .tutorial-buttons{
-	padding-left : 40px;
-	padding-bottom : 15px;
+	width: 100%;
+    text-align: center;
 }
 
 .cookieTutorial {
-	padding-left: 50px;
+	
 }
 
 .prevBtn{
-	border-color: #fc6320;
+	border: 0;
+    background-color: transparent!important;
 }
 
 .nextBtn{
-	border-color: #fc6320;
+	border: 0;
+    background-color: transparent!important;
 }
-
-.prevBtn:focus{
-	border-color: #fc6320;
-}
-
-.nextBtn:focus{
-	border-color: #fc6320;
-}
-
 
 #tutorialIcon{
-	padding-right: 20px;
+	color:#fc2320;
+	width: 100%;
+    text-align: center;
+    margin-bottom:10px;
 }
 
 .tutorialTitle{

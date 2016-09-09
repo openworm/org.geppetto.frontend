@@ -42,6 +42,7 @@ var Events = {
     Select: "experiment:selection_changed",
     Focus_changed: "experiment:focus_changed",
     Experiment_over: "experiment:over",
+    Project_loading: "project:loading",
     Project_loaded: "project:loaded",
     Model_loaded: "model:loaded",
     Experiment_loaded: "experiment:loaded",

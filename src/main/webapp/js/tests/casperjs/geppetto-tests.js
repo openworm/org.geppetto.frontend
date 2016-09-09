@@ -132,14 +132,12 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
       });
       casper.then(function() {
-      	// wait - sometimes persistence takes a while depending on project size
-      	// TODO: find a wait to wait for some selector rather than just sleeping
-      	this.echo("Waiting 10s to give time to the project to persist");
-      	casper.wait(10000, function() {
+      	this.echo("Waiting for persist star to stop spinning");
+      	casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function() {
         	//roll over the experiments row
         	this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
         	doPostPersistenceExperimentsTableButtonCheck(test);
-    	});
+    	}, null, 20000);
       });
       casper.then(function() {
         doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);

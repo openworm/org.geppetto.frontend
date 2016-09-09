@@ -209,5 +209,9 @@ define(function (require) {
 			}
     
         });
+        
+        GEPPETTO.on(Events.Project_loading, function () {
+				$('.osb-notification').remove();
+        });
 	};
 });

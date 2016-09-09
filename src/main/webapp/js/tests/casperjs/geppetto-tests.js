@@ -20,7 +20,7 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/login?username=guest1&password=guest",function() {
-      this.waitForSelector('div#page', function() {
+    this.waitForSelector('div#page', function() {
         this.echo("I've waited for the splash screen to come up.");
         test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
     }, null, 30000);
@@ -47,7 +47,7 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
 
   casper.then(function() {
     testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-    true, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay')
+    false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay')
   });
 
   //TODO: log back in as other users. Check more things
@@ -71,7 +71,11 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
       }
 
       casper.then(function() {
-        doExperimentTableTest(test);
+      	// wait for page to finish loading 
+      	this.echo("Waiting for load project logo to stop spinning");
+      	casper.waitWhileSelector('div.spinner-container > div.fa-spin', function() {
+      		doExperimentTableTest(test);
+    	}, null, 20000);
       });
 
       casper.then(function() {
@@ -125,12 +129,14 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
       casper.then(function() {
         test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
-
       });
       casper.then(function() {
-        //roll over the experiments row
-        this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-        doPostPersistenceExperimentsTableButtonCheck(test);
+      	this.echo("Waiting for persist star to stop spinning");
+      	casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function() {
+        	//roll over the experiments row
+        	this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+        	doPostPersistenceExperimentsTableButtonCheck(test);
+    	}, null, 20000);
       });
       casper.then(function() {
         doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
@@ -166,11 +172,9 @@ function doExperimentTableTest(test) {
   });
   
   casper.then(function() {
-    casper.mouseEvent('click', 'a[aria-controls="experiments"]', "Opening experiment console");
-  });
-  
-  casper.then(function() {
-    casper.waitUntilVisible('div#experiments', function() {
+    this.click('a[href="#experiments"]', "Opening experiment console");
+    
+    this.waitUntilVisible('div#experiments', function() {
       	test.assertVisible('div#experiments', "The experiment panel is correctly open.");
     }, null, 5000);
   });

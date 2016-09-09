@@ -1,7 +1,6 @@
 define(function (require) {
 
     var React = require('react'),
-        ReactDOM = require('react-dom'),
     	GEPPETTO = require('geppetto');
     	$ = require('jquery'),
         TutorialModal = require('../../tutorial/TutorialModule');
@@ -16,6 +15,7 @@ define(function (require) {
         getDefaultProps: function() {
             return {
                 label: '',
+                id: 'tutorialBtn',
                 className: 'squareB',
                 icon:'fa fa-leanpub',
                 onClick: function(){ GEPPETTO.Console.executeCommand("G.toggleTutorial()"); }

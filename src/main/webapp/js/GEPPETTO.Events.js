@@ -42,6 +42,7 @@ var Events = {
     Select: "experiment:selection_changed",
     Focus_changed: "experiment:focus_changed",
     Experiment_over: "experiment:over",
+    Project_loading: "project:loading",
     Project_loaded: "project:loaded",
     Model_loaded: "model:loaded",
     Experiment_loaded: "experiment:loaded",
@@ -138,12 +139,7 @@ define(function (require) {
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
                 });
-                GEPPETTO.on(Events.Instance_deleted, function (parameters) {
-                    if(GEPPETTO.ControlPanel != undefined){
-                        GEPPETTO.ControlPanel.deleteData([parameters]);
-                    }
-                });
-            },
+            }
         };
     }
 });

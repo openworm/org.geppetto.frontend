@@ -13,6 +13,7 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 label: '',
+                id: 'queryBuilderBtn',
                 className: 'squareB',
                 icon: 'fa fa-cogs',
                 onClick: function () {

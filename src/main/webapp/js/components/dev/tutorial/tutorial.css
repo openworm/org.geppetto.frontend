@@ -57,3 +57,11 @@
     color: #fd6808;
     margin-left: 5px;
 }
+
+.showTutorial {
+	display : block;
+}
+
+.hideTutorial {
+	display : none;
+}

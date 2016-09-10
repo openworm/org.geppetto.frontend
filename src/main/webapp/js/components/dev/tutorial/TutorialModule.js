@@ -72,7 +72,8 @@ define(function (require) {
 				cookieClass : "checkbox-inline cookieTutorial",
 				prevBtnDisabled : true,
 				nextBtnLast : false,
-				nextBtnLabel : ""
+				nextBtnLabel : "",
+				visible : true,
 			};
 		},
 
@@ -85,9 +86,8 @@ define(function (require) {
 			var message = this.state.tutorialData.steps[this.stepIndex].message;
 			var action = this.state.tutorialData.steps[this.stepIndex].action;
 			var icon = this.state.tutorialData.steps[this.stepIndex].icon;
-
+			this.open(true);
 			this.updateTutorialWindow(title,message,action,icon);			
-			this.open();
 			this.started = true;
 		},
 
@@ -167,8 +167,11 @@ define(function (require) {
 			$('#tutorial').hide();
 		},
 
-		open : function(){
+		open : function(started){
 			$('#tutorial').show();
+			if(!started){
+				$('#tutorialMain').removeClass("hideTutorial");
+			}
 		},
 		
 		setTutorial : function(event, configurationURL){
@@ -188,7 +191,9 @@ define(function (require) {
 				success: function (responseData, textStatus, jqXHR) {
 					self.setState({ tutorialData: responseData });
 					self.totalSteps = self.state.tutorialData.steps.length-1;
-					self.start();
+					if(self.state.visible){
+						self.start();
+					}
 					self.tutorialLoaded = true;
 				},
 				error: function (responseData, textStatus, errorThrown) {
@@ -218,15 +223,20 @@ define(function (require) {
 			//Launches tutorial from button 
 			GEPPETTO.on(Events.Show_Tutorial,function(){
 				if(self.started){
-					self.open();
+					self.open(false);
 				}else{
-					//default tutorial when user doesn't specify one for this event
-					var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json";
-					if(self.tutorialMap[Events.Show_Tutorial]!=null || undefined){
-						tutorialURL = self.tutorialMap[Events.Show_Tutorial];
+					if(!self.state.visible){
+						self.start();
+						self.open(false);
+					}else{
+						//default tutorial when user doesn't specify one for this event
+						var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json";
+						if(self.tutorialMap[Events.Show_Tutorial]!=null || undefined){
+							tutorialURL = self.tutorialMap[Events.Show_Tutorial];
+						}
+
+						self.tutorialData(tutorialURL);
 					}
-					
-					self.tutorialData(tutorialURL);
 				}
 			});
 			
@@ -249,8 +259,24 @@ define(function (require) {
 			return {__html: this.state.tutorialMessage}; 
 		},
 		
+		getCookie : function(){
+			var ignoreTutorial = $.cookie('ignore_tutorial');
+			if(ignoreTutorial == undefined){
+				//sets to string instead of boolean since $.cookie returns string even 
+				//when storing as boolean
+				ignoreTutorial = true;
+			}else{
+				ignoreTutorial = (ignoreTutorial === "true");
+			}
+			
+			return ignoreTutorial;
+		},
+		
 		render: function () {
-			return  <div className="tutorial ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-draggable-disabled ui-state-disabled noStyleDisableDrag">
+			var ignoreTutorial = this.getCookie();
+									
+			this.state.visible = !ignoreTutorial;
+			return  <div id="tutorialMain" className={(ignoreTutorial? "hideTutorial" : "showTutorial") + " tutorial ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-draggable-disabled ui-state-disabled noStyleDisableDrag"}>
 			<div className="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
 				<span id="ui-id-5" className="tutorialTitle">{this.state.tutorialTitle}</span>
 					<button className="ui-dialog-titlebar-close" onClick={this.close}><i className="fa fa-close" /></button>

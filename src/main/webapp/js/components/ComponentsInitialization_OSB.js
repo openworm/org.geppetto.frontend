@@ -51,7 +51,7 @@ define(function (require) {
 			
 			var formId = "gptForm";
 			
-			var formName = "Simulation Form";
+			var formName = "Run experiment";
 			
 			var schema = {
 				  type: "object",

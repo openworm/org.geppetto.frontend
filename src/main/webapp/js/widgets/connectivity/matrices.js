@@ -19,7 +19,6 @@ matrices = {
 
        context.svg
            .style("padding-left", margin.left + "px")
-           .style("padding-top", margin.top + "px")
            .append("g")
            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
        var matrix = [];
@@ -72,7 +71,7 @@ matrices = {
            .append("rect")
            .attr("class", "background")
            .attr("width", matrixDim - margin.left)
-           .attr("height", matrixDim - margin.top);
+           .attr("height", matrixDim);
 
        var row = context.svg.selectAll(".row")
            .data(matrix)
@@ -100,7 +99,7 @@ matrices = {
        var tooltip = context.svg
            .append("text")
            .attr("x", 0)
-           .attr("y", -10)
+           .attr("y", 20)
            .attr('class', 'connectionlabel')
            .text("Hover the squares to see the connections.");
 

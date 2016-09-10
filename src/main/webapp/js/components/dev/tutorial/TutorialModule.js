@@ -208,7 +208,7 @@ define(function (require) {
 
 			//launches specific tutorial is experiment is loaded
 			GEPPETTO.on(Events.Experiment_loaded,function(){
-				if(!this.dontShowTutorial){
+				if(!self.dontShowTutorial){
 					//default tutorial when user doesn't specify one for this event
 					var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json";
 					if(self.tutorialMap[Events.Experiment_loaded]!=null || undefined){
@@ -216,7 +216,7 @@ define(function (require) {
 					}
 					
 					self.tutorialData(tutorialURL);
-					this.dontShowTutorial = true;
+					self.dontShowTutorial = true;
 				}
 			});
 
@@ -264,7 +264,7 @@ define(function (require) {
 			if(ignoreTutorial == undefined){
 				//sets to string instead of boolean since $.cookie returns string even 
 				//when storing as boolean
-				ignoreTutorial = true;
+				ignoreTutorial = false;
 			}else{
 				ignoreTutorial = (ignoreTutorial === "true");
 			}

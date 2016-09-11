@@ -2,8 +2,6 @@ define(function (require) {
 
     var React = require('react'),
     	GEPPETTO = require('geppetto');
-    	$ = require('jquery'),
-        TutorialModal = require('../../tutorial/TutorialModule');
 
     return React.createClass({
         mixins: [require('mixins/Button')],

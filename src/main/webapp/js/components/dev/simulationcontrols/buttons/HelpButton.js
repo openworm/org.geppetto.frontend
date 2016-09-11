@@ -59,6 +59,7 @@ define(function (require) {
         getDefaultProps: function() {
             return {
                 label: 'Help',
+                id: 'genericHelpBtn',
                 className: 'pull-right help-button',
                 icon:'fa fa-info-circle',
                 onClick: function(){ GEPPETTO.Console.executeCommand("G.showHelpWindow(true)"); }

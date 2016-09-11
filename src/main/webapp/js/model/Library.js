@@ -85,21 +85,24 @@ define(function (require) {
     };
     
     Library.prototype.resolveAllImportTypes = function (callback) {
-    	GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.RESOLVING_TYPES);
-    	var b=[];
-    	const BATCH = 50;
-    	for(var i=0;i<this.importTypes.length;i++){
-			b.push(this.importTypes[i].getPath());
-		} 
-    	while(b.length>BATCH){
-    		GEPPETTO.SimulationHandler.resolveImportType(b.splice(0,BATCH));
-		}
-    	GEPPETTO.SimulationHandler.resolveImportType(b, function(){
-    		if(callback!=undefined){
-    			callback();
+    	if(this.importTypes.length>0){
+        	GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.RESOLVING_TYPES);
+        	var b=[];
+        	const BATCH = 50;
+        	for(var i=0;i<this.importTypes.length;i++){
+    			b.push(this.importTypes[i].getPath());
     		} 
-    		GEPPETTO.trigger("hide:spinner");
-    	});
+        	while(b.length>BATCH){
+        		GEPPETTO.SimulationHandler.resolveImportType(b.splice(0,BATCH));
+    		}
+        	GEPPETTO.SimulationHandler.resolveImportType(b, function(){
+        		if(callback!=undefined){
+        			callback();
+        		} 
+        		GEPPETTO.trigger("hide:spinner");
+        	});
+    	}
+
     };
 
     // Overriding set

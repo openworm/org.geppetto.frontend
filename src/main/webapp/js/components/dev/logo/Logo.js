@@ -38,8 +38,7 @@ define(function(require) {
     document.getElementsByTagName("head")[0].appendChild(link);
 
     var React = require('react');
-
-
+    var GEPPETTO = require('geppetto');
 	
     var logoDiv = React.createClass({
     	componentDidMount: function(){

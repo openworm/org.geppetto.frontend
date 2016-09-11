@@ -68,11 +68,10 @@ define(function (require) {
         },
         
         componentDidMount: function () {
-        	var experiment = window.Project.getActiveExperiment();
             var self = this;
 
             GEPPETTO.on(Events.Experiment_loaded, function () {
-            	experiment = window.Project.getActiveExperiment();
+            	var experiment = window.Project.getActiveExperiment();
                 
                 if(experiment!=null || undefined){
                 	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
@@ -99,7 +98,7 @@ define(function (require) {
             });
             
             GEPPETTO.on(Events.Project_persisted, function () {
-                experiment = window.Project.getActiveExperiment();
+            	var experiment = window.Project.getActiveExperiment();
                 
                 if(experiment!=null || undefined){
                 	if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN) {

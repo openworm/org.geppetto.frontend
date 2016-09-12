@@ -63,7 +63,6 @@ var Events = {
     Experiment_created:"experiment:created",
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
-    Update_user_privileges : "update_privileges",
     Spotlight_closed: "spotlight:closed",
     Instance_deleted: "instance: deleted",
     Show_Tutorial : "show_tutorial",

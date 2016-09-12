@@ -58,7 +58,19 @@ define(function (require) {
                 unselected_transparent: true
             },
             highlightedConnections: [],
+            
+            //TODO Design something better to hold abritrary status
+            timeWidget : {},
+            timeWidgetVisible : false,
+            recordedVariablesWidget : {},
+            recordedVariablesPlot : false,
+            enableColorPlottingActive : false,
+            brightnessFunctionSet: false,
 
+            isBrightnessFunctionSet: function() {
+                return this.brightnessFunctionSet;
+            },
+            
             addWidget: function (type) {
                 var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
                 return newWidget;
@@ -272,6 +284,21 @@ define(function (require) {
                 }
                 return returnMessage;
             },
+            
+            toggleTutorial : function() {
+            	 var returnMessage;
+            	 var modalVisible = $('#tutorial').is(':visible');
+            	 
+                 if (modalVisible) {
+                	 GEPPETTO.trigger(Events.Hide_Tutorial);
+                     returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
+                 }
+                 else {
+                	 GEPPETTO.trigger(Events.Show_Tutorial);
+                     returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
+                 }
+                 return returnMessage;
+            },
 
             /**
              *
@@ -416,10 +443,12 @@ define(function (require) {
              * @param {Function} callback - Callback function to be called whenever _variable_ changes
              */
             addOnNodeUpdatedCallback: function (node, callback) {
-                if (!this.listeners[node.getInstancePath()]) {
-                    this.listeners[node.getInstancePath()] = [];
-                }
-                this.listeners[node.getInstancePath()].push(callback);
+            	if(node !=null ||undefined){
+            		if (!this.listeners[node.getInstancePath()]) {
+            			this.listeners[node.getInstancePath()] = [];
+            		}
+            		this.listeners[node.getInstancePath()].push(callback);
+            	}
             },
 
             /**
@@ -482,19 +511,59 @@ define(function (require) {
              */
             addBrightnessFunctionBulkSimplified: function (instances, normalizationFunction) {
             	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
-            	var newInstance = "";
-            	var visualObjects = [];
-            	if (instances[0].getParent().getInstancePath() in GEPPETTO.getVARS().meshes){
-            		newInstance = instances[0].getParent(); 
-            	}
-            	else{
-            		newInstance = instances[0].getParent().getParent();
-            		for (var voInstance in instances){
-                		visualObjects.push(instances[voInstance].getParent().getId());
+            	var compositeToLit={};
+            	var visualObjectsToLit={};
+            	var variables={};
+            	var currentCompositePath=undefined;
+            		
+            	for(var i=0;i<instances.length;i++){
+            		//FIXME this is arbitrary and only true if the stateVariable is 2 nested down, it could be anywhere
+            		var composite =  undefined;
+            		var multicompartment=false;
+                	if (instances[i].getParent().getMetaType()==GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE){
+                		composite = instances[i].getParent(); 
                 	}
+                	else if(instances[i].getParent().getParent().getMetaType()==GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE){
+                		composite = instances[i].getParent().getParent();
+                		multicompartment=true;
+                	}
+                	else{
+                		throw "Unsupported model to use this function";
+                	}
+            		var currentCompositePath = composite.getInstancePath();
+            		if (!compositeToLit.hasOwnProperty(currentCompositePath)){
+            			compositeToLit[currentCompositePath]=composite;
+            			visualObjectsToLit[currentCompositePath]=[];
+            			variables[currentCompositePath]=[];
+            			
+            		}
+            		//FIXME Arbitrary
+            		if(multicompartment){
+            			visualObjectsToLit[currentCompositePath].push(instances[i].getParent().getId());
+            		}
+            		variables[currentCompositePath].push(instances[i]);
+                	
+            	}
+
+            	for(var i in Object.keys(compositeToLit)){
+            		var path=Object.keys(compositeToLit)[i];
+            		this.addBrightnessFunctionBulk(compositeToLit[path], visualObjectsToLit[path], variables[path], normalizationFunction);
             	}
             	
-            	this.addBrightnessFunctionBulk(newInstance, visualObjects, instances, normalizationFunction);
+            },
+
+            /**
+             * Removes brightness functions 
+             * 
+             * @param {Instance} instance - The instance to be lit
+             */
+            removeBrightnessFunctionBulkSimplified: function (instances) {
+                for (var index in instances){
+            		this.clearBrightnessFunctions(instances[index]);
+            	}
+
+                // update flag
+                this.brightnessFunctionSet = false;
             },
 
             /**
@@ -525,15 +594,31 @@ define(function (require) {
             		}
             	}
             	
+            	var matchedMap = [];
+            	//statevariableinstances come out of order, needs to sort into map to avoid nulls
             	for (var index in modulations){
-	                this.addBrightnessListener(modulations[index], stateVariableInstances[index], normalizationFunction);
+                    for(var i in stateVariableInstances){
+                         if(stateVariableInstances[i].getParent().getInstancePath()==modulations[index]){
+                             matchedMap[modulations[index]]=stateVariableInstances[i];
+                         }
+                    }
+               	}
+            	
+            	//add brightness listener for map of variables
+            	for (var index in matchedMap){
+	                this.addBrightnessListener(index, matchedMap[index], normalizationFunction);
             	}
+
+                // update flag
+                this.brightnessFunctionSet = true;
             },
             
             addBrightnessListener: function(instance, modulation, normalizationFunction){
             	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
-                    GEPPETTO.SceneController.lightUpEntity(instance,
-                        normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+            		if(step<stateVariableInstance.getTimeSeries().length){
+            			GEPPETTO.SceneController.lightUpEntity(instance,
+            					normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+            		}
                 });
             },
             
@@ -541,27 +626,6 @@ define(function (require) {
                 this.clearOnNodeUpdateCallback(varnode);
             },
 
-            /**
-             * Dynamically change the visual representation of an aspect,
-             * modulated by the value of a watched node. The _transformation_
-             * to be applied to the aspect visual representation should be a
-             * function receiving the aspect and the watched node's value,
-             * which can be normalized via the _normalization_ function. The
-             * latter is a function which receives the watched node's value
-             * an returns a float between 0 and 1.
-             *
-             * @param {AspectNode} visualAspect - Aspect which contains the VisualizationTree with the entity to be dynamically changed
-             * @param {String} visualEntityName - Name of visual entity in the visualAspect VisualizationTree
-             * @param {Variable} dynVar - Dynamical variable which will modulate the transformation
-             * @param {Function} transformation - Transformation to act upon the visualEntity, given the modulation value
-             * @param {Function} normalization - Function to be applied to the dynamical variable, normalizing it to a suitable range according to _transformation_
-             */
-            addDynamicVisualization: function (visualAspect, visualEntityName, dynVar, transformation, normalization) {
-                //TODO: things should be VisualizationTree centric instead of aspect centric...
-                this.addOnNodeUpdatedCallback(dynVar, function (watchedNode) {
-                    transformation(visualAspect, visualEntityName, normalization ? normalization(watchedNode.getTimeSeries()[0]) : watchedNode.getTimeSeries()[0]);
-                });
-            },
 
             /**
              * Sets options that happened during selection of an entity. For instance,

@@ -34,5 +34,10 @@
 	<p>
 		<h3><a href=".\GeppettoPersistenceTests.html">Persistence Tests</a></h3>
 	</p>
+	<i>Requires: org.geppetto.core, org.geppetto.simulation, org.geppetto.frontend, org.geppetto.persistence</i><br/>
+    <i>NOTE: tests persistence samples and functionality - fails if persistence bundle is NOT deployed</i>
+	<p>
+		<h3><a href=".\GeppettoExternalSimulatorTests.html">External Simulator Tests</a></h3>
+	</p>
 </body>
 </html>

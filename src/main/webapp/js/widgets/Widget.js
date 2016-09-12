@@ -55,6 +55,7 @@ define(function (require) {
             id: null,
             dialog: null,
             visible: true,
+            destroyed: false,
             size: {height: 300, width: 350},
             position: {left: "50%", top: "50%"},
             registeredEvents: null,
@@ -85,7 +86,7 @@ define(function (require) {
              */
             destroy: function () {
                 $("#" + this.id).remove();
-
+                this.destroyed=true;
                 return this.name + " destroyed";
             },
 
@@ -429,6 +430,9 @@ define(function (require) {
              * Renders the widget dialog window
              */
             render: function () {
+            	
+            	var that = this;
+            	
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -440,14 +444,14 @@ define(function (require) {
                         close: function (event, ui) {
                             if (event.originalEvent &&
                                 $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
-                                $("#" + this.id).remove();
+                                that.destroy();
                             }
                         }
                     });
 
                 this.$el = $("#" + this.id);
                 var dialogParent = this.$el.parent();
-                var that = this;
+                
 
                 //add history
                 this.addButtonToTitleBar($("<div class='fa fa-history'></div>").click(function (event) {

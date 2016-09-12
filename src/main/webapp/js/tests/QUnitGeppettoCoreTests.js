@@ -282,11 +282,11 @@ define(function (require) {
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
                                       'getAllInstanceOf returning instances as expected for Variable and Variable path.');
                             // check AllPotentialInstances
-                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 10876 &&
+                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 10938 &&
                                       GEPPETTO.ModelFactory.allPathsIndexing[0].path == 'acnet2' &&
                                       GEPPETTO.ModelFactory.allPathsIndexing[0].metaType == 'CompositeType' &&
-                                      GEPPETTO.ModelFactory.allPathsIndexing[10876 - 1].path == 'time' &&
-                                      GEPPETTO.ModelFactory.allPathsIndexing[10876 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                                      GEPPETTO.ModelFactory.allPathsIndexing[10938 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[10938 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
                             // check getAllPotentialInstancesEndingWith
                             assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
                                       GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&

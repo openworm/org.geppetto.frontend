@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2016 OpenWorm.
+ * Copyright (c) 2011, 2013 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -29,31 +30,58 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Keeps track of privileges login user has
+ *
+ */
+define(function(require)
+{
 
-define(function (require) {
+    return function(GEPPETTO)
+    {
+        GEPPETTO.UserController =
+        {
+        	userName : null,
+            privileges : null,
+            loggedIn : false,
+            persistence : false,
+            
+            setUserPrivileges : function(userPrivileges){
+            	this.userName = userPrivileges.userName;
+            	this.persistence = userPrivileges.hasPersistence;
+            	this.loggedIn = userPrivileges.loggedIn;
+            	
+            	this.privileges = $.map(userPrivileges.privileges, function(value, index) {
+            	    return [value];
+            	});
+            },
+            
+            getUserPrivileges : function(){
+            	return this.privileges;
+            },
+            
+            getUserName : function(){
+            	return this.userName;
+            },
+            
+            isLoggedIn : function(){
+            	return this.loggedIn;
+            },
 
-    var React = require('react'),
-        GEPPETTO = require('geppetto');
+            hasPersistence : function(){
+            	return this.persistence;
+            },
+            
+            hasPermission : function(privilege){
+            	if(this.privileges!=null || undefined){
+            		if(this.privileges.indexOf(privilege)>-1){
+            			return true;
+            		}
+            	}
+            	
+            	return false;
+            }
+        };
 
-    return React.createClass({
-        mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
-        
-        popoverTitle: 'Persist project',
-
-        componentDidMount: function() {
-
-        },
-
-        getDefaultProps: function() {
-            return {
-            	label : '',
-                className: 'SaveButton pull-right',
-                icon: 'fa fa-star',
-                onClick: function() {
-                    GEPPETTO.Console.executeCommand("Project.persist();");
-                }
-            };
-        }
-
-    });
+    };
 });

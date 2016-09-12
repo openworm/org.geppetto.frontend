@@ -13,6 +13,7 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 label: '',
+                id: 'spotlightBtn',
                 className: 'squareB',
                 icon: 'fa fa-search',
                 onClick: function () {

@@ -13,6 +13,7 @@ define(function (require) {
             return (
                 React.DOM.button({
                     type: 'button',
+                    id: this.props.id,
                     className: 'btn ' + this.props.className,
                     'data-toggle': this.props['data-toggle'],
                     onClick: this.props.onClick,

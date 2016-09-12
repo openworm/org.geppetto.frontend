@@ -51,7 +51,11 @@ define(function (require) {
 		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
 		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
 		var shareComp = require('jsx!./dev/share/share');
+
+		var dropDownButton = require('jsx!./dev/DropDownPanel/DropDownButton')
+		var dropDownComp = require('jsx!./dev/DropDownPanel/DropDownPanel');
 		var queryComp = require('jsx!./dev/query/query');
+		var tutorialComp = require('jsx!./dev/tutorial/TutorialModule');
 		
 		GEPPETTO.ComponentFactory = {
 			getComponent: function(component, properties){
@@ -76,6 +80,12 @@ define(function (require) {
 				}
 				else if (component == 'SPOTLIGHT'){
 					return React.createFactory(spotlightComp)(properties);
+				}
+				else if (component == 'DROPDOWNBUTTON'){
+					return React.createFactory(dropDownButton)(properties);
+				}
+				else if (component == 'DROPDOWNPANEL'){
+					return React.createFactory(dropDownComp)(properties);
 				}
 				else if (component == 'FOREGROUND'){
 					return React.createFactory(foregroundControlsComp)(properties);
@@ -104,10 +114,15 @@ define(function (require) {
 				else if (component == 'QUERY'){
 					return React.createFactory(queryComp)(properties);
 				}
+				else if (component == 'TUTORIAL'){
+					return React.createFactory(tutorialComp)(properties);
+				}
 			},
 			
 			addComponent: function(component, properties, container){
-				return this.renderComponent(this.getComponent(component, properties), container);
+				var renderedComponent = this.renderComponent(this.getComponent(component, properties), container);
+				GEPPETTO.ComponentsController.addEventDispatcher(component, renderedComponent);
+				return renderedComponent;
 			},
 			
 			renderComponent: function(component, container){
@@ -142,7 +157,7 @@ define(function (require) {
 	
 	                //Take focus away from close button
 	                dialogParent.find("button.ui-dialog-titlebar-close").blur();	
-	                dialogParent.css("z-index","10");
+	                dialogParent.css("z-index","100");
 	                
 	                container = dialog.get(0);
 				}

@@ -505,6 +505,11 @@ define(function (require) {
             }
         },
 
+        clearData: function(){
+            // set state to refresh grid
+            this.setState({data: []});
+        },
+
         setData: function (records) {
             var columnMeta = this.props.columnMeta;
 
@@ -610,6 +615,15 @@ define(function (require) {
                 if ($("#controlpanel").is(':visible') && e.keyCode == escape) {
                 	that.close();
                 }
+            });
+
+            // listen to events we need to react to
+            GEPPETTO.on(Events.Project_loaded, function () {
+                that.clearData();
+            });
+
+            GEPPETTO.on(Events.Instance_deleted, function (parameters) {
+                that.deleteData([parameters]);
             });
 
             if(GEPPETTO.ForegroundControls != undefined){

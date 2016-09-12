@@ -48,7 +48,7 @@ define(function (require) {
         GEPPETTO.ProjectFactory =
         {
             /** Creates and populates client project nodes */
-            createProjectNode: function (project) {
+            createProjectNode: function (project, persisted) {
                 var p = new ProjectNode(
                     {
                         name: project.name,
@@ -57,6 +57,8 @@ define(function (require) {
                         _metaType: GEPPETTO.Resources.PROJECT_NODE,
                     });
 
+                p.persisted = persisted;
+                
                 for (var key in project.experiments) {
                     var experiment = project.experiments[key];
                     var e = this.createExperimentNode(experiment);
@@ -86,6 +88,7 @@ define(function (require) {
                         script: node.script,
                         _metaType: GEPPETTO.Resources.EXPERIMENT_NODE,
                     });
+                
 
                 // create visualization subtree only at first
                 for (var key in node.aspectConfigurations) {
@@ -96,6 +99,13 @@ define(function (require) {
                         for (var key in variables) {
                             e.getWatchedVariables().push(variables[key]);
                         }
+                    }
+                    
+                    var parameters = aC.modelParameters;
+                    if (parameters != null || parameters != undefined) {
+	                    for(var i=0;i<parameters.length;i++){
+	                    	e.getSetParameters()[parameters[i].variable]=parameters[i].value;
+	                    }
                     }
 
                     if (aC.simulatorConfiguration != null) {

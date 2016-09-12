@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>GEPPETTO Tests for the external simulator layer</title>
+    <link rel="stylesheet" href="geppetto/css/qunit.css">
+    <link rel="stylesheet" href="geppetto/css/custom-theme/jquery-ui-1.10.0.custom.css" />
+
+	<script>
+        var path = "org.geppetto.frontend";
+        if(path === "") {
+            window.BUNDLE_CONTEXT_PATH = "org.geppetto.frontend";
+        } else if(path === "/") {
+            window.BUNDLE_CONTEXT_PATH = "";
+        } else {
+            window.BUNDLE_CONTEXT_PATH = path;
+        }
+
+        window.USE_SSL = false;
+    </script>
+
+    <script type="text/template" id="tplSandbox">
+        <pre class="output"></pre>
+        <div class="input">
+            <textarea rows="1" id="commandInputArea" placeholder="<%= placeholder %>"></textarea>
+        </div>
+    </script>
+
+    <!-- The contextual menu template: -->
+    <script type="text/template" id="tplContextMenu">
+    </script>
+    <script type="text/template" id="tplContextMenuItems">
+        <li id="<%= this.cid %>">
+            <%= label %>
+        </li>
+    </script>
+
+    <!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
+    <script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
+    <span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
+    <% } %></script>
+
+    <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
+    <script data-main="geppetto/js/GeppettoExternalSimulatorTests.js" src="geppetto/js/vendor/require.js"></script>
+
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture">
+    <div id="modal-region"></div>
+    <div id="sim"></div>
+    <div id="console">Console Loading...</div>
+</div>
+</body>
+</html>

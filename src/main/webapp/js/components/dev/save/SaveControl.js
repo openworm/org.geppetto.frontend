@@ -34,18 +34,37 @@ define(function(require) {
 
     var React = require('react');
     var ReactDOM = require('react-dom');
-    var SaveButton = require('./SaveButton');
     var GEPPETTO = require('geppetto');
 
-    var saveControlComp = React.createClass({
+    $.widget.bridge('uitooltip', $.ui.tooltip);
 
-    	 onClick: function() {
-             GEPPETTO.Console.executeCommand("Project.persist();");
+    var saveControlComp = React.createClass({
+         attachTooltip: function(){
+        	 var self = this;
+             $('button[rel="tooltip"]').uitooltip({
+                 position: { my: "right center", at : "left-25 center"},
+                 tooltipClass: "tooltip-persist",
+                 show: {
+                     effect: "slide",
+                     direction: "right",
+                     delay: 200
+                 },
+                 hide: {
+                     effect: "slide",
+                     direction: "right",
+                     delay: 200
+                 },
+                 content: function () {
+                     return self.state.tooltipLabel;
+                 },
+             });
          },
          
     	getInitialState: function() {
             return {
             	disableSave : true,
+            	tooltipLabel : "Click here to persist this project!",
+            	icon: "fa fa-star"
             };
         },
         
@@ -54,18 +73,46 @@ define(function(require) {
             var self = this;
 
             GEPPETTO.on(Events.Project_persisted, function(){
-                self.setState({disableSave:true});
+            	self.setState({disableSave: false});
+            	//update contents of what's displayed on tooltip
+           	 	$('button[rel="tooltip"]').uitooltip({content: "The project was persisted and added to your dashboard!",
+           	 		position: { my: "right center", at : "left center"}});
+            	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+            	self.setState({disableSave: true});
             });
             
-            GEPPETTO.on(Events.Volatile_project_loaded, function(){
-                self.setState({disableSave:false});
-            });
+            GEPPETTO.on('spin_persist', function() {
+    			self.setState({icon:"fa fa-star fa-spin"});
+    		}.bind($(".saveButton")));
+
+    		GEPPETTO.on('stop_spin_persist', function() {
+    			self.setState({icon:"fa fa-star"});
+    		}.bind($(".saveButton")));
+    		
+    		
+        	self.attachTooltip();
         },
 
-        render: function () {
-            return React.DOM.div({className:'saveButton'}, React.createFactory(SaveButton)({disabled:this.state.disableSave}));
+        clickEvent : function(){
+        	var self = this;
+        	//update contents of what's displayed on tooltip
+       	 	$('button[rel="tooltip"]').uitooltip({content: "The project is getting persisted..."});
+        	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+        	self.setState({disableSave: true});
+        	GEPPETTO.Console.executeCommand("Project.persist();");
+        	GEPPETTO.trigger("spin_persist");
+        },
+        
+        render:  function () {
+        	return (
+        			<div className="saveButton">
+        				<button className="btn SaveButton pull-right" type="button" title=''
+        				rel="tooltip" onClick={this.clickEvent} disabled={this.state.disableSave}>
+        					<i className={this.state.icon}></i>
+        				</button>
+        			</div>
+        	);
         }
-
     });
     
     return saveControlComp;

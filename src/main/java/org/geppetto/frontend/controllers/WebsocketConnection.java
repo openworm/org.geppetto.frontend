@@ -58,8 +58,8 @@ import org.geppetto.frontend.messaging.DefaultMessageSenderFactory;
 import org.geppetto.frontend.messaging.MessageSender;
 import org.geppetto.frontend.messaging.MessageSenderEvent;
 import org.geppetto.frontend.messaging.MessageSenderListener;
-import org.geppetto.model.GeppettoFactory;
-import org.geppetto.model.RunnableQuery;
+import org.geppetto.model.datasources.DatasourcesFactory;
+import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.simulation.manager.ExperimentRunManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -479,7 +479,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		List<RunnableQuery> runnableQueriesEMF=new ArrayList<RunnableQuery>();
 
 		for(RunnableQueryDT dt:runnableQueries){
-			RunnableQuery rqEMF=GeppettoFactory.eINSTANCE.createRunnableQuery();
+			RunnableQuery rqEMF=DatasourcesFactory.eINSTANCE.createRunnableQuery();
 			rqEMF.setQueryPath(dt.queryPath);
 			rqEMF.setTargetVariablePath(dt.targetVariablePath);
 			runnableQueriesEMF.add(rqEMF);

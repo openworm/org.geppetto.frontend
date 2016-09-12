@@ -73,6 +73,20 @@
     float: left;
 }
 
+#querybuilder .query-result-option {
+    width: 100%;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    font-size: 22px !important;
+    line-height: 30px !important;
+    border: 2px solid #fd6808 !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    outline: none;
+    margin-bottom: 5px;
+}
+
 #querybuilder .query-item-button {
     height: 20px;
     width: 30px;

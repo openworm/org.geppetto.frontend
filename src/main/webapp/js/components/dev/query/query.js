@@ -166,6 +166,7 @@ define(function (require) {
             for(var i=0; i<this.results.length; i++){
                 if(this.results[i].id == resultsSetId) {
                     this.results[i].selected = true;
+                    // TODO: move selected at the top of the list
                 } else {
                     this.results[i].selected = false;
                 }
@@ -800,11 +801,15 @@ define(function (require) {
                         var queryDoneCallback = function (jsonResults) {
                             var queryLabel = "";
                             var verboseLabel = "";
+                            var verboseLabelPlain = "";
                             for (var i = 0; i < that.props.model.items.length; i++) {
                                 queryLabel += ((i != 0) ? "/" : "")
                                     + that.props.model.items[i].term;
                                 verboseLabel += ((i != 0) ? "<span> / </span>" : "")
                                     + "<span>" + that.props.model.items[i].term + "</span>: "
+                                    + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
+                                verboseLabelPlain += ((i != 0) ? " / " : "")
+                                    + that.props.model.items[i].term + ": "
                                     + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
                             }
 
@@ -825,6 +830,7 @@ define(function (require) {
                                 items: that.props.model.items.slice(0),
                                 label: queryLabel,
                                 verboseLabel: verboseLabel,
+                                verboseLabelPLain: verboseLabelPlain,
                                 records: formattedRecords,
                                 selected: true
                             });
@@ -942,8 +948,9 @@ define(function (require) {
             this.setErrorMessage('');
         },
 
-        resultSetSelectionChange: function(value){
-            this.props.model.resultSelectionChanged(value);
+        resultSetSelectionChange: function(e){
+            var val = e.target.value;
+            this.props.model.resultSelectionChanged(val);
         },
 
         render: function () {
@@ -983,6 +990,13 @@ define(function (require) {
 
                 markup = (
                     <div id="query-results-container" className="center-content">
+                        <select className="query-result-option"
+                                onChange={this.resultSetSelectionChange}
+                                value={this.props.model.results[focusTabIndex-1].id}>
+                            {this.props.model.results.map(function (resultItem, key) {
+                                return <option key={key} value={resultItem.id}>{resultItem.verboseLabelPLain}</option>;
+                            })}
+                        </select>
                         <Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>

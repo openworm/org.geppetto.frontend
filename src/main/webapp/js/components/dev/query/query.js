@@ -147,7 +147,8 @@ define(function (require) {
                 this.results[i].selected = false;
             }
 
-            this.results.push(results);
+            // always add the new one at the start of the list to simulate history
+            this.results.unshift(results);
             this.notifyChange();
         },
 
@@ -166,7 +167,10 @@ define(function (require) {
             for(var i=0; i<this.results.length; i++){
                 if(this.results[i].id == resultsSetId) {
                     this.results[i].selected = true;
-                    // TODO: move selected at the top of the list
+                    // move selected at the top of the list to simulate history
+                    var match = this.results[i];
+                    this.results.splice(i, 1);
+                    this.results.unshift(match);
                 } else {
                     this.results[i].selected = false;
                 }

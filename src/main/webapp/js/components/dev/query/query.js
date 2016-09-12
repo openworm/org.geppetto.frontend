@@ -42,11 +42,15 @@ define(function (require) {
 
     loadCss("geppetto/js/components/dev/query/query.css");
     loadCss("geppetto/js/components/dev/query/vendor/css/react-simpletabs.css");
+    loadCss("geppetto/js/components/dev/query/vendor/css/react-select.min.css");
 
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
     var Tabs = require('geppetto/js/components/dev/query/vendor/js/react-simpletabs.js');
+    var cn = require('geppetto/js/components/dev/query/vendor/js/class-names.js');
+    var as = require('geppetto/js/components/dev/query/vendor/js/react-input-autosize.js');
+    var Select = require('geppetto/js/components/dev/query/vendor/js/react-select.js');
     var typeahead = require('typeahead');
     var bh = require('bloodhound');
     var handlebars = require('handlebars');
@@ -151,10 +155,23 @@ define(function (require) {
             this.notifyChange();
         },
 
-        deleteResults: function (results) {
+        deleteResults: function(results) {
             for (var i = 0; i < this.results.length; i++) {
                 if (results.id == this.results[i].id) {
                     this.results.splice(i, 1);
+                }
+            }
+
+            this.notifyChange();
+        },
+
+        resultSelectionChanged: function(resultsSetId){
+            // loop results and change selection
+            for(var i=0; i<this.results.length; i++){
+                if(this.results[i].id == resultsSetId) {
+                    this.results[i].selected = true;
+                } else {
+                    this.results[i].selected = false;
                 }
             }
 
@@ -929,6 +946,10 @@ define(function (require) {
             this.setErrorMessage('');
         },
 
+        resultSetSelectionChange: function(value){
+            this.props.model.resultSelectionChanged(value);
+        },
+
         render: function () {
             var markup = null;
 
@@ -964,8 +985,19 @@ define(function (require) {
                     );
                 }, this);
 
+                var selectBoxOptions = this.props.model.results.map(function (resultsItem){
+                    return {
+                        id: resultsItem.id,
+                        value: resultsItem.verboseLabel
+                    };
+                });
+
                 markup = (
                     <div id="query-results-container" className="center-content">
+                        <Select name="result-set-selection"
+                                value={focusTabIndex}
+                                options={selectBoxOptions}
+                                onChange={this.resultSetSelectionChange} />
                         <Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>

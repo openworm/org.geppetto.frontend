@@ -71,18 +71,18 @@ require.config({
      */
     shim: {
         'vendor/jquery-ui-1.10.3.custom.min': ["jquery"],
+        'vendor/postprocessing/EffectComposer': ['three'],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/shaders/ConvolutionShader': ['three'],
         'vendor/shaders/CopyShader': ['three'],
         'vendor/shaders/FilmShader': ['three'],
         'vendor/shaders/FocusShader': ['three'],
-        'vendor/postprocessing/EffectComposer': ['three'],
-        'vendor/postprocessing/MaskPass': ['three'],
-        'vendor/postprocessing/RenderPass': ['three'],
-        'vendor/postprocessing/BloomPass': ['three'],
-        'vendor/postprocessing/ShaderPass': ['three'],
-        'vendor/postprocessing/FilmPass': ['three'],
+        'vendor/postprocessing/MaskPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/RenderPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/BloomPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/ShaderPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/FilmPass': ['three', 'vendor/postprocessing/EffectComposer'],
         'vendor/ColladaLoader': ['three'],
         'vendor/OBJLoader': ['three'],
         'vendor/ColorConverter': ["three"],
@@ -137,9 +137,9 @@ require(jqueryLib, function ($) {
 
     var ProjectNode = require('model/ProjectNode');
     $(function () {
+        window.GEPPETTO = require('geppetto');
         var project = new ProjectNode({name: "Project", id: -1});
         window.Project = project;
-        window.GEPPETTO = require('geppetto');
         //Alias G, Simulation, and help() to global vars for easy access
         window.G = GEPPETTO.G;
         window.Widgets = GEPPETTO.Widgets;

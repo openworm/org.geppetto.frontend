@@ -49,9 +49,13 @@ define(function (require) {
             maxSteps: 0,
             paused: false,
 
+            isPlayExperimentReady: function(){
+            	return this.playExperimentReady;
+            },
 
             /** Update the instances of this experiment given the experiment state */
             updateExperiment: function (experiment, experimentState) {
+            	
                 this.playExperimentReady = false; //we reset
                 this.maxSteps = 0;
                 for (var i = 0; i < experimentState.recordedVariables.length; i++) {
@@ -86,6 +90,9 @@ define(function (require) {
                     //to update themselves
                     this.triggerPlayExperiment(experiment);
                 }
+                
+
+                GEPPETTO.trigger(Events.Experiment_updated);                
             },
             
             setActive:function(experiment){
@@ -145,7 +152,7 @@ define(function (require) {
                     parameters["modelParameters"] = modelParameters;
 
                     for (var key in newParameters) {
-                        Project.getActiveExperiment().parameters.push(key);
+                        Project.getActiveExperiment().getSetParameters()[newParameters[index].getInstancePath()]=newParameters[index].getValue();
                     }
 
                     GEPPETTO.MessageSocket.send("set_parameters", parameters);
@@ -159,20 +166,26 @@ define(function (require) {
                     watchedVariables.push(variables[i].getInstancePath());
                     variables[i].setWatched(watch, false);
                 }
-                if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                    var parameters = {};
-                    parameters["experimentId"] = Project.getActiveExperiment().id;
-                    parameters["projectId"] = Project.getId();
-                    parameters["variables"] = watchedVariables;
-                    parameters["watch"] = watch;
-                    GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
+                if(Project.getActiveExperiment()!=null){
+                	if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                		var parameters = {};
+                		parameters["experimentId"] = Project.getActiveExperiment().id;
+                		parameters["projectId"] = Project.getId();
+                		parameters["variables"] = watchedVariables;
+                		parameters["watch"] = watch;
+                		GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
+                	}
                 }
 
-
                 for (var v = 0; v < variables.length; v++) {
-                    if (Project.getActiveExperiment().variables.indexOf(variables[v]) == -1) {
-                        Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
-                    }
+                	if(Project.getActiveExperiment()!=null){
+                		var index = Project.getActiveExperiment().variables.indexOf(variables[v].getInstancePath());
+                		if (index == -1) {
+                			Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
+                		}else{
+                			Project.getActiveExperiment().variables.splice(index,1);
+                		}
+                	}
                 }
             },
 
@@ -206,6 +219,7 @@ define(function (require) {
                         parameters["projectId"] = experiment.getParent().getId();
                         //sending to the server request for data
                         GEPPETTO.MessageSocket.send("play_experiment", parameters);
+                        GEPPETTO.trigger('spin_logo');
                         return "Play Experiment";
                     } else {
                         this.triggerPlayExperiment();
@@ -265,21 +279,25 @@ define(function (require) {
 
             triggerPlayExperiment: function (experiment) {
 
-                GEPPETTO.trigger(Events.Experiment_play, {playAll: this.playOptions.playAll});
-
-                if (this.playOptions.playAll) {
-                    if (this.paused) {
+            	if (this.playOptions.playAll) {
+                	this.stop();
+            	}else{
+                    if (!this.paused) {
                         this.stop();
                     }
+            	}
+            	
+                GEPPETTO.trigger(Events.Experiment_play, this.playOptions);
+                
+                if (this.playOptions.playAll) {
                     GEPPETTO.ExperimentsController.terminateWorker();
                     GEPPETTO.trigger(Events.Experiment_update, {
                         step: this.maxSteps - 1,
                         playAll: true
                     });
-                    GEPPETTO.trigger(Events.Experiment_stop);
+                    this.stop();
                 }
                 else {
-
                     if (this.playOptions.step == null || undefined) {
                         this.playOptions.step = 0;
                     }
@@ -290,13 +308,16 @@ define(function (require) {
                     // tells worker to update each half a second
                     this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
 
+                    var that = this;
                     // receives message from web worker
                     this.worker.onmessage = function (event) {
                         // get current timeSteps to execute from web worker
                         var currentStep = event.data[0];
 
-                        if (currentStep >= this.maxSteps) {
+                        if (currentStep >= that.maxSteps) {
                             this.postMessage(["experiment:loop"]);
+                            Project.getActiveExperiment().stop();
+                            Project.getActiveExperiment().playAll();
                         } else {
                             GEPPETTO.trigger(Events.Experiment_update, {
                                 step: currentStep,

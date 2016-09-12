@@ -44,8 +44,8 @@ define(function (require) {
         root: null,
         variable: null,
         options: null,
-        default_width: 250,
-        default_height: 150,
+        default_width: 350,
+        default_height: 120,
 
         /**
          * Initialises viriables visualiser with a set of options
@@ -86,7 +86,8 @@ define(function (require) {
                 this.root = $("#" + this.id)
             }
 
-            this.updateVariable();
+            this.setHeader(this.variable.name);
+            this.updateVariable(0, false);
             return "Variable visualisation added to widget";
         },
 
@@ -99,23 +100,25 @@ define(function (require) {
          * @param {Object} state - geppetto similation variable to remove
          */
         clearVariable: function () {
-            if (this.variable == null) {
-                return;
-            }
+    		if (this.variable == null) {
+    			return;
+    		}
 
-            this.variable = null;
-            this.setHeader("");
-            this.setBody("");
+    		this.variable = null;
+    		this.setHeader("");
+    		this.setBody("");
         },
 
         /**
          * Updates variable values
          */
         updateVariable: function (step) {
-            this.setHeader(this.variable.name);
-            if (typeof step != 'undefined') {
-                this.setBody(this.variable.state.getTimeSeries()[step].getValue().toFixed(4) + " " + this.variable.state.getUnit());
-            }
+			if (typeof step != 'undefined' && (this.variable.state.getTimeSeries()!=null || undefined)) {
+				if(this.variable.state.getTimeSeries().length>step){
+					this.setBody(this.variable.state.getTimeSeries()[step].toFixed(4) + this.variable.state.getUnit());
+				}
+			}
+ 
         },
 
         /**

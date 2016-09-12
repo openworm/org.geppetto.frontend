@@ -159,6 +159,8 @@ define(function (require) {
 
             LOADING_EXPERIMENT: "Loading Experiment",
             
+            FETCHING_RESULTS: "Fetching Experiment Results",
+            
             RESOLVING_TYPES: "Resolving types",
                         
             PARSING_MODEL: "Parsing model",
@@ -204,8 +206,16 @@ define(function (require) {
             SIMULATION_SET_WATCHED_VARIABLES: "Watch variables requested",
 
             SIMULATION_CLEAR_WATCH: 'Clear watched variables requested',
+            
+            NO_WATCHED_VARIABLES : "No Recorded Variables",
 
             NO_FEATURE: "The feature is not avaialble for the current service",
+            
+            TIME_VARIABLE_NOT_DEFINED : "Time Variable not defined, can't show time",
+            
+            DISABLED_COLOR_PLOTTING : "Color Plotting Disabled",
+            
+            ENABLED_COLOR_PLOTTING : "Color Plotting Enabled",
 
             /**
              * Object G resources
@@ -391,6 +401,12 @@ define(function (require) {
             BATCH_HIGHLIGHT_CONNECTIONS: "Batch highlight connections performed",
             BATCH_SHOW_CONNECTIONS_LINES: "Batch show/hide connection lines performed",
             OPERATION_NOT_SUPPORTED: "Operation not supported: ",
+			WRITE_PRIVILEGES_NOT_SUPPORTED : "User doesn't have WRITE privileges",
+            DOWNLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have DOWNLOAD privileges",
+            RUN_PRIVILEGES_NOT_SUPPORTED : "User doesn't have RUN_EXPERIMENT privileges",
+            UPLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have UPLOAD privileges",
+            PROJECT_NOT_PERSISTED : "Project not persisted, run command Project.persist() or use Save button on top right corner.",
+            USER_NOT_LOGIN : "User not logged in.",
 
 
             /**
@@ -503,9 +519,16 @@ define(function (require) {
             // COMMMON TYPE PATHS
             STATE_VARIABLE_TYPE_PATH: 'Model.common.StateVariable',
             PARAMETER_TYPE_PATH: 'Model.common.Parameter',
-            MODEL_PREFIX_CLIENT: 'Model',
+            MODEL_PREFIX_CLIENT: 'Model', //DO NOT ADD A DOT HERE THANKS
             // CONTROL PANEL
-            CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:'
+            CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT: 'Control Panel - error running source script:',
+            
+            //USER PRIVILEGES
+            WRITE_PROJECT : "WRITE_PROJECT",
+            READ_PROJECT : "READ_PROJECT",
+            DOWNLOAD : "DOWNLOAD",
+            DROPBOX_INTEGRATION : "DROPBOX_INTEGRATION",
+            RUN_EXPERIMENT : "RUN_EXPERIMENT"
         }
     }
 });

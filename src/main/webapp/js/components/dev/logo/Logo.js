@@ -39,11 +39,7 @@ define(function (require) {
 
     var React = require('react');
     var GEPPETTO = require('geppetto');
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> refs/remotes/origin/development
     var logoDiv = React.createClass({
         componentDidMount: function () {
             GEPPETTO.on('spin_logo', function (label) {

@@ -2,10 +2,13 @@
     position: absolute;
     height: 300px;
     width: 400px;
-    top:160px;
-    left:430px;
+    top:140px;
+  	left: 0; 
+  	right: 0; 
+  	margin-left: auto; 
+  	margin-right: auto; 
     display: block;
-    z-index:100;
+    z-index:500;
 }
 
 .tutorial-message{

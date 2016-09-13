@@ -51,7 +51,7 @@ define(function (require) {
 			
 			var formId = "gptForm";
 			
-			var formName = "Simulation Form";
+			var formName = "Run experiment";
 			
 			var schema = {
 				  type: "object",
@@ -154,6 +154,17 @@ define(function (require) {
 			});
 		};
 		
+		window.getRecordedMembranePotentials=function(){
+			var instances=Project.getActiveExperiment().getWatchedVariables(true,false);
+			var v=[];
+			for(var i=0;i<instances.length;i++){
+				if(instances[i].getInstancePath().endsWith(".v")){
+					v.push(instances[i]);
+				}
+			}
+			return v;
+		};
+		
         var dropDownPanelConfig = [
 	        {
         		label: "Plot all recorded variables",
@@ -171,10 +182,10 @@ define(function (require) {
                 label: "Apply voltage colouring to morphologies",
                 condition: "GEPPETTO.G.isBrightnessFunctionSet()",
                 false: {
-                    action: "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
+                    action: "G.addBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(), function(x){return (x+0.07)/0.1;});"
                 },
                 true: {
-                    action: "G.removeBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false));"
+                    action: "G.removeBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(),false);"
                 }
             },
             {

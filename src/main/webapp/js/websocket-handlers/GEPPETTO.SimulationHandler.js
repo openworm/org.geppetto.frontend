@@ -121,7 +121,7 @@ define(function (require) {
             var experiment = window.Project.getActiveExperiment();
 
             GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);
-
+            GEPPETTO.trigger("stop_spin_logo");
         };
 
         messageHandler[messageTypes.EXPERIMENT_STATUS] = function (payload) {

@@ -159,6 +159,8 @@ define(function (require) {
 
             LOADING_EXPERIMENT: "Loading Experiment",
             
+            FETCHING_RESULTS: "Fetching Experiment Results",
+            
             RESOLVING_TYPES: "Resolving types",
                         
             PARSING_MODEL: "Parsing model",

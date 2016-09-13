@@ -45,9 +45,7 @@ define(function (require) {
 
     var SpotlightButton = require('./buttons/SpotlightButton');
     var ControlPanelButton = require('./buttons/ControlPanelButton');
-
     var QueryBuilderButton = require('./buttons/QueryBuilderButton');
-
     var TutorialButton = require('./buttons/TutorialButton');
 
     var GEPPETTO = require('geppetto');

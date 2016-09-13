@@ -86,8 +86,6 @@ define(function (require) {
              */
             destroy: function () {
                 $("#" + this.id).remove();
-                this.remove();
-                this.unbind();
                 this.destroyed=true;
                 return this.name + " destroyed";
             },

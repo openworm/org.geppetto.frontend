@@ -2393,6 +2393,7 @@ define(function (require) {
              */
             getMatchingQueries : function(type){
                 var datasources = window.Model.getDatasources();
+                var topLevelQueries = window.Model.getQueries();
                 var matchingQueries = [];
 
                 // iterate datasources
@@ -2403,6 +2404,13 @@ define(function (require) {
                         if(queries[j].matchesCriteria(type)){
                             matchingQueries.push(queries[j]);
                         }
+                    }
+                }
+
+                // iterate top level queries
+                for(var k=0; k<topLevelQueries.length; k++){
+                    if(topLevelQueries[k].matchesCriteria(type)){
+                        matchingQueries.push(topLevelQueries[k]);
                     }
                 }
 

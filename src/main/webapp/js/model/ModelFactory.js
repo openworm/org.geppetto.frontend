@@ -131,6 +131,9 @@ define(function (require) {
                     // create datasources
                     geppettoModel.datasources = this.createDatasources(jsonModel.dataSources, geppettoModel);
 
+                    // create top level queries (potentially cross-datasource)
+                    geppettoModel.queries = this.createQueries(jsonModel.queries, geppettoModel);
+
                     if (populateRefs) {
                         // traverse everything and build shortcuts to children if composite --> containment == true
                         this.populateChildrenShortcuts(geppettoModel);
@@ -1751,19 +1754,33 @@ define(function (require) {
 
                 var d = new Datasource(options);
 
-                // set queries
-                var rawQueries = node.queries;
+                // create queries
+                d.queries = this.createQueries(node.queries, d);
+
+                return d;
+            },
+
+            /**
+             * Create array of client query objects given raw json query objects and a parent
+             *
+             * @param rawQueries
+             * @param parent
+             * @returns {Array}
+             */
+            createQueries: function(rawQueries, parent) {
+                var queries = [];
+
                 if(rawQueries!=undefined) {
                     for (var i = 0; i < rawQueries.length; i++) {
                         var q = this.createQuery(rawQueries[i]);
                         // set datasource as parent
-                        q.parent = d;
+                        q.parent = parent;
                         // push query to queries array
-                        d.queries.push(q);
+                        queries.push(q);
                     }
                 }
 
-                return d;
+                return queries;
             },
 
             createQuery: function(node, options) {

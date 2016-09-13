@@ -395,7 +395,8 @@ define(function (require) {
                 data: this.state.data,
                 controls: this.state.controls,
                 controlsConfig: this.state.controlsConfig,
-                dataFilter: this.state.dataFilter
+                dataFilter: this.state.dataFilter,
+                columnMeta: this.state.columnMeta
             });
         },
 
@@ -406,13 +407,13 @@ define(function (require) {
                 controls: {"Common": [], "VisualCapability": ['color', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration,
                 dataFilter: defaultDataFilter,
+                columnMeta: controlPanelColumnMeta
             };
         },
 
         getDefaultProps: function () {
             return {
-                "tableClassName": 'control-panel-table',
-                "columnMeta": controlPanelColumnMeta
+                "tableClassName": 'control-panel-table'
             };
         },
 
@@ -421,20 +422,13 @@ define(function (require) {
         },
 
         setColumnMeta: function (colMeta) {
-            // if the user sets meta - NUKE everything and rebuild
-            // NOTE: griddle does not pickup metadata for eventual new columns (fixed in newer versions) TODO: upgrade
-            ReactDOM.unmountComponentAtNode(document.getElementById("controlpanel"));
-            // re-instantiate the control panel in its entirety with the new column meta
-            ReactDOM.render(
-                React.createElement(ControlPanel, {columnMeta: colMeta}),
-                document.getElementById("controlpanel")
-            );
+            this.setState({columnMeta: colMeta});
         },
 
         addData: function(instances){
         	if(instances!= undefined && instances.length>0){
         		
-	            var columnMeta = this.props.columnMeta;
+	            var columnMeta = this.state.columnMeta;
 	
 	            // filter new records with data filter
 	            var records = this.state.dataFilter(instances);
@@ -511,7 +505,7 @@ define(function (require) {
         },
 
         setData: function (records) {
-            var columnMeta = this.props.columnMeta;
+            var columnMeta = this.state.columnMeta;
 
             // filter records with data filter
             records = this.state.dataFilter(records);
@@ -635,7 +629,7 @@ define(function (require) {
             return React.createElement(Griddle, {
                 columns: this.state.columns, results: this.state.data,
                 showFilter: true, showSettings: false, enableInfiniteScroll: true, bodyHeight: 400,
-                useGriddleStyles: false, columnMetadata: this.props.columnMeta
+                useGriddleStyles: false, columnMetadata: this.state.columnMeta
             });
         }
     });

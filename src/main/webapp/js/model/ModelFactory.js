@@ -2392,20 +2392,8 @@ define(function (require) {
              * @param type
              */
             getMatchingQueries : function(type){
-                var datasources = window.Model.getDatasources();
                 var topLevelQueries = window.Model.getQueries();
                 var matchingQueries = [];
-
-                // iterate datasources
-                for(var i=0; i<datasources.length; i++){
-                    // fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
-                    var queries = datasources[i].getQueries();
-                    for(var j=0; j<queries.length; j++){
-                        if(queries[j].matchesCriteria(type)){
-                            matchingQueries.push(queries[j]);
-                        }
-                    }
-                }
 
                 // iterate top level queries
                 for(var k=0; k<topLevelQueries.length; k++){

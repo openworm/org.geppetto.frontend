@@ -62,7 +62,7 @@ define(function (require) {
              * Set of commands being inherited from Backbone ojects, ignored them while displaying
              * autocomplete commands.
              */
-            nonCommands = ["constructor()", "initialize(options)", "on(t,e,i)", "once(t,e,r)", "off(t,e,r)", "trigger(t)", "stopListening(t,e,r)", "listenTo(e,r,s)",
+            nonCommands = ["constructor()", "constructor(options)","initialize(options)", "on(t,e,i)", "once(t,e,r)", "off(t,e,r)", "trigger(t)", "stopListening(t,e,r)", "listenTo(e,r,s)",
                 "listenToOnce(e,r,s)", "bind(t,e,i)", "unbind(t,e,r)", "$(t)", "initialize()", "remove()", "setElement(t,i)", "delegateEvents(t)",
                 "undelegateEvents()", "_ensureElement()", "constructor(a,c)", "on(a,c,d)", "off(a,c,d)", "get(a)", "set(a,c,d)", "_set(a,c)",
                 "_setAttr(c={})", "_bubbleEvent(a,c,d)", "_isEventAvailable(a,c)", "_setupParents(a,c)", "_createCollection(a,c)", "_processPendingEvents()",
@@ -105,8 +105,13 @@ define(function (require) {
             }
 
             if (nodePath == "") {
-                nodePath = nodePath.substring(0, nodePath.length - 1);
+            	nodePath = nodePath.substring(0, nodePath.length - 1);
             }
+
+            if(avail.length==0 && nodePath==(request.term+".")){
+            	avail.push(nodePath.substring(0, nodePath.length - 1));
+            }
+
 
             // build a regex with the last directory entry being typed
             var last = path.pop();
@@ -259,6 +264,11 @@ define(function (require) {
                     if (!this.visible) {
                         //$('#console').slideToggle(200);
                         $('#commandInputArea').focus();
+                        setTimeout(function(){
+                        	//make console scroll to bottom
+                            var output = document.getElementsByClassName("output")[0];
+                            output.scrollTop = output.scrollHeight;
+                        }, 100);
                     }
                 }
                 else {

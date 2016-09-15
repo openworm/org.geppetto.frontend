@@ -234,5 +234,7 @@ define(function (require) {
         });
         
         G.setIdleTimeOut(-1)
+        
+        GEPPETTO.SceneController.setLinesThreshold(20000);
 	};
 });

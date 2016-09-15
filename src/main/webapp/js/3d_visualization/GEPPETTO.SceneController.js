@@ -15,7 +15,7 @@ define(function (require) {
 
         GEPPETTO.SceneController =
         {
-            linesThreshold: 20000,
+            linesThreshold: 2000,
             aboveLinesThreshold: false,
             wireframe: false,
 

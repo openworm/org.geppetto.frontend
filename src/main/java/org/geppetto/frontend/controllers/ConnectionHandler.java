@@ -443,7 +443,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			count = geppettoManager.runQueryCount(runnableQueries, geppettoProject);
-			//websocketConnection.sendMessage(requestID, OutboundMessages.QUERY_RESULT, GeppettoSerializer.serializeToJSON(geppettoModel, true));
 			websocketConnection.sendMessage(requestID, OutboundMessages.RETURN_QUERY_COUNT, Integer.toString(count));
 		}
 		catch(GeppettoDataSourceException | GeppettoModelException | GeppettoExecutionException e)

@@ -175,6 +175,10 @@ define(function (require) {
 		        action: "Project.getActiveExperiment().play({step:1});"
 		    },
 		    {
+		    	label: "Play step by step (10x)",
+		    	action: "Project.getActiveExperiment().play({step:10});"
+		    },
+		    {
 		    	label: "Play step by step (100x)",
 		    	action: "Project.getActiveExperiment().play({step:100});"
 		    },

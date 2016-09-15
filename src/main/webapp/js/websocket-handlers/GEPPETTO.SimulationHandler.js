@@ -519,6 +519,8 @@ define(function (require) {
                     throw ("Could not find the experiment with id " + experimentId);
                 }
 
+                GEPPETTO.Console.createTags("Project.getActiveExperiment()", GEPPETTO.Utility.extractMethodsFromObject(experiment, true));
+
                 window.Project.setActiveExperiment(experiment);
                 GEPPETTO.ExperimentsController.updateExperiment(experiment, message);
                 console.timeEnd(GEPPETTO.Resources.LOADING_EXPERIMENT);

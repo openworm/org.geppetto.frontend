@@ -62,7 +62,7 @@ define(function (require) {
              * Set of commands being inherited from Backbone ojects, ignored them while displaying
              * autocomplete commands.
              */
-            nonCommands = ["constructor()", "initialize(options)", "on(t,e,i)", "once(t,e,r)", "off(t,e,r)", "trigger(t)", "stopListening(t,e,r)", "listenTo(e,r,s)",
+            nonCommands = ["constructor()", "constructor(options)","initialize(options)", "on(t,e,i)", "once(t,e,r)", "off(t,e,r)", "trigger(t)", "stopListening(t,e,r)", "listenTo(e,r,s)",
                 "listenToOnce(e,r,s)", "bind(t,e,i)", "unbind(t,e,r)", "$(t)", "initialize()", "remove()", "setElement(t,i)", "delegateEvents(t)",
                 "undelegateEvents()", "_ensureElement()", "constructor(a,c)", "on(a,c,d)", "off(a,c,d)", "get(a)", "set(a,c,d)", "_set(a,c)",
                 "_setAttr(c={})", "_bubbleEvent(a,c,d)", "_isEventAvailable(a,c)", "_setupParents(a,c)", "_createCollection(a,c)", "_processPendingEvents()",
@@ -105,8 +105,13 @@ define(function (require) {
             }
 
             if (nodePath == "") {
-                nodePath = nodePath.substring(0, nodePath.length - 1);
+            	nodePath = nodePath.substring(0, nodePath.length - 1);
             }
+
+            if(avail.length==0 && nodePath==(request.term+".")){
+            	avail.push(nodePath.substring(0, nodePath.length - 1));
+            }
+
 
             // build a regex with the last directory entry being typed
             var last = path.pop();
@@ -134,12 +139,16 @@ define(function (require) {
          */
         function autoComplete() {
 
+        	var autocompleteOn = true;
             GEPPETTO.Console.populateTags();
             //bind console input area to autocomplete event
             $("#commandInputArea").bind("keydown", function (event) {
                 if (event.keyCode === $.ui.keyCode.TAB &&
                     $(this).data("ui-autocomplete").menu.active) {
                     event.preventDefault();
+                }
+                if (event.keyCode === $.ui.keyCode.BACKSPACE) {
+                	autocompleteOn = false;
                 }
             })
                 .autocomplete({
@@ -151,56 +160,60 @@ define(function (require) {
                         return false;
                     },
                     open: function (event, ui) {
-                        var suggestions = $(this).data("uiAutocomplete").menu.element[0].children
-                            , firstElement = suggestions[0]
-                            , inpt = $('#commandInputArea')
-                            , original = inpt.val()
-                            , firstElementText = $(firstElement).text()
-                            , suggestionsSize = suggestions.length;
-                        /*
+                    	if(autocompleteOn){
+                    		var suggestions = $(this).data("uiAutocomplete").menu.element[0].children
+                    		, firstElement = suggestions[0]
+                    		, inpt = $('#commandInputArea')
+                    		, original = inpt.val()
+                    		, firstElementText = $(firstElement).text()
+                    		, suggestionsSize = suggestions.length;
+                    		/*
                          here we want to make sure that we're not matching something that doesn't start
                          with what was typed in
-                         */
-                        if (firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0) {
+                    		 */
+                    		if (firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0) {
 
-                            //only one suggestion
-                            if (suggestionsSize == 1) {
-                                if (inpt.val() !== firstElementText) {
-                                    inpt.val(firstElementText); //change the input to the first match
+                    			//only one suggestion
+                    			if (suggestionsSize == 1) {
+                    				if (inpt.val() !== firstElementText) {
+                    					inpt.val(firstElementText); //change the input to the first match
 
-                                    inpt[0].selectionStart = original.length; //highlight from beginning of input
-                                    inpt[0].selectionEnd = firstElementText.length;//highlight to the end
-                                }
-                            }
-                            //match multiple suggestions
-                            else {
-                                if (inpt.val() !== "") {
+                    					inpt[0].selectionStart = original.length; //highlight from beginning of input
+                    					inpt[0].selectionEnd = firstElementText.length;//highlight to the end
+                    				}
+                    			}
+                    			//match multiple suggestions
+                    			else {
+                    				if (inpt.val() !== "") {
 
-                                    var elementsText = [];
-                                    for (var i = 0; i < suggestionsSize; i++) {
-                                        elementsText[i] = $(suggestions[i]).text();
-                                    }
-                                    var A = elementsText.slice(0).sort(),
-                                        word1 = A[0], word2 = A[A.length - 1],
-                                        i = 0;
-                                    if (word1 != word2) {
-                                        while (word1.charAt(i) == word2.charAt(i))++i;
-                                        //match up most common part
-                                        mostCommon = word1.substring(0, i);
-                                    }
-                                    else {
-                                        mostCommon = word1;
-                                    }
+                    					var elementsText = [];
+                    					for (var i = 0; i < suggestionsSize; i++) {
+                    						elementsText[i] = $(suggestions[i]).text();
+                    					}
+                    					var A = elementsText.slice(0).sort(),
+                    					word1 = A[0], word2 = A[A.length - 1],
+                    					i = 0;
+                    					if (word1 != word2) {
+                    						while (word1.charAt(i) == word2.charAt(i))++i;
+                    						//match up most common part
+                    						mostCommon = word1.substring(0, i);
+                    					}
+                    					else {
+                    						mostCommon = word1;
+                    					}
 
-                                    if (inpt.val().indexOf(mostCommon) == -1) {
-                                        inpt.val(mostCommon);//change the input to the first match
+                    					if (inpt.val().indexOf(mostCommon) == -1) {
+                    						inpt.val(mostCommon);//change the input to the first match
 
-                                        inpt[0].selectionStart = original.length; //highlight from end of input
-                                        inpt[0].selectionEnd = mostCommon.length;//highlight to the end
-                                    }
-                                }
-                            }
-                        }
+                    						inpt[0].selectionStart = original.length; //highlight from end of input
+                    						inpt[0].selectionEnd = mostCommon.length;//highlight to the end
+                    					}
+                    				}
+                    			}
+                    		}
+                    	}else{
+                    		autocompleteOn = true;
+                    	}
                     }
                 });
         }
@@ -251,6 +264,11 @@ define(function (require) {
                     if (!this.visible) {
                         //$('#console').slideToggle(200);
                         $('#commandInputArea').focus();
+                        setTimeout(function(){
+                        	//make console scroll to bottom
+                            var output = document.getElementsByClassName("output")[0];
+                            output.scrollTop = output.scrollHeight;
+                        }, 100);
                     }
                 }
                 else {

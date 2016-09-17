@@ -374,6 +374,15 @@ define(function (require) {
                 "label": "Color",
                 "tooltip": "Color"
             },
+            randomcolor: {
+                "id": "randomcolor",
+                "actions": [
+                    "GEPPETTO.SceneController.assignRandomColor($instance$);"
+                ],
+                "icon": "fa-random",
+                "label": "Random Color",
+                "tooltip": "Random Color"
+            },
             "zoom": {
                 "id": "zoom",
                 "actions": [
@@ -405,7 +414,7 @@ define(function (require) {
             return {
                 columns: ['name', 'type', 'controls'],
                 data: [],
-                controls: {"Common": [], "VisualCapability": ['color', 'visibility', 'zoom']},
+                controls: {"Common": [], "VisualCapability": ['color', 'randomcolor', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration,
                 dataFilter: defaultDataFilter,
                 columnMeta: controlPanelColumnMeta

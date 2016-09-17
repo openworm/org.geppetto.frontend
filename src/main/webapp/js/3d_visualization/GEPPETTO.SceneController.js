@@ -412,6 +412,34 @@ define(function (require) {
             },
 
             /**
+             * Assign random color to instance if leaf - if not leaf assign random colr to all leaf children recursively
+             * @param instance
+             */
+            assignRandomColor: function(instance){
+                var getRandomColor = function() {
+                    var letters = '0123456789ABCDEF';
+                    var color = '0x';
+                    for (var i = 0; i < 6; i++ ) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
+                };
+
+                if(instance.hasCapability('VisualCapability')) {
+                    var children = instance.getChildren();
+
+                    if (children.length == 0 || instance.getMetaType() == GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
+                        var randomColor = getRandomColor();
+                        instance.setColor(randomColor);
+                    } else {
+                        for (var i = 0; i < children.length; i++) {
+                            this.assignRandomColor(children[i]);
+                        }
+                    }
+                }
+            },
+
+            /**
              *
              * @param threeColor
              * @param color

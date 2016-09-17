@@ -42,6 +42,7 @@ var Events = {
     Select: "experiment:selection_changed",
     Focus_changed: "experiment:focus_changed",
     Experiment_over: "experiment:over",
+    Project_loading: "project:loading",
     Project_loaded: "project:loaded",
     Model_loaded: "model:loaded",
     Experiment_loaded: "experiment:loaded",
@@ -54,15 +55,21 @@ var Events = {
     Experiment_running: "experiment:running",
     Experiment_stop: "experiment:stop",
     Experiment_completed: "experiment:completed",
+    Experiment_failed: "experiment:failed",
     Experiment_update: "experiment:update",
+    Experiment_updated: "experiment:updated",
     Experiment_deleted: "experiment_deleted",
     Experiment_active: "experiment_active",
     Experiment_created:"experiment:created",
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
     Spotlight_closed: "spotlight:closed",
-    Instance_deleted: "instance: deleted"
+    Instance_deleted: "instance: deleted",
+    Show_Tutorial : "show_tutorial",
+    Hide_Tutorial : "hide_tutorial"
+
 };
+
 define(function (require) {
     return function (GEPPETTO) {
         /**
@@ -87,9 +94,12 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });
                 GEPPETTO.on(Events.Experiment_loaded, function () {
-                    GEPPETTO.trigger("hide:spinner");
+                    if(GEPPETTO.UserController.isLoggedIn()){
+                    	GEPPETTO.trigger("hide:spinner");
+                    }
                 });
                 GEPPETTO.on(Events.Project_loaded, function () {
+                    var projectID = window.Project.getId();
                 	GEPPETTO.Main.startStatusWorker();
                 });
                 GEPPETTO.on(Events.Experiment_over, function (e) {
@@ -113,11 +123,13 @@ define(function (require) {
                 GEPPETTO.on(Events.Experiment_update, function (parameters) {
                     if (parameters.playAll != null || parameters.step != undefined) {
                         //update scene brightness
-                        for (var key in GEPPETTO.G.listeners) {
-                            for (var i = 0; i < GEPPETTO.G.listeners[key].length; i++) {
-                                GEPPETTO.G.listeners[key][i](Instances.getInstance(key), parameters.step);
-                            }
-                        }
+                    	for (var key in GEPPETTO.G.listeners) {
+                    		if(GEPPETTO.G.listeners[key]!=null || undefined){
+                    			for (var i = 0; i < GEPPETTO.G.listeners[key].length; i++) {
+                    				GEPPETTO.G.listeners[key][i](Instances.getInstance(key), parameters.step);
+                    			}
+                    		}
+                    	}
                     }
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);
@@ -126,12 +138,7 @@ define(function (require) {
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
                 });
-                GEPPETTO.on(Events.Instance_deleted, function (parameters) {
-                    if(GEPPETTO.ControlPanel != undefined){
-                        GEPPETTO.ControlPanel.deleteData([parameters]);
-                    }
-                });
-            },
+            }
         };
     }
 });

@@ -56,6 +56,7 @@ define(function (require) {
             DATASOURCE_FETCHED: "data_source_results_fetched",
             SERVER_AVAILABLE: "server_available",
             SERVER_UNAVAILABLE: "server_unavailable",
+            USER_PRIVILEGES : "user_privileges"
         };
 
         var messageHandler =
@@ -64,6 +65,11 @@ define(function (require) {
         // sets client id
         messageHandler[messageTypes.CLIENT_ID] = function (payload) {
             GEPPETTO.MessageSocket.setClientID(payload.clientID);
+        };
+        
+        messageHandler[messageTypes.USER_PRIVILEGES] = function (payload) {
+        	var user_privileges = JSON.parse(payload.user_privileges);
+        	GEPPETTO.UserController.setUserPrivileges(user_privileges);
         };
 
         // clear canvas, used when loading a new model or re-loading previous

@@ -38,6 +38,7 @@ package org.geppetto.frontend.messages;
 public enum InboundMessages {
 	
 	GEPPETTO_VERSION("geppetto_version"),
+	USER_PRIVILEGES("user_privileges"),
 	NOTIFY_USER("notify_user"),
 	GET_SCRIPT("get_script"),
 	GET_DATA_SOURCE_RESULTS("get_data_source_results"),
@@ -48,7 +49,7 @@ public enum InboundMessages {
 	LOAD_PROJECT_FROM_CONTENT("load_project_from_content"),
 	SAVE_PROJECT_PROPERTIES("save_project_properties"),
 	PERSIST_PROJECT("persist_project"),
-
+	
 	//EXPERIMENT MESSAGES
 	NEW_EXPERIMENT("new_experiment"),
 	CLONE_EXPERIMENT("clone_experiment"),

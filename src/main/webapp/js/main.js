@@ -65,7 +65,7 @@ require.config({
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',
         pako: 'vendor/pako.min',
-        mathjs: 'vendor/math.min',
+        mathjs: 'vendor/math.min'
     },
     /*
      * Notes what dependencies are needed prior to loading each library, values on the right
@@ -74,18 +74,18 @@ require.config({
      */
     shim: {
         'vendor/jquery-ui.min': ["jquery"],
+        'vendor/postprocessing/EffectComposer': ['three'],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/shaders/ConvolutionShader': ['three'],
         'vendor/shaders/CopyShader': ['three'],
         'vendor/shaders/FilmShader': ['three'],
         'vendor/shaders/FocusShader': ['three'],
-        'vendor/postprocessing/EffectComposer': ['three'],
-        'vendor/postprocessing/MaskPass': ['three'],
-        'vendor/postprocessing/RenderPass': ['three'],
-        'vendor/postprocessing/BloomPass': ['three'],
-        'vendor/postprocessing/ShaderPass': ['three'],
-        'vendor/postprocessing/FilmPass': ['three'],
+        'vendor/postprocessing/MaskPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/RenderPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/BloomPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/ShaderPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/FilmPass': ['three', 'vendor/postprocessing/EffectComposer'],
         'vendor/ColladaLoader': ['three'],
         'vendor/OBJLoader': ['three'],
         'vendor/ColorConverter': ["three"],
@@ -161,9 +161,8 @@ require(jqueryLib, function ($, geppetto) {
 
         //start project node which will be used as a Singleton
         //to store current project info
-        var project = new ProjectNode({name: "Project", id: -1});
+        var project = GEPPETTO.ProjectFactory.createProjectNode({name: "Project", id: -1}, false);
         window.Project = project;
-        GEPPETTO.Console.updateTags("Project", project, true);
 
         window.G = GEPPETTO.G;
         window.Widgets = GEPPETTO.Widgets;

@@ -439,7 +439,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<phase>install</phase>
+						<phase>site</phase>
 						<goals>
 							<goal>jsdoc3</goal>
 						</goals>

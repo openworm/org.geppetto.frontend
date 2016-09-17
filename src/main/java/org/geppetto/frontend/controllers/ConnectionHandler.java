@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -53,15 +54,18 @@ import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
+import org.geppetto.core.data.model.ExperimentStatus;
 import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.ResultsFormat;
+import org.geppetto.core.data.model.UserPrivileges;
 import org.geppetto.core.datasources.GeppettoDataSourceException;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.manager.Scope;
 import org.geppetto.core.model.GeppettoSerializer;
 import org.geppetto.core.services.registry.ServicesRegistry;
+import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
@@ -92,7 +96,7 @@ import com.google.gson.JsonParseException;
  * @author matteocantarelli
  * 
  */
-public class ConnectionHandler
+public class ConnectionHandler implements IGeppettoManagerCallbackListener
 {
 
 	private static Log logger = LogFactory.getLog(ConnectionHandler.class);
@@ -117,7 +121,7 @@ public class ConnectionHandler
 		// FIXME This is extremely ugly, a session based geppetto manager is autowired in the websocketconnection
 		// but a session bean cannot travel outside a conenction thread so a new one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
-
+		this.geppettoManager.setSimulationListener(this);
 	}
 
 	/**
@@ -187,8 +191,11 @@ public class ConnectionHandler
 			// serialize project prior to sending it to client
 			Gson gson = new Gson();
 			String projectJSON = gson.toJson(geppettoProject);
+			boolean persisted = geppettoProject.isVolatile();
+			String update = "{\"persisted\":" + !persisted + ",\"project\":" + projectJSON + "}";
+
 			setConnectionProject(geppettoProject);
-			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, projectJSON);
+			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, update);
 
 			String geppettoModelJSON = GeppettoSerializer.serializeToJSON(((GeppettoManager) geppettoManager).getRuntimeProject(geppettoProject).getGeppettoModel(), true);
 			websocketConnection.sendMessage(requestID, OutboundMessages.GEPPETTO_MODEL_LOADED, geppettoModelJSON);
@@ -316,6 +323,12 @@ public class ConnectionHandler
 				// run the matched experiment
 				if(experiment != null)
 				{
+					// TODO: If experiment is in ERROR state, user won't be able to run again.
+					// We reset it to DESIGN to allow user to run it for second time
+					if(experiment.getStatus() == ExperimentStatus.ERROR)
+					{
+						experiment.setStatus(ExperimentStatus.DESIGN);
+					}
 					geppettoManager.runExperiment(requestID, experiment);
 				}
 				else
@@ -1241,7 +1254,15 @@ public class ConnectionHandler
 					}
 				}
 			}
-			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, "");
+			// send back id of experiment saved, and if the experiment modified was in ERROR state change
+			// it back to DESIGN to allow re-running
+			ExperimentStatus status = experiment.getStatus();
+			if(status == ExperimentStatus.ERROR)
+			{
+				experiment.setStatus(ExperimentStatus.DESIGN);
+			}
+			String update = "{\"id\":" + '"' + experiment.getId() + '"' + ",\"status\":" + '"' + experiment.getStatus() + '"' + "}";
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_PROPS_SAVED, update);
 		}
 	}
 
@@ -1278,4 +1299,64 @@ public class ConnectionHandler
 
 
 
+	/**
+	 * Sends to the client login user privileges
+	 * 
+	 * @param requestID
+	 */
+	/**
+	 * @param requestID
+	 */
+	public void checkUserPrivileges(String requestID)
+	{
+		boolean hasPersistence = false;
+		try
+		{
+			hasPersistence = !AuthServiceCreator.getService().isDefault();
+		}
+		catch(GeppettoInitializationException e)
+		{
+			error(e, "Unable to determine whether persistence services are available or not");
+		}
+
+		UserPrivilegesDT userPrivileges = new UserPrivilegesDT();
+		if(this.geppettoManager.getUser() != null)
+		{
+			userPrivileges.userName = this.geppettoManager.getUser().getLogin();
+		}
+		userPrivileges.hasPersistence = hasPersistence;
+		userPrivileges.loggedIn = this.geppettoManager.getUser() != null;
+
+		if(this.geppettoManager.getUser() != null)
+		{
+			List<UserPrivileges> privileges = this.geppettoManager.getUser().getUserGroup().getPrivileges();
+			for(UserPrivileges up : privileges)
+			{
+				userPrivileges.privileges.add(up.toString());
+			}
+		}
+		websocketConnection.sendMessage(requestID, OutboundMessages.USER_PRIVILEGES, getGson().toJson(userPrivileges));
+	}
+
+	private class UserPrivilegesDT
+	{
+		public String userName = "";
+		public boolean loggedIn = false;
+		public boolean hasPersistence = false;
+		public List<String> privileges = new ArrayList<String>();
+	}
+
+	@Override
+	public void simulationError(String errorMessage, Exception exception)
+	{
+		this.error(exception, errorMessage);
+	}
+
+	@Override
+	public void externalProcessError(String titleMessage, String logMessage, Exception exception)
+	{
+		Error error = new Error(GeppettoErrorCodes.EXCEPTION, titleMessage, logMessage);
+		logger.error(logMessage, exception);
+		websocketConnection.sendMessage(null, OutboundMessages.ERROR, getGson().toJson(error));
+	}
 }

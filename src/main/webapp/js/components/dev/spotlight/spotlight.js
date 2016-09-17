@@ -57,6 +57,7 @@ define(function (require) {
         searchTimeOut : null,
         updateResults : false,
         initialised:false,
+        modifiable : true,
         
         close : function () {
             $("#spotlight").hide();
@@ -760,7 +761,7 @@ define(function (require) {
                 return bg;
             },
 
-            generateToolbar: function (buttonGroups, instance) {
+            generateToolbar: function (buttonGroups, instance, modifiable) {
                 var that = this;
                 var tbar = $('<div>').addClass('spotlight-toolbar');
                 var instanceToCheck = instance;
@@ -769,20 +770,41 @@ define(function (require) {
                     instanceToCheck = instance[0];
                 }
                 $.each(buttonGroups, function (groupName, groupDef) {
-                    if ((instanceToCheck.getCapabilities().indexOf(groupName) != -1) ||
-                        (instanceToCheck.getType().getMetaType() == groupName)) {
-                        tbar.append(that.createButtonGroup(groupName, groupDef, instance));
-                    }
+                	if ((instanceToCheck.getCapabilities().indexOf(groupName) != -1) ||
+                			(instanceToCheck.getType().getMetaType() == groupName)) {
+                		if(modifiable){
+                			tbar.append(that.createButtonGroup(groupName, groupDef, instance));
+                		}else{
+                			//don't load default toolbar for these two types if modifiable flag set to false,
+                			if(groupName!="StateVariableCapability" 
+                				&& groupName!="ParameterCapability"){
+                				tbar.append(that.createButtonGroup(groupName, groupDef, instance));
+                			}else{
+                				//don't show watch button if no permissions
+                				if(groupName == "StateVariableCapability"){
+                					//make copy since modifying original removes it through session
+                					var copiedObject = jQuery.extend({}, groupDef);
+                   					delete copiedObject["watch"];
+                   					tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
+                				}
+                			}
+                		}
+                	}
                 });
 
                 return tbar;
             }
         },
 
+        //Used to determined if toolbar for paramter and stateve variable can be shown.
+        //Flag set to false if user don't have enough permissions to modify parameters/state variables
+        updateToolBarVisibilityState : function(visible){
+        	this.modifiable = visible;
+        },
+        
         loadToolbarFor: function (instance) {
-            $(".spotlight-toolbar").remove();
-            $('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance));
-
+        	$(".spotlight-toolbar").remove();
+        	$('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance, this.modifiable));
         },
 
         render: function () {

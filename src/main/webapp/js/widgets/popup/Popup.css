@@ -42,6 +42,14 @@
 	user-select: text;
 }
 
+.popup-link{
+	color: #fc6320;
+}
+
+.popup-link:hover {
+	color: #fc401a;
+	text-decoration: none;
+}
 .popup a {
 	color: #fc6320;
 }

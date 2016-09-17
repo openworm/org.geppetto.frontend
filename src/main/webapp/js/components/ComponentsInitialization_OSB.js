@@ -51,7 +51,7 @@ define(function (require) {
 			
 			var formId = "gptForm";
 			
-			var formName = "Simulation Form";
+			var formName = "Run experiment";
 			
 			var schema = {
 				  type: "object",
@@ -73,12 +73,15 @@ define(function (require) {
 	
 			var formData= {
 					experimentName: Project.getActiveExperiment().getName(),
-					timeStep: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep(),
-					length: Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength(),
-					simulator:Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator(),
 					numberProcessors: 1
 			};
 			
+			if(Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()]!=null||undefined){
+				formData['timeStep']= Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getTimeStep();
+				formData['length']= Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getLength();
+				formData['simulator']=Project.getActiveExperiment().simulatorConfigurations[window.Instances[0].getId()].getSimulator();
+			}
+
 			var submitHandler = function(){
 				GEPPETTO.Flows.showSpotlightForRun(formCallback);
 				$("#" + formWidget.props.id + "_container").remove();
@@ -121,6 +124,10 @@ define(function (require) {
 		//Logo initialization 
 		GEPPETTO.ComponentFactory.addComponent('LOGO',	{logo: 'gpt-osb'}, document.getElementById("geppettologo"));
 		
+		//Tutorial component initialization
+		GEPPETTO.ComponentFactory.addComponent('TUTORIAL', {}, document.getElementById("tutorial"));		
+		GEPPETTO.Tutorial.setTutorial(Events.Experiment_loaded,"https://dl.dropboxusercontent.com/s/puwpjdy9u7bfm2s/osb_tutorial.json?dl=1");
+		
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {
 			GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, text: label, logo: "gpt-osb"}, document.getElementById("modal-region"));	
@@ -135,6 +142,81 @@ define(function (require) {
 		//Spotlight initialization
 		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
 
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNBUTTON', {label: ' Results', iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("DropDownButton"));
+
+		window.plotAllRecordedVariables=function(){
+			Project.getActiveExperiment().playAll();
+			var plt=G.addWidget(0).setName('Recorded Variables'); 
+			$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
+				function(index,value){
+					plt.plotData(value)
+			});
+		};
+		
+		window.getMembranePotentialsAtSoma = function(){
+		  var trail = ".v";
+		  var instances = GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(trail);
+		  var instancesToRecord=[];
+		  for(var i=0;i<instances.length;i++){
+		    var s=instances[i].split(trail)[0];
+		    if(s.endsWith("_0") || s.endsWith("]")){
+		      instancesToRecord.push(instances[i]);
+		    }
+		  }
+		  return Instances.getInstance(instancesToRecord);
+		};
+
+		
+		window.getRecordedMembranePotentials=function(){
+			var instances=Project.getActiveExperiment().getWatchedVariables(true,false);
+			var v=[];
+			for(var i=0;i<instances.length;i++){
+				if(instances[i].getInstancePath().endsWith(".v")){
+					v.push(instances[i]);
+				}
+			}
+			return v;
+		};
+		
+        var dropDownPanelConfig = [
+	        {
+        		label: "Plot all recorded variables",
+    			action: "window.plotAllRecordedVariables();"
+	        },
+		    {
+		    	label: "Play step by step",
+		        action: "Project.getActiveExperiment().play({step:1});"
+		    },
+		    {
+		    	label: "Play step by step (10x)",
+		    	action: "Project.getActiveExperiment().play({step:10});"
+		    },
+		    {
+		    	label: "Play step by step (100x)",
+		    	action: "Project.getActiveExperiment().play({step:100});"
+		    },
+            {
+                label: "Apply voltage colouring to morphologies",
+                condition: "GEPPETTO.G.isBrightnessFunctionSet()",
+                false: {
+                    action: "G.addBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(), function(x){return (x+0.07)/0.1;});"
+                },
+                true: {
+                    action: "G.removeBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(),false);"
+                }
+            },
+            {
+                label: "Show simulation time",
+                action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
+            }
+        ];
+
+		//FIXME Combine the dropdown button and the panel
+		var dropDownPanelPosition = {top : 40, right : 244};
+		
+		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {configuration : dropDownPanelConfig, position : dropDownPanelPosition, openByDefault : false}, document.getElementById("dropDownPanel"));
+		
 		//Foreground initialization
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {}, document.getElementById("foreground-toolbar"));
 
@@ -160,5 +242,13 @@ define(function (require) {
 			}
     
         });
+        
+        GEPPETTO.on(Events.Project_loading, function () {
+				$('.osb-notification').remove();
+        });
+        
+        GEPPETTO.G.setIdleTimeOut(-1);
+        
+        GEPPETTO.SceneController.setLinesThreshold(20000);
 	};
 });

@@ -114,9 +114,6 @@ define(function (require) {
             this.dialog.append("<div id='" + this.id + "'></div>");
             $("#" + this.id).addClass("plot");
 
-            //fix conflict between jquery and bootstrap tooltips
-            $.widget.bridge('uitooltip', $.ui.tooltip);
-
             $("#" + this.id).bind("plothover", {plot: this}, function (event, pos, item) {
                 event.data.plot.latestPosition = pos;
                 //Enable to change cursor on hover, couldnt find anything that felt better than the default pointer
@@ -609,13 +606,8 @@ define(function (require) {
          * Initialize legend
          */
         initializeLegend: function (labelFormatterFunction) {
-
             //set label legends to shorter label
             this.options.legend = {backgroundOpacity: 0, labelFormatter: labelFormatterFunction};
-
-            //fix conflict between jquery and bootstrap tooltips
-            $.widget.bridge('uitooltip', $.ui.tooltip);
-
         },
 
         /**

@@ -3,14 +3,12 @@ var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.c
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json"
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json"
 
-
-
 casper.test.begin('Geppetto basic tests', 99, function suite(test) {
   casper.options.viewportSize = {
           width: 1340,
           height: 768
       };
-
+  
   casper.start(TARGET_URL + ":8080/org.geppetto.frontend", function() {
     this.waitForSelector('div#logo', function() {
       this.echo("I waited for the logo to load.");
@@ -75,6 +73,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
       	this.echo("Waiting for load project logo to stop spinning");
       	casper.waitWhileSelector('div.spinner-container > div.fa-spin', function() {
       		doExperimentTableTest(test);
+      		doConsoleTest(test);
     	}, null, 20000);
       });
 
@@ -179,6 +178,40 @@ function doExperimentTableTest(test) {
     }, null, 5000);
   });
 }
+
+function doConsoleTest(test) {
+	  casper.then(function() {
+	    test.assertExists('a[aria-controls="console"]', "Console tab anchor is present");
+
+	    test.assertExists('div#console', "Console panel is present");
+
+	    test.assertNotVisible('div#console', "The console panel is correctly closed.");
+	  });
+	  
+	  casper.then(function() {
+		  this.click('a[href="#console"]', "Opening command console");
+
+		  this.waitUntilVisible('div#console', function() {
+			  //inject jquery
+			  casper.page.injectJs("../../vendor/jquery-1.9.1.min.js");
+			  test.assertVisible('div#console', "The console panel is correctly open.");
+			  //type into console command (getTimeSeries()) half finished for state variable 
+			  casper.sendKeys('textarea#commandInputArea', "hhcell.hhpop[0].v.getTi", { keepFocus: true });	      	
+			  casper.wait(200, function() {
+				  var nameCount = casper.evaluate(function() {
+					  //retrieve console input via jquery
+					  var output =  $('textarea#commandInputArea').val();
+					  return output;
+				  });
+				  casper.echo(nameCount);
+				  //console should return command fully finished after autocomplete kicks in
+				  test.assertEquals(nameCount,"hhcell.hhpop[0].v.getTimeSeries()", "Autocomplete for state variable present.");
+				  
+				  casper.sendKeys('textarea#commandInputArea', "", { reset: true} );
+			  });
+		  }, null, 5000);
+	  });
+	}
 
 function doExperimentsTableRowCheck(test) {
   test.assertVisible('td[name="parameters"]', "Parameters column content exists");

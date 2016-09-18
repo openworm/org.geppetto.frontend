@@ -524,7 +524,7 @@ define(function (require) {
             };
 
             // init empty term info area
-            window.termInfoPopup = G.addWidget(1).setPosition((window.innerWidth - (Math.ceil(window.innerWidth / 5) + 10)), 10).setSize((window.innerHeight - 20), Math.ceil(window.innerWidth / 5)).setName('Click on image to show info').addCustomNodeHandler(customHandler, 'click');
+            window.termInfoPopup = G.addWidget(1).setPosition((window.innerWidth - (Math.ceil(window.innerWidth / 4) + 10)), 10).setSize((window.innerHeight - 20), Math.ceil(window.innerWidth / 4)).setName('Click on image to show info').addCustomNodeHandler(customHandler, 'click');
 
             // show term info on selection
             window.oldSelection = "";

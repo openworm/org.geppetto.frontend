@@ -1279,6 +1279,10 @@ define(function (require) {
 
                             // ad to newly created instances list
                             newlyCreatedInstances.push(explodedInstance);
+                            
+                            if(explodedInstance != null || undefined){
+                                GEPPETTO.Console.createTags(explodedInstance.getInstancePath(), GEPPETTO.Utility.extractMethodsFromObject(explodedInstance, true));
+                            }
                         }
 
                         //  if there is a parent add to children else add to top level instances
@@ -1346,6 +1350,10 @@ define(function (require) {
                             parentInstance.addChild(newlyCreatedInstance);
                         } else {
                             topLevelInstances.push(newlyCreatedInstance);
+                        }
+                        
+                        if(newlyCreatedInstance != null || undefined){
+                        	GEPPETTO.Console.createTags(newlyCreatedInstance.getInstancePath(), GEPPETTO.Utility.extractMethodsFromObject(newlyCreatedInstance, true));
                         }
                     }
                 }

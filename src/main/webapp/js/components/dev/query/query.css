@@ -405,3 +405,30 @@
     width: 150px;
     text-align: center !important;
 }
+
+#querybuilder .query-results-images-column {
+    width: 300px;
+    text-align: center !important;
+}
+
+#querybuilder .query-results-slick-image {
+    margin: 0 auto;
+    text-align: center;
+    color: white;
+}
+
+#querybuilder .query-results-image {
+    margin: 0 auto;
+    text-align: center;
+    color: white;
+    clear: both;
+}
+
+#querybuilder .query-results-slick {
+    clear: both;
+    margin-top: 0px;
+}
+
+#querybuilder .slick-slider {
+    margin-bottom: 0px !important;
+}

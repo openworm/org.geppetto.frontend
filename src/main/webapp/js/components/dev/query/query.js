@@ -181,40 +181,49 @@ define(function (require) {
     };
 
     GEPPETTO.SlideshowImageComponent = React.createClass({
+        isCarousel: false,
+
+        imageContainerId: '',
+
+        componentDidMount: function(){
+            // apply carousel
+            if(this.isCarousel) {
+                $('#' + this.imageContainerId + '.slickdiv').slick();
+            }
+        },
+
         render: function () {
-            // TODO: where is this coming from?
-            var instance = "";
-            // TODO: where is this coming from?
-            var id = "";
             var imgElement = "";
+            if(this.props.data != "" && this.props.data != undefined) {
+                var jsonImageVariable = JSON.parse(this.props.data);
 
-            if (this.getVariable(instance).getInitialValues()[0] != undefined) {
-                var value = this.getVariable(instance).getInitialValues()[0].value;
-                if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
-                    //if it's an array we use slick to create a carousel
-                    var elements = value.elements.map(function (item, key) {
-                        var image = item.initialValue;
-                        return <div class="popup-slick-image"> {image.name}
-                            <a href="" instancepath={image.reference}>
-                                <img class="popup-image invert" src={image.data}/>
-                            </a>
+                if (jsonImageVariable.initialValues[0] != undefined) {
+                    var imageContainerId = this.props.rowData.id + '-image-container';
+                    this.imageContainerId = imageContainerId;
+
+                    var value = jsonImageVariable.initialValues[0].value;
+                    if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
+                        this.isCarousel = true;
+                        //if it's an array, create a carousel (relies on slick)
+                        var elements = value.elements.map(function (item, key) {
+                            var image = item.initialValue;
+                            return <div key={key} className="query-results-slick-image"> {image.name}
+                                <img className="popup-image invert" src={image.data}/>
+                            </div>
+                        });
+
+                        imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
+                                          data-slick={JSON.stringify({fade: true, centerMode: true, slidesToShow: 1, slidesToScroll: 1})}>
+                            {elements}
                         </div>
-                    });
-
-                    imgElement = <div id={id}
-                                      class="slickdiv popup-slick collapse in"
-                                      data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}'>
-                        {elements}
-                    </div>
-                }
-                else if (value.eClass == GEPPETTO.Resources.IMAGE) {
-                    //otherwise we just show an image
-                    var image = value;
-                    imgElement = <div id={id} className="popup-image collapse in">
-                        <a href="" instancepath={image.reference}>
-                            <img className="popup-image invert" src={image.data}/>
-                        </a>
-                    </div>
+                    }
+                    else if (value.eClass == GEPPETTO.Resources.IMAGE) {
+                        //otherwise we just show an image
+                        var image = value;
+                        imgElement = <div id={imageContainerId} className="query-results-image collapse in">
+                            <img className="query-results-image invert" src={image.data}/>
+                        </div>
+                    }
                 }
             }
 
@@ -871,6 +880,7 @@ define(function (require) {
                                     id: datasourceConfig.resultsFilters.getId(record),
                                     name: datasourceConfig.resultsFilters.getName(record),
                                     description: datasourceConfig.resultsFilters.getDescription(record),
+                                    images: datasourceConfig.resultsFilters.getImageData(record),
                                     controls: ''
                                 }
                             });

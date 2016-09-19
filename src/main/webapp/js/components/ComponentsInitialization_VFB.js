@@ -386,6 +386,16 @@ define(function (require) {
                 "displayName": "Controls",
                 "action": "",
                 "cssClassName": "query-results-controls-column"
+            },
+            {
+                "columnName": "images",
+                "order": 5,
+                "locked": false,
+                "visible": true,
+                "customComponent": GEPPETTO.SlideshowImageComponent,
+                "displayName": "Images",
+                "action": "",
+                "cssClassName": "query-results-images-column"
             }
         ];
         var queryResultsControlConfig = {
@@ -403,7 +413,7 @@ define(function (require) {
         };
         // Query control initialization with properties
         GEPPETTO.ComponentFactory.addComponent('QUERY', {
-            resultsColumns: ['name', 'description', 'controls'],
+            resultsColumns: ['name', 'description', 'controls', 'images'],
             resultsColumnMeta: queryResultsColMeta,
             resultsControlsConfig: queryResultsControlConfig
         }, document.getElementById("querybuilder"));
@@ -431,6 +441,7 @@ define(function (require) {
                     getId: function(record){ return record[0] },
                     getName: function(record){ return record[1] },
                     getDescription: function(record){ return record[2] },
+                    getImageData: function(record){ return record[3] },
                     getRecords: function(payload){ return payload.results.map(function(item){ return item.values })}
                 },
                 bloodhoundConfig: {

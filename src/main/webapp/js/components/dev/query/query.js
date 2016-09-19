@@ -180,6 +180,52 @@ define(function (require) {
         }
     };
 
+    GEPPETTO.SlideshowImageComponent = React.createClass({
+        render: function () {
+            // TODO: where is this coming from?
+            var instance = "";
+            // TODO: where is this coming from?
+            var id = "";
+            var imgElement = "";
+
+            if (this.getVariable(instance).getInitialValues()[0] != undefined) {
+                var value = this.getVariable(instance).getInitialValues()[0].value;
+                if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
+                    //if it's an array we use slick to create a carousel
+                    var elements = value.elements.map(function (item, key) {
+                        var image = item.initialValue;
+                        return <div class="popup-slick-image"> {image.name}
+                            <a href="" instancepath={image.reference}>
+                                <img class="popup-image invert" src={image.data}/>
+                            </a>
+                        </div>
+                    });
+
+                    imgElement = <div id={id}
+                                      class="slickdiv popup-slick collapse in"
+                                      data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}'>
+                        {elements}
+                    </div>
+                }
+                else if (value.eClass == GEPPETTO.Resources.IMAGE) {
+                    //otherwise we just show an image
+                    var image = value;
+                    imgElement = <div id={id} className="popup-image collapse in">
+                        <a href="" instancepath={image.reference}>
+                            <img className="popup-image invert" src={image.data}/>
+                        </a>
+                    </div>
+                }
+            }
+
+            return (
+                <div>
+                    {imgElement}
+                </div>
+            )
+        }
+    });
+
     GEPPETTO.QueryResultsControlsComponent = React.createClass({
 
         replaceTokensWithPath: function(inputStr, path){

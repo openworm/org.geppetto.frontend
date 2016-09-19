@@ -60,6 +60,7 @@
 	text-align: center;
 	color: white;
 	clear: both;
+	max-width: 100%;
 }
 
 .invert {

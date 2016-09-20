@@ -15,7 +15,7 @@ define(function (require) {
                 position: "Not specified",
                 label: "Not specified",
                 action: "Not specified",
-                icon: "Not specified",
+                icon: null,
                 option: "Not specified",
             },
             initialize: function (attributes) {
@@ -81,7 +81,9 @@ define(function (require) {
 
                 registeredItems[this.$el.find("li").attr("id")] = {
                     action: this.items.get("action"),
-                    option: this.items.get("option")
+                    label: this.items.get("label"),
+                    option: this.items.get("option"),
+                    icon : this.items.get("icon")
                 };
 
                 if (this.items.has("groups")) {
@@ -122,6 +124,7 @@ define(function (require) {
         GEPPETTO.ContextMenuView = Backbone.View.extend({
             className: 'contextMenuView',
             template: _.template($('#tplContextMenu').html()),
+            closeOnClick : true,
             parentSelector: 'body',
 
             /**
@@ -139,7 +142,7 @@ define(function (require) {
             manageMenuClickEvent: function (event) {
                 //TODO: Check if this can be done through and event in the menu view items
                 var itemId = $(event.target).attr('id');
-                var registeredItem = this.registeredItems[itemId];
+                var registeredItem = this.getClickedItem(itemId);
 
                 //This works if we pass the action as a pointer to a function
                 //if (typeof registeredItem === "function") registeredItem.apply(null, [this.data]);
@@ -159,6 +162,9 @@ define(function (require) {
                 }
             },
 
+            getClickedItem : function(itemId){
+            	return this.registeredItems[itemId];
+            },
             /**
              * Renders the Context Menu widget
              */
@@ -191,6 +197,14 @@ define(function (require) {
                     top: this.top,
                     left: this.left
                 });
+                
+                if(this.height != null || undefined){
+                	this.$el.height(this.height);
+                }
+                
+                if(this.width != null || undefined){
+                	this.$el.width(this.width);
+                }
 
                 return this;
             },
@@ -206,7 +220,9 @@ define(function (require) {
                 var self = this;
                 //  Hide the context menu whenever any click occurs not just when selecting an item.
                 $(this.parentSelector).on('click', function () {
-                    self.$el.hide();
+                	if(self.closeOnClick){
+                		self.$el.hide();
+                	}
                 });
             },
 
@@ -223,8 +239,20 @@ define(function (require) {
                 if (options.top === undefined || options.left === undefined) throw "ContextMenu must be shown with top/left coordinates.";
                 if (options.groups === undefined) throw "ContextMenu needs ContextMenuGroups to be shown.";
 
+                if(options.closeOnClick !=null || undefined){
+                	this.closeOnClick = options.closeOnClick;
+                }
+                
                 this.top = options.top;
                 this.left = options.left;
+                
+                if(options.height != null || undefined){
+                	this.height = options.height;
+                }
+                if(options.width != null || undefined){
+                	this.width = options.width;
+                }
+                
                 this.model = new ContextMenuModel({
                     groups: options.groups
                 });

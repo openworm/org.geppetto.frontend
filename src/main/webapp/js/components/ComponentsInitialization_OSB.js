@@ -162,33 +162,42 @@ define(function (require) {
 			return v;
 		};
 
-		var changeHandler = function(value){
-			//do something
+		var clickHandler = function(value){
+			if(value != null){
+				GEPPETTO.Console.executeCommand(value);
+			}
 		};
-		
+
 		var configuration = {
-				openByDefault : false, 
+				id : "menuButton",
+				openByDefault : false,
+				closeOnClick : true,
 				label: ' Results', 
 				iconOn : 'fa fa-caret-square-o-up' , 
 				iconOff : 'fa fa-caret-square-o-down',
-				menuPosition : {top : 40, right : 244, left : 30},
-                handler : changeHandler,
+				menuPosition : null,
+				menuSize : {height : "auto", width : 300},
+                clickHandler : clickHandler,
 				menuItems : [
 				                   {
 				                	   label: "Plot all recorded variables",
-				                	   action: "window.plotAllRecordedVariables();"
+				                	   action: "window.plotAllRecordedVariables();",
+				                	   value : "GEPPETTO.Console.log('Recorded Variables Plotted')"
 				                   },
 				                   {
 				                	   label: "Play step by step",
-				                	   action: "Project.getActiveExperiment().play({step:1});"
+				                	   action: "Project.getActiveExperiment().play({step:1});",
+				                	   value : "GEPPETTO.Console.log('Playing experiment step by step')"
 				                   },
 				                   {
 				                	   label: "Play step by step (100x)",
-				                	   action: "Project.getActiveExperiment().play({step:100});"
+				                	   action: "Project.getActiveExperiment().play({step:100});",
+				                	   value : "GEPPETTO.Console.log('Playing experiment 100 steps at one')"
 				                   },
 				                   {
 				                	   label: "Apply voltage colouring to morphologies",
 				                	   condition: "GEPPETTO.G.isBrightnessFunctionSet()",
+				                	   value : "GEPPETTO.Console.log('Applying voltage colouring to morphologies')",
 				                	   false: {
 				                		   action: "G.addBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(), function(x){return (x+0.07)/0.1;});"
 				                	   },
@@ -198,7 +207,8 @@ define(function (require) {
 				                   },
 				                   {
 				                	   label: "Show simulation time",
-				                	   action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
+				                	   action: "G.addWidget(5).setName('Simulation time').setVariable(time);",
+				                	   value : "GEPPETTO.Console.log('Window with time open')"
 				                   }
 				                   ]
 		};

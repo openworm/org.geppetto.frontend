@@ -110,6 +110,9 @@
 </script>
 <script type="text/template" id="tplContextMenuItems">
     <li id="<%= this.cid %>">
+        <% if (icon != null || undefined) { %>
+    		<i class="<%= icon %>"></i>
+		<% } %>
         <%= label %>
     </li>
 </script>

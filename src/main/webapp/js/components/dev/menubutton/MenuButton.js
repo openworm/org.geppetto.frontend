@@ -13,7 +13,7 @@ define(function (require) {
         menu: new GEPPETTO.ContextMenuView(),
         menuPosition : {},
         menuSize : {},
-        clickHandler : null,
+        onClickHandler : null,
         
         menuItemsIcons: {
             checked: "fa fa-check-circle-o",
@@ -89,7 +89,7 @@ define(function (require) {
         
         addExternalHandler : function(){
         	var self = this;
-        	if(self.props.configuration.clickHandler !=null || undefined){
+        	if(self.props.configuration.onClickHandler !=null || undefined){
         		$(self.menu.el).on('click', function (event) {
         			var itemId = $(event.target).attr('id');
         			var registeredItem = self.menu.getClickedItem(itemId);
@@ -101,10 +101,10 @@ define(function (require) {
         						value = self.state.menuItems[i].value;
         					}
         				}
-        				if(self.props.closeOnClick){
+        				if(self.props.configuration.closeOnClick){
         					self.toggleMenu();
         				}
-        				self.props.configuration.clickHandler(value);
+        				self.props.configuration.onClickHandler(value);
         			}
         		});
         	}

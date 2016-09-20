@@ -162,10 +162,10 @@ define(function (require) {
 			return v;
 		};
 
-		var clickHandler = function(value){
-			
+		var onClickHandler = function(value){
+			//Do Something with value returned
 			if(value != null){
-				GEPPETTO.Console.log(value);
+				//GEPPETTO.Console.log(value);
 			}
 		};
 
@@ -178,7 +178,7 @@ define(function (require) {
 				iconOff : 'fa fa-caret-square-o-down',
 				menuPosition : null,
 				menuSize : {height : "auto", width : 300},
-                clickHandler : clickHandler,
+                onClickHandler : onClickHandler,
 				menuItems : [
 				                   {
 				                	   label: "Plot all recorded variables",

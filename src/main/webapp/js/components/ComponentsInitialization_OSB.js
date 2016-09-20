@@ -142,9 +142,6 @@ define(function (require) {
 		//Spotlight initialization
 		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
 
-		//Home button initialization
-		GEPPETTO.ComponentFactory.addComponent('DROPDOWNBUTTON', {label: ' Results', iconOn : 'fa fa-caret-square-o-up' , iconOff : 'fa fa-caret-square-o-down'}, document.getElementById("DropDownButton"));
-
 		window.plotAllRecordedVariables=function(){
 			Project.getActiveExperiment().playAll();
 			var plt=G.addWidget(0).setName('Recorded Variables'); 
@@ -164,40 +161,50 @@ define(function (require) {
 			}
 			return v;
 		};
-		
-        var dropDownPanelConfig = [
-	        {
-        		label: "Plot all recorded variables",
-    			action: "window.plotAllRecordedVariables();"
-	        },
-		    {
-		    	label: "Play step by step",
-		        action: "Project.getActiveExperiment().play({step:1});"
-		    },
-		    {
-		    	label: "Play step by step (100x)",
-		    	action: "Project.getActiveExperiment().play({step:100});"
-		    },
-            {
-                label: "Apply voltage colouring to morphologies",
-                condition: "GEPPETTO.G.isBrightnessFunctionSet()",
-                false: {
-                    action: "G.addBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(), function(x){return (x+0.07)/0.1;});"
-                },
-                true: {
-                    action: "G.removeBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(),false);"
-                }
-            },
-            {
-                label: "Show simulation time",
-                action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
-            }
-        ];
 
-		//FIXME Combine the dropdown button and the panel
-		var dropDownPanelPosition = {top : 40, right : 244};
+		var changeHandler = function(value){
+			//do something
+		};
 		
-		GEPPETTO.ComponentFactory.addComponent('DROPDOWNPANEL', {configuration : dropDownPanelConfig, position : dropDownPanelPosition, openByDefault : false}, document.getElementById("dropDownPanel"));
+		var configuration = {
+				openByDefault : false, 
+				label: ' Results', 
+				iconOn : 'fa fa-caret-square-o-up' , 
+				iconOff : 'fa fa-caret-square-o-down',
+				menuPosition : {top : 40, right : 244, left : 30},
+                handler : changeHandler,
+				menuItems : [
+				                   {
+				                	   label: "Plot all recorded variables",
+				                	   action: "window.plotAllRecordedVariables();"
+				                   },
+				                   {
+				                	   label: "Play step by step",
+				                	   action: "Project.getActiveExperiment().play({step:1});"
+				                   },
+				                   {
+				                	   label: "Play step by step (100x)",
+				                	   action: "Project.getActiveExperiment().play({step:100});"
+				                   },
+				                   {
+				                	   label: "Apply voltage colouring to morphologies",
+				                	   condition: "GEPPETTO.G.isBrightnessFunctionSet()",
+				                	   false: {
+				                		   action: "G.addBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(), function(x){return (x+0.07)/0.1;});"
+				                	   },
+				                	   true: {
+				                		   action: "G.removeBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(),false);"
+				                	   }
+				                   },
+				                   {
+				                	   label: "Show simulation time",
+				                	   action: "G.addWidget(5).setName('Simulation time').setVariable(time);"
+				                   }
+				                   ]
+		};
+		
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('MENUBUTTON', {configuration : configuration}, document.getElementById("MenuButton"));
 		
 		//Foreground initialization
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {}, document.getElementById("foreground-toolbar"));

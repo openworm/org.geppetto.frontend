@@ -1,21 +1,21 @@
-.dropDownButton {
+.menuButton {
   position: fixed;
   height:27px
 }
 
-.dropDownButtonContainer:disabled{
+.menuButtonContainer:disabled{
 	background:0;
 	color:@orange;
 }
 
-.dropDownButton {
+.menuButton {
   position: fixed;
   top: 5px;
   right: 390px;
   height:28px
 }
 
-.dropDownButton:disabled{
+.menuButton:disabled{
 	background:0;
 	color:@orange;
 }

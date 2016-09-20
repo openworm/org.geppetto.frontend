@@ -210,6 +210,10 @@ define(function (require) {
                 });
             },
 
+            hide : function(){
+            	this.$el.hide();
+            },
+            
             /**
              * Shows the context menu
              *

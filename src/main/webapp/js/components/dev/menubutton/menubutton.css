@@ -1,16 +1,20 @@
-.menuButtonContainer:disabled{
-	background:0;
-	color:@orange;
+.menuButtonContainer:disabled {
+	background: 0;
+	color: @orange;
 }
 
 .menuButton {
-  position: fixed;
-  top: 5px;
-  right: 390px;
-  height:28px
+	position: fixed;
+	top: 5px;
+	right: 390px;
+	height: 28px
 }
 
-.menuButton:disabled{
-	background:0;
-	color:@orange;
+.menuButton:disabled {
+	background: 0;
+	color: @orange;
+}
+
+.menu {
+	color: #fd6808;
 }

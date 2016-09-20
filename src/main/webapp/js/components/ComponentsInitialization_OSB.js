@@ -163,15 +163,16 @@ define(function (require) {
 		};
 
 		var clickHandler = function(value){
+			
 			if(value != null){
-				GEPPETTO.Console.executeCommand(value);
+				GEPPETTO.Console.log(value);
 			}
 		};
 
 		var configuration = {
 				id : "menuButton",
 				openByDefault : false,
-				closeOnClick : true,
+				closeOnClick : false,
 				label: ' Results', 
 				iconOn : 'fa fa-caret-square-o-up' , 
 				iconOff : 'fa fa-caret-square-o-down',
@@ -182,22 +183,27 @@ define(function (require) {
 				                   {
 				                	   label: "Plot all recorded variables",
 				                	   action: "window.plotAllRecordedVariables();",
-				                	   value : "GEPPETTO.Console.log('Recorded Variables Plotted')"
+				                	   value : "plot_recorded_variables"
 				                   },
 				                   {
 				                	   label: "Play step by step",
 				                	   action: "Project.getActiveExperiment().play({step:1});",
-				                	   value : "GEPPETTO.Console.log('Playing experiment step by step')"
+				                	   value : "play_speed_1"
+				                   },
+				                   {
+				                	   label: "Play step by step (10x)",
+				                	   action: "Project.getActiveExperiment().play({step:10});",
+				                	   value : "play_speed_10"
 				                   },
 				                   {
 				                	   label: "Play step by step (100x)",
 				                	   action: "Project.getActiveExperiment().play({step:100});",
-				                	   value : "GEPPETTO.Console.log('Playing experiment 100 steps at one')"
+				                	   value : "play_speed_100"
 				                   },
 				                   {
 				                	   label: "Apply voltage colouring to morphologies",
 				                	   condition: "GEPPETTO.G.isBrightnessFunctionSet()",
-				                	   value : "GEPPETTO.Console.log('Applying voltage colouring to morphologies')",
+				                	   value : "apply_voltage",
 				                	   false: {
 				                		   action: "G.addBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(), function(x){return (x+0.07)/0.1;});"
 				                	   },
@@ -208,7 +214,7 @@ define(function (require) {
 				                   {
 				                	   label: "Show simulation time",
 				                	   action: "G.addWidget(5).setName('Simulation time').setVariable(time);",
-				                	   value : "GEPPETTO.Console.log('Window with time open')"
+				                	   value : "simulation_time"
 				                   }
 				                   ]
 		};

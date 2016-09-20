@@ -101,7 +101,9 @@ define(function (require) {
         						value = self.state.menuItems[i].value;
         					}
         				}
-
+        				if(self.props.closeOnClick){
+        					self.toggleMenu();
+        				}
         				self.props.configuration.clickHandler(value);
         			}
         		});
@@ -158,11 +160,11 @@ define(function (require) {
             self.setState({menuItems : self.props.configuration.menuItems});
             
             //attach handler to clicking on menu to notify attached handlers
-            self.addExternalHandler();
+            self.addExternalHandler();            
         },
-        
-        clickEvent: function () {
-            var showIcon;
+
+        toggleMenu : function(){
+        	var showIcon;
             if (this.state.open) {
                 this.hideMenu();
             	showIcon = this.props.configuration.iconOff;
@@ -173,12 +175,12 @@ define(function (require) {
                 this.setState({open: true, icon: showIcon});
             }
         },
-
+        
         render: function () {
             return (
                 <div className="menuButtonContainer">
                     <button className="btn menuButton pull-right" type="button" title=''
-                          id={this.props.configuration.id}  onClick={this.clickEvent} disabled={this.state.disabled} ref="menuButton">
+                          id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.state.disabled} ref="menuButton">
                         <i className={this.state.icon}></i>
                         {this.props.configuration.label}
                     </button>

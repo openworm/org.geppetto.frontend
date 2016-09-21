@@ -81,6 +81,7 @@ define(function (require) {
 
                 registeredItems[this.$el.find("li").attr("id")] = {
                     action: this.items.get("action"),
+                    label: this.items.get("label"),
                     option: this.items.get("option"),
                     icon : this.items.get("icon")
                 };

@@ -11,10 +11,8 @@ define(function (require) {
 
     var MenuButton = React.createClass({
         menu: new GEPPETTO.ContextMenuView(),
-        menuPosition : {},
-        menuSize : {},
         onClickHandler : null,
-        
+
         menuItemsIcons: {
             checked: "fa fa-check-circle-o",
             unchecked: "fa fa-circle-o",
@@ -26,7 +24,9 @@ define(function (require) {
                 icon: this.props.configuration.iconOff,
                 open: false,
                 disabled: true,
-                menuItems : null
+                menuItems : null,        
+                menuPosition : {},
+                menuSize : {}
             };
         },
         
@@ -71,10 +71,10 @@ define(function (require) {
             var self = this;
             if (self.state.menuItems.length > 0) {
                 self.menu.show({
-                    top: self.menuPosition.top,
-                    left: self.menuPosition.left,
-                    height: self.menuSize.height,
-                    width: self.menuSize.width,
+                    top: self.state.menuPosition.top,
+                    left: self.state.menuPosition.left,
+                    height: self.state.menuSize.height,
+                    width: self.state.menuSize.width,
                     closeOnClick : self.props.configuration.closeOnClick,
                     groups: self.getMenuItems(),
                     data: self
@@ -89,7 +89,8 @@ define(function (require) {
         
         addExternalHandler : function(){
         	var self = this;
-        	if(self.props.configuration.onClickHandler !=null || undefined){
+        	self.onClickHandler = self.props.configuration.onClickHandler;
+        	if(self.onClickHandler !=null || undefined){
         		$(self.menu.el).on('click', function (event) {
         			var itemId = $(event.target).attr('id');
         			var registeredItem = self.menu.getClickedItem(itemId);
@@ -104,7 +105,7 @@ define(function (require) {
         				if(self.props.configuration.closeOnClick){
         					self.toggleMenu();
         				}
-        				self.props.configuration.onClickHandler(value);
+        				self.onClickHandler(value);
         			}
         		});
         	}
@@ -137,27 +138,30 @@ define(function (require) {
                 self.setState({disabled: newState});
             });
             
+            var menuPosition=null
+            var menuSize = null;
             //if position wasn't specify for location of menu list
             if(self.props.configuration.menuPosition == null || undefined){
-            	self.menuPosition = { 
+            	menuPosition = { 
             			top : $("#"+self.props.configuration.id).position().top + 35,
             			left: $("#"+self.props.configuration.id).position().left
             	}
             }else{
             	//assign position of menu to what it is in configuration passed
-            	self.menuPosition = self.configuration.menuPosition;
+            	menuPosition = self.configuration.menuPosition;
             }
             
             //if position wasn't specify for location of menu list
             if(self.props.configuration.menuSize != null || undefined){
-            	self.menuSize = { 
+            	menuSize = { 
             			width : self.props.configuration.menuSize.width,
             			height: self.props.configuration.menuSize.height
             	}
             }
             
             //update the state of menu with position, list to display and handler
-            self.setState({menuItems : self.props.configuration.menuItems});
+            self.setState({menuItems : self.props.configuration.menuItems, 
+            			menuPosition : menuPosition, menuSize : menuSize});
             
             //attach handler to clicking on menu to notify attached handlers
             self.addExternalHandler();            

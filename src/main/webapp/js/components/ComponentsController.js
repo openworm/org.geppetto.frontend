@@ -66,8 +66,15 @@ define(function (require) {
 						GEPPETTO.on(Events.Volatile_project_loaded, function(){
 							component.setState({disableSave:!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)});
 						});
-						GEPPETTO.on(Events.Check_project_persisted, function(){
-							component.setState({disableSave:GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)});
+						GEPPETTO.on(Events.Project_loaded, function(){
+							var disable = true;
+							if(!window.Project.persisted){
+								if(GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)){
+									disable = false;
+								}
+							}	
+
+							component.setState({disableSave:disable});
 						});
 					}
 					else if (type == 'SPOTLIGHT'){

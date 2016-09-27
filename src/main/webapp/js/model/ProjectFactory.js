@@ -117,7 +117,6 @@ define(function (require) {
                     }
                 }
 
-                GEPPETTO.Console.createTags(e.name, GEPPETTO.Utility.extractMethodsFromObject(e, true));
                 return e;
             },
 

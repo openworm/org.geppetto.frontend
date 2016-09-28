@@ -1058,15 +1058,15 @@ define(function (require) {
         		};
 
         		var configuration = {
-        				id : "queryButton",
+        				id : "queryResultsButton",
         				openByDefault : false,
         				closeOnClick : false,
-        				label: this.props.model.results[focusTabIndex-1].id, 
+        				label: "Query Results", 
         				iconOn : 'fa fa-caret-square-o-up' , 
         				iconOff : 'fa fa-caret-square-o-down',
-        				menuPosition : {top : 0, left : 0},
-        				menuSize : {height : "auto", width : 300},
-                        onClickHandler : "Query Results",
+        				menuPosition : null,
+        				menuSize : {height : "auto", width : 600},
+                        onClickHandler : this.clickHandler,
         				menuItems : []
         		};
         		

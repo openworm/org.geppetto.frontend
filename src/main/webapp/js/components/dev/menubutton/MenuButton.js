@@ -169,7 +169,7 @@ define(function (require) {
         render: function () {
             return (
                 <div className="menuButtonContainer">
-                    <button className={this.props.configuration.id + " btn pull-right"} type="button" title=''
+                    <button className={this.props.configuration.id + " btn"} type="button" title=''
                           id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.state.disabled} ref="menuButton">
                         <i className={this.state.icon}></i>
                         {this.props.configuration.label}

@@ -83,6 +83,7 @@ define(function (require) {
 				id : "menuButton",
 				openByDefault : false,
 				closeOnClick : false,
+				buttonDisabled : true,
 				label: ' Results', 
 				iconOn : 'fa fa-caret-square-o-up' , 
 				iconOff : 'fa fa-caret-square-o-down',
@@ -130,7 +131,7 @@ define(function (require) {
 		};
 		
 		//Home button initialization
-		GEPPETTO.ComponentFactory.addComponent('MENUBUTTON', {configuration : configuration}, document.getElementById("MenuButton"));
+		//GEPPETTO.ComponentFactory.addComponent('MENUBUTTON', {configuration : configuration}, document.getElementById("MenuButton"));
 		
         //Loading spinner initialization
         GEPPETTO.on('show_spinner', function (label) {

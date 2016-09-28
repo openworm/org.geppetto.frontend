@@ -1,5 +1,10 @@
 /*Classes*/
 
+#queryResultsButton {
+	float : left;
+	margin-left : 5px;
+}
+
 #querybuilder .queryresults-button {
     height: 25px;
     width: 33px;

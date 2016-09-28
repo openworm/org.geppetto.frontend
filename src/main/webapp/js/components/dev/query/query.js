@@ -1081,7 +1081,13 @@ define(function (require) {
         		
                 markup = (
                     <div id="query-results-container" className="center-content">
-                    	<MenuButton configuration={configuration} className="query-result-option"/>
+	                    <select className="query-result-option"
+	                        onChange={this.resultSetSelectionChange}
+	                        value={this.props.model.results[focusTabIndex-1].id}>
+	                    {this.props.model.results.map(function (resultItem, key) {
+	                        return <option key={key} value={resultItem.id}>{resultItem.verboseLabelPLain}</option>;
+	                    })}
+                    	</select>	
                     	<Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>

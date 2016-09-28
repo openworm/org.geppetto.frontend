@@ -6,6 +6,12 @@
 	margin-right : 5px;
 }
 
+.queryButtonMenu {
+	background-color: rgb(6, 6, 6);
+    font-size: 18px;
+    color: rgba(255, 224, 0, 0.84);	
+}
+
 #querybuilder .queryresults-button {
     height: 25px;
     width: 33px;

@@ -1067,7 +1067,8 @@ define(function (require) {
         				iconOn : 'fa fa-caret-square-o-up fa-2x' , 
         				iconOff : 'fa fa-caret-square-o-down fa-2x',
         				menuPosition : null,
-        				menuSize : {height : "auto", width : 600},
+        				menuSize : {height : "auto", width : 750},
+        				menuCSS : "queryButtonMenu",
                         onClickHandler : this.resultSetSelectionChange,
                         onLoadHandler : loadHandler,
         				menuItems : []

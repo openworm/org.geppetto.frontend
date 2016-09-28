@@ -1,3 +1,13 @@
+/**
+ * Reusable drop down button React component. 
+ * Takes in a configuration with properties and data, uses it 
+ * to create button and drop down.
+ * 
+ * @author Jesus R Martinez (jesus@metacell.us) 
+ * 
+ * @param require
+ * @returns
+ */
 define(function (require) {
 
     var link = document.createElement("link");
@@ -13,7 +23,9 @@ define(function (require) {
         menu: new GEPPETTO.ContextMenuView(),
         onClickHandler : null,
         onLoadHandler : null,
+   
         
+        //Set of icons used for different drop down items
         menuItemsIcons: {
             checked: "fa fa-check-circle-o",
             unchecked: "fa fa-circle-o",
@@ -31,6 +43,7 @@ define(function (require) {
             };
         },
         
+        //Creates array of items used for drop down button
         getMenuItems: function () {
             var iconState = this.menuItemsIcons.default;
             var data = [];
@@ -68,6 +81,7 @@ define(function (require) {
             return data;
         },
         
+        //Makes the drop down menu visible
         showMenu: function () {
             var self = this;
             if (self.state.menuItems.length > 0) {
@@ -88,6 +102,7 @@ define(function (require) {
         	this.menu.hide();
         },
         
+        //Adds external handler for click events, notifies it when a drop down item is clicked
         addExternalClickHandler : function(){
         	var self = this;
         	self.onClickHandler = self.props.configuration.onClickHandler;
@@ -114,6 +129,7 @@ define(function (require) {
         	}
         },
         
+        //Adds external load handler, gets notified when component is mounted and ready
         addExternalLoadHandler : function(){
         	var self = this;
         	self.onLoadHandler = self.props.configuration.onLoadHandler;
@@ -133,10 +149,14 @@ define(function (require) {
             var menuSize = null;
             //if position wasn't specify for location of menu list
             if(self.props.configuration.menuPosition == null || undefined){
+            	//compute best spot for menu to show up by getting the button's top
+            	//and left values, and considering padding values as well
             	menuPosition = { 
             			top : $("#"+self.props.configuration.id).offset().top + 
             				  $("#"+self.props.configuration.id).outerHeight(),
-            			left: $("#"+self.props.configuration.id).offset().left
+            			left: ($("#"+self.props.configuration.id).offset().left - 
+            				   ($("#"+self.props.configuration.id).outerHeight()-
+            				    $("#"+self.props.configuration.id).innerHeight()))
             	}
             }else{
             	//assign position of menu to what it is in configuration passed
@@ -154,12 +174,23 @@ define(function (require) {
             //update the state of menu with position, list to display and handler
             self.setState({menuPosition : menuPosition, menuSize : menuSize});
 
+            //attach external handler for loading events
             self.addExternalLoadHandler();
             
-            //attach handler to clicking on menu to notify attached handlers
-            self.addExternalClickHandler();            
+            //attach external handler for clicking events
+            self.addExternalClickHandler();    
+            
+            //applies css class to menu, css class specified in configuration
+            if(self.props.configuration.menuCSS != null || undefined){
+            	self.addCSSMenu(self.props.configuration.menuCSS);
+            }
         },
 
+        addCSSMenu : function(className){
+        	this.menu.applyCSS(className);
+        },
+        
+        //toggles visibility of drop down menu
         toggleMenu : function(){
         	var showIcon;
             if (this.state.open) {
@@ -174,6 +205,7 @@ define(function (require) {
         },
         
         render: function () {
+        	//initializes drop down items from configuration
         	this.state.menuItems = this.props.configuration.menuItems;
         	
             return (

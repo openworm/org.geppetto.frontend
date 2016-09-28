@@ -232,6 +232,12 @@ define(function (require) {
             	this.$el.hide();
             },
             
+            applyCSS : function(className){
+            	if(className!=null || undefined){
+            		this.$el.addClass(className);
+            	}
+            },
+            
             /**
              * Shows the context menu
              *

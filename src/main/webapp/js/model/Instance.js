@@ -104,7 +104,10 @@ define(function (require) {
         getTypes: function () {
             return this.getVariable().getTypes();
         },
-
+        
+        getValues: function () {
+            return this.getVariable().getValues();
+        },
         /**
          * Get the type of this variable, return a list if it has more than one
          *
@@ -120,7 +123,10 @@ define(function (require) {
             }
             else return types;
         },
-
+        
+        getValue: function () {
+            return this.getVariable().getValue();
+        },
         /**
          *
          * @returns {*|Object}

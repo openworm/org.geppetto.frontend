@@ -15,7 +15,6 @@ define(function (require) {
 
         GEPPETTO.SceneController =
         {
-
             linesThreshold: 2000,
             aboveLinesThreshold: false,
             wireframe: false,
@@ -116,10 +115,12 @@ define(function (require) {
                     threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
                 var baseColor = threeObject.material.defaultColor;
+                var tgtColor = intensity < 0.25 ? new THREE.Color(0,intensity*4,1) : (intensity < 0.5 ? new THREE.Color(0,1,1-(intensity-0.25)*4) : intensity < 0.75 ? new THREE.Color((intensity-0.55)*4,1,0) : new THREE.Color(1,1-(intensity-0.75)*4,0))
                 if (threeObject instanceof THREE.Line) {
-                    threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range([baseColor, "red"])(intensity));
+                    threeObject.material.color = tgtColor;
                 } else {
-                    threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range([baseColor, "red"])(intensity));
+                    threeObject.material.emissive = tgtColor;
+                    threeObject.material.color = tgtColor;
                 }
 
             },

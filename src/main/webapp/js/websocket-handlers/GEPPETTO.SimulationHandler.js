@@ -51,6 +51,7 @@ define(function (require) {
             EXPERIMENT_LOADED: "experiment_loaded",
             VARIABLE_FETCHED: "variable_fetched",
             IMPORT_TYPE_RESOLVED: "import_type_resolved",
+            IMPORT_VALUE_RESOLVED: "import_value_resolved",
             PLAY_EXPERIMENT: "play_experiment",
             SET_WATCHED_VARIABLES: "set_watched_variables",
             WATCHED_VARIABLES_SET: "watched_variables_set",
@@ -111,10 +112,15 @@ define(function (require) {
 
         messageHandler[messageTypes.IMPORT_TYPE_RESOLVED] = function (payload) {
         	GEPPETTO.trigger('spin_logo');
-            GEPPETTO.SimulationHandler.swapResolvedType(payload);
+        	GEPPETTO.SimulationHandler.swapResolvedType(payload);
             GEPPETTO.trigger('stop_spin_logo');
         };
-
+        
+        messageHandler[messageTypes.IMPORT_VALUE_RESOLVED] = function (payload) {
+            GEPPETTO.SimulationHandler.swapResolvedValue(payload);
+            GEPPETTO.trigger('stop_spin_logo');
+        };
+        
         messageHandler[messageTypes.PLAY_EXPERIMENT] = function (payload) {
 
             var experimentState = JSON.parse(payload.update);
@@ -417,7 +423,34 @@ define(function (require) {
                 console.timeEnd(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },
+            
+            resolveImportValue: function (typePath, callback) {
+                var params = {};
+                params["experimentId"] = Project.getActiveExperiment().getId();
+                params["projectId"] = Project.getId();
+                // replace client naming first occurrence - the server doesn't know about it
+                params["path"] = typePath.replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".", '');
 
+                var requestID = GEPPETTO.MessageSocket.send("resolve_import_value", params, callback);
+
+                GEPPETTO.trigger('spin_logo');
+            },
+
+            /**
+             * Swap resolved import value with actual type
+             *
+             * @param payload
+             */
+            swapResolvedValue: function (payload) {
+                var rawModel = JSON.parse(payload.import_value_resolved);
+
+                // STEP 1: merge model - expect a fully formed Geppetto model to be merged into current one
+                var diffReport = GEPPETTO.ModelFactory.mergeValue(rawModel, true);
+
+                GEPPETTO.FE.refresh();
+
+                GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_VALUE_RESOLVED);
+            },
             /**
              * Augments the instances array with some utilities methods for ease of access
              */
@@ -586,9 +619,9 @@ define(function (require) {
 
                 // print node
                 var arrayPart = (size != null) ? "[" + size + "]" : "";
-                var indentation = "   ���������";
+                var indentation = "   ���������������������������";
                 for (var j = 0; j < indent; j++) {
-                    indentation = indentation.replace("���������", " ") + "   ��������� ";
+                    indentation = indentation.replace("���������������������������", " ") + "   ��������������������������� ";
                 }
                 formattedNode = indentation + name + arrayPart;
 

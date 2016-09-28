@@ -47,6 +47,7 @@ define(function (require) {
         this.types = (options.types != undefined) ? options.types : [];
         this.pointerValue = options.pointerValue;
         this.capabilities = [];
+        this.values = (options.values != undefined) ? options.values : [];
     };
 
     Variable.prototype = Object.create(ObjectWrapper.prototype);
@@ -97,7 +98,20 @@ define(function (require) {
         else return types;
     };
 
+    //TODO: Matteo: Review before merging to development
 
+    Variable.prototype.getValues= function () {
+        return this.values;
+    };
+
+    Variable.prototype.getValue= function () {
+        var values = this.getValues();
+        if (values.length == 1) {
+            return values[0];
+        }
+        else return values;
+    };
+    
     /**
      * Get the list of values for this variable
      *

@@ -175,5 +175,4 @@ define(function (require) {
     };
     
     return Type;
-})
-;
+});

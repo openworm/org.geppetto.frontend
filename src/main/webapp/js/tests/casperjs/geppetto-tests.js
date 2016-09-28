@@ -18,10 +18,10 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/login?username=guest1&password=guest",function() {
-    this.waitForSelector('div#page', function() {
+    /*this.waitForSelector('div#page', function() {
         this.echo("I've waited for the splash screen to come up.");
         test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
-    }, null, 30000);
+    }, null, 30000);*/
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/",function() {

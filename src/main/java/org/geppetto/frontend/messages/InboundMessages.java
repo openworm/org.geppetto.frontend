@@ -76,6 +76,7 @@ public enum InboundMessages {
 	//DATASOURCES
 	FETCH_VARIABLE("fetch_variable"), 
 	RESOLVE_IMPORT_TYPE("resolve_import_type"), 
+	RESOLVE_IMPORT_VALUE("resolve_import_value"),	 
 	
 	//QUERIES
 	RUN_QUERY("run_query"),

@@ -152,8 +152,7 @@ define(function (require) {
             }
             
             //update the state of menu with position, list to display and handler
-            self.setState({menuItems : self.props.configuration.menuItems, 
-            			menuPosition : menuPosition, menuSize : menuSize});
+            self.setState({menuPosition : menuPosition, menuSize : menuSize});
 
             self.addExternalLoadHandler();
             
@@ -175,6 +174,8 @@ define(function (require) {
         },
         
         render: function () {
+        	this.state.menuItems = this.props.configuration.menuItems;
+        	
             return (
                 <div className="menuButtonContainer">
                     <button className={this.props.configuration.id + " btn"} type="button" title=''

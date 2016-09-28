@@ -2,8 +2,8 @@
 
 #queryResultsButton {
 	float : left;
-	margin-left : 5px;
-	width : 600px;
+	margin-left : 10px;
+	margin-right : 5px;
 }
 
 #querybuilder .queryresults-button {
@@ -39,16 +39,17 @@
 #querybuilder .delete-result-button {
     float: right;
     margin-bottom: 10px;
+    margin-right : 10px;
 }
 
 #querybuilder .result-verbose-label {
     float: left;
     color: white;
     font-weight: bold;
-    font-size: 15px;
+    font-size: 20px;
     margin-bottom: 10px;
+    margin-top : -5px;
     text-align: left;
-    width: 95%;
 }
 
 #querybuilder .result-verbose-label span {

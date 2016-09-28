@@ -155,6 +155,7 @@ define(function (require) {
         },
 
         deleteResults: function(results) {
+        	GEPPETTO.Console.log("delete results");
             for (var i = 0; i < this.results.length; i++) {
                 if (results.id == this.results[i].id) {
                     this.results.splice(i, 1);
@@ -1062,9 +1063,9 @@ define(function (require) {
         				id : "queryResultsButton",
         				openByDefault : false,
         				closeOnClick : true,
-        				label: "Query Results", 
-        				iconOn : 'fa fa-caret-square-o-up' , 
-        				iconOff : 'fa fa-caret-square-o-down',
+        				label: "", 
+        				iconOn : 'fa fa-caret-square-o-up fa-2x' , 
+        				iconOff : 'fa fa-caret-square-o-down fa-2x',
         				menuPosition : null,
         				menuSize : {height : "auto", width : 600},
                         onClickHandler : this.resultSetSelectionChange,

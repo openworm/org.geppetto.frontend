@@ -127,8 +127,9 @@ define(function (require) {
             //if position wasn't specify for location of menu list
             if(self.props.configuration.menuPosition == null || undefined){
             	menuPosition = { 
-            			top : $("#"+self.props.configuration.id).position().top + 35,
-            			left: $("#"+self.props.configuration.id).position().left
+            			top : $("#"+self.props.configuration.id).offset().top + 
+            				  $("#"+self.props.configuration.id).outerHeight() + 10,
+            			left: $("#"+self.props.configuration.id).offset().left
             	}
             }else{
             	//assign position of menu to what it is in configuration passed
@@ -171,7 +172,7 @@ define(function (require) {
                 <div className="menuButtonContainer">
                     <button className={this.props.configuration.id + " btn"} type="button" title=''
                           id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.state.disabled} ref="menuButton">
-                        <i className={this.state.icon}></i>
+                        <i className={this.state.icon + " menuButtonIcon"}></i>
                         {this.props.configuration.label}
                     </button>
                 </div>

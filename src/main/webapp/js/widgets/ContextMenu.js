@@ -158,7 +158,9 @@ define(function (require) {
 
                 //TODO: We are not using the option parameter (registeredItem["option"])
                 for (var i=0;i<registeredItem["action"].length;i++) {
-                    GEPPETTO.Console.executeCommand(registeredItem["action"][i]);
+                	if(registeredItem["action"][i] != null || undefined){
+                		GEPPETTO.Console.executeCommand(registeredItem["action"][i]);
+                	}
                 }
             },
 

@@ -128,7 +128,7 @@ define(function (require) {
             if(self.props.configuration.menuPosition == null || undefined){
             	menuPosition = { 
             			top : $("#"+self.props.configuration.id).offset().top + 
-            				  $("#"+self.props.configuration.id).outerHeight() + 10,
+            				  $("#"+self.props.configuration.id).outerHeight() + 5,
             			left: $("#"+self.props.configuration.id).offset().left
             	}
             }else{

@@ -162,6 +162,33 @@ define(function (require) {
 			return v;
 		};
 
+		var loadedHandler = function(self){
+            GEPPETTO.on(Events.Experiment_active, function () {
+                if (!self.state.disabled) {
+                    if (self.state.open) {
+                        self.hideMenu();
+                    }
+                }
+                var experiment = window.Project.getActiveExperiment();
+                var newState = true;
+                if (experiment != null || undefined) {
+                    if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                        newState = false;
+                    }
+                }
+                self.setState({disabled: newState});
+            });
+
+            GEPPETTO.on(Events.Experiment_completed, function (experimentID) {
+                var newState = self.state.disabled;
+                var experiment = window.Project.getActiveExperiment();
+                if (experiment.getId() == experimentID) {
+                    newState = false;
+                }
+                self.setState({disabled: newState});
+            });
+		};
+
 		var clickHandler = function(value){
 			//Do Something with value returned
 			if(value != null){
@@ -173,12 +200,14 @@ define(function (require) {
 				id : "menuButton",
 				openByDefault : false,
 				closeOnClick : false,
+				buttonDisabled : true,
 				label: ' Results', 
 				iconOn : 'fa fa-caret-square-o-up' , 
 				iconOff : 'fa fa-caret-square-o-down',
 				menuPosition : null,
 				menuSize : {height : "auto", width : 300},
                 onClickHandler : clickHandler,
+                onLoadHandler : loadedHandler,
 				menuItems : [
 				                   {
 				                	   label: "Plot all recorded variables",

@@ -316,7 +316,7 @@ define(function (require) {
                     data.push({
                         "label": this.controller.history[i].label,
                         "action": [action],
-                        "icon": "fa-history",
+                        "icon": null,
                         "position": i
                     })
                 }

@@ -52,6 +52,8 @@ define(function (require) {
     var handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
 
+	var MenuButton = require('jsx!./../menubutton/MenuButton')
+
     // query model object to represent component state and trigger view updates
     var queryBuilderModel = {
         // list of change handlers called on change
@@ -1048,16 +1050,39 @@ define(function (require) {
                     );
                 }, this);
 
+        		var clickHandler = function(value){
+        			//Do Something with value returned
+        			if(value != null){
+        				GEPPETTO.Console.log(value);
+        			}
+        		};
+
+        		var configuration = {
+        				id : "queryButton",
+        				openByDefault : false,
+        				closeOnClick : false,
+        				label: this.props.model.results[focusTabIndex-1].id, 
+        				iconOn : 'fa fa-caret-square-o-up' , 
+        				iconOff : 'fa fa-caret-square-o-down',
+        				menuPosition : {top : 0, left : 0},
+        				menuSize : {height : "auto", width : 300},
+                        onClickHandler : "Query Results",
+        				menuItems : []
+        		};
+        		
+        		var menuItems = [];
+        		var i =0;
+        		this.props.model.results.map(function (resultItem, key) {
+        			menuItems[i] = {label : resultItem.verboseLabelPLain,
+        							value : resultItem.id};
+                });
+                
+        		configuration["menuItems"] = menuItems;
+        		
                 markup = (
                     <div id="query-results-container" className="center-content">
-                        <select className="query-result-option"
-                                onChange={this.resultSetSelectionChange}
-                                value={this.props.model.results[focusTabIndex-1].id}>
-                            {this.props.model.results.map(function (resultItem, key) {
-                                return <option key={key} value={resultItem.id}>{resultItem.verboseLabelPLain}</option>;
-                            })}
-                        </select>
-                        <Tabs tabActive={focusTabIndex}>
+                    	<MenuButton configuration={configuration} className="query-result-option"/>
+                    	<Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-hand-o-left querybuilder-button"

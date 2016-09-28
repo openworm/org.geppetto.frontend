@@ -64,7 +64,7 @@
 
 	<div id="SaveButton" class="row"></div>
 	<div id="HomeButton" class="row"></div>
-	<div id="DropDownButton" class="row"></div>
+	<div id="MenuButton" class="row"></div>
     <div id="sim-toolbar" class="row"></div>
 	<div id="tutorial"></div>
     <div id="camera-controls"></div>
@@ -81,7 +81,6 @@
     <div id="geppettologo" ></div>
     <div id="spotlight" ></div>
     <div id="controlpanel" ></div>
-   	<div id="dropDownPanel" ></div>
     <div id="querybuilder" ></div>
     <div id="sim"></div>
 
@@ -117,6 +116,9 @@
 </script>
 <script type="text/template" id="tplContextMenuItems">
     <li id="<%= this.cid %>">
+    	<% if (icon != null || undefined) { %>
+    		<i class="<%= icon %>" id="<%= this.cid %>"></i>
+		<% } %>
         <%= label %>
     </li>
 </script>

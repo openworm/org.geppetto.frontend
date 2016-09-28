@@ -52,6 +52,86 @@ define(function (require) {
         //Camera controls initialization
         GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
 
+		window.plotAllRecordedVariables=function(){
+			Project.getActiveExperiment().playAll();
+			var plt=G.addWidget(0).setName('Recorded Variables'); 
+			$.each(Project.getActiveExperiment().getWatchedVariables(true,false),
+				function(index,value){
+					plt.plotData(value)
+			});
+		};
+		
+		window.getRecordedMembranePotentials=function(){
+			var instances=Project.getActiveExperiment().getWatchedVariables(true,false);
+			var v=[];
+			for(var i=0;i<instances.length;i++){
+				if(instances[i].getInstancePath().endsWith(".v")){
+					v.push(instances[i]);
+				}
+			}
+			return v;
+		};
+
+		var clickHandler = function(value){
+			//Do Something with value returned
+			if(value != null){
+				GEPPETTO.Console.log(value);
+			}
+		};
+
+		var configuration = {
+				id : "menuButton",
+				openByDefault : false,
+				closeOnClick : false,
+				label: ' Results', 
+				iconOn : 'fa fa-caret-square-o-up' , 
+				iconOff : 'fa fa-caret-square-o-down',
+				menuPosition : null,
+				menuSize : {height : "auto", width : 300},
+                onClickHandler : clickHandler,
+				menuItems : [
+				                   {
+				                	   label: "Plot all recorded variables",
+				                	   action: "window.plotAllRecordedVariables();",
+				                	   value : "plot_recorded_variables"
+				                   },
+				                   {
+				                	   label: "Play step by step",
+				                	   action: "Project.getActiveExperiment().play({step:1});",
+				                	   value : "play_speed_1"
+				                   },
+				                   {
+				                	   label: "Play step by step (10x)",
+				                	   action: "Project.getActiveExperiment().play({step:10});",
+				                	   value : "play_speed_10"
+				                   },
+				                   {
+				                	   label: "Play step by step (100x)",
+				                	   action: "Project.getActiveExperiment().play({step:100});",
+				                	   value : "play_speed_100"
+				                   },
+				                   {
+				                	   label: "Apply voltage colouring to morphologies",
+				                	   condition: "GEPPETTO.G.isBrightnessFunctionSet()",
+				                	   value : "apply_voltage",
+				                	   false: {
+				                		   action: "G.addBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(), function(x){return (x+0.07)/0.1;});"
+				                	   },
+				                	   true: {
+				                		   action: "G.removeBrightnessFunctionBulkSimplified(window.getRecordedMembranePotentials(),false);"
+				                	   }
+				                   },
+				                   {
+				                	   label: "Show simulation time",
+				                	   action: "G.addWidget(5).setName('Simulation time').setVariable(time);",
+				                	   value : "simulation_time"
+				                   }
+				                   ]
+		};
+		
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('MENUBUTTON', {configuration : configuration}, document.getElementById("MenuButton"));
+		
         //Loading spinner initialization
         GEPPETTO.on('show_spinner', function (label) {
             GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {

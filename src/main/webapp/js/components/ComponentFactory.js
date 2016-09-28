@@ -51,10 +51,9 @@ define(function (require) {
 		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
 		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
 		var shareComp = require('jsx!./dev/share/share');
-
-		var dropDownButton = require('jsx!./dev/DropDownPanel/DropDownButton')
-		var dropDownComp = require('jsx!./dev/DropDownPanel/DropDownPanel');
 		var queryComp = require('jsx!./dev/query/query');
+		var menuButton = require('jsx!./dev/menubutton/MenuButton')
+		//var queryComp = require('jsx!./dev/query/query');
 		var tutorialComp = require('jsx!./dev/tutorial/TutorialModule');
 		
 		GEPPETTO.ComponentFactory = {
@@ -81,11 +80,8 @@ define(function (require) {
 				else if (component == 'SPOTLIGHT'){
 					return React.createFactory(spotlightComp)(properties);
 				}
-				else if (component == 'DROPDOWNBUTTON'){
-					return React.createFactory(dropDownButton)(properties);
-				}
-				else if (component == 'DROPDOWNPANEL'){
-					return React.createFactory(dropDownComp)(properties);
+				else if (component == 'MENUBUTTON'){
+					return React.createFactory(menuButton)(properties);
 				}
 				else if (component == 'FOREGROUND'){
 					return React.createFactory(foregroundControlsComp)(properties);

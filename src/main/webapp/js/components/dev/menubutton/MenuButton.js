@@ -12,7 +12,8 @@ define(function (require) {
     var MenuButton = React.createClass({
         menu: new GEPPETTO.ContextMenuView(),
         onClickHandler : null,
-
+        onLoadHandler : null,
+        
         menuItemsIcons: {
             checked: "fa fa-check-circle-o",
             unchecked: "fa fa-circle-o",
@@ -23,7 +24,7 @@ define(function (require) {
             return {
                 icon: this.props.configuration.iconOff,
                 open: false,
-                disabled: true,
+                disabled: this.props.configuration.buttonDisabled,
                 menuItems : null,        
                 menuPosition : {},
                 menuSize : {}
@@ -87,7 +88,7 @@ define(function (require) {
         	this.menu.hide();
         },
         
-        addExternalHandler : function(){
+        addExternalClickHandler : function(){
         	var self = this;
         	self.onClickHandler = self.props.configuration.onClickHandler;
         	if(self.onClickHandler !=null || undefined){
@@ -110,34 +111,17 @@ define(function (require) {
         		});
         	}
         },
+        
+        addExternalLoadHandler : function(){
+        	var self = this;
+        	self.onLoadHandler = self.props.configuration.onLoadHandler;
+        	if(self.onLoadHandler !=null || undefined){
+        		self.onLoadHandler(self);
+        	}
+        },
 
         componentDidMount: function () {
             var self = this;
-            GEPPETTO.on(Events.Experiment_active, function () {
-                if (!self.state.disabled) {
-                    if (self.state.open) {
-                        self.hideMenu();
-                    }
-                }
-                var experiment = window.Project.getActiveExperiment();
-                var newState = true;
-                if (experiment != null || undefined) {
-                    if (experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        newState = false;
-                    }
-                }
-                self.setState({disabled: newState});
-            });
-
-            GEPPETTO.on(Events.Experiment_completed, function (experimentID) {
-                var newState = self.state.disabled;
-                var experiment = window.Project.getActiveExperiment();
-                if (experiment.getId() == experimentID) {
-                    newState = false;
-                }
-                self.setState({disabled: newState});
-            });
-            
             var menuPosition=null
             var menuSize = null;
             //if position wasn't specify for location of menu list
@@ -148,7 +132,7 @@ define(function (require) {
             	}
             }else{
             	//assign position of menu to what it is in configuration passed
-            	menuPosition = self.configuration.menuPosition;
+            	menuPosition = self.props.configuration.menuPosition;
             }
             
             //if position wasn't specify for location of menu list
@@ -162,9 +146,11 @@ define(function (require) {
             //update the state of menu with position, list to display and handler
             self.setState({menuItems : self.props.configuration.menuItems, 
             			menuPosition : menuPosition, menuSize : menuSize});
+
+            self.addExternalLoadHandler();
             
             //attach handler to clicking on menu to notify attached handlers
-            self.addExternalHandler();            
+            self.addExternalClickHandler();            
         },
 
         toggleMenu : function(){
@@ -183,7 +169,7 @@ define(function (require) {
         render: function () {
             return (
                 <div className="menuButtonContainer">
-                    <button className="btn menuButton pull-right" type="button" title=''
+                    <button className={this.props.configuration.id + " btn pull-right"} type="button" title=''
                           id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.state.disabled} ref="menuButton">
                         <i className={this.state.icon}></i>
                         {this.props.configuration.label}

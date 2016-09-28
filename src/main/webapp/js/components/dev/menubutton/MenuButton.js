@@ -93,20 +93,22 @@ define(function (require) {
         	self.onClickHandler = self.props.configuration.onClickHandler;
         	if(self.onClickHandler !=null || undefined){
         		$(self.menu.el).on('click', function (event) {
-        			var itemId = $(event.target).attr('id');
-        			var registeredItem = self.menu.getClickedItem(itemId);
-        			if(registeredItem != null || undefined){
-        				var label = registeredItem["label"];
-        				var value = null;
-        				for(var i =0; i<self.state.menuItems.length; i++){
-        					if(self.state.menuItems[i].label == label){
-        						value = self.state.menuItems[i].value;
+        			if(self.onClickHandler != null || undefined){
+        				var itemId = $(event.target).attr('id');
+        				var registeredItem = self.menu.getClickedItem(itemId);
+        				if(registeredItem != null || undefined){
+        					var label = registeredItem["label"];
+        					var value = null;
+        					for(var i =0; i<self.state.menuItems.length; i++){
+        						if(self.state.menuItems[i].label == label){
+        							value = self.state.menuItems[i].value;
+        						}
         					}
+        					if(self.props.configuration.closeOnClick){
+        						self.toggleMenu();
+        					}
+        					self.onClickHandler(value);
         				}
-        				if(self.props.configuration.closeOnClick){
-        					self.toggleMenu();
-        				}
-        				self.onClickHandler(value);
         			}
         		});
         	}
@@ -120,6 +122,11 @@ define(function (require) {
         	}
         },
 
+        componentWillUnmount : function(){
+        	this.onLoadHandler = null;
+        	this.onClickHandler = null;
+        },
+        
         componentDidMount: function () {
             var self = this;
             var menuPosition=null
@@ -128,7 +135,7 @@ define(function (require) {
             if(self.props.configuration.menuPosition == null || undefined){
             	menuPosition = { 
             			top : $("#"+self.props.configuration.id).offset().top + 
-            				  $("#"+self.props.configuration.id).outerHeight() + 5,
+            				  $("#"+self.props.configuration.id).outerHeight(),
             			left: $("#"+self.props.configuration.id).offset().left
             	}
             }else{

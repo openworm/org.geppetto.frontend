@@ -3,6 +3,7 @@
 #queryResultsButton {
 	float : left;
 	margin-left : 5px;
+	width : 600px;
 }
 
 #querybuilder .queryresults-button {

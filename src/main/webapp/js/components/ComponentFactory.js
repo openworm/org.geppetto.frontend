@@ -52,8 +52,7 @@ define(function (require) {
 		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
 		var shareComp = require('jsx!./dev/share/share');
 
-		var dropDownButton = require('jsx!./dev/DropDownPanel/DropDownButton')
-		var dropDownComp = require('jsx!./dev/DropDownPanel/DropDownPanel');
+		var menuButton = require('jsx!./dev/menubutton/MenuButton')
 		var queryComp = require('jsx!./dev/query/query');
 		var tutorialComp = require('jsx!./dev/tutorial/TutorialModule');
 
@@ -83,11 +82,8 @@ define(function (require) {
 				else if (component == 'SPOTLIGHT'){
 					return React.createFactory(spotlightComp)(properties);
 				}
-				else if (component == 'DROPDOWNBUTTON'){
-					return React.createFactory(dropDownButton)(properties);
-				}
-				else if (component == 'DROPDOWNPANEL'){
-					return React.createFactory(dropDownComp)(properties);
+				else if (component == 'MENUBUTTON'){
+					return React.createFactory(menuButton)(properties);
 				}
 				else if (component == 'FOREGROUND'){
 					return React.createFactory(foregroundControlsComp)(properties);
@@ -108,11 +104,11 @@ define(function (require) {
 					return React.createFactory(shareComp)(properties);
 				}
 				else if (component == 'INFOMODAL'){
-            return React.createFactory(infoModalComp)(properties);
-        }
-        else if (component == 'MDMODAL'){
-            return React.createFactory(mdModalComp)(properties);
-        }
+					return React.createFactory(infoModalComp)(properties);
+				}
+				else if (component == 'MDMODAL'){
+					return React.createFactory(mdModalComp)(properties);
+				}
 				else if (component == 'QUERY'){
 					return React.createFactory(queryComp)(properties);
 				}

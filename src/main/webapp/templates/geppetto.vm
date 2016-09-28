@@ -64,7 +64,7 @@
 
 	<div id="SaveButton" class="row"></div>
 	<div id="HomeButton" class="row"></div>
-	<div id="DropDownButton" class="row"></div>
+	<div id="MenuButton" class="row"></div>
     <div id="sim-toolbar" class="row"></div>
 	<div id="tutorial"></div>
     <div id="camera-controls"></div>

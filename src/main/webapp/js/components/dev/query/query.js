@@ -560,6 +560,7 @@ define(function (require) {
                 if (e.target==e.delegateTarget){
                     //we want this only to happen if we clicked on the div directly and not on anything therein contained
                     that.close();
+                    GEPPETTO.trigger("query_closed");
                 }
             });
 
@@ -1010,8 +1011,7 @@ define(function (require) {
             this.setErrorMessage('');
         },
 
-        resultSetSelectionChange: function(e){
-            var val = e.target.value;
+        resultSetSelectionChange: function(val){
             this.props.model.resultSelectionChanged(val);
         },
 
@@ -1050,23 +1050,25 @@ define(function (require) {
                     );
                 }, this);
 
-        		var clickHandler = function(value){
-        			//Do Something with value returned
-        			if(value != null){
-        				GEPPETTO.Console.log(value);
-        			}
+        		var loadHandler = function(self){
+        			GEPPETTO.on("query_closed", function(){
+        				if(self.state.open){
+        					self.toggleMenu();
+        				}
+        			});
         		};
 
         		var configuration = {
         				id : "queryResultsButton",
         				openByDefault : false,
-        				closeOnClick : false,
+        				closeOnClick : true,
         				label: "Query Results", 
         				iconOn : 'fa fa-caret-square-o-up' , 
         				iconOff : 'fa fa-caret-square-o-down',
         				menuPosition : null,
         				menuSize : {height : "auto", width : 600},
-                        onClickHandler : this.clickHandler,
+                        onClickHandler : this.resultSetSelectionChange,
+                        onLoadHandler : loadHandler,
         				menuItems : []
         		};
         		
@@ -1074,20 +1076,15 @@ define(function (require) {
         		var i =0;
         		this.props.model.results.map(function (resultItem, key) {
         			menuItems[i] = {label : resultItem.verboseLabelPLain,
-        							value : resultItem.id};
+							value : resultItem.id};
+        			i++;
                 });
                 
         		configuration["menuItems"] = menuItems;
         		
                 markup = (
                     <div id="query-results-container" className="center-content">
-	                    <select className="query-result-option"
-	                        onChange={this.resultSetSelectionChange}
-	                        value={this.props.model.results[focusTabIndex-1].id}>
-	                    {this.props.model.results.map(function (resultItem, key) {
-	                        return <option key={key} value={resultItem.id}>{resultItem.verboseLabelPLain}</option>;
-	                    })}
-                    	</select>	
+                    	<MenuButton configuration={configuration}/>
                     	<Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>

@@ -32,28 +32,44 @@
  *******************************************************************************/
 
 /**
- * Loads popup scripts
+ * Client class use to represent an array type.
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @module model/ImportValue
+ * @author nitesh thali
  */
-//Load PopupsController and other classes using GEPPETTO
+define(function (require) {
+    var Value = require('model/Value');
+    
 
-require.config({
-    paths: {
-        "slick": "widgets/popup/vendor/slick.min",
-        "anchorme": "widgets/popup/vendor/anchorme.min"
+    function ImportValue(options) {
+        Value.prototype.constructor.call(this, options);
     }
+    
+    ImportValue.prototype = Object.create(Value.prototype);
+    ImportValue.prototype.constructor = ImportValue;
+    
+    ImportValue.prototype.resolve = function(callback) {
+            GEPPETTO.SimulationHandler.resolveImportValue(this.getPath(), callback);
+    };
+    
+    
+    /**
+     * Get path
+     *
+     * @command Type.getPath()
+     *
+     * @returns {String} - path
+     *
+     */
+    ImportValue.prototype.getPath = function () {
+        if (this.parent) {
+            return this.parent.getPath();
+        }
+        else {
+            throw "A value should always have a parent!";
+        }
+
+    };
+    
+    return ImportValue;
 });
-
-var reqs = [];
-reqs.push("slick");
-reqs.push("anchorme");
-
-
-require(reqs, function () {
-	loadCss("geppetto/js/widgets/popup/Popup.css");
-	loadCss("geppetto/js/widgets/popup/vendor/slick.css");
-	loadCss("geppetto/js/widgets/popup/vendor/slick-theme.css");
-
-});
-

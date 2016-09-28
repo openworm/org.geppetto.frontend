@@ -32,28 +32,24 @@
  *******************************************************************************/
 
 /**
- * Loads popup scripts
+ * Client class use to represent a variable.
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @module model/Value
+ * @author Nitesh Thali
  */
-//Load PopupsController and other classes using GEPPETTO
+define(function (require) {
+	
+    var ObjectWrapper = require('model/ObjectWrapper');
 
-require.config({
-    paths: {
-        "slick": "widgets/popup/vendor/slick.min",
-        "anchorme": "widgets/popup/vendor/anchorme.min"
+    function Value(options) {
+    	ObjectWrapper.prototype.constructor.call(this, options);
+    	this.pointerValue=  options.pointerValue;
+    	this.capabilities= [];
     }
+    
+    Value.prototype = Object.create(ObjectWrapper.prototype);
+    Value.prototype.constructor = Value;
+
+    return Value;
+    
 });
-
-var reqs = [];
-reqs.push("slick");
-reqs.push("anchorme");
-
-
-require(reqs, function () {
-	loadCss("geppetto/js/widgets/popup/Popup.css");
-	loadCss("geppetto/js/widgets/popup/vendor/slick.css");
-	loadCss("geppetto/js/widgets/popup/vendor/slick-theme.css");
-
-});
-

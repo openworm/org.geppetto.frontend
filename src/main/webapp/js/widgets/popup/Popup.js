@@ -201,7 +201,7 @@ define(function (require) {
 			  truncate:0,
 			  defaultProtocol:"http://"
 			};
-			var type = anyInstance.getType();
+			var type = anyInstance;
 			if(!(type instanceof Type)){
 				type=anyInstance.getType();
 			}

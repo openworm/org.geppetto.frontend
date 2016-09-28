@@ -1845,9 +1845,6 @@ define(function (require) {
             /** Creates a variable */
             createVariable: function (node, options) {
                 if (options == null || options == undefined) {
-                	//TODO Matteo Review before mergin to development, do we want to create values also when we don't have
-                	//importValue? Probably not as it creates unnecessary objects...maybe
-                	
                     options = {wrappedObj: node, types: node.types};
                 }
 

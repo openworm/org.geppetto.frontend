@@ -33,6 +33,11 @@
     color: #fd6808;
     font-size: 45px !important;
     border: 0 !important;
+    cursor:pointer;
+}
+
+#querybuilder .querybuilder-button:hover{
+	color:white!important;
 }
 
 #querybuilder .querybuilder-button-small {
@@ -49,6 +54,9 @@
     float: right;
     margin-top: 12px;
     margin-right : 5px;
+}
+#querybuilder .delete-result-button:hover {
+	color:white!important;
 }
 
 #querybuilder .result-verbose-label {
@@ -70,7 +78,7 @@
     font-weight: bold;
     font-size: 20px;
     text-align: center;
-    color: #fd6808;
+    color: #fc401a;
     float: left;
     margin-right: 25px;
     width: 75px;
@@ -115,6 +123,9 @@
     float: right;
 }
 
+#querybuilder .query-item-button:hover {
+	color:white!important;
+}
 #querybuilder .query-item {
     margin-bottom: 25px;
 }
@@ -165,6 +176,13 @@
 #add-query-btn {
     float: left;
     cursor: default;
+    color:#fc401a;
+    height: 50px;
+    width: 66px;
+    margin: 0px;
+    background: none !important;
+    font-size: 45px !important;
+    border: 0 !important;
 }
 
 #query-typeahead {
@@ -184,16 +202,18 @@
     margin-left: auto;
     margin-right: auto;
     margin-top: 25px;
+    text-align:center;
     left: 0;
     right: 0;
-    width: 80px;
 }
 
 #query-results-label {
     font-weight: bold;
     font-size: 15px;
+    width:200px;
     text-align: center;
     color: #fd6808;
+    margin: 0 auto;
 }
 
 #query-error-message {

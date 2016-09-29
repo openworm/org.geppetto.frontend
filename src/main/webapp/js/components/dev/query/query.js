@@ -414,7 +414,7 @@ define(function (require) {
         render: function () {
             return (
                 <div id="querybuilder-footer" className={this.props.containerClass}>
-                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={this.props.onRun} />
+                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="Run query" onClick={this.props.onRun} />
                     <div id="query-results-label">{this.props.count.toString()} results</div>
                 </div>
             );
@@ -1040,7 +1040,7 @@ define(function (require) {
                     return (
                         <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
-                            <button className="fa fa-times-circle-o querybuilder-button-small delete-result-button"
+                            <button className="fa fa-trash-o querybuilder-button-small delete-result-button"
                                     title="Delete result set"  onClick={this.queryResultDeleted.bind(null, resultsItem)}>
                             </button>
                             <div className="clearer"></div>
@@ -1086,8 +1086,8 @@ define(function (require) {
                     	<Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>
-                        <button id="switch-view-btn" className="fa fa-hand-o-left querybuilder-button"
-                                title="back to query" onClick={this.switchView.bind(null, false)}>
+                        <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
+                                title="Back to query" onClick={this.switchView.bind(null, false)}>
                         </button>
                     </div>
                 );
@@ -1118,7 +1118,7 @@ define(function (require) {
                             {queryItems}
                         </div>
                         <div id="add-new-query-container">
-                            <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" />
+                            <button id="add-query-btn" className="fa fa-plus" title="add query" />
                             <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                         </div>
                         <QueryFooter containerClass={footerClass} count={this.props.model.count} onRun={this.runQuery} />

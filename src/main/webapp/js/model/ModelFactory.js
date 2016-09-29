@@ -957,7 +957,7 @@ define(function (require) {
 
                         // getChildren of instance and recurse by the power of greyskull!
                         updateInstancesCapabilities(instances[j].getChildren());
-                        //GEPPETTO.Console.updateTags(instances[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(instances[j], true));
+                        GEPPETTO.Console.createTags(instances[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(instances[j], true));
                     }
                 };
 
@@ -982,7 +982,9 @@ define(function (require) {
 
                     // update instances capabilities
                     updateInstancesCapabilities(varInstances);
-                    GEPPETTO.Console.updateTags(variables[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(variables[j], true));
+                    if(variables[i]!=null || undefined){
+                    	GEPPETTO.Console.createTags(variables[i].getPath(), GEPPETTO.Utility.extractMethodsFromObject(variables[i], true));
+                    }
                 }
             },
 
@@ -1515,6 +1517,8 @@ define(function (require) {
                 if (!(parent == undefined || parent == null) && !parent.hasCapability(capability.capabilityId)) {
                     // apply capability
                     parent.extendApi(capability);
+                    
+                	GEPPETTO.Console.createTags(parent.getPath(), GEPPETTO.Utility.extractMethodsFromObject(parent, true));
 
                     this.propagateCapabilityToParents(capability, parent);
                 }
@@ -2073,8 +2077,6 @@ define(function (require) {
 
                 var i = new Instance(options);
 
-                GEPPETTO.Console.createTags(i.getInstancePath(), this.instanceTags[GEPPETTO.Resources.INSTANCE_NODE]);
-
                 return i;
             },
 
@@ -2086,8 +2088,6 @@ define(function (require) {
 
                 var aei = new ArrayElementInstance(options);
 
-                GEPPETTO.Console.createTags(aei.getInstancePath(), this.instanceTags[GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE]);
-
                 return aei;
             },
 
@@ -2098,8 +2098,6 @@ define(function (require) {
                 }
 
                 var a = new ArrayInstance(options);
-
-                GEPPETTO.Console.createTags(a.getInstancePath(), this.instanceTags[GEPPETTO.Resources.ARRAY_INSTANCE_NODE]);
 
                 return a;
             },

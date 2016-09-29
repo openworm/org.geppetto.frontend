@@ -215,7 +215,9 @@ function doConsoleTest(test) {
 	  casper.then(function() {
 		  //inject jquery
 		  casper.page.injectJs("../../vendor/jquery-1.9.1.min.js");
-		  //type into console command (getTimeSeries()) half finished for state variable 
+		  //type into console command (isSelected()) half finished for object, if
+		  //updated capability worked then isSelected() method from object VisualCapability
+		  //will be part of object hhcell
 		  casper.sendKeys('textarea#commandInputArea', "hhcell.isS", { keepFocus: true });	      	
 		  casper.wait(200, function() {
 			  var nameCount = casper.evaluate(function() {

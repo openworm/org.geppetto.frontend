@@ -211,6 +211,25 @@ function doConsoleTest(test) {
 			  });
 		  }, null, 5000);
 	  });
+	  
+	  casper.then(function() {
+		  //inject jquery
+		  casper.page.injectJs("../../vendor/jquery-1.9.1.min.js");
+		  //type into console command (getTimeSeries()) half finished for state variable 
+		  casper.sendKeys('textarea#commandInputArea', "hhcell.isS", { keepFocus: true });	      	
+		  casper.wait(200, function() {
+			  var nameCount = casper.evaluate(function() {
+				  //retrieve console input via jquery
+				  var output =  $('textarea#commandInputArea').val();
+				  return output;
+			  });
+			  casper.echo(nameCount);
+			  //console should return command fully finished after autocomplete kicks in
+			  test.assertEquals(nameCount,"hhcell.isSelected()", "Autocomplete for updated capability present.");
+			  
+			  casper.sendKeys('textarea#commandInputArea', "", { reset: true} );
+		  });
+	  });
 	}
 
 function doExperimentsTableRowCheck(test) {

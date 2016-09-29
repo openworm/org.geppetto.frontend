@@ -447,6 +447,7 @@ define(function (require) {
                             type.parent = parent;
 
                             types.push(type);
+                            GEPPETTO.Console.createTags(type.getPath(), GEPPETTO.Utility.extractMethodsFromObject(type, true));
                         }
                     }
                 }
@@ -956,6 +957,7 @@ define(function (require) {
 
                         // getChildren of instance and recurse by the power of greyskull!
                         updateInstancesCapabilities(instances[j].getChildren());
+                        //GEPPETTO.Console.updateTags(instances[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(instances[j], true));
                     }
                 };
 
@@ -980,6 +982,7 @@ define(function (require) {
 
                     // update instances capabilities
                     updateInstancesCapabilities(varInstances);
+                    GEPPETTO.Console.updateTags(variables[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(variables[j], true));
                 }
             },
 

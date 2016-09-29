@@ -79,8 +79,56 @@ define(function (require) {
             $('#consoleButton').click(function () {
                 GEPPETTO.Console.toggleConsole();
             });
+            
+            /**Series of moustenter and mouseleave events register to footer 
+            *elements aka console and experiments. This is done so zindex of footer
+            *div can be modified if user has mouse over console or not, if user has mouse
+            *away from console then z-index is set to lowest to avoid it being above
+            *widgets and other html elements.*/
+            
+            $('#consoleButton').mouseenter(function () {
+            	toggleFooterZIndex(true);
+            });
+            
+            $('#experimentsButton').mouseenter(function () {
+            	toggleFooterZIndex(true);
+            });
+            
+            $('#consoleButton').mouseleave(function () {
+            	toggleFooterZIndex(false);
+            });
+            
+            $('#experimentsButton').mouseleave(function () {
+            	toggleFooterZIndex(false);
+            });
+            
+            $('#console').mouseenter(function () {
+            	toggleFooterZIndex(true);
+            });
+            
+            $('#experiments').mouseenter(function () {
+            	toggleFooterZIndex(true);
+            });
+            
+            $('#console').mouseleave(function () {
+            	toggleFooterZIndex(false);
+            });
+            
+            $('#experiments').mouseleave(function () {
+            	toggleFooterZIndex(false);
+            });
         });
 
+        function toggleFooterZIndex(focus){
+        	if(focus){
+        		$("#footer").removeClass("footerOutFocus");
+        		$("#footer").addClass("footerFocus");
+        	}else{
+        		$("#footer").removeClass("footerFocus");
+        		$("#footer").addClass("footerOutFocus");
+        	}
+        }
+        
         /**
          * Matches user input in console to terms in tags map, this to retrieve suggestions
          * for autocompletion.

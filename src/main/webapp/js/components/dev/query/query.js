@@ -1064,8 +1064,8 @@ define(function (require) {
         				openByDefault : false,
         				closeOnClick : true,
         				label: "", 
-        				iconOn : 'fa fa-caret-square-o-up fa-2x' , 
-        				iconOff : 'fa fa-caret-square-o-down fa-2x',
+        				iconOn : 'fa fa-history fa-2x' ,
+        				iconOff : 'fa fa-history fa-2x',
         				menuPosition : null,
         				menuSize : {height : "auto", width : 750},
         				menuCSS : "queryButtonMenu",
@@ -1074,12 +1074,8 @@ define(function (require) {
         				menuItems : []
         		};
         		
-        		var menuItems = [];
-        		var i =0;
-        		this.props.model.results.map(function (resultItem, key) {
-        			menuItems[i] = {label : resultItem.verboseLabelPLain,
-							value : resultItem.id};
-        			i++;
+        		var menuItems = this.props.model.results.map(function (resultItem) {
+        			return {label : resultItem.verboseLabelPLain, value : resultItem.id, icon: "fa-cogs"};
                 });
                 
         		configuration["menuItems"] = menuItems;

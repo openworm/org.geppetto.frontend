@@ -869,6 +869,7 @@ define(function (require) {
                     }            
                 return diffReport;
             },
+
             createValueInstanceFronDiffReport : function(diffReport){
             	 // get initial instance count (used to figure out if we added instances at the end)
                 var instanceCount = this.getInstanceCount(window.Instances);

@@ -96,7 +96,7 @@ define(function (require) {
             "displayName": "Controls",
             "cssClassName": "controlpanel-controls-column",
             "source": "",
-            "actions": "GEPPETTO.FE.refresh();"
+            "actions": "GEPPETTO.ControlPanel.refresh();"
             },
             {
             "columnName": "image",
@@ -131,7 +131,7 @@ define(function (require) {
         GEPPETTO.ControlPanel.setControlsConfig({
             "VisualCapability": {
                 "select": {
-                    "condition": "GEPPETTO.SceneController.isSelected($instances$)",
+                    "condition": "GEPPETTO.SceneController.isSelected($instance$.$instance$_obj != undefined ? [$instance$.$instance$_obj] : []) ||  GEPPETTO.SceneController.isSelected($instance$.$instance$_swc != undefined ? [$instance$.$instance$_swc] : [])",
                     "false": {
                         "actions": ["GEPPETTO.SceneController.select($instances$)"],
                         "icon": "fa-hand-stop-o",

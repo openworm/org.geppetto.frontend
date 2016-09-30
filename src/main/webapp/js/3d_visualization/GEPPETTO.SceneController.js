@@ -1197,10 +1197,10 @@ define(function (require) {
 
 
             isVisible: function (variables) {
-                var visible = true;
+                var visible = false;
                 for (var i = 0; i < variables.length; i++) {
-                    if (!variables[i].isVisible()) {
-                        visible = false;
+                    if (variables[i].isVisible()) {
+                        visible = true;
                         break;
                     }
                 }
@@ -1208,10 +1208,10 @@ define(function (require) {
             },
 
             isSelected: function (variables) {
-                var selected = true;
+                var selected = false;
                 for (var i = 0; i < variables.length; i++) {
-                    if (!variables[i].isSelected()) {
-                        selected = false;
+                    if (variables[i].isSelected()) {
+                        selected = true;
                         break;
                     }
                 }

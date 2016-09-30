@@ -619,8 +619,10 @@ define(function (require) {
         },
 
         open: function () {
-            // hide control panel
+            // show control panel
             $("#controlpanel").show();
+            // refresh to reflect latest state (might have changed)
+            this.refresh();
         },
         
         close: function () {
@@ -647,9 +649,7 @@ define(function (require) {
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == pKey) {
                     // show control panel
-                    $("#controlpanel").show();
-                    // refresh to reflect up to date state of records
-                    GEPPETTO.ControlPanel.refresh();
+                    that.open();
                     // set focus on filter text box
                     $('#controlpanel .griddle-filter input').focus();
                 }

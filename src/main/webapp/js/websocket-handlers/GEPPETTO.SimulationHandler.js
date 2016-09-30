@@ -595,55 +595,5 @@ define(function (require) {
         GEPPETTO.SimulationHandler.MESSAGE_TYPE = messageTypes;
     };
 
-    /**
-     * Utility function for formatting output of list variable operations
-     * NOTE: move from here under wherever it makes sense
-     *
-     * @param vars - array of variables
-     */
-    function formatListVariableOutput(vars, indent) {
-        var formattedNode = null;
-
-        // vars is always an array of variables
-        for (var i = 0; i < vars.length; i++) {
-            var name = vars[i].name;
-
-            if (vars[i].aspect != "aspect") {
-                var size = null;
-                if (typeof(vars[i].size) != "undefined") {
-                    // we know it's an array
-                    size = vars[i].size;
-                }
-
-                // print node
-                var arrayPart = (size != null) ? "[" + size + "]" : "";
-                var indentation = "   ���������������������������";
-                for (var j = 0; j < indent; j++) {
-                    indentation = indentation.replace("���������������������������", " ") + "   ��������������������������� ";
-                }
-                formattedNode = indentation + name + arrayPart;
-
-                // is type simple variable? print type
-                if (typeof(vars[i].type.variables) == "undefined") {
-                    // we know it's a simple type
-                    var type = vars[i].type.type;
-                    formattedNode += ":" + type;
-                }
-
-                // print current node
-                GEPPETTO.Console.log(formattedNode);
-
-                // recursion check
-                if (typeof(vars[i].type.variables) != "undefined") {
-                    // we know it's a complex type - recurse! recurse!
-                    formatListVariableOutput(vars[i].type.variables, indent + 1);
-                }
-            }
-            else {
-                formattedNode = name;
-                // print current node
-                GEPPETTO.Console.log(formattedNode);
-            }
-        }
-    }
+    
 });

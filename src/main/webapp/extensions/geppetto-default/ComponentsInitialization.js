@@ -34,14 +34,18 @@
 
 define(function (require) {
 	return function (GEPPETTO) {
+		
 		//Logo initialization
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
 
 		//Control panel initialization
 		GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"));
 
+
 		//Spotlight initialization
-		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"));
+		GEPPETTO.ComponentFactory.addComponent('SPOTLIGHT', {}, document.getElementById("spotlight"), function(){
+			GEPPETTO.Spotlight.addSuggestion(GEPPETTO.Spotlight.plotSample, GEPPETTO.Resources.PLAY_FLOW);
+		});
 
 		//Foreground initialization
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {dropDown : false}, document.getElementById("foreground-toolbar"));
@@ -66,8 +70,10 @@ define(function (require) {
 
 		//Loading spinner initialization
 		GEPPETTO.on('show_spinner', function(label) {
-			GEPPETTO.ComponentFactory.addComponent('LOADINGSPINNER', {show : true, keyboard : false, text: label, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
+			GEPPETTO.ComponentFactory.addSpinner({show : true, keyboard : false, text: label, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
 		});
+		
+		
 
 	};
 });

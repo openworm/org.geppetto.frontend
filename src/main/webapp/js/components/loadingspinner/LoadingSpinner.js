@@ -45,8 +45,12 @@ define(function(require) {
 			};
 		},
 		
+		hideSpinner:function(){
+			this.hide();
+		},
+		
 		componentDidMount: function(){
-			GEPPETTO.once('hide:spinner', this.hide);
+			GEPPETTO.once('hide:spinner', this.hideSpinner);
 			setTimeout((function(){
 				if(this.isMounted()){
 					this.props.text = 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited';

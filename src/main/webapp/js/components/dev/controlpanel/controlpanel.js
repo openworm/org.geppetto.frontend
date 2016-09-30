@@ -605,10 +605,6 @@ define(function (require) {
             this.setState({dataFilter: dataFilter});
         },
 
-        mixins: [
-            require('jsx!mixins/bootstrap/modal')
-        ],
-
         componentWillMount: function () {
             GEPPETTO.ControlPanel = this;
         },

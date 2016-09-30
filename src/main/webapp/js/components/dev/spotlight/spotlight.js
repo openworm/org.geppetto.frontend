@@ -46,9 +46,7 @@ define(function (require) {
         GEPPETTO = require('geppetto');
 
     var Spotlight = React.createClass({
-        mixins: [
-            require('jsx!mixins/bootstrap/modal')
-        ],
+
 
         potentialSuggestions: {},
         suggestions: null,
@@ -75,6 +73,11 @@ define(function (require) {
             var escape = 27;
 
             var that = this;
+            
+            GEPPETTO.Spotlight = this;
+            
+            this.initTypeahead();
+			
 
             $("#spotlight").click(function(e){
             	if (e.target==e.delegateTarget){
@@ -133,6 +136,7 @@ define(function (require) {
             });
            
 
+
             GEPPETTO.on(Events.Experiment_loaded, function () {
             	if(that.initialised){
             		that.initialised=false;
@@ -188,13 +192,6 @@ define(function (require) {
 
             });
 
-
-            this.initTypeahead();
-
-            GEPPETTO.Spotlight = this;
-
-            this.addSuggestion(this.plotSample, GEPPETTO.Resources.PLAY_FLOW);
-
             if(GEPPETTO.ForegroundControls != undefined){
                 GEPPETTO.ForegroundControls.refresh();
             }
@@ -231,8 +228,9 @@ define(function (require) {
             });
             
 			this.updateToolBarVisibilityState(this.checkHasWritePermission());
+            this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
 			
-			this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
+			
             
         },
         
@@ -249,10 +247,10 @@ define(function (require) {
 				if(window.Project.getActiveExperiment().getId() == experimentId){
 					visible = false;
 				}
-			}
-			
-			if(window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
-				visible = false;
+
+				if(window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+					visible = false;
+				}
 			}
 			return visible;
 		},

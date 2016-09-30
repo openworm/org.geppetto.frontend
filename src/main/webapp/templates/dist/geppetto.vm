@@ -28,7 +28,7 @@
     
     <script>
 	  less = {
-	    env: "development",
+	    env: "production",
 	    async: true,
 	    fileAsync: false,
 	    poll: 1000,
@@ -51,6 +51,7 @@
     <link rel="icon" type="image/png" href="geppetto/images/favicon.png"/>
 </head>
 <body>
+
 
 <div id="modal-region"></div>
 

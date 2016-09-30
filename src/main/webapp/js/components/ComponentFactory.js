@@ -36,6 +36,7 @@ define(function (require) {
 
 		var React = require('react');
 		var ReactDOM = require('react-dom');
+		
 
 		//All the components potentially instantiable go here
 		var components = {
@@ -64,7 +65,20 @@ define(function (require) {
 			'RAISEDBUTTON': 'jsx!components/dev/BasicComponents/RaisedButton'
 		}
 		
+		//We require this synchronously to properly show spinner when loading projects
+		var LoadingSpinner = require('jsx!./loadingspinner/LoadingSpinner');
+		
 		GEPPETTO.ComponentFactory = {
+			
+				
+			//This exception will be removed once the spinner will behave like other components, and set its status (spinning/visible) depening
+			//on what is currently ongoing in the project
+			addSpinner : function(properties, container){
+				var that=this;
+				var component = React.createFactory(LoadingSpinner)(properties)
+				var renderedComponent = that.renderComponent(component, container);
+				return renderedComponent;
+			},
 			
 			addComponent: function(componentID, properties, container, callback){
 				var that=this;

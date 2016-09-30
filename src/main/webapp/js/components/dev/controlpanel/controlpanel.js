@@ -82,26 +82,38 @@ define(function (require) {
         }
     });
 
-    GEPPETTO.LinkComponent = React.createClass({
+    GEPPETTO.LinkArrayComponent = React.createClass({
         render: function () {
             var that = this;
             return (
                 <div>
                     {
-                    	function(){
-                            var displayText = that.props.data;
-                            var action = function (e) {
-                                e.preventDefault();
-                                var actionStr = that.props.metadata.action;
-                                actionStr = actionStr.replace(/\$entity\$/gi, item);
-                                GEPPETTO.Console.executeCommand(actionStr);
+                        that.props.data.map(function (item, i) {
+                            // parse html for easy manipulation
+                            var domObj = $(item.html);
+                            var anchorElement = domObj.filter('a');
+
+                            // extract action target
+                            var actionItem = anchorElement.attr('instancepath');
+
+                            // grab action string from metadata config and swap target
+                            var actionStr = that.props.metadata.actions.replace(/\$entity\$/gi, actionItem);
+
+                            // set action
+                            var onClickActionStr = 'GEPPETTO.Console.executeCommand("' + actionStr + '")';
+                            anchorElement.attr('onclick', onClickActionStr);
+
+                            // retrieve markup to inject as string
+                            var markupToInject = domObj.prop('outerHTML');
+
+                            var getMarkup = function() {
+                                return {__html: markupToInject};
                             };
 
-
                             return (
-                                <span><a href='#' onClick={action}>{displayText}</a></span>
+                                <span key={i} dangerouslySetInnerHTML={getMarkup()} />
                             );
-                    	}
+                        })
                     }
                 </div>
             )

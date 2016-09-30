@@ -83,10 +83,10 @@ define(function (require) {
             "columnName": "type",
             "order": 3,
             "locked": false,
-            "customComponent": GEPPETTO.ArrayComponent,
+            "customComponent": GEPPETTO.LinkArrayComponent,
             "displayName": "Type(s)",
-            "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
-            "actions": "var displayText = '$entity$'.split('.')['$entity$'.split('.').length - 1]; setTermInfo($entity$[displayText + '_meta'], displayText);"
+            "source": "$entity$.$entity$_meta.getTypes().map(function (t) {return t.type.getInitialValue().value})",
+            "actions": "Model.getDatasources()[0].fetchVariable('$entity$', function(){ var instance = Instances.getInstance('$entity$.$entity$_meta'); setTermInfo(instance, instance.getParent().getId());});"
             },
             {
             "columnName": "controls",

@@ -85,11 +85,13 @@
 	            <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
     				<li role="presentation" class="active" id="consoleButton"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i>  Console</a></li>
     				<li role="presentation" id="experimentsButton" style="display:none"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>  Experiments</a></li>
+					<li role="presentation" id="pythonConsoleButton" style="display:none"><a href="#pythonConsole" aria-controls="pythonConsole" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i>  Python</a></li>
 				</ul>
 
 				 <div class="tab-content">
     					<div role="tabpanel" class="tab-pane active" id="console">Console Loading...</div>
     					<div role="tabpanel" id="experiments" class="tab-pane panel panel-default"></div>
+                        <div role="tabpanel" id="pythonConsole" class="tab-pane  panel panel-default"></div>
  				 </div>
             </div>
 

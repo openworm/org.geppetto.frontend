@@ -664,10 +664,19 @@ define(function (require) {
             GEPPETTO.on(Events.Instance_deleted, function (parameters) {
                 that.deleteData([parameters]);
             });
+            
+            GEPPETTO.on(Events.Instances_created, function(instances){
+            	if(instances!=undefined){
+            		that.addData(instances);
+            	}
+            });
 
             if(GEPPETTO.ForegroundControls != undefined){
                 GEPPETTO.ForegroundControls.refresh();
             }
+            
+            this.addData(window.Instances);
+            
         },
 
         render: function () {

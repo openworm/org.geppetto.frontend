@@ -36,96 +36,45 @@ define(function (require) {
 
 		var React = require('react');
 		var ReactDOM = require('react-dom');
-		var formComp = require('jsx!components/dev/form/Form');
-		var panelComp = require('jsx!components/dev/panel/Panel');
-		var logoComp = require('jsx!components/dev/logo/Logo');
-		var infoModalComp = require('jsx!components/popups/InfoModal');
-        var mdModalComp = require('jsx!components/popups/MarkDownModal');
-		var loadingSpinnerComp = require('jsx!./loadingspinner/LoadingSpinner');
-		var saveControlComp = require('jsx!components/dev/save/SaveControl');
-		var controlPanelComp = require('jsx!components/dev/controlpanel/controlpanel');
-		var spotlightComp = require('jsx!components/dev/spotlight/spotlight');
-		var foregroundControlsComp = require('jsx!components/dev/foregroundcontrols/ForegroundControls');
-		var experimentTableComp = require('jsx!components/dev/ExperimentsTable/ExperimentsTable');
-		var homeControlsComp = require('jsx!components/dev/home/HomeControl');
-		var simControlsComp = require('jsx!components/dev/simulationcontrols/ExperimentControls');
-		var cameraControlsComp = require('jsx!./dev/cameracontrols/CameraControls');
-		var shareComp = require('jsx!./dev/share/share');
 
-		var dropDownButton = require('jsx!./dev/DropDownPanel/DropDownButton')
-		var dropDownComp = require('jsx!./dev/DropDownPanel/DropDownPanel');
-		//var queryComp = require('jsx!./dev/query/query');
-		var tutorialComp = require('jsx!./dev/tutorial/TutorialModule');
-
-
+		//All the components potentially instantiable go here
+		var components = {
+			'FORM':'jsx!components/dev/form/Form',
+			'PANEL':'jsx!components/dev/panel/Panel',
+			'LOGO':'jsx!components/dev/logo/Logo',
+			'LOADINGSPINNER':'jsx!./loadingspinner/LoadingSpinner',
+			'SAVECONTROL':'jsx!components/dev/save/SaveControl',
+			'CONTROLPANEL':'jsx!components/dev/controlpanel/controlpanel',
+			'SPOTLIGHT':'jsx!components/dev/spotlight/spotlight',
+			'DROPDOWNBUTTON':'jsx!./dev/DropDownPanel/DropDownButton',
+			'DROPDOWNPANEL':'jsx!./dev/DropDownPanel/DropDownPanel',
+			'FOREGROUND':'jsx!components/dev/foregroundcontrols/ForegroundControls',
+			'EXPERIMENTSTABLE':'jsx!components/dev/ExperimentsTable/ExperimentsTable',
+			'HOME':'jsx!components/dev/home/HomeControl',
+			'SIMULATIONCONTROLS':'jsx!components/dev/simulationcontrols/ExperimentControls',
+			'CAMERACONTROLS': 'jsx!./dev/cameracontrols/CameraControls',
+			'SHARE':'jsx!./dev/share/share',
+			'INFOMODAL':'jsx!components/popups/InfoModal',
+			'MDMODAL':'jsx!components/popups/MarkDownModal',
+			'QUERY':'jsx!./dev/query/query',
+			'TUTORIAL':'jsx!./dev/tutorial/TutorialModule'
+		}
+		
 		GEPPETTO.ComponentFactory = {
-
-			getComponent: function(component, properties){
-
-				if (component == 'FORM'){
-	    	      	return React.createFactory(formComp)(properties);
-				}
-				else if (component == 'PANEL'){
-					return React.createFactory(panelComp)(properties);
-				}
-				else if (component == 'LOGO'){
-					return React.createFactory(logoComp)(properties);
-				}
-				else if (component == 'LOADINGSPINNER'){
-					return React.createFactory(loadingSpinnerComp)(properties);
-				}
-				else if (component == 'SAVECONTROL'){
-					return React.createFactory(saveControlComp)(properties);
-				}
-				else if (component == 'CONTROLPANEL'){
-					return React.createFactory(controlPanelComp)(properties);
-				}
-				else if (component == 'SPOTLIGHT'){
-					return React.createFactory(spotlightComp)(properties);
-				}
-				else if (component == 'DROPDOWNBUTTON'){
-					return React.createFactory(dropDownButton)(properties);
-				}
-				else if (component == 'DROPDOWNPANEL'){
-					return React.createFactory(dropDownComp)(properties);
-				}
-				else if (component == 'FOREGROUND'){
-					return React.createFactory(foregroundControlsComp)(properties);
-				}
-				else if (component == 'EXPERIMENTSTABLE'){
-					return React.createFactory(experimentTableComp)(properties);
-				}
-				else if (component == 'HOME'){
-					return React.createFactory(homeControlsComp)(properties);
-				}
-				else if (component == 'SIMULATIONCONTROLS'){
-					return React.createFactory(simControlsComp)(properties);
-				}
-				else if (component == 'CAMERACONTROLS'){
-					return React.createFactory(cameraControlsComp)(properties);
-				}
-				else if (component == 'SHARE'){
-					return React.createFactory(shareComp)(properties);
-				}
-				else if (component == 'INFOMODAL'){
-            return React.createFactory(infoModalComp)(properties);
-        }
-        else if (component == 'MDMODAL'){
-            return React.createFactory(mdModalComp)(properties);
-        }
-				else if (component == 'QUERY'){
-					return React.createFactory(queryComp)(properties);
-				}
-				else if (component == 'TUTORIAL'){
-					return React.createFactory(tutorialComp)(properties);
-				}
+			
+			addComponent: function(componentID, properties, container, callback){
+				var that=this;
+				require([components[componentID]], function(loadedModule){
+					var component = React.createFactory(loadedModule)(properties)
+					var renderedComponent = that.renderComponent(component, container);
+					if(callback!=undefined){
+						callback(renderedComponent);
+					}
+					return renderedComponent;
+				});
+				
 			},
 
-			addComponent: function(component, properties, container){
-				var renderedComponent = this.renderComponent(this.getComponent(component, properties), container);
-				GEPPETTO.ComponentsController.addEventDispatcher(component, renderedComponent);
-				return renderedComponent;
-			},
 
 			renderComponent: function(component, container){
 				//Let's create a dialog

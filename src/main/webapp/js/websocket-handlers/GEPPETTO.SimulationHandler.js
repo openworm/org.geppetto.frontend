@@ -319,7 +319,7 @@ define(function (require) {
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 
                 // populate control panel with instances
-                GEPPETTO.FE.refresh(window.Instances);
+                GEPPETTO.trigger(Events.Instances_created, window.Instances);
 
                 console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);
                 GEPPETTO.trigger("hide:spinner");
@@ -369,7 +369,7 @@ define(function (require) {
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
                 // STEP: 4 update components
-                GEPPETTO.FE.refresh(newInstances);
+                GEPPETTO.trigger(Events.Instances_created, newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
@@ -418,7 +418,7 @@ define(function (require) {
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
                 // STEP: 4 update components
-                GEPPETTO.FE.refresh(newInstances);
+                GEPPETTO.trigger(Events.Instances_created, newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
@@ -446,8 +446,6 @@ define(function (require) {
 
                 // STEP 1: merge model - expect a fully formed Geppetto model to be merged into current one
                 var diffReport = GEPPETTO.ModelFactory.mergeValue(rawModel, true);
-
-                GEPPETTO.FE.refresh();
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_VALUE_RESOLVED);
             },

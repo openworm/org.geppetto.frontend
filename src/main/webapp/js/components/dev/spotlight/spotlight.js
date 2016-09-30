@@ -198,7 +198,65 @@ define(function (require) {
             if(GEPPETTO.ForegroundControls != undefined){
                 GEPPETTO.ForegroundControls.refresh();
             }
+            
+			GEPPETTO.on(Events.Project_loaded, function () {
+				//Hides or Shows tool bar depending on login user permissions
+				that.updateToolBarVisibilityState(that.checkHasWritePermission());
+			});
+
+			GEPPETTO.on(Events.Project_persisted, function () {
+				//Hides or Shows tool bar depending on login user permissions
+				that.updateToolBarVisibilityState(that.checkHasWritePermission());
+			});						
+			GEPPETTO.on(Events.Experiment_completed, function () {
+				that.updateToolBarVisibilityState(that.checkHasWritePermission(experimentId));
+			});
+			
+			GEPPETTO.on(Events.Experiment_running, function () {
+				//Hides or Shows tool bar depending on login user permissions
+				that.updateToolBarVisibilityState(that.checkHasWritePermission());
+			});
+			
+			GEPPETTO.on(Events.Experiment_failed, function () {
+				//Hides or Shows tool bar depending on login user permissions
+				that.updateToolBarVisibilityState(that.checkHasWritePermission());
+			});
+			
+			GEPPETTO.on(Events.Experiment_active, function () {
+				that.updateToolBarVisibilityState(that.checkHasWritePermission());
+			});
+            
+            GEPPETTO.on(Events.Instances_created, function(instances){
+        		that.addData(GEPPETTO.ModelFactory.newPathsIndexing);
+            });
+            
+			this.updateToolBarVisibilityState(this.checkHasWritePermission());
+			
+			this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
+            
         },
+        
+		/**
+		 * Returns true if user has permission to write and project is persisted
+		 */
+		checkHasWritePermission : function(experimentId){
+			var visible = true;
+			if(!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) || !window.Project.persisted || !GEPPETTO.UserController.isLoggedIn()){
+				visible = false;
+			}
+			
+			if(window.Project.getActiveExperiment()!=null || undefined){
+				if(window.Project.getActiveExperiment().getId() == experimentId){
+					visible = false;
+				}
+			}
+			
+			if(window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
+				visible = false;
+			}
+			return visible;
+		},
+
 
         recordSample: {
             "label": "Record all membrane potentials",

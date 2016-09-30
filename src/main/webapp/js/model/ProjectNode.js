@@ -255,7 +255,6 @@ define(['backbone'], function (require) {
 
             if (projectURL != null && projectURL != "") {
                 GEPPETTO.MessageSocket.send("load_project_from_url", projectURL);
-                GEPPETTO.trigger(Events.Volatile_project_loaded);
                 this.persisted = false;
                 this.initializationTime = new Date();
                 GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());

@@ -1,10 +1,15 @@
 define(function(require, exports, module) {
 	
 	var React = require('react');
-	var PanelComp = require('jsx!components/dev/panel/Panel');
 	var ReactDOM = require('react-dom');
-	//var $jParent = window.parent.jQuery.noConflict();
+
 	require('./vendor/jupyter_widgets');
+	
+	var PanelComp = require('jsx!components/dev/panel/Panel');
+	var CheckboxComp = require('jsx!components/dev/BasicComponents/Checkbox');
+	var TextFieldComp = require('jsx!components/dev/BasicComponents/TextField');
+	var RaisedButtonComp = require('jsx!components/dev/BasicComponents/RaisedButton');
+	
 	var $ = require('jquery');
 	
 	var PanelView = jupyter_widgets.WidgetView.extend({
@@ -18,52 +23,7 @@ define(function(require, exports, module) {
 	    
         add_item: function(model){
         	var that = this;
-//        	return this.create_child_view(model)
-//	            .then(function(view) {
-//	            	//that.componentItems.push(view.getComponent());
-//	            	view.getComponent().then(function(component) {
-//	            		that.componentItems.push(component);
-//	            	});
-//	            	return view;
-//	            	});
 
-        	
-        	
-//        	 model.state_change.then(function() {
-//        		 
-//                 model.on("change:sync_value", function(){
-//                	 console.log("eoeoeo");
-//                	 
-//                	 this.componentItems = [];
-//                	 
-//                	 var that = this;
-//                	 Promise.all(this.itemsList.views).then(function(views) {
-//
-//                		 Promise.all(views.map(function(currentView){
-//                			 return currentView.getComponent().then(function(component) {
-//	             	         		that.componentItems.push(component);
-//	             	         		return component;
-//	             	         });
-//                			 })).then(function() {
-//                	        	 that.model.get("component").setChildren(that.componentItems);
-//                 	         	});
-//                	 });
-//                	 
-//                 }, that);
-//                 
-//                 
-//
-//
-//             });
-        	
-//        	 var componentView = this.create_child_view(model)
-//            .then(function(view){
-//            	return view.getComponent();
-//            })
-//            .then(function(component) {
-//            	model.set('component', component);
-//        		that.componentItems.push(model.get('component'));
-//        	});
         	 var componentView = this.create_child_view(model)
              .then(function(view){
              	return view;
@@ -106,7 +66,8 @@ define(function(require, exports, module) {
         getComponent: function () {
 	        var that = this;
 	        return Promise.all(this.itemsList.views).then(function(views) {
-    	        return GEPPETTO.ComponentFactory.getComponent('PANEL', {id: that.model.get('widget_id'), name: that.model.get('widget_name'), items: that.componentItems, parentStyle: that.model.get('parentStyle')});
+	        	return React.createFactory(PanelComp)({id: that.model.get('widget_id'), name: that.model.get('widget_name'), items: that.componentItems, parentStyle: that.model.get('parentStyle')});
+    	        //return GEPPETTO.ComponentFactory.getComponent('PANEL', {id: that.model.get('widget_id'), name: that.model.get('widget_name'), items: that.componentItems, parentStyle: that.model.get('parentStyle')});
             });
             
 	    },
@@ -197,7 +158,19 @@ define(function(require, exports, module) {
 	    },
 	    
 	    getComponent: function () {
-	    	return Promise.resolve(GEPPETTO.ComponentFactory.getComponent(this.model.get('component_name'),{id:this.model.get('widget_id'), label:this.model.get('widget_name'), parentStyle:this.model.get('parentStyle'), sync_value: this.model.get('sync_value'), handleClick: this.handleClick.bind(null, this), handleChange: this.handleChange.bind(null, this), handleBlur: this.handleBlur.bind(null, this)}));
+	    	var componentName = this.model.get('component_name');
+	    	var componentItem;
+	    	if (componentName == 'RAISEDBUTTON'){
+				componentItem = RaisedButtonComp;
+			}
+			else if (componentName == 'TEXTFIELD'){
+				componentItem = TextFieldComp;
+			}
+			else if (componentName == 'CHECKBOX'){
+				componentItem = CheckboxComp;
+			}
+	    	return Promise.resolve(React.createFactory(componentItem)({id:this.model.get('widget_id'), label:this.model.get('widget_name'), parentStyle:this.model.get('parentStyle'), sync_value: this.model.get('sync_value'), handleClick: this.handleClick.bind(null, this), handleChange: this.handleChange.bind(null, this), handleBlur: this.handleBlur.bind(null, this)}));
+	    	//return Promise.resolve(GEPPETTO.ComponentFactory.getComponent(this.model.get('component_name'),{id:this.model.get('widget_id'), label:this.model.get('widget_name'), parentStyle:this.model.get('parentStyle'), sync_value: this.model.get('sync_value'), handleClick: this.handleClick.bind(null, this), handleChange: this.handleChange.bind(null, this), handleBlur: this.handleBlur.bind(null, this)}));
 	    },
 
 	    // Render the view.

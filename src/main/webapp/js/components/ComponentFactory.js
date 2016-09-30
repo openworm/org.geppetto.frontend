@@ -58,7 +58,10 @@ define(function (require) {
 			'MDMODAL':'jsx!components/popups/MarkDownModal',
 			'QUERY':'jsx!./dev/query/query',
 			'TUTORIAL':'jsx!./dev/tutorial/TutorialModule',
-			'PYTHON_CONSOLE': 'jsx!components/dev/PythonConsole/PythonConsole'
+			'PYTHONCONSOLE': 'jsx!components/dev/PythonConsole/PythonConsole',
+			'CHECKBOX': 'jsx!components/dev/BasicComponents/Checkbox',
+			'TEXTFIELD': 'jsx!components/dev/BasicComponents/TextField',
+			'RAISEDBUTTON': 'jsx!components/dev/BasicComponents/RaisedButton'
 		}
 		
 		GEPPETTO.ComponentFactory = {

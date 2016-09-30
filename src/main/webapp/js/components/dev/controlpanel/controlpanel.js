@@ -44,7 +44,6 @@ define(function (require) {
     loadCss("geppetto/js/components/dev/controlpanel/vendor/css/bootstrap-colorpicker.min.css");
 
     var React = require('react'), $ = require('jquery');
-    var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');

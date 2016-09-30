@@ -57,7 +57,8 @@ define(function (require) {
 			'INFOMODAL':'jsx!components/popups/InfoModal',
 			'MDMODAL':'jsx!components/popups/MarkDownModal',
 			'QUERY':'jsx!./dev/query/query',
-			'TUTORIAL':'jsx!./dev/tutorial/TutorialModule'
+			'TUTORIAL':'jsx!./dev/tutorial/TutorialModule',
+			'PYTHON_CONSOLE': 'jsx!components/dev/PythonConsole/PythonConsole'
 		}
 		
 		GEPPETTO.ComponentFactory = {

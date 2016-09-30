@@ -6,6 +6,7 @@ define(function(require) {
 		require('./geppetto-default/ComponentsInitialization')(GEPPETTO);
 		//require('./geppetto-osb/ComponentsInitialization')(GEPPETTO);
 		//require('./geppetto-vfb/ComponentsInitialization')(GEPPETTO);
+		//require('./geppetto-neuron/ComponentsInitialization')(GEPPETTO);
 
 		
 	};

@@ -218,7 +218,7 @@ define(function (require) {
                         var mesh = meshes[meshesIndex];
 
                         if (!mesh.visible) {
-                            GEPPETTO.SceneController.merge(instancePath);
+                            GEPPETTO.SceneController.merge(instancePath,true);
                         }
                         if (mesh.selected == false) {
                             if (mesh instanceof THREE.Object3D) {
@@ -283,7 +283,7 @@ define(function (require) {
                         var mesh = meshes[meshesIndex];
                         // match instancePath to mesh store in variables properties
                         if (!mesh.visible) {
-                            GEPPETTO.SceneController.merge(instancePath);
+                            GEPPETTO.SceneController.merge(instancePath,false);
                         }
                         // make sure that path was selected in the first place
                         if (mesh.selected == true) {
@@ -1120,7 +1120,7 @@ define(function (require) {
              * @param {String}
              *            aspectPath - Path to aspect that points to mesh
              */
-            merge: function (aspectPath) {
+            merge: function (aspectPath, visible) {
                 // get mesh from map
                 var mergedMesh = GEPPETTO.getVARS().meshes[aspectPath];
 
@@ -1138,9 +1138,11 @@ define(function (require) {
                             }
                         }
                     }
-                    // add merged mesh to scene and set flag to true
-                    mergedMesh.visible = true;
-                    GEPPETTO.getVARS().scene.add(mergedMesh);
+                    if(visible){
+                    	// add merged mesh to scene and set flag to true
+                    	mergedMesh.visible = true;
+                    	GEPPETTO.getVARS().scene.add(mergedMesh);
+                    }
                 }
             },
 
@@ -1151,7 +1153,7 @@ define(function (require) {
             	for (var i = 0; i < instances.length; i++) {
             		var instance = instances[i];
             		var instancePath = instance.getInstancePath();            				
-            		GEPPETTO.SceneController.merge(instancePath);
+            		GEPPETTO.SceneController.merge(instancePath,true);
             		if (mode) {
             			var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
             			var map = mergedMesh.mergedMeshesPaths;

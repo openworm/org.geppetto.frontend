@@ -425,6 +425,7 @@ define(function (require) {
         displayName: 'QueryBuilder',
         dataSourceResults: {},
         updateResults : false,
+        initTypeAheadCreated : false,
         configuration: { DataSources: {} },
         mixins: [
             require('jsx!mixins/bootstrap/modal')
@@ -483,58 +484,61 @@ define(function (require) {
         },
 
         initTypeahead: function () {
-            var that = this;
+        	if(!this.initTypeAheadCreated){
+        		var that = this;
 
-            $("#query-typeahead").unbind('keydown');
-            $("#query-typeahead").keydown(this, function (e) {
-                if (e.which == 9 || e.keyCode == 9) {
-                    e.preventDefault();
-                }
-            });
+        		$("#query-typeahead").unbind('keydown');
+        		$("#query-typeahead").keydown(this, function (e) {
+        			if (e.which == 9 || e.keyCode == 9) {
+        				e.preventDefault();
+        			}
+        		});
 
-            $("#query-typeahead").unbind('keypress');
-            $("#query-typeahead").keypress(this, function (e) {
-                if (e.which == 13 || e.keyCode == 13) {
-                    that.confirmed($("#query-typeahead").val());
-                }
-                if (this.searchTimeOut !== null) {
-                    clearTimeout(this.searchTimeOut);
-                }
-                this.searchTimeOut = setTimeout(function () {
-                    for (var key in that.configuration.DataSources) {
-                        if (that.configuration.DataSources.hasOwnProperty(key)) {
-                            var dataSource = that.configuration.DataSources[key];
-                            var searchQuery = $("#query-typeahead").val();
-                            var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
-                            that.updateResults = true;
-                            that.requestDataSourceResults(key, url, dataSource.crossDomain);
-                        }
-                    }
-                }, 150);
-            });
+        		$("#query-typeahead").unbind('keypress');
+        		$("#query-typeahead").keypress(this, function (e) {
+        			if (e.which == 13 || e.keyCode == 13) {
+        				that.confirmed($("#query-typeahead").val());
+        			}
+        			if (this.searchTimeOut !== null) {
+        				clearTimeout(this.searchTimeOut);
+        			}
+        			this.searchTimeOut = setTimeout(function () {
+        				for (var key in that.configuration.DataSources) {
+        					if (that.configuration.DataSources.hasOwnProperty(key)) {
+        						var dataSource = that.configuration.DataSources[key];
+        						var searchQuery = $("#query-typeahead").val();
+        						var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
+        						that.updateResults = true;
+        						that.requestDataSourceResults(key, url, dataSource.crossDomain);
+        					}
+        				}
+        			}, 150);
+        		});
 
-            $("#query-typeahead").unbind('typeahead:selected');
-            $("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {
-                if (datum.hasOwnProperty("label")) {
-                    that.confirmed(datum.label);
-                }
-            });
+        		$("#query-typeahead").unbind('typeahead:selected');
+        		$("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {
+        			if (datum.hasOwnProperty("label")) {
+        				that.confirmed(datum.label);
+        			}
+        		});
 
-            $('#query-typeahead').typeahead({
-                    hint: true,
-                    highlight: true,
-                    minLength: 1
-                },
-                {
-                    name: 'dataSourceResults',
-                    source: this.defaultDataSources,
-                    limit: 50,
-                    display: 'label',
-                    templates: {
-                        suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
-                    }
-                }
-            );
+        		$('#query-typeahead').typeahead({
+        			hint: true,
+        			highlight: true,
+        			minLength: 1
+        		},
+        		{
+        			name: 'dataSourceResults',
+        			source: this.defaultDataSources,
+        			limit: 50,
+        			display: 'label',
+        			templates: {
+        				suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
+        			}
+        		}
+        		);
+        		that.initTypeAheadCreated = true;
+        	}
         },
 
         componentDidMount: function () {

@@ -242,10 +242,45 @@ define(function (require) {
                     var found = this.dataSourceResults.get(item);
                     if (found.length == 1) {
                         suggestionFound = true;
-                        var actions = found[0].actions;
-                        actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommand(action)
-                        });
+                        var buttons = found[0].buttons;
+                        //data source item has buttons
+                        if(buttons!=null || undefined){
+                    		var button;
+                    		//format button actions to have proper values instead of placeholders
+                    		for (var prop in buttons) {
+                    			  if( buttons.hasOwnProperty( prop ) ) {
+                    			    button = buttons[prop];
+                    			    var actions = button[false].actions;
+                    			    var newActions = actions.slice(0);
+                            		for(var i=0; i < actions.length; i++) {
+                            			newActions[i] = newActions[i].replace(/\$ID\$/g, found[0]["id"]);
+                            			newActions[i] = newActions[i].replace(/\$LABEL\$/gi,found[0]["label"]);
+                            		}
+                    			    button[false].actions = newActions;
+                    			    
+                    			    var actions = button[true].actions;
+                    			    var newActions = actions.slice(0);
+                            		for(var i=0; i < actions.length; i++) {
+                            			newActions[i] = newActions[i].replace(/\$ID\$/g, found[0]["id"]);
+                            			newActions[i] = newActions[i].replace(/\$LABEL\$/gi, found[0]["label"]);
+                            		}
+                    			    button[true].actions = newActions;
+                    			  } 
+                    		}
+                            var tbar = $('<div>').addClass('spotlight-toolbar');
+           					tbar.append(this.BootstrapMenuMaker.createButtonGroup("DataSource", buttons, null));
+           					$(".spotlight-toolbar").remove();
+           		        	$('#spotlight').append(tbar);
+           		        	$(".tt-menu").hide();
+           					$(".spotlight-button").eq(0).focus();
+           					$(".spotlight-input").eq(0).focus();
+                        }//data source is straight up execution of actions
+                        else{
+                        	var actions = found[0].actions;
+                        	actions.forEach(function (action) {
+                        		GEPPETTO.Console.executeCommand(action)
+                        	});
+                        }
                         $("#typeahead").typeahead('val', "");
                     }
                 }
@@ -550,18 +585,27 @@ define(function (require) {
         createDataSourceResult : function(data_source_name, response, formattedLabel, id){
         	var typeName = response.type;
 
+        	var buttons = 
+        		this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].buttons;
+
     		var obj = {};
     		obj["label"] = formattedLabel;
     		obj["id"] = id;
-    		//replace $ID$ with one returned from server for actions
-    		var actions = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
-    		var newActions = actions.slice(0);
-    		for(var i=0; i < actions.length; i++) {
-    			 newActions[i] = newActions[i].replace(/\$ID\$/g, obj["id"]);
-    			 newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
-    		}
-    		obj["actions"] = newActions;
-    		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
+        	if(buttons!= null || undefined){
+        		obj["buttons"] = buttons;
+        	}else{
+        		obj["label"] = formattedLabel;
+        		obj["id"] = id;
+        		//replace $ID$ with one returned from server for actions
+        		var actions = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+        		var newActions = actions.slice(0);
+        		for(var i=0; i < actions.length; i++) {
+        			newActions[i] = newActions[i].replace(/\$ID\$/g, obj["id"]);
+        			newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
+        		}
+        		obj["actions"] = newActions;
+        		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
+        	}
     		this.dataSourceResults.add(obj);
         },
         
@@ -621,28 +665,32 @@ define(function (require) {
             getCommand: function (action, instance, value) {
                 var label="";
                 var processed="";
-                if($.isArray(instance)){
-                    if (instance.length == 1) {
-                        label = instance[0].getInstancePath();
-                    }
-                    else {
-                        label = "Multiple instances of " + instance[0].getVariable().getId();
-                    }
-                    processed = action.split("$instances$").join("_spotlightInstance");
-                    processed = processed.split("$instance0$").join("_spotlightInstance[0]");
-                    processed = processed.split("$label$").join(label);
-                    processed = processed.split("$value$").join(value);
-                    processed = processed.split("$type$").join(instance[0].getType().getPath());
-                    processed = processed.split("$typeid$").join(instance[0].getType().getId());
-                    processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
-                }
-                else{
-                    processed = action.split("$instances$").join(instance.getInstancePath());
-                    processed = processed.split("$label$").join(instance.getInstancePath());
-                    processed = processed.split("$value$").join(value);
-                    processed = processed.split("$type$").join(instance.getType().getPath());
-                    processed = processed.split("$typeid$").join(instance.getType().getId());
-                    processed = processed.split("$variableid$").join(instance.getVariable().getId());
+                if(instance!=null || undefined){
+                	if($.isArray(instance)){
+                		if (instance.length == 1) {
+                			label = instance[0].getInstancePath();
+                		}
+                		else {
+                			label = "Multiple instances of " + instance[0].getVariable().getId();
+                		}
+                		processed = action.split("$instances$").join("_spotlightInstance");
+                		processed = processed.split("$instance0$").join("_spotlightInstance[0]");
+                		processed = processed.split("$label$").join(label);
+                		processed = processed.split("$value$").join(value);
+                		processed = processed.split("$type$").join(instance[0].getType().getPath());
+                		processed = processed.split("$typeid$").join(instance[0].getType().getId());
+                		processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
+                	}
+                	else{
+                		processed = action.split("$instances$").join(instance.getInstancePath());
+                		processed = processed.split("$label$").join(instance.getInstancePath());
+                		processed = processed.split("$value$").join(value);
+                		processed = processed.split("$type$").join(instance.getType().getPath());
+                		processed = processed.split("$typeid$").join(instance.getType().getId());
+                		processed = processed.split("$variableid$").join(instance.getVariable().getId());
+                	}
+                }else{
+                	processed = action;
                 }
 
                 return processed;

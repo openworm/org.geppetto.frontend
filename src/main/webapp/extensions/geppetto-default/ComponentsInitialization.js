@@ -66,13 +66,7 @@ define(function (require) {
 		GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
 
 		//Share controls initialization
-		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));
-
-		//Loading spinner initialization
-		GEPPETTO.on('show_spinner', function(label) {
-			GEPPETTO.ComponentFactory.addSpinner({show : true, keyboard : false, text: label, logo: "gpt-gpt_logo"}, document.getElementById("modal-region"));
-		});
-		
+		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));		
 		
 
 	};

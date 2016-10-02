@@ -65,7 +65,8 @@ require.config({
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',
         pako: 'vendor/pako.min',
-        mathjs: 'vendor/math.min'
+        mathjs: 'vendor/math.min',
+        json: 'vendor/require-json'
     },
     /*
      * Notes what dependencies are needed prior to loading each library, values on the right
@@ -146,7 +147,7 @@ var jqueryLib = [
     "vendor/jquery.cookie",
     "vendor/rAF",
     "pako",
-    "mathjs"
+    "mathjs",
 ];
 
 require(jqueryLib, function ($, geppetto) {

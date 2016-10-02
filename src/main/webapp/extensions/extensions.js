@@ -1,14 +1,11 @@
-define(function(require) {
+require(['json!../extensions/extensionConfiguration.json', 'geppetto'], function(extensionConfiguration, GEPPETTO) {
 
-	return function (GEPPETTO) {
-		
-		//Require your extension here
-		require('./geppetto-default/ComponentsInitialization')(GEPPETTO);
-		//require('./geppetto-osb/ComponentsInitialization')(GEPPETTO);
-		//require('./geppetto-vfb/ComponentsInitialization')(GEPPETTO);
-		//require('./geppetto-neuron/ComponentsInitialization')(GEPPETTO);
-
-		
-	};
-
+	//Require your extension in extensionConfiguration.json
+	for (var extension in extensionConfiguration){
+		if (extensionConfiguration[extension]){
+			require(['../extensions/' + extension], function(componentsInitialization){
+				componentsInitialization(GEPPETTO);
+			});
+		}
+	}
 });

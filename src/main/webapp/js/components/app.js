@@ -11,7 +11,7 @@ define(function(require) {
 	require('./ComponentsController')(GEPPETTO);
 
 	//load extensions
-	require('../../extensions/extensions')(GEPPETTO);
+	require('../../extensions/extensions');
 
 	var command = "Project.loadFromURL";
 	var simParam = utils.getQueryStringParameter('load_project_from_url');

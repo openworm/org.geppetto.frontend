@@ -132,7 +132,9 @@ define(function (require) {
                 }
             });
            
-
+            //fire key event on paste
+            $('#typeahead').on("paste", function(){$(this).trigger("keypress",{ keyCode: 13 });});
+            
             GEPPETTO.on(Events.Experiment_loaded, function () {
             	if(that.initialised){
             		that.initialised=false;

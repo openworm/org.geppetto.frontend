@@ -41,7 +41,7 @@ define(function (require) {
                     backdrop: this.props.backdrop, keyboard: this.props.keyboard, show: this.props.show, remote: this.props.remote
                 });
                 
-                $(ReactDOM.findDOMNode(this)).modal('show');
+                
 
                 handlerProps.forEach(function (prop) {
                     if (this[prop]) {
@@ -72,6 +72,7 @@ define(function (require) {
                 $(".modal-backdrop").hide();
             }, 
             show: function () {
+            	$(ReactDOM.findDOMNode(this)).modal('show');
                 $(ReactDOM.findDOMNode(this)).show();
                 $(".modal-backdrop").show();
             }, 

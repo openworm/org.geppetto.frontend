@@ -43,7 +43,8 @@ define(function(require) {
 		
 		getInitialState: function() {
 			return {
-				text :'Loading Experiment',
+				visible:false,
+				text :'Loading...',
 				logo :'gpt-gpt_logo'
 			};
 		},
@@ -58,7 +59,7 @@ define(function(require) {
 		},
 		
 		showSpinner:function(label){
-			this.setState({text:label});
+			this.setState({text:label, visible:true});
 			this.show();
 			var that=this;
 			
@@ -94,21 +95,25 @@ define(function(require) {
 			GEPPETTO.on('hide:spinner', function(label) {
 				that.hideSpinner();
 			});
-
+			
 		},
 				
 		render: function () {
-			
-            return (
-            	<div className="modal fade" id="loading-spinner">
-            		<div className="spinner-backdrop">
-	            		<div className="spinner-container">
-	            			<div className={this.state.logo + " fa-spin"}></div>
-	            			<p id="loadingmodaltext" className="orange">{this.state.text}</p>
-	            		</div>
-            		</div>
-            	</div>
-            	);
-        }		
+			if(this.state.visible){
+				return (
+		            	
+		            	<div className="modal fade" id="loading-spinner">
+		            		<div className="spinner-backdrop">
+			            		<div className="spinner-container">
+			            			<div className={this.state.logo + " fa-spin"}></div>
+			            			<p id="loadingmodaltext" className="orange">{this.state.text}</p>
+			            		</div>
+		            		</div>
+		            	</div>
+		            	);
+		    }
+			return null;
+		}
+            
 	});
 });

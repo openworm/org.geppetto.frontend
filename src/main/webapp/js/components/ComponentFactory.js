@@ -90,17 +90,16 @@ define(function (require) {
 			renderComponent: function(component, container){
 				//Let's create a dialog
 				if (container == undefined){
-					var containerId = component.props.id + "_container";
-					var containerName = component.props.name;
 
 					//create the dialog window for the widget
-	                var dialog = $("<div id=" + containerId + " class='dialog' title='" + containerName + "'></div>").dialog(
+	                var dialog = $("<div id=" + component.props.id + "_dialog" + " class='dialog' title='" + component.props.name + "'></div>").dialog(
 	                    {
 	                        resizable: true,
 	                        draggable: true,
 	                        top: 10,
 	                        height: 300,
 	                        width: 350,
+	                        dialogClass: component.props.id + "_dialog",
 	                        close: function (event, ui) {
 	                            if (event.originalEvent &&
 	                                $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {

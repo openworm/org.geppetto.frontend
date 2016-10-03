@@ -1084,6 +1084,8 @@ define(function (require) {
                 
         		configuration["menuItems"] = menuItems;
         		
+        		this.initTypeAheadCreated = false;
+        		
                 markup = (
                     <div id="query-results-container" className="center-content">
                     	<MenuButton configuration={configuration}/>

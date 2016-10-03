@@ -219,7 +219,40 @@ define(function (require) {
             ],
             "icon": "fa-lightbulb-o"
         },
+        
+        focusButtonBar : function(){
+			$(".tt-menu").hide();
+			$(".spotlight-button").eq(0).focus();
+			$(".spotlight-input").eq(0).focus();
+        },
 
+        formatButtonActions : function(button, id, label, flag){
+		    var actions, newActions;
+		    if(button.condition!=null || undefined){
+		    	actions = button[false].actions;
+		    	newActions = this.replaceActionHolders(actions, id,label);
+			    button[false].actions = newActions;
+			    
+			    actions = button[true].actions;
+		    	newActions = this.replaceActionHolders(actions, id,label);
+			    button[true].actions = newActions;
+		    }else{
+		    	actions = button.actions;
+		    	newActions = this.replaceActionHolders(actions, id,label);
+			    button.actions = newActions;
+		    }
+        },
+        
+        replaceActionHolders : function(actions, id, label){
+        	var newActions = actions.slice(0);
+    		for(var i=0; i < actions.length; i++) {
+    			newActions[i] = newActions[i].replace(/\$ID\$/g, id);
+    			newActions[i] = newActions[i].replace(/\$LABEL\$/gi,label);
+    		}
+    		
+    		return newActions;
+        },
+        
         confirmed: function (item) {
             //check suggestions
 
@@ -250,30 +283,14 @@ define(function (require) {
                     		for (var prop in buttons) {
                     			  if( buttons.hasOwnProperty( prop ) ) {
                     			    button = buttons[prop];
-                    			    var actions = button[false].actions;
-                    			    var newActions = actions.slice(0);
-                            		for(var i=0; i < actions.length; i++) {
-                            			newActions[i] = newActions[i].replace(/\$ID\$/g, found[0]["id"]);
-                            			newActions[i] = newActions[i].replace(/\$LABEL\$/gi,found[0]["label"]);
-                            		}
-                    			    button[false].actions = newActions;
-                    			    
-                    			    var actions = button[true].actions;
-                    			    var newActions = actions.slice(0);
-                            		for(var i=0; i < actions.length; i++) {
-                            			newActions[i] = newActions[i].replace(/\$ID\$/g, found[0]["id"]);
-                            			newActions[i] = newActions[i].replace(/\$LABEL\$/gi, found[0]["label"]);
-                            		}
-                    			    button[true].actions = newActions;
+                    			    this.formatButtonActions(button,found[0]["id"], found[0]["label"]);
                     			  } 
                     		}
                             var tbar = $('<div>').addClass('spotlight-toolbar');
            					tbar.append(this.BootstrapMenuMaker.createButtonGroup("DataSource", buttons, null));
            					$(".spotlight-toolbar").remove();
            		        	$('#spotlight').append(tbar);
-           		        	$(".tt-menu").hide();
-           					$(".spotlight-button").eq(0).focus();
-           					$(".spotlight-input").eq(0).focus();
+           		        	this.focusButtonBar();
                         }//data source is straight up execution of actions
                         else{
                         	var actions = found[0].actions;
@@ -295,10 +312,7 @@ define(function (require) {
                 			if ($(".spotlight-toolbar").length == 0) {
                 				this.loadToolbarFor(window._spotlightInstance);
                 			}
-
-                			$(".tt-menu").hide();
-                			$(".spotlight-button").eq(0).focus();
-                			$(".spotlight-input").eq(0).focus();
+                			this.focusButtonBar();
                 		}
                 	}catch (e){
                 		//TODO: Simulation Handler throws error when not finding an instance, should probably
@@ -598,11 +612,7 @@ define(function (require) {
         		obj["id"] = id;
         		//replace $ID$ with one returned from server for actions
         		var actions = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
-        		var newActions = actions.slice(0);
-        		for(var i=0; i < actions.length; i++) {
-        			newActions[i] = newActions[i].replace(/\$ID\$/g, obj["id"]);
-        			newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
-        		}
+        		var newActions = this.replaceActionHolders(actions, obj["id"], obj["label"]);
         		obj["actions"] = newActions;
         		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
         	}

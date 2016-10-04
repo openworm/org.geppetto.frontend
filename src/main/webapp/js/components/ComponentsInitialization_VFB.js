@@ -246,8 +246,8 @@ define(function (require) {
                             "setTermInfo($variableid$['$variableid$' + '_meta'],'$variableid$');",
                         ],
                         "icon": "fa-puzzle-piece",
-                        "label": "Explore type",
-                        "tooltip": "Explore type"
+                        "label": "Show info",
+                        "tooltip": "Show info"
                     }
                 },
                 "TextType": {
@@ -329,12 +329,26 @@ define(function (require) {
                 explode_arrays: [{field: "synonym", formatting: "$VALUE$ ($LABEL$)[$ID$]"}],
                 type: {
                     "class": {
-                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); setTermInfo(instance, instance.getParent().getId()); GEPPETTO.Spotlight.close();});"],
-                        icon: "fa-dot-circle-o"
+                        icon: "fa-dot-circle-o",
+                        buttons : {
+                            buttonOne: {
+                                actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$.$ID$_meta'); setTermInfo(instance, instance.getParent().getId());});"],
+                                icon: "fa-puzzle-piece",
+                                "label": "Show info",
+                                tooltip: "Show info"
+                            }
+                        }
                     },
                     individual: {
-                        actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); var meta = Instances.getInstance('$ID$.$ID$_meta'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance); setTermInfo(meta, meta.getParent().getId());}); }); "],
-                        icon: "fa-square-o"
+                        icon: "fa-square-o",
+                        buttons : {
+                            buttonOne: {
+                                actions: ["Model.getDatasources()[0].fetchVariable('$ID$', function(){ var instance = Instances.getInstance('$ID$'); var meta = Instances.getInstance('$ID$.$ID$_meta'); resolve3D('$ID$', function(){instance.select(); GEPPETTO.Spotlight.openToInstance(instance); setTermInfo(meta, meta.getParent().getId());}); }); "],
+                                icon: "fa-puzzle-piece",
+                                "label": "Add to scene",
+                                tooltip: "Add to scene"
+                            }
+                        }
                     }
                 },
                 bloodhoundConfig: {

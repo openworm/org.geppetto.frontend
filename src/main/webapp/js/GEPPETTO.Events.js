@@ -64,7 +64,7 @@ var Events = {
     Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
     Spotlight_closed: "spotlight:closed",
-    Instance_deleted: "instance: deleted",
+    Instance_deleted: "instance:deleted",
     Show_Tutorial : "show_tutorial",
     Hide_Tutorial : "hide_tutorial"
 

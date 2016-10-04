@@ -516,7 +516,10 @@ define(function (require) {
         		});
         		
         		//fire key event on paste
-                $('#query-typeahead').on("paste", function(){$(this).trigger("keypress",{ keyCode: 13 });});
+                $('#query-typeahead').off("paste");
+                $('#query-typeahead').on("paste", function(){
+                    $(this).trigger("keypress",{ keyCode: 13 });
+                });
 
         		$("#query-typeahead").unbind('typeahead:selected');
         		$("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {

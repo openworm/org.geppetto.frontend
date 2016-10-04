@@ -451,14 +451,7 @@ define(function (require) {
         displayName: 'ControlPanel',
 
         refresh: function() {
-            this.setState({
-                columns: this.state.columns,
-                data: this.state.data,
-                controls: this.state.controls,
-                controlsConfig: this.state.controlsConfig,
-                dataFilter: this.state.dataFilter,
-                columnMeta: this.state.columnMeta
-            });
+            this.forceUpdate();
         },
 
         getInitialState: function () {
@@ -556,7 +549,9 @@ define(function (require) {
                 }
 
                 // set state to refresh grid
-                this.setState({data: newGridInput});
+                if(gridInput.length != newGridInput.length){
+                    this.setState({data: newGridInput});
+                }
             }
         },
 
@@ -644,19 +639,18 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-
             var escape = 27;
             var pKey = 80;
 
             var that = this;
-            
-            $("#controlpanel").click(function(e){
-            	if (e.target==e.delegateTarget || e.target==$(".griddle-body").children(":first")[0]){
-            		//we want this only to happen if we clicked on the div directly and not on anything therein contained
-            		that.close();
-            	}
+
+            $("#controlpanel").click(function (e) {
+                if (e.target == e.delegateTarget || e.target == $(".griddle-body").children(":first")[0]) {
+                    //we want this only to happen if we clicked on the div directly and not on anything therein contained
+                    that.close();
+                }
             });
-            
+
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == pKey) {
                     // show control panel
@@ -668,7 +662,7 @@ define(function (require) {
 
             $(document).keydown(function (e) {
                 if ($("#controlpanel").is(':visible') && e.keyCode == escape) {
-                	that.close();
+                    that.close();
                 }
             });
 
@@ -681,7 +675,7 @@ define(function (require) {
                 that.deleteData([parameters]);
             });
 
-            if(GEPPETTO.ForegroundControls != undefined){
+            if (GEPPETTO.ForegroundControls != undefined) {
                 GEPPETTO.ForegroundControls.refresh();
             }
         },

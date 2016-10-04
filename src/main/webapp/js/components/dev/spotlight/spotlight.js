@@ -299,8 +299,8 @@ define(function (require) {
                         	actions.forEach(function (action) {
                         		GEPPETTO.Console.executeCommand(action)
                         	});
+                            $("#typeahead").typeahead('val', "");
                         }
-                        $("#typeahead").typeahead('val', "");
                     }
                 }
                 
@@ -607,16 +607,14 @@ define(function (require) {
     		var obj = {};
     		obj["label"] = formattedLabel;
     		obj["id"] = id;
+    		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
         	if(buttons!= null || undefined){
         		obj["buttons"] = buttons;
         	}else{
-        		obj["label"] = formattedLabel;
-        		obj["id"] = id;
         		//replace $ID$ with one returned from server for actions
         		var actions = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
         		var newActions = this.replaceActionHolders(actions, obj["id"], obj["label"]);
         		obj["actions"] = newActions;
-        		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
         	}
     		this.dataSourceResults.add(obj);
         },

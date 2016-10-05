@@ -125,8 +125,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		messageSender = messageSenderFactory.getMessageSender(getWsOutbound(), this);
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
-		
-		//User permissions are sent when socket is open
+
+		// User permissions are sent when socket is open
 		this.connectionHandler.checkUserPrivileges(null);
 	}
 
@@ -213,7 +213,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
 				experimentId = Long.parseLong(parameters.get("experimentId"));
-				connectionHandler.cloneExperiment(requestID, projectId,experimentId);
+				connectionHandler.cloneExperiment(requestID, projectId, experimentId);
 				break;
 			}
 			case LOAD_PROJECT_FROM_URL:
@@ -298,12 +298,12 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				try
 				{
 					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-							{
-							}.getType());
+					{
+					}.getType());
 					url = URLReader.getURL(parameters.get("url"));
 					dataSourceName = parameters.get("data_source_name");
 
-					connectionHandler.sendDataSourceResults(requestID,dataSourceName, url, this);
+					connectionHandler.sendDataSourceResults(requestID, dataSourceName, url, this);
 
 				}
 				catch(MalformedURLException e)
@@ -491,10 +491,11 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	 */
 	private List<RunnableQuery> convertRunnableQueriesDataTransferModel(List<RunnableQueryDT> runnableQueries)
 	{
-		EList<RunnableQuery> runnableQueriesEMF=new BasicEList<RunnableQuery>();
+		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
 
-		for(RunnableQueryDT dt:runnableQueries){
-			RunnableQuery rqEMF=DatasourcesFactory.eINSTANCE.createRunnableQuery();
+		for(RunnableQueryDT dt : runnableQueries)
+		{
+			RunnableQuery rqEMF = DatasourcesFactory.eINSTANCE.createRunnableQuery();
 			rqEMF.setQueryPath(dt.queryPath);
 			rqEMF.setTargetVariablePath(dt.targetVariablePath);
 			runnableQueriesEMF.add(rqEMF);
@@ -549,12 +550,11 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		String variableId;
 		List<RunnableQueryDT> runnableQueries;
 	}
-	
-	class RunnableQueryDT{
+
+	class RunnableQueryDT
+	{
 		String targetVariablePath;
 		String queryPath;
 	}
-	
-
 
 }

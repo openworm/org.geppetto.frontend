@@ -1212,7 +1212,7 @@ define(function (require) {
             isSelected: function (variables) {
                 var selected = false;
                 for (var i = 0; i < variables.length; i++) {
-                    if (variables[i].isSelected()) {
+                    if (variables[i].hasOwnProperty('isSelected') && variables[i].isSelected()) {
                         selected = true;
                         break;
                     }

@@ -38,38 +38,32 @@ define(function(require, exports, module) {
         },
         
         forceRender: function () {
-        	
-	           	 this.componentItems = [];
-	           	 
-	           	 var that = this;
-	           	 Promise.all(this.itemsList.views).then(function(views) {
-	
-	           		 Promise.all(views.map(function(currentView){
-	           			 return currentView.getComponent().then(function(component) {
-	            	         		that.componentItems.push(component);
-	            	         		return component;
-	            	         });
-	           			 })).then(function() {
-	           				if (that.model.get("embedded") == false){   	 
-	           					that.model.get("component").setChildren(that.componentItems);
-	           	        	}
-	           	        	else{
-	           	        		that.options.parent.forceRender();
-	           	        	}
-	           				 
-	           			 });
-	           	 });
-	        
-	        
+           	 this.componentItems = [];
+           	 
+           	 var that = this;
+           	 Promise.all(this.itemsList.views).then(function(views) {
+
+           		 Promise.all(views.map(function(currentView){
+           			 return currentView.getComponent().then(function(component) {
+            	         		that.componentItems.push(component);
+            	         		return component;
+            	         });
+           			 })).then(function() {
+           				if (that.model.get("embedded") == false){   	 
+           					that.model.get("component").setChildren(that.componentItems);
+           	        	}
+           	        	else{
+           	        		that.options.parent.forceRender();
+           	        	}
+       			 });
+           	 });
         },
         
         getComponent: function () {
 	        var that = this;
 	        return Promise.all(this.itemsList.views).then(function(views) {
 	        	return React.createFactory(PanelComp)({id: that.model.get('widget_id'), name: that.model.get('widget_name'), items: that.componentItems, parentStyle: that.model.get('parentStyle')});
-    	        //return GEPPETTO.ComponentFactory.getComponent('PANEL', {id: that.model.get('widget_id'), name: that.model.get('widget_name'), items: that.componentItems, parentStyle: that.model.get('parentStyle')});
             });
-            
 	    },
 	    
 	    // Render the view.
@@ -87,7 +81,13 @@ define(function(require, exports, module) {
             if (this.model.get("embedded") == false){
             	this.getComponent().then(function(component) {
             		that.model.set("component", GEPPETTO.ComponentFactory.renderComponent(component));
-            		that.$el = $("#RunControl");
+            		that.$el = $("." + that.model.get('widget_id') + "_dialog");
+            		if (that.model.get('positionX') > 0){
+            			that.$el.css({left: that.model.get('positionX')});
+            		}
+            		if (that.model.get('positionY') > 0){
+            			that.$el.css({top: that.model.get('positionY')});
+            		}
             	});
             }
 	    }
@@ -101,8 +101,9 @@ define(function(require, exports, module) {
             _view_module: "panel",
 
             items: [],
-            component: null
-            
+            component: null,
+            positionX: null,
+            positionY: null
         }),
         
         initialize: function() {
@@ -113,22 +114,6 @@ define(function(require, exports, module) {
             items: { deserialize: jupyter_widgets.unpack_models },
         }, jupyter_widgets.WidgetModel.serializers)
     });
-	
-	var ComponentModel = jupyter_widgets.WidgetModel.extend({
-		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-	        _model_name: 'ComponentModel',
-	        _view_name: 'ComponentView',
-	        _model_module: "component",
-            _view_module: "component",
-            
-            sync_value: undefined,
-            component: null
-	    }),
-	    
-	    initialize: function() {
-	    	ComponentModel.__super__.initialize.apply(this);
-        }
-	});
 	
 	var ComponentView = jupyter_widgets.WidgetView.extend({
 	    initialize: function (options) {
@@ -180,6 +165,22 @@ define(function(require, exports, module) {
                that.options.parent.forceRender();
            }, that);
 	    }
+	});
+	
+	var ComponentModel = jupyter_widgets.WidgetModel.extend({
+		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
+	        _model_name: 'ComponentModel',
+	        _view_name: 'ComponentView',
+	        _model_module: "component",
+            _view_module: "component",
+            
+            sync_value: undefined,
+            component: null
+	    }),
+	    
+	    initialize: function() {
+	    	ComponentModel.__super__.initialize.apply(this);
+        }
 	});
 	
 	module.exports= {

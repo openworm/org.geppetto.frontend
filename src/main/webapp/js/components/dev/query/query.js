@@ -278,7 +278,7 @@ define(function (require) {
 
         render: function () {
             // TODO: would be nicer to pass controls and config straight from the parent component rather than assume
-            var config = GEPPETTO.QueryBuilder.props.resultsControlsConfig;
+            var config = GEPPETTO.QueryBuilder.state.resultsControlsConfig;
             var resultItemId = this.props.rowData.id;
             var ctrlButtons = [];
 
@@ -444,16 +444,16 @@ define(function (require) {
             return {
                 resultsView: false,
                 errorMsg: '',
-                showSpinner: false
+                showSpinner: false,
+                resultsColumns: null,
+                resultsColumnMeta: null,
+                resultsControlsConfig: null
             };
         },
 
         getDefaultProps: function () {
             return {
-                model: queryBuilderModel,
-                resultsColumns: null,
-                resultsColumnMeta: null,
-                resultsControlsConfig: null
+                model: queryBuilderModel
             };
         },
 
@@ -479,8 +479,16 @@ define(function (require) {
             $("#querybuilder").hide();
         },
 
-        setControlsConfig: function(controlsConfig){
+        setResultsControlsConfig: function(controlsConfig){
+            this.setState({resultsControlsConfig: controlsConfig});
+        },
 
+        setResultsColumns: function(columns){
+            this.setState({resultsColumns: columns});
+        },
+
+        setResultsColumnMeta: function(colMeta){
+            this.setState({resultsColumnMeta: colMeta});
         },
 
         initTypeahead: function () {
@@ -1054,9 +1062,9 @@ define(function (require) {
                                     title="Delete result set"  onClick={this.queryResultDeleted.bind(null, resultsItem)}>
                             </button>
                             <div className="clearer"></div>
-                            <Griddle columns={this.props.resultsColumns} results={resultsItem.records}
+                            <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
                             showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={425}
-                            useGriddleStyles={false} columnMetadata={this.props.resultsColumnMeta} />
+                            useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
                         </Tabs.Panel>
                     );
                 }, this);
@@ -1146,9 +1154,7 @@ define(function (require) {
 
     var renderQueryComponent = function(){
         ReactDOM.render(
-            <QueryBuilder resultsColumns={GEPPETTO.QueryBuilder.props.resultsColumns}
-                          resultsColumnMeta={GEPPETTO.QueryBuilder.props.resultsColumnMeta}
-                          resultsControlsConfig={GEPPETTO.QueryBuilder.props.resultsControlsConfig} />,
+            <QueryBuilder />,
             document.getElementById("querybuilder")
         );
     };

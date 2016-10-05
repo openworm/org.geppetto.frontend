@@ -68,7 +68,8 @@ var Events = {
     Show_Tutorial : "show_tutorial",
     Hide_Tutorial : "hide_tutorial",
     Show_spinner: "spinner:show",
-    Hide_spinner: "spinner:hide"
+    Hide_spinner: "spinner:hide",
+    Canvas_initialised: "canvas:initialised"
 };
 
 define(function (require) {

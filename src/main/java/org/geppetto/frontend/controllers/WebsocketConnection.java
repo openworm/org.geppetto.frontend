@@ -38,7 +38,6 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,8 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.manager.IGeppettoManager;
@@ -490,7 +491,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	 */
 	private List<RunnableQuery> convertRunnableQueriesDataTransferModel(List<RunnableQueryDT> runnableQueries)
 	{
-		List<RunnableQuery> runnableQueriesEMF=new ArrayList<RunnableQuery>();
+		EList<RunnableQuery> runnableQueriesEMF=new BasicEList<RunnableQuery>();
 
 		for(RunnableQueryDT dt:runnableQueries){
 			RunnableQuery rqEMF=DatasourcesFactory.eINSTANCE.createRunnableQuery();

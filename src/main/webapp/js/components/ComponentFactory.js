@@ -63,7 +63,7 @@ define(function (require) {
 			'CHECKBOX': 'jsx!components/dev/BasicComponents/Checkbox',
 			'TEXTFIELD': 'jsx!components/dev/BasicComponents/TextField',
 			'RAISEDBUTTON': 'jsx!components/dev/BasicComponents/RaisedButton'
-		}
+		};
 		
 	
 		GEPPETTO.ComponentFactory = {

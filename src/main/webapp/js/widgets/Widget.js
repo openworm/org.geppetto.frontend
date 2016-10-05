@@ -401,15 +401,17 @@ define(function (require) {
             				if(event.target.id == (that.id + "-left-nav")){
             					if(that.executedAction > -1){
             						that.executedAction--;
-            						item = historyItems[that.executedAction].action[0];
-            						GEPPETTO.Console.executeCommand(item);
+            						if(that.executedAction == -1 ){
+            							$("#"+that.id + "-left-nav").addClass("arrow-disabled");
+            						}else{
+            							item = historyItems[that.executedAction].action[0];
+            							GEPPETTO.Console.executeCommand(item);
+            						}
             						
             						if(that.executedAction == (historyItems.length -2)){
             							$("#"+that.id + "-right-nav").removeClass("arrow-disabled");
             						}
-            						
-            					}else if(that.executedAction <= -1){
-            						$("#"+that.id + "-left-nav").addClass("arrow-disabled");
+   
             					}
             				}
             				if(event.target.id == (that.id + "-right-nav")){

@@ -435,7 +435,6 @@ define(function (require) {
             			var dialogParent = this.$el.parent();
             			button.insertBefore(dialogParent.find("span.ui-dialog-title"));
             			$(button).addClass("widget-title-bar-button");
-            			this.navArrowsCreated = true;
             		}
             	} else {
             		if(leftNav.is(":visible") && rightNav.is(":visible")){

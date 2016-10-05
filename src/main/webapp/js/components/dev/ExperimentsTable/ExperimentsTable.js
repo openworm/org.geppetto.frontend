@@ -37,8 +37,8 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-        	$("#experimentsButton").show();
             var row = "#" + this.props.experiment.getId();
+            var that = this;
             
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
             	if (e.keyCode == 13) {
@@ -67,7 +67,11 @@ define(function (require) {
                         GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
                     }
             });
+            
+
         },
+        
+       
         render: function () {
             var rowNumber = this.props.rowNumber;
             var rowClasses = "experimentsTableColumn accordion-toggle row-" + this.props.experiment.getId();
@@ -491,11 +495,13 @@ define(function (require) {
 
             GEPPETTO.on(Events.Project_loaded, function () {
                 self.populate();
+                self.updateStatus();
             });
 
             GEPPETTO.on(Events.Project_persisted, function () {
                 self.forceUpdate();
                 self.updateExperimentStatus();
+				self.updateStatus();
             });
             
             GEPPETTO.on(Events.Experiment_status_check, function () {
@@ -514,6 +520,7 @@ define(function (require) {
                 self.deleteExperiment(experiment);
                 GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
             });
+            
 
             $("#experiments").resizable({
                 handles: 'n',
@@ -529,20 +536,29 @@ define(function (require) {
                     $("#experiments").get(0).style.top = "0px";
                 }.bind(this)
             });
+            
+            //As every other component this could be loaded after the project has been loaded so when we mount it we populate it with whatever is present
+            this.populate();
+            this.updateStatus();
+         
+            $("#experimentsButton").show();
         },
 
-        updateNewExperimentState : function(visible){
+        updateStatus: function(){
+			var visible = true;
+			if(!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) || !window.Project.persisted || !GEPPETTO.UserController.isLoggedIn()){
+				visible = false;
+			}
+			
 			this.setState({newExperimentIconVisible: visible});
-        },
-        
-        updateIconsStatus : function(activeIconVisibility, visible){
         	for (var property in this.refs) {
         	    if (this.refs.hasOwnProperty(property)) {
-        	        this.refs[property].updateIcons(activeIconVisibility,visible);
+        	        this.refs[property].updateIcons(GEPPETTO.UserController.isLoggedIn(),visible);
         	    }
         	}
         },
         
+       
         newExperiment: function (experiment) {
             var experiments = this.state.experiments;
             var rows = [];

@@ -19,12 +19,12 @@ def main(argv):
     opts, args = getopt.getopt(argv,"v:")
 
     if len(opts) < 1 or not opts[0][0] == '-v':
-        print './publish_components.py -v <version>'
+        print('./publish_components.py -v <version>')
         sys.exit(2)
 
     version = opts[0][1]
 
-    print 'Z'
+    print('Z')
 
     os.chdir('./dev')
     for name in os.listdir('.'):
@@ -34,7 +34,7 @@ def main(argv):
                 os.makedirs(directory)
 
             filepath = os.path.join(directory, name + '.zip')
-            print 'Creating ' + filepath
+            print('Creating ' + filepath)
             zipf = zipfile.ZipFile( filepath, 'w')
             zipdir( name, zipf )
             zipf.close()

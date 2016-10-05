@@ -61,10 +61,10 @@ var Events = {
     Experiment_deleted: "experiment_deleted",
     Experiment_active: "experiment_active",
     Experiment_created:"experiment:created",
-    Volatile_project_loaded: "project:volatile",
     Project_persisted: "project:persisted",
     Spotlight_closed: "spotlight:closed",
     Instance_deleted: "instance:deleted",
+    Instances_created: "instances:created",
     Show_Tutorial : "show_tutorial",
     Hide_Tutorial : "hide_tutorial"
 

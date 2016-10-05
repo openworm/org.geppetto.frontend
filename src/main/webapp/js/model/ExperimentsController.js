@@ -37,17 +37,24 @@
  */
 define(function (require) {
     return function (GEPPETTO) {
+
+    	ExperimentStateEnum = {
+    		    STOPPED : 0,
+    		    PLAYING : 1,
+    		    PAUSED : 2
+    	}
+    	
         /**
          * @class GEPPETTO.ExperimentController
          */
         GEPPETTO.ExperimentsController =
         {
-
+       	
             playExperimentReady: false,
             worker: null,
             playOptions: {},
             maxSteps: 0,
-            paused: false,
+            state:ExperimentStateEnum.STOPPED,
 
             isPlayExperimentReady: function(){
             	return this.playExperimentReady;
@@ -234,23 +241,30 @@ define(function (require) {
             ,
 
             pause: function () {
-                this.paused = true;
+            	this.state=ExperimentStateEnum.PAUSED;
                 this.getWorker().postMessage([Events.Experiment_pause]);
                 GEPPETTO.trigger(Events.Experiment_pause);
             }
             ,
 
             isPaused: function () {
-                return this.paused;
-            }
-            ,
+                return this.state==ExperimentStateEnum.PAUSED;
+            },
+            
+            isPlaying: function () {
+                return this.state==ExperimentStateEnum.PLAYING;
+            },
+            
+            isStopped: function () {
+                return this.state==ExperimentStateEnum.STOPPED;
+            },
 
             resume: function () {
                 //we'll use a worker
-                if (this.paused) {
-                    GEPPETTO.ExperimentsController.getWorker().postMessage([Events.Experiment_resume]);
+                if (this.isPaused()) {
+                	this.state=ExperimentStateEnum.PLAYING;
+                	GEPPETTO.ExperimentsController.getWorker().postMessage([Events.Experiment_resume]);
                     GEPPETTO.trigger(Events.Experiment_resume);
-                    this.paused = false;
                     return "Pause Experiment";
                 }
             }
@@ -258,7 +272,7 @@ define(function (require) {
 
             stop: function () {
                 this.terminateWorker();
-                this.paused = false;
+                this.state=ExperimentStateEnum.STOPPED;
                 GEPPETTO.trigger(Events.Experiment_stop);
             }
             ,
@@ -282,11 +296,12 @@ define(function (require) {
             	if (this.playOptions.playAll) {
                 	this.stop();
             	}else{
-                    if (!this.paused) {
+                    if (!this.isPaused()) {
                         this.stop();
                     }
             	}
             	
+            	this.state=ExperimentStateEnum.PLAYING;            	
                 GEPPETTO.trigger(Events.Experiment_play, this.playOptions);
                 
                 if (this.playOptions.playAll) {

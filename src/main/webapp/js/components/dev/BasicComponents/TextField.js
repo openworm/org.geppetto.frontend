@@ -1,7 +1,6 @@
 /*******************************************************************************
- * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2016 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -30,37 +29,35 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-/**
- * Controller responsible for managing actions fired by components
- */
-define(function (require) {
 
-	return function (GEPPETTO) {
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//MATTEO: I am removing this, don't add anything to this file
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		GEPPETTO.ComponentsController =
-		{
-				componentsMap : {},
-				initialized : false,
+define(function(require, exports, module) {
 
-				executeAction: function (action) {
-					eval(action);
-				},
-
-				/**
-				 * Returns true if user has permission to write and project is persisted
-				 */
-				permissions : function(){
-					var visible = true;
-					if(!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) || !window.Project.persisted || !GEPPETTO.UserController.isLoggedIn()){
-						visible = false;
-					}
-
-					return visible
-				}
-			
-		}
-	}
-})
-;
+	var React = require('react');
+	
+    var TextField = React.createClass({
+    	getInitialState: function() {
+    	    return {value: this.props.sync_value};
+    	  },
+    	  handleChange: function(event) {
+    	    this.setState({value: event.target.value});
+    	    this.props.handleChange(event.target.value);
+    	  },
+    	  handleBlur: function(event) {
+      	    //this.setState({value: event.target.value});
+      	    this.props.handleBlur(event.target.value);
+      	  },
+    	  componentWillReceiveProps: function(nextProps) {
+    		  this.setState({
+    			  value: nextProps.sync_value
+    		  });
+    		},
+	
+	    render: function(){
+	        return (
+	    		<input type="text" id={this.props.id} value={this.state.value} onChange={this.handleChange} onBlur={this.handleBlur}/>
+			);
+	    }
+    });
+    
+    return TextField;
+});

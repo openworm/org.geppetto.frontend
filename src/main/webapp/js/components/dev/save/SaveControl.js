@@ -91,8 +91,18 @@ define(function(require) {
     		
     		
         	self.attachTooltip();
+        	
+			GEPPETTO.on(Events.Project_loaded, function(){
+				self.setState(self.evaluateState());
+			});
+			
+			this.setState(this.evaluateState());
         },
 
+        evaluateState:function(){
+        	return {disableSave:!window.Project.persisted || !GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)};
+        },
+        
         clickEvent : function(){
         	var self = this;
         	//update contents of what's displayed on tooltip

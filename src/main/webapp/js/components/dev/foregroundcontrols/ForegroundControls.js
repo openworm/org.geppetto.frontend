@@ -54,20 +54,14 @@ define(function (require) {
 
     	getInitialState: function () {
             return {
-                disableSpotlight: true,
+                disableSpotlight: false,
                 showDropDown : false
             }
         },
 
         componentDidMount: function () {
-        	var self = this;
-        	GEPPETTO.on(Events.Project_loaded, function () {
-        		self.setState({disableSpotlight: false});
-            });
 
-        	GEPPETTO.on(Events.Experiment_loaded, function () {
-        		self.setState({disableSpotlight: false});
-            });
+        	
         },
 
         componentWillMount: function () {

@@ -40,6 +40,8 @@ define(function (require) {
                 var $modal = $(ReactDOM.findDOMNode(this)).modal({
                     backdrop: this.props.backdrop, keyboard: this.props.keyboard, show: this.props.show, remote: this.props.remote
                 });
+                
+                
 
                 handlerProps.forEach(function (prop) {
                     if (this[prop]) {
@@ -49,6 +51,7 @@ define(function (require) {
                         $modal.on(bsModalEvents[prop], this.props[prop])
                     }
                 }.bind(this));
+                
             }, 
             componentWillUnmount: function () {
                 var $modal = $(ReactDOM.findDOMNode(this));
@@ -65,10 +68,13 @@ define(function (require) {
                 $modal.modal('hide');
             }, 
             hide: function () {
-                $(ReactDOM.findDOMNode(this)).modal('hide');
+                $(ReactDOM.findDOMNode(this)).hide();
+                $(".modal-backdrop").hide();
             }, 
             show: function () {
-                $(ReactDOM.findDOMNode(this)).modal('show');
+            	$(ReactDOM.findDOMNode(this)).modal('show');
+                $(ReactDOM.findDOMNode(this)).show();
+                $(".modal-backdrop").show();
             }, 
             toggle: function () {
                 $(ReactDOM.findDOMNode(this)).modal('toggle');

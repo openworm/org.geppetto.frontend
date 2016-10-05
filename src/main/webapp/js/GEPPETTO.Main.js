@@ -204,6 +204,7 @@ define(function(require) {
                 $('#experimentsButton').click(function (e) {
                     if (!visibleExperiments) {
                         $('#console').hide();
+                        $("#pythonConsole").hide();
                         $('#experiments').show();
                         $(this).tab('show');
                         visibleExperiments = true;
@@ -216,6 +217,15 @@ define(function(require) {
                 $('#consoleButton').click(function (e) {
                     $('#console').show();
                     $('#experiments').hide();
+                    $("#pythonConsole").hide();
+                    $(this).tab('show');
+                    visibleExperiments = false;
+                });
+                
+                $('#pythonConsoleButton').click(function (e) {
+                	$('#console').hide();
+                	$('#experiments').hide();
+                	 $("#pythonConsole").show();
                     $(this).tab('show');
                     visibleExperiments = false;
                 });

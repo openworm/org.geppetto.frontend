@@ -59,7 +59,7 @@ define(function (require) {
             size: {height: 300, width: 350},
             position: {left: "50%", top: "50%"},
             registeredEvents: null,
-
+            executedAction : -1,
 
             /**
              * Initializes the widget
@@ -375,6 +375,74 @@ define(function (require) {
                 } else {
                     $("#" + this.id).parent().find(".ui-dialog-titlebar").hide();
                 }
+            },
+            
+            showHistoryNavigationBar : function(show){
+            	var leftNav = $("#"+this.id + "-left-nav");
+            	var rightNav = $("#"+this.id + "-right-nav");
+            	
+            	if (show) {
+            		if((leftNav.length ==0) && (rightNav.length == 0)){
+            			
+            			var leftDisabled = "";
+            			var rightDisabled = "";
+            			if(this.executedAction == -1){
+            				leftDisabled = "arrow-disabled ";
+            			}
+            			if(this.executedAction == this.getHistoryItems().length){
+            				rightDisabled = "arrow-disabled ";
+            			}
+            			
+            			var that = this;
+            			var button = $("<div id='" + this.id + "-left-nav' class='"+ leftDisabled +"fa fa-arrow-left'></div>"+
+            			"<div id='"+ this.id + "-right-nav' class='"+rightDisabled+"fa fa-arrow-right'></div>").click(function (event) {
+            				var historyItems = that.getHistoryItems();
+            				var item;
+            				if(event.target.id == (that.id + "-left-nav")){
+            					if(that.executedAction > -1){
+            						that.executedAction--;
+            						if(that.executedAction == -1 ){
+            							$("#"+that.id + "-left-nav").addClass("arrow-disabled");
+            						}else{
+            							item = historyItems[that.executedAction].action[0];
+            							GEPPETTO.Console.executeCommand(item);
+            						}
+            						
+            						if(that.executedAction == (historyItems.length -2)){
+            							$("#"+that.id + "-right-nav").removeClass("arrow-disabled");
+            						}
+   
+            					}
+            				}
+            				if(event.target.id == (that.id + "-right-nav")){
+            					if(that.executedAction < (historyItems.length-1)){
+            						that.executedAction++;
+            						item = historyItems[that.executedAction].action[0];;
+            						GEPPETTO.Console.executeCommand(item);
+            						
+            						if(that.executedAction == 0){
+            							$("#"+that.id + "-left-nav").removeClass("arrow-disabled");
+            						}
+            						
+            						if(that.executedAction == (historyItems.length -1)){
+            							$("#"+that.id + "-right-nav").addClass("arrow-disabled");
+                					}
+            					}
+            				}
+            				event.stopPropagation();
+            			});
+
+            			var dialogParent = this.$el.parent();
+            			button.insertBefore(dialogParent.find("span.ui-dialog-title"));
+            			$(button).addClass("widget-title-bar-button");
+            			this.navArrowsCreated = true;
+            		}
+            	} else {
+            		if(leftNav.is(":visible") && rightNav.is(":visible")){
+            			leftNav.remove();
+            			rightNav.remove();
+            		}
+            	}
             },
 
             /**

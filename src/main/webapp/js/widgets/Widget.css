@@ -238,3 +238,9 @@
 .noStyleDisableDrag .ui-dialog-titlebar {
     cursor: default;
 }
+
+.arrow-disabled {
+	pointer-events: none;
+    opacity: 0.4;
+}
+

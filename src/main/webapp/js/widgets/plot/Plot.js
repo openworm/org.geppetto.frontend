@@ -200,7 +200,7 @@ define(function (require) {
             }
             
         	for (var i = 0; i < data.length; i++) {
-        		this.controller.addToHistory("Plot "+data[i].getInstancePath(),"plotData",[data[i]]);
+        		this.controller.addToHistory("Plot "+data[i].getInstancePath(),"plotData",[data[i]],this.getId());
         	}
 
             // If no options specify by user, use default options

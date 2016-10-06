@@ -1144,7 +1144,7 @@ define(function (require) {
                     );
                 }, this);
 
-                var spinnerClass = this.state.showSpinner ? 'fa fa-spinner fa-spin' : 'hide';
+                var spinnerClass = this.state.showSpinner ? 'fa fa-cog fa-spin' : 'hide';
                 var footerClass = this.state.showSpinner ? 'hide' : '';
 
                 markup = (

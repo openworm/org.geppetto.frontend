@@ -281,7 +281,7 @@ define(function (require) {
 			$(".spotlight-input").eq(0).focus();
         },
 
-        formatButtonActions : function(button, id, label, flag){
+        formatButtonActions : function(button, id, label){
 		    var actions, newActions;
 		    if(button.condition!=null || undefined){
 		    	actions = button[false].actions;
@@ -299,7 +299,7 @@ define(function (require) {
         },
         
         replaceActionHolders : function(actions, id, label){
-        	var newActions = actions.slice(0);
+        	var newActions = JSON.parse(JSON.stringify(actions));
     		for(var i=0; i < actions.length; i++) {
     			newActions[i] = newActions[i].replace(/\$ID\$/g, id);
     			newActions[i] = newActions[i].replace(/\$LABEL\$/gi,label);
@@ -330,7 +330,8 @@ define(function (require) {
                     var found = this.dataSourceResults.get(item);
                     if (found.length == 1) {
                         suggestionFound = true;
-                        var buttons = found[0].buttons;
+                        // one does not simply assign buttons without deep cloning them
+                        var buttons = JSON.parse(JSON.stringify(found[0].buttons));
                         //data source item has buttons
                         if(buttons!=null || undefined){
                     		var button;

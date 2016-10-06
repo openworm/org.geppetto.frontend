@@ -162,7 +162,7 @@ define(function (require) {
         },
 
         deleteResults: function(results) {
-        	GEPPETTO.Console.log("delete results");
+        	GEPPETTO.Console.debugLog("delete results");
             for (var i = 0; i < this.results.length; i++) {
                 if (results.id == this.results[i].id) {
                     this.results.splice(i, 1);
@@ -194,47 +194,85 @@ define(function (require) {
         isCarousel: false,
 
         imageContainerId: '',
+        fullyLoaded : false, 
+        
+        getInitialState: function () {
+            return {
+                carouselFullyLoaded : false,
+            };
+        },
 
         componentDidMount: function(){
             // apply carousel
             if(this.isCarousel) {
                 $('#' + this.imageContainerId + '.slickdiv').slick();
+                var that = this;
+                
+                //reload slick carousel if it's first time clicking on arrow in any direction
+                $('#' + this.imageContainerId + '.slickdiv').find(".slick-arrow").on("click", function(){
+                	if(!that.fullyLoaded){
+                		that.setState({carouselFullyLoaded : true});
+                		that.fullyLoaded = true;
+                	}
+                });
             }
         },
+        
+        componentDidUpdate(params) {
+        	//on component refresh, update slick carousel
+            $('#' + this.imageContainerId + '.slickdiv').slick('unslick').slick();
+        },
+        
+        buildCarousel : function(){
+            var jsonImageVariable = JSON.parse(this.props.data);
+            var imgElement = "";
+            
+            if (jsonImageVariable.initialValues[0] != undefined) {
+                var imageContainerId = this.props.rowData.id + '-image-container';
+                this.imageContainerId = imageContainerId;
+
+                var value = jsonImageVariable.initialValues[0].value;
+                if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
+                    this.isCarousel = true;
+                    var imagesToLoad = 2;
+                    if(this.state.carouselFullyLoaded){
+                    	imagesToLoad = value.elements.length;
+                    }
+                    
+                    //if it's an array, create a carousel (relies on slick)
+                    var elements = value.elements.map(function (item, key) {
+                    	if(key<imagesToLoad){
+                    		var image = item.initialValue;
+                    		return <div key={key} className="query-results-slick-image"> {image.name}
+                    		<img className="popup-image invert" src={image.data}/>
+                    		</div>
+                    	}
+                    });
+                    
+                    elements = elements.slice(0,imagesToLoad);
+
+                    imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
+                                      data-slick={JSON.stringify({fade: true, centerMode: true, slidesToShow: 1, slidesToScroll: 1})}>
+                        {elements}
+                    </div>
+                }
+                else if (value.eClass == GEPPETTO.Resources.IMAGE) {
+                    //otherwise we just show an image
+                    var image = value;
+                    imgElement = <div id={imageContainerId} className="query-results-image collapse in">
+                        <img className="query-results-image invert" src={image.data}/>
+                    </div>
+                }
+            }
+            
+            return imgElement;
+        },
+        
 
         render: function () {
             var imgElement = "";
             if(this.props.data != "" && this.props.data != undefined) {
-                var jsonImageVariable = JSON.parse(this.props.data);
-
-                if (jsonImageVariable.initialValues[0] != undefined) {
-                    var imageContainerId = this.props.rowData.id + '-image-container';
-                    this.imageContainerId = imageContainerId;
-
-                    var value = jsonImageVariable.initialValues[0].value;
-                    if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
-                        this.isCarousel = true;
-                        //if it's an array, create a carousel (relies on slick)
-                        var elements = value.elements.map(function (item, key) {
-                            var image = item.initialValue;
-                            return <div key={key} className="query-results-slick-image"> {image.name}
-                                <img className="popup-image invert" src={image.data}/>
-                            </div>
-                        });
-
-                        imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
-                                          data-slick={JSON.stringify({fade: true, centerMode: true, slidesToShow: 1, slidesToScroll: 1})}>
-                            {elements}
-                        </div>
-                    }
-                    else if (value.eClass == GEPPETTO.Resources.IMAGE) {
-                        //otherwise we just show an image
-                        var image = value;
-                        imgElement = <div id={imageContainerId} className="query-results-image collapse in">
-                            <img className="query-results-image invert" src={image.data}/>
-                        </div>
-                    }
-                }
+            	imgElement = this.buildCarousel();
             }
 
             return (

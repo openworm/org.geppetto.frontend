@@ -65,10 +65,12 @@ define(function (require) {
         // result count for the current query items
         count: 0,
 
+        // subscribe to model change notifications
         subscribe: function (callback) {
             this.onChangeHandlers.push(callback);
         },
 
+        // notify to all listeners that the model has changed
         notifyChange: function () {
             this.onChangeHandlers.forEach(function (cb) {
                 cb();
@@ -87,6 +89,7 @@ define(function (require) {
             this.getCount(callback);
         },
 
+        // add query item to model
         addItem: function(item, callback){
             this.items.push(item);
 
@@ -94,6 +97,7 @@ define(function (require) {
             this.getCount(callback);
         },
 
+        // delete single query item from model
         deleteItem: function (item, callback) {
             for (var i = 0; i < this.items.length; i++) {
                 if (item.id == this.items[i].id) {
@@ -110,11 +114,14 @@ define(function (require) {
             }
         },
 
-        /**
-         * Asynchronous call to the server to get the results count for the given query items
-         *
-         * @param callback
-         */
+        // clear all query items from model
+        clearItems: function(){
+            this.items = [];
+            this.count = 0;
+            this.notifyChange();
+        },
+
+        // Asynchronous call to the server to get the results count for the given query items
         getCount: function(callback){
             var queryDTOs = [];
 
@@ -817,6 +824,14 @@ define(function (require) {
             this.showBrentSpiner(true);
 
             this.props.model.deleteItem(item, callback.bind(this));
+        },
+
+        /**
+         * Clears all query items from the query builder
+         */
+        clearAllQueryItems: function(){
+            this.clearErrorMessage();
+            this.props.model.clearItems();
         },
 
         queryResultDeleted: function(resultsItem){

@@ -439,7 +439,7 @@ define(function (require) {
 
             return (
                 <div id={containerId} className="query-item">
-                    <div className="query-item-label">{this.props.item.term}</div>
+                    <div className="query-item-label"  title={this.props.item.term}>{this.props.item.term}</div>
                     <select className="query-item-option" onChange={onSelection} value={this.props.item.selection}>
                         {this.props.item.options.map(createItem)}
                     </select>

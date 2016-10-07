@@ -82,6 +82,9 @@
     float: left;
     margin-right: 25px;
     width: 75px;
+    height : 40px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 #querybuilder .query-item-option {

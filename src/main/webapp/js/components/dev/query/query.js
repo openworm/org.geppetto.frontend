@@ -238,6 +238,11 @@ define(function (require) {
                     if(this.state.carouselFullyLoaded){
                     	imagesToLoad = value.elements.length;
                     }
+                     
+                    //set flag to fully loaded if total length of images to render is less or equal to 2
+                    if(value.elements.length<=2){
+                    	this.fullyLoaded = true;
+                    }
                     
                     //if it's an array, create a carousel (relies on slick)
                     var elements = value.elements.map(function (item, key) {

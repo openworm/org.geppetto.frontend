@@ -85,7 +85,7 @@ define(function (require) {
 
         },
 
-        componentDidUpdate: function(object prevProps, object prevState) {
+        componentDidUpdate: function(){
             this.renderer.resize(this.props.width, this.props.height);
         },
 

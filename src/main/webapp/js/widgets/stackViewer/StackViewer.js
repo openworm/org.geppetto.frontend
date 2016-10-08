@@ -46,6 +46,7 @@ define(function (require) {
     return Widget.View.extend({
         variable: null,
         options: null,
+        data: null,
 
         /**
          * Initialises button bar
@@ -62,6 +63,18 @@ define(function (require) {
             this.setSize(100, 300);
 
             //in case you need some styling add it to the CSS $("#" + this.id).addClass("yourStyle");
+        },
+
+        setSize: function (h, w) {
+            Widget.View.prototype.setSize.call(this, h, w);
+            if (this.data != null) {
+                this.data.height = h;
+                this.data.width = w;
+                ReactDOM.render(
+                    React.createElement(StackViewerComponent, {data: this.data}),
+                    document.getElementById('stack-container' + this.id)
+                );
+            }
         },
 
         /**
@@ -81,6 +94,8 @@ define(function (require) {
                 React.createElement(StackViewerComponent, {data: data}),
                 document.getElementById('stack-container' + this.id)
             );
+
+            this.data = data;
 
             return this;
         },

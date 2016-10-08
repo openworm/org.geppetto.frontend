@@ -35,11 +35,6 @@ define(function (require) {
             //Setup PIXI Canvas in componentDidMount
             this.renderer = PIXI.autoDetectRenderer(this.props.width, this.props.height);
             // maintain full window size
-            window.onresize = function (event) {
-                var w = window.innerWidth;
-                var h = window.innerHeight;
-                this.renderer.resize(w, h);
-            }.bind(this);
             this.refs.stackCanvas.appendChild(this.renderer.view);
 
 
@@ -88,6 +83,10 @@ define(function (require) {
             this.createImages();
             this.animate();
 
+        },
+
+        componentDidUpdate: function(object prevProps, object prevState) {
+            this.renderer.resize(this.props.width, this.props.height);
         },
 
         callDstRange: function () {

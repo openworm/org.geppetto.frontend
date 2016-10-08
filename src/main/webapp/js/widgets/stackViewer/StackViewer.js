@@ -71,8 +71,8 @@ define(function (require) {
                 this.data.height = h;
                 this.data.width = w;
                 // add border
-                this.data.width -= 20;
-                this.data.height -= 20;
+                this.data.width -= 30;
+                this.data.height -= 40;
 
                 ReactDOM.render(
                     React.createElement(StackViewerComponent, {data: this.data}),
@@ -95,8 +95,8 @@ define(function (require) {
             this.setSize(data.height, data.width);
             this.data = data;
             // add border
-            this.data.width -= 20;
-            this.data.height -= 20;
+            this.data.width -= 30;
+            this.data.height -= 40;
 
             ReactDOM.render(
                 React.createElement(StackViewerComponent, {data: this.data}),

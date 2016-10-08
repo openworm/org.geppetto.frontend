@@ -44,7 +44,8 @@ define(function (require) {
     var React = require('react'), ReactDOM = require('react-dom');
 
 
-    var Canvas = React.createClass({
+    var Canvas = React.createClass(
+        {
             getInitialState: function () {
                 return {
                     buffer: {},
@@ -63,7 +64,8 @@ define(function (require) {
                     updating: false,
                     numTiles: 1,
                     posX: 0,
-                    posY: 0
+                    posY: 0,
+                    loadingLabels: false
                 };
             },
             /**
@@ -211,14 +213,15 @@ define(function (require) {
                     $.ajax({
                         url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
                         type: 'POST',
-                        label: this.props.label[i],
                         success: function (data) {
-                            console.log(this.label + ' - ' + data.trim());
+                            // console.log(that.props.label[i] + ' - ' + data.trim());
                             result = data.trim().split(':')[1].trim().split(' ');
                             if (result !== '') {
                                 for (j in result) {
                                     if (result[j] == '0') {
-                                        console.log(this.label + ' clicked');
+                                        console.log(that.props.label[i] + ' clicked');
+                                        that.setStatusText(that.props.label[i] + ' clicked!');
+                                        that.setState({text:that.props.label[i] + ' clicked!'});
                                     } else {
                                         console.log('Odd value: ' + result[j].toString());
                                     }
@@ -229,7 +232,44 @@ define(function (require) {
                             that.state.lastUpdate = 0;
                             that.checkStack();
 
-                        }.bind(that),
+                        }.bind({i:i}),
+                        error: function (xhr, status, err) {
+                            console.error(this.props.url, status, err.toString());
+                        }.bind(this)
+                    });
+                }
+            },
+
+            listObjects: function () {
+
+                var i, j, result;
+                var that = this;
+                for (i in this.state.stack) {
+                    var image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+                    //get image size;
+                    $.ajax({
+                        url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
+                        type: 'POST',
+                        success: function (data) {
+                            // console.log(that.props.label[i] + ' - ' + data.trim());
+                            result = data.trim().split(':')[1].trim().split(' ');
+                            if (result !== '') {
+                                for (j in result) {
+                                    if (result[j] == '0') {
+                                        console.log(that.props.label[i]);
+                                        that.setStatusText(that.props.label[i]);
+                                    } else {
+                                        console.log('Odd value: ' + result[j].toString());
+                                    }
+                                }
+                            }
+
+                            // update slice view
+                            that.state.lastUpdate = 0;
+                            that.checkStack();
+                            that.state.loadingLabels = false;
+
+                        }.bind({that:this, i:i}),
                         error: function (xhr, status, err) {
                             console.error(this.props.url, status, err.toString());
                         }.bind(this)
@@ -495,11 +535,16 @@ define(function (require) {
             ,
 
             /**
-             * Update the stage "zoom" level by setting the scale
+             * Update the display text
              **/
             updateStatusText: function (props) {
                 this.state.buffer[-1].text = props.statusText;
                 this.setState({text: props.statusText});
+            }
+            ,
+
+            setStatusText: function (text) {
+                this.setState({text: text});
             }
             ,
 
@@ -581,7 +626,7 @@ define(function (require) {
                 var newPosX = startPosition.x + ((this.state.imageX*0.5)*(1/this.disp.scale.x));
                 var newPosY = startPosition.y + ((this.state.imageY*0.5)*(1/this.disp.scale.y));
                 if (newPosX == this.state.posX && newPosY == this.state.posY){
-                    console.log([newPosX, newPosY]);
+                    // console.log([newPosX, newPosY]);
                     this.callObjects();
                 }
                 // set the interaction data to null
@@ -589,7 +634,23 @@ define(function (require) {
             }
             ,
 
-            onDragMove: function () {
+            onHoverEvent: function (event) {
+                if (!this.state.loadingLabels) {
+                    this.state.loadingLabels = true;
+                    this.stack.data = event.data;
+                    var currentPosition = this.stack.data.getLocalPosition(this.stack);
+                    var xOffset = ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
+                    var yOffset = ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
+                    this.state.posX = currentPosition.x + xOffset;
+                    this.state.posY = currentPosition.y + yOffset;
+                    if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {
+                        this.listObjects();
+                    }
+                }
+            }
+            ,
+
+            onDragMove: function (event) {
                 if (this.stack.dragging) {
                     var startPosition = this.stack.dragOffset;
                     var newPosition = this.stack.data.getLocalPosition(this.stack);
@@ -599,6 +660,8 @@ define(function (require) {
                     this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                     // update slice view
                     this.checkStack();
+                }else{
+                    this.onHoverEvent(event);
                 }
             }
             ,
@@ -612,42 +675,111 @@ define(function (require) {
                     </div>
                 );
             }
-        });
+        }
+    );
 
     var prefix = "", _addEventListener, onwheel, support;
 
-    var StackViewer = React.createClass({
-        getInitialState: function () {
-            return {
-                zoomLevel: 1.0,
-                dst: 0,
-                text: '',
-                serverUrl: 'http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi',
-                stackX: 0,
-                stackY: 0,
-                fxp: [511, 255, 108],
-                pit: 0,
-                yaw: 0,
-                rol: 0,
-                scl: 1.0,
-                minDst: -100,
-                maxDst: 100,
-                color: [0xFFFFFF, 0xFF0000],
-                stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz', '/disk/data/VFB/IMAGE_DATA/VFB/i/0003/0624/volume.wlz'],
-                label: ['JFRC2 Template', 'medulla']
-            };
-        },
+    var StackViewer = React.createClass(
+        {
+            getInitialState: function () {
+                return {
+                    zoomLevel: 1.0,
+                    dst: 0,
+                    text: '',
+                    serverUrl: 'http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi',
+                    stackX: 0,
+                    stackY: 0,
+                    fxp: [511, 255, 108],
+                    pit: 0,
+                    yaw: 0,
+                    rol: 0,
+                    scl: 1.0,
+                    minDst: -100,
+                    maxDst: 100,
+                    color: [0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF],
+                    stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz', '/disk/data/VFB/IMAGE_DATA/VFB/i/0003/0624/volume.wlz', '/disk/data/VFB/IMAGE_DATA/VFB/i/0000/0001/volume.wlz', '/disk/data/VFB/IMAGE_DATA/VFB/i/0000/0002/volume.wlz'],
+                    label: ['JFRC2 Template', 'medulla', 'VFB_00000001', 'VFB_00000002']
+                };
+            },
 
-        onWheelEvent: function (e) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            var newdst = this.state.dst;
-            if (e.ctrlKey && e.wheelDelta > 0) {
-                this.onZoomIn();
-            } else if (e.ctrlKey && e.wheelDelta < 0) {
-                this.onZoomOut();
-            } else {
-                newdst += -1 * e.wheelDelta * 0.1;
+            onWheelEvent: function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var newdst = this.state.dst;
+                if (e.ctrlKey && e.wheelDelta > 0) {
+                    this.onZoomIn();
+                } else if (e.ctrlKey && e.wheelDelta < 0) {
+                    this.onZoomOut();
+                } else {
+                    // Mac keypad returns values (+/-)1-20 Mouse wheel (+/-)120
+                    var step = -1 * e.wheelDelta * 0.1;
+                    // Max step of 0.6 imposed
+                    // TODO: derive max and min step from voxel size
+                    if (step > 3) {
+                        step = 0.6;
+                    }else if (step < -3) {
+                        step = -0.6;
+                    }
+                    newdst += step;
+                    if (newdst < this.state.maxDst && newdst > this.state.minDst) {
+                        this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
+                    } else if (newdst < this.state.maxDst) {
+                        newdst = this.state.minDst;
+                        this.setState({dst: newdst, text: 'First slice!'});
+                    } else if (newdst > this.state.minDst) {
+                        newdst = this.state.maxDst;
+                        this.setState({dst: newdst, text: 'Last slice!'});
+                    }
+                }
+            },
+
+            componentDidMount: function () {
+                // detect event model
+                if (window.addEventListener) {
+                    this._addEventListener = "addEventListener";
+                } else {
+                    this._addEventListener = "attachEvent";
+                    prefix = "on";
+                }
+
+                // detect available wheel event
+                support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+                    document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+                        "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+                this.addWheelListener($('#displayArea')[0], function (e) {
+                    this.onWheelEvent(e);
+                }.bind(this));
+            },
+            /**
+             * Event handler for clicking zoom in. Increments the zoom level
+             **/
+            onZoomIn: function () {
+                let zoomLevel = this.state.zoomLevel += .1;
+                if (zoomLevel < 10.0) {
+                    this.setState({zoomLevel: zoomLevel, text: 'Zooming in to (X' + Number(zoomLevel).toFixed(1) + ')'});
+                } else {
+                    this.setState({zoomLevel: 10.0, text: 'Max zoom! (X10)'});
+                }
+            },
+            /**
+             * Event handler for clicking zoom out. Decrements the zoom level
+             **/
+            onZoomOut: function () {
+                let zoomLevel = this.state.zoomLevel -= .1;
+
+                if (zoomLevel > 0.1) {
+                    this.setState({zoomLevel: zoomLevel, text: 'Zooming out to (X' + Number(zoomLevel).toFixed(1) + ')'});
+                } else {
+                    this.setState({zoomLevel: 0.1, text: 'Min zoom! (X0.1)'});
+                }
+            },
+
+            /**
+             * Event handler for clicking step in. Increments the dst level
+             **/
+            onStepIn: function () {
+                var newdst = this.state.dst + 0.1;
                 if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                     this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
                 } else if (newdst < this.state.maxDst) {
@@ -657,153 +789,96 @@ define(function (require) {
                     newdst = this.state.maxDst;
                     this.setState({dst: newdst, text: 'Last slice!'});
                 }
-            }
-        },
-
-        componentDidMount: function () {
-            // detect event model
-            if (window.addEventListener) {
-                this._addEventListener = "addEventListener";
-            } else {
-                this._addEventListener = "attachEvent";
-                prefix = "on";
-            }
-
-            // detect available wheel event
-            support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
-                document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
-                    "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
-            this.addWheelListener($('#displayArea')[0], function (e) {
-                this.onWheelEvent(e);
-            }.bind(this));
-        },
-        /**
-         * Event handler for clicking zoom in. Increments the zoom level
-         **/
-        onZoomIn: function () {
-            let zoomLevel = this.state.zoomLevel += .1;
-            if (zoomLevel < 10.0) {
-                this.setState({zoomLevel: zoomLevel, text: 'Zooming in to (X' + Number(zoomLevel).toFixed(1) + ')'});
-            } else {
-                this.setState({zoomLevel: 10.0, text: 'Max zoom! (X10)'});
-            }
-        },
-        /**
-         * Event handler for clicking zoom out. Decrements the zoom level
-         **/
-        onZoomOut: function () {
-            let zoomLevel = this.state.zoomLevel -= .1;
-
-            if (zoomLevel > 0.1) {
-                this.setState({zoomLevel: zoomLevel, text: 'Zooming out to (X' + Number(zoomLevel).toFixed(1) + ')'});
-            } else {
-                this.setState({zoomLevel: 0.1, text: 'Min zoom! (X0.1)'});
-            }
-        },
-
-        /**
-         * Event handler for clicking step in. Increments the dst level
-         **/
-        onStepIn: function () {
-            var newdst = this.state.dst + 0.1;
-            if (newdst < this.state.maxDst && newdst > this.state.minDst) {
-                this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
-            } else if (newdst < this.state.maxDst) {
-                newdst = this.state.minDst;
-                this.setState({dst: newdst, text: 'First slice!'});
-            } else if (newdst > this.state.minDst) {
-                newdst = this.state.maxDst;
-                this.setState({dst: newdst, text: 'Last slice!'});
-            }
-        },
-        /**
-         * Event handler for clicking step out. Decrements the dst level
-         **/
-        onStepOut: function () {
-            var newdst = this.state.dst - 0.1;
-            if (newdst < this.state.maxDst && newdst > this.state.minDst) {
-                this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
-            } else if (newdst < this.state.maxDst) {
-                newdst = this.state.minDst;
-                this.setState({dst: newdst, text: 'First slice!'});
-            } else if (newdst > this.state.minDst) {
-                newdst = this.state.maxDst;
-                this.setState({dst: newdst, text: 'Last slice!'});
-            }
-        },
-
-        /**
-         * Event handler for clicking Home.
-         **/
-        onHome: function () {
-            this.setState({dst: 0, stackX: 0, stackY: 0, text: 'View reset', zoomLevel: 1.0});
-        },
-
-        onExtentChange: function (data) {
-            this.setState(data);
-        },
-
-        addWheelListener: function (elem, callback, useCapture) {
-            this._addWheelListener(elem, support, callback, useCapture);
-
-            // handle MozMousePixelScroll in older Firefox
-            if (support == "DOMMouseScroll") {
-                this._addWheelListener(elem, "MozMousePixelScroll", callback, useCapture);
-            }
-        },
-
-        _addWheelListener: function (elem, eventName, callback, useCapture) {
-            elem[this._addEventListener](prefix + eventName, support == "wheel" ? callback : function (originalEvent) {
-                !originalEvent && ( originalEvent = window.event );
-
-                // create a normalized event object
-                var event = {
-                    // keep a ref to the original event object
-                    originalEvent: originalEvent,
-                    target: originalEvent.target || originalEvent.srcElement,
-                    type: "wheel",
-                    deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
-                    deltaX: 0,
-                    delatZ: 0,
-                    preventDefault: function () {
-                        originalEvent.preventDefault ?
-                            originalEvent.preventDefault() :
-                            originalEvent.returnValue = false;
-                    }
-                };
-
-                // calculate deltaY (and deltaX) according to the event
-                if (support == "mousewheel") {
-                    event.deltaY = -1 / 40 * originalEvent.wheelDelta;
-                    // Webkit also support wheelDeltaX
-                    originalEvent.wheelDeltaX && ( event.deltaX = -1 / 40 * originalEvent.wheelDeltaX );
-                } else {
-                    event.deltaY = originalEvent.detail;
+            },
+            /**
+             * Event handler for clicking step out. Decrements the dst level
+             **/
+            onStepOut: function () {
+                var newdst = this.state.dst - 0.1;
+                if (newdst < this.state.maxDst && newdst > this.state.minDst) {
+                    this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
+                } else if (newdst < this.state.maxDst) {
+                    newdst = this.state.minDst;
+                    this.setState({dst: newdst, text: 'First slice!'});
+                } else if (newdst > this.state.minDst) {
+                    newdst = this.state.maxDst;
+                    this.setState({dst: newdst, text: 'Last slice!'});
                 }
+            },
 
-                // it's time to fire the callback
-                return callback(event);
+            /**
+             * Event handler for clicking Home.
+             **/
+            onHome: function () {
+                this.setState({dst: 0, stackX: 0, stackY: 0, text: 'View reset', zoomLevel: 1.0});
+            },
 
-            }, useCapture || false);
-        },
+            onExtentChange: function (data) {
+                this.setState(data);
+            },
 
-        render: function () {
-            return (
-                <div id="displayArea">
-                    <button style={{position: 'absolute', right: 25, top: 10, padding: 2}} onClick={this.onZoomIn}>+</button>
-                    <button style={{position: 'absolute', right: 10, top: 10, padding: 2}} onClick={this.onZoomOut}>-</button>
-                    <button style={{position: 'absolute', right: 25, top: 30, padding: 2}} onClick={this.onStepIn}>&lt;</button>
-                    <button style={{position: 'absolute', right: 10, top: 30, padding: 2}} onClick={this.onStepOut}>&gt;</button>
-                    <button style={{position: 'absolute', right: 5, top: 50, padding: 2}} onClick={this.onHome}>HOME</button>
-                    <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
-                            fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
-                            stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
-                            statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY} scl={this.state.scl}
-                            label={this.state.label}/>
-                </div>
-            );
+            addWheelListener: function (elem, callback, useCapture) {
+                this._addWheelListener(elem, support, callback, useCapture);
+
+                // handle MozMousePixelScroll in older Firefox
+                if (support == "DOMMouseScroll") {
+                    this._addWheelListener(elem, "MozMousePixelScroll", callback, useCapture);
+                }
+            },
+
+            _addWheelListener: function (elem, eventName, callback, useCapture) {
+                elem[this._addEventListener](prefix + eventName, support == "wheel" ? callback : function (originalEvent) {
+                    !originalEvent && ( originalEvent = window.event );
+
+                    // create a normalized event object
+                    var event = {
+                        // keep a ref to the original event object
+                        originalEvent: originalEvent,
+                        target: originalEvent.target || originalEvent.srcElement,
+                        type: "wheel",
+                        deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
+                        deltaX: 0,
+                        delatZ: 0,
+                        preventDefault: function () {
+                            originalEvent.preventDefault ?
+                                originalEvent.preventDefault() :
+                                originalEvent.returnValue = false;
+                        }
+                    };
+
+                    // calculate deltaY (and deltaX) according to the event
+                    if (support == "mousewheel") {
+                        event.deltaY = -1 / 40 * originalEvent.wheelDelta;
+                        // Webkit also support wheelDeltaX
+                        originalEvent.wheelDeltaX && ( event.deltaX = -1 / 40 * originalEvent.wheelDeltaX );
+                    } else {
+                        event.deltaY = originalEvent.detail;
+                    }
+
+                    // it's time to fire the callback
+                    return callback(event);
+
+                }, useCapture || false);
+            },
+
+            render: function () {
+                return (
+                    <div id="displayArea">
+                        <button style={{position: 'absolute', right: 25, top: 10, padding: 2}} onClick={this.onZoomIn}>+</button>
+                        <button style={{position: 'absolute', right: 10, top: 10, padding: 2}} onClick={this.onZoomOut}>-</button>
+                        <button style={{position: 'absolute', right: 25, top: 30, padding: 2}} onClick={this.onStepIn}>&lt;</button>
+                        <button style={{position: 'absolute', right: 10, top: 30, padding: 2}} onClick={this.onStepOut}>&gt;</button>
+                        <button style={{position: 'absolute', right: 5, top: 50, padding: 2}} onClick={this.onHome}>HOME</button>
+                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
+                                fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
+                                stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
+                                statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY} scl={this.state.scl}
+                                label={this.state.label}/>
+                    </div>
+                );
+            }
         }
-    });
+    );
 
     return Widget.View
         .extend({

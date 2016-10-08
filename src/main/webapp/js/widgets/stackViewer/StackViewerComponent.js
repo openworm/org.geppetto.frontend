@@ -712,7 +712,10 @@ define(function (require) {
         onZoomIn: function () {
             let zoomLevel = this.state.zoomLevel += .1;
             if (zoomLevel < 10.0) {
-                this.setState({zoomLevel: zoomLevel, text: 'Zooming in to (X' + Number(zoomLevel).toFixed(1) + ')'});
+                this.setState({
+                    zoomLevel: zoomLevel,
+                    text: 'Zooming in to (X' + Number(zoomLevel).toFixed(1) + ')'
+                });
             } else {
                 this.setState({zoomLevel: 10.0, text: 'Max zoom! (X10)'});
             }
@@ -724,7 +727,10 @@ define(function (require) {
             let zoomLevel = this.state.zoomLevel -= .1;
 
             if (zoomLevel > 0.1) {
-                this.setState({zoomLevel: zoomLevel, text: 'Zooming out to (X' + Number(zoomLevel).toFixed(1) + ')'});
+                this.setState({
+                    zoomLevel: zoomLevel,
+                    text: 'Zooming out to (X' + Number(zoomLevel).toFixed(1) + ')'
+                });
             } else {
                 this.setState({zoomLevel: 0.1, text: 'Min zoom! (X0.1)'});
             }
@@ -819,23 +825,25 @@ define(function (require) {
         render: function () {
             return (
                 <div id="displayArea">
-                    <button style={{position: 'absolute', right: 25, top: 10, padding: 2}} onClick={this.onZoomIn}>+
+                    <button style={{position: 'absolute', right: 25, top: 10, padding: 2}} onClick={this.onZoomIn}>
+                        +
                     </button>
-                    <button style={{position: 'absolute', right: 10, top: 10, padding: 2}} onClick={this.onZoomOut}>-
+                    <button style={{position: 'absolute', right: 10, top: 10, padding: 2}} onClick={this.onZoomOut}>
+                        -
                     </button>
                     <button style={{position: 'absolute', right: 25, top: 30, padding: 2}}
                             onClick={this.onStepIn}>&lt;</button>
                     <button style={{position: 'absolute', right: 10, top: 30, padding: 2}}
                             onClick={this.onStepOut}>&gt;</button>
-                    <button style={{position: 'absolute', right: 5, top: 50, padding: 2}} onClick={this.onHome}>HOME
+                    <button style={{position: 'absolute', right: 5, top: 50, padding: 2}} onClick={this.onHome}>
+                        HOME
                     </button>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
-                            scl={this.state.scl} label={this.state.label}
-                            height={this.props.data.height}
-                            width={this.props.data.width} />
+                            scl={this.state.scl}
+                            label={this.state.label}/>
                 </div>
             );
         }

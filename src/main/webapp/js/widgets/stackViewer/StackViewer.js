@@ -70,6 +70,10 @@ define(function (require) {
             if (this.data != null) {
                 this.data.height = h;
                 this.data.width = w;
+                // add border
+                this.data.width -= 20;
+                this.data.height -= 20;
+
                 ReactDOM.render(
                     React.createElement(StackViewerComponent, {data: this.data}),
                     document.getElementById('stack-container' + this.id)
@@ -89,9 +93,13 @@ define(function (require) {
             $('#' + this.id).append("<div id='stack-container" + this.id + "'></div>");
 
             this.setSize(data.height, data.width);
+            this.data = data;
+            // add border
+            this.data.width -= 20;
+            this.data.height -= 20;
 
             ReactDOM.render(
-                React.createElement(StackViewerComponent, {data: data}),
+                React.createElement(StackViewerComponent, {data: this.data}),
                 document.getElementById('stack-container' + this.id)
             );
 

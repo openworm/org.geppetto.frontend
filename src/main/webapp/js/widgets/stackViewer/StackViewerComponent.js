@@ -843,7 +843,8 @@ define(function (require) {
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
-                            label={this.state.label}/>
+                            label={this.state.label} height={this.props.data.height}
+                            width={this.props.data.width} />
                 </div>
             );
         }

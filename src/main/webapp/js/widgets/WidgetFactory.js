@@ -130,7 +130,7 @@ define(function (require) {
                         break;
                     //create stack viewer
                     case GEPPETTO.Widgets.STACKVIEWER:
-                        widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addButtonBarWidget();
+                        widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget();
                         break;
                     //Use as template for new widgets
                     //create WIDGETNAME

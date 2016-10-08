@@ -38,7 +38,7 @@
 define(function (require) {
 
     var AWidgetController = require('widgets/AWidgetController');
-    var stackViewer = require('widgets/stackViewer/stackViewer'); //this refers to the JS file (no extension!)
+    var Stack = require('widgets/stackViewer/StackViewer');
 
     /**
      * @exports Widgets/stackViewer/stackViewerController
@@ -55,9 +55,9 @@ define(function (require) {
          */
         addStackViewerWidget: function () {
             //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("stackViewer", this.widgets);
+            var id = this.getAvailableWidgetId("StackViewer", this.widgets);
             var name = id;
-            var vv = window[name] = new stackViewer({id: id, name: name, visible: true});
+            var vv = window[name] = new Stack({id: id, name: name, visible: true});
             vv.help = function () {
                 return GEPPETTO.Console.getObjectCommands(id);
             };
@@ -66,7 +66,7 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //updates help command options
-            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/widgets/StackViewer/stackViewer.js"));
+            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/widgets/stackViewer/StackViewer.js"));
 
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(vv.getId(), vv);

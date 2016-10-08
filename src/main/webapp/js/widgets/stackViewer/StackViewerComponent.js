@@ -33,7 +33,7 @@ define(function (require) {
         componentDidMount: function () {
             console.log('Loading....');
             //Setup PIXI Canvas in componentDidMount
-            this.renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+            this.renderer = PIXI.autoDetectRenderer(this.props.width, this.props.height);
             // maintain full window size
             window.onresize = function (event) {
                 var w = window.innerWidth;
@@ -834,8 +834,9 @@ define(function (require) {
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
-                            scl={this.state.scl}
-                            label={this.state.label}/>
+                            scl={this.state.scl} label={this.state.label}
+                            height={this.props.data.height}
+                            width={this.props.data.width} />
                 </div>
             );
         }

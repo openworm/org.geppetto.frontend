@@ -64,8 +64,6 @@ define(function (require) {
             //in case you need some styling add it to the CSS $("#" + this.id).addClass("yourStyle");
         },
 
-
-        //<StackViewerComponent />, document.getElementById(this.id)
         /**
          * Sets the content of this widget
          * This is a sample method of the widget's API, in this case the user would use the widget by passing an instance to a setData method
@@ -77,8 +75,10 @@ define(function (require) {
         setData: function (data) {
             $('#' + this.id).append("<div id='stack-container" + this.id + "'></div>");
 
+            this.setSize(data.height, data.width);
+
             ReactDOM.render(
-                React.createElement(StackViewerComponent, {}),
+                React.createElement(StackViewerComponent, {data: data}),
                 document.getElementById('stack-container' + this.id)
             );
 

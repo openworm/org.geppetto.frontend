@@ -11,7 +11,7 @@ define(function(require) {
 	require('./ComponentsController')(GEPPETTO);
 
 	GEPPETTO.ComponentFactory.loadSpinner();
-	
+
 	//load extensions
 	require('../../extensions/extensions');
 
@@ -32,11 +32,9 @@ define(function(require) {
 		$(document).ready(
 			function() {
 				if (expParam) {
-					GEPPETTO.Console.executeCommand(command + '("'
-							+ simParam + '", "'+expParam+'")');
+					GEPPETTO.Console.executeCommand(command + '("' + simParam + '", "'+expParam+'")');
 				} else {
-					GEPPETTO.Console.executeCommand(command + '("'
-							+ simParam + '")');
+					GEPPETTO.Console.executeCommand(command + '("' + simParam + '")');
 				}
 			});
 	}

@@ -63,11 +63,13 @@ var Events = {
     Experiment_created:"experiment:created",
     Project_persisted: "project:persisted",
     Spotlight_closed: "spotlight:closed",
-    Instance_deleted: "instance: deleted",
-    Instances_created: "instances: created",
+    Instance_deleted: "instance:deleted",
+    Instances_created: "instances:created",
     Show_Tutorial : "show_tutorial",
-    Hide_Tutorial : "hide_tutorial"
-
+    Hide_Tutorial : "hide_tutorial",
+    Show_spinner: "spinner:show",
+    Hide_spinner: "spinner:hide",
+    Canvas_initialised: "canvas:initialised"
 };
 
 define(function (require) {
@@ -95,7 +97,7 @@ define(function (require) {
                 });
                 GEPPETTO.on(Events.Experiment_loaded, function () {
                     if(GEPPETTO.UserController.isLoggedIn()){
-                    	GEPPETTO.trigger("hide:spinner");
+                    	GEPPETTO.trigger(Events.Hide_spinner);
                     }
                 });
                 GEPPETTO.on(Events.Project_loaded, function () {

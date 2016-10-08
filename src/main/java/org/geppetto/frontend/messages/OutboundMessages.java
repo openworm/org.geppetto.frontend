@@ -88,7 +88,8 @@ public enum OutboundMessages {
 	IMPORT_TYPE_RESOLVED("import_type_resolved"), 
 	IMPORT_VALUE_RESOLVED("import_value_resolved"),
 	RETURN_QUERY("return_query"),
-	RETURN_QUERY_COUNT("return_query_count");
+	RETURN_QUERY_COUNT("return_query_count"), 
+	RETURN_QUERY_RESULTS("return_query_results");
 
 	private OutboundMessages(final String text) {
 		this.text = text;

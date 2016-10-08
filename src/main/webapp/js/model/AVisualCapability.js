@@ -322,8 +322,8 @@ define(function (require) {
                             GEPPETTO.SceneController.ghostEffect(allOtherMeshes, true);
                         }
                     }
-                    //signal selection has changed in simulation
-                    GEPPETTO.trigger(Events.Select);
+                    //signal selection has changed in simulation pass instance
+                    GEPPETTO.trigger(Events.Select, this);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
                 }
@@ -402,7 +402,7 @@ define(function (require) {
                     }
 
                     //trigger event that selection has been changed
-                    GEPPETTO.trigger(Events.Selection);
+                    GEPPETTO.trigger(Events.Select, this);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
                 }

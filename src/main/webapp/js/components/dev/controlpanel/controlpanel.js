@@ -44,7 +44,6 @@ define(function (require) {
     loadCss("geppetto/js/components/dev/controlpanel/vendor/css/bootstrap-colorpicker.min.css");
 
     var React = require('react'), $ = require('jquery');
-    var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
@@ -83,26 +82,38 @@ define(function (require) {
         }
     });
 
-    GEPPETTO.LinkComponent = React.createClass({
+    GEPPETTO.LinkArrayComponent = React.createClass({
         render: function () {
             var that = this;
             return (
                 <div>
                     {
-                    	function(){
-                            var displayText = that.props.data;
-                            var action = function (e) {
-                                e.preventDefault();
-                                var actionStr = that.props.metadata.action;
-                                actionStr = actionStr.replace(/\$entity\$/gi, item);
-                                GEPPETTO.Console.executeCommand(actionStr);
+                        that.props.data.map(function (item, i) {
+                            // parse html for easy manipulation
+                            var domObj = $(item.html);
+                            var anchorElement = domObj.filter('a');
+
+                            // extract action target
+                            var actionItem = anchorElement.attr('instancepath');
+
+                            // grab action string from metadata config and swap target
+                            var actionStr = that.props.metadata.actions.replace(/\$entity\$/gi, actionItem);
+
+                            // set action
+                            var onClickActionStr = 'GEPPETTO.Console.executeCommand("' + actionStr + '")';
+                            anchorElement.attr('onclick', onClickActionStr);
+
+                            // retrieve markup to inject as string
+                            var markupToInject = domObj.prop('outerHTML');
+
+                            var getMarkup = function() {
+                                return {__html: markupToInject};
                             };
 
-
                             return (
-                                <span><a href='#' onClick={action}>{displayText}</a></span>
+                                <span key={i} dangerouslySetInnerHTML={getMarkup()} />
                             );
-                    	}
+                        })
                     }
                 </div>
             )
@@ -301,7 +312,8 @@ define(function (require) {
                             that.colorPickerBtnId = idVal;
                             that.colorPickerActionFn = actionFn;
                             // set style val to color tint icon
-                            styleVal = {color: String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0, 7)};
+                            var colorVal = String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0, 7);
+                            styleVal = {color: colorVal.startsWith('#') ? colorVal : ('#' + colorVal) };
                             classVal += " color-picker-button";
                         }
 
@@ -358,7 +370,8 @@ define(function (require) {
             "customComponent": GEPPETTO.ControlsComponent,
             "displayName": "Controls",
             "source": "",
-            "actions": "GEPPETTO.ControlPanel.refresh();"
+            "actions": "GEPPETTO.ControlPanel.refresh();",
+            "cssClassName": "controlpanel-controls-column"
         }
     ];
 
@@ -412,6 +425,15 @@ define(function (require) {
                 "label": "Color",
                 "tooltip": "Color"
             },
+            randomcolor: {
+                "id": "randomcolor",
+                "actions": [
+                    "GEPPETTO.SceneController.assignRandomColor($instance$);"
+                ],
+                "icon": "fa-random",
+                "label": "Random Color",
+                "tooltip": "Random Color"
+            },
             "zoom": {
                 "id": "zoom",
                 "actions": [
@@ -429,29 +451,23 @@ define(function (require) {
         displayName: 'ControlPanel',
 
         refresh: function() {
-            this.setState({
-                columns: this.state.columns,
-                data: this.state.data,
-                controls: this.state.controls,
-                controlsConfig: this.state.controlsConfig,
-                dataFilter: this.state.dataFilter
-            });
+            this.forceUpdate();
         },
 
         getInitialState: function () {
             return {
                 columns: ['name', 'type', 'controls'],
                 data: [],
-                controls: {"Common": [], "VisualCapability": ['color', 'visibility', 'zoom']},
+                controls: {"Common": [], "VisualCapability": ['color', 'randomcolor', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration,
                 dataFilter: defaultDataFilter,
+                columnMeta: controlPanelColumnMeta
             };
         },
 
         getDefaultProps: function () {
             return {
-                "tableClassName": 'control-panel-table',
-                "columnMeta": controlPanelColumnMeta
+                "tableClassName": 'control-panel-table'
             };
         },
 
@@ -460,20 +476,13 @@ define(function (require) {
         },
 
         setColumnMeta: function (colMeta) {
-            // if the user sets meta - NUKE everything and rebuild
-            // NOTE: griddle does not pickup metadata for eventual new columns (fixed in newer versions)
-            ReactDOM.unmountComponentAtNode(document.getElementById("controlpanel"));
-            // re-instantiate the control panel in its entirety with the new column meta
-            ReactDOM.render(
-                React.createElement(ControlPanel, {columnMeta: colMeta}),
-                document.getElementById("controlpanel")
-            );
+            this.setState({columnMeta: colMeta});
         },
 
         addData: function(instances){
         	if(instances!= undefined && instances.length>0){
         		
-	            var columnMeta = this.props.columnMeta;
+	            var columnMeta = this.state.columnMeta;
 	
 	            // filter new records with data filter
 	            var records = this.state.dataFilter(instances);
@@ -540,7 +549,9 @@ define(function (require) {
                 }
 
                 // set state to refresh grid
-                this.setState({data: newGridInput});
+                if(gridInput.length != newGridInput.length){
+                    this.setState({data: newGridInput});
+                }
             }
         },
 
@@ -550,7 +561,7 @@ define(function (require) {
         },
 
         setData: function (records) {
-            var columnMeta = this.props.columnMeta;
+            var columnMeta = this.state.columnMeta;
 
             // filter records with data filter
             records = this.state.dataFilter(records);
@@ -610,8 +621,10 @@ define(function (require) {
         },
 
         open: function () {
-            // hide control panel
+            // show control panel
             $("#controlpanel").show();
+            // refresh to reflect latest state (might have changed)
+            this.refresh();
         },
         
         close: function () {
@@ -622,25 +635,22 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-
             var escape = 27;
             var pKey = 80;
 
             var that = this;
-            
-            $("#controlpanel").click(function(e){
-            	if (e.target==e.delegateTarget || e.target==$(".griddle-body").children(":first")[0]){
-            		//we want this only to happen if we clicked on the div directly and not on anything therein contained
-            		that.close();
-            	}
+
+            $("#controlpanel").click(function (e) {
+                if (e.target == e.delegateTarget || e.target == $(".griddle-body").children(":first")[0]) {
+                    //we want this only to happen if we clicked on the div directly and not on anything therein contained
+                    that.close();
+                }
             });
-            
+
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == pKey) {
                     // show control panel
-                    $("#controlpanel").show();
-                    // refresh to reflect up to date state of records
-                    GEPPETTO.ControlPanel.refresh();
+                    that.open();
                     // set focus on filter text box
                     $('#controlpanel .griddle-filter input').focus();
                 }
@@ -648,7 +658,7 @@ define(function (require) {
 
             $(document).keydown(function (e) {
                 if ($("#controlpanel").is(':visible') && e.keyCode == escape) {
-                	that.close();
+                    that.close();
                 }
             });
 
@@ -667,7 +677,7 @@ define(function (require) {
             	}
             });
 
-            if(GEPPETTO.ForegroundControls != undefined){
+            if (GEPPETTO.ForegroundControls != undefined) {
                 GEPPETTO.ForegroundControls.refresh();
             }
             
@@ -679,7 +689,7 @@ define(function (require) {
             return React.createElement(Griddle, {
                 columns: this.state.columns, results: this.state.data,
                 showFilter: true, showSettings: false, enableInfiniteScroll: true, bodyHeight: 400,
-                useGriddleStyles: false, columnMetadata: this.props.columnMeta
+                useGriddleStyles: false, columnMetadata: this.state.columnMeta
             });
         }
     });

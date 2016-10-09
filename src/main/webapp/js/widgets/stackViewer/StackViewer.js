@@ -88,7 +88,16 @@ define(function (require) {
          */
         setData: function (data) {
             if(data != undefined && data!=null){
-                this.setSize(data.height!=undefined?data.height:this.defHeight, data.width!=undefined?data.width:this.defWidth);
+                if(data.height == undefined){
+                    data.height = this.defHeight;
+                }
+
+                if(data.width == undefined){
+                    data.width = this.defWidth;
+                }
+
+                this.setSize(data.height, data.width);
+
                 this.data = data;
             }
 

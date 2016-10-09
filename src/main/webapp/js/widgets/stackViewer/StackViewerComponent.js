@@ -705,6 +705,81 @@ define(function (require) {
             this.addWheelListener($('#displayArea')[0], function (e) {
                 this.onWheelEvent(e);
             }.bind(this));
+
+            if (this.props.data && this.props.data!=null && this.props.data.instances && this.props.data.instances!=null) {
+                var instance;
+                var data;
+                var files = [];
+                var colors = [];
+                var labels = [];
+                var server = this.state.serverUrl;
+                for (instance in this.props.data.instances) {
+                    if (instance.data && instance.data != null) {
+                        try {
+                            data = JSON.parse(instance.data);
+                            server = data.serverUrl;
+                            files.push(data.fileLocation);
+                            labels.push(instance.getName());
+                            colors.push(instance.getColor());
+                        catch
+                            (ignore)
+                            {
+                                console.log('Error handling ' + instance.data);
+                            }
+                        }
+                    }
+                    if (server != this.state.serverUrl && server != null) {
+                        this.state.serverUrl = server;
+                    }
+                    if (files != this.state.stack && files != null) {
+                        this.state.stack = files;
+                    }
+                    if (labels != this.state.label && labels != null) {
+                        this.state.label = labels;
+                    }
+                    if (colors != this.state.color && colors != null) {
+                        this.state.color = colors;
+                    }
+                }
+            }
+        },
+
+        componentDidUpdate: function () {
+            if (this.props.data && this.props.data!=null && this.props.data.instances && this.props.data.instances!=null){
+                var instance;
+                var data;
+                var files = [];
+                var colors = [];
+                var labels = [];
+                var server = this.state.serverUrl;
+                for (instance in this.props.data.instances){
+                    if (instance.data && instance.data != null){
+                        try{
+                            data = JSON.parse(instance.data);
+                            server = data.serverUrl;
+                            files.push(data.fileLocation);
+                            labels.push(instance.getName());
+                            colors.push(instance.getColor());
+                        catch (ignore)
+                            {
+                                console.log('Error handling ' + instance.data);
+                            }
+                        }
+                    }
+                    if (server != this.state.serverUrl && server != null) {
+                        this.state.serverUrl = server;
+                    }
+                    if (files != this.state.stack && files != null){
+                        this.state.stack = files;
+                    }
+                    if (labels != this.state.label && labels != null){
+                        this.state.label = labels;
+                    }
+                    if (colors != this.state.color && colors != null){
+                        this.state.color = colors;
+                    }
+                }
+            }
         },
         /**
          * Event handler for clicking zoom in. Increments the zoom level

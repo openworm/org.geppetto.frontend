@@ -46,7 +46,9 @@ define(function (require) {
     return Widget.View.extend({
         variable: null,
         options: null,
-        data: null,
+        defHeight: 400,
+        defWidth: 600,
+        data: { height: this.defHeight, width: this.defWidth },
 
         /**
          * Initialises button bar
@@ -60,25 +62,20 @@ define(function (require) {
         initialize: function (options) {
             Widget.View.prototype.initialize.call(this, options);
             this.render();
-            this.setSize(100, 300);
 
-            //in case you need some styling add it to the CSS $("#" + this.id).addClass("yourStyle");
+            // add container for nested react component
+            $('#' + this.id).append("<div id='stack-container" + this.id + "'></div>");
+
+            this.setSize(this.defHeight, this.defWidth);
         },
 
         setSize: function (h, w) {
             Widget.View.prototype.setSize.call(this, h, w);
-            if (this.data != null) {
-                this.data.height = h;
-                this.data.width = w;
-                // add border
-                this.data.width -= 30;
-                this.data.height -= 40;
+            this.data.height = h;
+            this.data.width = w;
 
-                ReactDOM.render(
-                    React.createElement(StackViewerComponent, {data: this.data}),
-                    document.getElementById('stack-container' + this.id)
-                );
-            }
+            this.updateBorders();
+            this.updateScene();
         },
 
         /**
@@ -90,24 +87,42 @@ define(function (require) {
          * @param {Object} anyInstance - An instance of any type
          */
         setData: function (data) {
-            $('#' + this.id).append("<div id='stack-container" + this.id + "'></div>");
+            if(data != undefined && data!=null){
+                if(data.height == undefined){
+                    data.height = this.defHeight;
+                }
 
-            this.setSize(data.height, data.width);
-            this.data = data;
-            // add border
-            this.data.width -= 30;
-            this.data.height -= 40;
+                if(data.width == undefined){
+                    data.width = this.defWidth;
+                }
 
-            ReactDOM.render(
-                React.createElement(StackViewerComponent, {data: this.data}),
-                document.getElementById('stack-container' + this.id)
-            );
+                this.setSize(data.height, data.width);
 
-            this.data = data;
+                this.data = data;
+            }
+
+            this.updateBorders();
+            this.updateScene();
 
             return this;
         },
 
+        setSlices: function(instances){
+            this.data.instances = this.data.instances.concat(instances);
+            this.updateScene();
+        },
+
+        updateScene: function(){
+            ReactDOM.render(
+                React.createElement(StackViewerComponent, {data: this.data}),
+                document.getElementById('stack-container' + this.id)
+            );
+        },
+
+        updateBorders: function(){
+            this.data.width -= 30;
+            this.data.height -= 40;
+        }
     });
 });
 

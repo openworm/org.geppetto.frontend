@@ -23,7 +23,7 @@ define(function (require) {
         menu: new GEPPETTO.ContextMenuView(),
         onClickHandler : null,
         onLoadHandler : null,
-   
+        positionUpdated : false,
         
         //Set of icons used for different drop down items
         menuItemsIcons: {
@@ -69,6 +69,7 @@ define(function (require) {
                 } else {
                     // if condition does not exist, simply assign action
                     action = this.state.menuItems[i].action;
+                    iconState = this.menuItemsIcons.default;
                 }
 
                 data.push({
@@ -143,6 +144,16 @@ define(function (require) {
         	this.onClickHandler = null;
         },
         
+        getMenuPosition : function(){
+        	return { 
+        		top : $("#"+this.props.configuration.id).offset().top + 
+        				$("#"+this.props.configuration.id).outerHeight(),
+        		left: ($("#"+this.props.configuration.id).offset().left - 
+        				($("#"+this.props.configuration.id).outerHeight()-
+        						$("#"+this.props.configuration.id).innerHeight()))
+        	};
+        },
+        
         componentDidMount: function () {
             var self = this;
             var menuPosition=null
@@ -151,13 +162,7 @@ define(function (require) {
             if(self.props.configuration.menuPosition == null || undefined){
             	//compute best spot for menu to show up by getting the button's top
             	//and left values, and considering padding values as well
-            	menuPosition = { 
-            			top : $("#"+self.props.configuration.id).offset().top + 
-            				  $("#"+self.props.configuration.id).outerHeight(),
-            			left: ($("#"+self.props.configuration.id).offset().left - 
-            				   ($("#"+self.props.configuration.id).outerHeight()-
-            				    $("#"+self.props.configuration.id).innerHeight()))
-            	}
+            	menuPosition = self.getMenuPosition();
             }else{
             	//assign position of menu to what it is in configuration passed
             	menuPosition = self.props.configuration.menuPosition;
@@ -193,6 +198,16 @@ define(function (require) {
         //toggles visibility of drop down menu
         toggleMenu : function(){
         	var showIcon;
+        	
+        	//MenuButton first mounted at position 0,0 insted of position assigned in its css.
+        	//This if updates the button's drop down to show in button's actual position insted of 0,0
+        	if(!this.positionUpdated){
+        		var menuPosition = this.getMenuPosition();
+        		this.positionUpdated = true;
+                this.setState({menuPosition : menuPosition}, this.toggleMenu);
+                return;
+        	}
+        	
             if (this.state.open) {
                 this.hideMenu();
             	showIcon = this.props.configuration.iconOff;

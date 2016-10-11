@@ -439,10 +439,10 @@ define(function (require) {
 
             return (
                 <div id={containerId} className="query-item">
+                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem} />
                     <select className="query-item-option" onChange={onSelection} value={this.props.item.selection}>
                         {this.props.item.options.map(createItem)}
                     </select>
-                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem} />
                     <div className="clearer"></div>
                 </div>
             );

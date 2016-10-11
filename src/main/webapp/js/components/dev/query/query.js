@@ -510,7 +510,11 @@ define(function (require) {
             GEPPETTO.QueryBuilder = this;
         },
 
-        switchView(resultsView) {
+        switchView(resultsView, clearQueryItems) {
+            if(clearQueryItems == true){
+                this.clearAllQueryItems();
+            }
+
             this.setState({ resultsView: resultsView});
         },
 
@@ -1161,12 +1165,17 @@ define(function (require) {
         		
                 markup = (
                     <div id="query-results-container" className="center-content">
-                    	<MenuButton configuration={configuration}/>
-                    	<Tabs tabActive={focusTabIndex}>
+                        <MenuButton configuration={configuration}/>
+                        <Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
-                                title="Back to query" onClick={this.switchView.bind(null, false)}>
+                                title="Back to query" onClick={this.switchView.bind(null, false, false)}>
+                                <div className="querybuilder-button-label">Back</div>
+                        </button>
+                        <button id="switch-view-clear-btn" className="fa fa-cog querybuilder-button"
+                                title="Start new query" onClick={this.switchView.bind(null, false, true)}>
+                                <div className="querybuilder-button-label">New Query</div>
                         </button>
                     </div>
                 );

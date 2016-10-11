@@ -36,6 +36,11 @@
     cursor:pointer;
 }
 
+#querybuilder .querybuilder-button-label {
+    font-size: 12px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 #querybuilder .querybuilder-button:hover{
 	color:white!important;
 }

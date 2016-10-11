@@ -1121,9 +1121,6 @@ define(function (require) {
                     return (
                         <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
-                            <button className="fa fa-trash-o querybuilder-button-small delete-result-button"
-                                    title="Delete result set"  onClick={this.queryResultDeleted.bind(null, resultsItem)}>
-                            </button>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
                             showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={425}
@@ -1171,11 +1168,16 @@ define(function (require) {
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
                                 title="Back to query" onClick={this.switchView.bind(null, false, false)}>
-                                <div className="querybuilder-button-label">Refine Query</div>
+                                <div className="querybuilder-button-label">Refine query</div>
                         </button>
                         <button id="switch-view-clear-btn" className="fa fa-cog querybuilder-button"
                                 title="Start new query" onClick={this.switchView.bind(null, false, true)}>
-                                <div className="querybuilder-button-label">New Query</div>
+                                <div className="querybuilder-button-label">New query</div>
+                        </button>
+                        <button id="delete-result-btn" className="fa fa-trash-o querybuilder-button"
+                                title="Delete results"
+                                onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex -1])}>
+                            <div className="querybuilder-button-label">Delete results</div>
                         </button>
                     </div>
                 );

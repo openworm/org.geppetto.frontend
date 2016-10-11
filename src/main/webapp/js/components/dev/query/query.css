@@ -88,7 +88,7 @@
 }
 
 #querybuilder .query-item-option {
-    width: 450px !important;
+    width: 550px !important;
     height: 40px !important;
     padding: 8px 12px !important;
     font-size: 22px !important;
@@ -181,7 +181,7 @@
     cursor: default;
     color:#fc401a;
     height: 50px;
-    width: 66px;
+    width: 50px;
     margin: 0px;
     background: none !important;
     font-size: 45px !important;
@@ -243,7 +243,7 @@
 #querybuilder .typeahead,
 #querybuilder .tt-query,
 #querybuilder .tt-hint {
-    width: 500px !important;
+    width: 530px !important;
     height: 40px !important;
     padding: 8px 12px !important;
     font-size: 22px !important;

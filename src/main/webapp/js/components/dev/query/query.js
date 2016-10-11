@@ -439,7 +439,6 @@ define(function (require) {
 
             return (
                 <div id={containerId} className="query-item">
-                    <div className="query-item-label"  title={this.props.item.term}>{this.props.item.term}</div>
                     <select className="query-item-option" onChange={onSelection} value={this.props.item.selection}>
                         {this.props.item.options.map(createItem)}
                     </select>
@@ -945,10 +944,8 @@ define(function (require) {
                                 queryLabel += ((i != 0) ? "/" : "")
                                     + that.props.model.items[i].term;
                                 verboseLabel += ((i != 0) ? "<span> / </span>" : "")
-                                    + "<span>" + that.props.model.items[i].term + "</span>: "
                                     + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
                                 verboseLabelPlain += ((i != 0) ? " / " : "")
-                                    + that.props.model.items[i].term + ": "
                                     + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
                             }
 
@@ -1019,8 +1016,11 @@ define(function (require) {
         addQueryItem: function(queryItemParam){
             this.clearErrorMessage();
 
+            // grab datasource configuration (assumption we only have one datasource)
+            var datasourceConfig = this.configuration.DataSources[Object.keys(this.configuration.DataSources)[0]];
+            var queryNameToken = datasourceConfig.queryNameToken;
+
             // retrieve variable from queryItem.id
-            var label = queryItemParam.term;
             var variable = GEPPETTO.ModelFactory.getTopLevelVariablesById([queryItemParam.id])[0];
             var term = variable.getName();
 
@@ -1037,9 +1037,10 @@ define(function (require) {
 
                 // fill out options from matching queries
                 for (var i = 0; i < matchingQueries.length; i++) {
+                    var regx = new RegExp('\\' + queryNameToken, "g");
                     queryItem.options.push({
                             id: matchingQueries[i].getId(),
-                            name: matchingQueries[i].getDescription(),
+                            name: matchingQueries[i].getDescription().replace(regx, term),
                             datasource: matchingQueries[i].getParent().getId(),
                             value: i,
                             queryObj: matchingQueries[i]
@@ -1060,7 +1061,7 @@ define(function (require) {
                 // add default selection
                 queryItem.selection = -1;
                 // add default option
-                queryItem.options.splice(0, 0, {name: 'Please select an option', value: -1});
+                queryItem.options.splice(0, 0, {name: 'Select query for ' + term, value: -1});
 
                 var callback = function(){
                     this.showBrentSpiner(false);

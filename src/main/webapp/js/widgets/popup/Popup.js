@@ -107,7 +107,7 @@ define(function (require) {
 		 */
 		setMessage: function (msg) {
 			$("#" + this.id).html(msg);
-			GEPPETTO.Console.log("Set new Message for " + this.id);
+			GEPPETTO.Console.debugLog("Set new Message for " + this.id);
 
 			if (this.customHandlers.length > 0) {
 				// msg has changed, set hooked attribute on handlers to false
@@ -117,7 +117,7 @@ define(function (require) {
 
 				// trigger routine that hooks up handlers
 				hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
-				GEPPETTO.Console.log("Hooked up custom handlers for " + this.id);
+				GEPPETTO.Console.debugLog("Hooked up custom handlers for " + this.id);
 			}
 
 			return this;
@@ -161,7 +161,7 @@ define(function (require) {
 		 */
 		
 		setData: function (anyInstance, filter) {
-			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance, filter]);
+			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance, filter], this.getId());
 
 			this.setMessage(this.getHTML(anyInstance, "", filter));
 			var changeIcon=function(chevron){
@@ -243,22 +243,23 @@ define(function (require) {
 				html += "<div id='" + id + "' class='collapse in popup-text'>" + anchorme.js(value.text, anchorOptions) + "</div>";
 			}
 			else if (type.getMetaType() == GEPPETTO.Resources.IMAGE_TYPE) {
-				var value = this.getVariable(anyInstance).getInitialValues()[0].value;
-				if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
-					//if it's an array we use slick to create a carousel
-					var elements = "";
-					for (var j = 0; j < value.elements.length; j++) { 
-						var image = value.elements[j].initialValue;
-						elements += "<div class='popup-slick-image'>"+image.name+"<a href='' instancepath='" + image.reference + "'><img  class='popup-image invert' src='" + image.data + "'/></a></div>";
+				if(this.getVariable(anyInstance).getInitialValues()[0] != undefined) {
+					var value = this.getVariable(anyInstance).getInitialValues()[0].value;
+					if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
+						//if it's an array we use slick to create a carousel
+						var elements = "";
+						for (var j = 0; j < value.elements.length; j++) {
+							var image = value.elements[j].initialValue;
+							elements += "<div class='popup-slick-image'>" + image.name + "<a href='' instancepath='" + image.reference + "'><img  class='popup-image invert' src='" + image.data + "'/></a></div>";
+						}
+						html += "<div id='" + id + "' class='slickdiv popup-slick collapse in' data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}' >" + elements + "</div>";
 					}
-					html += "<div id='" + id + "' class='slickdiv popup-slick collapse in' data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}' >" + elements + "</div>";
+					else if (value.eClass == GEPPETTO.Resources.IMAGE) {
+						//otherwise we just show an image
+						var image = value;
+						html += "<div id='" + id + "' class='popup-image collapse in'><a href='' instancepath='" + image.reference + "'><img  class='popup-image invert' src='" + image.data + "'/></a></div>";
+					}
 				}
-				else if (value.eClass == GEPPETTO.Resources.IMAGE) {
-					//otherwise we just show an image
-					var image = value;
-					html += "<div id='" + id + "' class='popup-image collapse in'><a href='' instancepath='" + image.reference + "'><img  class='popup-image invert' src='" + image.data + "'/></a></div>";
-				}
-
 			}
 			return html;
 		},

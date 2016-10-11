@@ -67,7 +67,7 @@ define(function (require) {
                 return this.widgets;
             },
 
-            addToHistory: function (label, method, arguments) {
+            addToHistory: function (label, method, arguments,id) {
                 var elementPresentInHistory = false;
                 for (var i = 0; i < this.history.length; i++) {
                     if (this.history[i].label == label && this.history[i].method == method) {
@@ -78,12 +78,15 @@ define(function (require) {
                     }
                 }
                 if (!elementPresentInHistory) {
-                    this.history.push({
+                    this.history.unshift({
                         "label": label,
                         "method": method,
                         "arguments": arguments,
                     });
                 }
+                
+                var widget = this.getWidgetById(id);
+                widget.updateNavigationHistoryBar();
             },
 
             /**
@@ -152,6 +155,17 @@ define(function (require) {
                 return id;
             },
 
+            getWidgetById : function(id){
+            	for (var i = 0; i< this.widgets.length; i++) {
+                    var widget = this.widgets[i];
+                    if(widget.getId()==id){
+                    	return widget;
+                    }
+                }
+            	
+            	return null;
+            },
+            
             /**
              * Get the comments of a given widget file through an Ajax call. This is used to extract the comments on the methods
              * and visualize them when using the help command.

@@ -59,7 +59,7 @@
 
 	<div id="SaveButton" class="row"></div>
 	<div id="HomeButton" class="row"></div>
-	<div id="DropDownButton" class="row"></div>
+	<div id="MenuButton" class="row"></div>
     <div id="sim-toolbar" class="row"></div>
     <div id="tutorial"></div>
     <div id="camera-controls"></div>
@@ -114,6 +114,9 @@
 </script>
 <script type="text/template" id="tplContextMenuItems">
     <li id="<%= this.cid %>">
+        <% if (icon != null || undefined) { %>
+    		<i class="<%= icon %>" id="<%= this.cid %>"></i>
+		<% } %>
         <%= label %>
     </li>
 </script>
@@ -145,7 +148,7 @@
     ga('send', 'pageview');
 </script>
 
-<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" id="contact" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
-<!-- end olark code -->
+
+
 </body>
 </html>

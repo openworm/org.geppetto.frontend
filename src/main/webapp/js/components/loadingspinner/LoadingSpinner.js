@@ -88,12 +88,12 @@ define(function(require) {
 			GEPPETTO.Spinner=this;
 			
 			//Loading spinner initialization
-			GEPPETTO.on('show_spinner', function(label) {
+			GEPPETTO.on(Events.Show_spinner, function(label) {
 				that.showSpinner(label);
 			});
 			
-			GEPPETTO.on('hide:spinner', function(label) {
-				that.hideSpinner();
+			GEPPETTO.on(Events.Hide_spinner, function(label) {
+				setTimeout(that.hideSpinner, 1);
 			});
 			
 		},

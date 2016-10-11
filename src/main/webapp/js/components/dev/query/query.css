@@ -1,5 +1,20 @@
 /*Classes*/
 
+#queryResultsButton {
+	float : left;
+    background-color: transparent;
+    margin-top: 20px;
+    padding-bottom: 0px;
+    padding-right: 0px;
+    outline: none;
+}
+
+.queryButtonMenu {
+	background-color: rgb(6, 6, 6);
+    font-size: 14px;
+    color: white;
+}
+
 #querybuilder .queryresults-button {
     height: 25px;
     width: 33px;
@@ -18,16 +33,58 @@
     color: #fd6808;
     font-size: 45px !important;
     border: 0 !important;
+    cursor:pointer;
+}
+
+#querybuilder .querybuilder-button:hover{
+	color:white!important;
+}
+
+#querybuilder .querybuilder-button-small {
+    height: 30px;
+    width: 40px;
+    margin: 0px;
+    background: none !important;
+    color: #fd6808;
+    font-size: 30px !important;
+    border: 0 !important;
+}
+
+#querybuilder .delete-result-button {
+    float: right;
+    margin-top: 12px;
+    margin-right : 5px;
+}
+#querybuilder .delete-result-button:hover {
+	color:white!important;
+}
+
+#querybuilder .result-verbose-label {
+    float: left;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+    margin-top : 12px;
+    margin-left : 5px;
+    text-align: left;
+}
+
+#querybuilder .result-verbose-label span {
+    color: #fd6808;
 }
 
 #querybuilder .query-item-label {
     font-weight: bold;
     font-size: 20px;
     text-align: center;
-    color: #fd6808;
+    color: #fc401a;
     float: left;
     margin-right: 25px;
-    width: 75px;
+    width: 80px;
+    height : 30px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 #querybuilder .query-item-option {
@@ -44,6 +101,20 @@
     float: left;
 }
 
+#querybuilder .query-result-option {
+    width: 100%;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    font-size: 22px !important;
+    line-height: 30px !important;
+    border: 2px solid #fd6808 !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    outline: none;
+    margin-bottom: 5px;
+}
+
 #querybuilder .query-item-button {
     height: 20px;
     width: 30px;
@@ -55,6 +126,9 @@
     float: right;
 }
 
+#querybuilder .query-item-button:hover {
+	color:white!important;
+}
 #querybuilder .query-item {
     margin-bottom: 25px;
 }
@@ -65,6 +139,10 @@
 
 #querybuilder .center-content{
     text-align: center;
+}
+
+#querybuilder .hide{
+    display: none;
 }
 
 /*IDs*/
@@ -94,13 +172,20 @@
     margin-right: auto;
     left: 0;
     right: 0;
-    width: 800px;
-    top: 20%;
+    width: 88%;
+    top: 10%;
 }
 
 #add-query-btn {
     float: left;
     cursor: default;
+    color:#fc401a;
+    height: 50px;
+    width: 66px;
+    margin: 0px;
+    background: none !important;
+    font-size: 45px !important;
+    border: 0 !important;
 }
 
 #query-typeahead {
@@ -111,24 +196,46 @@
 
 #add-new-query-container {
     height: 40px;
+    text-align: left;
 }
 
 #querybuilder-footer {
     clear: both;
-    position: absolute !important;
+    position: relative !important;
     margin-left: auto;
     margin-right: auto;
     margin-top: 25px;
+    text-align:center;
     left: 0;
     right: 0;
-    width: 80px;
 }
 
 #query-results-label {
     font-weight: bold;
     font-size: 15px;
+    width:200px;
     text-align: center;
     color: #fd6808;
+    margin: 0 auto;
+}
+
+#query-error-message {
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    color: #fd2821;
+}
+
+#brent-spiner {
+    position: relative;
+    left: 35%;
+    height: 50px;
+    width: 50px;
+    background: none !important;
+    color: #fd6808;
+    font-size: 55px !important;
+    border: 0 !important;
+    margin-top: 25px;
 }
 
 /*Search box*/
@@ -328,4 +435,40 @@
 #querybuilder .griddle button:hover {
     backround: transparent;
     color: #fc4b19;
+}
+
+#querybuilder .query-results-name-column {
+    width: 150px;
+}
+
+#querybuilder .query-results-controls-column {
+    width: 150px;
+    text-align: center !important;
+}
+
+#querybuilder .query-results-images-column {
+    width: 300px;
+    text-align: center !important;
+}
+
+#querybuilder .query-results-slick-image {
+    margin: 0 auto;
+    text-align: center;
+    color: white;
+}
+
+#querybuilder .query-results-image {
+    margin: 0 auto;
+    text-align: center;
+    color: white;
+    clear: both;
+}
+
+#querybuilder .query-results-slick {
+    clear: both;
+    margin-top: 0px;
+}
+
+#querybuilder .slick-slider {
+    margin-bottom: 0px !important;
 }

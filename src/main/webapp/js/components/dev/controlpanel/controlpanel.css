@@ -141,8 +141,12 @@
 	color: #fc4b19;
 }
 
-.img-column {
+#controlpanel .img-column {
 	width: 100px;
+}
+
+#controlpanel .controlpanel-controls-column {
+	text-align: center !important;
 }
 
 .thumbnail-img {

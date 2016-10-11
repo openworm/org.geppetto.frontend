@@ -134,7 +134,7 @@ define(function (require) {
     				GEPPETTO.MessageSocket.send("load_experiment", parameters);
                 }*/
                 
-	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+	            GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 				GEPPETTO.MessageSocket.send("load_experiment", parameters);
 

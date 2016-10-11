@@ -169,15 +169,15 @@ define(function (require) {
         	}
         	
         },
-        
+
+        componentWillUnmount: function() {
+            GEPPETTO.off(Events.Experiment_updated, this.refresh, this);
+        },
+
         componentDidMount: function () {
-        	var self = this;
-        	
             var row = "#simulatorRowId-" + this.props.experiment.getId();
             
-            GEPPETTO.on(Events.Experiment_updated, function () {
-                self.refresh();
-            });
+            GEPPETTO.on(Events.Experiment_updated, this.refresh, this);
             
             // Handle edits to editable fields
             $(row).parent().find("td[contenteditable='true']").keydown(function (e) {
@@ -378,7 +378,7 @@ define(function (require) {
             
             var login = GEPPETTO.UserController.isLoggedIn();
             if(login){
-                GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+                GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
             }else{
         		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, 
         				GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN);

@@ -287,6 +287,8 @@ define(function (require) {
         // ============================================================================
         GEPPETTO.Init = {
 
+        	initialised : false,
+        	
             /**
              *
              */
@@ -312,6 +314,8 @@ define(function (require) {
                 setupLights();
                 setupControls();
                 setupListeners();
+                this.initialised = true;
+                GEPPETTO.trigger(Events.Canvas_initialised);
                 return GEPPETTO.getVARS();
             },
 

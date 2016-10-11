@@ -18,10 +18,10 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/login?username=guest1&password=guest",function() {
-    this.waitForSelector('div#page', function() {
+    /*this.waitForSelector('div#page', function() {
         this.echo("I've waited for the splash screen to come up.");
         test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
-    }, null, 30000);
+    }, null, 30000);*/
   });
 
   casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/",function() {
@@ -192,8 +192,6 @@ function doConsoleTest(test) {
 		  this.click('a[href="#console"]', "Opening command console");
 
 		  this.waitUntilVisible('div#console', function() {
-			  //inject jquery
-			  casper.page.injectJs("../../vendor/jquery-1.9.1.min.js");
 			  test.assertVisible('div#console', "The console panel is correctly open.");
 			  //type into console command (getTimeSeries()) half finished for state variable 
 			  casper.sendKeys('textarea#commandInputArea', "hhcell.hhpop[0].v.getTi", { keepFocus: true });	      	
@@ -210,6 +208,25 @@ function doConsoleTest(test) {
 				  casper.sendKeys('textarea#commandInputArea', "", { reset: true} );
 			  });
 		  }, null, 5000);
+	  });
+	  
+	  casper.then(function() {
+		  //type into console command (isSelected()) half finished for object, if
+		  //updated capability worked then isSelected() method from object VisualCapability
+		  //will be part of object hhcell
+		  casper.sendKeys('textarea#commandInputArea', "hhcell.isS", { keepFocus: true });	      	
+		  casper.wait(200, function() {
+			  var nameCount = casper.evaluate(function() {
+				  //retrieve console input via jquery
+				  var output =  $('textarea#commandInputArea').val();
+				  return output;
+			  });
+			  casper.echo(nameCount);
+			  //console should return command fully finished after autocomplete kicks in
+			  test.assertEquals(nameCount,"hhcell.isSelected()", "Autocomplete for updated capability present.");
+			  
+			  casper.sendKeys('textarea#commandInputArea', "", { reset: true} );
+		  });
 	  });
 	}
 

@@ -1,4 +1,5 @@
 define(function (require) {
+
     var Pixi = require('widgets/stackViewer/vendor/pixi.min');
     var Browser = require('widgets/stackViewer/vendor/browser.min');
     var React = require('react');
@@ -85,7 +86,7 @@ define(function (require) {
 
         },
 
-        componentDidUpdate: function(){
+        componentDidUpdate: function () {
             this.renderer.resize(this.props.width, this.props.height);
         },
 
@@ -706,7 +707,7 @@ define(function (require) {
                 this.onWheelEvent(e);
             }.bind(this));
 
-            if (this.props.data && this.props.data!=null && this.props.data.instances && this.props.data.instances!=null) {
+            if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 var instance;
                 var data;
                 var files = [];
@@ -721,66 +722,64 @@ define(function (require) {
                             files.push(data.fileLocation);
                             labels.push(instance.getName());
                             colors.push(instance.getColor());
-                        catch
-                            (ignore)
-                            {
-                                console.log('Error handling ' + instance.data);
-                            }
+                        }
+                        catch (ignore) {
+                            console.log('Error handling ' + instance.data);
                         }
                     }
-                    if (server != this.state.serverUrl && server != null) {
-                        this.state.serverUrl = server;
-                    }
-                    if (files != this.state.stack && files != null) {
-                        this.state.stack = files;
-                    }
-                    if (labels != this.state.label && labels != null) {
-                        this.state.label = labels;
-                    }
-                    if (colors != this.state.color && colors != null) {
-                        this.state.color = colors;
-                    }
+                }
+                if (server != this.state.serverUrl && server != null) {
+                    this.state.serverUrl = server;
+                }
+                if (files != this.state.stack && files != null) {
+                    this.state.stack = files;
+                }
+                if (labels != this.state.label && labels != null) {
+                    this.state.label = labels;
+                }
+                if (colors != this.state.color && colors != null) {
+                    this.state.color = colors;
                 }
             }
         },
 
         componentDidUpdate: function () {
-            if (this.props.data && this.props.data!=null && this.props.data.instances && this.props.data.instances!=null){
+            if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 var instance;
                 var data;
                 var files = [];
                 var colors = [];
                 var labels = [];
                 var server = this.state.serverUrl;
-                for (instance in this.props.data.instances){
-                    if (instance.data && instance.data != null){
-                        try{
+                for (instance in this.props.data.instances) {
+                    if (instance.data && instance.data != null) {
+                        try {
                             data = JSON.parse(instance.data);
                             server = data.serverUrl;
                             files.push(data.fileLocation);
                             labels.push(instance.getName());
                             colors.push(instance.getColor());
-                        catch (ignore)
-                            {
-                                console.log('Error handling ' + instance.data);
-                            }
+                        }
+                        catch (ignore) {
+                            console.log('Error handling ' + instance.data);
                         }
                     }
-                    if (server != this.state.serverUrl && server != null) {
-                        this.state.serverUrl = server;
-                    }
-                    if (files != this.state.stack && files != null){
-                        this.state.stack = files;
-                    }
-                    if (labels != this.state.label && labels != null){
-                        this.state.label = labels;
-                    }
-                    if (colors != this.state.color && colors != null){
-                        this.state.color = colors;
-                    }
+                }
+                if (server != this.state.serverUrl && server != null) {
+                    this.state.serverUrl = server;
+                }
+                if (files != this.state.stack && files != null) {
+                    this.state.stack = files;
+                }
+                if (labels != this.state.label && labels != null) {
+                    this.state.label = labels;
+                }
+                if (colors != this.state.color && colors != null) {
+                    this.state.color = colors;
                 }
             }
         },
+
         /**
          * Event handler for clicking zoom in. Increments the zoom level
          **/
@@ -794,7 +793,9 @@ define(function (require) {
             } else {
                 this.setState({zoomLevel: 10.0, text: 'Max zoom! (X10)'});
             }
+
         },
+
         /**
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
@@ -825,7 +826,8 @@ define(function (require) {
                 newdst = this.state.maxDst;
                 this.setState({dst: newdst, text: 'Last slice!'});
             }
-        },
+        }
+        ,
         /**
          * Event handler for clicking step out. Decrements the dst level
          **/
@@ -840,18 +842,21 @@ define(function (require) {
                 newdst = this.state.maxDst;
                 this.setState({dst: newdst, text: 'Last slice!'});
             }
-        },
+        }
+        ,
 
         /**
          * Event handler for clicking Home.
          **/
         onHome: function () {
             this.setState({dst: 0, stackX: 0, stackY: 0, text: 'View reset', zoomLevel: 1.0});
-        },
+        }
+        ,
 
         onExtentChange: function (data) {
             this.setState(data);
-        },
+        }
+        ,
 
         addWheelListener: function (elem, callback, useCapture) {
             this._addWheelListener(elem, support, callback, useCapture);
@@ -860,7 +865,8 @@ define(function (require) {
             if (support == "DOMMouseScroll") {
                 this._addWheelListener(elem, "MozMousePixelScroll", callback, useCapture);
             }
-        },
+        }
+        ,
 
         _addWheelListener: function (elem, eventName, callback, useCapture) {
             elem[this._addEventListener](prefix + eventName, support == "wheel" ? callback : function (originalEvent) {
@@ -895,7 +901,8 @@ define(function (require) {
                 return callback(event);
 
             }, useCapture || false);
-        },
+        }
+        ,
 
         render: function () {
             return (
@@ -919,7 +926,7 @@ define(function (require) {
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
                             label={this.state.label} height={this.props.data.height}
-                            width={this.props.data.width} />
+                            width={this.props.data.width}/>
                 </div>
             );
         }

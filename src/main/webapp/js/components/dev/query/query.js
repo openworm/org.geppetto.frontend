@@ -1171,7 +1171,7 @@ define(function (require) {
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
                                 title="Back to query" onClick={this.switchView.bind(null, false, false)}>
-                                <div className="querybuilder-button-label">Back</div>
+                                <div className="querybuilder-button-label">Refine Query</div>
                         </button>
                         <button id="switch-view-clear-btn" className="fa fa-cog querybuilder-button"
                                 title="Start new query" onClick={this.switchView.bind(null, false, true)}>

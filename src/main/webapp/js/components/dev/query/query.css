@@ -231,7 +231,7 @@
 
 #brent-spiner {
     position: relative;
-    left: 35%;
+    left: 45%;
     background: none !important;
     color: #fd6808;
     font-size: 55px !important;
@@ -280,7 +280,7 @@
 }
 
 #querybuilder .tt-menu {
-    width: 500px;
+    width: 550px;
     margin: 12px 0;
     padding: 8px 0;
     background-color: #fff;

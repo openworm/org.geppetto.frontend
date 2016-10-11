@@ -441,6 +441,10 @@
     width: 150px;
 }
 
+#querybuilder .query-results-description-column:first-letter {
+    text-transform: capitalize;
+}
+
 #querybuilder .query-results-controls-column {
     width: 150px;
     text-align: center !important;

@@ -48,7 +48,7 @@ define(function (require) {
         options: null,
         defHeight: 400,
         defWidth: 600,
-        data: { height: this.defHeight, width: this.defWidth },
+        data: { height: this.defHeight, width: this.defWidth, instances: [] },
 
         /**
          * Initialises button bar

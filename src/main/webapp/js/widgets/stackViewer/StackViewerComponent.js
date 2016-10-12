@@ -10,8 +10,10 @@ define(function (require) {
                 buffer: {},
                 images: {},
                 text: this.props.statusText,
+                serverUrl: this.props.serverUrl,
                 color: this.props.color,
                 stack: this.props.stack,
+                label: this.props.label,
                 minDst: -100,
                 maxDst: 100,
                 tileX: 1025,
@@ -88,10 +90,19 @@ define(function (require) {
 
         componentDidUpdate: function () {
             this.renderer.resize(this.props.width, this.props.height);
+
+        },
+
+        componentWillUnmount: function () {
+            this.stage.destroy( true );
+            this.stage = null;
+            this.refs.stackCanvas.removeChild(this.renderer.view);
+            this.renderer.destroy( true );
+            this.renderer = null;
         },
 
         callDstRange: function () {
-            var image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
             this.state.buffer[-1].text = 'Buffering stack...';
             //get distance range;
             $.ajax({
@@ -114,7 +125,7 @@ define(function (require) {
         },
 
         callTileSize: function () {
-            var image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
             //get tile size;
             $.ajax({
                 url: image + '&obj=Tile-size',
@@ -138,7 +149,7 @@ define(function (require) {
         },
 
         callImageSize: function () {
-            var image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
             //get image size;
             $.ajax({
                 url: image + '&obj=Max-size',
@@ -166,7 +177,7 @@ define(function (require) {
             var i, j, result;
             var that = this;
             for (i in this.state.stack) {
-                var image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
                 //get image size;
                 $.ajax({
                     url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
@@ -203,7 +214,7 @@ define(function (require) {
             var i, j, result;
             var that = this;
             for (i in this.state.stack) {
-                var image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
                 //get image size;
                 $.ajax({
                     url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
@@ -247,7 +258,7 @@ define(function (require) {
             };
             for (j = 0; j < this.state.numTiles; j++) {
                 for (i in this.state.stack) {
-                    image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
+                    image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                     if (!PIXI.loader.resources[image]) {
                         // console.log('buffering ' + this.state.stack[i].toString() + '...');
                         imageLoader.add(image, image, loaderOptions);
@@ -261,7 +272,7 @@ define(function (require) {
             if (this.state.numTiles < 10) {
                 for (j in this.state.visibleTiles) {
                     for (i in this.state.stack) {
-                        image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0.0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
+                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0.0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
                         if (!PIXI.loader.resources[image]) {
                             // console.log('buffering ' + this.state.stack[i].toString() + '...');
                             imageLoader.add(image, image, loaderOptions);
@@ -273,12 +284,12 @@ define(function (require) {
                     }
                     for (dst = 0.1; -dst > min || dst < max; dst += 0.1) {
                         for (i in this.state.stack) {
-                            image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
+                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
                             if (dst < max && !PIXI.loader.resources[image]) {
                                 imageLoader.add(image, image, loaderOptions);
                                 buffMax -= 1;
                             }
-                            image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(-dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
+                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(-dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
                             if (-dst > min && !PIXI.loader.resources[image]) {
                                 imageLoader.add(image, image, loaderOptions);
                                 buffMax -= 1;
@@ -293,7 +304,7 @@ define(function (require) {
                 console.log('Buffering neighbouring layers (' + this.state.numTiles.toString() + ') tiles...');
                 for (j = 0; j < this.state.numTiles; j++) {
                     for (i in this.state.stack) {
-                        image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst - 0.1).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
+                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst - 0.1).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                         if (!PIXI.loader.resources[image]) {
                             // console.log('buffering ' + this.state.stack[i].toString() + '...');
                             imageLoader.add(image, image, loaderOptions);
@@ -302,7 +313,7 @@ define(function (require) {
                         if (buffMax < 1) {
                             break;
                         }
-                        image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst + 0.1).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
+                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst + 0.1).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                         if (!PIXI.loader.resources[image]) {
                             // console.log('buffering ' + this.state.stack[i].toString() + '...');
                             imageLoader.add(image, image, loaderOptions);
@@ -383,7 +394,7 @@ define(function (require) {
                         d = i.toString() + ',' + t.toString();
                         if (!this.state.images[d]) {
                             // console.log('Adding ' + this.state.stack[i].toString());
-                            image = this.props.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + t.toString();
+                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + t.toString();
                             // console.log(image);
                             this.state.images[d] = PIXI.Sprite.fromImage(image);
                             this.state.images[d].anchor.x = 0;
@@ -461,6 +472,12 @@ define(function (require) {
          * When we get new props, run the appropriate imperative functions
          **/
         componentWillReceiveProps: function (nextProps) {
+            if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
+                this.state.stack = nextProps.stack;
+                this.state.color = nextProps.color;
+                this.state.serverUrl = nextProps.serverUrl;
+                this.updateImages(nextProps);
+            }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);
             }
@@ -479,6 +496,7 @@ define(function (require) {
                 this.stack.position.x = nextProps.stackX;
                 this.stack.position.y = nextProps.stackX;
             }
+
         }
         ,
         /**
@@ -653,9 +671,9 @@ define(function (require) {
                 scl: 1.0,
                 minDst: -100,
                 maxDst: 100,
-                color: [0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF],
-                stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz', '/disk/data/VFB/IMAGE_DATA/VFB/i/0003/0624/volume.wlz', '/disk/data/VFB/IMAGE_DATA/VFB/i/0000/0001/volume.wlz', '/disk/data/VFB/IMAGE_DATA/VFB/i/0000/0002/volume.wlz'],
-                label: ['JFRC2 Template', 'medulla', 'VFB_00000001', 'VFB_00000002']
+                color: [0xFFFFFF],
+                stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz'],
+                label: ['Adult Brain']
             };
         },
 
@@ -780,6 +798,9 @@ define(function (require) {
             }
         },
 
+        componentWillUnmount: function () {
+            React.unmountComponentAtNode(document.getElementById('displayArea'));
+        },
         /**
          * Event handler for clicking zoom in. Increments the zoom level
          **/

@@ -478,3 +478,7 @@
 #querybuilder .slick-slider {
     margin-bottom: 0px !important;
 }
+
+#querybuilder .standard-row {
+    height: 130px;
+}

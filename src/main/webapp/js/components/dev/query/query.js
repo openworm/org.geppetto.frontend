@@ -845,11 +845,16 @@ define(function (require) {
             }
         },
 
-        queryOptionSelected: function(item, value){
+        queryOptionSelected: function(item, value, cb){
             this.clearErrorMessage();
 
             var callback = function(){
                 this.showBrentSpiner(false);
+
+                // cascading callback from parameters
+                if(typeof cb === "function"){
+                    cb();
+                }
             };
 
             // hide footer and show spinner
@@ -1016,8 +1021,9 @@ define(function (require) {
          * Add a query item
          *
          * @param queryItem - Object with term and variable id properties
+         * @param cb - optional callback function
          */
-        addQueryItem: function(queryItemParam){
+        addQueryItem: function(queryItemParam, cb){
             this.clearErrorMessage();
 
             // grab datasource configuration (assumption we only have one datasource)
@@ -1086,6 +1092,21 @@ define(function (require) {
 
                 // add query item to model
                 this.props.model.addItem(queryItem, callback.bind(this));
+
+                // check if we have a queryObj parameter and set it as the selected item
+                if(queryItemParam.queryObj != undefined){
+                    // figure out which option it matches to and trigger selection
+                    var val = -1;
+                    for(var h=0; h<queryItem.options.length; h++){
+                        if(queryItem.options[h].value != -1 && queryItem.options[h].id == queryItemParam.queryObj.getId()){
+                            val = queryItem.options[h].value;
+                        }
+                    }
+
+                    if(val != -1){
+                        this.queryOptionSelected(queryItem, val, cb);
+                    }
+                }
             } else {
                 // notify no queries available for the selected term
                 this.setErrorMessage("No queries available for the selected term.");

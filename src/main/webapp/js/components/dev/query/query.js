@@ -1028,8 +1028,18 @@ define(function (require) {
             var variable = GEPPETTO.ModelFactory.getTopLevelVariablesById([queryItemParam.id])[0];
             var term = variable.getName();
 
+            // do we have any query items already? If so grab result type and match on that too
+            var resultType = undefined;
+            for(var h=0; h<this.props.model.items.length > 0; h++){
+                var sel = this.props.model.items[h].selection;
+                if(sel != -1 && this.props.model.items[h].options[sel].value != -1){
+                    // grab the first for which we have a selection if any
+                    resultType = this.props.model.items[h].options[sel].queryObj.getResultType();
+                }
+            }
+
             // retrieve matching queries for variable type
-            var matchingQueries = GEPPETTO.ModelFactory.getMatchingQueries(variable.getType());
+            var matchingQueries = GEPPETTO.ModelFactory.getMatchingQueries(variable.getType(), resultType);
 
             if(matchingQueries.length > 0) {
                 // build item in model-friendly format

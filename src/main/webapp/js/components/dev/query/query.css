@@ -169,6 +169,7 @@
     right: 0;
     width: 600px;
     top: 30%;
+    padding-top: 20px;
 }
 
 #query-results-container {

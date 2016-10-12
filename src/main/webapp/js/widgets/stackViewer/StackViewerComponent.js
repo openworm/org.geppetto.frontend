@@ -594,19 +594,21 @@ define(function (require) {
         ,
 
         onDragEnd: function () {
-            // console.log('drag stop');
-            this.stack.alpha = 1;
+            if (this.stack.data !== null) {
+                // console.log('drag stop');
+                this.stack.alpha = 1;
 
-            this.stack.dragging = false;
-            var startPosition = this.stack.data.getLocalPosition(this.stack);
-            var newPosX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
-            var newPosY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
-            if (newPosX == this.state.posX && newPosY == this.state.posY) {
-                // console.log([newPosX, newPosY]);
-                this.callObjects();
+                this.stack.dragging = false;
+                var startPosition = this.stack.data.getLocalPosition(this.stack);
+                var newPosX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
+                var newPosY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
+                if (newPosX == this.state.posX && newPosY == this.state.posY) {
+                    // console.log([newPosX, newPosY]);
+                    this.callObjects();
+                }
+                // set the interaction data to null
+                this.stack.data = null;
             }
-            // set the interaction data to null
-            this.stack.data = null;
         }
         ,
 

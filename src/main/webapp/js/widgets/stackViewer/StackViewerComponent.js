@@ -90,7 +90,7 @@ define(function (require) {
 
         componentDidUpdate: function () {
             this.renderer.resize(this.props.width, this.props.height);
-
+            this.checkStack();
         },
 
         componentWillUnmount: function () {

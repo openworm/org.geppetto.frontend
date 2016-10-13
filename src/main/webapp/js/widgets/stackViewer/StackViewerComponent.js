@@ -89,6 +89,7 @@ define(function (require) {
         },
 
         componentDidUpdate: function () {
+            console.log('Canvas update');
             this.renderer.resize(this.props.width, this.props.height);
             this.checkStack();
         },
@@ -472,6 +473,7 @@ define(function (require) {
          * When we get new props, run the appropriate imperative functions
          **/
         componentWillReceiveProps: function (nextProps) {
+            console.log('update props ' + nextProps);
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
                 this.state.stack = nextProps.stack;
                 this.state.color = nextProps.color;

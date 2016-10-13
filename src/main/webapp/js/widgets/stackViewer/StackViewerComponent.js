@@ -459,9 +459,9 @@ define(function (require) {
                 };
                 this.state.buffer[-1] = new PIXI.Text(this.state.text, style);
                 this.state.buffer[-1].x = -this.stage.position.x;
-                this.state.buffer[-1].y = -this.stage.position.y;
+                this.state.buffer[-1].y = -this.stage.position.y+;
                 this.state.buffer[-1].anchor.x = 0;
-                this.state.buffer[-1].anchor.y = 0;
+                this.state.buffer[-1].anchor.y = 100;
                 this.state.buffer[-1].zOrder = 1000;
                 this.stage.addChild(this.state.buffer[-1]);
             } else {
@@ -766,6 +766,8 @@ define(function (require) {
         },
 
         componentDidUpdate: function () {
+            console.log('updating stack viewer component');
+            console.log(this.props.data);
             if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 var instance;
                 var data;
@@ -788,16 +790,20 @@ define(function (require) {
                     }
                 }
                 if (server != this.state.serverUrl && server != null) {
-                    this.state.serverUrl = server;
+                    this.setState({serverURL: server});
+                    console.log('Changing IIP server to ' + server);
                 }
                 if (files != this.state.stack && files != null) {
-                    this.state.stack = files;
+                    this.setState({stack: files});
+                    console.log('setting stack to ' + files);
                 }
                 if (labels != this.state.label && labels != null) {
-                    this.state.label = labels;
+                    this.setState({label: labels});
+                    console.log('updating labels to ' + labels);
                 }
                 if (colors != this.state.color && colors != null) {
-                    this.state.color = colors;
+                    this.setState({color: colors});
+                    console.log('updating colours to ' + colors);
                 }
             }
         },

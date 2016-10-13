@@ -2,7 +2,7 @@ define(function (require) {
 
     var Pixi = require('widgets/stackViewer/vendor/pixi.min');
     var Browser = require('widgets/stackViewer/vendor/browser.min');
-    var React = require('react');
+    var React = require('widgets/stackViewer/vendor/react.min');
 
     var Canvas = React.createClass({
         getInitialState: function () {

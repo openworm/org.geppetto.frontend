@@ -39,8 +39,8 @@ define(function (require) {
 
     var Widget = require('widgets/Widget');
     var $ = require('jquery');
-    var React = require('widgets/stackViewer/vendor/react.min');
-    var ReactDOM = require('widgets/stackViewer/vendor/react-dom.min');
+    var React = require('jsx!widgets/stackViewer/vendor/react.min');
+    var ReactDOM = require('jsx!widgets/stackViewer/vendor/react-dom.min');
     var StackViewerComponent = require('jsx!widgets/stackViewer/StackViewerComponent');
 
     return Widget.View.extend({

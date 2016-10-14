@@ -124,10 +124,10 @@ define(function (require) {
             this.data.height -= 40;
         },
 
-        destroy: function () {
-            ReactDOM.unmountComponentAtNode(document.getElementById('stack-container' + this.id));
-            Widget.View.prototype.destroy.call(this);
-        },
+        // destroy: function () {
+        //     ReactDOM.unmountComponentAtNode(document.getElementById('stack-container' + this.id));
+        //     Widget.View.prototype.destroy.call(this);
+        // },
     });
 });
 

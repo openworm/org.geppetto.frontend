@@ -1,7 +1,7 @@
 define(function (require) {
 
-    var Pixi = require('widgets/stackViewer/vendor/pixi.min');
-    var Browser = require('widgets/stackViewer/vendor/browser.min');
+    require('widgets/stackViewer/vendor/pixi.min');
+    require('widgets/stackViewer/vendor/browser.min');
     var React = require('react');
 
     var Canvas = React.createClass({
@@ -95,10 +95,10 @@ define(function (require) {
         },
 
         componentWillUnmount: function () {
-            this.stage.destroy( true );
+            this.stage.destroy(true);
             this.stage = null;
             this.refs.stackCanvas.removeChild(this.renderer.view);
-            this.renderer.destroy( true );
+            this.renderer.destroy(true);
             this.renderer = null;
         },
 
@@ -499,8 +499,7 @@ define(function (require) {
                 this.stack.position.y = nextProps.stackX;
             }
 
-        }
-        ,
+        },
         /**
          * Update the stage "zoom" level by setting the scale
          **/
@@ -509,8 +508,7 @@ define(function (require) {
             this.disp.scale.y = props.zoomLevel;
             // update slice view
             this.checkStack();
-        }
-        ,
+        },
 
         /**
          * Update the display text
@@ -518,13 +516,11 @@ define(function (require) {
         updateStatusText: function (props) {
             this.state.buffer[-1].text = props.statusText;
             this.setState({text: props.statusText});
-        }
-        ,
+        },
 
         setStatusText: function (text) {
             this.setState({text: text});
-        }
-        ,
+        },
 
         /**
          * Update the stage Image files when any change.
@@ -561,8 +557,7 @@ define(function (require) {
                 }
             }
             PIXI.loader.load();
-        }
-        ,
+        },
 
         /**
          * Animation loop for updating Pixi Canvas
@@ -571,8 +566,7 @@ define(function (require) {
             // render the stage container
             this.renderer.render(this.stage);
             this.frame = requestAnimationFrame(this.animate);
-        }
-        ,
+        },
 
         onDragStart: function (event) {
             // store a reference to the data
@@ -587,13 +581,12 @@ define(function (require) {
                 x: (startPosition.x - this.stack.position.x),
                 y: (startPosition.y - this.stack.position.y)
             };
-            var startPosition = this.stack.data.getLocalPosition(this.stack);
+            startPosition = this.stack.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
             this.state.posY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
             // console.log([this.state.posX,this.state.posY]);
-        }
-        ,
+        },
 
         onDragEnd: function () {
             if (this.stack.data !== null) {
@@ -611,8 +604,7 @@ define(function (require) {
                 // set the interaction data to null
                 this.stack.data = null;
             }
-        }
-        ,
+        },
 
         onHoverEvent: function (event) {
             if (!this.state.loadingLabels) {
@@ -627,8 +619,7 @@ define(function (require) {
                     this.listObjects();
                 }
             }
-        }
-        ,
+        },
 
         onDragMove: function (event) {
             if (this.stack.dragging) {
@@ -643,8 +634,7 @@ define(function (require) {
             } else {
                 this.onHoverEvent(event);
             }
-        }
-        ,
+        },
 
         /**
          * Render our container that will store our PixiJS game canvas. Store the ref
@@ -713,21 +703,21 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-            // detect event model
-            if (window.addEventListener) {
-                this._addEventListener = "addEventListener";
-            } else {
-                this._addEventListener = "attachEvent";
-                prefix = "on";
-            }
-
-            // detect available wheel event
-            support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
-                document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
-                    "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
-            this.addWheelListener($('#displayArea')[0], function (e) {
-                this.onWheelEvent(e);
-            }.bind(this));
+            // // detect event model
+            // if (window.addEventListener) {
+            //     this._addEventListener = "addEventListener";
+            // } else {
+            //     this._addEventListener = "attachEvent";
+            //     prefix = "on";
+            // }
+            //
+            // // detect available wheel event
+            // support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+            //     document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+            //         "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+            // this.addWheelListener($('#displayArea')[0], function (e) {
+            //     this.onWheelEvent(e);
+            // }.bind(this));
 
             if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 var instance;
@@ -857,8 +847,7 @@ define(function (require) {
                 newdst = this.state.maxDst;
                 this.setState({dst: newdst, text: 'Last slice!'});
             }
-        }
-        ,
+        },
         /**
          * Event handler for clicking step out. Decrements the dst level
          **/
@@ -873,21 +862,18 @@ define(function (require) {
                 newdst = this.state.maxDst;
                 this.setState({dst: newdst, text: 'Last slice!'});
             }
-        }
-        ,
+        },
 
         /**
          * Event handler for clicking Home.
          **/
         onHome: function () {
             this.setState({dst: 0, stackX: 0, stackY: 0, text: 'View reset', zoomLevel: 1.0});
-        }
-        ,
+        },
 
         onExtentChange: function (data) {
             this.setState(data);
-        }
-        ,
+        },
 
         addWheelListener: function (elem, callback, useCapture) {
             this._addWheelListener(elem, support, callback, useCapture);
@@ -896,8 +882,7 @@ define(function (require) {
             if (support == "DOMMouseScroll") {
                 this._addWheelListener(elem, "MozMousePixelScroll", callback, useCapture);
             }
-        }
-        ,
+        },
 
         _addWheelListener: function (elem, eventName, callback, useCapture) {
             elem[this._addEventListener](prefix + eventName, support == "wheel" ? callback : function (originalEvent) {
@@ -932,8 +917,7 @@ define(function (require) {
                 return callback(event);
 
             }, useCapture || false);
-        }
-        ,
+        },
 
         render: function () {
             return (

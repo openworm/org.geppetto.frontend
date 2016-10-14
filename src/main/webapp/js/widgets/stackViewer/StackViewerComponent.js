@@ -2,7 +2,7 @@ define(function (require) {
 
     var Pixi = require('widgets/stackViewer/vendor/pixi.min');
     var Browser = require('widgets/stackViewer/vendor/browser.min');
-    //var React = require('jsx!widgets/stackViewer/vendor/react.min');
+    var React = require('react');
 
     var Canvas = React.createClass({
         getInitialState: function () {
@@ -459,7 +459,7 @@ define(function (require) {
                 };
                 this.state.buffer[-1] = new PIXI.Text(this.state.text, style);
                 this.state.buffer[-1].x = -this.stage.position.x;
-                this.state.buffer[-1].y = -this.stage.position.y+;
+                this.state.buffer[-1].y = -this.stage.position.y;
                 this.state.buffer[-1].anchor.x = 0;
                 this.state.buffer[-1].anchor.y = 100;
                 this.state.buffer[-1].zOrder = 1000;

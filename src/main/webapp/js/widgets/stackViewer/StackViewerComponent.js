@@ -91,7 +91,7 @@ define(function (require) {
         componentDidUpdate: function () {
             console.log('Canvas update');
             this.renderer.resize(this.props.width, this.props.height);
-            this.checkStack();
+
         },
 
         componentWillUnmount: function () {

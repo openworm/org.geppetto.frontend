@@ -470,7 +470,9 @@ define(function (require) {
             },
 
             /**
-             * makes the widget draggable or not
+             * Makes the widget draggable or not
+             *
+             * @param draggable
              */
             setDraggable: function (draggable) {
                 if (draggable) {
@@ -480,6 +482,19 @@ define(function (require) {
                 } else {
                     $("#" + this.id).parent().draggable({disabled: true});
                     this.setClass('noStyleDisableDrag');
+                }
+            },
+
+            /**
+             * Set background as transparent
+             *
+             * @param isTransparent
+             */
+            setTrasparentBackground: function(isTransparent) {
+                if(isTransparent){
+                    $("#" + this.id).parent().addClass('transparent-back');
+                } else {
+                    $("#" + this.id).parent().removeClass('transparent-back');
                 }
             },
 

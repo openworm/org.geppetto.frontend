@@ -2528,18 +2528,27 @@ define(function (require) {
             },
 
             /**
-             * Get matching queries given a type
+             * Get matching queries given a type and optional results type
              *
              * @param type
+             * @param resultType
              */
-            getMatchingQueries : function(type){
+            getMatchingQueries : function(type, resultType){
                 var topLevelQueries = window.Model.getQueries();
                 var matchingQueries = [];
 
                 // iterate top level queries
                 for(var k=0; k<topLevelQueries.length; k++){
+                    // check matching criteria first
                     if(topLevelQueries[k].matchesCriteria(type)){
-                        matchingQueries.push(topLevelQueries[k]);
+                        // if resultType is defined then match on that too
+                        if(resultType != undefined){
+                            if(resultType == topLevelQueries[k].getResultType()){
+                                matchingQueries.push(topLevelQueries[k]);
+                            }
+                        } else {
+                            matchingQueries.push(topLevelQueries[k]);
+                        }
                     }
                 }
 

@@ -58,7 +58,7 @@ define(function (require) {
 				popupDOM.find("a[instancepath]").each(function () {
 					var fun = handlers[i].funct;
 					var ev = handlers[i].event;
-					var domainType = handlers[i].domain;
+					var metaType = handlers[i].meta;
 					var path = $(this).attr("instancepath").replace(/\$/g, "");
 					var node;
 
@@ -70,7 +70,7 @@ define(function (require) {
 					}
 
 					// hookup IF domain type is undefined OR it's defined and it matches the node type
-					if (domainType === undefined || (domainType !== undefined && node !== undefined && node.domainType === domainType)) {
+					if (metaType === undefined || (metaType !== undefined && node !== undefined && node.getMetaType() === metaType)) {
 						// hookup custom handler
 						$(this).on(ev, function () {
 							// invoke custom handler with instancepath as arg
@@ -86,6 +86,8 @@ define(function (require) {
 	};
 
 	return Widget.View.extend({
+
+		data: null,
 
 		/**
 		 * Initialize the popup widget
@@ -162,6 +164,7 @@ define(function (require) {
 		
 		setData: function (anyInstance, filter) {
 			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance, filter], this.getId());
+			this.data = anyInstance;
 
 			this.setMessage(this.getHTML(anyInstance, "", filter));
 			var changeIcon=function(chevron){
@@ -286,8 +289,8 @@ define(function (require) {
 		 * @param {fucntion} funct - Handler function
 		 * @param {String} eventType - event that triggers the custom handler
 		 */
-		addCustomNodeHandler: function (funct, eventType, domainType) {
-			this.customHandlers.push({funct: funct, event: eventType, domain: domainType, hooked: false});
+		addCustomNodeHandler: function (funct, eventType, metaType) {
+			this.customHandlers.push({funct: funct, event: eventType, meta: metaType, hooked: false});
 
 			// trigger routine that hooks up handlers
 			hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);

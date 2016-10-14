@@ -190,6 +190,28 @@ define(function (require) {
         }
     };
 
+    GEPPETTO.QueryLinkComponent = React.createClass({
+        render: function () {
+
+            var displayText = this.props.data;
+            var path = this.props.rowData.id;
+            var that = this;
+
+            var action = function (e) {
+                e.preventDefault();
+                var actionStr = that.props.metadata.actions;
+                actionStr = actionStr.replace(/\$entity\$/gi, path);
+                GEPPETTO.Console.executeCommand(actionStr);
+            };
+
+            return (
+                <div>
+                    <a href='#' onClick={action}>{displayText}</a>
+                </div>
+            )
+        }
+    });
+
     GEPPETTO.SlideshowImageComponent = React.createClass({
         isCarousel: false,
 

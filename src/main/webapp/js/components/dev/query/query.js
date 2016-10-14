@@ -1128,6 +1128,72 @@ define(function (require) {
             this.props.model.resultSelectionChanged(val);
         },
 
+        downloadQueryResults: function (resultsItem) {
+            var convertArrayOfObjectsToCSV = function (args) {
+                var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+                data = args.data || null;
+                if (data == null || !data.length) {
+                    return null;
+                }
+
+                columnDelimiter = args.columnDelimiter || ',';
+                lineDelimiter = args.lineDelimiter || '\n';
+
+                keys = Object.keys(data[0]);
+
+                result = '';
+                result += keys.join(columnDelimiter);
+                result += lineDelimiter;
+
+                data.forEach(function (item) {
+                    ctr = 0;
+                    keys.forEach(function (key) {
+                        if (ctr > 0) result += columnDelimiter;
+
+                        result += item[key];
+                        ctr++;
+                    });
+                    result += lineDelimiter;
+                });
+
+                return result;
+            };
+
+            var downloadCSV = function (args) {
+                var data, filename, link;
+
+                var csv = convertArrayOfObjectsToCSV({
+                    data: args.data
+                });
+                if (csv == null) return;
+
+                filename = args.filename || 'export.csv';
+
+                if (!csv.match(/^data:text\/csv/i)) {
+                    csv = 'data:text/csv;charset=utf-8,' + csv;
+                }
+                data = encodeURI(csv);
+
+                link = document.createElement('a');
+                link.setAttribute('href', data);
+                link.setAttribute('download', filename);
+                link.click();
+            };
+
+            downloadCSV({
+                filename: 'query-results',
+                data: resultsItem.records.map(function (record) {
+                        return {
+                            id: record.id,
+                            name: record.name,
+                            description: record.description.replace(/,/g, ' ')
+                        }
+                    }
+                )
+            });
+        },
+
         render: function () {
             var markup = null;
 
@@ -1209,6 +1275,11 @@ define(function (require) {
                                 title="Delete results"
                                 onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex -1])}>
                             <div className="querybuilder-button-label">Delete results</div>
+                        </button>
+                        <button id="download-result-btn" className="fa fa-download querybuilder-button"
+                                title="Download results"
+                                onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex -1])}>
+                            <div className="querybuilder-button-label">Download results (CSV)</div>
                         </button>
                     </div>
                 );

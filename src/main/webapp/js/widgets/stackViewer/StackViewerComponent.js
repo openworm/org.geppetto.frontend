@@ -757,15 +757,15 @@ define(function (require) {
                     this.setState({serverURL: server});
                     console.log('Changing IIP server to ' + server);
                 }
-                if (files != this.state.stack && files != null) {
+                if (files != this.state.stack && files != null && files != []) {
                     this.setState({stack: files});
                     console.log('setting stack to ' + files);
                 }
-                if (labels != this.state.label && labels != null) {
+                if (labels != this.state.label && labels != null && labels != []) {
                     this.setState({label: labels});
                     console.log('updating labels to ' + labels);
                 }
-                if (colors != this.state.color && colors != null) {
+                if (colors != this.state.color && colors != null && colors != []) {
                     this.setState({color: colors});
                     console.log('updating colours to ' + colors);
                 }

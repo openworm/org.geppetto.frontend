@@ -37,18 +37,21 @@
  * @author Matt Olson (matt@metacell.us)
  */
 
+
 /*
  * Configure RequireJS. Values inside brackets mean those libraries are required prior
  * to loading the one one. 
  */
 require.config({
+	
+	
     /*
      * Values in here are for dependencies that more than one module/script requires and/or needs.
      * E.G. If depenedency it's used more than once, it goes in here.
      */
     paths: {
         jquery: "vendor/jquery-1.9.1.min",
-        three: 'vendor/three.min',
+        three: 'vendor/threeWrapper',
         d3: 'vendor/d3.min',
         codemirror: "vendor/codemirror.min",
         handlebars: "vendor/handlebars",
@@ -98,6 +101,9 @@ require.config({
         'vendor/Detector': ["jquery"],
         'vendor/jquery.cookie': ["jquery"],
         'vendor/rAF': ["jquery"],
+        three: {
+            exports: 'THREE'
+        },
         JSXTransformer: {
             exports: "JSXTransformer"
         },

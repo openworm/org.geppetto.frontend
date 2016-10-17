@@ -760,24 +760,23 @@ define(function (require) {
             console.log(this.props.data);
             if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 var instance;
-                var data;
+                var data, vals;
                 var files = [];
                 var colors = [];
                 var labels = [];
                 var server = this.state.serverUrl;
                 for (instance in this.props.data.instances) {
-                    if (instance.data && instance.data != null) {
-                        try {
-                            data = JSON.parse(instance.data);
+                    try {
+                        vals = instance.getVariable().getInitialValue().value;
+                        data = JSON.parse(vals.data);
                             server = data.serverUrl;
                             files.push(data.fileLocation);
-                            labels.push(instance.getName());
-                            colors.push(instance.getColor());
-                        }
-                        catch (ignore) {
+                            labels.push(instance.parent.getName());
+                            colors.push(instance.parent.getColor());
+                    }
+                    catch (ignore) {
                             console.log('Error handling ' + instance.data);
                         }
-                    }
                 }
                 if (server != this.state.serverUrl && server != null) {
                     this.setState({serverURL: server});

@@ -121,7 +121,7 @@ define(function(require) {
                     <button id="rotateUpBtn" className="btn squareB fa fa-repeat rotate90 rotate-top" onClick={this.rotateUp}></button>
                     <button id="rotateRightBtn" className="btn squareB fa fa-repeat rotate-right" onClick={this.rotateRight}></button>
                     <button id="rotateDownBtn" className="btn squareB fa fa-undo rotate90 rotate-bottom" onClick={this.rotateDown}></button>
-                    <button id="rotateBtn" className="btn squareB fa fa-refresh rotate-home" onClick={this.rotate}></button>
+                    <button id="rotateBtn" className="btn squareB fa fa-video-camera rotate-home" onClick={this.rotate}></button>
 
                     <button id="zoomInBtn" className="btn squareB fa fa-search-plus zoom-in" onClick={this.zoomIn}></button>
                     <button id="zoomOutBtn" className="btn squareB fa fa-search-minus zoom-out" onClick={this.zoomOut}></button>

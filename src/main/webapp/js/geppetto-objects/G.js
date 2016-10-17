@@ -378,9 +378,11 @@ define(function (require) {
              */
             autoRotate: function () {
             	if(this.rotate==null){
+            		GEPPETTO.Init.movieMode(true);
             		this.rotate=setInterval(function(){G.incrementCameraRotate(0.01, 0)}, 100);
             	}
             	else{
+            		GEPPETTO.Init.movieMode(false);
             		clearInterval(this.rotate);
             		this.rotate=null;
             	}

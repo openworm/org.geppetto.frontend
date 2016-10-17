@@ -248,3 +248,7 @@
     opacity: 0.4;
 }
 
+.transparent-back {
+    background-color: transparent !important;
+}
+

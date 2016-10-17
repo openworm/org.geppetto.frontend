@@ -190,6 +190,28 @@ define(function (require) {
         }
     };
 
+    GEPPETTO.QueryLinkComponent = React.createClass({
+        render: function () {
+
+            var displayText = this.props.data;
+            var path = this.props.rowData.id;
+            var that = this;
+
+            var action = function (e) {
+                e.preventDefault();
+                var actionStr = that.props.metadata.actions;
+                actionStr = actionStr.replace(/\$entity\$/gi, path);
+                GEPPETTO.Console.executeCommand(actionStr);
+            };
+
+            return (
+                <div>
+                    <a href='#' onClick={action}>{displayText}</a>
+                </div>
+            )
+        }
+    });
+
     GEPPETTO.SlideshowImageComponent = React.createClass({
         isCarousel: false,
 
@@ -439,11 +461,10 @@ define(function (require) {
 
             return (
                 <div id={containerId} className="query-item">
-                    <div className="query-item-label"  title={this.props.item.term}>{this.props.item.term}</div>
+                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem} />
                     <select className="query-item-option" onChange={onSelection} value={this.props.item.selection}>
                         {this.props.item.options.map(createItem)}
                     </select>
-                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem} />
                     <div className="clearer"></div>
                 </div>
             );
@@ -511,7 +532,11 @@ define(function (require) {
             GEPPETTO.QueryBuilder = this;
         },
 
-        switchView(resultsView) {
+        switchView(resultsView, clearQueryItems) {
+            if(clearQueryItems == true){
+                this.clearAllQueryItems();
+            }
+
             this.setState({ resultsView: resultsView});
         },
 
@@ -842,11 +867,16 @@ define(function (require) {
             }
         },
 
-        queryOptionSelected: function(item, value){
+        queryOptionSelected: function(item, value, cb){
             this.clearErrorMessage();
 
             var callback = function(){
                 this.showBrentSpiner(false);
+
+                // cascading callback from parameters
+                if(typeof cb === "function"){
+                    cb();
+                }
             };
 
             // hide footer and show spinner
@@ -945,10 +975,8 @@ define(function (require) {
                                 queryLabel += ((i != 0) ? "/" : "")
                                     + that.props.model.items[i].term;
                                 verboseLabel += ((i != 0) ? "<span> / </span>" : "")
-                                    + "<span>" + that.props.model.items[i].term + "</span>: "
                                     + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
                                 verboseLabelPlain += ((i != 0) ? " / " : "")
-                                    + that.props.model.items[i].term + ": "
                                     + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
                             }
 
@@ -1015,17 +1043,31 @@ define(function (require) {
          * Add a query item
          *
          * @param queryItem - Object with term and variable id properties
+         * @param cb - optional callback function
          */
-        addQueryItem: function(queryItemParam){
+        addQueryItem: function(queryItemParam, cb){
             this.clearErrorMessage();
 
+            // grab datasource configuration (assumption we only have one datasource)
+            var datasourceConfig = this.configuration.DataSources[Object.keys(this.configuration.DataSources)[0]];
+            var queryNameToken = datasourceConfig.queryNameToken;
+
             // retrieve variable from queryItem.id
-            var label = queryItemParam.term;
             var variable = GEPPETTO.ModelFactory.getTopLevelVariablesById([queryItemParam.id])[0];
             var term = variable.getName();
 
+            // do we have any query items already? If so grab result type and match on that too
+            var resultType = undefined;
+            for(var h=0; h<this.props.model.items.length > 0; h++){
+                var sel = this.props.model.items[h].selection;
+                if(sel != -1 && this.props.model.items[h].options[sel].value != -1){
+                    // grab the first for which we have a selection if any
+                    resultType = this.props.model.items[h].options[sel].queryObj.getResultType();
+                }
+            }
+
             // retrieve matching queries for variable type
-            var matchingQueries = GEPPETTO.ModelFactory.getMatchingQueries(variable.getType());
+            var matchingQueries = GEPPETTO.ModelFactory.getMatchingQueries(variable.getType(), resultType);
 
             if(matchingQueries.length > 0) {
                 // build item in model-friendly format
@@ -1037,9 +1079,10 @@ define(function (require) {
 
                 // fill out options from matching queries
                 for (var i = 0; i < matchingQueries.length; i++) {
+                    var regx = new RegExp('\\' + queryNameToken, "g");
                     queryItem.options.push({
                             id: matchingQueries[i].getId(),
-                            name: matchingQueries[i].getDescription(),
+                            name: matchingQueries[i].getDescription().replace(regx, term),
                             datasource: matchingQueries[i].getParent().getId(),
                             value: i,
                             queryObj: matchingQueries[i]
@@ -1060,7 +1103,7 @@ define(function (require) {
                 // add default selection
                 queryItem.selection = -1;
                 // add default option
-                queryItem.options.splice(0, 0, {name: 'Please select an option', value: -1});
+                queryItem.options.splice(0, 0, {name: 'Select query for ' + term, value: -1});
 
                 var callback = function(){
                     this.showBrentSpiner(false);
@@ -1071,6 +1114,21 @@ define(function (require) {
 
                 // add query item to model
                 this.props.model.addItem(queryItem, callback.bind(this));
+
+                // check if we have a queryObj parameter and set it as the selected item
+                if(queryItemParam.queryObj != undefined){
+                    // figure out which option it matches to and trigger selection
+                    var val = -1;
+                    for(var h=0; h<queryItem.options.length; h++){
+                        if(queryItem.options[h].value != -1 && queryItem.options[h].id == queryItemParam.queryObj.getId()){
+                            val = queryItem.options[h].value;
+                        }
+                    }
+
+                    if(val != -1){
+                        this.queryOptionSelected(queryItem, val, cb);
+                    }
+                }
             } else {
                 // notify no queries available for the selected term
                 this.setErrorMessage("No queries available for the selected term.");
@@ -1090,6 +1148,72 @@ define(function (require) {
 
         resultSetSelectionChange: function(val){
             this.props.model.resultSelectionChanged(val);
+        },
+
+        downloadQueryResults: function (resultsItem) {
+            var convertArrayOfObjectsToCSV = function (args) {
+                var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+                data = args.data || null;
+                if (data == null || !data.length) {
+                    return null;
+                }
+
+                columnDelimiter = args.columnDelimiter || ',';
+                lineDelimiter = args.lineDelimiter || '\n';
+
+                keys = Object.keys(data[0]);
+
+                result = '';
+                result += keys.join(columnDelimiter);
+                result += lineDelimiter;
+
+                data.forEach(function (item) {
+                    ctr = 0;
+                    keys.forEach(function (key) {
+                        if (ctr > 0) result += columnDelimiter;
+
+                        result += item[key];
+                        ctr++;
+                    });
+                    result += lineDelimiter;
+                });
+
+                return result;
+            };
+
+            var downloadCSV = function (args) {
+                var data, filename, link;
+
+                var csv = convertArrayOfObjectsToCSV({
+                    data: args.data
+                });
+                if (csv == null) return;
+
+                filename = args.filename || 'export.csv';
+
+                if (!csv.match(/^data:text\/csv/i)) {
+                    csv = 'data:text/csv;charset=utf-8,' + csv;
+                }
+                data = encodeURI(csv);
+
+                link = document.createElement('a');
+                link.setAttribute('href', data);
+                link.setAttribute('download', filename);
+                link.click();
+            };
+
+            downloadCSV({
+                filename: 'query-results',
+                data: resultsItem.records.map(function (record) {
+                        return {
+                            id: record.id,
+                            name: record.name,
+                            description: record.description.replace(/,/g, ' ')
+                        }
+                    }
+                )
+            });
         },
 
         render: function () {
@@ -1116,9 +1240,6 @@ define(function (require) {
                     return (
                         <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
-                            <button className="fa fa-trash-o querybuilder-button-small delete-result-button"
-                                    title="Delete result set"  onClick={this.queryResultDeleted.bind(null, resultsItem)}>
-                            </button>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
                             showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={425}
@@ -1160,12 +1281,27 @@ define(function (require) {
         		
                 markup = (
                     <div id="query-results-container" className="center-content">
-                    	<MenuButton configuration={configuration}/>
-                    	<Tabs tabActive={focusTabIndex}>
+                        <MenuButton configuration={configuration}/>
+                        <Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
-                                title="Back to query" onClick={this.switchView.bind(null, false)}>
+                                title="Back to query" onClick={this.switchView.bind(null, false, false)}>
+                                <div className="querybuilder-button-label">Refine query</div>
+                        </button>
+                        <button id="switch-view-clear-btn" className="fa fa-cog querybuilder-button"
+                                title="Start new query" onClick={this.switchView.bind(null, false, true)}>
+                                <div className="querybuilder-button-label">New query</div>
+                        </button>
+                        <button id="delete-result-btn" className="fa fa-trash-o querybuilder-button"
+                                title="Delete results"
+                                onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex -1])}>
+                            <div className="querybuilder-button-label">Delete results</div>
+                        </button>
+                        <button id="download-result-btn" className="fa fa-download querybuilder-button"
+                                title="Download results"
+                                onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex -1])}>
+                            <div className="querybuilder-button-label">Download results (CSV)</div>
                         </button>
                     </div>
                 );

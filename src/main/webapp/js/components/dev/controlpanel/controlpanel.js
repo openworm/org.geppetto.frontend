@@ -82,6 +82,28 @@ define(function (require) {
         }
     });
 
+    GEPPETTO.LinkComponent = React.createClass({
+        render: function () {
+
+            var displayText = this.props.data;
+            var path = this.props.rowData.path;
+            var that = this;
+
+            var action = function (e) {
+                e.preventDefault();
+                var actionStr = that.props.metadata.actions;
+                actionStr = actionStr.replace(/\$entity\$/gi, path);
+                GEPPETTO.Console.executeCommand(actionStr);
+            };
+
+            return (
+                <div>
+                    <a href='#' onClick={action}>{displayText}</a>
+                </div>
+            )
+        }
+    });
+
     GEPPETTO.LinkArrayComponent = React.createClass({
         render: function () {
             var that = this;

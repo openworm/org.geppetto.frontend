@@ -223,9 +223,6 @@ define(function (require) {
             
 			this.updateToolBarVisibilityState(this.checkHasWritePermission());
             this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
-
-
-
         },
         
 		/**

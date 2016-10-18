@@ -96,7 +96,7 @@ define(function (require) {
         render: function () {
             return <tr onClick={this.select}>
                 <td className="selectedStatus">
-                    <i className={"iconSelectionStatus " + this.state.icon}></i></td>
+                    <i className={"iconSelectionStatus " + this.state.icon} /></td>
                 <td className="dropDownLabel"><label>
                     <span>{this.props.item.label}</span>
                 </label></td>
@@ -164,12 +164,13 @@ define(function (require) {
         },
 
         open: function () {
+            var selector = $("#"+this.props.configuration.id);
             var self = this;
-            $("#"+this.props.configuration.id).css({
+            selector.css({
                 top: self.state.position.top, right: self.state.position.right,
                 bottom: self.state.position.bottom, left: self.state.position.left, position: 'fixed'
             });
-            $("#"+this.props.configuration.id).show();
+            selector.show();
         },
         
         render: function () {
@@ -238,18 +239,16 @@ define(function (require) {
         },
         
         getMenuPosition : function(){
+            var selector = $("#"+this.props.configuration.id);
         	return { 
-        		top : $("#"+this.props.configuration.id).offset().top + 
-        				$("#"+this.props.configuration.id).outerHeight(),
-        		left: ($("#"+this.props.configuration.id).offset().left - 
-        				($("#"+this.props.configuration.id).outerHeight()-
-        						$("#"+this.props.configuration.id).innerHeight()))
+        		top : selector.offset().top + selector.outerHeight(),
+        		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()))
         	};
         },
         
         componentDidMount: function () {
             var self = this;
-            var menuPosition=null
+            var menuPosition=null;
             var menuSize = null;
            
             //if position wasn't specify for location of menu list

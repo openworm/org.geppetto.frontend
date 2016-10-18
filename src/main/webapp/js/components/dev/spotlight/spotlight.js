@@ -307,12 +307,14 @@ define(function (require) {
         
         confirmed: function (item) {
             //check suggestions
+            var found;
+            var actions;
 
             if (item && item != "") {
                 var suggestionFound = false;
 
                 if (this.suggestions.get(item)) {
-                    var found = this.suggestions.get(item);
+                    found = this.suggestions.get(item);
                     if (found.length == 1) {
                         suggestionFound = true;
                         var actions = found[0].actions;
@@ -324,55 +326,78 @@ define(function (require) {
                 }
 
                 if (this.dataSourceResults.get(item)) {
-                    var found = this.dataSourceResults.get(item);
+                    found = this.dataSourceResults.get(item);
+
                     if (found.length == 1) {
                         suggestionFound = true;
-                        // one does not simply assign buttons without deep cloning them
-                        var buttons = JSON.parse(JSON.stringify(found[0].buttons));
-                        //data source item has buttons
-                        if(buttons!=null || undefined){
-                    		var button;
-                    		//format button actions to have proper values instead of placeholders
-                    		for (var prop in buttons) {
-                    			  if( buttons.hasOwnProperty( prop ) ) {
-                    			    button = buttons[prop];
-                    			    this.formatButtonActions(button,found[0]["id"], found[0]["label"]);
-                    			  } 
-                    		}
-                            var tbar = $('<div>').addClass('spotlight-toolbar');
-           					tbar.append(this.BootstrapMenuMaker.createButtonGroup("DataSource", buttons, null));
-           					$(".spotlight-toolbar").remove();
-           		        	$('#spotlight').append(tbar);
-           		        	this.focusButtonBar();
-                        }//data source is straight up execution of actions
-                        else{
-                        	var actions = found[0].actions;
-                        	actions.forEach(function (action) {
-                        		GEPPETTO.Console.executeCommand(action)
-                        	});
-                            $("#typeahead").typeahead('val', "");
+
+                        // evil eval to check if the id maps to an existing instance
+                        var inst = undefined;
+                        try {
+                            inst = eval(found[0]["id"]);
+                        } catch (e) {
+                            // we don't really wanna do anything here
+                        }
+
+                        // try handling instance in case we have already resolved it
+                        if(inst != undefined){
+                            this.handleInstanceSelection(found[0]["id"]);
+                        } else {
+                            // one does not simply assign buttons without deep cloning them
+                            var buttons = JSON.parse(JSON.stringify(found[0].buttons));
+                            //data source item has buttons
+                            if(buttons!=null || undefined){
+                                var button;
+                                //format button actions to have proper values instead of placeholders
+                                for (var prop in buttons) {
+                                    if( buttons.hasOwnProperty( prop ) ) {
+                                        button = buttons[prop];
+                                        this.formatButtonActions(button,found[0]["id"], found[0]["label"]);
+                                    }
+                                }
+                                var tbar = $('<div>').addClass('spotlight-toolbar');
+                                tbar.append(this.BootstrapMenuMaker.createButtonGroup("DataSource", buttons, null));
+                                $(".spotlight-toolbar").remove();
+                                $('#spotlight').append(tbar);
+                                this.focusButtonBar();
+                            }//data source is straight up execution of actions
+                            else{
+                                actions = found[0].actions;
+                                actions.forEach(function (action) {
+                                    GEPPETTO.Console.executeCommand(action)
+                                });
+                                $("#typeahead").typeahead('val', "");
+                            }
                         }
                     }
                 }
                 
-                //check the instances
+                // no suggestions or datasource hits were found, fall back on instances (default)
                 if (!suggestionFound) {
                 	try{
-                		window._spotlightInstance = Instances.getInstance([item]);
-                		if (window._spotlightInstance) {
-                			this.loadToolbarFor(window._spotlightInstance);
-
-                			if ($(".spotlight-toolbar").length == 0) {
-                				this.loadToolbarFor(window._spotlightInstance);
-                			}
-                			this.focusButtonBar();
-                		}
+                		this.handleInstanceSelection(item);
                 	}catch (e){
-                		//TODO: Simulation Handler throws error when not finding an instance, should probably
-                		//be handled different for Spotlight
+                		//TODO: Simulation Handler throws error when not finding an instance, should probably be handled different for Spotlight
                 	}
                 }
             }
+        },
+
+        handleInstanceSelection: function(item){
+            var instanceFound = false;
+
+            window._spotlightInstance = Instances.getInstance([item]);
+            if (window._spotlightInstance) {
+                instanceFound = true;
+                this.loadToolbarFor(window._spotlightInstance);
+
+                if ($(".spotlight-toolbar").length == 0) {
+                    this.loadToolbarFor(window._spotlightInstance);
+                }
+                this.focusButtonBar();
+            }
+
+            return instanceFound;
         },
 
         defaultSuggestions: function (q, sync) {

@@ -47,7 +47,7 @@ define(function (require) {
 			'SAVECONTROL':'jsx!components/dev/save/SaveControl',
 			'CONTROLPANEL':'jsx!components/dev/controlpanel/controlpanel',
 			'SPOTLIGHT':'jsx!components/dev/spotlight/spotlight',
-			'MENUBUTTON':'jsx!components/dev/menubutton/MenuButton',
+			'CONTROLSMENUBUTTON':'jsx!components/dev/menubutton/MenuButton',
 			'FOREGROUND':'jsx!components/dev/foregroundcontrols/ForegroundControls',
 			'EXPERIMENTSTABLE':'jsx!components/dev/ExperimentsTable/ExperimentsTable',
 			'HOME':'jsx!components/dev/home/HomeControl',

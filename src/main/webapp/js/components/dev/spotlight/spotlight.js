@@ -223,9 +223,6 @@ define(function (require) {
             
 			this.updateToolBarVisibilityState(this.checkHasWritePermission());
             this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
-
-
-
         },
         
 		/**
@@ -312,7 +309,7 @@ define(function (require) {
             //check suggestions
 
             if (item && item != "") {
-                var suggestionFound = false
+                var suggestionFound = false;
 
                 if (this.suggestions.get(item)) {
                     var found = this.suggestions.get(item);

@@ -36,6 +36,11 @@
     cursor:pointer;
 }
 
+#querybuilder .querybuilder-button-label {
+    font-size: 12px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 #querybuilder .querybuilder-button:hover{
 	color:white!important;
 }
@@ -88,7 +93,7 @@
 }
 
 #querybuilder .query-item-option {
-    width: 450px !important;
+    width: 550px !important;
     height: 40px !important;
     padding: 8px 12px !important;
     font-size: 22px !important;
@@ -98,7 +103,7 @@
     -moz-border-radius: 0px;
     border-radius: 0px;
     outline: none;
-    float: left;
+    float: right;
 }
 
 #querybuilder .query-result-option {
@@ -123,7 +128,7 @@
     color: #fd6808;
     font-size: 35px !important;
     border: 0 !important;
-    float: right;
+    float: left;
 }
 
 #querybuilder .query-item-button:hover {
@@ -164,6 +169,7 @@
     right: 0;
     width: 600px;
     top: 30%;
+    padding-top: 20px;
 }
 
 #query-results-container {
@@ -180,18 +186,16 @@
     float: left;
     cursor: default;
     color:#fc401a;
-    height: 50px;
-    width: 66px;
+    height: 40px;
+    width: 40px;
     margin: 0px;
     background: none !important;
-    font-size: 45px !important;
+    font-size: 40px !important;
     border: 0 !important;
 }
 
 #query-typeahead {
     float: right;
-    width: 500px;
-    height: 40px;
 }
 
 #add-new-query-container {
@@ -228,9 +232,7 @@
 
 #brent-spiner {
     position: relative;
-    left: 35%;
-    height: 50px;
-    width: 50px;
+    left: 45%;
     background: none !important;
     color: #fd6808;
     font-size: 55px !important;
@@ -243,7 +245,7 @@
 #querybuilder .typeahead,
 #querybuilder .tt-query,
 #querybuilder .tt-hint {
-    width: 500px !important;
+    width: 550px !important;
     height: 40px !important;
     padding: 8px 12px !important;
     font-size: 22px !important;
@@ -279,7 +281,7 @@
 }
 
 #querybuilder .tt-menu {
-    width: 500px;
+    width: 550px;
     margin: 12px 0;
     padding: 8px 0;
     background-color: #fff;
@@ -441,6 +443,10 @@
     width: 150px;
 }
 
+#querybuilder .query-results-description-column:first-letter {
+    text-transform: capitalize;
+}
+
 #querybuilder .query-results-controls-column {
     width: 150px;
     text-align: center !important;
@@ -471,4 +477,8 @@
 
 #querybuilder .slick-slider {
     margin-bottom: 0px !important;
+}
+
+#querybuilder .standard-row {
+    height: 130px;
 }

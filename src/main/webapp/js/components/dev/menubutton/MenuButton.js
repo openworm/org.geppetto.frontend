@@ -21,7 +21,8 @@ define(function (require) {
     var GEPPETTO = require('geppetto');
 
     var ListItem = React.createClass({
-
+    	
+    	updateIcon : false,
         icons: {
             checked: "fa fa-check-circle-o",
             unchecked: "fa fa-circle-o",
@@ -71,29 +72,37 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-            // figure out icon for this item
-            var iconState = this.icons.default;
-            if (this.props.item.condition != undefined) {
-                // evaluate condition
-                var condition = null;
-                try {
-                    condition = eval(this.props.item.condition);
-                } catch(e){
-                    throw( "Could not evaluate condition [" + this.props.item.condition + "]" );
-                }
+        	var iconState = this.getIconState();
+        	this.setState({icon: iconState});
+        }, 
+        
+        getIconState : function(){
+        	// figure out icon for this item
+        	var iconState = this.icons.default;
+        	if (this.props.item.condition != undefined) {
+        		// evaluate condition
+        		var condition = null;
+        		try {
+        			condition = eval(this.props.item.condition);
+        		} catch(e){
+        			throw( "Could not evaluate condition [" + this.props.item.condition + "]" );
+        		}
 
-                if(typeof(condition) === "boolean"){
-                    // assign icon status
-                    iconState = condition ? this.icons.checked : this.icons.unchecked;
-                } else {
-                    throw( "The condition [" + this.props.item.condition + "] doesn't resolve to a boolean" );
-                }
-            }
+        		if(typeof(condition) === "boolean"){
+        			// assign icon status
+        			iconState = condition ? this.icons.checked : this.icons.unchecked;
+        		} else {
+        			throw( "The condition [" + this.props.item.condition + "] doesn't resolve to a boolean" );
+        		}
+        	}
 
-            this.setState({icon: iconState});
+        	return iconState;
         },
 
         render: function () {
+        	var iconState = this.getIconState();
+        	this.state.icon = iconState;
+        	
             return <tr onClick={this.select}>
                 <td className="selectedStatus">
                     <i className={"iconSelectionStatus " + this.state.icon} /></td>
@@ -110,28 +119,37 @@ define(function (require) {
         getInitialState: function () {
             return {
                 visible: this.props.configuration.openByDefault,
-                configuration: null,
-                position: {
-                    top: this.props.configuration.position.top,
-                    right: this.props.configuration.position.right,
-                    left: this.props.configuration.position.left,
-                    bottom: this.props.configuration.position.bottom
-                }
+                configuration: null
             };
         },
 
         componentDidMount: function () {
-            if (this.state.visible) {
-                this.open();
-            }else{
-            	this.close();
-            }
-        },
-
-        clickEvent: function () {
+        	var menuPosition=null;
+            var menuSize = null;
             var self = this;
-            self.setState({disableSave: true});
-            GEPPETTO.Console.executeCommand("Project.persist();");
+            //if position wasn't specify for location of menu list
+            if(self.props.configuration.menuPosition == null || undefined){
+            	//compute best spot for menu to show up by getting the button's top
+            	//and left values, and considering padding values as well
+            	menuPosition = self.getMenuPosition();
+            }else{
+            	//assign position of menu to what it is in configuration passed
+            	menuPosition = self.props.configuration.menuPosition;
+            }
+            
+            //if position wasn't specify for location of menu list
+            if(self.props.configuration.menuSize != null || undefined){
+            	menuSize = { 
+            			width : self.props.configuration.menuSize.width,
+            			height: self.props.configuration.menuSize.height
+            	}
+            }
+            
+            var selector = $("#"+this.props.configuration.id+"-dropDown");
+            selector.css({
+                top: menuPosition.top, right: menuPosition.right,
+                bottom: menuPosition.bottom, left: menuPosition.left, position: 'fixed'
+            });
         },
 
         renderListItems: function () {
@@ -159,23 +177,25 @@ define(function (require) {
         	 }
         },
 
+        getMenuPosition : function(){
+            var selector = $("#"+this.props.configuration.id);
+        	return { 
+        		top : selector.offset().top + selector.outerHeight(),
+        		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()))
+        	};
+        },
+        
         close: function () {
-            $("#"+this.props.configuration.id).hide()
+        	this.setState({visible: false});
         },
 
-        open: function () {
-            var selector = $("#"+this.props.configuration.id);
-            var self = this;
-            selector.css({
-                top: self.state.position.top, right: self.state.position.right,
-                bottom: self.state.position.bottom, left: self.state.position.left, position: 'fixed'
-            });
-            selector.show();
+        open: function () {            
+            this.setState({visible: true});
         },
         
         render: function () {
             return (
-                <div id={this.props.configuration.id} className={"dropDownButtonContainer"}>
+                <div id={this.props.configuration.id+"-dropDown"} className={(this.state.visible ? 'show' : 'hide') + " dropDownButtonContainer"}>
                     <table className={this.props.configuration.menuCSS + " dropDownTable"} id="dropDownTable">
                         <tbody>
                             {this.renderListItems()}
@@ -196,10 +216,7 @@ define(function (require) {
             return {
                 icon: this.props.configuration.iconOff,
                 open: false,
-                disabled: this.props.configuration.buttonDisabled,
                 menuItems : null,        
-                menuPosition : {},
-                menuSize : {}
             };
         },
                 
@@ -207,13 +224,13 @@ define(function (require) {
         showMenu: function () {
             var self = this;
             if (self.state.menuItems.length > 0) {
-                self.menu.open();    
+                self.refs.dropDown.open();    
             }
             return false;
         },
         
         hideMenu : function(){
-        	this.menu.close();
+        	this.refs.dropDown.close();
         },
         
         //Adds external handler for click events, notifies it when a drop down item is clicked
@@ -238,60 +255,14 @@ define(function (require) {
         	this.onClickHandler = null;
         },
         
-        getMenuPosition : function(){
-            var selector = $("#"+this.props.configuration.id);
-        	return { 
-        		top : selector.offset().top + selector.outerHeight(),
-        		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()))
-        	};
-        },
-        
         componentDidMount: function () {
             var self = this;
-            var menuPosition=null;
-            var menuSize = null;
-           
-            //if position wasn't specify for location of menu list
-            if(self.props.configuration.menuPosition == null || undefined){
-            	//compute best spot for menu to show up by getting the button's top
-            	//and left values, and considering padding values as well
-            	menuPosition = self.getMenuPosition();
-            }else{
-            	//assign position of menu to what it is in configuration passed
-            	menuPosition = self.props.configuration.menuPosition;
-            }
             
-            //if position wasn't specify for location of menu list
-            if(self.props.configuration.menuSize != null || undefined){
-            	menuSize = { 
-            			width : self.props.configuration.menuSize.width,
-            			height: self.props.configuration.menuSize.height
-            	}
-            }
-            
-            //update the state of menu with position, list to display and handler
-            self.setState({menuPosition : menuPosition, menuSize : menuSize});
-
             //attach external handler for loading events
             self.onClickHandler = self.props.configuration.onClickHandler;
             
             //attach external handler for clicking events
-            self.addExternalLoadHandler();    
-            
-            var containerID = this.props.configuration.id+"-dropDown";
-
-            var configuration = {
-            		openByDefault : self.props.configuration.openByDefault,
-            		menuItems : self.props.configuration.menuItems,
-            		position : menuPosition,
-            		id : containerID,
-            		menuCSS : self.props.configuration.menuCSS,
-            		autoFormatMenu : self.props.configuration.autoFormatMenu,
-            };
-            
-            self.menu = new DropDownControlComp({configuration});
-                        
-            ReactDOM.render(<DropDownControlComp handleSelect={this.selectionChanged}  configuration={configuration}/>, document.getElementById(containerID));
+            self.addExternalLoadHandler();                    
         },
 
         //toggles visibility of drop down menu
@@ -312,15 +283,16 @@ define(function (require) {
         render: function () {
         	//initializes drop down items from configuration
         	this.state.menuItems = this.props.configuration.menuItems;
-        	
+
             return (
                 <div className="menuButtonContainer">
                     <button className={this.props.configuration.id + " btn"} type="button" title=''
-                          id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.state.disabled} ref="menuButton">
+                          id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.props.configuration.buttonDisabled} ref="menuButton">
                         <i className={this.state.icon + " menuButtonIcon"}></i>
                         {this.props.configuration.label}
                     </button>
-                    <div id={this.props.configuration.id+"-dropDown"} className="menuListContainer"></div>
+                    <div id={this.props.configuration.id+"-dropDown"} className="menuListContainer">
+                    <DropDownControlComp handleSelect={this.selectionChanged}  ref="dropDown" configuration={this.props.configuration}/></div>
                 </div>
             );
         }

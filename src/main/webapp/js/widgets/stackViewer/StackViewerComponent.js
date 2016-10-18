@@ -719,6 +719,8 @@ define(function (require) {
             //     this.onWheelEvent(e);
             // }.bind(this));
 
+            console.log('componet did mount');
+
             if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 this.handleInstances(this.props.data.instances);
             }
@@ -748,6 +750,7 @@ define(function (require) {
                         files.push(data.fileLocation);
                         labels.push(instance.parent.getName());
                         colors.push(instance.parent.getColor());
+                        console.log(instance);
                     }
                     catch (ignore) {
                         console.log('Error handling ' + instance.data);

@@ -62,8 +62,16 @@ define(function (require) {
         },
         
         addData : function(instances) {
-            this.instances.add(instances);
-            this.initialised=true;
+            if(this.props.indexInstances) {
+                this.instances.add(instances);
+                this.initialised = true;
+            }
+        },
+
+        getDefaultProps: function () {
+            return {
+                indexInstances: true
+            };
         },
 
         componentDidMount: function () {
@@ -76,9 +84,11 @@ define(function (require) {
             GEPPETTO.Spotlight = this;
             
             this.initTypeahead();
-			
 
-            $("#spotlight").click(function(e){
+            var spotlightContainer = $("#spotlight");
+            var typeAhead = $('#typeahead');
+
+            spotlightContainer.click(function(e){
             	if (e.target==e.delegateTarget){
             		//we want this only to happen if we clicked on the div directly and not on anything therein contained
             		that.close();
@@ -92,20 +102,20 @@ define(function (require) {
             });
 
             $(document).keydown(function (e) {
-                if ($("#spotlight").is(':visible') && e.keyCode == escape) {
+                if (spotlightContainer.is(':visible') && e.keyCode == escape) {
                 	that.close();
                 }
             });
 
-            $('#typeahead').keydown(this, function (e) {
+            typeAhead.keydown(this, function (e) {
                 if (e.which == 9 || e.keyCode == 9) {
                     e.preventDefault();
                 }
             });
 
-            $('#typeahead').keypress(this, function (e) {
+            typeAhead.keypress(this, function (e) {
                 if (e.which == 13 || e.keyCode == 13) {
-                    that.confirmed($('#typeahead').val()); 
+                    that.confirmed(typeAhead.val());
                 }
                 if (this.searchTimeOut !== null) {
                     clearTimeout(this.searchTimeOut);
@@ -114,7 +124,7 @@ define(function (require) {
                 	for (var key in that.configuration.SpotlightBar.DataSources) {
                 	    if (that.configuration.SpotlightBar.DataSources.hasOwnProperty(key)) {
                 	    	var dataSource = that.configuration.SpotlightBar.DataSources[key];
-                	    	var searchQuery = $('#typeahead').val();
+                	    	var searchQuery = typeAhead.val();
                 	    	var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
                             that.updateResults = true;
                             that.requestDataSourceResults(key, url, dataSource.crossDomain);
@@ -123,7 +133,7 @@ define(function (require) {
                 }, 150);
             });
 
-            $('#typeahead').bind('typeahead:selected', function (obj, datum, name) {
+            typeAhead.bind('typeahead:selected', function (obj, datum, name) {
                 if (datum.hasOwnProperty("path")) {
                     //it's an instance
                     that.confirmed(datum.path);
@@ -135,7 +145,7 @@ define(function (require) {
             });
            
             //fire key event on paste
-            $('#typeahead').on("paste", function(){$(this).trigger("keypress",{ keyCode: 13 });});
+            typeAhead.on("paste", function(){$(this).trigger("keypress",{ keyCode: 13 });});
             
             GEPPETTO.on(Events.Experiment_loaded, function () {
             	if(that.initialised){
@@ -171,19 +181,12 @@ define(function (require) {
                 if (metaType) {
                     return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType] + "' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType] + ";'/>");
                 }
-                else {
-                    return;
-                }
-
             });
 
             Handlebars.registerHelper('geticon', function (icon) {
                 if (icon) {
                     return new Handlebars.SafeString("<icon class='fa " + icon + "' style='margin-right:5px;'/>");
-                } else {
-                    return;
                 }
-
             });
 
             if(GEPPETTO.ForegroundControls != undefined){
@@ -419,15 +422,17 @@ define(function (require) {
         },
 
         defaultInstances: function (q, sync) {
-            if (q === '') {
-                var rootInstances = [];
-                for (var i = 0; i < window.Instances.length; i++) {
-                    rootInstances.push(window.Instances[i].getId());
+            if(this.props.indexInstances) {
+                if (q === '') {
+                    var rootInstances = [];
+                    for (var i = 0; i < window.Instances.length; i++) {
+                        rootInstances.push(window.Instances[i].getId());
+                    }
+                    sync(this.instances.get(rootInstances));
                 }
-                sync(this.instances.get(rootInstances));
-            }
-            else {
-                this.instances.search(q, sync);
+                else {
+                    this.instances.search(q, sync);
+                }
             }
         },
 

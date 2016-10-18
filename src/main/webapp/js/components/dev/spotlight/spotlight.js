@@ -470,9 +470,11 @@ define(function (require) {
 
         openToInstance: function (instance) {
             $("#spotlight").show();
-            $("#typeahead").focus();
-            $("#typeahead").typeahead('val', instance.getInstancePath());
-            $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
+
+            var typeAhead = $("#typeahead");
+            typeAhead.focus();
+            typeAhead.typeahead('val', instance.getInstancePath());
+            typeAhead.trigger(jQuery.Event("keypress", {which: 13}));
         },
 
         open: function (flowFilter, useSelection) {
@@ -514,9 +516,11 @@ define(function (require) {
             }
 
             $("#spotlight").show();
-            $("#typeahead").focus();
-            $("#typeahead").typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
-            $("#typeahead").typeahead('val', "");
+
+            var typeAhead = $("#typeahead");
+            typeAhead.focus();
+            typeAhead.typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
+            typeAhead.typeahead('val', "");
         },
 
         initDataSourceResults: function(datumToken, queryToken, sorter){
@@ -539,8 +543,8 @@ define(function (require) {
                 for (var key in sources) {
                     if (sources.hasOwnProperty(key)) {
                         var obj = sources[key];
-                        var key = this.generateDataSourceKey(key, 0);
-                        this.configuration.SpotlightBar.DataSources[key] = obj;
+                        var keysha = this.generateDataSourceKey(key, 0);
+                        this.configuration.SpotlightBar.DataSources[keysha] = obj;
 
                         if(obj.bloodhoundConfig) {
                             this.initDataSourceResults(
@@ -562,7 +566,7 @@ define(function (require) {
          * create a new key for it.
          */
         generateDataSourceKey : function(key, index){
-        	var dataSource = this.configuration.SpotlightBar.DataSources[key]
+        	var dataSource = this.configuration.SpotlightBar.DataSources[key];
 		    if(dataSource!=null || dataSource !=undefined){
 		    	key = key.concat(index);
 		    	this.generateDataSourceKey(key, index++);
@@ -619,9 +623,10 @@ define(function (require) {
 			//If it's an update request to show the drop down menu, this for it to show 
 			//updated results
 			if(this.updateResults){
-				var value = $("#typeahead").val();
-				$("#typeahead").typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
-                $("#typeahead").typeahead('val', value);
+                var typeAhead = $("#typeahead");
+				var value = typeAhead.val();
+                typeAhead.typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
+                typeAhead.typeahead('val', value);
 			}
         },
         
@@ -659,8 +664,8 @@ define(function (require) {
     			var searchTerm = explodeArrays[i].field;    		
     			var results = response[searchTerm];
     			if(results!=null || undefined){
-    				for(var i =0; i<results.length; i++){
-    					var result = results[i];
+    				for(var j =0; j<results.length; j++){
+    					var result = results[j];
     					formattedLabel = labelFormatting.replace('$VALUE$', result);
     					formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
     					formattedLabel = formattedLabel.replace('$ID$', id);
@@ -689,8 +694,7 @@ define(function (require) {
         	}else{
         		//replace $ID$ with one returned from server for actions
         		var actions = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
-        		var newActions = this.replaceActionHolders(actions, obj["id"], obj["label"]);
-        		obj["actions"] = newActions;
+        		obj["actions"] = this.replaceActionHolders(actions, obj["id"], obj["label"]);
         	}
     		this.dataSourceResults.add(obj);
         },
@@ -808,7 +812,7 @@ define(function (require) {
                 else if (element.hasOwnProperty("inputValue")) {
                     //an input box
                     if(!(instance.length>1)){
-                        var uiElement=$("<div>");
+                        uiElement=$("<div>");
                         var value=eval(this.getCommand(element.inputValue, instance[0]));
                         var unit=eval(this.getCommand(element.label, instance[0]));
                         label = $("<div class='spotlight-input-label'>").html(unit);
@@ -829,7 +833,6 @@ define(function (require) {
                         }
                         uiElement.append(input);
                         uiElement.append(label);
-
                     }
                 }
                 else {
@@ -853,13 +856,10 @@ define(function (require) {
                 var that = this;
                 var instance = bgInstance;
 
-                var bg = $('<div>')
-                    .addClass('btn-group')
-                    .attr('role', 'group')
-                    .attr('id', bgName);
+                var bg = $('<div>').addClass('btn-group').attr('role', 'group').attr('id', bgName);
                 $.each(bgDef, function (bName, bData) {
                     var button = that.named(that.createUIElement, bName, bData, instance);
-                    bg.append(button)
+                    bg.append(button);
                     $(button).keypress(that, function (e) {
                         if (e.which == 13 || e.keyCode == 13)  // enter
                         {

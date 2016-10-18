@@ -762,15 +762,15 @@ define(function (require) {
                 }
                 if (files != this.state.stack && files != null && files != []) {
                     this.setState({stack: files});
-                    console.log('setting stack to ' + files);
+                    console.log('setting stack to ' + JSON.stringify(files));
                 }
                 if (labels != this.state.label && labels != null && labels != []) {
                     this.setState({label: labels});
-                    console.log('updating labels to ' + labels);
+                    console.log('updating labels to ' + JSON.stringify(labels));
                 }
                 if (colors != this.state.color && colors != null && colors != []) {
                     this.setState({color: colors});
-                    console.log('updating colours to ' + colors);
+                    console.log('updating colours to ' + JSON.stringify(colors));
                 }
             }
         },

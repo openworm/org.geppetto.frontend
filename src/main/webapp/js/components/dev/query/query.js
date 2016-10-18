@@ -1266,6 +1266,7 @@ define(function (require) {
         				menuPosition : null,
         				menuSize : {height : "auto", width : 750},
         				menuCSS : "queryButtonMenu",
+        				autoFormatMenu : true,
                         onClickHandler : this.resultSetSelectionChange,
                         onLoadHandler : loadHandler,
         				menuItems : []

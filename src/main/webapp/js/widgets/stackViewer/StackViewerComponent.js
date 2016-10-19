@@ -721,9 +721,9 @@ define(function (require) {
 
             console.log('componet did mount');
 
-            if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
-                this.handleInstances(this.props.data.instances);
-            }
+            // if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
+            //     this.handleInstances(this.props.data.instances);
+            // }
         },
 
         componentDidUpdate: function () {

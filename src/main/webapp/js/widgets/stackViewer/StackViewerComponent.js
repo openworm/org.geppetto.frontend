@@ -14,6 +14,7 @@ define(function (require) {
                 color: this.props.color,
                 stack: this.props.stack,
                 label: this.props.label,
+                id: this.props.id,
                 minDst: -100,
                 maxDst: 100,
                 tileX: 1025,
@@ -189,9 +190,18 @@ define(function (require) {
                         if (result !== '') {
                             for (j in result) {
                                 if (result[j] == '0') {
-                                    console.log(that.props.label[i] + ' clicked');
-                                    that.setStatusText(that.props.label[i] + ' clicked!');
-                                    that.setState({text: that.props.label[i] + ' clicked!'});
+                                    console.log(that.status.id[i] + ' clicked');
+                                    // deselect if selected otherwise select only that one.
+                                    if (G.getSelection()[0].id.indexOf(that.status.id[i]) > -1) {
+                                        eval(that.status.id[i]).deselect();
+                                    }else {
+                                        while (G.getSelection()[0] != undefined) {
+                                            G.getSelection()[0].deselect();
+                                        }
+                                        eval(that.status.id[i]).select();
+                                    }
+                                    that.setStatusText(that.status.label[i] + ' clicked!');
+                                    that.setState({text: that.status.label[i] + ' clicked!'});
                                 } else {
                                     console.log('Odd value: ' + result[j].toString());
                                 }
@@ -480,6 +490,8 @@ define(function (require) {
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
                 this.state.stack = nextProps.stack;
                 this.state.color = nextProps.color;
+                this.state.label = nextProps.label;
+                this.state.id = nextProps.id;
                 this.state.serverUrl = nextProps.serverUrl;
                 this.updateImages(nextProps);
             }
@@ -670,7 +682,8 @@ define(function (require) {
                 maxDst: 100,
                 color: [0xFFFFFF],
                 stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz'],
-                label: ['Adult Brain']
+                label: ['Adult Brain'],
+                id: ['VFB_00017894']
             };
         },
 
@@ -745,25 +758,23 @@ define(function (require) {
         },
 
         handleInstances: function (instances) {
-            console.log('Handling Instances: ' + instances.length);
             if (instances && instances != null && instances.length > 0) {
                 var instance;
                 var data, vals;
                 var files = [];
                 var colors = [];
                 var labels = [];
+                var ids = [];
                 var server = this.state.serverUrl;
                 for (instance in instances) {
                     try {
-                        console.log('Instance:' + instance);
                         vals = instances[instance].getVariable().getInitialValue().value;
-                        console.log(JSON.stringify(vals));
                         data = JSON.parse(vals.data);
                         server = data.serverUrl;
                         files.push(data.fileLocation);
+                        ids.push(instances[instance].parent.getId());
                         labels.push(instances[instance].parent.getName());
                         colors.push(instances[instance].parent.getColor());
-                        console.log(instances[instance].parent.getName());
                     }
                     catch (ignore) {
                         console.log('Error handling ' + instance.data);
@@ -780,6 +791,10 @@ define(function (require) {
                 if (labels != this.state.label && labels != null && labels.length > 0) {
                     this.setState({label: labels});
                     console.log('updating labels to ' + JSON.stringify(labels));
+                }
+                if (ids != this.state.id && ids != null && ids.length > 0) {
+                    this.setState({id: ids});
+                    console.log('updating ids to ' + JSON.stringify(ids));
                 }
                 if (colors != this.state.color && colors != null && colors.length > 0) {
                     this.setState({color: colors});
@@ -932,7 +947,7 @@ define(function (require) {
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
-                            label={this.state.label} height={this.props.data.height}
+                            label={this.state.label} id={this.state.id} height={this.props.data.height}
                             width={this.props.data.width}/>
                 </div>
             );

@@ -745,6 +745,7 @@ define(function (require) {
                 for (instance in instances) {
                     try {
                         vals = instance.getVariable().getInitialValue().value;
+                        console.log(JSON.parse(vals));
                         data = JSON.parse(vals.data);
                         server = data.serverUrl;
                         files.push(data.fileLocation);

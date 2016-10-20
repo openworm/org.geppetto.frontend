@@ -59,6 +59,7 @@
 <body>
 
 <div id="modal-region"></div>
+<div id="load-spinner"></div>
 
 <div id="controls">
 

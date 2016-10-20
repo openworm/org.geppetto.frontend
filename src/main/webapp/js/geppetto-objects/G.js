@@ -66,6 +66,15 @@ define(function (require) {
             recordedVariablesPlot : false,
             enableColorPlottingActive : false,
             brightnessFunctionSet: false,
+            consoleFocused : true,
+            
+            isConsoleFocused : function(){
+            	return this.consoleFocused;
+            },
+            
+            autoFocusConsole : function(mode){
+            	this.consoleFocused = mode;
+            },
 
             isBrightnessFunctionSet: function() {
                 return this.brightnessFunctionSet;

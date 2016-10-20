@@ -55,18 +55,24 @@ define(function(require) {
 		
 		
 		hideSpinner:function(){
-			this.hide();
+			if(this.isMounted()){
+				this.hide();
+			}
 		},
 		
 		showSpinner:function(label){
-			this.setState({text:label, visible:true});
-			this.show();
 			var that=this;
+
+			if(that.isMounted()){
+				this.setState({text:label, visible:true});
+				this.show();
+			}
 			
 			if(this.timer1!=null){
 				clearTimeout(this.timer1);
 				clearTimeout(this.timer2);
 			}
+			
 			this.timer1=setTimeout((function(){
 				if(that.isMounted()){
 					that.setState({text:'Loading is taking longer than usual, either a large amount of data is being loaded or bandwidth is limited'});
@@ -97,7 +103,7 @@ define(function(require) {
 			});
 			
 		},
-				
+		
 		render: function () {
 			if(this.state.visible){
 				return (

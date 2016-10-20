@@ -120,12 +120,14 @@ define(function (require) {
         });
 
         function toggleFooterZIndex(focus){
-        	if(focus){
-        		$("#footer").removeClass("footerOutFocus");
-        		$("#footer").addClass("footerFocus");
-        	}else{
-        		$("#footer").removeClass("footerFocus");
-        		$("#footer").addClass("footerOutFocus");
+        	if(G.isConsoleFocused()){
+        		if(focus){
+        			$("#footer").removeClass("footerOutFocus");
+        			$("#footer").addClass("footerFocus");
+        		}else{
+        			$("#footer").removeClass("footerFocus");
+        			$("#footer").addClass("footerOutFocus");
+        		}
         	}
         }
         

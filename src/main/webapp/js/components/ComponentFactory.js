@@ -47,7 +47,7 @@ define(function (require) {
 			'SAVECONTROL':'jsx!components/dev/save/SaveControl',
 			'CONTROLPANEL':'jsx!components/dev/controlpanel/controlpanel',
 			'SPOTLIGHT':'jsx!components/dev/spotlight/spotlight',
-			'MENUBUTTON':'jsx!components/dev/menubutton/MenuButton',
+			'CONTROLSMENUBUTTON':'jsx!components/dev/menubutton/MenuButton',
 			'FOREGROUND':'jsx!components/dev/foregroundcontrols/ForegroundControls',
 			'EXPERIMENTSTABLE':'jsx!components/dev/ExperimentsTable/ExperimentsTable',
 			'HOME':'jsx!components/dev/home/HomeControl',
@@ -69,7 +69,7 @@ define(function (require) {
 				
 			loadSpinner:function(){
 				//We require this synchronously to properly show spinner when loading projects
-				this.renderComponent(React.createFactory(spinner)(),document.getElementById("modal-region"));	
+				this.renderComponent(React.createFactory(spinner)(),document.getElementById("load-spinner"));
 			},
 			
 			addComponent: function(componentID, properties, container, callback){

@@ -66,6 +66,15 @@ define(function (require) {
             recordedVariablesPlot : false,
             enableColorPlottingActive : false,
             brightnessFunctionSet: false,
+            consoleFocused : true,
+            
+            isConsoleFocused : function(){
+            	return this.consoleFocused;
+            },
+            
+            autoFocusConsole : function(mode){
+            	this.consoleFocused = mode;
+            },
 
             isBrightnessFunctionSet: function() {
                 return this.brightnessFunctionSet;
@@ -367,6 +376,27 @@ define(function (require) {
                 return GEPPETTO.Resources.CAMERA_RESET;
             },
 
+            
+            /**
+             * Increments camera rotation.
+             *
+             * @command - G.incrementCameraRotate()
+             * @param {Integer} x - x coordinate of rotate increment vector
+             * @param {Integer} y - y coordinate of rotate increment vector
+             * @param {Integer} z - z coordinate of rotate increment vector
+             */
+            autoRotate: function () {
+            	if(this.rotate==null){
+            		GEPPETTO.Init.movieMode(true);
+            		this.rotate=setInterval(function(){G.incrementCameraRotate(0.01, 0)}, 100);
+            	}
+            	else{
+            		GEPPETTO.Init.movieMode(false);
+            		clearInterval(this.rotate);
+            		this.rotate=null;
+            	}
+            },
+            
             /**
              * Increments camera pan.
              *

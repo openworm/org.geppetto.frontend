@@ -109,6 +109,7 @@ define(function (require) {
 
         setSlices: function(instances){
             this.data.instances = this.data.instances.concat(instances);
+            console.log('Passing ' + this.data.instances.length + 'instances');
             this.updateScene();
         },
 

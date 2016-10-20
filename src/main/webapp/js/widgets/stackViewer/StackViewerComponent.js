@@ -735,7 +735,7 @@ define(function (require) {
         },
 
         handleInstances: function (instances) {
-            if (instances && instances != null && instances.count > 0) {
+            if (instances && instances != null && instances.length > 0) {
                 var instance;
                 var data, vals;
                 var files = [];

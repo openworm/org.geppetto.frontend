@@ -190,7 +190,7 @@ define(function (require) {
                         if (result !== '') {
                             for (j in result) {
                                 if (result[j] == '0') {
-                                    console.log(that.status.id[i] + ' clicked');
+                                    console.log(this.status.id[i] + ' clicked');
                                     // deselect if selected otherwise select only that one.
                                     if (G.getSelection()[0].id.indexOf(that.status.id[i]) > -1) {
                                         eval(that.status.id[i]).deselect();
@@ -212,7 +212,7 @@ define(function (require) {
                         that.state.lastUpdate = 0;
                         that.checkStack();
 
-                    }.bind({i: i}),
+                    }.bind({i: i, that: that}),
                     error: function (xhr, status, err) {
                         console.error(this.props.url, status, err.toString());
                     }.bind(this)

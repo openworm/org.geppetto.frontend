@@ -102,6 +102,9 @@ define(function (require) {
 
                 console.log(JSON.stringify(data));
                 console.log(JSON.stringify(this.data));
+            }else{
+                console.log('set data issue:')
+                console.log(JSON.stringify(data));
             }
 
             this.updateBorders();

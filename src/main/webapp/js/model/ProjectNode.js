@@ -151,7 +151,7 @@ define(['backbone'], function (require) {
         setActiveExperiment: function (experiment) {
             if(GEPPETTO.UserController.isLoggedIn()){
                 this.activeExperiment = experiment;
-                GEPPETTO.trigger(Events.Experiment_active);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_active);
             }else{
     			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
             }
@@ -213,7 +213,7 @@ define(['backbone'], function (require) {
         loadFromID: function (projectID, experimentID) {
 
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-            GEPPETTO.trigger(Events.Project_loading);
+            GEPPETTO.trigger(GEPPETTO.Events.Project_loading);
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
             GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
 
@@ -248,7 +248,7 @@ define(['backbone'], function (require) {
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
-            GEPPETTO.trigger(Events.Project_loading);
+            GEPPETTO.trigger(GEPPETTO.Events.Project_loading);
             GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
 
             var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
@@ -260,7 +260,7 @@ define(['backbone'], function (require) {
                 GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
                 GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
                 //trigger simulation restart event
-                GEPPETTO.trigger(Events.Simulation_restarted);
+                GEPPETTO.trigger(GEPPETTO.Events.Simulation_restarted);
             }
 
             else {
@@ -279,7 +279,7 @@ define(['backbone'], function (require) {
          */
         loadFromContent: function (content) {
 
-        	GEPPETTO.trigger(Events.Project_loading);
+        	GEPPETTO.trigger(GEPPETTO.Events.Project_loading);
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 
             console.time(GEPPETTO.Resources.LOADING_PROJECT);

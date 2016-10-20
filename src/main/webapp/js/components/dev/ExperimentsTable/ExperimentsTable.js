@@ -175,7 +175,7 @@ define(function (require) {
         	
             var row = "#simulatorRowId-" + this.props.experiment.getId();
             
-            GEPPETTO.on(Events.Experiment_updated, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_updated, function () {
                 self.refresh();
             });
             
@@ -493,30 +493,30 @@ define(function (require) {
             	}
             });
 
-            GEPPETTO.on(Events.Project_loaded, function () {
+            GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
                 self.populate();
                 self.updateStatus();
             });
 
-            GEPPETTO.on(Events.Project_persisted, function () {
+            GEPPETTO.on(GEPPETTO.Events.Project_persisted, function () {
                 self.forceUpdate();
                 self.updateExperimentStatus();
 				self.updateStatus();
             });
             
-            GEPPETTO.on(Events.Experiment_status_check, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_status_check, function () {
                 self.updateExperimentsTableStatus();
             });
 
-            GEPPETTO.on(Events.Experiment_loaded, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_loaded, function () {
                 self.updateExperimentStatus();
             });
 
-            GEPPETTO.on(Events.Experiment_created, function (experiment) {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_created, function (experiment) {
                 self.newExperiment(experiment);
             });
 
-            GEPPETTO.on(Events.Experiment_deleted, function (experiment) {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_deleted, function (experiment) {
                 self.deleteExperiment(experiment);
                 GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
             });

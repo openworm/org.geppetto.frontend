@@ -95,7 +95,7 @@ define(function (require) {
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function (payload) {
             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
-            GEPPETTO.trigger(Events.Experiment_loaded);
+            GEPPETTO.trigger(GEPPETTO.Events.Experiment_loaded);
             
             if(window.Project.getActiveExperiment()!=null || undefined){
             	if (window.Project.getActiveExperiment().getScript() != undefined) {
@@ -147,10 +147,10 @@ define(function (require) {
                                 if (window.Project.getActiveExperiment().getId() == experimentID) {
                                     if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING &&
                                         status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                                        GEPPETTO.trigger(Events.Experiment_completed, experimentID);
+                                        GEPPETTO.trigger(GEPPETTO.Events.Experiment_completed, experimentID);
                                     }
                                     if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                                            GEPPETTO.trigger(Events.Experiment_failed, experimentID);
+                                            GEPPETTO.trigger(GEPPETTO.Events.Experiment_failed, experimentID);
                                      }
                                 }
                             }
@@ -159,7 +159,7 @@ define(function (require) {
                     }
                 }
             }
-            GEPPETTO.trigger(Events.Experiment_status_check);
+            GEPPETTO.trigger(GEPPETTO.Events.Experiment_status_check);
         };
 
         messageHandler[messageTypes.PROJECT_PERSISTED] = function (payload) {
@@ -177,7 +177,7 @@ define(function (require) {
         };
 
         messageHandler[messageTypes.WATCHED_VARIABLES_SET] = function (payload) {
-            GEPPETTO.trigger(Events.Experiment_updated);
+            GEPPETTO.trigger(GEPPETTO.Events.Experiment_updated);
             GEPPETTO.Console.log("The list of variables to watch was successfully updated.");
         };
 
@@ -189,7 +189,7 @@ define(function (require) {
 
         //received model tree from server
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function (payload) {
-            GEPPETTO.trigger(Events.Experiment_updated);
+            GEPPETTO.trigger(GEPPETTO.Events.Experiment_updated);
             GEPPETTO.Console.log("The model parameters were successfully updated.");
 
         };
@@ -261,7 +261,7 @@ define(function (require) {
                 }
                 window.Project.persisted = true;
 
-                GEPPETTO.trigger(Events.Project_persisted);
+                GEPPETTO.trigger(GEPPETTO.Events.Project_persisted);
                 GEPPETTO.Console.log("The project has been persisted  [id=" + projectID + "].");
             },
 
@@ -277,7 +277,7 @@ define(function (require) {
                 window.Project = GEPPETTO.ProjectFactory.createProjectNode(project, persisted);
                 
                 GEPPETTO.Init.initEventListeners();
-                GEPPETTO.trigger(Events.Project_loaded);
+                GEPPETTO.trigger(GEPPETTO.Events.Project_loaded);
                 GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
             },
 
@@ -315,11 +315,11 @@ define(function (require) {
                 }
                 GEPPETTO.SceneController.buildScene(window.Instances, window.Model);
                 console.timeEnd(GEPPETTO.Resources.CREATING_SCENE);
-                GEPPETTO.trigger(Events.Model_loaded);
+                GEPPETTO.trigger(GEPPETTO.Events.Model_loaded);
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 
                 // populate control panel with instances
-                GEPPETTO.trigger(Events.Instances_created, window.Instances);
+                GEPPETTO.trigger(GEPPETTO.Events.Instances_created, window.Instances);
 
                 console.timeEnd(GEPPETTO.Resources.LOADING_PROJECT);
                 GEPPETTO.trigger("hide:spinner");
@@ -369,7 +369,7 @@ define(function (require) {
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
                 // STEP: 4 update components
-                GEPPETTO.trigger(Events.Instances_created, newInstances);
+                GEPPETTO.trigger(GEPPETTO.Events.Instances_created, newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
@@ -418,7 +418,7 @@ define(function (require) {
                 GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
 
                 // STEP: 4 update components
-                GEPPETTO.trigger(Events.Instances_created, newInstances);
+                GEPPETTO.trigger(GEPPETTO.Events.Instances_created, newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
@@ -566,7 +566,7 @@ define(function (require) {
                 newExperiment.setActive();
                 GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
                 
-                GEPPETTO.trigger(Events.Experiment_created, newExperiment);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_created, newExperiment);
 
                 return newExperiment;
             },
@@ -588,7 +588,7 @@ define(function (require) {
             			window.Project.activeExperiment = null;
             		}
             	}
-                GEPPETTO.trigger(Events.Experiment_deleted, experiment);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_deleted, experiment);
             }
         };
 

@@ -70,19 +70,19 @@ define(function (require) {
         componentDidMount: function () {
             var self = this;
 
-            GEPPETTO.on(Events.Experiment_loaded, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_loaded, function () {
             	self.updateStatus();
             });
             
-            GEPPETTO.on(Events.Project_persisted, function () {
+            GEPPETTO.on(GEPPETTO.Events.Project_persisted, function () {
             	self.updateStatus();
             });
 
-            GEPPETTO.on(Events.Experiment_running, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
             	self.updateStatus();
             });
 
-            GEPPETTO.on(Events.Experiment_failed, function (id) {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function (id) {
             	var activeExperiment = window.Project.getActiveExperiment();
             	if(activeExperiment!=null || undefined){
             		if(activeExperiment.getId()==id){
@@ -91,27 +91,27 @@ define(function (require) {
             	}
             });
             
-            GEPPETTO.on(Events.Experiment_completed, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
             	self.updateStatus();
             });
 
-            GEPPETTO.on(Events.Experiment_play, function (options) {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_play, function (options) {
             	self.updateStatus();
             });
 
-            GEPPETTO.on(Events.Experiment_resume, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_resume, function () {
             	self.updateStatus();
             });
 
-            GEPPETTO.on(Events.Experiment_pause, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_pause, function () {
             	self.updateStatus();
             });
 
-            GEPPETTO.on(Events.Experiment_stop, function (options) {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_stop, function (options) {
             	self.updateStatus();
             });
             
-            GEPPETTO.on(Events.Experiment_deleted, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_deleted, function () {
             	var experiment = window.Project.getActiveExperiment();
             	if(experiment ==null || undefined){
             		self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
@@ -123,7 +123,7 @@ define(function (require) {
                 self.setState({disableRun: true, disablePlay: true, disablePause: true, disableStop: true});
             });
 
-            GEPPETTO.on(Events.Experiment_over, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_over, function () {
             	self.updateStatus();
             });
             

@@ -1,6 +1,3 @@
 {
-	"geppetto-default/ComponentsInitialization": true,
-	"geppetto-osb/ComponentsInitialization": false,
-	"geppetto-vfb/ComponentsInitialization": false,
-	"geppetto-neuron/ComponentsInitialization": false
+	"geppetto-default/ComponentsInitialization": true
 }

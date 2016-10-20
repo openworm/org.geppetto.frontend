@@ -2608,7 +2608,7 @@ define(function (require) {
                 // re-run model shortcuts
                 this.populateChildrenShortcuts(this.geppettoModel);
 
-                GEPPETTO.trigger(Events.Instance_deleted, instancePath);
+                GEPPETTO.trigger(GEPPETTO.Events.Instance_deleted, instancePath);
             },
 
             /**

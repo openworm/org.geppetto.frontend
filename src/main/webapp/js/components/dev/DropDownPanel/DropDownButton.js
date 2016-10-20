@@ -14,7 +14,7 @@ define(function (require) {
 
         componentDidMount: function () {
             var self = this;
-            GEPPETTO.on(Events.Experiment_active, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_active, function () {
                 if (!self.state.disabled) {
                     if (GEPPETTO.DropDownPanel.isOpen()) {
                         GEPPETTO.DropDownPanel.close();
@@ -30,7 +30,7 @@ define(function (require) {
                 self.setState({disabled: newState});
             });
 
-            GEPPETTO.on(Events.Experiment_completed, function (experimentID) {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function (experimentID) {
                 var newState = self.state.disabled;
                 var experiment = window.Project.getActiveExperiment();
                 if (experiment.getId() == experimentID) {

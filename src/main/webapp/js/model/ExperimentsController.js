@@ -99,7 +99,7 @@ define(function (require) {
                 }
                 
 
-                GEPPETTO.trigger(Events.Experiment_updated);                
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_updated);                
             },
             
             setActive:function(experiment){
@@ -242,8 +242,8 @@ define(function (require) {
 
             pause: function () {
             	this.state=ExperimentStateEnum.PAUSED;
-                this.getWorker().postMessage([Events.Experiment_pause]);
-                GEPPETTO.trigger(Events.Experiment_pause);
+                this.getWorker().postMessage([GEPPETTO.Events.Experiment_pause]);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_pause);
             }
             ,
 
@@ -263,8 +263,8 @@ define(function (require) {
                 //we'll use a worker
                 if (this.isPaused()) {
                 	this.state=ExperimentStateEnum.PLAYING;
-                	GEPPETTO.ExperimentsController.getWorker().postMessage([Events.Experiment_resume]);
-                    GEPPETTO.trigger(Events.Experiment_resume);
+                	GEPPETTO.ExperimentsController.getWorker().postMessage([GEPPETTO.Events.Experiment_resume]);
+                    GEPPETTO.trigger(GEPPETTO.Events.Experiment_resume);
                     return "Pause Experiment";
                 }
             }
@@ -273,7 +273,7 @@ define(function (require) {
             stop: function () {
                 this.terminateWorker();
                 this.state=ExperimentStateEnum.STOPPED;
-                GEPPETTO.trigger(Events.Experiment_stop);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_stop);
             }
             ,
 
@@ -302,11 +302,11 @@ define(function (require) {
             	}
             	
             	this.state=ExperimentStateEnum.PLAYING;            	
-                GEPPETTO.trigger(Events.Experiment_play, this.playOptions);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_play, this.playOptions);
                 
                 if (this.playOptions.playAll) {
                     GEPPETTO.ExperimentsController.terminateWorker();
-                    GEPPETTO.trigger(Events.Experiment_update, {
+                    GEPPETTO.trigger(GEPPETTO.Events.Experiment_update, {
                         step: this.maxSteps - 1,
                         playAll: true
                     });
@@ -321,7 +321,7 @@ define(function (require) {
                     this.worker = new Worker("geppetto/js/ExperimentWorker.js");
 
                     // tells worker to update each half a second
-                    this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
+                    this.worker.postMessage([GEPPETTO.Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
 
                     var that = this;
                     // receives message from web worker
@@ -334,7 +334,7 @@ define(function (require) {
                             Project.getActiveExperiment().stop();
                             Project.getActiveExperiment().playAll();
                         } else {
-                            GEPPETTO.trigger(Events.Experiment_update, {
+                            GEPPETTO.trigger(GEPPETTO.Events.Experiment_update, {
                                 step: currentStep,
                                 playAll: false
                             });

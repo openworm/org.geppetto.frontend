@@ -1,6 +1,7 @@
 /**
  * @author Eberhard Graether / http://egraether.com/
  */
+var THREE = window.THREE || require('three-js')();
 
 THREE.TrackballControls = function ( object, domElement ) {
 
@@ -198,7 +199,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 			// Around where do we want to rotate the camera by `angle` degrees?
 			var axis = ( new THREE.Vector3() ).crossVectors( _rotateStart, _rotateEnd ).normalize();
 			// Blank quaternion
-			quaternion = new THREE.Quaternion();
+			var quaternion = new THREE.Quaternion();
 
 			// _this.rotateSpeed contains a fraction, for example:
 			// 1/60 if we want to fully rotate after 60 interactions.

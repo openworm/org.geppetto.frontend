@@ -14,7 +14,7 @@ module.exports = {
     //path: PATHS.build,
 	 path: './js/',
     filename: 'app-bundle.js',
-    publicPath: "/geppetto/js/",
+    publicPath: "/org.geppetto.frontend/geppetto/js/",
   },
   
   // target: "node",

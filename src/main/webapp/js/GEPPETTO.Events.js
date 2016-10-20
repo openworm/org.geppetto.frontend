@@ -38,38 +38,6 @@
  *
  * @enum
  */
-var Events = {
-    Select: "experiment:selection_changed",
-    Focus_changed: "experiment:focus_changed",
-    Experiment_over: "experiment:over",
-    Project_loading: "project:loading",
-    Project_loaded: "project:loaded",
-    Model_loaded: "model:loaded",
-    Experiment_loaded: "experiment:loaded",
-    ModelTree_populated: "experiment:modeltreepopulated",
-    SimulationTree_populated: "experiment:simulationtreepopulated",
-    Experiment_play: "experiment:play",
-    Experiment_status_check: "experiment:status_check",
-    Experiment_pause: "experiment:pause",
-    Experiment_resume: "experiment:resume",
-    Experiment_running: "experiment:running",
-    Experiment_stop: "experiment:stop",
-    Experiment_completed: "experiment:completed",
-    Experiment_failed: "experiment:failed",
-    Experiment_update: "experiment:update",
-    Experiment_updated: "experiment:updated",
-    Experiment_deleted: "experiment_deleted",
-    Experiment_active: "experiment_active",
-    Experiment_created:"experiment:created",
-    Project_persisted: "project:persisted",
-    Spotlight_closed: "spotlight:closed",
-    Instance_deleted: "instance: deleted",
-    Instances_created: "instances: created",
-    Show_Tutorial : "show_tutorial",
-    Hide_Tutorial : "hide_tutorial"
-
-};
-
 define(function (require) {
     return function (GEPPETTO) {
         /**
@@ -77,37 +45,66 @@ define(function (require) {
          */
         GEPPETTO.Events = {
 
+    		Select: "experiment:selection_changed",
+            Focus_changed: "experiment:focus_changed",
+            Experiment_over: "experiment:over",
+            Project_loading: "project:loading",
+            Project_loaded: "project:loaded",
+            Model_loaded: "model:loaded",
+            Experiment_loaded: "experiment:loaded",
+            ModelTree_populated: "experiment:modeltreepopulated",
+            SimulationTree_populated: "experiment:simulationtreepopulated",
+            Experiment_play: "experiment:play",
+            Experiment_status_check: "experiment:status_check",
+            Experiment_pause: "experiment:pause",
+            Experiment_resume: "experiment:resume",
+            Experiment_running: "experiment:running",
+            Experiment_stop: "experiment:stop",
+            Experiment_completed: "experiment:completed",
+            Experiment_failed: "experiment:failed",
+            Experiment_update: "experiment:update",
+            Experiment_updated: "experiment:updated",
+            Experiment_deleted: "experiment_deleted",
+            Experiment_active: "experiment_active",
+            Experiment_created:"experiment:created",
+            Project_persisted: "project:persisted",
+            Spotlight_closed: "spotlight:closed",
+            Instance_deleted: "instance: deleted",
+            Instances_created: "instances: created",
+            Show_Tutorial : "show_tutorial",
+            Hide_Tutorial : "hide_tutorial"	,
+        		
             listening: false,
 
             listen: function () {
-                GEPPETTO.on(Events.Select, function () {
+                GEPPETTO.on(this.Select, function () {
                     //notify widgets that selection has changed in scene
-                    GEPPETTO.WidgetsListener.update(Events.Select);
+                    GEPPETTO.WidgetsListener.update(this.Select);
 
                     //trigger focus change event
-                    GEPPETTO.trigger(Events.Focus_changed);
+                    GEPPETTO.trigger(this.Focus_changed);
                 });
-                GEPPETTO.on(Events.Model_loaded, function () {
+                GEPPETTO.on(this.Model_loaded, function () {
                     G.resetCamera();
                 });
-                GEPPETTO.on(Events.Experiment_active, function () {
+                GEPPETTO.on(this.Experiment_active, function () {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });
-                GEPPETTO.on(Events.Experiment_loaded, function () {
+                GEPPETTO.on(this.Experiment_loaded, function () {
                     if(GEPPETTO.UserController.isLoggedIn()){
                     	GEPPETTO.trigger("hide:spinner");
                     }
                 });
-                GEPPETTO.on(Events.Project_loaded, function () {
+                GEPPETTO.on(this.Project_loaded, function () {
                     var projectID = window.Project.getId();
                 	GEPPETTO.Main.startStatusWorker();
                 });
-                GEPPETTO.on(Events.Experiment_over, function (e) {
+                GEPPETTO.on(this.Experiment_over, function (e) {
                     var name = e.name;
                     var id = e.id;
 
                     //notify listeners experiment has finished playing
-                    GEPPETTO.WidgetsListener.update(Events.Experiment_over);
+                    GEPPETTO.WidgetsListener.update(this.Experiment_over);
 
                     // check if we are in looping mode
                     if (GEPPETTO.getVARS().playLoop === true) {
@@ -117,10 +114,10 @@ define(function (require) {
                         GEPPETTO.Console.log("Experiment " + name + " with " + id + " is over ");
                     }
                 });
-                GEPPETTO.on(Events.Experiment_play, function (parameters) {
-                    GEPPETTO.WidgetsListener.update(Events.Experiment_play, parameters);
+                GEPPETTO.on(this.Experiment_play, function (parameters) {
+                    GEPPETTO.WidgetsListener.update(this.Experiment_play, parameters);
                 });
-                GEPPETTO.on(Events.Experiment_update, function (parameters) {
+                GEPPETTO.on(this.Experiment_update, function (parameters) {
                     if (parameters.playAll != null || parameters.step != undefined) {
                         //update scene brightness
                     	for (var key in GEPPETTO.G.listeners) {
@@ -132,13 +129,15 @@ define(function (require) {
                     	}
                     }
                     //notify widgets a restart of data is needed
-                    GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);
+                    GEPPETTO.WidgetsListener.update(this.Experiment_update, parameters);
                 });
-                GEPPETTO.on(Events.Experiment_stop, function (parameters) {
+                GEPPETTO.on(this.Experiment_stop, function (parameters) {
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
                 });
             }
+            
+            
         };
     }
 });

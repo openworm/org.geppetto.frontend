@@ -220,7 +220,7 @@ define(['backbone'], function (require) {
                     this.status == GEPPETTO.Resources.ExperimentStatus.ERROR)
                     && activeExperimentId == this.id) {
 
-                    GEPPETTO.trigger(Events.Experiment_running);
+                    GEPPETTO.trigger(GEPPETTO.Events.Experiment_running);
                     var parameters =
                     {};
                     parameters["experimentId"] = this.id;

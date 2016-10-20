@@ -46,7 +46,8 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
     var Griddle = require('griddle-react');
-    var Tabs = require('./vendor/js/react-simpletabs.js');
+    //var Tabs = require('./vendor/js/react-simpletabs.js');
+    var Tabs = require('react-simpletabs');
     var typeahead = require('jquery-typeahead');
     var Bloodhound = require('bloodhound-js');
     var Handlebars = require('handlebars');

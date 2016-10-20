@@ -42,6 +42,13 @@ define(function (require) {
 	var $ = require('jquery');
 	var Type = require('../../model/Type');
 	var anchorme = require('./vendor/anchorme.min');
+	var slick = require('./vendor/slick.min');
+	
+	var widgetUtility = require("../WidgetUtility");
+	widgetUtility.loadCss("geppetto/js/widgets/popup/Popup.css");
+	widgetUtility.loadCss("geppetto/js/widgets/popup/vendor/slick.css");
+	widgetUtility.loadCss("geppetto/js/widgets/popup/vendor/slick-theme.css");
+	
 	/**
 	 * Private function to hookup custom event handlers
 	 *

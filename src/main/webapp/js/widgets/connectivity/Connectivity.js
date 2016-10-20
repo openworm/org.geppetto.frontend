@@ -41,8 +41,19 @@ define(function (require) {
 
     var Widget = require('../Widget');
     var $ = require('jquery');
+    var _ = require('underscore');
     var Instance = require('../../model/Instance');
     require('../../mixins/bootstrap/modal.js')
+    
+	require('./vendor/d3.min');
+	require('./vendor/d3.hive.v0');
+	var chords = require('./chords');
+	var hives = require('./hives');
+	var matrices = require('./matrices');
+	var forces = require('./forces');
+    
+    var widgetUtility = require("../WidgetUtility");
+    widgetUtility.loadCss("geppetto/js/widgets/connectivity/Connectivity.css");
 
     return Widget.View.extend({
 

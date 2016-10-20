@@ -36,11 +36,11 @@ define(function (require) {
         ReactDOM = require('react-dom'),
         $ = require('jquery'),
         Button = require('../../../mixins/bootstrap/button'),
-        GEPPETTO = require('geppetto'),
+        GEPPETTO = require('geppetto');
 
     var Tutorial = React.createClass({
         mixins: [
-            require('./mixins/bootstrap/modal.js')
+            require('../../../mixins/bootstrap/modal.js')
         ],
 
         dontShowNextTime: function(val){
@@ -86,4 +86,6 @@ define(function (require) {
             </div>
         }
     });
+    
+    return Tutorial;
 });

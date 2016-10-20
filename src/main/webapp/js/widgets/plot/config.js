@@ -60,7 +60,7 @@
 //         "widgets/plot/vendor/jquery.flot.crosshair": ["flot"]
 //     }
 // });
-
+//
 // /*
 //  * Libraries used by plot widget
 //  */
@@ -70,7 +70,7 @@
 // libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
 // libraries.push("widgets/plot/vendor/jquery.flot.crosshair");
 // libraries.push("widgets/plot/vendor/jquery.flot.downsample");
-
+//
 // define("math.global", ["mathjs"], function (_) {
 //     math = _;
 // });
@@ -84,12 +84,16 @@
 //     loadCss("geppetto/js/widgets/plot/Plot.css");
 // });	
 
-// //Load PlotsController and other classes using GEPPETTO
-// define(function(require) {
-// 	return function(GEPPETTO) {
-// 		// Register Commands
-// 		GEPPETTO.MenuManager.registerNewCommandProvider([GEPPETTO.Resources.DYNAMICS_TYPE,GEPPETTO.Resources.VARIABLE_NODE],
-// 				GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getCommands);
-// 	};
-// });
+
+//var widgetUtility = require("../WidgetUtility");
+//widgetUtility.loadCss("geppetto/js/widgets/plot/Plot.css");
+
+ //Load PlotsController and other classes using GEPPETTO
+ define(function(require) {
+ 	return function(GEPPETTO) {
+ 		// Register Commands
+ 		GEPPETTO.MenuManager.registerNewCommandProvider([GEPPETTO.Resources.DYNAMICS_TYPE,GEPPETTO.Resources.VARIABLE_NODE],
+ 				GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getCommands);
+ 	};
+ });
 

@@ -41,6 +41,13 @@ define(function (require) {
     var Widget = require('../Widget');
     var $ = require('jquery');
     var math = require('mathjs');
+    
+    var Flot = require("./vendor/jquery.flot.min");
+    require("./vendor/jquery.flot.resize.min");
+    require("./vendor/jquery.flot.axislabels.min");
+    require("./vendor/jquery.flot.downsample");
+    require("./vendor/jquery.flot.crosshair");
+    
 
     return Widget.View.extend({
         plot: null,

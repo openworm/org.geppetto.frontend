@@ -43,28 +43,28 @@ define(function (require) {
 
         require('./WidgetFactory')(GEPPETTO);
         require('./WidgetsListener')(GEPPETTO);
-        require("./WidgetUtility");
+        var widgetUtility = require("./WidgetUtility");
         require("./ContextMenu")(GEPPETTO);
         //Plot Widget
-        //require("./plot/config")(GEPPETTO);
+        require("./plot/config")(GEPPETTO);
         //Popup Widget
-        //require("./popup/config");
-        //Scatter3d Widget
-        //require("./scatter3d/config");
-        //TreeVisualiser DAT Widget
-        //require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
-        //TreeVisualiser D3 Widget
-        //require("./treevisualiser/treevisualiserd3/config")(GEPPETTO);
-        //VariableVisualiser widget
-        //require("./variablevisualiser/config");
+        //require("./popup/config"); <-- Migrated
+//        //Scatter3d Widget
+//        require("./scatter3d/config");
+//        //TreeVisualiser DAT Widget
+//        require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
+//        //TreeVisualiser D3 Widget
+//        require("./treevisualiser/treevisualiserd3/config")(GEPPETTO);
+//        //VariableVisualiser widget
+//        require("./variablevisualiser/config");
         //Connectivity Widget
-        //require("./connectivity/config");
-        //Buttonbar widget
-        //require("./buttonBar/config");
+        //require("./connectivity/config");   <-- Migrated
+//        //Buttonbar widget
+//        require("./buttonBar/config");
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");
 
-        //loadCss("geppetto/js/widgets/Widget.css");
+        widgetUtility.loadCss("geppetto/js/widgets/Widget.css");
     };
 });

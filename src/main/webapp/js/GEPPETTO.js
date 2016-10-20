@@ -49,16 +49,6 @@ define(function (require) {
     var isWebglEnabled = require('detector-webgl');
     var THREEx = require('./vendor/THREEx.KeyboardState');
     var THREE = require('three-js')(['ConvolutionShader','CopyShader','FilmShader','FocusShader','EffectComposer','MaskPass','RenderPass','BloomPass','ShaderPass','FilmPass'])
-    // require('vendor/shaders/ConvolutionShader');
-    // require('vendor/shaders/CopyShader');
-    // require('vendor/shaders/FilmShader');
-    // require('vendor/shaders/FocusShader');
-    // require('vendor/postprocessing/EffectComposer');
-    // require('vendor/postprocessing/MaskPass');
-    // require('vendor/postprocessing/RenderPass');
-    // require('vendor/postprocessing/BloomPass');
-    // require('vendor/postprocessing/ShaderPass');
-    // require('vendor/postprocessing/FilmPass');
 
     var step = 0;
 

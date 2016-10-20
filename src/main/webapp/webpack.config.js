@@ -16,7 +16,9 @@ module.exports = {
     filename: 'app-bundle.js',
     publicPath: "/org.geppetto.frontend/geppetto/js/",
   },
-  
+  resolve: {
+    extensions: ['', '.js', '.json']
+  },
   // target: "node",
   
   module: {

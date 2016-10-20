@@ -3,8 +3,9 @@
  */
 
 
-forces = {
-    createForceLayout: function (context) {
+define(function(require){
+	return {
+		createForceLayout: function (context) {
 
             //TODO: 10/20 categories hardcoded in color scales
             var linkTypeScale = d3.scale.category10()
@@ -82,4 +83,5 @@ forces = {
             //Links
             context.createLegend('legend2', linkTypeScale, legendPosition, 'Synapse Types');
         }
-}
+	}
+});

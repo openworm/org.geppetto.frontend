@@ -45,11 +45,11 @@ define(function (require) {
 
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
-    var Griddle = require('griddle');
+    var Griddle = require('griddle-react');
     var Tabs = require('./vendor/js/react-simpletabs.js');
-    var typeahead = require('typeahead');
+    var typeahead = require('jquery-typeahead');
     var Bloodhound = require('bloodhound-js');
-    var handlebars = require('handlebars');
+    var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
 
     // query model object to represent component state and trigger view updates

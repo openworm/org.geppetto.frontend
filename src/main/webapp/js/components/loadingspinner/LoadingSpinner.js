@@ -32,18 +32,17 @@
 
 define(function(require) {
 
-	var React = require('react'),
-		ReactDOM = require('react-dom'),
-		GEPPETTO = require('geppetto');
+	var React = require('react');
+	var	GEPPETTO = require('geppetto');
 	
 	return React.createClass({		
 		mixins: [require('jsx!mixins/bootstrap/modal')],
 		timer1:null,
 		timer2:null,
+        visible: false,
 		
 		getInitialState: function() {
 			return {
-				visible:false,
 				text :'Loading...',
 				logo :'gpt-gpt_logo'
 			};
@@ -52,10 +51,15 @@ define(function(require) {
 		setLogo:function(logo){
 			this.setState({logo:logo});
 		},
-		
-		
+
 		hideSpinner:function(){
-			if(this.isMounted()){
+			if(this.isMounted() && this.visible){
+                if(this.timer1!=null){
+                    clearTimeout(this.timer1);
+                    clearTimeout(this.timer2);
+                }
+
+                this.visible = false;
 				this.hide();
 			}
 		},
@@ -64,7 +68,8 @@ define(function(require) {
 			var that=this;
 
 			if(that.isMounted()){
-				this.setState({text:label, visible:true});
+                this.visible = true;
+				this.setState({text:label});
 				this.show();
 			}
 			
@@ -84,8 +89,6 @@ define(function(require) {
 					that.setState({text:GEPPETTO.Resources.SPOTLIGHT_HINT});
 				}
 			}).bind(this), 5000);
-			
-			
 		},
 		
 		componentDidMount: function(){
@@ -101,13 +104,11 @@ define(function(require) {
 			GEPPETTO.on(Events.Hide_spinner, function(label) {
 				setTimeout(that.hideSpinner, 1);
 			});
-			
 		},
 		
 		render: function () {
-			if(this.state.visible){
+			if(this.visible){
 				return (
-		            	
 		            	<div className="modal fade" id="loading-spinner">
 		            		<div className="spinner-backdrop">
 			            		<div className="spinner-container">

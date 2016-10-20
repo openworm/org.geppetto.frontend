@@ -13,7 +13,14 @@ define(function (require) {
 
         return {
             propTypes: {
-                handleShow: React.PropTypes.func, handleShown: React.PropTypes.func, handleHide: React.PropTypes.func, handleHidden: React.PropTypes.func, backdrop: React.PropTypes.bool, keyboard: React.PropTypes.bool, show: React.PropTypes.bool, remote: React.PropTypes.string
+                handleShow: React.PropTypes.func,
+                handleShown: React.PropTypes.func,
+                handleHide: React.PropTypes.func,
+                handleHidden: React.PropTypes.func,
+                backdrop: React.PropTypes.bool,
+                keyboard: React.PropTypes.bool,
+                show: React.PropTypes.bool,
+                remote: React.PropTypes.string
             },
 
             getDefaultProps: function () {
@@ -28,20 +35,11 @@ define(function (require) {
                     }
                 }
             },
-
-            //Close modal if one is currently open
-            componentWillMount: function() {
-                if($('.modal')) {
-                    $('.modal').modal('hide');
-                }
-            },
             
             componentDidMount: function () {
                 var $modal = $(ReactDOM.findDOMNode(this)).modal({
                     backdrop: this.props.backdrop, keyboard: this.props.keyboard, show: this.props.show, remote: this.props.remote
                 });
-                
-                
 
                 handlerProps.forEach(function (prop) {
                     if (this[prop]) {
@@ -51,8 +49,8 @@ define(function (require) {
                         $modal.on(bsModalEvents[prop], this.props[prop])
                     }
                 }.bind(this));
-                
-            }, 
+            },
+
             componentWillUnmount: function () {
                 var $modal = $(ReactDOM.findDOMNode(this));
 
@@ -66,19 +64,23 @@ define(function (require) {
                 }.bind(this));
 
                 $modal.modal('hide');
-            }, 
+            },
+
             hide: function () {
                 $(ReactDOM.findDOMNode(this)).hide();
                 $(".modal-backdrop").hide();
-            }, 
+            },
+
             show: function () {
             	$(ReactDOM.findDOMNode(this)).modal('show');
                 $(ReactDOM.findDOMNode(this)).show();
                 $(".modal-backdrop").show();
-            }, 
+            },
+
             toggle: function () {
                 $(ReactDOM.findDOMNode(this)).modal('toggle');
-            }, 
+            },
+
             renderCloseButton: function () {
                 return <button
                 type="button"

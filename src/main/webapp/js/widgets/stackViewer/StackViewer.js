@@ -104,8 +104,8 @@ define(function (require) {
                 Widget.View.prototype.setSize.call(this, data.height, data.width);
 
                 console.log('data:');
-                console.log(JSON.stringify(data));
-                console.log(JSON.stringify(this.data));
+                console.log(data.instances.length);
+                console.log(this.data.instances.length);
             }else{
                 console.log('set data issue:');
                 console.log(JSON.stringify(data));

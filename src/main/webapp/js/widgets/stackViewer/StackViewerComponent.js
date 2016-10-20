@@ -726,14 +726,6 @@ define(function (require) {
             }
         },
 
-        componentDidUpdate: function () {
-            // console.log('updating stack viewer component');
-            // console.log(this.props.data);
-            // if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
-            //     this.handleInstances(this.props.data.instances);
-            // }
-        },
-
         componentWillReceiveProps: function (nextProps) {
             console.log('Recieved Props:');
             console.log(nextProps);

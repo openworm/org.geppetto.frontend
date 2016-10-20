@@ -737,6 +737,9 @@ define(function (require) {
         componentWillReceiveProps: function (nextProps) {
             console.log('Recieved Props:');
             console.log(nextProps);
+            if (nextProps.data && nextProps.data != null && nextProps.data.instances && nextProps.data.instances != null) {
+                this.handleInstances(nextProps.data.instances);
+            }
         },
 
         handleInstances: function (instances) {

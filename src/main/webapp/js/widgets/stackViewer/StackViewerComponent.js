@@ -468,10 +468,10 @@ define(function (require) {
                     wordWrapWidth: this.renderer.view.width
                 };
                 this.state.buffer[-1] = new PIXI.Text(this.state.text, style);
-                this.state.buffer[-1].x = -(this.renderer.view.width * 0.5);
-                this.state.buffer[-1].y = -(this.renderer.view.height * 0.5);
-                this.state.buffer[-1].anchor.x = 0;
-                this.state.buffer[-1].anchor.y = 0;
+                this.state.buffer[-1].x = (this.renderer.view.width * 0.5);
+                this.state.buffer[-1].y = (this.renderer.view.height * 0.5);
+                this.state.buffer[-1].anchor.x = 100;
+                this.state.buffer[-1].anchor.y = 100;
                 this.state.buffer[-1].zOrder = 1000;
                 this.stage.addChild(this.state.buffer[-1]);
             } else {

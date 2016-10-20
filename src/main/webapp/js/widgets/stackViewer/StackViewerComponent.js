@@ -473,7 +473,7 @@ define(function (require) {
          * When we get new props, run the appropriate imperative functions
          **/
         componentWillReceiveProps: function (nextProps) {
-            console.log('update props ' + nextProps);
+            console.log('update props ' + JSON.stringify(nextProps));
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
                 this.state.stack = nextProps.stack;
                 this.state.color = nextProps.color;
@@ -745,7 +745,7 @@ define(function (require) {
                 for (instance in instances) {
                     try {
                         vals = instance.getVariable().getInitialValue().value;
-                        console.log(vals);
+                        console.log(JSON.stringify(vals));
                         data = JSON.parse(vals.data);
                         server = data.serverUrl;
                         files.push(data.fileLocation);

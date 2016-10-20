@@ -372,6 +372,9 @@ define(function (require) {
                         clearInterval(sendMessage);
                     }
                 }, 100);
+                
+                $("#footer").addClass("footerFocus");
+                
                 return console;
             },
 

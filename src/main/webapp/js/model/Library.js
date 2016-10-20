@@ -38,8 +38,8 @@
  * @author Giovanni Idili
  */
 define(function (require) {
-    var ObjectWrapper = require('model/ObjectWrapper');
-    var ImportType = require('model/ImportType');
+    var ObjectWrapper = require('./ObjectWrapper');
+    var ImportType = require('./ImportType');
 
 
     function Library(options) {

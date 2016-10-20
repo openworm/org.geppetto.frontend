@@ -35,14 +35,14 @@ define(function (require) {
     var React = require('react'),
         ReactDOM = require('react-dom'),
         $ = require('jquery'),
-        XMLEditor = require('jsx!./XMLEditor'),
+        XMLEditor = require('./XMLEditor.js'),
         GEPPETTO = require('geppetto');
         
 
     return React.createClass({
         mixins: [
-            require('jsx!mixins/bootstrap/modal'),
-            require('jsx!mixins/Events')
+            require('../../../mixins/bootstrap/modal.js'),
+            require('../../../mixins/Events.js')
         ],
 
         getInitialState: function() {

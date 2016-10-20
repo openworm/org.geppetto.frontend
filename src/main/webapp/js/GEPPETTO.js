@@ -43,21 +43,22 @@ define(function (require) {
 
     //These two libraries are required here so that Geppetto can work properly in an iframe (as embedded website).
     //Otherwise, sometimes (randomly)  these libraries are not loaded on time and some js commands failed and the web is not loaded properly.
-    require('vendor/jquery-ui.min');
-    require('vendor/bootstrap.min');
+    require('jquery-ui');
+    require('bootstrap');
 
-    require('vendor/Detector');
-    require('vendor/THREEx.KeyboardState');
-    require('vendor/shaders/ConvolutionShader');
-    require('vendor/shaders/CopyShader');
-    require('vendor/shaders/FilmShader');
-    require('vendor/shaders/FocusShader');
-    require('vendor/postprocessing/EffectComposer');
-    require('vendor/postprocessing/MaskPass');
-    require('vendor/postprocessing/RenderPass');
-    require('vendor/postprocessing/BloomPass');
-    require('vendor/postprocessing/ShaderPass');
-    require('vendor/postprocessing/FilmPass');
+    var isWebglEnabled = require('detector-webgl');
+    var THREEx = require('./vendor/THREEx.KeyboardState');
+    var THREE = require('three-js')(['ConvolutionShader','CopyShader','FilmShader','FocusShader','EffectComposer','MaskPass','RenderPass','BloomPass','ShaderPass','FilmPass'])
+    // require('vendor/shaders/ConvolutionShader');
+    // require('vendor/shaders/CopyShader');
+    // require('vendor/shaders/FilmShader');
+    // require('vendor/shaders/FocusShader');
+    // require('vendor/postprocessing/EffectComposer');
+    // require('vendor/postprocessing/MaskPass');
+    // require('vendor/postprocessing/RenderPass');
+    // require('vendor/postprocessing/BloomPass');
+    // require('vendor/postprocessing/ShaderPass');
+    // require('vendor/postprocessing/FilmPass');
 
     var step = 0;
 
@@ -113,8 +114,9 @@ define(function (require) {
          *            containerp - HTML element to draw the 3D Scene
          * @returns {Boolean}
          */
+        //AQP: Almost same code!!!!!!!!!!!
         init: function (containerp) {
-            if (!Detector.webgl) {
+            if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
                 return false;
             } else {
@@ -128,12 +130,19 @@ define(function (require) {
          * @returns {Boolean} True or false, whether webgl is detected or not
          */
         webGLAvailable: function () {
-            if (!Detector.webgl) {
-                Detector.addGetWebGLMessage();
-                return false;
-            } else {
+            if (isWebglEnabled){
                 return true;
             }
+            else{
+                Detector.addGetWebGLMessage();
+                return false;
+            }
+            // if (!Detector.webgl) {
+            //     Detector.addGetWebGLMessage();
+            //     return false;
+            // } else {
+            //     return true;
+            // }
         },
 
         /**
@@ -561,34 +570,34 @@ define(function (require) {
 
     _.extend(GEPPETTO, Backbone.Events);
 
-    require('SandboxConsole')(GEPPETTO);
-    require('GEPPETTO.Resources')(GEPPETTO);
-    require('GEPPETTO.Events')(GEPPETTO);
-    require('GEPPETTO.Init')(GEPPETTO);
-    require('3d_visualization/GEPPETTO.SceneFactory')(GEPPETTO);
-    require('3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
-    require('GEPPETTO.Vanilla')(GEPPETTO);
-    require('GEPPETTO.FE')(GEPPETTO);
-    require('GEPPETTO.UserController')(GEPPETTO);
-    require('GEPPETTO.Flows')(GEPPETTO);
-    require('GEPPETTO.ScriptRunner')(GEPPETTO);
+    require('./SandboxConsole')(GEPPETTO);
+    require('./GEPPETTO.Resources')(GEPPETTO);
+    require('./GEPPETTO.Events')(GEPPETTO);
+    require('./GEPPETTO.Init')(GEPPETTO);
+    require('./3d_visualization/GEPPETTO.SceneFactory')(GEPPETTO);
+    require('./3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
+    require('./GEPPETTO.Vanilla')(GEPPETTO);
+    require('./GEPPETTO.FE')(GEPPETTO);
+    require('./GEPPETTO.UserController')(GEPPETTO);
+    require('./GEPPETTO.Flows')(GEPPETTO);
+    require('./GEPPETTO.ScriptRunner')(GEPPETTO);
     // require('GEPPETTO.SimulationContentEditor')(GEPPETTO);
-    require('GEPPETTO.JSEditor')(GEPPETTO);
-    require('GEPPETTO.Console')(GEPPETTO);
-    require('GEPPETTO.Utility')(GEPPETTO);
-    require('GEPPETTO.MenuManager')(GEPPETTO);
-    require('websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
-    require('websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
-    require('websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
-    require('geppetto-objects/G')(GEPPETTO);
-    require('GEPPETTO.Main')(GEPPETTO);
+    require('./GEPPETTO.JSEditor')(GEPPETTO);
+    require('./GEPPETTO.Console')(GEPPETTO);
+    require('./GEPPETTO.Utility')(GEPPETTO);
+    require('./GEPPETTO.MenuManager')(GEPPETTO);
+    require('./websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
+    require('./websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
+    require('./websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
+    require('./geppetto-objects/G')(GEPPETTO);
+    require('./GEPPETTO.Main')(GEPPETTO);
     // require('GEPPETTO.Tutorial')(GEPPETTO);
-    require("widgets/includeWidget")(GEPPETTO);
-    require('model/ProjectFactory')(GEPPETTO);
-    require('model/ModelFactory')(GEPPETTO);
-    require('model/ExperimentsController')(GEPPETTO);
-    require('controllers/QueriesController')(GEPPETTO);
-    require('components/ComponentsController')(GEPPETTO);
+    require("./widgets/includeWidget")(GEPPETTO);
+    require('./model/ProjectFactory')(GEPPETTO);
+    require('./model/ModelFactory')(GEPPETTO);
+    require('./model/ExperimentsController')(GEPPETTO);
+    require('./controllers/QueriesController')(GEPPETTO);
+    require('./components/ComponentsController')(GEPPETTO);
 
     return GEPPETTO;
 

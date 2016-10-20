@@ -35,11 +35,11 @@ define(function (require) {
     var React = require('react'),
         ReactDOM = require('react-dom'),
         GEPPETTO = require('geppetto'),
-        LoadSimModal = require('jsx!../LoadSimulationModal');
+        LoadSimModal = require('../LoadSimulationModal');
 
 
     return React.createClass({
-        mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
+        mixins: [require('../../../../mixins/TutorialMixin'), require('../../../../mixins/Button')],
 
         popoverTitle: 'Load a Simulation',
 

@@ -36,10 +36,10 @@ define(function (require) {
         ReactDOM = require('react-dom'),
     	GEPPETTO = require('geppetto');
     	$ = require('jquery'),
-        HelpModal = require('jsx!../../help/HelpModal');
+        HelpModal = require('../../help/HelpModal');
 
     return React.createClass({
-        mixins: [require('mixins/Button')],
+        mixins: [require('../../../../mixins/Button')],
         
         componentDidMount: function() {
         	

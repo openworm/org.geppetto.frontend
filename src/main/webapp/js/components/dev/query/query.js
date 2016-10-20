@@ -46,7 +46,7 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
     var Griddle = require('griddle');
-    var Tabs = require('geppetto/js/components/dev/query/vendor/js/react-simpletabs.js');
+    var Tabs = require('./vendor/js/react-simpletabs.js');
     var typeahead = require('typeahead');
     var bh = require('bloodhound');
     var handlebars = require('handlebars');
@@ -415,7 +415,7 @@ define(function (require) {
         updateResults : false,
         configuration: { DataSources: {} },
         mixins: [
-            require('jsx!mixins/bootstrap/modal')
+            require('../../../mixins/bootstrap/modal.js')
         ],
 
         defaultDataSources: function (q, sync) {

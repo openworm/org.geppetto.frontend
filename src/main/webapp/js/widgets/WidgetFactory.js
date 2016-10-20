@@ -36,14 +36,14 @@
  */
 define(function (require) {
 
-    PlotsController = require('widgets/plot/controllers/PlotsController');
-    Scatter3dController = require('widgets/scatter3d/controllers/Scatter3dController');
-    ConnectivityController = require('widgets/connectivity/controllers/ConnectivityController');
-    PopupsController = require('widgets/popup/controllers/PopupController');
-    TreeVisualiserControllerD3 = require('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
-    TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
-    VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
-    ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
+    PlotsController = require('./plot/controllers/PlotsController');
+    Scatter3dController = require('./scatter3d/controllers/Scatter3dController');
+    ConnectivityController = require('./connectivity/controllers/ConnectivityController');
+    PopupsController = require('./popup/controllers/PopupController');
+    TreeVisualiserControllerD3 = require('./treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
+    TreeVisualiserControllerDAT = require('./treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
+    VariableVisualizerController = require('./variablevisualiser/controllers/VariableVisualiserController');
+    ButtonBarController = require('./buttonBar/controllers/ButtonBarController');
     //Use as template for new widgets
     //WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
 

@@ -39,8 +39,8 @@
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function (require) {
-    var AWidgetController = require('widgets/AWidgetController');
-    var TreeVisualiserD3 = require('widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3');
+    var AWidgetController = require('../../../AWidgetController');
+    var TreeVisualiserD3 = require('../TreeVisualiserD3');
 
     /**
      * @exports Widgets/Connectivity/TreeVisualiserControllerD3Controller

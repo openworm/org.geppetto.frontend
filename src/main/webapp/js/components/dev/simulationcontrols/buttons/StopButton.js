@@ -36,7 +36,7 @@ define(function (require) {
         GEPPETTO = require('geppetto');
 
     return React.createClass({
-        mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
+        mixins: [require('../../../../mixins/TutorialMixin'), require('../../../../mixins/Button')],
 
         componentDidMount: function() {
             if(GEPPETTO.tutorialEnabled) {

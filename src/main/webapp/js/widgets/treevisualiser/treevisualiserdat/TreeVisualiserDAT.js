@@ -39,7 +39,7 @@
 
 define(function (require) {
 
-    var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
+    var TreeVisualiser = require('../TreeVisualiser');
     var $ = require('jquery');
     
     // Icons to display on hover

@@ -40,7 +40,7 @@
  */
 define(function (require) {
 
-    var Node = require('model/Node');
+    var Node = require('./Node');
 
     return Node.Model.extend({
         simulatorId: "",

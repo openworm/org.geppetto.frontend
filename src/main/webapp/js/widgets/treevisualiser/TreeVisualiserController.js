@@ -37,8 +37,8 @@
  */
 define(function (require) {
 
-    var TreeVisualiserNode = require('widgets/treevisualiser/TreeVisualiserNode');
-    var TreeVisualiserWrappedObject = require('widgets/treevisualiser/TreeVisualiserWrappedObject');
+    var TreeVisualiserNode = require('./TreeVisualiserNode');
+    var TreeVisualiserWrappedObject = require('./TreeVisualiserWrappedObject');
 
     return Backbone.Model.extend({
     		expandNodes : false,

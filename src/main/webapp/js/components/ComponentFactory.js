@@ -36,7 +36,7 @@ define(function (require) {
 
 		var React = require('react');
 		var ReactDOM = require('react-dom');
-		var spinner=require('jsx!./loadingspinner/LoadingSpinner');		
+		var spinner=require('./loadingspinner/LoadingSpinner.js');		
 
 		//All the components potentially instantiable go here
 		var components = {

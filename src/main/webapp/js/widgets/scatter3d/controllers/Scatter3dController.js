@@ -38,8 +38,8 @@
  */
 define(function (require) {
 
-    var Scatter3d = require('widgets/scatter3d/Scatter3d');
-    var AWidgetController = require('widgets/AWidgetController');
+    var Scatter3d = require('../Scatter3d');
+    var AWidgetController = require('../../AWidgetController');
 
     /**
      * @exports Widgets/Scatter3d/Scatter3dController

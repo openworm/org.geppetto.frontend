@@ -15,7 +15,8 @@ define(function (require) {
         var $ = require('jquery');
         var _ = require('underscore');
 
-        require('vendor/backbone-localStorage.min');
+        // require('vendor/backbone-localStorage.min');
+        require("backbone.localstorage");
 
         GEPPETTO.Sandbox = {
 

@@ -39,7 +39,7 @@
  */
 define(function (require) {
 
-    var Instance = require('model/Instance');
+    var Instance = require('./Instance');
 
     function ArrayElementInstance(options) {
         Instance.prototype.constructor.call(this, options);

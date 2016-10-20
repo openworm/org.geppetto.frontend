@@ -4,7 +4,7 @@ define(function (require) {
     	GEPPETTO = require('geppetto');
 
     return React.createClass({
-        mixins: [require('mixins/Button')],
+        mixins: [require('../../../../mixins/Button')],
         
         componentDidMount: function() {
 

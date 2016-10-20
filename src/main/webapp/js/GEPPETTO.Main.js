@@ -44,8 +44,8 @@ define(function(require) {
 
         var $ = require('jquery'),
             React = require('react'),
-            InfoModal = require('jsx!components/popups/InfoModal'),
-            ProjectNode = require('model/ProjectNode'),
+            InfoModal = require('./components/popups/InfoModal'),
+            ProjectNode = require('./model/ProjectNode'),
             ReactDOM = require('react-dom');
 
         /**

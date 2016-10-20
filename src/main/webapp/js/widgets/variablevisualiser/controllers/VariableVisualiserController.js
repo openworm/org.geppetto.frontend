@@ -37,8 +37,8 @@
  */
 define(function (require) {
 
-    var AWidgetController = require('widgets/AWidgetController');
-    var VarVis = require('widgets/variablevisualiser/VariableVisualiser');
+    var AWidgetController = require('../../AWidgetController');
+    var VarVis = require('../VariableVisualiser');
 
     /**
      * @exports Widgets/VariableVisualiser/VariableVisualiserController

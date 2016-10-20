@@ -42,8 +42,8 @@
  */
 define(function (require) {
 
-    var ObjectWrapper = require('model/ObjectWrapper');
-    var VisualGroupElement = require('model/VisualGroupElement');
+    var ObjectWrapper = require('./ObjectWrapper');
+    var VisualGroupElement = require('./VisualGroupElement');
 
 
     function VisualGroup(options) {

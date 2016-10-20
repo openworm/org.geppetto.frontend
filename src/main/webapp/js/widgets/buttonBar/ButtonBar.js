@@ -38,7 +38,7 @@
  */
 define(function (require) {
 
-    var Widget = require('widgets/Widget');
+    var Widget = require('../Widget');
     var $ = require('jquery');
 
     return Widget.View

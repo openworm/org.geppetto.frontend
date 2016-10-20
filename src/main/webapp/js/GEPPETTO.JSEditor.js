@@ -43,7 +43,7 @@ define(function (require) {
         var editingJS = false;
         var jsEditor = null;
 
-        require('codemirror');
+        var CodeMirror = require('codemirror');
 
         CodeMirror.on(window, "resize", function () {
             var showing = document.body.getElementsByClassName("CodeMirror-fullscreen")[0];

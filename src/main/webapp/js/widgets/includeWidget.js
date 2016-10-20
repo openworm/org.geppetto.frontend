@@ -41,30 +41,30 @@
 define(function (require) {
     return function (GEPPETTO) {
 
-        require('widgets/WidgetFactory')(GEPPETTO);
-        require('widgets/WidgetsListener')(GEPPETTO);
-        require("widgets/WidgetUtility");
-        require("widgets/ContextMenu")(GEPPETTO);
+        require('./WidgetFactory')(GEPPETTO);
+        require('./WidgetsListener')(GEPPETTO);
+        require("./WidgetUtility");
+        require("./ContextMenu")(GEPPETTO);
         //Plot Widget
-        require("widgets/plot/config")(GEPPETTO);
+        //require("./plot/config")(GEPPETTO);
         //Popup Widget
-        require("widgets/popup/config");
+        //require("./popup/config");
         //Scatter3d Widget
-        require("widgets/scatter3d/config");
+        //require("./scatter3d/config");
         //TreeVisualiser DAT Widget
-        require("widgets/treevisualiser/treevisualiserdat/config")(GEPPETTO);
+        //require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
         //TreeVisualiser D3 Widget
-        require("widgets/treevisualiser/treevisualiserd3/config")(GEPPETTO);
+        //require("./treevisualiser/treevisualiserd3/config")(GEPPETTO);
         //VariableVisualiser widget
-        require("widgets/variablevisualiser/config");
+        //require("./variablevisualiser/config");
         //Connectivity Widget
-        require("widgets/connectivity/config");
+        //require("./connectivity/config");
         //Buttonbar widget
-        require("widgets/buttonBar/config");
+        //require("./buttonBar/config");
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");
 
-        loadCss("geppetto/js/widgets/Widget.css");
+        //loadCss("geppetto/js/widgets/Widget.css");
     };
 });

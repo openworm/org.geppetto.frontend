@@ -37,7 +37,7 @@ define(function(require) {
 		GEPPETTO = require('geppetto');
 	
 	return React.createClass({		
-		mixins: [require('jsx!mixins/bootstrap/modal')],
+		mixins: [require('../../mixins/bootstrap/modal.js')],
 		timer1:null,
 		timer2:null,
 		

@@ -38,7 +38,7 @@
  * @author nitesh thali
  */
 define(function (require) {
-    var Value = require('model/Value');
+    var Value = require('./Value');
     
 
     function ImportValue(options) {

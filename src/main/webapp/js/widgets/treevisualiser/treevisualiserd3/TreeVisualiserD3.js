@@ -39,7 +39,7 @@
 
 define(function (require) {
 
-    var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
+    var TreeVisualiser = require('../TreeVisualiser');
     var $ = require('jquery');
 
     return TreeVisualiser.TreeVisualiser.extend({

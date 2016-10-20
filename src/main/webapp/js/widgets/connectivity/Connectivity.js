@@ -39,10 +39,10 @@
 
 define(function (require) {
 
-    var Widget = require('widgets/Widget');
+    var Widget = require('../Widget');
     var $ = require('jquery');
-    var Instance = require('model/Instance');
-    require('jsx!mixins/bootstrap/modal')
+    var Instance = require('../../model/Instance');
+    require('../../mixins/bootstrap/modal.js')
 
     return Widget.View.extend({
 

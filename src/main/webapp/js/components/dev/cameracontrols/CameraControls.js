@@ -37,7 +37,7 @@ define(function(require) {
 
     var CameraControls = React.createClass({
 
-        mixins:[require('mixins/TutorialMixin')],
+        mixins:[require('../../../mixins/TutorialMixin')],
 
         popoverTitle: 'Camera Controls',
 

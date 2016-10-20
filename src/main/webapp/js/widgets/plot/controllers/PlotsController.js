@@ -37,8 +37,8 @@
  */
 define(function (require) {
 
-    var AWidgetController = require('widgets/AWidgetController');
-    var Plot = require('widgets/plot/Plot');
+    var AWidgetController = require('../../AWidgetController');
+    var Plot = require('../Plot');
 
     /**
      * @exports Widgets/Plot/PlotsController

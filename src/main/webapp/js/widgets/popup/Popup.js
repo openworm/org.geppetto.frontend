@@ -38,10 +38,10 @@
  */
 define(function (require) {
 
-	var Widget = require('widgets/Widget');
+	var Widget = require('../Widget');
 	var $ = require('jquery');
-	var Type = require('model/Type');
-	var anchorme = require('anchorme');
+	var Type = require('../../model/Type');
+	var anchorme = require('./vendor/anchorme.min');
 	/**
 	 * Private function to hookup custom event handlers
 	 *

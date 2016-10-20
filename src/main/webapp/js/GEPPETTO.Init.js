@@ -36,6 +36,7 @@
 define(function (require) {
     return function (GEPPETTO) {
         var $ = require('jquery');
+        var THREE = require('three-js');
 
         var createChannel = function () {
             // Change link from blank to self for embedded environments

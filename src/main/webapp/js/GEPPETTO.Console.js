@@ -43,7 +43,8 @@ define(function (require) {
     var console;
 
     return function (GEPPETTO) {
-        var $ = require('jquery');
+        var $ = require('jquery')
+        require('jquery-ui-bundle');
         //keeps track of API commands
         var commands = [];
         /**suggestions for autocomplete

@@ -43,37 +43,37 @@
  * Libraries used by Connectivity widget
  */
 
-require.config({
-    paths: {
-        "d3": "widgets/connectivity/vendor/d3",
-        "d3.hive": "widgets/connectivity/vendor/d3.hive.v0",
-        "chords": "widgets/connectivity/chords",
-        "hives": "widgets/connectivity/hives",
-        "matrices": "widgets/connectivity/matrices",
-        "forces": "widgets/connectivity/forces"
-    }
-});
+// require.config({
+//     paths: {
+//         "d3": "widgets/connectivity/vendor/d3",
+//         "d3.hive": "widgets/connectivity/vendor/d3.hive.v0",
+//         "chords": "widgets/connectivity/chords",
+//         "hives": "widgets/connectivity/hives",
+//         "matrices": "widgets/connectivity/matrices",
+//         "forces": "widgets/connectivity/forces"
+//     }
+// });
 
-var reqs = [];
-reqs.push("d3");
-reqs.push("d3.hive");
-reqs.push("chords");
-reqs.push("hives");
-reqs.push("matrices");
-reqs.push("forces");
+// var reqs = [];
+// reqs.push("d3");
+// reqs.push("d3.hive");
+// reqs.push("chords");
+// reqs.push("hives");
+// reqs.push("matrices");
+// reqs.push("forces");
 
 
-define("d3.global", ["d3"], function (_) {
-    d3 = _;
-});
+// define("d3.global", ["d3"], function (_) {
+//     d3 = _;
+// });
 
-require(reqs, function (d3) {
-    window.d3 = d3;
-    window.d3.hive = d3.hive;
-    window.chords = chords;
-    window.hives = hives;
-    window.matrices = matrices;
-    window.forces = forces;
-    loadCss("geppetto/js/widgets/connectivity/Connectivity.css");
+// require(reqs, function (d3) {
+//     window.d3 = d3;
+//     window.d3.hive = d3.hive;
+//     window.chords = chords;
+//     window.hives = hives;
+//     window.matrices = matrices;
+//     window.forces = forces;
+//     loadCss("geppetto/js/widgets/connectivity/Connectivity.css");
 
-});
+// });

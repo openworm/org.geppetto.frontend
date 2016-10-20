@@ -40,8 +40,8 @@ define(function(require)
     return function(GEPPETTO)
     {
 
-        var React = require('react'), $ = require('jquery'), InfoModal = require('jsx!components/popups/InfoModal'), ErrorModal = require('jsx!components/popups/ErrorModal');
-        var InputModal = require('jsx!components/popups/InputModal');
+        var React = require('react'), $ = require('jquery'), InfoModal = require('./components/popups/InfoModal'), ErrorModal = require('./components/popups/ErrorModal');
+        var InputModal = require('./components/popups/InputModal');
         var ReactDOM = require('react-dom');
 
         /**

@@ -37,8 +37,8 @@
  */
 define(function (require) {
 
-    var AWidgetController = require('widgets/AWidgetController');
-    var BuBar = require('widgets/buttonBar/ButtonBar');
+    var AWidgetController = require('../../AWidgetController');
+    var BuBar = require('../ButtonBar');
 
     /**
      * @exports Widgets/ButtonBar/ButtonBarController

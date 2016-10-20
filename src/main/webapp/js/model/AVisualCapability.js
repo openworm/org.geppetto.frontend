@@ -40,10 +40,10 @@
 
 define(function (require) {
 
-    var Instance = require('model/Instance');
-    var ArrayInstance = require('model/ArrayInstance');
-    var Type = require('model/Type');
-    var Variable = require('model/Variable');
+    var Instance = require('./Instance');
+    var ArrayInstance = require('./ArrayInstance');
+    var Type = require('./Type');
+    var Variable = require('./Variable');
 
     return {
         capabilityId: 'VisualCapability',

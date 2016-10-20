@@ -37,8 +37,8 @@
  */
 define(function (require) {
 
-    var AWidgetController = require('widgets/AWidgetController');
-    var WIDGETNAME = require('widgets/template/WIDGETNAME'); //this refers to the JS file (no extension!)
+    var AWidgetController = require('../../AWidgetController');
+    var WIDGETNAME = require('../WIDGETNAME'); //this refers to the JS file (no extension!)
 
     /**
      * @exports Widgets/template/WIDGETNAMEController

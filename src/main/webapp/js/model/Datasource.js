@@ -38,7 +38,7 @@
  * @author Giovanni Idili
  */
 define(function (require) {
-    var ObjectWrapper = require('model/ObjectWrapper');
+    var ObjectWrapper = require('./ObjectWrapper');
 
     function Datasource(options) {
         ObjectWrapper.prototype.constructor.call(this, options);

@@ -484,6 +484,7 @@ define(function (require) {
          **/
         componentWillReceiveProps: function (nextProps) {
             if (nextProps.text == 'View reset'){
+                console.log('Reseting position...');
                 this.stage.position.x = this.renderer.view.width * 0.5;
                 this.stage.position.y = this.renderer.view.height * 0.5;
             }

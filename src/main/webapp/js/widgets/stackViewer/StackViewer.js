@@ -87,6 +87,7 @@ define(function (require) {
          * @param {Object} anyInstance - An instance of any type
          */
         setData: function (data) {
+            console.log('set Data');
             if(data != undefined && data!=null){
                 if(data.height == undefined){
                     data.height = this.defHeight;

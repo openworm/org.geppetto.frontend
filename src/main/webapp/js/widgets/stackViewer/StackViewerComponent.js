@@ -735,6 +735,7 @@ define(function (require) {
         },
 
         handleInstances: function (instances) {
+            console.log('Handling Instances: ' + instances.length);
             if (instances && instances != null && instances.length > 0) {
                 var instance;
                 var data, vals;
@@ -744,6 +745,7 @@ define(function (require) {
                 var server = this.state.serverUrl;
                 for (instance in instances) {
                     try {
+                        console.log('Instance:');
                         vals = instance.getVariable().getInitialValue().value;
                         console.log(JSON.stringify(vals));
                         data = JSON.parse(vals.data);

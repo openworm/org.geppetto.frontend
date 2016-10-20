@@ -473,7 +473,10 @@ define(function (require) {
          * When we get new props, run the appropriate imperative functions
          **/
         componentWillReceiveProps: function (nextProps) {
-            console.log('update props ' + JSON.stringify(nextProps));
+            if (nextProps.text == 'View reset'){
+                this.stage.position.x = this.renderer.view.width * 0.5;
+                this.stage.position.y = this.renderer.view.height * 0.5;
+            }
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
                 this.state.stack = nextProps.stack;
                 this.state.color = nextProps.color;

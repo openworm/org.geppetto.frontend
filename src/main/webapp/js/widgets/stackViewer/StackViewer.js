@@ -99,6 +99,9 @@ define(function (require) {
                 this.setSize(data.height, data.width);
 
                 this.data = data;
+
+                console.log(JSON.stringify(data));
+                console.log(JSON.stringify(this.data));
             }
 
             this.updateBorders();

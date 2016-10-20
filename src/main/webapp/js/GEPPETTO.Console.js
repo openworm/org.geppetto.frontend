@@ -120,12 +120,14 @@ define(function (require) {
         });
 
         function toggleFooterZIndex(focus){
-        	if(focus){
-        		$("#footer").removeClass("footerOutFocus");
-        		$("#footer").addClass("footerFocus");
-        	}else{
-        		$("#footer").removeClass("footerFocus");
-        		$("#footer").addClass("footerOutFocus");
+        	if(G.isConsoleFocused()){
+        		if(focus){
+        			$("#footer").removeClass("footerOutFocus");
+        			$("#footer").addClass("footerFocus");
+        		}else{
+        			$("#footer").removeClass("footerFocus");
+        			$("#footer").addClass("footerOutFocus");
+        		}
         	}
         }
         
@@ -370,6 +372,9 @@ define(function (require) {
                         clearInterval(sendMessage);
                     }
                 }, 100);
+                
+                $("#footer").addClass("footerFocus");
+                
                 return console;
             },
 

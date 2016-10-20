@@ -100,7 +100,7 @@ define(function(require) {
         },
 
         evaluateState:function(){
-        	return {disableSave:!window.Project.persisted || !GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)};
+        	return {disableSave:window.Project.persisted || !GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)};
         },
         
         clickEvent : function(){

@@ -253,6 +253,7 @@ define(function (require) {
        		  }
        		}
        		
+       		
        		modifiedParameters += "</ul>";
         	GEPPETTO.FE.infoDialog("Set Parameters ", modifiedParameters);
         },
@@ -750,7 +751,7 @@ define(function (require) {
                     
                     var expandableRowId = "collapsable-" + experiment.getId();
                     rows.push(<ExperimentRow experiment={experiment} rowNumber={rownumber} editable={editable}
-                    				ref={expandableRowId} key={experiment.name} fnClick={this.onClick.bind(this,expandableRowId)}/>);
+                    				ref={expandableRowId} key={experiment.name+"-"+experiment.getId()} fnClick={this.onClick.bind(this,expandableRowId)}/>);
                     rows.push(<ExperimentExpandableRow experiment={experiment} rowNumber={rownumber}
                                      key={expandableRowId} editable={editable}/>);
                     rownumber++;

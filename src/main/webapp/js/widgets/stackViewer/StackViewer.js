@@ -88,23 +88,26 @@ define(function (require) {
          */
         setData: function (data) {
             console.log('set Data');
-            if(data != undefined && data!=null){
+            if(data != undefined && data != null){
                 if(data.height == undefined){
+                    console.log('setting default height');
                     data.height = this.defHeight;
                 }
 
                 if(data.width == undefined){
+                    console.log('setting default width');
                     data.width = this.defWidth;
                 }
 
-                this.setSize(data.height, data.width);
-
                 this.data = data;
 
+                Widget.View.prototype.setSize.call(this, data.height, data.width);
+
+                console.log('data:');
                 console.log(JSON.stringify(data));
                 console.log(JSON.stringify(this.data));
             }else{
-                console.log('set data issue:')
+                console.log('set data issue:');
                 console.log(JSON.stringify(data));
             }
 

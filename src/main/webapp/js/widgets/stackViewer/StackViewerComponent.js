@@ -735,7 +735,7 @@ define(function (require) {
         },
 
         handleInstances: function (instances) {
-            if (instances && instances != null) {
+            if (instances && instances != null && instances.count > 0) {
                 var instance;
                 var data, vals;
                 var files = [];
@@ -773,6 +773,8 @@ define(function (require) {
                     this.setState({color: colors});
                     console.log('updating colours to ' + JSON.stringify(colors));
                 }
+            }else{
+                console.log('No instances sent');
             }
         },
 

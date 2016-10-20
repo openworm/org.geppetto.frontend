@@ -753,15 +753,15 @@ define(function (require) {
                 var server = this.state.serverUrl;
                 for (instance in instances) {
                     try {
-                        console.log('Instance:');
-                        vals = instance.getVariable().getInitialValue().value;
+                        console.log('Instance:' + instance);
+                        vals = instances[instance].getVariable().getInitialValue().value;
                         console.log(JSON.stringify(vals));
                         data = JSON.parse(vals.data);
                         server = data.serverUrl;
                         files.push(data.fileLocation);
-                        labels.push(instance.parent.getName());
-                        colors.push(instance.parent.getColor());
-                        console.log(instance);
+                        labels.push(instances[instance].parent.getName());
+                        colors.push(instances[instance].parent.getColor());
+                        console.log(instances[instance].parent.getName());
                     }
                     catch (ignore) {
                         console.log('Error handling ' + instance.data);

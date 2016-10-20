@@ -703,23 +703,21 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-            // // detect event model
-            // if (window.addEventListener) {
-            //     this._addEventListener = "addEventListener";
-            // } else {
-            //     this._addEventListener = "attachEvent";
-            //     prefix = "on";
-            // }
-            //
-            // // detect available wheel event
-            // support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
-            //     document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
-            //         "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
-            // this.addWheelListener($('#displayArea')[0], function (e) {
-            //     this.onWheelEvent(e);
-            // }.bind(this));
+            // detect event model
+            if (window.addEventListener) {
+                this._addEventListener = "addEventListener";
+            } else {
+                this._addEventListener = "attachEvent";
+                prefix = "on";
+            }
 
-            console.log('componet did mount');
+            // detect available wheel event
+            support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+                document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+                    "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+            this.addWheelListener($('#displayArea')[0], function (e) {
+                this.onWheelEvent(e);
+            }.bind(this));
 
             if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 this.handleInstances(this.props.data.instances);
@@ -729,8 +727,17 @@ define(function (require) {
         componentWillReceiveProps: function (nextProps) {
             console.log('Recieved Props:');
             console.log(nextProps);
-            if (nextProps.data && nextProps.data != null && nextProps.data.instances && nextProps.data.instances != null) {
-                this.handleInstances(nextProps.data.instances);
+            if (nextProps.data && nextProps.data != null) {
+                if (nextProps.data.instances && nextProps.data.instances != null) {
+                    this.handleInstances(nextProps.data.instances);
+                }
+
+                if (nextProps.data.height && nextProps.data.height != null) {
+                    this.setState({height: nextProps.data.height});
+                }
+                if (nextProps.data.width && nextProps.data.width != null) {
+                    this.setState({width: nextProps.data.width});
+                }
             }
         },
 

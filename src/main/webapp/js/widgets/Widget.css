@@ -81,6 +81,7 @@
     right: 0;
     font-size: 15px;
     opacity: 1 !important;
+    margin-top: -10px;
 }
 
 .ui-dialog .ui-dialog-titlebar-close:hover {

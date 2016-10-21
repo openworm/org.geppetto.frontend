@@ -40,6 +40,8 @@ define(function (require) {
 
     var Backbone = require('backbone');
     var $ = require('jquery');
+    require("vendor/jquery.dialogextend.min");
+    
     return {
 
         /**
@@ -108,7 +110,7 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             hide: function () {
-                $("#" + this.id).dialog('close');
+                $("#" + this.id).dialog('close').dialogExtend();
 
                 this.visible = false;
 
@@ -122,7 +124,7 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             show: function () {
-                $("#" + this.id).dialog('open');
+                $("#" + this.id).dialog('open').dialogExtend();
                 this.visible = true;
 
                 //Unfocused close button
@@ -150,7 +152,7 @@ define(function (require) {
                 this.name = name;
 
                 // set name to widget window
-                $("#" + this.id).dialog("option", "title", this.name);
+                $("#" + this.id).dialog("option", "title", this.name).dialogExtend();
 
                 return this;
             },
@@ -170,7 +172,7 @@ define(function (require) {
                         my: "left+" + this.position.left + " top+" + this.position.top,
                         at: "left top",
                         of: $(window)
-                    });
+                    }).dialogExtend();
                 return this;
             },
 
@@ -183,7 +185,7 @@ define(function (require) {
             setSize: function (h, w) {
                 this.size.height = h;
                 this.size.width = w;
-                $("#" + this.id).dialog({height: this.size.height, width: this.size.width});
+                $("#" + this.id).dialog({height: this.size.height, width: this.size.width}).dialogExtend();
 
                 return this;
             },
@@ -193,7 +195,7 @@ define(function (require) {
              * @param {Integer} h - Minimum Height of the widget
              */
             setMinHeight: function (h) {
-                $("#" + this.id).dialog('option', 'minHeight', h);
+                $("#" + this.id).dialog('option', 'minHeight', h).dialogExtend();
                 return this;
             },
 
@@ -202,7 +204,7 @@ define(function (require) {
              * @param {Integer} w - Minimum Width of the widget
              */
             setMinWidth: function (w) {
-                $("#" + this.id).dialog('option', 'minWidth', w);
+                $("#" + this.id).dialog('option', 'minWidth', w).dialogExtend();
                 return this;
             },
 
@@ -222,7 +224,7 @@ define(function (require) {
              * @param {Boolean} true|false - enables / disables resizability
              */
             setResizable: function (resize) {
-                $("#" + this.id).dialog('option', 'resizable', resize);
+                $("#" + this.id).dialog('option', 'resizable', resize).dialogExtend();
                 return this;
             },
 
@@ -230,7 +232,7 @@ define(function (require) {
              * @command setAutoWidth()
              */
             setAutoWidth: function () {
-                $("#" + this.id).dialog('option', 'width', 'auto');
+                $("#" + this.id).dialog('option', 'width', 'auto').dialogExtend();
                 return this;
             },
 
@@ -238,7 +240,7 @@ define(function (require) {
              * @command setAutoHeigth()
              */
             setAutoHeight: function () {
-                $("#" + this.id).dialog('option', 'height', 'auto');
+                $("#" + this.id).dialog('option', 'height', 'auto').dialogExtend();
                 return this;
             },
 
@@ -502,7 +504,7 @@ define(function (require) {
              * Inject CSS for custom behaviour
              */
             setClass: function (className) {
-                $("#" + this.id).dialog({dialogClass: className});
+                $("#" + this.id).dialog({dialogClass: className}).dialogExtend();
             },
 
             /**
@@ -526,7 +528,26 @@ define(function (require) {
                                 that.destroy();
                             }
                         }
-                    });
+                    }).dialogExtend({"closable" : true,
+                        "maximizable" : true,
+                        "minimizable" : true,
+                        "collapsable" : true,
+                        "restore" : true,
+                        "minimizeLocation": "right",
+                        "icons" : {
+                            "maximize" : "fa fa-expand",
+                            "minimize" : "fa fa-minus",
+                            "collapse" : "fa  fa-caret-square-o-down",
+                            "restore" : "fa fa-undo",
+                          },
+                         "load" : function(evt, dlg){ 
+                        	 var icons = $("#"+that.id).parent().find(".ui-icon"); 
+                        	 for(var i =0 ; i<icons.length; i++){
+                        		 //remove text from span added by vendor library
+                        		 $(icons[i]).text("");
+                        	 }
+                          }
+                        });
 
                 this.$el = $("#" + this.id);
                 var dialogParent = this.$el.parent();

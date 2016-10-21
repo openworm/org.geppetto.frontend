@@ -62,6 +62,7 @@ define(function (require) {
             position: {left: "50%", top: "50%"},
             registeredEvents: null,
             executedAction : 0,
+            title : null,
 
             /**
              * Initializes the widget
@@ -85,7 +86,8 @@ define(function (require) {
                 	var registeredItem = self.historyMenu.getClickedItem(itemId);
                 	if(registeredItem != null || undefined){
                 		var label = registeredItem["label"];
-                		$("#"+self.id).parent().find(".ui-dialog-title").html(label);
+                		self.title = label;
+                		$("#"+self.id).parent().find(".ui-dialog-title").html(self.title);
                 	}
                 });
             },
@@ -546,7 +548,15 @@ define(function (require) {
                         		 //remove text from span added by vendor library
                         		 $(icons[i]).text("");
                         	 }
-                          }
+                          },
+                          "beforeMinimize" : function(evt, dlg){
+                        	  var label = that.name;
+                        	  label = label.substring(0, 6);
+                        	  $("#"+that.id).dialog({ title: label});
+                           },
+                           "minimize" : function(evt, dlg){
+                         	  $("#"+that.id).dialog({ title: that.name});
+                            }
                         });
 
                 this.$el = $("#" + this.id);

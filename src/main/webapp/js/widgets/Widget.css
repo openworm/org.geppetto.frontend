@@ -58,6 +58,11 @@
     margin-right: 4px;
 }
 
+
+.ui-dialog .ui-dialog-titlebar-maximize:hover,.ui-dialog .ui-dialog-titlebar-minimize:hover,.ui-dialog .ui-dialog-titlebar-collapse:hover {
+	margin-top: 2px;
+}
+
 .ui-dialog span{
 	margin-left : -2px;
 }

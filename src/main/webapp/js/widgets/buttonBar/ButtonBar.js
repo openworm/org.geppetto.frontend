@@ -40,6 +40,9 @@ define(function (require) {
 
     var Widget = require('../Widget');
     var $ = require('jquery');
+    
+    var widgetUtility = require("../WidgetUtility");
+    widgetUtility.loadCss("geppetto/js/widgets/buttonBar/ButtonBar.css");
 
     return Widget.View
         .extend({

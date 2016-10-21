@@ -42,6 +42,13 @@ define(function (require) {
 
     var Widget = require('../Widget');
     var $ = require('jquery');
+    
+    var THREE = require('three-js')();
+    require("./vendor/OrbitControls");
+    
+    var widgetUtility = require("../WidgetUtility");
+    widgetUtility.loadCss("geppetto/js/widgets/scatter3d/Scatter3d.css");
+    
 
     return Widget.View
         .extend({

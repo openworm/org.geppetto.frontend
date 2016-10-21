@@ -48,6 +48,8 @@ define(function (require) {
     require("./vendor/jquery.flot.downsample");
     require("./vendor/jquery.flot.crosshair");
     
+    var widgetUtility = require("../WidgetUtility");
+    widgetUtility.loadCss("geppetto/js/widgets/plot/Plot.css");
 
     return Widget.View.extend({
         plot: null,

@@ -41,6 +41,12 @@ define(function (require) {
 
     var TreeVisualiser = require('../TreeVisualiser');
     var $ = require('jquery');
+    
+    var widgetUtility = require("../../WidgetUtility");
+    widgetUtility.loadCss("geppetto/js/widgets/treevisualiser/treevisualiserd3/TreeVisualiserD3.css");
+    
+    require("./vendor/d3.min");
+    
 
     return TreeVisualiser.TreeVisualiser.extend({
 

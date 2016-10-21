@@ -20,6 +20,7 @@
 //    	controls = new THREE.TrackballControls( camera );
 //      controls.target.z = 150;
 // Simple substitute "OrbitControls" and the control should work as-is.
+var THREE = window.THREE || require('three-js')();
 
 THREE.OrbitControls = function (object, domElement) {
 

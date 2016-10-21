@@ -50,17 +50,17 @@ define(function (require) {
         //Popup Widget
         //require("./popup/config"); <-- Migrated
 //        //Scatter3d Widget
-//        require("./scatter3d/config");
+//        require("./scatter3d/config"); <-- Migrated
 //        //TreeVisualiser DAT Widget
-//        require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
+        require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
 //        //TreeVisualiser D3 Widget
-//        require("./treevisualiser/treevisualiserd3/config")(GEPPETTO);
+        require("./treevisualiser/treevisualiserd3/config")(GEPPETTO);
 //        //VariableVisualiser widget
-//        require("./variablevisualiser/config");
+//        require("./variablevisualiser/config"); <-- Migrated
         //Connectivity Widget
         //require("./connectivity/config");   <-- Migrated
 //        //Buttonbar widget
-//        require("./buttonBar/config");
+//        require("./buttonBar/config"); <-- Migrated
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");

@@ -125,6 +125,8 @@
     font-weight: 200;
     color: #fd6808;
     margin-left: 5px;
+    width: 60%;
+    white-space: nowrap;
 }
 
 .ui-dialog {

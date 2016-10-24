@@ -193,11 +193,11 @@ define(function (require) {
                                 if (result[j] == '0') {
                                     console.log(label + ' clicked');
                                     // deselect if selected otherwise select only that one.
-                                    if (G.getSelection()[0].id.indexOf(id) > -1) {
+                                    if (GEPPETTO.G.getSelection()[0].id.indexOf(id) > -1) {
                                         eval(id).deselect();
                                     }else {
-                                        while (G.getSelection()[0] != undefined) {
-                                            G.getSelection()[0].deselect();
+                                        while (GEPPETTO.G.getSelection()[0] != undefined) {
+                                            GEPPETTO.G.getSelection()[0].deselect();
                                         }
                                         eval(id).select();
                                     }

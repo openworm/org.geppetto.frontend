@@ -469,7 +469,7 @@ define(function (require) {
             }
             // fix position
             this.state.buffer[-1].x = 0;
-            this.state.buffer[-1].y = (this.renderer.view.height * 0.5);
+            this.state.buffer[-1].y = (this.renderer.view.height * 0.5)-50;
             this.state.buffer[-1].anchor.x = 50;
             this.state.buffer[-1].anchor.y = 100;
             this.state.buffer[-1].zOrder = 1000;

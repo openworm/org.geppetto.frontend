@@ -176,9 +176,11 @@ define(function (require) {
 
         callObjects: function () {
 
-            var i, j, result;
+            var i, j, result, currId, currLabel;
             var that = this;
             for (i in this.state.stack) {
+                currId = this.status.id[i];
+                currLabel = this.status.label[i];
                 var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
                 //get image size;
                 $.ajax({
@@ -210,8 +212,7 @@ define(function (require) {
                         // update slice view
                         that.state.lastUpdate = 0;
                         that.checkStack();
-
-                    }.bind({i: i, id: that.status.id[i], label: that.status.label[i]}),
+                    }.bind({i: i, id: currId, label: currLabel}),
                     error: function (xhr, status, err) {
                         console.error(this.props.url, status, err.toString());
                     }.bind(this)

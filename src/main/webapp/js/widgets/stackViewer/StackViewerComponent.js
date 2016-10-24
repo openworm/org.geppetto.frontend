@@ -211,7 +211,7 @@ define(function (require) {
                         that.state.lastUpdate = 0;
                         that.checkStack();
 
-                    }.bind({i: i, id: this.status.id[i], label: this.status.label[i]}),
+                    }.bind({i: i, id: that.status.id[i], label: that.status.label[i]}),
                     error: function (xhr, status, err) {
                         console.error(this.props.url, status, err.toString());
                     }.bind(this)

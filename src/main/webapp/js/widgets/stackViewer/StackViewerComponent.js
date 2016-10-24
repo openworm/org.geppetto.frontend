@@ -775,7 +775,7 @@ define(function (require) {
                         files.push(data.fileLocation);
                         ids.push(instances[instance].parent.getId());
                         labels.push(instances[instance].parent.getName());
-                        if (instances[instance].parent.isSelected()){
+                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId()+'_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId()+'_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId()+'_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId()+'_swc'].isSelected())){
                             colors.push('0Xffcc00'); // selected
                         }else {
                             colors.push(instances[instance].parent.getColor());

@@ -182,13 +182,13 @@ define(function (require) {
                 GEPPETTO.G.getSelection()[0].deselect();
             }
             for (i in this.state.stack) {
-                (function(i) {
-                    id = this.state.id[i];
-                    label = this.state.label[i];
-                    var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+                (function(i, that) {
+                    id = that.state.id[i];
+                    label = that.state.label[i];
+                    var image = that.state.serverUrl.toString() + '?wlz=' + that.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.props.dst).toFixed(1) + '&pit=' + Number(that.props.pit).toFixed(0) + '&yaw=' + Number(that.props.yaw).toFixed(0) + '&rol=' + Number(that.props.rol).toFixed(0);
                     //get image size;
                     $.ajax({
-                        url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
+                        url: image + '&prl=-1,' + that.state.posX + ',' + that.state.posY + '&obj=Wlz-foreground-objects',
                         type: 'POST',
                         success: function (data) {
                             result = data.trim().split(':')[1].trim().split(' ');
@@ -204,16 +204,15 @@ define(function (require) {
                                     }
                                 }
                             }
-
                             // update slice view
                             that.state.lastUpdate = 0;
                             that.checkStack();
                         },
                         error: function (xhr, status, err) {
-                            console.error(this.props.url, status, err.toString());
+                            console.error(that.props.url, status, err.toString());
                         }.bind(this)
                     });
-                })(i);
+                })(i, that);
             }
         },
 
@@ -460,7 +459,7 @@ define(function (require) {
                     dropShadow: true,
                     dropShadowColor: '#000000',
                     dropShadowAngle: Math.PI / 6,
-                    dropShadowDistance: 6,
+                    dropShadowDistance: 2,
                     wordWrap: true,
                     wordWrapWidth: this.renderer.view.width
                 };
@@ -470,10 +469,10 @@ define(function (require) {
                 this.state.buffer[-1].text = this.state.text;
             }
             // fix position
-            this.state.buffer[-1].x = -100;
-            this.state.buffer[-1].y = -100;
-            this.state.buffer[-1].anchor.x = 0;
-            this.state.buffer[-1].anchor.y = 0;
+            this.state.buffer[-1].x = 0;
+            this.state.buffer[-1].y = 0;
+            this.state.buffer[-1].anchor.x = 50;
+            this.state.buffer[-1].anchor.y = 50;
             this.state.buffer[-1].zOrder = 1000;
         },
 

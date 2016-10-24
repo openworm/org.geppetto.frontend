@@ -90,12 +90,12 @@ define(function (require) {
             console.log('set Data');
             if(data != undefined && data != null){
                 if(data.height == undefined){
-                    console.log('setting default height');
+                    // console.log('setting default height');
                     data.height = this.defHeight;
                 }
 
                 if(data.width == undefined){
-                    console.log('setting default width');
+                    // console.log('setting default width');
                     data.width = this.defWidth;
                 }
 
@@ -103,9 +103,6 @@ define(function (require) {
 
                 Widget.View.prototype.setSize.call(this, data.height, data.width);
 
-                console.log('data:');
-                console.log(data.instances.length);
-                console.log(this.data.instances.length);
             }else{
                 console.log('set data issue:');
                 console.log(JSON.stringify(data));

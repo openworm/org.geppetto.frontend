@@ -69,6 +69,7 @@ var Events = {
     Hide_Tutorial : "hide_tutorial",
     Show_spinner: "spinner:show",
     Hide_spinner: "spinner:hide",
+    Color_set: "color:set",
     Canvas_initialised: "canvas:initialised"
 };
 

@@ -455,10 +455,10 @@ define(function (require) {
         createStatusText: function () {
             if (!this.state.buffer[-1]) {
                 var style = {
-                    font: 'bold 24px Helvetica',
-                    fill: '#F7EDCA',
-                    stroke: '#4a1850',
-                    strokeThickness: 5,
+                    font: '13px Helvetica',
+                    fill: '#ffffff',
+                    stroke: '#000000',
+                    strokeThickness: 2,
                     dropShadow: true,
                     dropShadowColor: '#000000',
                     dropShadowAngle: Math.PI / 6,

@@ -185,23 +185,22 @@ define(function (require) {
                     url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
                     type: 'POST',
                     success: function (data) {
-                        // console.log(that.props.label[i] + ' - ' + data.trim());
                         result = data.trim().split(':')[1].trim().split(' ');
                         if (result !== '') {
                             for (j in result) {
                                 if (result[j] == '0') {
-                                    console.log(this.status.id[i] + ' clicked');
+                                    console.log(label + ' clicked');
                                     // deselect if selected otherwise select only that one.
-                                    if (G.getSelection()[0].id.indexOf(that.status.id[i]) > -1) {
-                                        eval(that.status.id[i]).deselect();
+                                    if (G.getSelection()[0].id.indexOf(id) > -1) {
+                                        eval(id).deselect();
                                     }else {
                                         while (G.getSelection()[0] != undefined) {
                                             G.getSelection()[0].deselect();
                                         }
-                                        eval(that.status.id[i]).select();
+                                        eval(id).select();
                                     }
-                                    that.setStatusText(that.status.label[i] + ' clicked!');
-                                    that.setState({text: that.status.label[i] + ' clicked!'});
+                                    that.setStatusText(label + ' clicked!');
+                                    that.setState({text: label + ' clicked!'});
                                 } else {
                                     console.log('Odd value: ' + result[j].toString());
                                 }
@@ -212,7 +211,7 @@ define(function (require) {
                         that.state.lastUpdate = 0;
                         that.checkStack();
 
-                    }.bind({i: i, that: that}),
+                    }.bind({i: i, id: this.status.id[i], label: this.status.label[i]}),
                     error: function (xhr, status, err) {
                         console.error(this.props.url, status, err.toString());
                     }.bind(this)

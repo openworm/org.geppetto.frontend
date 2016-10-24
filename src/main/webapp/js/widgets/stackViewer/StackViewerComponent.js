@@ -176,42 +176,44 @@ define(function (require) {
 
         callObjects: function () {
 
-            var i, j, result, currId, currLabel;
+            var i, j, result, id, label;
             var that = this;
             while (GEPPETTO.G.getSelection()[0] != undefined) {
                 GEPPETTO.G.getSelection()[0].deselect();
             }
             for (i in this.state.stack) {
-                id = this.state.id[i];
-                label = this.state.label[i];
-                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
-                //get image size;
-                $.ajax({
-                    url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
-                    type: 'POST',
-                    success: function (data) {
-                        result = data.trim().split(':')[1].trim().split(' ');
-                        if (result !== '') {
-                            for (j in result) {
-                                if (result[j] == '0') {
-                                    console.log(label + ' clicked');
-                                    eval(id).select();
-                                    that.setStatusText(label + ' clicked!');
-                                    that.setState({text: label + ' clicked!'});
-                                } else {
-                                    console.log('Odd value: ' + result[j].toString());
+                (function(i) {
+                    id = this.state.id[i];
+                    label = this.state.label[i];
+                    var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+                    //get image size;
+                    $.ajax({
+                        url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
+                        type: 'POST',
+                        success: function (data) {
+                            result = data.trim().split(':')[1].trim().split(' ');
+                            if (result !== '') {
+                                for (j in result) {
+                                    if (result[j] == '0') {
+                                        console.log(label + ' clicked');
+                                        eval(id).select();
+                                        that.setStatusText(label + ' clicked!');
+                                        that.setState({text: label + ' clicked!'});
+                                    } else {
+                                        console.log('Odd value: ' + result[j].toString());
+                                    }
                                 }
                             }
-                        }
 
-                        // update slice view
-                        that.state.lastUpdate = 0;
-                        that.checkStack();
-                    }.bind({i: i, id: id, label: label}),
-                    error: function (xhr, status, err) {
-                        console.error(this.props.url, status, err.toString());
-                    }.bind(this)
-                });
+                            // update slice view
+                            that.state.lastUpdate = 0;
+                            that.checkStack();
+                        },
+                        error: function (xhr, status, err) {
+                            console.error(this.props.url, status, err.toString());
+                        }.bind(this)
+                    });
+                })(i);
             }
         },
 

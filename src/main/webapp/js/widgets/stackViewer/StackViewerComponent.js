@@ -90,7 +90,7 @@ define(function (require) {
         },
 
         componentDidUpdate: function () {
-            console.log('Canvas update');
+            // console.log('Canvas update');
             this.renderer.resize(this.props.width, this.props.height);
             this.checkStack();
         },
@@ -178,6 +178,9 @@ define(function (require) {
 
             var i, j, result, currId, currLabel;
             var that = this;
+            while (GEPPETTO.G.getSelection()[0] != undefined) {
+                GEPPETTO.G.getSelection()[0].deselect();
+            }
             for (i in this.state.stack) {
                 id = this.state.id[i];
                 label = this.state.label[i];
@@ -192,15 +195,7 @@ define(function (require) {
                             for (j in result) {
                                 if (result[j] == '0') {
                                     console.log(label + ' clicked');
-                                    // deselect if selected otherwise select only that one.
-                                    if (GEPPETTO.G.getSelection().length > 0 && GEPPETTO.G.getSelection()[0].id.indexOf(id) > -1) {
-                                        eval(id).deselect();
-                                    }else {
-                                        while (GEPPETTO.G.getSelection()[0] != undefined) {
-                                            GEPPETTO.G.getSelection()[0].deselect();
-                                        }
-                                        eval(id).select();
-                                    }
+                                    eval(id).select();
                                     that.setStatusText(label + ' clicked!');
                                     that.setState({text: label + ' clicked!'});
                                 } else {
@@ -355,7 +350,7 @@ define(function (require) {
             if (this.state.lastUpdate < (Date.now() - 2000)) {
                 this.state.lastUpdate = Date.now();
                 this.state.buffer[-1].text = '';
-                console.log('Updating scene...');
+                // console.log('Updating scene...');
                 this.createImages();
                 this.updateImages(this.props);
                 var extent = {minDst: this.state.minDst, maxDst: this.state.maxDst};
@@ -743,8 +738,8 @@ define(function (require) {
         },
 
         componentWillReceiveProps: function (nextProps) {
-            console.log('Recieved Props:');
-            console.log(nextProps);
+            // console.log('Recieved Props:');
+            // console.log(nextProps);
             if (nextProps.data && nextProps.data != null) {
                 if (nextProps.data.instances && nextProps.data.instances != null) {
                     this.handleInstances(nextProps.data.instances);
@@ -788,23 +783,23 @@ define(function (require) {
                 }
                 if (server != this.state.serverUrl && server != null) {
                     this.setState({serverURL: server});
-                    console.log('Changing IIP server to ' + server);
+                    // console.log('Changing IIP server to ' + server);
                 }
                 if (files != this.state.stack && files != null && files.length > 0) {
                     this.setState({stack: files});
-                    console.log('setting stack to ' + JSON.stringify(files));
+                    // console.log('setting stack to ' + JSON.stringify(files));
                 }
                 if (labels != this.state.label && labels != null && labels.length > 0) {
                     this.setState({label: labels});
-                    console.log('updating labels to ' + JSON.stringify(labels));
+                    // console.log('updating labels to ' + JSON.stringify(labels));
                 }
                 if (ids != this.state.id && ids != null && ids.length > 0) {
                     this.setState({id: ids});
-                    console.log('updating ids to ' + JSON.stringify(ids));
+                    // console.log('updating ids to ' + JSON.stringify(ids));
                 }
                 if (colors != this.state.color && colors != null && colors.length > 0) {
                     this.setState({color: colors});
-                    console.log('updating colours to ' + JSON.stringify(colors));
+                    // console.log('updating colours to ' + JSON.stringify(colors));
                 }
             }else{
                 console.log('No instances sent');

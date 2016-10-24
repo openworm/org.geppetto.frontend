@@ -766,8 +766,6 @@ define(function (require) {
                 var colors = [];
                 var labels = [];
                 var ids = [];
-                var selected = G.getSelection();
-                var selection, found;
                 var server = this.state.serverUrl;
                 for (instance in instances) {
                     try {
@@ -777,13 +775,7 @@ define(function (require) {
                         files.push(data.fileLocation);
                         ids.push(instances[instance].parent.getId());
                         labels.push(instances[instance].parent.getName());
-                        found = false;
-                        for (selection in selected){
-                            if (selected[selection].id.indexOf(instances[instance].parent.getId()) > -1){
-                                found = true;
-                            }
-                        }
-                        if (found){
+                        if (instances[instance].parent.isSelected()){
                             colors.push('0Xffcc00'); // selected
                         }else {
                             colors.push(instances[instance].parent.getColor());

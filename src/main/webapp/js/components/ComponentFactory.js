@@ -70,7 +70,7 @@ define(function (require) {
 				
 			loadSpinner:function(){
 				//We require this synchronously to properly show spinner when loading projects
-				this.renderComponent(React.createFactory(spinner)(),document.getElementById("modal-region"));	
+				this.renderComponent(React.createFactory(spinner)(),document.getElementById("load-spinner"));
 			},
 			
 			addComponent: function(componentID, properties, container, callback){

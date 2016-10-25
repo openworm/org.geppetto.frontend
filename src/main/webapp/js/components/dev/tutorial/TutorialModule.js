@@ -207,12 +207,12 @@ define(function (require) {
 			var self = this;
 
 			//launches specific tutorial is experiment is loaded
-			GEPPETTO.on(GEPPETTO.Events.Experiment_loaded,function(){
+			GEPPETTO.on(GEPPETTO.Events.Model_loaded,function(){
 				if(!self.dontShowTutorial){
 					//default tutorial when user doesn't specify one for this event
-					var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json";
-					if(self.tutorialMap[GEPPETTO.Events.Experiment_loaded]!=null || undefined){
-						tutorialURL = self.tutorialMap[GEPPETTO.Events.Experiment_loaded];
+					var tutorialURL = self.props.tutorial;
+					if(self.tutorialMap[GEPPETTO.Events.Model_loaded]!=null || undefined){
+						tutorialURL = self.tutorialMap[GEPPETTO.Events.Model_loaded];
 					}
 					
 					self.tutorialData(tutorialURL);

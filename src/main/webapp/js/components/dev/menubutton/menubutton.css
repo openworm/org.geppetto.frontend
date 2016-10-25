@@ -1,6 +1,9 @@
-.dropDownButton {
-  position: fixed;
-  height:27px
+.menuButtonIcon {
+	padding-right : 5px;	
+}
+
+.menuListContainer{
+	z-index: 100 !important;	
 }
 
 .dropDownButtonContainer:disabled{
@@ -8,21 +11,8 @@
 	color:@orange;
 }
 
-.dropDownButton {
-  position: fixed;
-  top: 5px;
-  right: 390px;
-  height:28px
-}
-
-.dropDownButton:disabled{
-	background:0;
-	color:@orange;
-}
-
-#dropDownPanel {
+.dropDownButtonContainer {
     position: fixed;
-    display: none;
     z-index: 99;
     height: auto;
     width: auto;    
@@ -72,15 +62,4 @@
 .dropDownTable tr:hover {
 	background-color:#fd6808;
 	color:white;
-}
-
-.tooltip-persist {
-	height: 25px;
-	max-width: 800px;
-	border-radius: 5px;
-	border: 1px solid black;
-	padding: 2px 4px 2px 4px;
-	background: white;
-	opacity: 1;
-	left : 20px;
 }

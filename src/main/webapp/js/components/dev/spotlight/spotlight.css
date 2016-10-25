@@ -2,7 +2,7 @@
     position: absolute !important;
     background-color: rgba(0, 0, 0, 0.6);
     display: none;
-    z-index: 99;
+    z-index: 999;
     height: 100%;
     width: 100%;
 }
@@ -148,7 +148,7 @@
     margin-right: auto;
     left: 0;
     right: 0;
-    width: 600px;
+    width: 750px;
     top: 40%;
 }
 

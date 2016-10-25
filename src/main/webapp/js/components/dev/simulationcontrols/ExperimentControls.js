@@ -139,7 +139,7 @@ define(function (require) {
             			this.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: false});
             		}
             		else if(GEPPETTO.ExperimentsController.isPlaying()){
-            			this.setState({disableRun: true, disablePlay: true, disablePause: false, disableStop: true});
+            			this.setState({disableRun: true, disablePlay: true, disablePause: false, disableStop: false});
             		}
             		else if(GEPPETTO.ExperimentsController.isStopped()){
             			this.setState({disableRun: true, disablePlay: false, disablePause: true, disableStop: true});

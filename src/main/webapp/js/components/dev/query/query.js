@@ -53,6 +53,8 @@ define(function (require) {
     var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
 
+	var MenuButton = require('jsx!./../menubutton/MenuButton')
+
     // query model object to represent component state and trigger view updates
     var queryBuilderModel = {
         // list of change handlers called on change
@@ -64,17 +66,19 @@ define(function (require) {
         // result count for the current query items
         count: 0,
 
+        // subscribe to model change notifications
         subscribe: function (callback) {
             this.onChangeHandlers.push(callback);
         },
 
+        // notify to all listeners that the model has changed
         notifyChange: function () {
             this.onChangeHandlers.forEach(function (cb) {
                 cb();
             });
         },
 
-        itemSelectionChanged: function (item, selection) {
+        itemSelectionChanged: function (item, selection, callback) {
             for (var i = 0; i < this.items.length; i++) {
                 if (item.id == this.items[i].id) {
                     this.items[i].selection = selection;
@@ -83,17 +87,19 @@ define(function (require) {
             }
 
             // get count triggers notify change once results are fetched
-            this.getCount();
+            this.getCount(callback);
         },
 
-        addItem: function(item){
+        // add query item to model
+        addItem: function(item, callback){
             this.items.push(item);
 
             // get count triggers notify change once results are fetched
-            this.getCount();
+            this.getCount(callback);
         },
 
-        deleteItem: function (item) {
+        // delete single query item from model
+        deleteItem: function (item, callback) {
             for (var i = 0; i < this.items.length; i++) {
                 if (item.id == this.items[i].id) {
                     this.items.splice(i, 1);
@@ -102,18 +108,21 @@ define(function (require) {
 
             if(this.items.length >0) {
                 // get count triggers notify change once results are fetched
-                this.getCount();
+                this.getCount(callback);
             } else {
                 // set count triggers notify change
-                this.setCount(0);
+                this.setCount(0, callback);
             }
         },
 
-        /**
-         * Asynchronous call to the server to get the results count for the given query items
-         *
-         * @param callback
-         */
+        // clear all query items from model
+        clearItems: function(){
+            this.items = [];
+            this.count = 0;
+            this.notifyChange();
+        },
+
+        // Asynchronous call to the server to get the results count for the given query items
         getCount: function(callback){
             var queryDTOs = [];
 
@@ -121,34 +130,40 @@ define(function (require) {
                 var selection = this.items[i].selection;
                 if(selection != -1){
                     var queryDTO = {
-                        id: this.items[i].options[selection+1].id,
-                        queryObj: this.items[i].options[selection+1].queryObj
+                        target: this.items[i].target,
+                        query: this.items[i].options[selection+1].queryObj
                     };
 
                     queryDTOs.push(queryDTO);
                 }
             }
 
-            var that = this;
-            GEPPETTO.QueriesController.getQueriesCount(queryDTOs, that.setCount.bind(that));
+            var getCountDoneCallback = function(count){
+                this.setCount(count, callback);
+            };
+
+            GEPPETTO.QueriesController.getQueriesCount(queryDTOs, getCountDoneCallback.bind(this));
         },
 
-        setCount(count){
+        setCount(count, callback){
             this.count = count;
+            callback();
             this.notifyChange();
         },
 
         addResults: function(results){
             // loop results and unselect all
             for(var i=0; i<this.results.length; i++){
-                this.results.selected = false;
+                this.results[i].selected = false;
             }
 
-            this.results.push(results);
+            // always add the new one at the start of the list to simulate history
+            this.results.unshift(results);
             this.notifyChange();
         },
 
-        deleteResults: function (results) {
+        deleteResults: function(results) {
+        	GEPPETTO.Console.debugLog("delete results");
             for (var i = 0; i < this.results.length; i++) {
                 if (results.id == this.results[i].id) {
                     this.results.splice(i, 1);
@@ -156,8 +171,145 @@ define(function (require) {
             }
 
             this.notifyChange();
+        },
+
+        resultSelectionChanged: function(resultsSetId){
+            // loop results and change selection
+            for(var i=0; i<this.results.length; i++){
+                if(this.results[i].id == resultsSetId) {
+                    this.results[i].selected = true;
+                    // move selected at the top of the list to simulate history
+                    var match = this.results[i];
+                    this.results.splice(i, 1);
+                    this.results.unshift(match);
+                } else {
+                    this.results[i].selected = false;
+                }
+            }
+
+            this.notifyChange();
         }
     };
+
+    GEPPETTO.QueryLinkComponent = React.createClass({
+        render: function () {
+
+            var displayText = this.props.data;
+            var path = this.props.rowData.id;
+            var that = this;
+
+            var action = function (e) {
+                e.preventDefault();
+                var actionStr = that.props.metadata.actions;
+                actionStr = actionStr.replace(/\$entity\$/gi, path);
+                GEPPETTO.Console.executeCommand(actionStr);
+            };
+
+            return (
+                <div>
+                    <a href='#' onClick={action}>{displayText}</a>
+                </div>
+            )
+        }
+    });
+
+    GEPPETTO.SlideshowImageComponent = React.createClass({
+        isCarousel: false,
+
+        imageContainerId: '',
+        fullyLoaded : false, 
+        
+        getInitialState: function () {
+            return {
+                carouselFullyLoaded : false,
+            };
+        },
+
+        componentDidMount: function(){
+            // apply carousel
+            if(this.isCarousel) {
+                $('#' + this.imageContainerId + '.slickdiv').slick();
+                var that = this;
+                
+                //reload slick carousel if it's first time clicking on arrow in any direction
+                $('#' + this.imageContainerId + '.slickdiv').find(".slick-arrow").on("click", function(){
+                	if(!that.fullyLoaded){
+                		that.setState({carouselFullyLoaded : true});
+                		that.fullyLoaded = true;
+                	}
+                });
+            }
+        },
+        
+        componentDidUpdate(params) {
+        	//on component refresh, update slick carousel
+            $('#' + this.imageContainerId + '.slickdiv').slick('unslick').slick();
+        },
+        
+        buildCarousel : function(){
+            var jsonImageVariable = JSON.parse(this.props.data);
+            var imgElement = "";
+            
+            if (jsonImageVariable.initialValues[0] != undefined) {
+                var imageContainerId = this.props.rowData.id + '-image-container';
+                this.imageContainerId = imageContainerId;
+
+                var value = jsonImageVariable.initialValues[0].value;
+                if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
+                    this.isCarousel = true;
+                    var imagesToLoad = 2;
+                    if(this.state.carouselFullyLoaded){
+                    	imagesToLoad = value.elements.length;
+                    }
+                     
+                    //set flag to fully loaded if total length of images to render is less or equal to 2
+                    if(value.elements.length<=2){
+                    	this.fullyLoaded = true;
+                    }
+                    
+                    //if it's an array, create a carousel (relies on slick)
+                    var elements = value.elements.map(function (item, key) {
+                    	if(key<imagesToLoad){
+                    		var image = item.initialValue;
+                    		return <div key={key} className="query-results-slick-image"> {image.name}
+                    		<img className="popup-image invert" src={image.data}/>
+                    		</div>
+                    	}
+                    });
+                    
+                    elements = elements.slice(0,imagesToLoad);
+
+                    imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
+                                      data-slick={JSON.stringify({fade: true, centerMode: true, slidesToShow: 1, slidesToScroll: 1})}>
+                        {elements}
+                    </div>
+                }
+                else if (value.eClass == GEPPETTO.Resources.IMAGE) {
+                    //otherwise we just show an image
+                    var image = value;
+                    imgElement = <div id={imageContainerId} className="query-results-image collapse in">
+                        <img className="query-results-image invert" src={image.data}/>
+                    </div>
+                }
+            }
+            
+            return imgElement;
+        },
+        
+
+        render: function () {
+            var imgElement = "";
+            if(this.props.data != "" && this.props.data != undefined) {
+            	imgElement = this.buildCarousel();
+            }
+
+            return (
+                <div>
+                    {imgElement}
+                </div>
+            )
+        }
+    });
 
     GEPPETTO.QueryResultsControlsComponent = React.createClass({
 
@@ -199,7 +351,7 @@ define(function (require) {
 
         render: function () {
             // TODO: would be nicer to pass controls and config straight from the parent component rather than assume
-            var config = GEPPETTO.QueryBuilder.props.resultsControlsConfig;
+            var config = GEPPETTO.QueryBuilder.state.resultsControlsConfig;
             var resultItemId = this.props.rowData.id;
             var ctrlButtons = [];
 
@@ -277,75 +429,6 @@ define(function (require) {
         }
     });
 
-    // column metadata for display of query results
-    var queryResultsColumnMeta = [
-        {
-            "columnName": "id",
-            "order": 1,
-            "locked": false,
-            "visible": true,
-            "displayName": "ID",
-        },
-        {
-            "columnName": "name",
-            "order": 2,
-            "locked": false,
-            "visible": true,
-            "displayName": "Name"
-        },
-        {
-            "columnName": "description",
-            "order": 3,
-            "locked": false,
-            "visible": true,
-            "displayName": "Description"
-        },
-        {
-            "columnName": "controls",
-            "order": 4,
-            "locked": false,
-            "visible": true,
-            "customComponent": GEPPETTO.QueryResultsControlsComponent,
-            "displayName": "Controls",
-            "action": ""
-        }
-    ];
-
-    // control configuration for query results action
-    var queryResultsControlConfig = {
-        "Common": {
-            "info": {
-                "id": "info",
-                "actions": [
-                    "GEPPETTO.Console.log('Result ID: $ID$');"
-                ],
-                "icon": "fa-info-circle",
-                "label": "Info",
-                "tooltip": "Info"
-            }
-        }
-    };
-
-    // TODO: remove mock results
-    var mockResults = [
-        { id: 'VFB_1', name: 'JFRC2_template', description: 'Test description', controls: ''},
-        { id: 'VFB_2', name: 'VGlut-F-000176', description: 'Test description', controls: ''},
-        { id: 'VFB_3', name: 'DM5 Clone of Yu 2013', description: 'Test description a bit longer', controls: ''},
-        { id: 'VFB_4', name: 'Gad1-F-200114', description: 'Test description a bit longer even more indeed', controls: ''},
-        { id: 'VFB_5', name: 'VGlut-F-800176', description: 'Test description a bit longer even more indeed', controls: ''},
-        { id: 'VFB_6', name: 'DL1 Clone of Nonna 007', description: 'Test description', controls: ''},
-        { id: 'VFB_7', name: 'VFB-123-123-123', description: 'Test description', controls: ''},
-        { id: 'VFB_8', name: 'VGlut-000-000', description: 'Test description blah blah', controls: ''},
-        { id: 'VFB_9', name: 'JFRC2_test', description: 'Test description', controls: ''},
-        { id: 'VFB_10', name: 'VGlut-F-000345', description: 'Test description', controls: ''},
-        { id: 'VFB_11', name: 'DM5 Clone of Yu 2014', description: 'Test description a bit longer', controls: ''},
-        { id: 'VFB_12', name: 'Gad1-F-200234', description: 'Test description a bit longer even more indeed', controls: ''},
-        { id: 'VFB_13', name: 'VGlut-F-800133', description: 'Test description a bit longer even more indeed', controls: ''},
-        { id: 'VFB_14', name: 'DL2 Clone of Nonna 008', description: 'Test description', controls: ''},
-        { id: 'VFB_15', name: 'VFB-123-123-666', description: 'Test description', controls: ''},
-        { id: 'VFB_16', name: 'VGlut-000-123', description: 'Test description blah blah', controls: ''}
-    ];
-
     var QueryItem = React.createClass({
         displayName: 'QueryItem',
 
@@ -379,11 +462,10 @@ define(function (require) {
 
             return (
                 <div id={containerId} className="query-item">
-                    <div className="query-item-label">{this.props.item.term}</div>
+                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem} />
                     <select className="query-item-option" onChange={onSelection} value={this.props.item.selection}>
                         {this.props.item.options.map(createItem)}
                     </select>
-                    <button className="fa fa-trash-o query-item-button" title="delete item" onClick={this.props.onDeleteItem} />
                     <div className="clearer"></div>
                 </div>
             );
@@ -396,14 +478,15 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 "count": 0,
-                "onRun": undefined
+                "onRun": undefined,
+                "containerClass": ''
             };
         },
 
         render: function () {
             return (
-                <div id="querybuilder-footer">
-                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="run query" onClick={this.props.onRun} />
+                <div id="querybuilder-footer" className={this.props.containerClass}>
+                    <button id="run-query-btn" className="fa fa-cogs querybuilder-button" title="Run query" onClick={this.props.onRun} />
                     <div id="query-results-label">{this.props.count.toString()} results</div>
                 </div>
             );
@@ -414,6 +497,7 @@ define(function (require) {
         displayName: 'QueryBuilder',
         dataSourceResults: {},
         updateResults : false,
+        initTypeAheadCreated : false,
         configuration: { DataSources: {} },
         mixins: [
             require('../../../mixins/bootstrap/modal.js')
@@ -430,16 +514,18 @@ define(function (require) {
 
         getInitialState: function () {
             return {
-                resultsView: false
+                resultsView: false,
+                errorMsg: '',
+                showSpinner: false,
+                resultsColumns: null,
+                resultsColumnMeta: null,
+                resultsControlsConfig: null
             };
         },
 
         getDefaultProps: function () {
             return {
-                model: queryBuilderModel,
-                resultsColumns: ['name', 'description', 'controls'],
-                resultsColumnMeta: queryResultsColumnMeta,
-                resultsControlsConfig: queryResultsControlConfig,
+                model: queryBuilderModel
             };
         },
 
@@ -447,8 +533,16 @@ define(function (require) {
             GEPPETTO.QueryBuilder = this;
         },
 
-        switchView(resultsView) {
+        switchView(resultsView, clearQueryItems) {
+            if(clearQueryItems == true){
+                this.clearAllQueryItems();
+            }
+
             this.setState({ resultsView: resultsView});
+        },
+
+        showBrentSpiner(spin) {
+            this.setState({ showSpinner: spin});
         },
 
         open: function () {
@@ -461,59 +555,80 @@ define(function (require) {
             $("#querybuilder").hide();
         },
 
+        setResultsControlsConfig: function(controlsConfig){
+            this.setState({resultsControlsConfig: controlsConfig});
+        },
+
+        setResultsColumns: function(columns){
+            this.setState({resultsColumns: columns});
+        },
+
+        setResultsColumnMeta: function(colMeta){
+            this.setState({resultsColumnMeta: colMeta});
+        },
+
         initTypeahead: function () {
-            var that = this;
+        	if(!this.initTypeAheadCreated){
+        		var that = this;
 
-            $("#query-typeahead").unbind('keydown');
-            $("#query-typeahead").keydown(this, function (e) {
-                if (e.which == 9 || e.keyCode == 9) {
-                    e.preventDefault();
-                }
-            });
+        		$("#query-typeahead").unbind('keydown');
+        		$("#query-typeahead").keydown(this, function (e) {
+        			if (e.which == 9 || e.keyCode == 9) {
+        				e.preventDefault();
+        			}
+        		});
 
-            $("#query-typeahead").unbind('keypress');
-            $("#query-typeahead").keypress(this, function (e) {
-                if (e.which == 13 || e.keyCode == 13) {
-                    that.confirmed($("#query-typeahead").val());
-                }
-                if (this.searchTimeOut !== null) {
-                    clearTimeout(this.searchTimeOut);
-                }
-                this.searchTimeOut = setTimeout(function () {
-                    for (var key in that.configuration.DataSources) {
-                        if (that.configuration.DataSources.hasOwnProperty(key)) {
-                            var dataSource = that.configuration.DataSources[key];
-                            var searchQuery = $("#query-typeahead").val();
-                            var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
-                            that.updateResults = true;
-                            that.requestDataSourceResults(key, url, dataSource.crossDomain);
-                        }
-                    }
-                }, 150);
-            });
+        		$("#query-typeahead").unbind('keypress');
+        		$("#query-typeahead").keypress(this, function (e) {
+        			if (e.which == 13 || e.keyCode == 13) {
+        				that.confirmed($("#query-typeahead").val());
+        			}
+        			if (this.searchTimeOut !== null) {
+        				clearTimeout(this.searchTimeOut);
+        			}
+        			this.searchTimeOut = setTimeout(function () {
+        				for (var key in that.configuration.DataSources) {
+        					if (that.configuration.DataSources.hasOwnProperty(key)) {
+        						var dataSource = that.configuration.DataSources[key];
+        						var searchQuery = $("#query-typeahead").val();
+        						var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
+        						that.updateResults = true;
+        						that.requestDataSourceResults(key, url, dataSource.crossDomain);
+        					}
+        				}
+        			}, 150);
+        		});
+        		
+        		//fire key event on paste
+                $('#query-typeahead').off("paste");
+                $('#query-typeahead').on("paste", function(){
+                    $(this).trigger("keypress",{ keyCode: 13 });
+                });
 
-            $("#query-typeahead").unbind('typeahead:selected');
-            $("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {
-                if (datum.hasOwnProperty("label")) {
-                    that.confirmed(datum.label);
-                }
-            });
+        		$("#query-typeahead").unbind('typeahead:selected');
+        		$("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {
+        			if (datum.hasOwnProperty("label")) {
+        				that.confirmed(datum.label);
+        			}
+        		});
 
-            $('#query-typeahead').typeahead({
-                    hint: true,
-                    highlight: true,
-                    minLength: 1
-                },
-                {
-                    name: 'dataSourceResults',
-                    source: this.defaultDataSources,
-                    limit: 50,
-                    display: 'label',
-                    templates: {
-                        suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
-                    }
-                }
-            );
+        		$('#query-typeahead').typeahead({
+        			hint: true,
+        			highlight: true,
+        			minLength: 1
+        		},
+        		{
+        			name: 'dataSourceResults',
+        			source: this.defaultDataSources,
+        			limit: 50,
+        			display: 'label',
+        			templates: {
+        				suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
+        			}
+        		}
+        		);
+        		that.initTypeAheadCreated = true;
+        	}
         },
 
         componentDidMount: function () {
@@ -540,6 +655,7 @@ define(function (require) {
                 if (e.target==e.delegateTarget){
                     //we want this only to happen if we clicked on the div directly and not on anything therein contained
                     that.close();
+                    GEPPETTO.trigger("query_closed");
                 }
             });
 
@@ -567,13 +683,14 @@ define(function (require) {
             }
         },
 
-        initDataSourceResults: function(){
+        initDataSourceResults: function(datumToken, queryToken, sorter){
             this.dataSourceResults = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                datumTokenizer: (datumToken != undefined) ? datumToken : Bloodhound.tokenizers.obj.whitespace('label'),
+                queryTokenizer: (queryToken != undefined) ? queryToken :Bloodhound.tokenizers.whitespace,
                 identify: function (obj) {
                     return obj.label;
-                }
+                },
+                sorter: sorter
             });
         },
 
@@ -588,6 +705,14 @@ define(function (require) {
                         var obj = sources[key];
                         var key = this.generateDataSourceKey(key, 0);
                         this.configuration.DataSources[key] = obj;
+
+                        if(obj.bloodhoundConfig) {
+                            this.initDataSourceResults(
+                                obj.bloodhoundConfig.datumTokenizer,
+                                obj.bloodhoundConfig.queryTokenizer,
+                                obj.bloodhoundConfig.sorter
+                            );
+                        }
                     }
                 }
             }
@@ -653,11 +778,10 @@ define(function (require) {
                 that.formatDataSourceResult(data_source_name, response);
             });
 
-            //If it's an update request to show the drop down menu, this for it to show
-            //updated results
+            //If it's an update request to show the drop down menu, this for it to show updated results
             if(this.updateResults){
                 var value = $("#query-typeahead").val();
-                $("#query-typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
+                $("#query-typeahead").typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
                 $("#query-typeahead").typeahead('val', value);
             }
         },
@@ -744,18 +868,48 @@ define(function (require) {
             }
         },
 
-        queryOptionSelected: function(item, value){
+        queryOptionSelected: function(item, value, cb){
+            this.clearErrorMessage();
+
+            var callback = function(){
+                this.showBrentSpiner(false);
+
+                // cascading callback from parameters
+                if(typeof cb === "function"){
+                    cb();
+                }
+            };
+
+            // hide footer and show spinner
+            this.showBrentSpiner(true);
+
             // Option has been selected
-            this.props.model.itemSelectionChanged(item, value);
+            this.props.model.itemSelectionChanged(item, value, callback.bind(this));
         },
 
         queryItemDeleted: function(item){
-            this.props.model.deleteItem(item);
+            this.clearErrorMessage();
+
+            var callback = function(){
+                this.showBrentSpiner(false);
+            };
+
+            // hide footer and show spinner
+            this.showBrentSpiner(true);
+
+            this.props.model.deleteItem(item, callback.bind(this));
         },
 
-        // TODO: remove mock query execution - this will probably end up in the datasource
-        executeQuery: function(query, callback){
-            callback();
+        /**
+         * Clears all query items from the query builder
+         */
+        clearAllQueryItems: function(){
+            this.clearErrorMessage();
+            this.props.model.clearItems();
+        },
+
+        queryResultDeleted: function(resultsItem){
+            this.props.model.deleteResults(resultsItem);
         },
 
         getCompoundQueryId: function(queryItems){
@@ -769,63 +923,120 @@ define(function (require) {
         },
 
         runQuery: function(){
+            this.clearErrorMessage();
             if(this.props.model.items.length > 0) {
 
-                // TODO: check if we already have results for th given compound query
-                var compoundId = this.getCompoundQueryId(this.props.model.items);
-                var match = false;
-
-                for(var i=0; i<this.props.model.results.length; i++){
-                    if(this.props.model.results[i].id == compoundId){
-                        match = true;
+                var allSelected = true;
+                for(var i=0; i<this.props.model.items.length; i++){
+                    if(this.props.model.items[i].selection == -1){
+                        allSelected = false;
+                        break;
                     }
                 }
 
-                if(!match) {
-                    // TODO: if we already have results for the an identical query switch to results and select the right tab
-                    // TODO: build query client object (same as other model objects)
-                    var query = {
-                        items: this.props.model.items.slice(0)
-                    };
+                if (!allSelected) {
+                    // show error message for unselected query items
+                    this.setErrorMessage('Please select an option for all query items.');
+                } else if (this.props.model.count == 0) {
+                    // show message for no query results
+                    this.setErrorMessage('There are no results for this query.');
+                } else {
+                    // check if we already have results for the given compound query
+                    var compoundId = this.getCompoundQueryId(this.props.model.items);
+                    var match = false;
 
-                    var that = this;
-                    var queryDoneCallback = function () {
-                        // TODO: store actual results in the model
-                        // store mock results in the model
-                        var queryLabel = "";
-                        for (var i = 0; i < that.props.model.items.length; i++) {
-                            queryLabel += ((i != 0) ? "/" : "") + that.props.model.items[i].term;
+                    for (var i = 0; i < this.props.model.results.length; i++) {
+                        if (this.props.model.results[i].id == compoundId) {
+                            match = true;
+                        }
+                    }
+
+                    if (!match) {
+                        // build query items for data transfer
+                        var queryDTOs = [];
+
+                        for (var i = 0; i < this.props.model.items.length; i++) {
+                            var selection = this.props.model.items[i].selection;
+                            if (selection != -1) {
+                                var queryDTO = {
+                                    target: this.props.model.items[i].target,
+                                    query: this.props.model.items[i].options[selection + 1].queryObj
+                                };
+
+                                queryDTOs.push(queryDTO);
+                            }
                         }
 
-                        that.props.model.addResults({
-                            id: compoundId,
-                            label: queryLabel,
-                            records: mockResults,
-                            selected: true
-                        });
+                        var that = this;
+                        var queryDoneCallback = function (jsonResults) {
+                            var queryLabel = "";
+                            var verboseLabel = "";
+                            var verboseLabelPlain = "";
+                            for (var i = 0; i < that.props.model.items.length; i++) {
+                                queryLabel += ((i != 0) ? "/" : "")
+                                    + that.props.model.items[i].term;
+                                verboseLabel += ((i != 0) ? "<span> / </span>" : "")
+                                    + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
+                                verboseLabelPlain += ((i != 0) ? " / " : "")
+                                    + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
+                            }
+
+                            // NOTE: assumption we only have one datasource configured
+                            var datasourceConfig = that.configuration.DataSources[Object.keys(that.configuration.DataSources)[0]];
+                            var recordsDatasourceFormat = datasourceConfig.resultsFilters.getRecords(JSON.parse(jsonResults));
+                            var formattedRecords = recordsDatasourceFormat.map(function (record) {
+                                return {
+                                    id: datasourceConfig.resultsFilters.getId(record),
+                                    name: datasourceConfig.resultsFilters.getName(record),
+                                    description: datasourceConfig.resultsFilters.getDescription(record),
+                                    images: datasourceConfig.resultsFilters.getImageData(record),
+                                    controls: ''
+                                }
+                            });
+
+                            that.props.model.addResults({
+                                id: compoundId,
+                                items: that.props.model.items.slice(0),
+                                label: queryLabel,
+                                verboseLabel: verboseLabel,
+                                verboseLabelPLain: verboseLabelPlain,
+                                records: formattedRecords,
+                                selected: true
+                            });
+
+                            // stop showing spinner
+                            that.showBrentSpiner(false);
+
+                            // change state to switch to results view
+                            that.switchView(true);
+                        };
+
+                        // hide footer and show spinner
+                        this.showBrentSpiner(true);
+
+                        // run query on queries controller
+                        GEPPETTO.QueriesController.runQuery(queryDTOs, queryDoneCallback);
+                    } else {
+                        // if we already have results for the an identical query switch to results and select the right tab
+                        // set the right results item as the selected tab
+                        for (var i = 0; i < this.props.model.results.length; i++) {
+                            if (this.props.model.results[i].id == compoundId) {
+                                this.props.model.results[i].selected = true;
+                            } else {
+                                this.props.model.results[i].selected = false;
+                            }
+                        }
+
+                        // trigger refresh
+                        this.props.model.notifyChange();
 
                         // change state to switch to results view
-                        that.switchView(true);
-                    };
-
-                    // TODO: run query - probably on datasource client object
-                    this.executeQuery(query, queryDoneCallback);
-                } else {
-                    // set the right results item as the selected tab
-                    for(var i=0; i<this.props.model.results.length; i++){
-                        if(this.props.model.results[i].id == compoundId){
-                            this.props.model.results[i].selected = true;
-                        }else {
-                            this.props.model.results[i].selected = false;
-                        }
+                        this.switchView(true);
                     }
-
-                    // trigger refresh
-                    this.props.model.notifyChange();
-
-                    // change state to switch to results view
-                    this.switchView(true);
                 }
+            } else {
+                // show error message for empty query
+                this.setErrorMessage('Please add query items to run a query.');
             }
         },
 
@@ -833,28 +1044,46 @@ define(function (require) {
          * Add a query item
          *
          * @param queryItem - Object with term and variable id properties
+         * @param cb - optional callback function
          */
-        addQueryItem: function(queryItemParam){
+        addQueryItem: function(queryItemParam, cb){
+            this.clearErrorMessage();
+
+            // grab datasource configuration (assumption we only have one datasource)
+            var datasourceConfig = this.configuration.DataSources[Object.keys(this.configuration.DataSources)[0]];
+            var queryNameToken = datasourceConfig.queryNameToken;
+
             // retrieve variable from queryItem.id
-            var label = queryItemParam.term;
             var variable = GEPPETTO.ModelFactory.getTopLevelVariablesById([queryItemParam.id])[0];
             var term = variable.getName();
 
+            // do we have any query items already? If so grab result type and match on that too
+            var resultType = undefined;
+            for(var h=0; h<this.props.model.items.length > 0; h++){
+                var sel = this.props.model.items[h].selection;
+                if(sel != -1 && this.props.model.items[h].options[sel].value != -1){
+                    // grab the first for which we have a selection if any
+                    resultType = this.props.model.items[h].options[sel].queryObj.getResultType();
+                }
+            }
+
             // retrieve matching queries for variable type
-            var matchingQueries = GEPPETTO.ModelFactory.getMatchingQueries(variable.getType());
+            var matchingQueries = GEPPETTO.ModelFactory.getMatchingQueries(variable.getType(), resultType);
 
             if(matchingQueries.length > 0) {
                 // build item in model-friendly format
                 var queryItem = {
                     term: term,
+                    target: variable,
                     options: []
                 };
 
                 // fill out options from matching queries
                 for (var i = 0; i < matchingQueries.length; i++) {
+                    var regx = new RegExp('\\' + queryNameToken, "g");
                     queryItem.options.push({
                             id: matchingQueries[i].getId(),
-                            name: matchingQueries[i].getDescription(),
+                            name: matchingQueries[i].getDescription().replace(regx, term),
                             datasource: matchingQueries[i].getParent().getId(),
                             value: i,
                             queryObj: matchingQueries[i]
@@ -875,23 +1104,124 @@ define(function (require) {
                 // add default selection
                 queryItem.selection = -1;
                 // add default option
-                queryItem.options.splice(0, 0, {name: 'Please select an option', value: -1});
+                queryItem.options.splice(0, 0, {name: 'Select query for ' + term, value: -1});
+
+                var callback = function(){
+                    this.showBrentSpiner(false);
+                };
+
+                // hide footer and show spinner
+                this.showBrentSpiner(true);
+
                 // add query item to model
-                this.props.model.addItem(queryItem);
+                this.props.model.addItem(queryItem, callback.bind(this));
+
+                // check if we have a queryObj parameter and set it as the selected item
+                if(queryItemParam.queryObj != undefined){
+                    // figure out which option it matches to and trigger selection
+                    var val = -1;
+                    for(var h=0; h<queryItem.options.length; h++){
+                        if(queryItem.options[h].value != -1 && queryItem.options[h].id == queryItemParam.queryObj.getId()){
+                            val = queryItem.options[h].value;
+                        }
+                    }
+
+                    if(val != -1){
+                        this.queryOptionSelected(queryItem, val, cb);
+                    }
+                }
             } else {
-                // TODO: notify no queries available for the selected term
-                alert("No queries available for the selected term.");
+                // notify no queries available for the selected term
+                this.setErrorMessage("No queries available for the selected term.");
             }
 
             // init datasource results to avoid duplicates
             this.dataSourceResults.clear();
         },
 
+        setErrorMessage: function(message){
+            this.setState({errorMsg : message});
+        },
+
+        clearErrorMessage: function(){
+            this.setErrorMessage('');
+        },
+
+        resultSetSelectionChange: function(val){
+            this.props.model.resultSelectionChanged(val);
+        },
+
+        downloadQueryResults: function (resultsItem) {
+            var convertArrayOfObjectsToCSV = function (args) {
+                var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+                data = args.data || null;
+                if (data == null || !data.length) {
+                    return null;
+                }
+
+                columnDelimiter = args.columnDelimiter || ',';
+                lineDelimiter = args.lineDelimiter || '\n';
+
+                keys = Object.keys(data[0]);
+
+                result = '';
+                result += keys.join(columnDelimiter);
+                result += lineDelimiter;
+
+                data.forEach(function (item) {
+                    ctr = 0;
+                    keys.forEach(function (key) {
+                        if (ctr > 0) result += columnDelimiter;
+
+                        result += item[key];
+                        ctr++;
+                    });
+                    result += lineDelimiter;
+                });
+
+                return result;
+            };
+
+            var downloadCSV = function (args) {
+                var data, filename, link;
+
+                var csv = convertArrayOfObjectsToCSV({
+                    data: args.data
+                });
+                if (csv == null) return;
+
+                filename = args.filename || 'export.csv';
+
+                if (!csv.match(/^data:text\/csv/i)) {
+                    csv = 'data:text/csv;charset=utf-8,' + csv;
+                }
+                data = encodeURI(csv);
+
+                link = document.createElement('a');
+                link.setAttribute('href', data);
+                link.setAttribute('download', filename);
+                link.click();
+            };
+
+            downloadCSV({
+                filename: 'query-results',
+                data: resultsItem.records.map(function (record) {
+                        return {
+                            id: record.id,
+                            name: record.name,
+                            description: record.description.replace(/,/g, ' ')
+                        }
+                    }
+                )
+            });
+        },
+
         render: function () {
             var markup = null;
 
             // figure out if we are in results view or query builder view
-            if(this.state.resultsView){
+            if(this.state.resultsView && this.props.model.results.length > 0){
                 // if results view, build results markup based on results in the model
                 // figure out focus tab index (1 based index)
                 var focusTabIndex = 1;
@@ -904,28 +1234,85 @@ define(function (require) {
                 // set data for each tab based on results from the model
                 // for each tab put a Griddle configured with appropriate column meta
                 var tabs = this.props.model.results.map(function (resultsItem) {
+                    var getVerboseLabelMarkup = function() {
+                          return {__html: resultsItem.verboseLabel};
+                    };
+
                     return (
                         <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
-                            <Griddle columns={this.props.resultsColumns} results={this.props.model.results[focusTabIndex - 1].records}
-                            showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={400}
-                            useGriddleStyles={false} columnMetadata={this.props.resultsColumnMeta} />
+                            <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
+                            <div className="clearer"></div>
+                            <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
+                            showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={425}
+                            useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
                         </Tabs.Panel>
                     );
                 }, this);
 
+        		var loadHandler = function(self){
+        			GEPPETTO.on("query_closed", function(){
+        				if(self.state.open){
+        					self.toggleMenu();
+        				}
+        			});
+        		};
+
+        		var configuration = {
+        				id : "queryResultsButton",
+        				openByDefault : false,
+        				closeOnClick : true,
+        				label: "", 
+        				iconOn : 'fa fa-history fa-2x' ,
+        				iconOff : 'fa fa-history fa-2x',
+        				menuPosition : null,
+        				menuSize : {height : "auto", width : 750},
+        				menuCSS : "queryButtonMenu",
+        				autoFormatMenu : true,
+                        onClickHandler : this.resultSetSelectionChange,
+                        onLoadHandler : loadHandler,
+        				menuItems : []
+        		};
+        		
+        		var menuItems = this.props.model.results.map(function (resultItem) {
+        			return {label : resultItem.verboseLabelPLain, value : resultItem.id, icon: "fa-cogs"};
+                });
+                
+        		configuration["menuItems"] = menuItems;
+        		
+        		this.initTypeAheadCreated = false;
+        		
                 markup = (
                     <div id="query-results-container" className="center-content">
+                        <MenuButton configuration={configuration}/>
                         <Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>
-                        <button id="switch-view-btn"
-                                className="fa fa-hand-o-left querybuilder-button"
-                                title="back to query" onClick={this.switchView.bind(null, false)}>
+                        <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
+                                title="Back to query" onClick={this.switchView.bind(null, false, false)}>
+                                <div className="querybuilder-button-label">Refine query</div>
+                        </button>
+                        <button id="switch-view-clear-btn" className="fa fa-cog querybuilder-button"
+                                title="Start new query" onClick={this.switchView.bind(null, false, true)}>
+                                <div className="querybuilder-button-label">New query</div>
+                        </button>
+                        <button id="delete-result-btn" className="fa fa-trash-o querybuilder-button"
+                                title="Delete results"
+                                onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex -1])}>
+                            <div className="querybuilder-button-label">Delete results</div>
+                        </button>
+                        <button id="download-result-btn" className="fa fa-download querybuilder-button"
+                                title="Download results"
+                                onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex -1])}>
+                            <div className="querybuilder-button-label">Download results (CSV)</div>
                         </button>
                     </div>
                 );
 
             } else {
+                // if we ended up in query builder rendering make sure the state flag is synced up
+                // NOTE: this could happen if we were in resultsView and the user deleted all the results
+                this.state.resultsView = false;
+
                 // build QueryItem list
                 var queryItems = this.props.model.items.map(function (item) {
                     return (
@@ -938,16 +1325,21 @@ define(function (require) {
                     );
                 }, this);
 
+                var spinnerClass = this.state.showSpinner ? 'fa fa-cog fa-spin' : 'hide';
+                var footerClass = this.state.showSpinner ? 'hide' : '';
+
                 markup = (
                     <div id="query-builder-container">
                         <div id="query-builder-items-container">
                             {queryItems}
                         </div>
                         <div id="add-new-query-container">
-                            <button id="add-query-btn" className="fa fa-plus querybuilder-button" title="add query" />
+                            <button id="add-query-btn" className="fa fa-plus" title="add query" />
                             <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
                         </div>
-                        <QueryFooter count={this.props.model.count} onRun={this.runQuery} />
+                        <QueryFooter containerClass={footerClass} count={this.props.model.count} onRun={this.runQuery} />
+                        <div id="brent-spiner" className={spinnerClass}></div>
+                        <div id="query-error-message">{this.state.errorMsg}</div>
                     </div>
                 );
             }
@@ -958,9 +1350,7 @@ define(function (require) {
 
     var renderQueryComponent = function(){
         ReactDOM.render(
-            <QueryBuilder model={queryBuilderModel}
-                          resultsColumnMeta={queryResultsColumnMeta}
-                          resultsControlsConfig={queryResultsControlConfig} />,
+            <QueryBuilder />,
             document.getElementById("querybuilder")
         );
     };

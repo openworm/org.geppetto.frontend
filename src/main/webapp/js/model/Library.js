@@ -86,7 +86,7 @@ define(function (require) {
     
     Library.prototype.resolveAllImportTypes = function (callback) {
     	if(this.importTypes.length>0){
-        	GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.RESOLVING_TYPES);
+        	GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.RESOLVING_TYPES);
         	var b=[];
         	const BATCH = 50;
         	for(var i=0;i<this.importTypes.length;i++){
@@ -99,7 +99,7 @@ define(function (require) {
         		if(callback!=undefined){
         			callback();
         		} 
-        		GEPPETTO.trigger("hide:spinner");
+        		GEPPETTO.trigger(Events.Hide_spinner);
         	});
     	}
 

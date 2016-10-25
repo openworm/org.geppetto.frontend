@@ -9,7 +9,7 @@ define(function(require) {
 	require('./ComponentsController')(GEPPETTO);
 
 	GEPPETTO.ComponentFactory.loadSpinner();
-	
+
 	//load extensions
 	require('../../extensions/extensions');
 

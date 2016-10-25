@@ -62,21 +62,25 @@ define(function(require) {
         },
 
         rotateUp: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0, 0)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0.01)');
         },
 
         rotateDown: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, 0.01)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, -0.01)');
         },
 
         rotateLeft: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0, 0)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0)');
         },
 
         rotateRight: function() {
-            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0, -0.01)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0)');
         },
 
+        rotate: function() {
+            GEPPETTO.Console.executeCommand('G.autoRotate()');
+        },
+        
         cameraHome: function() {
             GEPPETTO.Console.executeCommand('G.resetCamera()');
         },
@@ -117,7 +121,7 @@ define(function(require) {
                     <button id="rotateUpBtn" className="btn squareB fa fa-repeat rotate90 rotate-top" onClick={this.rotateUp}></button>
                     <button id="rotateRightBtn" className="btn squareB fa fa-repeat rotate-right" onClick={this.rotateRight}></button>
                     <button id="rotateDownBtn" className="btn squareB fa fa-undo rotate90 rotate-bottom" onClick={this.rotateDown}></button>
-                    <button id="rotateHomeBtn" className="btn squareB fa fa-home rotate-home" onClick={this.cameraHome}></button>
+                    <button id="rotateBtn" className="btn squareB fa fa-video-camera rotate-home" onClick={this.rotate}></button>
 
                     <button id="zoomInBtn" className="btn squareB fa fa-search-plus zoom-in" onClick={this.zoomIn}></button>
                     <button id="zoomOutBtn" className="btn squareB fa fa-search-minus zoom-out" onClick={this.zoomOut}></button>

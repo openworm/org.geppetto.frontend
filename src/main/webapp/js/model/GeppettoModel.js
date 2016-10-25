@@ -46,6 +46,7 @@ define(function (require) {
         this.variables = (options.variables != undefined) ? options.variables : [];
         this.libraries = (options.libraries != undefined) ? options.libraries : [];
         this.datasources = (options.datasources != undefined) ? options.datasources : [];
+        this.queries = (options.queries != undefined) ? options.queries : [];
     };
 
     GeppettoModel.prototype = Object.create(ObjectWrapper.prototype);
@@ -100,6 +101,18 @@ define(function (require) {
     };
 
     /**
+     * Get top level queries
+     *
+     * @command GeppettoModel.getQueries()
+     *
+     * @returns {List<Query>} - List of query objects
+     *
+     */
+    GeppettoModel.prototype.getQueries = function () {
+        return this.queries;
+    };
+
+    /**
      * Get combined list of all children
      *
      * @command GeppettoModel.getChildren()
@@ -108,7 +121,7 @@ define(function (require) {
      *
      */
     GeppettoModel.prototype.getChildren = function () {
-        return this.variables.concat(this.libraries.concat(this.datasources));
+        return this.variables.concat(this.libraries.concat(this.datasources.concat(this.queries)));
     };
 
     return GeppettoModel;

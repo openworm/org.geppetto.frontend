@@ -133,6 +133,9 @@ define(function (require) {
                     // create datasources
                     geppettoModel.datasources = this.createDatasources(jsonModel.dataSources, geppettoModel);
 
+                    // create top level queries (potentially cross-datasource)
+                    geppettoModel.queries = this.createQueries(jsonModel.queries, geppettoModel);
+
                     if (populateRefs) {
                         // traverse everything and build shortcuts to children if composite --> containment == true
                         this.populateChildrenShortcuts(geppettoModel);
@@ -444,6 +447,7 @@ define(function (require) {
                             type.parent = parent;
 
                             types.push(type);
+                            GEPPETTO.Console.createTags(type.getPath(), GEPPETTO.Utility.extractMethodsFromObject(type, true));
                         }
                     }
                 }
@@ -866,6 +870,7 @@ define(function (require) {
                     }            
                 return diffReport;
             },
+
             createValueInstanceFronDiffReport : function(diffReport){
             	 // get initial instance count (used to figure out if we added instances at the end)
                 var instanceCount = this.getInstanceCount(window.Instances);
@@ -952,6 +957,7 @@ define(function (require) {
 
                         // getChildren of instance and recurse by the power of greyskull!
                         updateInstancesCapabilities(instances[j].getChildren());
+                        GEPPETTO.Console.createTags(instances[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(instances[j], true));
                     }
                 };
 
@@ -976,6 +982,9 @@ define(function (require) {
 
                     // update instances capabilities
                     updateInstancesCapabilities(varInstances);
+                    if(variables[i]!=null || undefined){
+                    	GEPPETTO.Console.createTags(variables[i].getPath(), GEPPETTO.Utility.extractMethodsFromObject(variables[i], true));
+                    }
                 }
             },
 
@@ -1508,6 +1517,8 @@ define(function (require) {
                 if (!(parent == undefined || parent == null) && !parent.hasCapability(capability.capabilityId)) {
                     // apply capability
                     parent.extendApi(capability);
+                    
+                	GEPPETTO.Console.createTags(parent.getPath(), GEPPETTO.Utility.extractMethodsFromObject(parent, true));
 
                     this.propagateCapabilityToParents(capability, parent);
                 }
@@ -1890,19 +1901,33 @@ define(function (require) {
 
                 var d = new Datasource(options);
 
-                // set queries
-                var rawQueries = node.queries;
+                // create queries
+                d.queries = this.createQueries(node.queries, d);
+
+                return d;
+            },
+
+            /**
+             * Create array of client query objects given raw json query objects and a parent
+             *
+             * @param rawQueries
+             * @param parent
+             * @returns {Array}
+             */
+            createQueries: function(rawQueries, parent) {
+                var queries = [];
+
                 if(rawQueries!=undefined) {
                     for (var i = 0; i < rawQueries.length; i++) {
                         var q = this.createQuery(rawQueries[i]);
                         // set datasource as parent
-                        q.parent = d;
+                        q.parent = parent;
                         // push query to queries array
-                        d.queries.push(q);
+                        queries.push(q);
                     }
                 }
 
-                return d;
+                return queries;
             },
 
             createQuery: function(node, options) {
@@ -2052,8 +2077,6 @@ define(function (require) {
 
                 var i = new Instance(options);
 
-                GEPPETTO.Console.createTags(i.getInstancePath(), this.instanceTags[GEPPETTO.Resources.INSTANCE_NODE]);
-
                 return i;
             },
 
@@ -2065,8 +2088,6 @@ define(function (require) {
 
                 var aei = new ArrayElementInstance(options);
 
-                GEPPETTO.Console.createTags(aei.getInstancePath(), this.instanceTags[GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE]);
-
                 return aei;
             },
 
@@ -2077,8 +2098,6 @@ define(function (require) {
                 }
 
                 var a = new ArrayInstance(options);
-
-                GEPPETTO.Console.createTags(a.getInstancePath(), this.instanceTags[GEPPETTO.Resources.ARRAY_INSTANCE_NODE]);
 
                 return a;
             },
@@ -2509,21 +2528,26 @@ define(function (require) {
             },
 
             /**
-             * Get matching queries given a type
+             * Get matching queries given a type and optional results type
              *
              * @param type
+             * @param resultType
              */
-            getMatchingQueries : function(type){
-                var datasources = window.Model.getDatasources();
+            getMatchingQueries : function(type, resultType){
+                var topLevelQueries = window.Model.getQueries();
                 var matchingQueries = [];
 
-                // iterate datasources
-                for(var i=0; i<datasources.length; i++){
-                    // fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
-                    var queries = datasources[i].getQueries();
-                    for(var j=0; j<queries.length; j++){
-                        if(queries[j].matchesCriteria(type)){
-                            matchingQueries.push(queries[j]);
+                // iterate top level queries
+                for(var k=0; k<topLevelQueries.length; k++){
+                    // check matching criteria first
+                    if(topLevelQueries[k].matchesCriteria(type)){
+                        // if resultType is defined then match on that too
+                        if(resultType != undefined){
+                            if(resultType == topLevelQueries[k].getResultType()){
+                                matchingQueries.push(topLevelQueries[k]);
+                            }
+                        } else {
+                            matchingQueries.push(topLevelQueries[k]);
                         }
                     }
                 }

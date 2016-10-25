@@ -45,35 +45,6 @@ define(function (require) {
          */
         GEPPETTO.Events = {
 
-    		Select: "experiment:selection_changed",
-            Focus_changed: "experiment:focus_changed",
-            Experiment_over: "experiment:over",
-            Project_loading: "project:loading",
-            Project_loaded: "project:loaded",
-            Model_loaded: "model:loaded",
-            Experiment_loaded: "experiment:loaded",
-            ModelTree_populated: "experiment:modeltreepopulated",
-            SimulationTree_populated: "experiment:simulationtreepopulated",
-            Experiment_play: "experiment:play",
-            Experiment_status_check: "experiment:status_check",
-            Experiment_pause: "experiment:pause",
-            Experiment_resume: "experiment:resume",
-            Experiment_running: "experiment:running",
-            Experiment_stop: "experiment:stop",
-            Experiment_completed: "experiment:completed",
-            Experiment_failed: "experiment:failed",
-            Experiment_update: "experiment:update",
-            Experiment_updated: "experiment:updated",
-            Experiment_deleted: "experiment_deleted",
-            Experiment_active: "experiment_active",
-            Experiment_created:"experiment:created",
-            Project_persisted: "project:persisted",
-            Spotlight_closed: "spotlight:closed",
-            Instance_deleted: "instance: deleted",
-            Instances_created: "instances: created",
-            Show_Tutorial : "show_tutorial",
-            Hide_Tutorial : "hide_tutorial"	,
-        		
             listening: false,
 
             listen: function () {
@@ -92,7 +63,7 @@ define(function (require) {
                 });
                 GEPPETTO.on(this.Experiment_loaded, function () {
                     if(GEPPETTO.UserController.isLoggedIn()){
-                    	GEPPETTO.trigger("hide:spinner");
+                    	GEPPETTO.trigger(this.Hide_spinner);
                     }
                 });
                 GEPPETTO.on(this.Project_loaded, function () {
@@ -136,8 +107,6 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
                 });
             }
-            
-            
         };
     }
 });

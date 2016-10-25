@@ -544,17 +544,14 @@ define(function (require) {
          * @param opt_value
          * @param opt_noninteraction
          */
-        trackActivity: function (category, action, opt_label, opt_value,
-                                 opt_noninteraction) {
+        trackActivity: function (category, action, opt_label, opt_value, opt_noninteraction) {
             if (typeof _gaq != 'undefined') {
-                _gaq.push(['_trackEvent', category, action, opt_label,
-                    opt_value, opt_noninteraction]);
+                _gaq.push(['_trackEvent', category, action, opt_label, opt_value, opt_noninteraction]);
             }
         },
 
         winHeight: function () {
-            return window.innerHeight
-                || (document.documentElement || document.body).clientHeight;
+            return window.innerHeight || (document.documentElement || document.body).clientHeight;
         }
     };
 

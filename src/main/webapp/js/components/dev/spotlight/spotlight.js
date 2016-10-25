@@ -47,7 +47,6 @@ define(function (require) {
 
     var Spotlight = React.createClass({
 
-
         potentialSuggestions: {},
         suggestions: null,
         instances: null,
@@ -63,8 +62,16 @@ define(function (require) {
         },
         
         addData : function(instances) {
-            this.instances.add(instances);
-            this.initialised=true;
+            if(this.props.indexInstances) {
+                this.instances.add(instances);
+                this.initialised = true;
+            }
+        },
+
+        getDefaultProps: function () {
+            return {
+                indexInstances: true
+            };
         },
 
         componentDidMount: function () {
@@ -73,13 +80,15 @@ define(function (require) {
             var escape = 27;
 
             var that = this;
-            
+
             GEPPETTO.Spotlight = this;
             
             this.initTypeahead();
-			
 
-            $("#spotlight").click(function(e){
+            var spotlightContainer = $("#spotlight");
+            var typeAhead = $('#typeahead');
+
+            spotlightContainer.click(function(e){
             	if (e.target==e.delegateTarget){
             		//we want this only to happen if we clicked on the div directly and not on anything therein contained
             		that.close();
@@ -93,20 +102,20 @@ define(function (require) {
             });
 
             $(document).keydown(function (e) {
-                if ($("#spotlight").is(':visible') && e.keyCode == escape) {
+                if (spotlightContainer.is(':visible') && e.keyCode == escape) {
                 	that.close();
                 }
             });
 
-            $('#typeahead').keydown(this, function (e) {
+            typeAhead.keydown(this, function (e) {
                 if (e.which == 9 || e.keyCode == 9) {
                     e.preventDefault();
                 }
             });
 
-            $('#typeahead').keypress(this, function (e) {
+            typeAhead.keypress(this, function (e) {
                 if (e.which == 13 || e.keyCode == 13) {
-                    that.confirmed($('#typeahead').val()); 
+                    that.confirmed(typeAhead.val());
                 }
                 if (this.searchTimeOut !== null) {
                     clearTimeout(this.searchTimeOut);
@@ -115,7 +124,7 @@ define(function (require) {
                 	for (var key in that.configuration.SpotlightBar.DataSources) {
                 	    if (that.configuration.SpotlightBar.DataSources.hasOwnProperty(key)) {
                 	    	var dataSource = that.configuration.SpotlightBar.DataSources[key];
-                	    	var searchQuery = $('#typeahead').val();
+                	    	var searchQuery = typeAhead.val();
                 	    	var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
                             that.updateResults = true;
                             that.requestDataSourceResults(key, url, dataSource.crossDomain);
@@ -124,7 +133,7 @@ define(function (require) {
                 }, 150);
             });
 
-            $('#typeahead').bind('typeahead:selected', function (obj, datum, name) {
+            typeAhead.bind('typeahead:selected', function (obj, datum, name) {
                 if (datum.hasOwnProperty("path")) {
                     //it's an instance
                     that.confirmed(datum.path);
@@ -135,8 +144,9 @@ define(function (require) {
                 }
             });
            
-
-
+            //fire key event on paste
+            typeAhead.on("paste", function(){$(this).trigger("keypress",{ keyCode: 13 });});
+            
             GEPPETTO.on(GEPPETTO.Events.Experiment_loaded, function () {
             	if(that.initialised){
             		that.initialised=false;
@@ -165,31 +175,18 @@ define(function (require) {
             	}
             });
 
-            this.dataSourceResults = new Bloodhound({
-            	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label'),
-            	queryTokenizer: Bloodhound.tokenizers.whitespace,
-            	identify: function (obj) {
-            		return obj.label;
-            	}
-            });
+            this.initDataSourceResults();
 
             Handlebars.registerHelper('geticonFromMetaType', function (metaType) {
                 if (metaType) {
                     return new Handlebars.SafeString("<icon class='fa " + GEPPETTO.Resources.Icon[metaType] + "' style='margin-right:5px; color:" + GEPPETTO.Resources.Colour[metaType] + ";'/>");
                 }
-                else {
-                    return;
-                }
-
             });
 
             Handlebars.registerHelper('geticon', function (icon) {
                 if (icon) {
                     return new Handlebars.SafeString("<icon class='fa " + icon + "' style='margin-right:5px;'/>");
-                } else {
-                    return;
                 }
-
             });
 
             if(GEPPETTO.ForegroundControls != undefined){
@@ -205,7 +202,7 @@ define(function (require) {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});						
-			GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
+			GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function (experimentId) {
 				that.updateToolBarVisibilityState(that.checkHasWritePermission(experimentId));
 			});
 			
@@ -229,9 +226,6 @@ define(function (require) {
             
 			this.updateToolBarVisibilityState(this.checkHasWritePermission());
             this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
-			
-			
-            
         },
         
 		/**
@@ -243,7 +237,7 @@ define(function (require) {
 				visible = false;
 			}
 			
-			if(window.Project.getActiveExperiment()!=null || undefined){
+			if(window.Project!= undefined && window.Project.getActiveExperiment()!=null || undefined){
 				if(window.Project.getActiveExperiment().getId() == experimentId){
 					visible = false;
 				}
@@ -251,10 +245,9 @@ define(function (require) {
 				if(window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED){
 					visible = false;
 				}
-			}
+            }
 			return visible;
-		},
-
+        },
 
         recordSample: {
             "label": "Record all membrane potentials",
@@ -281,15 +274,50 @@ define(function (require) {
             ],
             "icon": "fa-lightbulb-o"
         },
+        
+        focusButtonBar : function(){
+			$(".tt-menu").hide();
+			$(".spotlight-button").eq(0).focus();
+			$(".spotlight-input").eq(0).focus();
+        },
 
+        formatButtonActions : function(button, id, label){
+		    var actions, newActions;
+		    if(button.condition!=null || undefined){
+		    	actions = button[false].actions;
+		    	newActions = this.replaceActionHolders(actions, id,label);
+			    button[false].actions = newActions;
+			    
+			    actions = button[true].actions;
+		    	newActions = this.replaceActionHolders(actions, id,label);
+			    button[true].actions = newActions;
+		    }else{
+		    	actions = button.actions;
+		    	newActions = this.replaceActionHolders(actions, id,label);
+			    button.actions = newActions;
+		    }
+        },
+        
+        replaceActionHolders : function(actions, id, label){
+        	var newActions = JSON.parse(JSON.stringify(actions));
+    		for(var i=0; i < actions.length; i++) {
+    			newActions[i] = newActions[i].replace(/\$ID\$/g, id);
+    			newActions[i] = newActions[i].replace(/\$LABEL\$/gi,label);
+    		}
+    		
+    		return newActions;
+        },
+        
         confirmed: function (item) {
             //check suggestions
+            var found;
+            var actions;
 
             if (item && item != "") {
-                var suggestionFound = false
+                var suggestionFound = false;
 
                 if (this.suggestions.get(item)) {
-                    var found = this.suggestions.get(item);
+                    found = this.suggestions.get(item);
                     if (found.length == 1) {
                         suggestionFound = true;
                         var actions = found[0].actions;
@@ -301,38 +329,78 @@ define(function (require) {
                 }
 
                 if (this.dataSourceResults.get(item)) {
-                    var found = this.dataSourceResults.get(item);
+                    found = this.dataSourceResults.get(item);
+
                     if (found.length == 1) {
                         suggestionFound = true;
-                        var actions = found[0].actions;
-                        actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommand(action)
-                        });
-                        $("#typeahead").typeahead('val', "");
+
+                        // evil eval to check if the id maps to an existing instance
+                        var inst = undefined;
+                        try {
+                            inst = eval(found[0]["id"]);
+                        } catch (e) {
+                            // we don't really wanna do anything here
+                        }
+
+                        // try handling instance in case we have already resolved it
+                        if(inst != undefined){
+                            this.handleInstanceSelection(found[0]["id"]);
+                        } else {
+                            // one does not simply assign buttons without deep cloning them
+                            var buttons = JSON.parse(JSON.stringify(found[0].buttons));
+                            //data source item has buttons
+                            if(buttons!=null || undefined){
+                                var button;
+                                //format button actions to have proper values instead of placeholders
+                                for (var prop in buttons) {
+                                    if( buttons.hasOwnProperty( prop ) ) {
+                                        button = buttons[prop];
+                                        this.formatButtonActions(button,found[0]["id"], found[0]["label"]);
+                                    }
+                                }
+                                var tbar = $('<div>').addClass('spotlight-toolbar');
+                                tbar.append(this.BootstrapMenuMaker.createButtonGroup("DataSource", buttons, null));
+                                $(".spotlight-toolbar").remove();
+                                $('#spotlight').append(tbar);
+                                this.focusButtonBar();
+                            }//data source is straight up execution of actions
+                            else{
+                                actions = found[0].actions;
+                                actions.forEach(function (action) {
+                                    GEPPETTO.Console.executeCommand(action)
+                                });
+                                $("#typeahead").typeahead('val', "");
+                            }
+                        }
                     }
                 }
                 
-                //check the instances
+                // no suggestions or datasource hits were found, fall back on instances (default)
                 if (!suggestionFound) {
                 	try{
-                		window._spotlightInstance = Instances.getInstance([item]);
-                		if (window._spotlightInstance) {
-                			this.loadToolbarFor(window._spotlightInstance);
-
-                			if ($(".spotlight-toolbar").length == 0) {
-                				this.loadToolbarFor(window._spotlightInstance);
-                			}
-
-                			$(".tt-menu").hide();
-                			$(".spotlight-button").eq(0).focus();
-                			$(".spotlight-input").eq(0).focus();
-                		}
+                		this.handleInstanceSelection(item);
                 	}catch (e){
-                		//TODO: Simulation Handler throws error when not finding an instance, should probably
-                		//be handled different for Spotlight
+                		//TODO: Simulation Handler throws error when not finding an instance, should probably be handled different for Spotlight
                 	}
                 }
             }
+        },
+
+        handleInstanceSelection: function(item){
+            var instanceFound = false;
+
+            window._spotlightInstance = Instances.getInstance([item]);
+            if (window._spotlightInstance) {
+                instanceFound = true;
+                this.loadToolbarFor(window._spotlightInstance);
+
+                if ($(".spotlight-toolbar").length == 0) {
+                    this.loadToolbarFor(window._spotlightInstance);
+                }
+                this.focusButtonBar();
+            }
+
+            return instanceFound;
         },
 
         defaultSuggestions: function (q, sync) {
@@ -354,15 +422,17 @@ define(function (require) {
         },
 
         defaultInstances: function (q, sync) {
-            if (q === '') {
-                var rootInstances = [];
-                for (var i = 0; i < window.Instances.length; i++) {
-                    rootInstances.push(window.Instances[i].getId());
+            if(this.props.indexInstances) {
+                if (q === '') {
+                    var rootInstances = [];
+                    for (var i = 0; i < window.Instances.length; i++) {
+                        rootInstances.push(window.Instances[i].getId());
+                    }
+                    sync(this.instances.get(rootInstances));
                 }
-                sync(this.instances.get(rootInstances));
-            }
-            else {
-                this.instances.search(q, sync);
+                else {
+                    this.instances.search(q, sync);
+                }
             }
         },
 
@@ -405,9 +475,11 @@ define(function (require) {
 
         openToInstance: function (instance) {
             $("#spotlight").show();
-            $("#typeahead").focus();
-            $(".typeahead").typeahead('val', instance.getInstancePath());
-            $("#typeahead").trigger(jQuery.Event("keypress", {which: 13}));
+
+            var typeAhead = $("#typeahead");
+            typeAhead.focus();
+            typeAhead.typeahead('val', instance.getInstancePath());
+            typeAhead.trigger(jQuery.Event("keypress", {which: 13}));
         },
 
         open: function (flowFilter, useSelection) {
@@ -449,28 +521,49 @@ define(function (require) {
             }
 
             $("#spotlight").show();
-            $("#typeahead").focus();
-            $("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
-            $("#typeahead").typeahead('val', "");
+
+            var typeAhead = $("#typeahead");
+            typeAhead.focus();
+            typeAhead.typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
+            typeAhead.typeahead('val', "");
+        },
+
+        initDataSourceResults: function(datumToken, queryToken, sorter){
+            this.dataSourceResults = new Bloodhound({
+                datumTokenizer: (datumToken != undefined) ? datumToken : Bloodhound.tokenizers.obj.whitespace('label'),
+                queryTokenizer: (queryToken != undefined) ? queryToken : Bloodhound.tokenizers.nonword,
+                identify: function (obj) {
+                    return obj.label;
+                },
+                sorter: sorter
+            });
         },
 
         /**
-         * Requests external data sources. 
-         * 
+         * Requests external data sources.
+         *
          */
         addDataSource : function(sources){
-        	try {
-        		for (var key in sources) {
-        			  if (sources.hasOwnProperty(key)) {
-        			    var obj = sources[key];
-        			    var key = this.generateDataSourceKey(key, 0);
-        			    this.configuration.SpotlightBar.DataSources[key] = obj;
-        			  }
-        		}
-        	}
-        	catch (err) {
-        		throw ("Error parsing data sources " + err);
-        	}
+            try {
+                for (var key in sources) {
+                    if (sources.hasOwnProperty(key)) {
+                        var obj = sources[key];
+                        var keysha = this.generateDataSourceKey(key, 0);
+                        this.configuration.SpotlightBar.DataSources[keysha] = obj;
+
+                        if(obj.bloodhoundConfig) {
+                            this.initDataSourceResults(
+                                obj.bloodhoundConfig.datumTokenizer,
+                                obj.bloodhoundConfig.queryTokenizer,
+                                obj.bloodhoundConfig.sorter
+                            );
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                throw ("Error parsing data sources " + err);
+            }
         },
         
         /**
@@ -478,7 +571,7 @@ define(function (require) {
          * create a new key for it.
          */
         generateDataSourceKey : function(key, index){
-        	var dataSource = this.configuration.SpotlightBar.DataSources[key]
+        	var dataSource = this.configuration.SpotlightBar.DataSources[key];
 		    if(dataSource!=null || dataSource !=undefined){
 		    	key = key.concat(index);
 		    	this.generateDataSourceKey(key, index++);
@@ -535,9 +628,10 @@ define(function (require) {
 			//If it's an update request to show the drop down menu, this for it to show 
 			//updated results
 			if(this.updateResults){
-				var value = $("#typeahead").val();
-				$("#typeahead").typeahead('val', "!"); //this is required to make sure the query changes otherwise typeahead won't update
-                $("#typeahead").typeahead('val', value);
+                var typeAhead = $("#typeahead");
+				var value = typeAhead.val();
+                typeAhead.typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
+                typeAhead.typeahead('val', value);
 			}
         },
         
@@ -575,8 +669,8 @@ define(function (require) {
     			var searchTerm = explodeArrays[i].field;    		
     			var results = response[searchTerm];
     			if(results!=null || undefined){
-    				for(var i =0; i<results.length; i++){
-    					var result = results[i];
+    				for(var j =0; j<results.length; j++){
+    					var result = results[j];
     					formattedLabel = labelFormatting.replace('$VALUE$', result);
     					formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
     					formattedLabel = formattedLabel.replace('$ID$', id);
@@ -593,18 +687,20 @@ define(function (require) {
         createDataSourceResult : function(data_source_name, response, formattedLabel, id){
         	var typeName = response.type;
 
+        	var buttons = 
+        		this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].buttons;
+
     		var obj = {};
     		obj["label"] = formattedLabel;
     		obj["id"] = id;
-    		//replace $ID$ with one returned from server for actions
-    		var actions = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
-    		var newActions = actions.slice(0);
-    		for(var i=0; i < actions.length; i++) {
-    			 newActions[i] = newActions[i].replace(/\$ID\$/g, obj["id"]);
-    			 newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
-    		}
-    		obj["actions"] = newActions;
     		obj["icon"] = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].icon;
+        	if(buttons!= null || undefined){
+        		obj["buttons"] = buttons;
+        	}else{
+        		//replace $ID$ with one returned from server for actions
+        		var actions = this.configuration.SpotlightBar.DataSources[data_source_name].type[typeName].actions;
+        		obj["actions"] = this.replaceActionHolders(actions, obj["id"], obj["label"]);
+        	}
     		this.dataSourceResults.add(obj);
         },
         
@@ -664,28 +760,32 @@ define(function (require) {
             getCommand: function (action, instance, value) {
                 var label="";
                 var processed="";
-                if($.isArray(instance)){
-                    if (instance.length == 1) {
-                        label = instance[0].getInstancePath();
-                    }
-                    else {
-                        label = "Multiple instances of " + instance[0].getVariable().getId();
-                    }
-                    processed = action.split("$instances$").join("_spotlightInstance");
-                    processed = processed.split("$instance0$").join("_spotlightInstance[0]");
-                    processed = processed.split("$label$").join(label);
-                    processed = processed.split("$value$").join(value);
-                    processed = processed.split("$type$").join(instance[0].getType().getPath());
-                    processed = processed.split("$typeid$").join(instance[0].getType().getId());
-                    processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
-                }
-                else{
-                    processed = action.split("$instances$").join(instance.getInstancePath());
-                    processed = processed.split("$label$").join(instance.getInstancePath());
-                    processed = processed.split("$value$").join(value);
-                    processed = processed.split("$type$").join(instance.getType().getPath());
-                    processed = processed.split("$typeid$").join(instance.getType().getId());
-                    processed = processed.split("$variableid$").join(instance.getVariable().getId());
+                if(instance!=null || undefined){
+                	if($.isArray(instance)){
+                		if (instance.length == 1) {
+                			label = instance[0].getInstancePath();
+                		}
+                		else {
+                			label = "Multiple instances of " + instance[0].getVariable().getId();
+                		}
+                		processed = action.split("$instances$").join("_spotlightInstance");
+                		processed = processed.split("$instance0$").join("_spotlightInstance[0]");
+                		processed = processed.split("$label$").join(label);
+                		processed = processed.split("$value$").join(value);
+                		processed = processed.split("$type$").join(instance[0].getType().getPath());
+                		processed = processed.split("$typeid$").join(instance[0].getType().getId());
+                		processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
+                	}
+                	else{
+                		processed = action.split("$instances$").join(instance.getInstancePath());
+                		processed = processed.split("$label$").join(instance.getInstancePath());
+                		processed = processed.split("$value$").join(value);
+                		processed = processed.split("$type$").join(instance.getType().getPath());
+                		processed = processed.split("$typeid$").join(instance.getType().getId());
+                		processed = processed.split("$variableid$").join(instance.getVariable().getId());
+                	}
+                }else{
+                	processed = action;
                 }
 
                 return processed;
@@ -717,7 +817,7 @@ define(function (require) {
                 else if (element.hasOwnProperty("inputValue")) {
                     //an input box
                     if(!(instance.length>1)){
-                        var uiElement=$("<div>");
+                        uiElement=$("<div>");
                         var value=eval(this.getCommand(element.inputValue, instance[0]));
                         var unit=eval(this.getCommand(element.label, instance[0]));
                         label = $("<div class='spotlight-input-label'>").html(unit);
@@ -738,7 +838,6 @@ define(function (require) {
                         }
                         uiElement.append(input);
                         uiElement.append(label);
-
                     }
                 }
                 else {
@@ -762,13 +861,10 @@ define(function (require) {
                 var that = this;
                 var instance = bgInstance;
 
-                var bg = $('<div>')
-                    .addClass('btn-group')
-                    .attr('role', 'group')
-                    .attr('id', bgName);
+                var bg = $('<div>').addClass('btn-group').attr('role', 'group').attr('id', bgName);
                 $.each(bgDef, function (bName, bData) {
                     var button = that.named(that.createUIElement, bName, bData, instance);
-                    bg.append(button)
+                    bg.append(button);
                     $(button).keypress(that, function (e) {
                         if (e.which == 13 || e.keyCode == 13)  // enter
                         {

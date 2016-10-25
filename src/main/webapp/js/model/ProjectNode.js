@@ -215,7 +215,7 @@ define(['backbone'], function (require) {
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
             GEPPETTO.trigger(GEPPETTO.Events.Project_loading);
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
-            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
 
             var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
@@ -249,7 +249,7 @@ define(['backbone'], function (require) {
 
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
             GEPPETTO.trigger(GEPPETTO.Events.Project_loading);
-            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
 
             var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
@@ -283,7 +283,7 @@ define(['backbone'], function (require) {
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
-            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
 
             var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 

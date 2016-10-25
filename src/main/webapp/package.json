@@ -1,10 +1,9 @@
 {
   "name": "org.geppetto.frontend",
-  "version": "0.2.5",
+  "version": "0.3.2",
   "scripts": {
     "build": "webpack -p",
-    "watch": "webpack -d --watch",
-    "dev": "webpack-dev-server --config webpack.config.dev.js",
+    "start": "webpack-dev-server --config webpack.config.dev.js",
     "postinstall": "node -e \"var srcpath='../js/GEPPETTO.js'; var dstpath='node_modules/geppetto';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
   },
   "devDependencies": {

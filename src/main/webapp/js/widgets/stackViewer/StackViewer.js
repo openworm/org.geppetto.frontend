@@ -48,7 +48,7 @@ define(function (require) {
         options: null,
         defHeight: 400,
         defWidth: 600,
-        data: { height: this.defHeight, width: this.defWidth, instances: [] },
+        data: { height: this.defHeight, width: this.defWidth, instances: [], selected: [] },
 
         /**
          * Initialises button bar
@@ -88,8 +88,10 @@ define(function (require) {
          */
         setData: function (data) {
             // console.log('set Data');
-            if (data !== this.data) {
-                if (data != undefined && data != null) {
+            var sel = GEPPETTO.G.getSelection();
+            if (data != undefined && data != null) {
+                if (data !== this.data || sel !== this.data.selected) {
+
                     if (data.height == undefined) {
                         // console.log('setting default height');
                         data.height = this.defHeight;
@@ -102,16 +104,17 @@ define(function (require) {
 
                     this.data = data;
 
+                    this.data.selected = sel;
+
                     Widget.View.prototype.setSize.call(this, data.height, data.width);
 
-                } else {
-                    console.log('set data issue:');
-                    console.log(JSON.stringify(data));
+                    this.updateBorders();
+                    this.updateScene();
+
                 }
-
-                this.updateBorders();
-                this.updateScene();
-
+            } else {
+                console.log('set data issue:');
+                console.log(JSON.stringify(data));
             }
 
             return this;

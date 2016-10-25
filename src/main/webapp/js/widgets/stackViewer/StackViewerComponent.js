@@ -101,6 +101,7 @@ define(function (require) {
             this.refs.stackCanvas.removeChild(this.renderer.view);
             this.renderer.destroy(true);
             this.renderer = null;
+            return true;
         },
 
         callDstRange: function () {
@@ -474,10 +475,6 @@ define(function (require) {
             this.state.buffer[-1].anchor.x = 50;
             this.state.buffer[-1].anchor.y = 50;
             this.state.buffer[-1].zOrder = 1000;
-        },
-
-        shouldComponentUpdate: function(nextProps, nextState) {
-            return this.props.value !== nextProps.value;
         },
 
         /**

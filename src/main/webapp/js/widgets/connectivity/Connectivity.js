@@ -47,7 +47,7 @@ define(function (require) {
     
 	require('./vendor/d3.min');
 	require('./vendor/d3.hive.v0');
-	var chords = require('./chords');
+	//var chords = require('./chords');
 	var hives = require('./hives');
 	var matrices = require('./matrices');
 	var forces = require('./forces');

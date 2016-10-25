@@ -182,9 +182,9 @@ define(function (require) {
             while (GEPPETTO.G.getSelection()[0] != undefined) {
                 GEPPETTO.G.getSelection()[0].deselect();
             }
-            for (i in this.state.stack) {
+            $.each(this.state.stack, function (i, item) {
                 (function(i, that) {
-                    var image = that.state.serverUrl.toString() + '?wlz=' + that.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.props.dst).toFixed(1) + '&pit=' + Number(that.props.pit).toFixed(0) + '&yaw=' + Number(that.props.yaw).toFixed(0) + '&rol=' + Number(that.props.rol).toFixed(0);
+                    var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.props.dst).toFixed(1) + '&pit=' + Number(that.props.pit).toFixed(0) + '&yaw=' + Number(that.props.yaw).toFixed(0) + '&rol=' + Number(that.props.rol).toFixed(0);
                     //get image size;
                     $.ajax({
                         url: image + '&prl=-1,' + that.state.posX + ',' + that.state.posY + '&obj=Wlz-foreground-objects',
@@ -212,7 +212,7 @@ define(function (require) {
                         }.bind(this)
                     }).bind(i);
                 })(i, that);
-            }
+            });
         },
 
         listObjects: function () {

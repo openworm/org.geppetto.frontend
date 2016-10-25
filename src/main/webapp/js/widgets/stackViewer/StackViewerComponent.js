@@ -210,7 +210,7 @@ define(function (require) {
                         error: function (xhr, status, err) {
                             console.error(that.props.url, status, err.toString());
                         }.bind(this)
-                    }).bind(i);
+                    });
                 })(i, that);
             });
         },

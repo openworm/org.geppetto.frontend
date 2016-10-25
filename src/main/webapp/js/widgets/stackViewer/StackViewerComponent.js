@@ -184,8 +184,6 @@ define(function (require) {
             }
             for (i in this.state.stack) {
                 (function(i, that) {
-                    id = that.state.id[i];
-                    label = that.state.label[i];
                     var image = that.state.serverUrl.toString() + '?wlz=' + that.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.props.dst).toFixed(1) + '&pit=' + Number(that.props.pit).toFixed(0) + '&yaw=' + Number(that.props.yaw).toFixed(0) + '&rol=' + Number(that.props.rol).toFixed(0);
                     //get image size;
                     $.ajax({
@@ -196,10 +194,10 @@ define(function (require) {
                             if (result !== '') {
                                 for (j in result) {
                                     if (result[j] == '0') {
-                                        console.log(label + ' clicked');
-                                        eval(id).select();
-                                        that.setStatusText(label + ' clicked!');
-                                        that.setState({text: label + ' clicked!'});
+                                        console.log(that.state.label[i] + ' clicked');
+                                        eval(that.state.id[i]).select();
+                                        that.setStatusText(that.state.label[i] + ' clicked!');
+                                        that.setState({text: that.state.label[i] + ' clicked!'});
                                     } else {
                                         console.log('Odd value: ' + result[j].toString());
                                     }
@@ -212,7 +210,7 @@ define(function (require) {
                         error: function (xhr, status, err) {
                             console.error(that.props.url, status, err.toString());
                         }.bind(this)
-                    });
+                    }).bind(i);
                 })(i, that);
             }
         },

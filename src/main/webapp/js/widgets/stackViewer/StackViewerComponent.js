@@ -476,6 +476,10 @@ define(function (require) {
             this.state.buffer[-1].zOrder = 1000;
         },
 
+        shouldComponentUpdate: function(nextProps, nextState) {
+            return this.props.value !== nextProps.value;
+        },
+
         /**
          * When we get new props, run the appropriate imperative functions
          **/
@@ -736,6 +740,10 @@ define(function (require) {
             if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 this.handleInstances(this.props.data.instances);
             }
+        },
+
+        shouldComponentUpdate: function(nextProps, nextState) {
+            return this.props.value !== nextProps.value;
         },
 
         componentWillReceiveProps: function (nextProps) {

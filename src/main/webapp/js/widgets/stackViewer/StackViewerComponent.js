@@ -739,10 +739,6 @@ define(function (require) {
             }
         },
 
-        shouldComponentUpdate: function(nextProps, nextState) {
-            return this.props.value !== nextProps.value;
-        },
-
         componentWillReceiveProps: function (nextProps) {
             // console.log('Recieved Props:');
             // console.log(nextProps);

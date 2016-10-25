@@ -4,7 +4,6 @@
  * @author Simone Manini / http://daron1337.github.io
  * @author Luca Antiga 	/ http://lantiga.github.io
  */
-
 var THREE = window.THREE || require('three-js')();
 THREE.TrackballControls = function ( object, domElement ) {
 
@@ -208,13 +207,13 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	this.rotateCamera = ( function() {
 
-		// Verify if we do have and rotation to apply
-		// e.g.: angle isn't 0
-		if ( angle ) {
-			// Around where do we want to rotate the camera by `angle` degrees?
-			var axis = ( new THREE.Vector3() ).crossVectors( _rotateStart, _rotateEnd ).normalize();
-			// Blank quaternion
-			quaternion = new THREE.Quaternion();
+		var axis = new THREE.Vector3(),
+			quaternion = new THREE.Quaternion(),
+			eyeDirection = new THREE.Vector3(),
+			objectUpDirection = new THREE.Vector3(),
+			objectSidewaysDirection = new THREE.Vector3(),
+			moveDirection = new THREE.Vector3(),
+			angle;
 
 		return function rotateCamera() {
 

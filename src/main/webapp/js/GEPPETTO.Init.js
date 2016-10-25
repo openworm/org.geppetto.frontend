@@ -326,7 +326,7 @@ define(function (require) {
                 setupControls();
                 setupListeners();
                 this.initialised = true;
-                GEPPETTO.trigger(Events.Canvas_initialised);
+                GEPPETTO.trigger(GEPPETTO.Events.Canvas_initialised);
                 return GEPPETTO.getVARS();
             },
 

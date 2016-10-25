@@ -100,7 +100,7 @@ define(function (require) {
             }
 
             //update plotting widgets
-            else if (event == Events.Experiment_play) {
+            else if (event == GEPPETTO.Events.Experiment_play) {
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
                     plot.clean(parameters.playAll);
@@ -109,11 +109,11 @@ define(function (require) {
             }
 
             //update plotting widgets
-            else if (event == Events.Experiment_over) {
+            else if (event == GEPPETTO.Events.Experiment_over) {
             }
 
             //update plotting widgets
-            else if (event == Events.Experiment_update) {
+            else if (event == GEPPETTO.Events.Experiment_update) {
 
                 //loop through all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {

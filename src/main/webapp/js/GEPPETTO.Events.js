@@ -45,6 +45,38 @@ define(function (require) {
          */
         GEPPETTO.Events = {
 
+            Select: "experiment:selection_changed",
+            Focus_changed: "experiment:focus_changed",
+            Experiment_over: "experiment:over",
+            Project_loading: "project:loading",
+            Project_loaded: "project:loaded",
+            Model_loaded: "model:loaded",
+            Experiment_loaded: "experiment:loaded",
+            ModelTree_populated: "experiment:modeltreepopulated",
+            SimulationTree_populated: "experiment:simulationtreepopulated",
+            Experiment_play: "experiment:play",
+            Experiment_status_check: "experiment:status_check",
+            Experiment_pause: "experiment:pause",
+            Experiment_resume: "experiment:resume",
+            Experiment_running: "experiment:running",
+            Experiment_stop: "experiment:stop",
+            Experiment_completed: "experiment:completed",
+            Experiment_failed: "experiment:failed",
+            Experiment_update: "experiment:update",
+            Experiment_updated: "experiment:updated",
+            Experiment_deleted: "experiment_deleted",
+            Experiment_active: "experiment_active",
+            Experiment_created: "experiment:created",
+            Project_persisted: "project:persisted",
+            Spotlight_closed: "spotlight:closed",
+            Instance_deleted: "instance:deleted",
+            Instances_created: "instances:created",
+            Show_Tutorial: "show_tutorial",
+            Hide_Tutorial: "hide_tutorial",
+            Show_spinner: "spinner:show",
+            Hide_spinner: "spinner:hide",
+            Canvas_initialised: "canvas:initialised",
+
             listening: false,
 
             listen: function () {
@@ -62,13 +94,13 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });
                 GEPPETTO.on(this.Experiment_loaded, function () {
-                    if(GEPPETTO.UserController.isLoggedIn()){
-                    	GEPPETTO.trigger(this.Hide_spinner);
+                    if (GEPPETTO.UserController.isLoggedIn()) {
+                        GEPPETTO.trigger(this.Hide_spinner);
                     }
                 });
                 GEPPETTO.on(this.Project_loaded, function () {
                     var projectID = window.Project.getId();
-                	GEPPETTO.Main.startStatusWorker();
+                    GEPPETTO.Main.startStatusWorker();
                 });
                 GEPPETTO.on(this.Experiment_over, function (e) {
                     var name = e.name;
@@ -79,7 +111,7 @@ define(function (require) {
 
                     // check if we are in looping mode
                     if (GEPPETTO.getVARS().playLoop === true) {
-                        Project.getActiveExperiment().play({step: 1});
+                        Project.getActiveExperiment().play({ step: 1 });
                     }
                     else {
                         GEPPETTO.Console.log("Experiment " + name + " with " + id + " is over ");
@@ -91,13 +123,13 @@ define(function (require) {
                 GEPPETTO.on(this.Experiment_update, function (parameters) {
                     if (parameters.playAll != null || parameters.step != undefined) {
                         //update scene brightness
-                    	for (var key in GEPPETTO.G.listeners) {
-                    		if(GEPPETTO.G.listeners[key]!=null || undefined){
-                    			for (var i = 0; i < GEPPETTO.G.listeners[key].length; i++) {
-                    				GEPPETTO.G.listeners[key][i](Instances.getInstance(key), parameters.step);
-                    			}
-                    		}
-                    	}
+                        for (var key in GEPPETTO.G.listeners) {
+                            if (GEPPETTO.G.listeners[key] != null || undefined) {
+                                for (var i = 0; i < GEPPETTO.G.listeners[key].length; i++) {
+                                    GEPPETTO.G.listeners[key][i](Instances.getInstance(key), parameters.step);
+                                }
+                            }
+                        }
                     }
                     //notify widgets a restart of data is needed
                     GEPPETTO.WidgetsListener.update(this.Experiment_update, parameters);

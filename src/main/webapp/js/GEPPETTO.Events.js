@@ -82,10 +82,10 @@ define(function (require) {
             listen: function () {
                 GEPPETTO.on(this.Select, function () {
                     //notify widgets that selection has changed in scene
-                    GEPPETTO.WidgetsListener.update(this.Select);
+                    GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Select);
 
                     //trigger focus change event
-                    GEPPETTO.trigger(this.Focus_changed);
+                    GEPPETTO.trigger(GEPPETTO.Events.Focus_changed);
                 });
                 GEPPETTO.on(this.Model_loaded, function () {
                     G.resetCamera();
@@ -95,7 +95,7 @@ define(function (require) {
                 });
                 GEPPETTO.on(this.Experiment_loaded, function () {
                     if (GEPPETTO.UserController.isLoggedIn()) {
-                        GEPPETTO.trigger(this.Hide_spinner);
+                        GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
                     }
                 });
                 GEPPETTO.on(this.Project_loaded, function () {
@@ -107,7 +107,7 @@ define(function (require) {
                     var id = e.id;
 
                     //notify listeners experiment has finished playing
-                    GEPPETTO.WidgetsListener.update(this.Experiment_over);
+                    GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_over);
 
                     // check if we are in looping mode
                     if (GEPPETTO.getVARS().playLoop === true) {
@@ -118,7 +118,7 @@ define(function (require) {
                     }
                 });
                 GEPPETTO.on(this.Experiment_play, function (parameters) {
-                    GEPPETTO.WidgetsListener.update(this.Experiment_play, parameters);
+                    GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_play, parameters);
                 });
                 GEPPETTO.on(this.Experiment_update, function (parameters) {
                     if (parameters.playAll != null || parameters.step != undefined) {
@@ -132,7 +132,7 @@ define(function (require) {
                         }
                     }
                     //notify widgets a restart of data is needed
-                    GEPPETTO.WidgetsListener.update(this.Experiment_update, parameters);
+                    GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_update, parameters);
                 });
                 GEPPETTO.on(this.Experiment_stop, function (parameters) {
                     //notify widgets a restart of data is needed

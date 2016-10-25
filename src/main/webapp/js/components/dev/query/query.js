@@ -53,7 +53,7 @@ define(function (require) {
     var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
 
-	var MenuButton = require('jsx!./../menubutton/MenuButton')
+	var MenuButton = require('../menubutton/MenuButton')
 
     // query model object to represent component state and trigger view updates
     var queryBuilderModel = {

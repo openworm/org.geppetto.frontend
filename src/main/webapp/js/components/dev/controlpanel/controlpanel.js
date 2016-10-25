@@ -685,15 +685,15 @@ define(function (require) {
             });
 
             // listen to events we need to react to
-            GEPPETTO.on(Events.Project_loaded, function () {
+            GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
                 that.clearData();
             });
 
-            GEPPETTO.on(Events.Instance_deleted, function (parameters) {
+            GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (parameters) {
                 that.deleteData([parameters]);
             });
             
-            GEPPETTO.on(Events.Instances_created, function(instances){
+            GEPPETTO.on(GEPPETTO.Events.Instances_created, function(instances){
             	if(instances!=undefined){
             		that.addData(instances);
             	}

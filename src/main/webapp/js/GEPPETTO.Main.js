@@ -74,6 +74,9 @@ define(function(require) {
 
             startStatusWorker : function(){
                 //create web worker for checking status
+            	if(this.statusWorker!=undefined){
+            		this.statusWorker.terminate();
+            	}
                 this.statusWorker = new Worker("geppetto/js/PullStatusWorker.js");
 
                 this.statusWorker.postMessage(1000);

@@ -184,33 +184,35 @@ define(function (require) {
             }
             $.each(this.state.stack, function (i, item) {
                 (function(i, that) {
-                    var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.props.dst).toFixed(1) + '&pit=' + Number(that.props.pit).toFixed(0) + '&yaw=' + Number(that.props.yaw).toFixed(0) + '&rol=' + Number(that.props.rol).toFixed(0);
-                    //get image size;
-                    $.ajax({
-                        url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
-                        type: 'POST',
-                        success: function (data) {
-                            result = data.trim().split(':')[1].trim().split(' ');
-                            if (result !== '') {
-                                for (j in result) {
-                                    if (result[j] == '0') {
-                                        console.log(that.state.label[i] + ' clicked');
-                                        eval(that.state.id[i]).select();
-                                        that.setStatusText(that.state.label[i] + ' clicked!');
-                                        that.setState({text: that.state.label[i] + ' clicked!'});
-                                    } else {
-                                        console.log('Odd value: ' + result[j].toString());
+                    if (i>0 || that.state.stack.length == 1) {
+                        var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.props.dst).toFixed(1) + '&pit=' + Number(that.props.pit).toFixed(0) + '&yaw=' + Number(that.props.yaw).toFixed(0) + '&rol=' + Number(that.props.rol).toFixed(0);
+                        //get image size;
+                        $.ajax({
+                            url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
+                            type: 'POST',
+                            success: function (data) {
+                                result = data.trim().split(':')[1].trim().split(' ');
+                                if (result !== '') {
+                                    for (j in result) {
+                                        if (result[j] == '0') {
+                                            console.log(that.state.label[i] + ' clicked');
+                                            eval(that.state.id[i]).select();
+                                            that.setStatusText(that.state.label[i] + ' clicked!');
+                                            that.setState({text: that.state.label[i] + ' clicked!'});
+                                        } else {
+                                            console.log('Odd value: ' + result[j].toString());
+                                        }
                                     }
                                 }
-                            }
-                            // update slice view
-                            that.state.lastUpdate = 0;
-                            that.checkStack();
-                        },
-                        error: function (xhr, status, err) {
-                            console.error(that.props.url, status, err.toString());
-                        }.bind(this)
-                    });
+                                // update slice view
+                                that.state.lastUpdate = 0;
+                                that.checkStack();
+                            },
+                            error: function (xhr, status, err) {
+                                console.error(that.props.url, status, err.toString());
+                            }.bind(this)
+                        });
+                    }
                 })(i, that);
             });
         },

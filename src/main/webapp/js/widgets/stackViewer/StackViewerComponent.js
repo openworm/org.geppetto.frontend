@@ -472,8 +472,8 @@ define(function (require) {
             // fix position
             this.state.buffer[-1].x = 0;
             this.state.buffer[-1].y = 0;
-            this.state.buffer[-1].anchor.x = 50;
-            this.state.buffer[-1].anchor.y = 50;
+            this.state.buffer[-1].anchor.x = 0;
+            this.state.buffer[-1].anchor.y = 0;
             this.state.buffer[-1].zOrder = 1000;
         },
 
@@ -933,18 +933,15 @@ define(function (require) {
             var homeClass = 'btn fa fa-home';
             var zoomInClass = 'btn fa fa-search-plus';
             var zoomOutClass = 'btn fa fa-search-minus';
+            var stepInClass = 'btn fa fa-chevron-down';
+            var stepOutClass = 'btn fa fa-chevron-up';
             return (
                 <div id="displayArea">
-                    <button style={{position: 'absolute', right: 65, top: -21, padding: 0}} className={zoomOutClass} onClick={this.onZoomIn}>
-                    </button>
-                    <button style={{position: 'absolute', right: 55, top: -21, padding: 0}} className={zoomInClass} onClick={this.onZoomOut}>
-                    </button>
-                    <button style={{position: 'absolute', right: 35, top: -21, padding: 0}}
-                            onClick={this.onStepIn}>&lt;</button>
-                    <button style={{position: 'absolute', right: 25, top: -21, padding: 0}}
-                            onClick={this.onStepOut}>&gt;</button>
-                    <button style={{position: 'absolute', right: 75, top: -21, padding: 0}} className={homeClass} onClick={this.onHome}>
-                    </button>
+                    <button style={{position: 'absolute', right: 95, top: -21, padding: 0}} className={homeClass} onClick={this.onHome}></button>
+                    <button style={{position: 'absolute', right: 80, top: -21, padding: 0}} className={zoomOutClass} onClick={this.onZoomIn}></button>
+                    <button style={{position: 'absolute', right: 65, top: -21, padding: 0}} className={zoomInClass} onClick={this.onZoomOut}></button>
+                    <button style={{position: 'absolute', right: 50, top: -21, padding: 0}} className={stepInClass} onClick={this.onStepIn}></button>
+                    <button style={{position: 'absolute', right: 35, top: -21, padding: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}

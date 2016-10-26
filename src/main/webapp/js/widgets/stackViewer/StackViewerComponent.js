@@ -942,11 +942,11 @@ define(function (require) {
             var stepOutClass = 'btn fa fa-chevron-up';
             return (
                 <div id="displayArea" style={{position: 'absolute', top: -1, left: -1}}>
-                    <button style={{position: 'absolute', right: 95, top: -21, padding: 0}} className={homeClass} onClick={this.onHome}></button>
-                    <button style={{position: 'absolute', right: 75, top: -21, padding: 0}} className={zoomOutClass} onClick={this.onZoomIn}></button>
-                    <button style={{position: 'absolute', right: 55, top: -21, padding: 0}} className={zoomInClass} onClick={this.onZoomOut}></button>
-                    <button style={{position: 'absolute', right: 35, top: -21, padding: 0}} className={stepInClass} onClick={this.onStepIn}></button>
-                    <button style={{position: 'absolute', right: 15, top: -21, padding: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
+                    <button style={{position: 'absolute', right: 95, top: -21, padding: 0, border: 0}} className={homeClass} onClick={this.onHome}></button>
+                    <button style={{position: 'absolute', right: 75, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomIn}></button>
+                    <button style={{position: 'absolute', right: 55, top: -21, padding: 0, border: 0}} className={zoomInClass} onClick={this.onZoomOut}></button>
+                    <button style={{position: 'absolute', right: 35, top: -21, padding: 0, border: 0}} className={stepInClass} onClick={this.onStepIn}></button>
+                    <button style={{position: 'absolute', right: 15, top: -21, padding: 0, border: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}

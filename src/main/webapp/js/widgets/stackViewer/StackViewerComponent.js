@@ -627,8 +627,8 @@ define(function (require) {
                 var currentPosition = this.stack.data.getLocalPosition(this.stack);
                 var xOffset = ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
                 var yOffset = ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
-                this.state.posX = currentPosition.x + xOffset;
-                this.state.posY = currentPosition.y + yOffset;
+                this.state.posX = (currentPosition.x + xOffset) * this.disp.scale.x;
+                this.state.posY = (currentPosition.y + yOffset) * this.disp.scale.y;
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {
                     this.listObjects();
                 }

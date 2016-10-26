@@ -134,7 +134,7 @@ define(function (require) {
         },
 
         updateBorders: function(){
-            this.data.width -= 5; //30
+            this.data.width -= 4; //30
             this.data.height -= 22; //40
         },
 

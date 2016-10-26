@@ -222,7 +222,7 @@ define(function (require) {
             var i, j, result;
             var that = this;
             for (i in this.state.stack) {
-                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.disp.scale.x.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
                 //get image size;
                 $.ajax({
                     url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
@@ -626,12 +626,12 @@ define(function (require) {
                 this.stack.data = event.data;
                 var currentPosition = this.stack.data.getLocalPosition(this.stack);
                 console.log(currentPosition);
-                var xOffset = (this.state.imageX * 0.5);
-                var yOffset = (this.state.imageY * 0.5);
+                var xOffset = (this.state.imageX * 0.5) * (1 / this.disp.scale.x);
+                var yOffset = (this.state.imageY * 0.5) * (1 / this.disp.scale.y);
                 console.log(xOffset);
                 console.log(yOffset);
-                this.state.posX = (currentPosition.x + xOffset) * (1 / this.disp.scale.x);
-                this.state.posY = (currentPosition.y + yOffset) * (1 / this.disp.scale.y);
+                this.state.posX = (currentPosition.x + xOffset);
+                this.state.posY = (currentPosition.y + yOffset);
                 console.log(this.state.posX);
                 console.log(this.state.posY);
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {

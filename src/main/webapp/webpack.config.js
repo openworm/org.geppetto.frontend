@@ -15,8 +15,8 @@ module.exports = {
   },
   output: {
     //path: PATHS.build,
-    //path: './js/',
-    path: __dirname,
+    path: './js/',
+    //path: __dirname,
     filename: '[name].bundle.js',
     publicPath: "/org.geppetto.frontend/geppetto/js/",
   },

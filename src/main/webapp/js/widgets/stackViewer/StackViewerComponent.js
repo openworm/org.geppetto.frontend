@@ -470,7 +470,7 @@ define(function (require) {
                 this.state.buffer[-1].text = this.state.text;
             }
             // fix position
-            this.state.buffer[-1].x = 0;
+            this.state.buffer[-1].x = -this.stage.position.x;
             this.state.buffer[-1].y = 0;
             this.state.buffer[-1].anchor.x = 0;
             this.state.buffer[-1].anchor.y = 0;

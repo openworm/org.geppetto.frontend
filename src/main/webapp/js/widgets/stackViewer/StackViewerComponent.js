@@ -942,7 +942,7 @@ define(function (require) {
                             onClick={this.onStepIn}>&lt;</button>
                     <button style={{position: 'absolute', right: 10, top: 30, padding: 2}}
                             onClick={this.onStepOut}>&gt;</button>
-                    <button style={{position: 'absolute', left: 5, bottom: 0, padding: 2}} class={[btn,fa,fa-home]} onClick={this.onHome}>
+                    <button style={{position: 'absolute', left: 5, bottom: 0, padding: 2}} class={{btn,fa,fa-home}} onClick={this.onHome}>
                     </button>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}

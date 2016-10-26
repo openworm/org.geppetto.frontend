@@ -94,12 +94,12 @@ define(function (require) {
 
                     if (data.height == undefined) {
                         // console.log('setting default height');
-                        data.height = this.defHeight;
+                        data.height = this.data.height;
                     }
 
                     if (data.width == undefined) {
                         // console.log('setting default width');
-                        data.width = this.defWidth;
+                        data.width = this.data.width;
                     }
 
                     this.data = data;

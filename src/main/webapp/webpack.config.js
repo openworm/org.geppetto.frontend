@@ -2,20 +2,27 @@ var packageJSON = require('./package.json');
 var path = require('path');
 var webpack = require('webpack');
 
-const PATHS = {
-  //build: path.join(__dirname, 'target', 'classes', 'META-INF', 'resources', 'webjars', packageJSON.name, packageJSON.version)
-  build: path.join(__dirname, 'target', 'classes', 'static')
-};
+//const PATHS = {
+//build: path.join(__dirname, 'target', 'classes', 'META-INF', 'resources', 'webjars', packageJSON.name, packageJSON.version)
+//build: path.join(__dirname, 'target', 'classes', 'static')
+//};
 
 module.exports = {
-  entry: './js/main.js',
-  devtool: 'source-map',
+
+  entry: {
+    main: "./js/main.js",
+    // dashboard: "./dashboard/js/main.js",
+  },
   output: {
     //path: PATHS.build,
-    path: './js/',
-    filename: 'app-bundle.js',
+    //path: './js/',
+    path: __dirname,
+    filename: '[name].bundle.js',
     publicPath: "/org.geppetto.frontend/geppetto/js/",
   },
+
+  devtool: 'source-map',
+
   resolve: {
     extensions: ['', '.js', '.json']
   },
@@ -33,13 +40,13 @@ module.exports = {
         }
       },
       { test: /\.json$/, loader: "json-loader" },
-      {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        loaders: [
-          'file?hash=sha512&digest=hex&name=[hash].[ext]',
-          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
-        ]
-      }
+      // {
+      //   test: /\.(jpe?g|png|gif|svg)$/i,
+      //   loaders: [
+      //     'file?hash=sha512&digest=hex&name=[hash].[ext]',
+      //     'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+      //   ]
+      // }
 
     ]
   },

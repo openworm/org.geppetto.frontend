@@ -935,15 +935,15 @@ define(function (require) {
             var zoomOutClass = 'btn fa fa-search-minus';
             return (
                 <div id="displayArea">
-                    <button style={{position: 'absolute', left: 25, bottom: 0, padding: 0}} className={zoomOutClass} onClick={this.onZoomIn}>
+                    <button style={{position: 'absolute', right: 65, top: -21, padding: 0}} className={zoomOutClass} onClick={this.onZoomIn}>
                     </button>
-                    <button style={{position: 'absolute', left: 35, bottom: 0, padding: 0}} className={zoomInClass} onClick={this.onZoomOut}>
+                    <button style={{position: 'absolute', right: 55, top: -21, padding: 0}} className={zoomInClass} onClick={this.onZoomOut}>
                     </button>
-                    <button style={{position: 'absolute', left: 45, bottom: 0, padding: 0}}
+                    <button style={{position: 'absolute', right: 35, top: -21, padding: 0}}
                             onClick={this.onStepIn}>&lt;</button>
-                    <button style={{position: 'absolute', left: 55, bottom: 0, padding: 0}}
+                    <button style={{position: 'absolute', right: 25, top: -21, padding: 0}}
                             onClick={this.onStepOut}>&gt;</button>
-                    <button style={{position: 'absolute', left: 5, bottom: 0, padding: 0}} className={homeClass} onClick={this.onHome}>
+                    <button style={{position: 'absolute', right: 75, top: -21, padding: 0}} className={homeClass} onClick={this.onHome}>
                     </button>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}

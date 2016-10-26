@@ -27,7 +27,8 @@ define(function (require) {
                 numTiles: 1,
                 posX: 0,
                 posY: 0,
-                loadingLabels: false
+                loadingLabels: false,
+                mode: this.props.mode
             };
         },
         /**
@@ -512,6 +513,9 @@ define(function (require) {
                 this.stack.position.x = nextProps.stackX;
                 this.stack.position.y = nextProps.stackX;
             }
+            if (nextProps.mode !== this.state.mode) {
+                this.changeMode(nextProps.mode);
+            }
 
         },
         /**
@@ -530,6 +534,20 @@ define(function (require) {
         updateStatusText: function (props) {
             this.state.buffer[-1].text = props.statusText;
             this.setState({text: props.statusText});
+        },
+
+        changeMode: function (mode) {
+            this.state.mode = mode;
+            switch(mode) {
+                case 0:
+                    this.updateStatusText({statusText: 'Selection'});
+                case 1:
+                    this.updateStatusText({statusText: 'Hover Labels'});
+                case 2:
+                    this.updateStatusText({statusText: 'Add Anatomy'});
+                default:
+                    this.updateStatusText({statusText: '...'});
+            }
         },
 
         setStatusText: function (text) {
@@ -687,8 +705,9 @@ define(function (require) {
                 color: [0xFFFFFF],
                 stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz'],
                 label: ['Adult Brain'],
-                id: ['VFB_00017894']
-            };
+                id: ['VFB_00017894'],
+                mode: 0
+            }; // mode: 0=select, 1=label, 2=add.
         },
 
         onWheelEvent: function (e) {
@@ -829,7 +848,14 @@ define(function (require) {
             } else {
                 this.setState({zoomLevel: 10.0, text: 'Max zoom! (X10)'});
             }
+        },
 
+        toggleMode: function () {
+            let mode = this.state.mode += 1;
+            if (mode > 2) {
+                mode = 0;
+            }
+            this.setState({mode: mode});
         },
 
         /**
@@ -940,20 +966,23 @@ define(function (require) {
             var zoomOutClass = 'btn fa fa-search-minus';
             var stepInClass = 'btn fa fa-chevron-down';
             var stepOutClass = 'btn fa fa-chevron-up';
+            var pointerClass = 'btn fa fa-hand-pointer-o';
+            var startOffset = 115;
             return (
                 <div id="displayArea" style={{position: 'absolute', top: -1, left: -1}}>
-                    <button style={{position: 'absolute', right: 95, top: -21, padding: 0, border: 0}} className={homeClass} onClick={this.onHome}></button>
-                    <button style={{position: 'absolute', right: 75, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomIn}></button>
-                    <button style={{position: 'absolute', right: 55, top: -21, padding: 0, border: 0}} className={zoomInClass} onClick={this.onZoomOut}></button>
-                    <button style={{position: 'absolute', right: 35, top: -21, padding: 0, border: 0}} className={stepInClass} onClick={this.onStepIn}></button>
-                    <button style={{position: 'absolute', right: 15, top: -21, padding: 0, border: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
+                    <button style={{position: 'absolute', right: startOffset, top: -21, padding: 0, border: 0}} className={homeClass} onClick={this.onHome}></button>
+                    <button style={{position: 'absolute', right: startOffset-20, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomIn}></button>
+                    <button style={{position: 'absolute', right: startOffset-35, top: -21, padding: 0, border: 0}} className={zoomInClass} onClick={this.onZoomOut}></button>
+                    <button style={{position: 'absolute', right: startOffset-55, top: -21, padding: 0, border: 0}} className={stepInClass} onClick={this.onStepIn}></button>
+                    <button style={{position: 'absolute', right: startOffset-70, top: -21, padding: 0, border: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
+                    <button style={{position: 'absolute', right: startOffset-90, top: -21, padding: 0, border: 0}} className={pointerClass} onClick={this.toggleMode}></button>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
                             label={this.state.label} id={this.state.id} height={this.props.data.height}
-                            width={this.props.data.width}/>
+                            width={this.props.data.width} mode={this.state.mode}/>
                 </div>
             );
         }

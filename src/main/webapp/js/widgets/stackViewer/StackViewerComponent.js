@@ -471,7 +471,7 @@ define(function (require) {
             }
             // fix position
             this.state.buffer[-1].x = -this.stage.position.x;
-            this.state.buffer[-1].y = 0;
+            this.state.buffer[-1].y = -this.stage.position.y;
             this.state.buffer[-1].anchor.x = 0;
             this.state.buffer[-1].anchor.y = 0;
             this.state.buffer[-1].zOrder = 1000;

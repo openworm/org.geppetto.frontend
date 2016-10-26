@@ -332,6 +332,16 @@ define(function (require) {
         componentDidMount: function(){
             this.attachTooltip();
         },
+        
+        clickStatus : function(e){
+        	if(this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR){
+        		e.stopPropagation();
+        		e.nativeEvent.stopImmediatePropagation();
+        		var error = this.props.experiment.getDetails();
+        		GEPPETTO.trigger('geppetto:error', error.msg);
+        		GEPPETTO.FE.errorDialog(GEPPETTO.Resources.ERROR, error.message, error.code, error.exception);
+        	}
+        },
 
         render: function () {
             var experiment = this.props.experiment;
@@ -340,7 +350,7 @@ define(function (require) {
             var tdStatus = <td className="statusIcon">
                 <div className={"circle center-block " + experiment.getStatus()}
                      data-status={experiment.getStatus()}
-                     title=""
+                     title="" onClick={this.clickStatus}
                      data-custom-title={GEPPETTO.Resources.ExperimentStatus.Descriptions[experiment.getStatus()]}
                      rel="tooltip"></div>
             </td>;

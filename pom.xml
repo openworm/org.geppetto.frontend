@@ -22,12 +22,15 @@
 			</properties>
 			<build>
 				<plugins>
-
-					
 					<plugin>
 						<groupId>com.github.eirslett</groupId>
 						<artifactId>frontend-maven-plugin</artifactId>
-						<version>0.0.23</version>
+						<version>1.0</version>
+						<configuration>
+                			<nodeVersion>v5.12.0</nodeVersion>
+                			<npmVersion>3.9.6</npmVersion>
+                			<nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+						</configuration>
 						<executions>
 							<execution>
 								<id>install node and npm</id>
@@ -35,11 +38,6 @@
 									<goal>install-node-and-npm</goal>
 								</goals>
 								<phase>generate-resources</phase>
-								<configuration>
-									<nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
-                    				<nodeVersion>v5.12.0</nodeVersion>
-                    				<npmVersion>3.9.6</npmVersion>
-								</configuration>
 							</execution>
 							<execution>
 								<id>npm install</id>
@@ -61,6 +59,37 @@
 								</configuration>
 								<phase>generate-resources</phase>
 							</execution>
+							<execution>
+								<id>install node and npm webapp</id>
+								<goals>
+									<goal>install-node-and-npm</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+		                            <workingDirectory>src/main/webapp</workingDirectory>
+		                        </configuration>
+							</execution>
+							<execution>
+		                        <id>npm install webapp</id>
+		                        <goals>
+		                            <goal>npm</goal>
+		                        </goals>
+		                        <configuration>
+		                            <arguments>install</arguments>
+		                            <workingDirectory>src/main/webapp</workingDirectory>
+		                        </configuration>
+		                    </execution>
+		                    <execution>
+		                        <id>npm run build webapp</id>
+		                        <goals>
+		                            <goal>npm</goal>
+		                        </goals>
+		                        <phase>generate-resources</phase>
+		                        <configuration>
+		                            <arguments>run build</arguments>
+		                            <workingDirectory>src/main/webapp</workingDirectory>
+		                        </configuration>
+		                    </execution>
 						</executions>
 					</plugin>
 				</plugins>
@@ -381,19 +410,6 @@
 										<ignore />
 									</action>
 								</pluginExecution>
-								<!-- <pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.github.bringking</groupId>
-										<artifactId>requirejs-maven-plugin</artifactId>
-										<versionRange>[2.0.4,)</versionRange>
-										<goals>
-											<goal>optimize</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution> -->
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.codehaus.mojo</groupId>

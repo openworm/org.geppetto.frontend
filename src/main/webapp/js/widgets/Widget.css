@@ -146,6 +146,10 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
+.contextMenuView i {
+	width: 10%;
+}
+
 .contextMenuView li {
     padding: 2px 10px 2px 10px;
     background-color: rgba(66, 59, 59, 0.9);
@@ -238,3 +242,13 @@
 .noStyleDisableDrag .ui-dialog-titlebar {
     cursor: default;
 }
+
+.arrow-disabled {
+	pointer-events: none;
+    opacity: 0.4;
+}
+
+.transparent-back {
+    background-color: transparent !important;
+}
+

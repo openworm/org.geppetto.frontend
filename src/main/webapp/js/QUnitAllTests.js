@@ -68,7 +68,8 @@ require.config({
         'QUnitPersistenceTests': 'tests/QUnitPersistenceTests',
         'QUnitNeuronalTests': 'tests/QUnitNeuronalTests',
         'QUnitFluidDynamicsTests': 'tests/QUnitFluidDynamicsTests',
-        'QUnitGeppettoCoreTests': 'tests/QUnitGeppettoCoreTests'	
+        'QUnitGeppettoCoreTests': 'tests/QUnitGeppettoCoreTests',
+        'QUnitExternalSimulatorTests': 'tests/QUnitExternalSimulatorTests'	
     },
     /*
      * Notes what dependencies are needed prior to loading each library, values on the right
@@ -104,6 +105,14 @@ require.config({
         },
         'QUnitPersistenceTests':{
         	exports: 'QUnitPersistenceTests',
+            deps: ['geppetto']
+        },
+        'QUnitExternalSimulatorTests':{
+        	exports: 'QUnitExternalSimulatorTests',
+            deps: ['geppetto']
+        },
+        'QUnitPersistenceTests-alt':{
+        	exports: 'QUnitPersistenceTests-alt',
             deps: ['geppetto']
         },
         'QUnitNeuronalTests':{
@@ -152,9 +161,9 @@ require(jqueryLib, function ($) {
 
     var ProjectNode = require('model/ProjectNode');
     $(function () {
+        window.GEPPETTO = require('geppetto');
         var project = new ProjectNode({name: "Project", id: -1});
         window.Project = project;
-        window.GEPPETTO = require('geppetto');
         //Alias G, Simulation, and help() to global vars for easy access
         window.G = GEPPETTO.G;
         window.Widgets = GEPPETTO.Widgets;
@@ -162,7 +171,7 @@ require(jqueryLib, function ($) {
 
         require(
             ['QUnit', 'QUnitPersistenceTests', 'QUnitNeuronalTests',
-                'QUnitFluidDynamicsTests', 'QUnitGeppettoCoreTests'],
+                'QUnitFluidDynamicsTests', 'QUnitGeppettoCoreTests','QUnitExternalSimulatorTests'],
             function (QUnit, persistenceTests, neuronal, fluid, core) {
                 persistenceTests.run();
                 neuronal.run();

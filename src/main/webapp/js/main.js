@@ -37,18 +37,21 @@
  * @author Matt Olson (matt@metacell.us)
  */
 
+
 /*
  * Configure RequireJS. Values inside brackets mean those libraries are required prior
  * to loading the one one. 
  */
 require.config({
+	
+	
     /*
      * Values in here are for dependencies that more than one module/script requires and/or needs.
      * E.G. If depenedency it's used more than once, it goes in here.
      */
     paths: {
         jquery: "vendor/jquery-1.9.1.min",
-        three: 'vendor/three.min',
+        three: 'vendor/threeWrapper',
         d3: 'vendor/d3.min',
         codemirror: "vendor/codemirror.min",
         handlebars: "vendor/handlebars",
@@ -66,6 +69,7 @@ require.config({
         text: 'vendor/text',
         pako: 'vendor/pako.min',
         mathjs: 'vendor/math.min',
+        json: 'vendor/require-json'
     },
     /*
      * Notes what dependencies are needed prior to loading each library, values on the right
@@ -74,18 +78,18 @@ require.config({
      */
     shim: {
         'vendor/jquery-ui.min': ["jquery"],
+        'vendor/postprocessing/EffectComposer': ['three'],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/shaders/ConvolutionShader': ['three'],
         'vendor/shaders/CopyShader': ['three'],
         'vendor/shaders/FilmShader': ['three'],
         'vendor/shaders/FocusShader': ['three'],
-        'vendor/postprocessing/EffectComposer': ['three'],
-        'vendor/postprocessing/MaskPass': ['three'],
-        'vendor/postprocessing/RenderPass': ['three'],
-        'vendor/postprocessing/BloomPass': ['three'],
-        'vendor/postprocessing/ShaderPass': ['three'],
-        'vendor/postprocessing/FilmPass': ['three'],
+        'vendor/postprocessing/MaskPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/RenderPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/BloomPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/ShaderPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/FilmPass': ['three', 'vendor/postprocessing/EffectComposer'],
         'vendor/ColladaLoader': ['three'],
         'vendor/OBJLoader': ['three'],
         'vendor/ColorConverter': ["three"],
@@ -97,6 +101,9 @@ require.config({
         'vendor/Detector': ["jquery"],
         'vendor/jquery.cookie': ["jquery"],
         'vendor/rAF': ["jquery"],
+        three: {
+            exports: 'THREE'
+        },
         JSXTransformer: {
             exports: "JSXTransformer"
         },
@@ -146,7 +153,7 @@ var jqueryLib = [
     "vendor/jquery.cookie",
     "vendor/rAF",
     "pako",
-    "mathjs"
+    "mathjs",
 ];
 
 require(jqueryLib, function ($, geppetto) {
@@ -161,9 +168,8 @@ require(jqueryLib, function ($, geppetto) {
 
         //start project node which will be used as a Singleton
         //to store current project info
-        var project = new ProjectNode({name: "Project", id: -1});
+        var project = GEPPETTO.ProjectFactory.createProjectNode({name: "Project", id: -1}, false);
         window.Project = project;
-        GEPPETTO.Console.updateTags("Project", project, true);
 
         window.G = GEPPETTO.G;
         window.Widgets = GEPPETTO.Widgets;

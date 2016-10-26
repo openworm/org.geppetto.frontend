@@ -3,14 +3,17 @@
  */
 define(function(require) {
 
-	var $ = require('jquery'),
-		GEPPETTO = require('geppetto'),
-		utils = require('./utils');
+	var $ = require('jquery');
+	var GEPPETTO = require('geppetto');
+	var utils = require('./utils');
 	
 	require('./ComponentFactory')(GEPPETTO);
-	//require('./ComponentsInitialization_OSB')(GEPPETTO);
-	//require('./ComponentsInitialization_VFB')(GEPPETTO);
-	require('./ComponentsInitialization')(GEPPETTO);
+	require('./ComponentsController')(GEPPETTO);
+
+	GEPPETTO.ComponentFactory.loadSpinner();
+
+	//load extensions
+	require('../../extensions/extensions');
 
 	var command = "Project.loadFromURL";
 	var simParam = utils.getQueryStringParameter('load_project_from_url');
@@ -29,11 +32,9 @@ define(function(require) {
 		$(document).ready(
 			function() {
 				if (expParam) {
-					GEPPETTO.Console.executeCommand(command + '("'
-							+ simParam + '", "'+expParam+'")');
+					GEPPETTO.Console.executeCommand(command + '("' + simParam + '", "'+expParam+'")');
 				} else {
-					GEPPETTO.Console.executeCommand(command + '("'
-							+ simParam + '")');
+					GEPPETTO.Console.executeCommand(command + '("' + simParam + '")');
 				}
 			});
 	}

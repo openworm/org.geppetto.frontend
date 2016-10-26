@@ -15,7 +15,6 @@ define(function (require) {
 
         GEPPETTO.SceneController =
         {
-
             linesThreshold: 2000,
             aboveLinesThreshold: false,
             wireframe: false,
@@ -116,10 +115,12 @@ define(function (require) {
                     threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
                 var baseColor = threeObject.material.defaultColor;
+                var tgtColor = intensity < 0.25 ? new THREE.Color(0,intensity*4,1) : (intensity < 0.5 ? new THREE.Color(0,1,1-(intensity-0.25)*4) : intensity < 0.75 ? new THREE.Color((intensity-0.55)*4,1,0) : new THREE.Color(1,1-(intensity-0.75)*4,0))
                 if (threeObject instanceof THREE.Line) {
-                    threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range([baseColor, "red"])(intensity));
+                    threeObject.material.color = tgtColor;
                 } else {
-                    threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range([baseColor, "red"])(intensity));
+                    threeObject.material.emissive = tgtColor;
+                    threeObject.material.color = tgtColor;
                 }
 
             },
@@ -217,7 +218,7 @@ define(function (require) {
                         var mesh = meshes[meshesIndex];
 
                         if (!mesh.visible) {
-                            GEPPETTO.SceneController.merge(instancePath);
+                            GEPPETTO.SceneController.merge(instancePath,true);
                         }
                         if (mesh.selected == false) {
                             if (mesh instanceof THREE.Object3D) {
@@ -282,7 +283,7 @@ define(function (require) {
                         var mesh = meshes[meshesIndex];
                         // match instancePath to mesh store in variables properties
                         if (!mesh.visible) {
-                            GEPPETTO.SceneController.merge(instancePath);
+                            GEPPETTO.SceneController.merge(instancePath,false);
                         }
                         // make sure that path was selected in the first place
                         if (mesh.selected == true) {
@@ -409,6 +410,34 @@ define(function (require) {
                     }
                 }
                 return false;
+            },
+
+            /**
+             * Assign random color to instance if leaf - if not leaf assign random colr to all leaf children recursively
+             * @param instance
+             */
+            assignRandomColor: function(instance){
+                var getRandomColor = function() {
+                    var letters = '0123456789ABCDEF';
+                    var color = '0x';
+                    for (var i = 0; i < 6; i++ ) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
+                };
+
+                if(instance.hasCapability('VisualCapability')) {
+                    var children = instance.getChildren();
+
+                    if (children.length == 0 || instance.getMetaType() == GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
+                        var randomColor = getRandomColor();
+                        instance.setColor(randomColor);
+                    } else {
+                        for (var i = 0; i < children.length; i++) {
+                            this.assignRandomColor(children[i]);
+                        }
+                    }
+                }
             },
 
             /**
@@ -1091,7 +1120,7 @@ define(function (require) {
              * @param {String}
              *            aspectPath - Path to aspect that points to mesh
              */
-            merge: function (aspectPath) {
+            merge: function (aspectPath, visible) {
                 // get mesh from map
                 var mergedMesh = GEPPETTO.getVARS().meshes[aspectPath];
 
@@ -1109,9 +1138,11 @@ define(function (require) {
                             }
                         }
                     }
-                    // add merged mesh to scene and set flag to true
-                    mergedMesh.visible = true;
-                    GEPPETTO.getVARS().scene.add(mergedMesh);
+                    if(visible){
+                    	// add merged mesh to scene and set flag to true
+                    	mergedMesh.visible = true;
+                    	GEPPETTO.getVARS().scene.add(mergedMesh);
+                    }
                 }
             },
 
@@ -1122,7 +1153,7 @@ define(function (require) {
             	for (var i = 0; i < instances.length; i++) {
             		var instance = instances[i];
             		var instancePath = instance.getInstancePath();            				
-            		GEPPETTO.SceneController.merge(instancePath);
+            		GEPPETTO.SceneController.merge(instancePath,true);
             		if (mode) {
             			var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
             			var map = mergedMesh.mergedMeshesPaths;
@@ -1168,10 +1199,10 @@ define(function (require) {
 
 
             isVisible: function (variables) {
-                var visible = true;
+                var visible = false;
                 for (var i = 0; i < variables.length; i++) {
-                    if (!variables[i].isVisible()) {
-                        visible = false;
+                    if (variables[i].isVisible()) {
+                        visible = true;
                         break;
                     }
                 }
@@ -1179,10 +1210,10 @@ define(function (require) {
             },
 
             isSelected: function (variables) {
-                var selected = true;
+                var selected = false;
                 for (var i = 0; i < variables.length; i++) {
-                    if (!variables[i].isSelected()) {
-                        selected = false;
+                    if (variables[i].hasOwnProperty('isSelected') && variables[i].isSelected()) {
+                        selected = true;
                         break;
                     }
                 }

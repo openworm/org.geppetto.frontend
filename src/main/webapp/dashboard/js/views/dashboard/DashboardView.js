@@ -36,7 +36,12 @@ define([ 'jquery', 'underscore', 'backbone',
             	};
             	// we have to listen for 'message'
             	window.addEventListener('message', handleRequest, false);
-            	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                if($.isArray(window.EMBEDDEDURL)){
+            		window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL[0]);	
+                }
+                else{
+                	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                }
             }
 		},
 

@@ -46,6 +46,8 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
 import org.geppetto.core.common.GeppettoExecutionException;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.manager.IGeppettoManager;
@@ -57,6 +59,8 @@ import org.geppetto.frontend.messaging.DefaultMessageSenderFactory;
 import org.geppetto.frontend.messaging.MessageSender;
 import org.geppetto.frontend.messaging.MessageSenderEvent;
 import org.geppetto.frontend.messaging.MessageSenderListener;
+import org.geppetto.model.datasources.DatasourcesFactory;
+import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.simulation.manager.ExperimentRunManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -121,6 +125,9 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		messageSender = messageSenderFactory.getMessageSender(getWsOutbound(), this);
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
+
+		// User permissions are sent when socket is open
+		this.connectionHandler.checkUserPrivileges(null);
 	}
 
 	@Override
@@ -185,6 +192,11 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.getVersionNumber(requestID);
 				break;
 			}
+			case USER_PRIVILEGES:
+			{
+				connectionHandler.checkUserPrivileges(requestID);
+				break;
+			}
 			case NEW_EXPERIMENT:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
@@ -201,7 +213,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
 				experimentId = Long.parseLong(parameters.get("experimentId"));
-				connectionHandler.cloneExperiment(requestID, projectId,experimentId);
+				connectionHandler.cloneExperiment(requestID, projectId, experimentId);
 				break;
 			}
 			case LOAD_PROJECT_FROM_URL:
@@ -286,12 +298,12 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				try
 				{
 					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-							{
-							}.getType());
+					{
+					}.getType());
 					url = URLReader.getURL(parameters.get("url"));
 					dataSourceName = parameters.get("data_source_name");
 
-					connectionHandler.sendDataSourceResults(requestID,dataSourceName, url, this);
+					connectionHandler.sendDataSourceResults(requestID, dataSourceName, url, this);
 
 				}
 				catch(MalformedURLException e)
@@ -448,16 +460,22 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.paths);
 				break;
 			}
+			case RESOLVE_IMPORT_VALUE:
+			{
+				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+				connectionHandler.resolveImportValue(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.path);
+				break;
+			}
 			case RUN_QUERY:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.runQuery(requestID, receivedObject.projectId, receivedObject.runnableQueries);
+				connectionHandler.runQuery(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
 				break;
 			}
 			case RUN_QUERY_COUNT:
 			{
 				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.runQueryCount(requestID, receivedObject.projectId, receivedObject.runnableQueries);
+				connectionHandler.runQueryCount(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
 				break;
 			}
 			default:
@@ -465,6 +483,24 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				// NOTE: no other messages expected for now
 			}
 		}
+	}
+
+	/**
+	 * @param runnableQueries
+	 * @return A list based on the EMF class. It's not possible to use directly the EMF class as Gson requires fields with public access modifiers which breaks EMF encapsulation
+	 */
+	private List<RunnableQuery> convertRunnableQueriesDataTransferModel(List<RunnableQueryDT> runnableQueries)
+	{
+		EList<RunnableQuery> runnableQueriesEMF = new BasicEList<RunnableQuery>();
+
+		for(RunnableQueryDT dt : runnableQueries)
+		{
+			RunnableQuery rqEMF = DatasourcesFactory.eINSTANCE.createRunnableQuery();
+			rqEMF.setQueryPath(dt.queryPath);
+			rqEMF.setTargetVariablePath(dt.targetVariablePath);
+			runnableQueriesEMF.add(rqEMF);
+		}
+		return runnableQueriesEMF;
 	}
 
 	/**
@@ -510,14 +546,15 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Long experimentId;
 		String dataSourceId;
 		List<String> paths;
+		String path;
 		String variableId;
-		List<RunnableQueryParameters> runnableQueries;
+		List<RunnableQueryDT> runnableQueries;
 	}
-	
-	class RunnableQueryParameters
+
+	class RunnableQueryDT
 	{
-		String queryId;
-		String variableId;
+		String targetVariablePath;
+		String queryPath;
 	}
 
 }

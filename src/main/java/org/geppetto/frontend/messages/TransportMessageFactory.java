@@ -85,6 +85,24 @@ public class TransportMessageFactory {
 				break;	
 			case READ_URL_PARAMETERS:
 				break;
+			case USER_PRIVILEGES:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.USER_PRIVILEGES.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case PROJECT_LOADED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.PROJECT_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case GEPPETTO_MODEL_LOADED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.GEPPETTO_MODEL_LOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case VARIABLE_FETCHED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.VARIABLE_FETCHED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case IMPORT_TYPE_RESOLVED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.IMPORT_TYPE_RESOLVED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case SIMULATION_OVER:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.SIMULATION_OVER.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;	
 			case FIRE_SIM_SCRIPTS:
 				params.add(new SimpleEntry<String, String>(OutboundMessages.GET_SCRIPTS.toString(), (update!=null) ? update : EMPTY_STRING));
 				break;
@@ -115,6 +133,21 @@ public class TransportMessageFactory {
 				break;
 			case PROJECT_PROPS_SAVED:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case EXPERIMENT_PROPS_SAVED:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case DROPBOX_LINKED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.DROPBOX_LINKED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case DROPBOX_UNLINKED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.DROPBOX_UNLINKED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case RESULTS_UPLOADED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.RESULTS_UPLOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
+				break;
+			case MODEL_UPLOADED:
+				params.add(new SimpleEntry<String, String>(OutboundMessages.MODEL_UPLOADED.toString(),  (update!=null) ? update : EMPTY_STRING));
 				break;
 			default:
 				params.add(new SimpleEntry<String, String>(type.toString(),  (update!=null) ? update : EMPTY_STRING));

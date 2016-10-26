@@ -43,12 +43,14 @@ define(function (require) {
         var Library = require('model/Library');
         var Type = require('model/Type');
         var Variable = require('model/Variable');
+        var Value = require('model/Value');
         var Datasource = require('model/Datasource');
         var Query = require('model/Query');
         var CompositeType = require('model/CompositeType');
         var CompositeVisualType = require('model/CompositeVisualType');
         var ArrayType = require('model/ArrayType');
         var ImportType = require('model/ImportType');
+        var ImportValue = require('model/ImportValue');
         var Instance = require('model/Instance');
         var ArrayInstance = require('model/ArrayInstance');
         var ArrayElementInstance = require('model/ArrayElementInstance');
@@ -61,7 +63,7 @@ define(function (require) {
         var AConnectionCapability = require('model/AConnectionCapability');
         var AParameterCapability = require('model/AParameterCapability');
         var AStateVariableCapability = require('model/AStateVariableCapability');
-
+       
         /**
          * @class GEPPETTO.ModelFactory
          */
@@ -130,6 +132,9 @@ define(function (require) {
 
                     // create datasources
                     geppettoModel.datasources = this.createDatasources(jsonModel.dataSources, geppettoModel);
+
+                    // create top level queries (potentially cross-datasource)
+                    geppettoModel.queries = this.createQueries(jsonModel.queries, geppettoModel);
 
                     if (populateRefs) {
                         // traverse everything and build shortcuts to children if composite --> containment == true
@@ -442,6 +447,7 @@ define(function (require) {
                             type.parent = parent;
 
                             types.push(type);
+                            GEPPETTO.Console.createTags(type.getPath(), GEPPETTO.Utility.extractMethodsFromObject(type, true));
                         }
                     }
                 }
@@ -758,7 +764,7 @@ define(function (require) {
 
                     for (var y = 0; y < vars.length; y++) {
                         if (diffVars[x].getPath() == vars[y].getPath()) {
-                            varMatch == true;
+                            varMatch = true;
                         }
                     }
 
@@ -792,7 +798,104 @@ define(function (require) {
 
                 return diffReport;
             },
+            
+            mergeValue: function (rawModel, overrideTypes) {
+                if (overrideTypes == undefined) {
+                    overrideTypes = false;
+                }
 
+                this.newPathsIndexing = [];
+
+                // diff object to report back what changed / has been added
+                var diffReport = {variables: [], types: [], libraries: []};
+
+                // STEP 1: create new geppetto model to merge into existing one
+                var diffModel = this.createGeppettoModel(rawModel, false, false);
+
+                // STEP 2: add libraries/types if any are different (both to object model and json model)
+                var diffLibs = diffModel.getLibraries();
+                var libs = this.geppettoModel.getLibraries();
+                var libMatch = false;
+                var i = 0, j=0;
+                for (i = 0; i < diffLibs.length; i++) {
+                    if (diffLibs[i].getWrappedObj().synched == true) {
+                        continue;
+                    }
+                    for (j = 0; j < libs.length; j++) {
+                        if (diffLibs[i].getPath() == libs[j].getPath()) {
+                            libMatch = true;
+                            break;
+                        }
+                    }
+                    if(libMatch)
+                        break;
+                    }   
+                   // diffReport.libraries.push(diffLibs[i]);
+                	var diffTypes = diffLibs[i].getTypes();
+                    var existingTypes = libs[j].getTypes();
+                    var typeMatch = false;
+                    var k = 0, m=0;
+		            for (k = 0; k < diffTypes.length; k++) {
+		                if (diffTypes[k].getWrappedObj().synched == true){
+		                    continue;
+		                }
+			            for (m = 0; m < existingTypes.length; m++) {		                    
+		                    if (diffTypes[k].getPath() == existingTypes[m].getPath()) {
+		                        typeMatch = true;
+		                        break;
+		                    }
+			            }
+			            if(typeMatch)
+			            	break;
+			        }
+		           // diffReport.types.push(diffTypes[k]);
+	                var diffVars = diffTypes[k].getVariables();
+	                var vars = existingTypes[m].getVariables();
+	                var varMatch = false;
+                    for (var x = 0; x < diffVars.length; x++) {
+                      if (diffVars[x].getWrappedObj().synched == true) {
+                    	  	continue;
+                       }
+                      for (var y = 0; y < vars.length; y++) {
+	                      if (diffVars[x].getPath() == vars[y].getPath()) {
+	                          varMatch = true;
+	                          this.populateTypeReferences(diffVars[x]);
+	                          vars[y] = diffVars[x];
+	                          diffReport.variables.push(vars[y]);
+	                          break;
+	                      }
+                      }
+                      if(varMatch)
+                    	  break;
+                    }            
+                return diffReport;
+            },
+
+            createValueInstanceFronDiffReport : function(diffReport){
+            	 // get initial instance count (used to figure out if we added instances at the end)
+                var instanceCount = this.getInstanceCount(window.Instances);
+                var newInstancePaths = [];
+
+                // shortcut function to get potential instance paths given a set types
+                // NOTE: defined as a nested function to avoid polluting the visible API of ModelFactory
+
+                // STEP 1: check new variables to see if any new instances are needed
+            
+                var variableId = diffReport.variables[0].getId();    
+                var variable = eval(variableId);
+                var varTypes = variable.getTypes();
+                
+                // STEP 4: If instances were added, re-populate shortcuts
+                    GEPPETTO.ModelFactory.populateChildrenShortcuts(variableId);
+               
+                for (var k = 0; k < window.Instances.length; k++) {
+                    GEPPETTO.ModelFactory.populateConnections(window.Instances[k]);
+                }
+
+                return newInstances;
+            },
+
+             
             /**
              * Updates capabilities of variables and their instances if any
              *
@@ -854,6 +957,7 @@ define(function (require) {
 
                         // getChildren of instance and recurse by the power of greyskull!
                         updateInstancesCapabilities(instances[j].getChildren());
+                        GEPPETTO.Console.createTags(instances[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(instances[j], true));
                     }
                 };
 
@@ -878,6 +982,9 @@ define(function (require) {
 
                     // update instances capabilities
                     updateInstancesCapabilities(varInstances);
+                    if(variables[i]!=null || undefined){
+                    	GEPPETTO.Console.createTags(variables[i].getPath(), GEPPETTO.Utility.extractMethodsFromObject(variables[i], true));
+                    }
                 }
             },
 
@@ -1122,6 +1229,8 @@ define(function (require) {
                         };
                         var arrayInstance = this.createArrayInstance(arrayOptions);
 
+                        
+                   
                         for (var i = 0; i < size; i++) {
                             // create simple instance for this variable
                             var options = {
@@ -1179,6 +1288,10 @@ define(function (require) {
 
                             // ad to newly created instances list
                             newlyCreatedInstances.push(explodedInstance);
+                            
+                            if(explodedInstance != null || undefined){
+                                GEPPETTO.Console.createTags(explodedInstance.getInstancePath(), GEPPETTO.Utility.extractMethodsFromObject(explodedInstance, true));
+                            }
                         }
 
                         //  if there is a parent add to children else add to top level instances
@@ -1246,6 +1359,10 @@ define(function (require) {
                             parentInstance.addChild(newlyCreatedInstance);
                         } else {
                             topLevelInstances.push(newlyCreatedInstance);
+                        }
+                        
+                        if(newlyCreatedInstance != null || undefined){
+                        	GEPPETTO.Console.createTags(newlyCreatedInstance.getInstancePath(), GEPPETTO.Utility.extractMethodsFromObject(newlyCreatedInstance, true));
                         }
                     }
                 }
@@ -1400,6 +1517,8 @@ define(function (require) {
                 if (!(parent == undefined || parent == null) && !parent.hasCapability(capability.capabilityId)) {
                     // apply capability
                     parent.extendApi(capability);
+                    
+                	GEPPETTO.Console.createTags(parent.getPath(), GEPPETTO.Utility.extractMethodsFromObject(parent, true));
 
                     this.propagateCapabilityToParents(capability, parent);
                 }
@@ -1740,9 +1859,40 @@ define(function (require) {
                     options = {wrappedObj: node, types: node.types};
                 }
 
-                return new Variable(options);
+                var v =  new Variable(options);
+                v.values=this.createValues(node.initialValues, v);
+                return v;
             },
 
+            createValues: function (initialValuesObject, variable){
+            	var values = [];
+            	var options;
+            	if (initialValuesObject != undefined){
+            		for (var i=0; i< initialValuesObject.length; i++){
+            			var value = this.createValue(initialValuesObject[i], options);
+            			value.parent = variable;
+            			values.push(value);
+            		}
+            	}
+            	return values;
+            }, 
+            
+            createValue: function(valueNode, options){
+            	 if (options == null || options == undefined) {
+                     options = {wrappedObj: valueNode};   
+            	 }
+            	 var value;
+            	 if (valueNode.value.eClass == "ImportValue"){
+            		 // getID() was returning undefined, hence hack - ask about this.
+            		 // if I dont do this then path is "Model.nwbLibrary.responseType_10.recording_10.undefined"
+            		 value = new ImportValue(options);
+            	 }else{
+            		 value = new Value(options);
+            	 }
+            	 
+            	 return value;
+            },
+            
             /** Creates a datasource */
             createDatasource: function (node, options) {
                 if (options == null || options == undefined) {
@@ -1751,19 +1901,33 @@ define(function (require) {
 
                 var d = new Datasource(options);
 
-                // set queries
-                var rawQueries = node.queries;
+                // create queries
+                d.queries = this.createQueries(node.queries, d);
+
+                return d;
+            },
+
+            /**
+             * Create array of client query objects given raw json query objects and a parent
+             *
+             * @param rawQueries
+             * @param parent
+             * @returns {Array}
+             */
+            createQueries: function(rawQueries, parent) {
+                var queries = [];
+
                 if(rawQueries!=undefined) {
                     for (var i = 0; i < rawQueries.length; i++) {
                         var q = this.createQuery(rawQueries[i]);
                         // set datasource as parent
-                        q.parent = d;
+                        q.parent = parent;
                         // push query to queries array
-                        d.queries.push(q);
+                        queries.push(q);
                     }
                 }
 
-                return d;
+                return queries;
             },
 
             createQuery: function(node, options) {
@@ -1913,8 +2077,6 @@ define(function (require) {
 
                 var i = new Instance(options);
 
-                GEPPETTO.Console.createTags(i.getInstancePath(), this.instanceTags[GEPPETTO.Resources.INSTANCE_NODE]);
-
                 return i;
             },
 
@@ -1926,8 +2088,6 @@ define(function (require) {
 
                 var aei = new ArrayElementInstance(options);
 
-                GEPPETTO.Console.createTags(aei.getInstancePath(), this.instanceTags[GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE]);
-
                 return aei;
             },
 
@@ -1938,8 +2098,6 @@ define(function (require) {
                 }
 
                 var a = new ArrayInstance(options);
-
-                GEPPETTO.Console.createTags(a.getInstancePath(), this.instanceTags[GEPPETTO.Resources.ARRAY_INSTANCE_NODE]);
 
                 return a;
             },
@@ -2370,21 +2528,26 @@ define(function (require) {
             },
 
             /**
-             * Get matching queries given a type
+             * Get matching queries given a type and optional results type
              *
              * @param type
+             * @param resultType
              */
-            getMatchingQueries : function(type){
-                var datasources = window.Model.getDatasources();
+            getMatchingQueries : function(type, resultType){
+                var topLevelQueries = window.Model.getQueries();
                 var matchingQueries = [];
 
-                // iterate datasources
-                for(var i=0; i<datasources.length; i++){
-                    // fetch a list of queries for matching criteria on variable type for all datasources (store datasource id)
-                    var queries = datasources[i].getQueries();
-                    for(var j=0; j<queries.length; j++){
-                        if(queries[j].matchesCriteria(type)){
-                            matchingQueries.push(queries[j]);
+                // iterate top level queries
+                for(var k=0; k<topLevelQueries.length; k++){
+                    // check matching criteria first
+                    if(topLevelQueries[k].matchesCriteria(type)){
+                        // if resultType is defined then match on that too
+                        if(resultType != undefined){
+                            if(resultType == topLevelQueries[k].getResultType()){
+                                matchingQueries.push(topLevelQueries[k]);
+                            }
+                        } else {
+                            matchingQueries.push(topLevelQueries[k]);
                         }
                     }
                 }

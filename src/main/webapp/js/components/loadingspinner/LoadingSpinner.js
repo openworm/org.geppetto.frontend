@@ -32,53 +32,95 @@
 
 define(function(require) {
 
-	var React = require('react'),
-		ReactDOM = require('react-dom'),
-		GEPPETTO = require('geppetto');
+	var React = require('react');
+	var	GEPPETTO = require('geppetto');
 	
 	return React.createClass({		
 		mixins: [require('jsx!mixins/bootstrap/modal')],
-
-		getDefaultProps: function() {
+		timer1:null,
+		timer2:null,
+        visible: false,
+		
+		getInitialState: function() {
 			return {
-				text :'Loading Experiment'
+				text :'Loading...',
+				logo :'gpt-gpt_logo'
 			};
 		},
 		
-		componentDidMount: function(){
-			GEPPETTO.once('hide:spinner', this.hide);
-			setTimeout((function(){
-				if(this.isMounted()){
-					this.props.text = 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited';
-					this.forceUpdate();
+		setLogo:function(logo){
+			this.setState({logo:logo});
+		},
 
-					// this.setProps({text: 'Loading is taking longer than usual, either a big project is being loaded or bandwidth is limited'});
+		hideSpinner:function(){
+			if(this.isMounted() && this.visible){
+                if(this.timer1!=null){
+                    clearTimeout(this.timer1);
+                    clearTimeout(this.timer2);
+                }
+
+                this.visible = false;
+				this.hide();
+			}
+		},
+		
+		showSpinner:function(label){
+			var that=this;
+
+			if(that.isMounted()){
+                this.visible = true;
+				this.setState({text:label});
+				this.show();
+			}
+			
+			if(this.timer1!=null){
+				clearTimeout(this.timer1);
+				clearTimeout(this.timer2);
+			}
+			
+			this.timer1=setTimeout((function(){
+				if(that.isMounted()){
+					that.setState({text:'Loading is taking longer than usual, either a large amount of data is being loaded or bandwidth is limited'});
 				}
 			}).bind(this), 20000);
 			
-			setTimeout((function(){
-				if(this.isMounted()){
-					this.props.text = GEPPETTO.Resources.SPOTLIGHT_HINT;
-					this.forceUpdate();
-
-					// this.setProps({text: GEPPETTO.Resources.SPOTLIGHT_HINT});
+			this.timer2=setTimeout((function(){
+				if(that.isMounted()){
+					that.setState({text:GEPPETTO.Resources.SPOTLIGHT_HINT});
 				}
-			}).bind(this), 3000);
-
+			}).bind(this), 5000);
 		},
-				
-		render: function () {
+		
+		componentDidMount: function(){
+			var that=this;
 			
-            return (
-            	<div className="modal fade" id="loading-spinner">
-            		<div className="spinner-backdrop">
-	            		<div className="spinner-container">
-	            			<div className={this.props.logo + " fa-spin"}></div>
-	            			<p id="loadingmodaltext" className="orange">{this.props.text}</p>
-	            		</div>
-            		</div>
-            	</div>
-            	);
-        }		
+			GEPPETTO.Spinner=this;
+			
+			//Loading spinner initialization
+			GEPPETTO.on(Events.Show_spinner, function(label) {
+				that.showSpinner(label);
+			});
+			
+			GEPPETTO.on(Events.Hide_spinner, function(label) {
+				setTimeout(that.hideSpinner, 1);
+			});
+		},
+		
+		render: function () {
+			if(this.visible){
+				return (
+		            	<div className="modal fade" id="loading-spinner">
+		            		<div className="spinner-backdrop">
+			            		<div className="spinner-container">
+			            			<div className={this.state.logo + " fa-spin"}></div>
+			            			<p id="loadingmodaltext" className="orange">{this.state.text}</p>
+			            		</div>
+		            		</div>
+		            	</div>
+		            	);
+		    }
+			return null;
+		}
+            
 	});
 });

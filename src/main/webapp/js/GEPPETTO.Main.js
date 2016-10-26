@@ -74,6 +74,9 @@ define(function(require) {
 
             startStatusWorker : function(){
                 //create web worker for checking status
+            	if(this.statusWorker!=undefined){
+            		this.statusWorker.terminate();
+            	}
                 this.statusWorker = new Worker("geppetto/js/PullStatusWorker.js");
 
                 this.statusWorker.postMessage(1000);
@@ -204,6 +207,7 @@ define(function(require) {
                 $('#experimentsButton').click(function (e) {
                     if (!visibleExperiments) {
                         $('#console').hide();
+                        $("#pythonConsole").hide();
                         $('#experiments').show();
                         $(this).tab('show');
                         visibleExperiments = true;
@@ -216,23 +220,17 @@ define(function(require) {
                 $('#consoleButton').click(function (e) {
                     $('#console').show();
                     $('#experiments').hide();
+                    $("#pythonConsole").hide();
                     $(this).tab('show');
                     visibleExperiments = false;
                 });
-
-                $("#experiments").resizable({
-                    handles: 'n',
-                    minHeight: 100,
-                    autoHide: true,
-                    maxHeight: 400,
-                    resize: function (event, ui) {
-                        if (ui.size.height > ($("#footerHeader").height() * .75)) {
-                            $("#experiments").height($("#footerHeader").height() * .75);
-                            event.preventDefault();
-                        }
-                        $('#experiments').resize();
-                        $("#experiments").get(0).style.top = "0px";
-                    }.bind(this)
+                
+                $('#pythonConsoleButton').click(function (e) {
+                	$('#console').hide();
+                	$('#experiments').hide();
+                	 $("#pythonConsole").show();
+                    $(this).tab('show');
+                    visibleExperiments = false;
                 });
 
                 $('.nav-tabs li.active').removeClass('active');

@@ -45,22 +45,16 @@ define(function (require) {
 	//http://blog.krawaller.se/posts/a-react-app-demonstrating-css3-flexbox/
 	//http://jaketrent.com/post/send-props-to-children-react/
 	
-	var defaultParentStyle = {'flexDirection':'column','justifyContent':'flex-start','alignItems':'flex-start','flexWrap':'nowrap','alignContent':'flex-start'};
-	var defaultChildStyle = {'alignSelf': 'auto', 'flexGrow': 0, 'order': 0, 'display': 'inline-block'};
+	var defaultChildStyle = {'alignSelf': 'auto', 'flexGrow': 0, 'order': 0};
 	
 	var panelComponent = React.createClass({
 		
 		getInitialState: function() {
-            return {
-            	parentStyle: this.props.parentStyle,
+			var defaultParentStyle = {'flexDirection':'column','justifyContent':'flex-start','alignItems':'flex-start','flexWrap':'nowrap','alignContent':'flex-start','display':'flex'};
+			
+			return {
+            	parentStyle: $.extend(defaultParentStyle, this.props.parentStyle),
             	items: this.props.items
-            };
-        },
-        
-        getDefaultProps: function(){
-        	return {
-            	parentStyle: defaultParentStyle,
-            	items: []
             };
         },
         
@@ -68,19 +62,37 @@ define(function (require) {
         	this.setState({ items: this.state.items.concat(items) });
         },
         
+        setChildren: function(items){
+        	this.setState({ items: items });
+        },
+        
+        componentWillReceiveProps: function(nextProps) {
+  		  this.setState({
+  			  items: nextProps.items
+  		  });
+  		},
+        
         setDirection: function(direction){
         	var currentStyle = this.state.parentStyle;
         	currentStyle['flexDirection'] = direction;
         	this.setState({ parentStyle:  currentStyle});
+        },
+        
+        componentDidMount : function(){
+        	var comp = $('#' + this.props.id);
+        	if (comp.parent().hasClass('dialog')){
+        		comp.parent().height(comp.height() + 10);
+        		comp.parent().parent().width(comp.width() + 70);
+        	}
         },
 		
          render: function(){
         	 var itemComponents = this.state.items.map(function (item) {		            			 
     			 return (<div key={item.props.id} style={defaultChildStyle}>{item}</div>);
     		 });
-        	 
+       	 
              return (
-        		 <div className="panelContainer" style={this.props.parentStyle}>
+        		 <div className="panelContainer" id={this.props.id} style={this.state.parentStyle}>
         		 	{itemComponents}
         		 </div>
              );

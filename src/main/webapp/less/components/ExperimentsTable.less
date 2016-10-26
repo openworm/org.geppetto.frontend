@@ -82,6 +82,17 @@
 	width : 300px;
 }
 
+.configurationTDLink {
+  width : 300px;
+  color:@orange;
+  cursor:pointer;
+}
+
+.configurationTDLink:hover {
+  color:@dark-orange;
+}
+
+
 #experimentsTable td{
 	border:0;
 	padding-bottom: 0px;
@@ -119,7 +130,7 @@
 }
 
 .activeExperiment {
-	background-color:rgba(0,0,0,0.50) !important;
+	background-color:rgba(84,32,0,1)  !important;
 }
 
 .newExperimentFocus {
@@ -238,6 +249,10 @@ color:white;
 
 .activeIcon > i{
 	padding-right : 10px;
+}	
+
+.enabled {
+    display : inline;
 }
 
 .tooltip-container-status {
@@ -248,4 +263,8 @@ color:white;
 	padding: 2px 4px 2px 4px;
 	background: white;
 	opacity: 1;
+}
+
+.listVariables {
+	padding-bottom : 5px;
 }

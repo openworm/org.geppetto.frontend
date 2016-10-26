@@ -1,0 +1,70 @@
+.tutorial{
+    position: absolute;
+    height: 300px;
+    width: 400px;
+    top:140px;
+  	left: 0; 
+  	right: 0; 
+  	margin-left: auto; 
+  	margin-right: auto; 
+    display: block;
+    z-index:500;
+}
+
+.tutorial-message{
+	display: inline-block;
+	width: auto;
+	minHeight: 0px;
+	maxHeight: none;
+	height: 180px;
+	color: #fc6320;
+}
+
+#ignoreTutorial {
+	width: auto;
+	margin-top:15px;
+	color: #fc6320;
+}
+
+.tutorial-buttons{
+	width: 100%;
+    text-align: center;
+}
+
+.cookieTutorial {
+	
+}
+
+.prevBtn{
+	border: 0;
+    background-color: transparent!important;
+}
+
+.nextBtn{
+	border: 0;
+    background-color: transparent!important;
+}
+
+#tutorialIcon{
+	color:#fc2320;
+	width: 100%;
+    text-align: center;
+    margin-bottom:10px;
+}
+
+.tutorialTitle{
+	font-size : 16px;
+	padding: 0 !important;
+    margin: 0 !important;
+    font-weight: bold;
+    color: #fd6808;
+    margin-left: 5px;
+}
+
+.showTutorial {
+	display : block;
+}
+
+.hideTutorial {
+	display : none;
+}

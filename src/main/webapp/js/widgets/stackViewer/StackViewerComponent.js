@@ -936,7 +936,7 @@ define(function (require) {
             var stepInClass = 'btn fa fa-chevron-down';
             var stepOutClass = 'btn fa fa-chevron-up';
             return (
-                <div id="displayArea">
+                <div id="displayArea" style={{position: 'absolute', top: -1, left: -1}}>
                     <button style={{position: 'absolute', right: 95, top: -21, padding: 0}} className={homeClass} onClick={this.onHome}></button>
                     <button style={{position: 'absolute', right: 80, top: -21, padding: 0}} className={zoomOutClass} onClick={this.onZoomIn}></button>
                     <button style={{position: 'absolute', right: 65, top: -21, padding: 0}} className={zoomInClass} onClick={this.onZoomOut}></button>
@@ -948,7 +948,7 @@ define(function (require) {
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
                             label={this.state.label} id={this.state.id} height={this.props.data.height}
-                            width={this.props.data.width} style={{position: 'absolute', top: 0, left: 0}}/>
+                            width={this.props.data.width}/>
                 </div>
             );
         }

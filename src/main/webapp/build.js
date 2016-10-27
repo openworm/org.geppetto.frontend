@@ -62,6 +62,7 @@
             exports: 'Bloodhound'
         }
     },
+    wrapShim: true,
     name : "main",
     waitSeconds : 200,
 })

@@ -91,7 +91,7 @@ define(function (require) {
             var sel = GEPPETTO.G.getSelection();
             if (data != undefined && data != null) {
                 if (data !== this.data || sel !== this.data.selected) {
-
+                    this.removeBorders();
                     if (data.height == undefined) {
                         // console.log('setting default height');
                         data.height = this.data.height;
@@ -108,7 +108,7 @@ define(function (require) {
 
                     Widget.View.prototype.setSize.call(this, data.height, data.width);
 
-                    this.updateBorders();
+                    this.addBorders();
                     this.updateScene();
 
                 }
@@ -133,9 +133,14 @@ define(function (require) {
             );
         },
 
-        updateBorders: function(){
-            this.data.width -= 4; //30
-            this.data.height -= 22; //40
+        removeBorders: function(){
+            this.data.width += 4;
+            this.data.height += 22;
+        },
+
+        addBorders: function(){
+            this.data.width -= 4;
+            this.data.height -= 22;
         },
 
         destroy: function () {

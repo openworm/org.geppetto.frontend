@@ -998,7 +998,7 @@ define(function (require) {
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
                             label={this.state.label} id={this.state.id} height={this.props.data.height}
-                            width={this.props.data.width} mode={this.state.mode} orth={this.state.orth} />
+                            width={this.props.data.width} mode={this.state.mode} />
                 </div>
             );
         }

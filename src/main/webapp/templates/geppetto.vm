@@ -59,13 +59,15 @@
 <body>
 
 <div id="modal-region"></div>
+<div id="load-spinner"></div>
 
 <div id="controls">
 
 	<div id="SaveButton" class="row"></div>
 	<div id="HomeButton" class="row"></div>
+	<div id="ControlsMenuButton" class="row"></div>
     <div id="sim-toolbar" class="row"></div>
-
+	<div id="tutorial"></div>
     <div id="camera-controls"></div>
     <div id="foreground-toolbar" class="row"></div>
 
@@ -115,6 +117,9 @@
 </script>
 <script type="text/template" id="tplContextMenuItems">
     <li id="<%= this.cid %>">
+    	<% if (icon != null || undefined) { %>
+    		<i class="<%= icon %>" id="<%= this.cid %>"></i>
+		<% } %>
         <%= label %>
     </li>
 </script>

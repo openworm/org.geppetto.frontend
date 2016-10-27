@@ -209,19 +209,6 @@ define(function(require)
                 document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
             },
 
-            /**
-             * Refreshes UI components base on current model / instances
-             */
-            refresh: function(newInstances){
-                // populate control panel with exploded instances
-                if (GEPPETTO.ControlPanel != undefined) {
-                    GEPPETTO.ControlPanel.addData(newInstances);
-                }
-                // populate spotligh with exploded instances
-                if (GEPPETTO.Spotlight != undefined) {
-                    GEPPETTO.Spotlight.addData(GEPPETTO.ModelFactory.newPathsIndexing);
-                }
-            },
             
             /**
 			 * Show error message if webgl failed to start

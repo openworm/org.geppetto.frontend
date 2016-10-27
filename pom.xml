@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.3.1</version> 
+	<version>0.3.2</version> 
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
@@ -359,6 +359,7 @@
 							org.apache.shiro.web.servlet,
 							org.apache.shiro.authc,
 							org.apache.shiro.realm,
+							org.eclipse.emf.common.util,
 							org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*
 						</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
@@ -439,7 +440,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<phase>install</phase>
+						<phase>site</phase>
 						<goals>
 							<goal>jsdoc3</goal>
 						</goals>

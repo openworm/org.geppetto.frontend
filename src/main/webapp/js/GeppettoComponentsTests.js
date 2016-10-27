@@ -49,7 +49,7 @@ require.config({
      */
     paths: {
         'jquery': "vendor/jquery-1.9.1.min",
-        'three': 'vendor/three.min',
+        three: 'vendor/threeWrapper',
         'd3': 'vendor/d3.min',
         'codemirror': "vendor/codemirror.min",
         'underscore': 'vendor/underscore.min',
@@ -73,18 +73,18 @@ require.config({
      */
     shim: {
         'vendor/jquery-ui.min': ["jquery"],
+        'vendor/postprocessing/EffectComposer': ['three'],
         'vendor/TrackballControls': ["three"],
         'vendor/THREEx.KeyboardState': ['three'],
         'vendor/shaders/ConvolutionShader': ['three'],
         'vendor/shaders/CopyShader': ['three'],
         'vendor/shaders/FilmShader': ['three'],
         'vendor/shaders/FocusShader': ['three'],
-        'vendor/postprocessing/EffectComposer': ['three'],
-        'vendor/postprocessing/MaskPass': ['three'],
-        'vendor/postprocessing/RenderPass': ['three'],
-        'vendor/postprocessing/BloomPass': ['three'],
-        'vendor/postprocessing/ShaderPass': ['three'],
-        'vendor/postprocessing/FilmPass': ['three'],
+        'vendor/postprocessing/MaskPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/RenderPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/BloomPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/ShaderPass': ['three', 'vendor/postprocessing/EffectComposer'],
+        'vendor/postprocessing/FilmPass': ['three', 'vendor/postprocessing/EffectComposer'],
         'vendor/ColladaLoader': ['three'],
         'vendor/OBJLoader': ['three'],
         'vendor/ColorConverter': ["three"],

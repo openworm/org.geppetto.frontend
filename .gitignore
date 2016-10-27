@@ -11,7 +11,9 @@ src/main/webapp/dashboard/api/session.json
 bin/
 src/main/webapp/js/main-built.js
 src/main/webapp/css/main.css
-
+src/main/webapp/js/extensions/*
+!src/main/webapp/js/extensions/geppetto-default
+!src/main/webapp/js/extensions/extensions.js
 # Package Files #
 *.jar
 *.war
@@ -27,7 +29,7 @@ src/main/webapp/css/main.css
 *~
 .imdone/
 /.externalToolBuilders/
-/.settings/
+/.settings/*
 .classpath
 
 #WormSim specific stuff
@@ -44,3 +46,4 @@ src/main/webapp/js/components/wormsim.*
 org.geppetto.core/
 org.geppetto.model/
 org.geppetto.simulation/
+/libjhdf5.jnilib

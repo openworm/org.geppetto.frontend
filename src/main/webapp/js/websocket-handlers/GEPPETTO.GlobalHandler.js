@@ -56,6 +56,7 @@ define(function (require) {
             DATASOURCE_FETCHED: "data_source_results_fetched",
             SERVER_AVAILABLE: "server_available",
             SERVER_UNAVAILABLE: "server_unavailable",
+            USER_PRIVILEGES : "user_privileges"
         };
 
         var messageHandler =
@@ -64,6 +65,11 @@ define(function (require) {
         // sets client id
         messageHandler[messageTypes.CLIENT_ID] = function (payload) {
             GEPPETTO.MessageSocket.setClientID(payload.clientID);
+        };
+        
+        messageHandler[messageTypes.USER_PRIVILEGES] = function (payload) {
+        	var user_privileges = JSON.parse(payload.user_privileges);
+        	GEPPETTO.UserController.setUserPrivileges(user_privileges);
         };
 
         // clear canvas, used when loading a new model or re-loading previous
@@ -75,6 +81,7 @@ define(function (require) {
 
             if (!webGLStarted || !webWorkersSupported) {
                 GEPPETTO.FE.notifyInitErrors(webGLStarted, webWorkersSupported);
+                GEPPETTO.trigger(Events.Hide_spinner);
             }
         };
 
@@ -82,24 +89,28 @@ define(function (require) {
         messageHandler[messageTypes.ERROR_LOADING_SIM] = function (payload) {
             GEPPETTO.trigger('geppetto:error', payload.message);
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INVALID_SIMULATION_FILE, payload.message);
+            GEPPETTO.trigger(Events.Hide_spinner);
         };
 
         // Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_LOADING_PROJECT] = function (payload) {
             GEPPETTO.trigger('geppetto:error', payload.message);
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_LOADING_PROJECT, payload.message);
+            GEPPETTO.trigger(Events.Hide_spinner);
         };
 
         // Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_DOWNLOADING_MODEL] = function (payload) {
             GEPPETTO.trigger('geppetto:error', payload.message);
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_DOWNLOADING_MODEL, payload.message);
+            GEPPETTO.trigger(Events.Hide_spinner);
         };
 
         // Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_DOWNLOADING_RESULTS] = function (payload) {
             GEPPETTO.trigger('geppetto:error', payload.message);
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_DOWNLOADING_RESULTS, payload.message);
+            GEPPETTO.trigger(Events.Hide_spinner);
         };
 
         // Error loading simulation, invalid url or simulation file
@@ -107,13 +118,14 @@ define(function (require) {
             var message = JSON.parse(payload.message);
             GEPPETTO.trigger('geppetto:info', message);
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INCOMING_MESSAGE, message);
+            GEPPETTO.trigger(Events.Hide_spinner);
         };
 
         messageHandler[messageTypes.ERROR] = function (payload) {
             var error = JSON.parse(payload.message);
             GEPPETTO.trigger('geppetto:error', error.msg);
             GEPPETTO.FE.errorDialog(GEPPETTO.Resources.ERROR, error.message, error.code, error.exception);
-
+            GEPPETTO.trigger(Events.Hide_spinner);
         };
 
         messageHandler[messageTypes.GEPPETTO_VERSION] = function (payload) {
@@ -127,19 +139,14 @@ define(function (require) {
         };
         
         messageHandler[messageTypes.DATASOURCE_FETCHED] = function (payload) {
-        	var message = JSON.parse(payload.data_source_results_fetched)
+        	var message = JSON.parse(payload.data_source_results_fetched);
         	GEPPETTO.Spotlight.updateDataSourceResults(message.data_source_name,JSON.parse(message.results));
         };
 
         // Simulation server became available
         messageHandler[messageTypes.SERVER_AVAILABLE] = function (payload) {
             GEPPETTO.FE.infoDialog(GEPPETTO.Resources.SERVER_AVAILABLE, payload.message);
-        };
-
-        // Simulation server already in use
-        messageHandler[messageTypes.SERVER_UNAVAILABLE] = function (payload) {
-            GEPPETTO.trigger('geppetto:error', payload.message);
-            GEPPETTO.FE.observersDialog(GEPPETTO.Resources.SERVER_UNAVAILABLE, payload.message);
+            GEPPETTO.trigger(Events.Hide_spinner);
         };
 
         GEPPETTO.GlobalHandler =

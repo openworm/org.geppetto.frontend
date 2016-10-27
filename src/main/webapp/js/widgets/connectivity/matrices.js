@@ -6,7 +6,7 @@
 matrices = {
    createMatrixLayout: function (context) {
 
-       var margin = {top: 30, right: 10, bottom: 10, left: 3};
+       var margin = {top: 30, right: 10, bottom: 10, left: 0};
        var legendWidth = 120;
 
        var matrixDim = (context.options.innerHeight < (context.options.innerWidth - legendWidth)) ? (context.options.innerHeight) : (context.options.innerWidth - legendWidth);
@@ -16,12 +16,20 @@ matrices = {
            z = d3.scale.linear().domain([0, 4]).clamp(true),
        // Colors
            c = d3.scale.category10();
+       
+       var labelTop=margin.top-10;
+       var tooltip = context.svg
+       	   .append("g")
+	       .attr("transform", "translate(" + margin.left + "," + labelTop + ")")
+	       .append("text")
+	       .attr('class', 'connectionlabel')
+	       .text("Hover the squares to see the connections.");
 
-       context.svg
-           .style("padding-left", margin.left + "px")
-           .style("padding-top", margin.top + "px")
+       var container = context.svg
            .append("g")
            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+       
+       
        var matrix = [];
        var nodes = context.dataset.nodes;
        var root = context.dataset.root;
@@ -68,13 +76,13 @@ matrices = {
        // Default sort order.
        x.domain(orders.id);
 
-       var rect = context.svg
+       var rect = container
            .append("rect")
            .attr("class", "background")
            .attr("width", matrixDim - margin.left)
            .attr("height", matrixDim - margin.top);
 
-       var row = context.svg.selectAll(".row")
+       var row = container.selectAll(".row")
            .data(matrix)
            .enter().append("g")
            .attr("class", "row")
@@ -86,7 +94,7 @@ matrices = {
        row.append("line")
            .attr("x2", context.options.innerWidth);
 
-       var column = context.svg.selectAll(".column")
+       var column = container.selectAll(".column")
            .data(matrix)
            .enter().append("g")
            .attr("class", "column")
@@ -97,12 +105,7 @@ matrices = {
        column.append("line")
            .attr("x1", -context.options.innerWidth);
 
-       var tooltip = context.svg
-           .append("text")
-           .attr("x", 0)
-           .attr("y", -10)
-           .attr('class', 'connectionlabel')
-           .text("Hover the squares to see the connections.");
+
 
        context.createLegend('legend', c, {x: matrixDim, y: 0});
 

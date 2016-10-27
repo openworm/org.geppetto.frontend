@@ -50,9 +50,9 @@ define(function (require) {
     Query.prototype.constructor = Query;
 
     /**
-     * Gets the default value for this type
+     * Gets the default value for this query
      *
-     * @command Type.getDefaultValue()
+     * @command Query.getDefaultValue()
      *
      * @returns {Object} - Default value
      *
@@ -62,15 +62,27 @@ define(function (require) {
     };
 
     /**
-     * Gets the super type for this type
+     * Gets the super type for this query
      *
-     * @command Type.getSuperType()
+     * @command Query.getDescription()
      *
      * @returns {List<Type>} - Super type
      *
      */
     Query.prototype.getDescription = function () {
         return this.wrappedObj.description;
+    };
+
+    /**
+     * Gets the result type for this query
+     *
+     * @command Query.getResultType()
+     *
+     * @returns {Object} - Result type
+     *
+     */
+    Query.prototype.getResultType = function () {
+        return this.wrappedObj.resultType;
     };
 
     /**
@@ -84,6 +96,7 @@ define(function (require) {
 
     /**
      * Checks if query matches given criteria (type)
+     *
      * @param type
      * @returns {boolean}
      */

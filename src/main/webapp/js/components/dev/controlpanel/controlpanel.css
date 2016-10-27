@@ -2,7 +2,7 @@
 	position: absolute !important;
 	background-color: rgba(0, 0, 0, 0.6);
 	display: none;
-	z-index: 99;
+	z-index: 999;
 	height: 100%;
 	width: 100%;
 }
@@ -141,8 +141,12 @@
 	color: #fc4b19;
 }
 
-.img-column {
+#controlpanel .img-column {
 	width: 100px;
+}
+
+#controlpanel .controlpanel-controls-column {
+	text-align: center !important;
 }
 
 .thumbnail-img {

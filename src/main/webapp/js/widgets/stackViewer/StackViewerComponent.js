@@ -971,8 +971,8 @@ define(function (require) {
             return (
                 <div id="displayArea" style={{position: 'absolute', top: -1, left: -1}}>
                     <button style={{position: 'absolute', right: startOffset, top: -21, padding: 0, border: 0}} className={homeClass} onClick={this.onHome}></button>
-                    <button style={{position: 'absolute', right: startOffset-20, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomIn}></button>
-                    <button style={{position: 'absolute', right: startOffset-35, top: -21, padding: 0, border: 0}} className={zoomInClass} onClick={this.onZoomOut}></button>
+                    <button style={{position: 'absolute', right: startOffset-20, top: -21, padding: 0, border: 0}} className={zoomInClass} onClick={this.onZoomIn}></button>
+                    <button style={{position: 'absolute', right: startOffset-35, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomOut}></button>
                     <button style={{position: 'absolute', right: startOffset-55, top: -21, padding: 0, border: 0}} className={stepInClass} onClick={this.onStepIn}></button>
                     <button style={{position: 'absolute', right: startOffset-70, top: -21, padding: 0, border: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
                     <button style={{position: 'absolute', right: startOffset-90, top: -21, padding: 0, border: 0}} className={pointerClass} onClick={this.toggleMode}></button>

@@ -20,7 +20,8 @@
         bloodhound: "vendor/bloodhound",
         text: 'vendor/text',
         pako:'vendor/pako.min',
-        mathjs:'vendor/math.min'
+        mathjs:'vendor/math.min',
+        json: 'vendor/require-json'
     },
     shim: {
         'vendor/jquery-ui': ["jquery"],

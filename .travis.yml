@@ -1,4 +1,5 @@
 language: java
+node_js: "5.12.0"
 before_script:
 - npm install -g bower
 install:

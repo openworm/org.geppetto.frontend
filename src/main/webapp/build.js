@@ -2,7 +2,7 @@
     preserveLicenseComments: false,
     paths: {
     	jquery :'vendor/jquery-1.9.1.min',
-		three : 'vendor/three.min',
+    	three: 'vendor/threeWrapper',
 		d3 : 'vendor/d3.min',
 		codemirror :"vendor/codemirror.min",
 		underscore : 'vendor/underscore.min',
@@ -48,6 +48,9 @@
         'vendor/Detector': ["jquery"],
         'vendor/jquery.cookie': ["jquery"],
         'vendor/rAF': ["jquery"],
+        three: {
+            exports: 'THREE'
+        },
         typeahead: {
             deps: ['jquery'],
             init: function ($) {

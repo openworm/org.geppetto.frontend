@@ -540,12 +540,16 @@ define(function (require) {
             this.state.mode = mode;
             switch(mode) {
                 case 0:
+                    console.log('Selection');
                     this.updateStatusText({statusText: 'Selection'});
                 case 1:
+                    console.log('Label');
                     this.updateStatusText({statusText: 'Hover Labels'});
                 case 2:
+                    console.log('Add');
                     this.updateStatusText({statusText: 'Add Anatomy'});
                 default:
+                    console.log('Mode:' + mode);
                     this.updateStatusText({statusText: '...'});
             }
         },

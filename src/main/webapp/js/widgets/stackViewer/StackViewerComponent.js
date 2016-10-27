@@ -706,6 +706,7 @@ define(function (require) {
                 scl: 1.0,
                 minDst: -100,
                 maxDst: 100,
+                orth: 0,
                 color: [0xFFFFFF],
                 stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz'],
                 label: ['Adult Brain'],
@@ -862,6 +863,15 @@ define(function (require) {
             this.setState({mode: mode});
         },
 
+        toggleOrth: function () {
+            let orth = this.state.orth +=1;
+            if (orth > 2) {
+                orth = 0;
+                this.state.orth = orth;
+            }
+            this.setState({orth: orth});
+        },
+
         /**
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
@@ -971,7 +981,8 @@ define(function (require) {
             var stepInClass = 'btn fa fa-chevron-down';
             var stepOutClass = 'btn fa fa-chevron-up';
             var pointerClass = 'btn fa fa-hand-pointer-o';
-            var startOffset = 115;
+            var orthClass = 'btn fa fa-refresh';
+            var startOffset = 135;
             return (
                 <div id="displayArea" style={{position: 'absolute', top: -1, left: -1}}>
                     <button style={{position: 'absolute', right: startOffset, top: -21, padding: 0, border: 0}} className={homeClass} onClick={this.onHome}></button>
@@ -979,14 +990,15 @@ define(function (require) {
                     <button style={{position: 'absolute', right: startOffset-35, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomOut}></button>
                     <button style={{position: 'absolute', right: startOffset-55, top: -21, padding: 0, border: 0}} className={stepInClass} onClick={this.onStepIn}></button>
                     <button style={{position: 'absolute', right: startOffset-70, top: -21, padding: 0, border: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
-                    <button style={{position: 'absolute', right: startOffset-90, top: -21, padding: 0, border: 0}} className={pointerClass} onClick={this.toggleMode}></button>
+                    <button style={{position: 'absolute', right: startOffset-90, top: -21, padding: 0, border: 0}} className={orthClass} onClick={this.toggleMode}></button>
+                    <button style={{position: 'absolute', right: startOffset-110, top: -21, padding: 0, border: 0}} className={pointerClass} onClick={this.toggleMode}></button>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
                             label={this.state.label} id={this.state.id} height={this.props.data.height}
-                            width={this.props.data.width} mode={this.state.mode}/>
+                            width={this.props.data.width} mode={this.state.mode} orth={this.state.orth} />
                 </div>
             );
         }

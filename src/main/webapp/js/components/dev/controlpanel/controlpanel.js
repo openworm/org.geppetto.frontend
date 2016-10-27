@@ -222,12 +222,13 @@ define(function (require) {
                 }
 
                 // init dat color picker
-                $('#' + this.colorPickerBtnId).colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
-                $('#' + this.colorPickerBtnId).colorpicker('setValue', defColor.replace(/0X/i, "#"));
+                var coloPickerElement = $('#' + this.colorPickerBtnId);
+                coloPickerElement.colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
+                coloPickerElement.colorpicker('setValue', defColor.replace(/0X/i, "#"));
 
                 // closure on local scope at this point - hook on change event
                 var that = this;
-                $('#' + this.colorPickerBtnId).on('changeColor', function (e) {
+                coloPickerElement.on('changeColor', function (e) {
                     that.colorPickerActionFn(e.color.toHex().replace("#", "0x"));
                     $(this).css("color", e.color.toHex());
                 });
@@ -661,8 +662,9 @@ define(function (require) {
             var pKey = 80;
 
             var that = this;
+            var controlPanelElement = $("#controlpanel");
 
-            $("#controlpanel").click(function (e) {
+            controlPanelElement.click(function (e) {
                 if (e.target == e.delegateTarget || e.target == $(".griddle-body").children(":first")[0]) {
                     //we want this only to happen if we clicked on the div directly and not on anything therein contained
                     that.close();
@@ -679,7 +681,7 @@ define(function (require) {
             });
 
             $(document).keydown(function (e) {
-                if ($("#controlpanel").is(':visible') && e.keyCode == escape) {
+                if (controlPanelElement.is(':visible') && e.keyCode == escape) {
                     that.close();
                 }
             });

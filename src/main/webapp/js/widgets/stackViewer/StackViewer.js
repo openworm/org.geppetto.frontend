@@ -74,7 +74,7 @@ define(function (require) {
             this.data.height = h;
             this.data.width = w;
 
-            this.updateBorders();
+            this.addBorders();
             this.updateScene();
         },
 

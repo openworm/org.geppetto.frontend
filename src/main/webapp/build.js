@@ -2,7 +2,7 @@
     preserveLicenseComments: false,
     paths: {
     	jquery :'vendor/jquery-1.9.1.min',
-    	three: 'vendor/threeWrapper',
+    	three: 'vendor/three.min',
 		d3 : 'vendor/d3.min',
 		codemirror :"vendor/codemirror.min",
 		underscore : 'vendor/underscore.min',

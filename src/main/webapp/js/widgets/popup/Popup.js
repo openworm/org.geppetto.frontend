@@ -41,7 +41,7 @@ define(function (require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 	var Type = require('model/Type');
-	var anchorme = require('anchorme');
+	// var anchorme = require('anchorme');
 	/**
 	 * Private function to hookup custom event handlers
 	 *

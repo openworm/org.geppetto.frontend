@@ -990,7 +990,7 @@ define(function (require) {
                     <button style={{position: 'absolute', right: startOffset-35, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomOut}></button>
                     <button style={{position: 'absolute', right: startOffset-55, top: -21, padding: 0, border: 0}} className={stepInClass} onClick={this.onStepIn}></button>
                     <button style={{position: 'absolute', right: startOffset-70, top: -21, padding: 0, border: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
-                    <button style={{position: 'absolute', right: startOffset-90, top: -21, padding: 0, border: 0}} className={orthClass} onClick={this.toggleMode}></button>
+                    <button style={{position: 'absolute', right: startOffset-90, top: -21, padding: 0, border: 0}} className={orthClass} onClick={this.toggleOrth}></button>
                     <button style={{position: 'absolute', right: startOffset-110, top: -21, padding: 0, border: 0}} className={pointerClass} onClick={this.toggleMode}></button>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}

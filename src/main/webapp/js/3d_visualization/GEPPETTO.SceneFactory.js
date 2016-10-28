@@ -467,6 +467,37 @@ define(function (require) {
 
 
             /**
+             * Add a 3D plane to the scene at the given coordinates (4) points. 
+             * It could be any geometry really.
+             * @returns {THREE.Mesh}
+             */
+            add3DPlane: function (x1,y1,z1,x2,y2,z2,x3,y3,z3,x4,y4,z4) {
+
+                var geometry=new THREE.Geometry();
+                geometry.vertices.push(
+                    new THREE.Vector3(x1,y1,z1),//vertex0
+                    new THREE.Vector3(x2,y2,z2),//1
+                    new THREE.Vector3(x3,y3,z3),//2
+                    new THREE.Vector3(x4,y4,z4)//3
+                );
+                geometry.faces.push(
+                    new THREE.Face3(2,1,0),//use vertices of rank 2,1,0
+                    new THREE.Face3(3,1,2)//vertices[3],1,2...
+                );
+                geometry.verticesNeedUpdate = true;
+                
+                //TODO Hardcoded material and settings
+                var material = new THREE.MeshBasicMaterial({side:THREE.DoubleSide, opacity: 0.3,transparent:true})
+                material.color.setHex("0xb0b0b0");
+                material.nowireframe=true;
+                var mesh = new THREE.Mesh(geometry, material);
+                mesh.renderOrder=1;
+                GEPPETTO.getVARS().scene.add(mesh);
+                return mesh;
+            },
+
+
+            /**
              *
              * @param sphereNode
              * @param material

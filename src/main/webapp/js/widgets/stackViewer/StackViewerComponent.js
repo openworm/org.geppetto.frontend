@@ -87,6 +87,7 @@ define(function (require) {
             //start the display
             this.createImages();
             this.animate();
+           
 
         },
 
@@ -711,7 +712,8 @@ define(function (require) {
                 stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz'],
                 label: ['Adult Brain'],
                 id: ['VFB_00017894'],
-                mode: 0
+                mode: 0,
+                plane:null
             }; // mode: 0=select, 1=label, 2=add.
         },
 
@@ -734,8 +736,10 @@ define(function (require) {
                     step = -0.6;
                 }
                 newdst += step;
+                
                 if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                     this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
+                    this.plane.translateZ(step);
                 } else if (newdst < this.state.maxDst) {
                     newdst = this.state.minDst;
                     this.setState({dst: newdst, text: 'First slice!'});
@@ -766,6 +770,8 @@ define(function (require) {
             if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 this.handleInstances(this.props.data.instances);
             }
+            //TODO Hardcoded coordinates
+            this.plane=GEPPETTO.SceneFactory.add3DPlane(0,0,70, 650,0,70, 0,350,70, 650,350,70);
         },
 
         componentWillReceiveProps: function (nextProps) {
@@ -838,7 +844,8 @@ define(function (require) {
         },
 
         componentWillUnmount: function () {
-            React.unmountComponentAtNode(document.getElementById('displayArea'));
+        	GEPPETTO.getVARS().scene.remove(this.plane);
+        	React.unmountComponentAtNode(document.getElementById('displayArea'));
         },
         /**
          * Event handler for clicking zoom in. Increments the zoom level

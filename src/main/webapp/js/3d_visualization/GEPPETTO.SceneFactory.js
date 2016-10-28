@@ -492,6 +492,7 @@ define(function (require) {
                 material.nowireframe=true;
                 var mesh = new THREE.Mesh(geometry, material);
                 mesh.renderOrder=1;
+                mesh.clickThrough=true;
                 GEPPETTO.getVARS().scene.add(mesh);
                 return mesh;
             },

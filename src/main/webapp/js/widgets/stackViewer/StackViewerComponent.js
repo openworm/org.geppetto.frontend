@@ -21,6 +21,9 @@ define(function (require) {
                 tileY: 1025,
                 imageX: 1024,
                 imageY: 1024,
+                voxelX: this.props.voxelX,
+                voxelY: this.props.voxelY,
+                voxelZ: this.props.voxelZ,
                 visibleTiles: [0],
                 plane: [[0,0,0],[1024,0,0],[0,1024,0],[1024,1024,0]],
                 lastUpdate: 0,
@@ -196,13 +199,13 @@ define(function (require) {
             }
             coordinates[0] = x;
             coordinates[1] = y;
-            if (this.status.imageX >= this.renderer.view.width) {
-                x = x + this.status.imageX;
+            if (this.state.imageX >= this.renderer.view.width) {
+                x = x + this.state.imageX;
             }else{
                 x = x + this.renderer.view.width;
             }
-            if (this.status.imageY >= this.renderer.view.height) {
-                y = y + this.status.imageY;
+            if (this.state.imageY >= this.renderer.view.height) {
+                y = y + this.state.imageY;
             }else{
                 y = y + this.renderer.view.height;
             }
@@ -795,6 +798,9 @@ define(function (require) {
                 yaw: 0,
                 rol: 0,
                 scl: 1.0,
+                voxelX: 0.5,
+                voxelY: 0.5,
+                voxelZ: 1,
                 minDst: -100,
                 maxDst: 100,
                 orth: 0,
@@ -1094,7 +1100,7 @@ define(function (require) {
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
                             label={this.state.label} id={this.state.id} height={this.props.data.height}
-                            width={this.props.data.width} mode={this.state.mode} />
+                            width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX} voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} />
                 </div>
             );
         }

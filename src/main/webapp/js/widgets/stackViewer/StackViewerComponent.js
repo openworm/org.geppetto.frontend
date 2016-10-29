@@ -192,16 +192,16 @@ define(function (require) {
                 //get top left plane coordinate:
                 var coordinates = [];
                 var x, y;
-                console.log(JSON.stringify(this.stage.position));
-                if (this.stage.position.x >= this.renderer.view.width * 0.5) {
+                console.log(JSON.stringify(this.stack.position));
+                if (this.stack.position.x >= this.renderer.view.width * 0.5) {
                     x = 0;
                 } else {
-                    x = (this.renderer.view.width * 0.5) - this.stage.position.x;
+                    x = (this.renderer.view.width * 0.5) - this.stack.position.x;
                 }
-                if (this.stage.position.y >= this.renderer.view.height * 0.5) {
+                if (this.stack.position.y >= this.renderer.view.height * 0.5) {
                     y = 0;
                 } else {
-                    y = (this.renderer.view.height * 0.5) - this.stage.position.y;
+                    y = (this.renderer.view.height * 0.5) - this.stack.position.y;
                 }
                 coordinates[0] = x.toFixed(0);
                 coordinates[1] = y.toFixed(0);

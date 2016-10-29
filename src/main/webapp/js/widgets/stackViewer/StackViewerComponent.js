@@ -204,12 +204,12 @@ define(function (require) {
                 }
                 coordinates[0] = x.toFixed(0);
                 coordinates[1] = y.toFixed(0);
-                if (this.state.imageX >= $('#displayArea').width()) {
+                if (this.state.imageX <= $('#displayArea').width()) {
                     x = x + this.state.imageX;
                 } else {
                     x = x + $('#displayArea').width();
                 }
-                if (this.state.imageY >= $('#displayArea').height()) {
+                if (this.state.imageY <= $('#displayArea').height()) {
                     y = y + this.state.imageY;
                 } else {
                     y = y + $('#displayArea').height();

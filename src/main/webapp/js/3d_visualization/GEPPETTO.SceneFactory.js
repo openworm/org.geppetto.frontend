@@ -485,7 +485,7 @@ define(function (require) {
                     new THREE.Face3(3,1,2)//vertices[3],1,2...
                 );
                 geometry.verticesNeedUpdate = true;
-                
+                geometry.dynamic = true;
                 //TODO Hardcoded material and settings
                 var material = new THREE.MeshBasicMaterial({side:THREE.DoubleSide, opacity: 0.3,transparent:true})
                 material.color.setHex("0xb0b0b0");
@@ -495,6 +495,19 @@ define(function (require) {
                 mesh.clickThrough=true;
                 GEPPETTO.getVARS().scene.add(mesh);
                 return mesh;
+            },
+            
+            /**
+             * Modify the coordinates (4) points of an existing plane. 
+             * @returns {THREE.Mesh}
+             */
+            modify3DPlane:function(object,x1,y1,z1,x2,y2,z2,x3,y3,z3,x4,y4,z4){
+            	object.geometry.vertices[0].set(x1,y1,z1);
+            	object.geometry.vertices[1].set(x2,y2,z2);
+            	object.geometry.vertices[2].set(x3,y3,z3);
+            	object.geometry.vertices[3].set(x4,y4,z4);
+            	object.geometry.verticesNeedUpdate = true;
+            	return object;
             },
 
 

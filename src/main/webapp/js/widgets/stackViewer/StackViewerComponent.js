@@ -221,7 +221,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[0] = result;
+                    this.state.plane[0] = result[0];
+                    this.state.plane[1] = result[1];
+                    this.state.plane[2] = result[2];
                     this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -234,7 +236,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[2] = result;
+                    this.state.plane[6] = result[6];
+                    this.state.plane[7] = result[7];
+                    this.state.plane[8] = result[8];
                     this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -247,7 +251,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[1] = result;
+                    this.state.plane[3] = result[3];
+                    this.state.plane[4] = result[4];
+                    this.state.plane[5] = result[5];
                     this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -260,7 +266,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[3] = result;
+                    this.state.plane[9] = result[9];
+                    this.state.plane[10] = result[10];
+                    this.state.plane[11] = result[11];
                     this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -270,7 +278,7 @@ define(function (require) {
         },
 
         passPlane: function () {
-            if (this.state.plane.length > 3) {
+            if (this.state.plane.length > 11) {
                 if (this.state.planeItem) {
                     console.log('Plane: ' + this.state.plane);
                     GEPPETTO.SceneFactory.modify3DPlane(this.state.planeItem, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);

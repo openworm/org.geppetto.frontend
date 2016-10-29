@@ -851,12 +851,11 @@ define(function (require) {
             } else {
                 // Mac keypad returns values (+/-)1-20 Mouse wheel (+/-)120
                 var step = -1 * e.wheelDelta * 0.1;
-                // Max step of 0.6 imposed
-                // TODO: derive max and min step from voxel size
+                // Max step of imposed
                 if (step > 3) {
-                    step = 0.6;
+                    step = this.state.voxelZ;
                 } else if (step < -3) {
-                    step = -0.6;
+                    step = -this.state.voxelZ;
                 }
                 newdst += step;
                 
@@ -1018,7 +1017,7 @@ define(function (require) {
          * Event handler for clicking step in. Increments the dst level
          **/
         onStepIn: function () {
-            var newdst = this.state.dst + 0.1;
+            var newdst = this.state.dst + this.state.voxelZ;
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {
@@ -1033,7 +1032,7 @@ define(function (require) {
          * Event handler for clicking step out. Decrements the dst level
          **/
         onStepOut: function () {
-            var newdst = this.state.dst - 0.1;
+            var newdst = this.state.dst - this.state.voxelZ;
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {

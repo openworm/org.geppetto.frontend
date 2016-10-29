@@ -27,6 +27,7 @@ define(function (require) {
                 visibleTiles: [0],
                 plane: [],
                 planeItem: false,
+                planeCount: 0,
                 lastUpdate: 0,
                 updating: false,
                 numTiles: 1,
@@ -215,7 +216,8 @@ define(function (require) {
             coordinates[3] = y.toFixed(0);
             console.log('Visible screen: ' + coordinates);
             this.state.plane = [];
-            $.ajax({
+            this.state.planeCount = 0;
+                $.ajax({
                 url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
@@ -224,6 +226,7 @@ define(function (require) {
                     this.state.plane[0] = result[0];
                     this.state.plane[1] = result[1];
                     this.state.plane[2] = result[2];
+                    this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -239,6 +242,7 @@ define(function (require) {
                     this.state.plane[6] = result[6];
                     this.state.plane[7] = result[7];
                     this.state.plane[8] = result[8];
+                    this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -254,6 +258,7 @@ define(function (require) {
                     this.state.plane[3] = result[3];
                     this.state.plane[4] = result[4];
                     this.state.plane[5] = result[5];
+                    this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -269,6 +274,7 @@ define(function (require) {
                     this.state.plane[9] = result[9];
                     this.state.plane[10] = result[10];
                     this.state.plane[11] = result[11];
+                    this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -278,7 +284,7 @@ define(function (require) {
         },
 
         passPlane: function () {
-            if (this.state.plane.length > 11 && $.isNumeric(this.state.plane[0]) && && $.isNumeric(this.state.plane[3]) && $.isNumeric(this.state.plane[6]) && $.isNumeric(this.state.plane[9])) {
+            if (this.state.planeCount > 3 && this.state.plane.length > 11 && $.isNumeric(this.state.plane[0]) && && $.isNumeric(this.state.plane[3]) && $.isNumeric(this.state.plane[6]) && $.isNumeric(this.state.plane[9])) {
                 if (this.state.planeItem) {
                     console.log('Plane: ' + this.state.plane);
                     GEPPETTO.SceneFactory.modify3DPlane(this.state.planeItem, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);

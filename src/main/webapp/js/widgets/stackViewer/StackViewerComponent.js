@@ -25,7 +25,8 @@ define(function (require) {
                 voxelY: this.props.voxelY,
                 voxelZ: this.props.voxelZ,
                 visibleTiles: [0],
-                plane: [[0,0,0],[1024,0,0],[0,1024,0],[1024,1024,0]],
+                plane: [],
+                planeItem: false,
                 lastUpdate: 0,
                 updating: false,
                 numTiles: 1,
@@ -108,6 +109,7 @@ define(function (require) {
             this.refs.stackCanvas.removeChild(this.renderer.view);
             this.renderer.destroy(true);
             this.renderer = null;
+            GEPPETTO.getVARS().scene.remove(this.state.planeItem);
             return true;
         },
 
@@ -269,9 +271,12 @@ define(function (require) {
 
         passPlane: function () {
             if (this.state.plane.length > 3) {
-                // TODO: update plane;
-                console.log('Plane: ' + this.state.plane);
-                GEPPETTO.SceneFactory.modify3DPlane(this.plane,this.state.plane[0],this.state.plane[1],this.state.plane[2],this.state.plane[3],this.state.plane[4],this.state.plane[5],this.state.plane[6],this.state.plane[7],this.state.plane[8],this.state.plane[9],this.state.plane[10],this.state.plane[11]);
+                if (this.state.planeItem) {
+                    console.log('Plane: ' + this.state.plane);
+                    GEPPETTO.SceneFactory.modify3DPlane(this.state.planeItem, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+                }else{
+                    this.state.planeItem=GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+                }
             }
         },
 
@@ -870,8 +875,6 @@ define(function (require) {
             if (this.props.data && this.props.data != null && this.props.data.instances && this.props.data.instances != null) {
                 this.handleInstances(this.props.data.instances);
             }
-            //TODO Hardcoded coordinates
-            this.plane=GEPPETTO.SceneFactory.add3DPlane(0,0,70, 650,0,70, 0,350,70, 650,350,70);
         },
 
         componentWillReceiveProps: function (nextProps) {
@@ -944,7 +947,6 @@ define(function (require) {
         },
 
         componentWillUnmount: function () {
-        	GEPPETTO.getVARS().scene.remove(this.plane);
         	React.unmountComponentAtNode(document.getElementById('displayArea'));
         },
         /**

@@ -193,25 +193,25 @@ define(function (require) {
                 var coordinates = [];
                 var x, y;
                 console.log(JSON.stringify(this.stack.position));
-                if (this.stack.position.x >= this.renderer.view.width * 0.5) {
+                if (this.stack.position.x >= $('#displayArea').width() * 0.5) {
                     x = 0;
                 } else {
-                    x = (this.renderer.view.width * 0.5) - this.stack.position.x;
+                    x = ($('#displayArea').width() * 0.5) - this.stack.position.x;
                 }
-                if (this.stack.position.y >= this.renderer.view.height * 0.5) {
+                if (this.stack.position.y >= $('#displayArea').height() * 0.5) {
                     y = 0;
                 } else {
-                    y = (this.renderer.view.height * 0.5) - this.stack.position.y;
+                    y = ($('#displayArea').height() * 0.5) - this.stack.position.y;
                 }
                 coordinates[0] = x.toFixed(0);
                 coordinates[1] = y.toFixed(0);
-                if (this.state.imageX <= $('#displayArea').width()) {
-                    x = x + this.state.imageX;
+                if ((this.state.imageX - x) <= $('#displayArea').width()) {
+                    x = this.state.imageX;
                 } else {
                     x = x + $('#displayArea').width();
                 }
-                if (this.state.imageY <= $('#displayArea').height()) {
-                    y = y + this.state.imageY;
+                if ((this.state.imageY - y) <= $('#displayArea').height()) {
+                    y = this.state.imageY;
                 } else {
                     y = y + $('#displayArea').height();
                 }

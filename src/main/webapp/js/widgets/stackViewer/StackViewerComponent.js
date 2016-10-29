@@ -271,7 +271,7 @@ define(function (require) {
             if (this.state.plane.length > 3) {
                 // TODO: update plane;
                 console.log('Plane: ' + this.state.plane);
-                GEPPETTO.SceneFactory.modify3DPlane(this.plane,this.state.plane[0][0],this.state.plane[0][1],this.state.plane[0][2],this.state.plane[1][0],this.state.plane[1][1],this.state.plane[1][2],this.state.plane[2][0],this.state.plane[2][1],this.state.plane[2][2],this.state.plane[3][0],this.state.plane[3][1],this.state.plane[3][2]);
+                GEPPETTO.SceneFactory.modify3DPlane(this.plane,this.state.plane[0],this.state.plane[1],this.state.plane[2],this.state.plane[3],this.state.plane[4],this.state.plane[5],this.state.plane[6],this.state.plane[7],this.state.plane[8],this.state.plane[9],this.state.plane[10],this.state.plane[11]);
             }
         },
 

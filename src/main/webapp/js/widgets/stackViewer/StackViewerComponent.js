@@ -21,7 +21,11 @@ define(function (require) {
                 tileY: 1025,
                 imageX: 1024,
                 imageY: 1024,
+                voxelX: this.props.voxelX,
+                voxelY: this.props.voxelY,
+                voxelZ: this.props.voxelZ,
                 visibleTiles: [0],
+                plane: [[0,0,0],[1024,0,0],[0,1024,0],[1024,1024,0]],
                 lastUpdate: 0,
                 updating: false,
                 numTiles: 1,
@@ -95,6 +99,7 @@ define(function (require) {
             // console.log('Canvas update');
             this.renderer.resize(this.props.width, this.props.height);
             this.checkStack();
+            this.callPlaneEdges();
         },
 
         componentWillUnmount: function () {
@@ -175,6 +180,94 @@ define(function (require) {
                     console.error(this.props.url, status, err.toString());
                 }.bind(this)
             });
+        },
+
+        callPlaneEdges: function() {
+            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+            //get top left plane coordinate:
+            var coordinates = [];
+            var x,y;
+            if (this.stage.position.x >= this.renderer.view.width * 0.5) {
+                x = 0;
+            }else{
+                x = (this.renderer.view.width * 0.5) - this.stage.position.x;
+            }
+            if (this.stage.position.y >= this.renderer.view.height * 0.5) {
+                y = 0;
+            }else{
+                y = (this.renderer.view.height * 0.5) - this.stage.position.y;
+            }
+            coordinates[0] = x.toFixed(0);
+            coordinates[1] = y.toFixed(0);
+            if (this.state.imageX >= this.renderer.view.width) {
+                x = x + this.state.imageX;
+            }else{
+                x = x + this.renderer.view.width;
+            }
+            if (this.state.imageY >= this.renderer.view.height) {
+                y = y + this.state.imageY;
+            }else{
+                y = y + this.renderer.view.height;
+            }
+            coordinates[2] = x.toFixed(0);
+            coordinates[3] = y.toFixed(0);
+            console.log('Visible screen: ' + coordinates);
+            this.state.plane = [];
+            $.ajax({
+                url: image + 'prl=-1,' + coordinates[0] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
+                type: 'POST',
+                success: function (data) {
+                    console.log(data.trim());
+                    var result = data.trim().split(':')[1].split(' ');
+                    this.state.plane[0] = result;
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.props.url, status, err.toString());
+                }.bind(this)
+            });
+            $.ajax({
+                url: image + 'prl=-1,' + coordinates[0] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
+                type: 'POST',
+                success: function (data) {
+                    console.log(data.trim());
+                    var result = data.trim().split(':')[1].split(' ');
+                    this.state.plane[2] = result;
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.props.url, status, err.toString());
+                }.bind(this)
+            });
+            $.ajax({
+                url: image + 'prl=-1,' + coordinates[2] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
+                type: 'POST',
+                success: function (data) {
+                    console.log(data.trim());
+                    var result = data.trim().split(':')[1].split(' ');
+                    this.state.plane[1] = result;
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.props.url, status, err.toString());
+                }.bind(this)
+            });
+            $.ajax({
+                url: image + 'prl=-1,' + coordinates[2] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
+                type: 'POST',
+                success: function (data) {
+                    console.log(data.trim());
+                    var result = data.trim().split(':')[1].split(' ');
+                    this.state.plane[3] = result;
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.props.url, status, err.toString());
+                }.bind(this)
+            });
+        },
+
+        passPlane: function () {
+            if (this.state.plane.length > 3) {
+                // TODO: update plane;
+                console.log('Plane: ' + this.state.plane);
+            }
         },
 
         callObjects: function () {
@@ -705,6 +798,9 @@ define(function (require) {
                 yaw: 0,
                 rol: 0,
                 scl: 1.0,
+                voxelX: 0.5,
+                voxelY: 0.5,
+                voxelZ: 1,
                 minDst: -100,
                 maxDst: 100,
                 orth: 0,
@@ -739,7 +835,6 @@ define(function (require) {
                 
                 if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                     this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
-                    this.plane.translateZ(step);
                 } else if (newdst < this.state.maxDst) {
                     newdst = this.state.minDst;
                     this.setState({dst: newdst, text: 'First slice!'});
@@ -1005,7 +1100,7 @@ define(function (require) {
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl}
                             label={this.state.label} id={this.state.id} height={this.props.data.height}
-                            width={this.props.data.width} mode={this.state.mode} />
+                            width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX} voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} />
                 </div>
             );
         }

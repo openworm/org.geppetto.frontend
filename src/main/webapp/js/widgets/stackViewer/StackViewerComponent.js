@@ -217,9 +217,10 @@ define(function (require) {
                 url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
-                    console.log(data.trim());
+                    //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     this.state.plane[0] = result;
+                    this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -229,9 +230,10 @@ define(function (require) {
                 url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
-                    console.log(data.trim());
+                    //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     this.state.plane[2] = result;
+                    this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -241,9 +243,10 @@ define(function (require) {
                 url: image + '&prl=-1,' + coordinates[2] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
-                    console.log(data.trim());
+                    //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     this.state.plane[1] = result;
+                    this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -253,9 +256,10 @@ define(function (require) {
                 url: image + '&prl=-1,' + coordinates[2] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
-                    console.log(data.trim());
+                    //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     this.state.plane[3] = result;
+                    this.passPlane();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.url, status, err.toString());

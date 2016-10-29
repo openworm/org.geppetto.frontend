@@ -202,15 +202,15 @@ define(function (require) {
             }
             coordinates[0] = x.toFixed(0);
             coordinates[1] = y.toFixed(0);
-            if (this.state.imageX >= this.renderer.view.width) {
+            if (this.state.imageX >= $('#displayArea').width()) {
                 x = x + this.state.imageX;
             }else{
-                x = x + this.renderer.view.width;
+                x = x + $('#displayArea').width();
             }
-            if (this.state.imageY >= this.renderer.view.height) {
+            if (this.state.imageY >= $('#displayArea').height()) {
                 y = y + this.state.imageY;
             }else{
-                y = y + this.renderer.view.height;
+                y = y + $('#displayArea').height();
             }
             coordinates[2] = x.toFixed(0);
             coordinates[3] = y.toFixed(0);
@@ -283,7 +283,6 @@ define(function (require) {
         },
 
         passPlane: function () {
-            console.log(this.state.planeCount);
             if (this.state.planeCount > 3 && this.state.plane.length > 11 ) {
                 if (this.state.planeItem) {
                     console.log('Plane: ' + this.state.plane);

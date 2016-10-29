@@ -197,8 +197,8 @@ define(function (require) {
             }else{
                 y = (this.renderer.view.height * 0.5) - this.stage.position.y;
             }
-            coordinates[0] = x.fixed(0);
-            coordinates[1] = y.fixed(0);
+            coordinates[0] = x.toFixed(0);
+            coordinates[1] = y.toFixed(0);
             if (this.state.imageX >= this.renderer.view.width) {
                 x = x + this.state.imageX;
             }else{
@@ -209,8 +209,8 @@ define(function (require) {
             }else{
                 y = y + this.renderer.view.height;
             }
-            coordinates[2] = x.fixed(0);
-            coordinates[3] = y.fixed(0);
+            coordinates[2] = x.toFixed(0);
+            coordinates[3] = y.toFixed(0);
             console.log('Visible screen: ' + coordinates);
             this.state.plane = [];
             $.ajax({

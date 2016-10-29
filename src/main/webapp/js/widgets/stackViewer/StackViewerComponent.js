@@ -215,7 +215,6 @@ define(function (require) {
             coordinates[2] = x.toFixed(0);
             coordinates[3] = y.toFixed(0);
             console.log('Visible screen: ' + coordinates);
-            this.state.plane = [];
             this.state.planeCount = 0;
                 $.ajax({
                 url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
@@ -284,6 +283,7 @@ define(function (require) {
         },
 
         passPlane: function () {
+            console.log(this.state.planeCount);
             if (this.state.planeCount > 3 && this.state.plane.length > 11 && $.isNumeric(this.state.plane[0]) && $.isNumeric(this.state.plane[3]) && $.isNumeric(this.state.plane[6]) && $.isNumeric(this.state.plane[9])) {
                 if (this.state.planeItem) {
                     console.log('Plane: ' + this.state.plane);

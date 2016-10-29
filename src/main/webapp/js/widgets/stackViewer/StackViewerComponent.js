@@ -193,12 +193,12 @@ define(function (require) {
                 var coordinates = [];
                 var x, y;
                 console.log(JSON.stringify(this.stack.position));
-                if (this.stack.position.x >= $('#displayArea').width() * 0.5) {
+                if (this.stack.position.x <= $('#displayArea').width() * 0.5) {
                     x = 0;
                 } else {
                     x = ($('#displayArea').width() * 0.5) - this.stack.position.x;
                 }
-                if (this.stack.position.y >= $('#displayArea').height() * 0.5) {
+                if (this.stack.position.y <= $('#displayArea').height() * 0.5) {
                     y = 0;
                 } else {
                     y = ($('#displayArea').height() * 0.5) - this.stack.position.y;

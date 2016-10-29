@@ -278,7 +278,7 @@ define(function (require) {
         },
 
         passPlane: function () {
-            if (this.state.plane.length > 11) {
+            if (this.state.plane.length > 11 && $.isNumeric(this.state.plane[0]) && && $.isNumeric(this.state.plane[3]) && $.isNumeric(this.state.plane[6]) && $.isNumeric(this.state.plane[9])) {
                 if (this.state.planeItem) {
                     console.log('Plane: ' + this.state.plane);
                     GEPPETTO.SceneFactory.modify3DPlane(this.state.planeItem, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);

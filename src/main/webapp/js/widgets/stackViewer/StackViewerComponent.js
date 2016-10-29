@@ -238,9 +238,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[6] = result[6];
-                    this.state.plane[7] = result[7];
-                    this.state.plane[8] = result[8];
+                    this.state.plane[6] = result[0];
+                    this.state.plane[7] = result[1];
+                    this.state.plane[8] = result[2];
                     this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
@@ -254,9 +254,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[3] = result[3];
-                    this.state.plane[4] = result[4];
-                    this.state.plane[5] = result[5];
+                    this.state.plane[3] = result[0];
+                    this.state.plane[4] = result[1];
+                    this.state.plane[5] = result[2];
                     this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
@@ -270,9 +270,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[9] = result[9];
-                    this.state.plane[10] = result[10];
-                    this.state.plane[11] = result[11];
+                    this.state.plane[9] = result[0];
+                    this.state.plane[10] = result[1];
+                    this.state.plane[11] = result[2];
                     this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),

@@ -214,7 +214,7 @@ define(function (require) {
             console.log('Visible screen: ' + coordinates);
             this.state.plane = [];
             $.ajax({
-                url: image + 'prl=-1,' + coordinates[0] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
+                url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
                     console.log(data.trim());
@@ -226,7 +226,7 @@ define(function (require) {
                 }.bind(this)
             });
             $.ajax({
-                url: image + 'prl=-1,' + coordinates[0] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
+                url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
                     console.log(data.trim());
@@ -238,7 +238,7 @@ define(function (require) {
                 }.bind(this)
             });
             $.ajax({
-                url: image + 'prl=-1,' + coordinates[2] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
+                url: image + '&prl=-1,' + coordinates[2] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
                     console.log(data.trim());
@@ -250,7 +250,7 @@ define(function (require) {
                 }.bind(this)
             });
             $.ajax({
-                url: image + 'prl=-1,' + coordinates[2] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
+                url: image + '&prl=-1,' + coordinates[2] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
                 type: 'POST',
                 success: function (data) {
                     console.log(data.trim());

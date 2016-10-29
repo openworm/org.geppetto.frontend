@@ -192,6 +192,7 @@ define(function (require) {
                 //get top left plane coordinate:
                 var coordinates = [];
                 var x, y;
+                console.log(JSON.stringify(this.stage.position));
                 if (this.stage.position.x >= this.renderer.view.width * 0.5) {
                     x = 0;
                 } else {

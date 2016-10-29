@@ -222,9 +222,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[0] = result[0];
-                    this.state.plane[1] = result[1];
-                    this.state.plane[2] = result[2];
+                    this.state.plane[0] = result[0]*this.state.voxelX;
+                    this.state.plane[1] = result[1]*this.state.voxelY;
+                    this.state.plane[2] = result[2]*this.state.voxelZ;
                     this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
@@ -238,9 +238,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[6] = result[0];
-                    this.state.plane[7] = result[1];
-                    this.state.plane[8] = result[2];
+                    this.state.plane[6] = result[0]*this.state.voxelX;
+                    this.state.plane[7] = result[1]*this.state.voxelY;
+                    this.state.plane[8] = result[2]*this.state.voxelZ;
                     this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
@@ -254,9 +254,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[3] = result[0];
-                    this.state.plane[4] = result[1];
-                    this.state.plane[5] = result[2];
+                    this.state.plane[3] = result[0]*this.state.voxelX;
+                    this.state.plane[4] = result[1]*this.state.voxelY;
+                    this.state.plane[5] = result[2]*this.state.voxelZ;
                     this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
@@ -270,9 +270,9 @@ define(function (require) {
                 success: function (data) {
                     //console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
-                    this.state.plane[9] = result[0];
-                    this.state.plane[10] = result[1];
-                    this.state.plane[11] = result[2];
+                    this.state.plane[9] = result[0]*this.state.voxelX;
+                    this.state.plane[10] = result[1]*this.state.voxelY;
+                    this.state.plane[11] = result[2]*this.state.voxelZ;
                     this.state.planeCount += 1;
                     this.passPlane();
                 }.bind(this),
@@ -825,9 +825,9 @@ define(function (require) {
                 yaw: 0,
                 rol: 0,
                 scl: 1.0,
-                voxelX: 0.5,
-                voxelY: 0.5,
-                voxelZ: 1,
+                voxelX: 0.6,
+                voxelY: 0.6,
+                voxelZ: 0.6,
                 minDst: -100,
                 maxDst: 100,
                 orth: 0,

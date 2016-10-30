@@ -195,40 +195,40 @@ define(function (require) {
                 console.log('Stage width: ' + this.stage.width);
                 console.log('Stage pox x: ' + this.stage.position.x);
                 this.state.planeUpdating = true;
-                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
-                //get top left plane coordinate:
-                var coordinates = [];
-                var x, y, z;
-                console.log(JSON.stringify(this.stack.position));
-                x = (this.stack.width * 0.5) - (this.stage.position.x + this.stack.position.x);
-                // if (((this.stack.width * 0.5) - this.stack.position.x) <= $('#displayArea').width() * 0.5) {
-                //     x = 0;
-                // } else {
-                //     x = ((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5);
-                // }
-                y = (this.stack.height * 0.5) - (this.stage.position.y + this.stack.position.y);
-                // if (((this.stack.height * 0.5) - this.stack.position.y) <= $('#displayArea').height() * 0.5) {
-                //     y = 0;
-                // } else {
-                //     y = ((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5);
-                // }
-                coordinates[0] = x.toFixed(0);
-                coordinates[1] = y.toFixed(0);
-                x = x + this.renderer.view.width;
-                y = y + this.renderer.view.height;
-                // if ((this.stack.width - (((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5))) <= $('#displayArea').width()) {
-                //     x = this.stack.width;
-                // } else {
-                //     x = x + $('#displayArea').width();
-                // }
-                // if ((this.stack.height - (((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5))) <= $('#displayArea').height()) {
-                //     y = this.stack.height;
-                // } else {
-                //     y = y + $('#displayArea').height();
-                // }
-                coordinates[2] = x.toFixed(0);
-                coordinates[3] = y.toFixed(0);
-                if (x > 1) {
+                if (this.stack.width > 1) {
+                    // var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+                    //get top left plane coordinate:
+                    var coordinates = [];
+                    var x, y, z;
+                    console.log(JSON.stringify(this.stack.position));
+                    x = (this.stack.width * 0.5) - (this.stage.position.x + this.stack.position.x);
+                    // if (((this.stack.width * 0.5) - this.stack.position.x) <= $('#displayArea').width() * 0.5) {
+                    //     x = 0;
+                    // } else {
+                    //     x = ((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5);
+                    // }
+                    y = (this.stack.height * 0.5) - (this.stage.position.y + this.stack.position.y);
+                    // if (((this.stack.height * 0.5) - this.stack.position.y) <= $('#displayArea').height() * 0.5) {
+                    //     y = 0;
+                    // } else {
+                    //     y = ((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5);
+                    // }
+                    coordinates[0] = x.toFixed(0);
+                    coordinates[1] = y.toFixed(0);
+                    x = x + this.renderer.view.width;
+                    y = y + this.renderer.view.height;
+                    // if ((this.stack.width - (((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5))) <= $('#displayArea').width()) {
+                    //     x = this.stack.width;
+                    // } else {
+                    //     x = x + $('#displayArea').width();
+                    // }
+                    // if ((this.stack.height - (((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5))) <= $('#displayArea').height()) {
+                    //     y = this.stack.height;
+                    // } else {
+                    //     y = y + $('#displayArea').height();
+                    // }
+                    coordinates[2] = x.toFixed(0);
+                    coordinates[3] = y.toFixed(0);
                     console.log('Visible screen: ' + coordinates);
                     if (this.state.orth == 0) {
                         this.state.plane[0] = coordinates[0];

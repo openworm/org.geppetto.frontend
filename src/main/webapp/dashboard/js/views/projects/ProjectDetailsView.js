@@ -16,6 +16,15 @@ define([ 'jquery', 'underscore', 'backbone',
 			});
 			_.bindAll(this, 'render', 'fetchSuccess', 'refreshModel');
 			this.model.fetch({ success : this.fetchSuccess });
+			
+			$(document).on('click','#status',function(){
+				var details = $(this).data('id');
+				
+				if(details!="" || null){
+				   $("#errorModal").modal();
+				   $("#errormodal-text").html(details);
+				}
+			});
 		},
 
 		render : function() {

@@ -264,6 +264,7 @@ dd {
 
 .ERROR {
 	background: red;
+	cursor: hand;
 }
 
 .COMPLETED {
@@ -484,4 +485,8 @@ a:hover {
    */
 	-ms-user-select: none;
 	user-select: none;
+}
+
+#errormodal-text {
+	overflow : auto;
 }

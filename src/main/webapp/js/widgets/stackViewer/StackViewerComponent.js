@@ -604,6 +604,9 @@ define(function (require) {
             if (nextProps.mode !== this.state.mode) {
                 this.changeMode(nextProps.mode);
             }
+            if (nextProps.orth !== this.state.orth) {
+                this.changeOrth(nextProps.orth);
+            }
 
         },
         /**
@@ -625,8 +628,9 @@ define(function (require) {
         },
 
         changeMode: function (mode) {
+            console.log('Mode: ' + mode);
             this.state.mode = mode;
-            switch(mode) {
+            switch(Number(mode)) {
                 case 0:
                     console.log('Selection');
                     this.updateStatusText({statusText: 'Selection'});
@@ -638,6 +642,25 @@ define(function (require) {
                     this.updateStatusText({statusText: 'Add Anatomy'});
                 default:
                     console.log('Mode:' + mode);
+                    this.updateStatusText({statusText: '...'});
+            }
+        },
+
+        changeMode: function (orth) {
+            console.log('Orth: ' + orth);
+            this.state.orth = orth;
+            switch(Number(orth)) {
+                case 0:
+                    console.log('Frontal');
+                    this.updateStatusText({statusText: 'Frontal'});
+                case 1:
+                    console.log('Transverse');
+                    this.updateStatusText({statusText: 'Transverse'});
+                case 2:
+                    console.log('Sagital');
+                    this.updateStatusText({statusText: 'Sagital'});
+                default:
+                    console.log('Orth:' + orth);
                     this.updateStatusText({statusText: '...'});
             }
         },

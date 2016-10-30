@@ -227,13 +227,13 @@ define(function (require) {
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[11] = coordinates[3];
                     } else if (this.state.orth == 2) { // sagital
-                        this.state.plane[0] = coordinates[1];
+                        this.state.plane[1] = coordinates[1];
                         this.state.plane[2] = coordinates[0];
-                        this.state.plane[3] = coordinates[1];
+                        this.state.plane[4] = coordinates[1];
                         this.state.plane[5] = coordinates[2];
-                        this.state.plane[6] = coordinates[3];
+                        this.state.plane[7] = coordinates[3];
                         this.state.plane[8] = coordinates[0];
-                        this.state.plane[9] = coordinates[3];
+                        this.state.plane[10] = coordinates[3];
                         this.state.plane[11] = coordinates[2];
                     }
                 }
@@ -250,10 +250,10 @@ define(function (require) {
                     this.state.plane[7] = z;
                     this.state.plane[10] = z;
                 } else if (this.state.orth == 2) { // sagital
-                    this.state.plane[1] = z;
-                    this.state.plane[4] = z;
-                    this.state.plane[7] = z;
-                    this.state.plane[10] = z;
+                    this.state.plane[0] = z;
+                    this.state.plane[3] = z;
+                    this.state.plane[6] = z;
+                    this.state.plane[9] = z;
                 }
                 this.passPlane();
             }

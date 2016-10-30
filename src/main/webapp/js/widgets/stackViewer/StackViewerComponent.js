@@ -196,12 +196,12 @@ define(function (require) {
                 if (((this.stack.width * 0.5) - this.stack.position.x) <= $('#displayArea').width() * 0.5) {
                     x = 0;
                 } else {
-                    x = ($('#displayArea').width()* 0.5) - ((this.stack.width * 0.5) - this.stack.position.x);
+                    x = ((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5);
                 }
                 if (((this.stack.height * 0.5) - this.stack.position.y) <= $('#displayArea').height() * 0.5) {
                     y = 0;
                 } else {
-                    y = ($('#displayArea').height()* 0.5) - ((this.stack.height * 0.5) - this.stack.position.y);
+                    y = ((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5);
                 }
                 coordinates[0] = x.toFixed(0);
                 coordinates[1] = y.toFixed(0);

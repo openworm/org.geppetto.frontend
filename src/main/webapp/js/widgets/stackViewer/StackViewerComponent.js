@@ -102,7 +102,7 @@ define(function (require) {
             // console.log('Canvas update');
             this.renderer.resize(this.props.width, this.props.height);
             this.checkStack();
-
+            this.callPlaneEdges();
         },
 
         componentWillUnmount: function () {
@@ -656,7 +656,6 @@ define(function (require) {
                 console.log('Reseting position...');
                 this.stage.position.x = this.renderer.view.width * 0.5;
                 this.stage.position.y = this.renderer.view.height * 0.5;
-                this.callPlaneEdges();
             }
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
                 this.state.stack = nextProps.stack;
@@ -665,15 +664,12 @@ define(function (require) {
                 this.state.id = nextProps.id;
                 this.state.serverUrl = nextProps.serverUrl;
                 this.updateImages(nextProps);
-                this.callPlaneEdges();
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);
-                this.callPlaneEdges();
             }
             if (nextProps.dst !== this.props.dst || nextProps.fxp !== this.props.fxp || nextProps.pit !== this.props.pit || nextProps.yaw !== this.props.yaw || nextProps.rol !== this.props.rol || nextProps.serverUrl !== this.props.serverUrl) {
                 this.updateImages(nextProps);
-                this.callPlaneEdges();
             }
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color) {
                 this.setState({stack: this.props.stack, color: this.props.color});
@@ -686,7 +682,6 @@ define(function (require) {
             if (nextProps.stackX !== this.stack.position.x || nextProps.stackY !== this.stack.position.y) {
                 this.stack.position.x = nextProps.stackX;
                 this.stack.position.y = nextProps.stackX;
-                this.callPlaneEdges();
             }
             if (nextProps.mode !== this.state.mode) {
                 this.changeMode(nextProps.mode);

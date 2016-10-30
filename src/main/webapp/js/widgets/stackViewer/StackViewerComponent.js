@@ -205,13 +205,13 @@ define(function (require) {
                 }
                 coordinates[0] = x.toFixed(0);
                 coordinates[1] = y.toFixed(0);
-                if ((this.state.imageX - x) <= $('#displayArea').width()) {
-                    x = this.state.imageX;
+                if ((this.stack.width - (((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5))) <= $('#displayArea').width()) {
+                    x = this.stack.width;
                 } else {
                     x = x + $('#displayArea').width();
                 }
-                if ((this.state.imageY - y) <= $('#displayArea').height()) {
-                    y = this.state.imageY;
+                if ((this.state.imageY - (((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5))) <= $('#displayArea').height()) {
+                    y = this.stack.height;
                 } else {
                     y = y + $('#displayArea').height();
                 }

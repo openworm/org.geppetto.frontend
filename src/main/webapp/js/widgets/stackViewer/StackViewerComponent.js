@@ -980,11 +980,25 @@ define(function (require) {
 
         toggleOrth: function () {
             let orth = this.state.orth +=1;
+            var pit,yaw,rol;
             if (orth > 2) {
                 orth = 0;
                 this.state.orth = orth;
             }
-            this.setState({orth: orth});
+            if (orth == 0) {
+                pit = 0;
+                yaw = 0;
+                rol = 0;
+            }else if (orth == 1) {
+                pit = 90;
+                yaw = 90;
+                rol = 90;
+            }else if (orth == 2) {
+                pit = 90;
+                yaw = 0;
+                rol = 90;
+            }
+            this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol});
         },
 
         /**

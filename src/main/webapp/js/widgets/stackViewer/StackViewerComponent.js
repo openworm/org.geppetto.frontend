@@ -187,8 +187,7 @@ define(function (require) {
         },
 
         callPlaneEdges: function() {
-            console.log(this.stack.width);
-            if (!this.state.planeUpdating && this.stack.width > 1) {
+            if (!this.state.planeUpdating) {
                 this.state.planeUpdating = true;
                 var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
                 //get top left plane coordinate:
@@ -221,51 +220,53 @@ define(function (require) {
                 coordinates[3] = y.toFixed(0);
                 if (x > 1) {
                     console.log('Visible screen: ' + coordinates);
-                    z = this.props.dst - this.state.minDst;
                     if (this.state.orth == 0) {
                         this.state.plane[0] = coordinates[0];
                         this.state.plane[1] = coordinates[1];
-                        this.state.plane[2] = z;
                         this.state.plane[3] = coordinates[2];
                         this.state.plane[4] = coordinates[1];
-                        this.state.plane[5] = z;
                         this.state.plane[6] = coordinates[0];
                         this.state.plane[7] = coordinates[3];
-                        this.state.plane[8] = z;
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[10] = coordinates[3];
-                        this.state.plane[11] = z;
                     } else if (this.state.orth == 1) {
                         this.state.plane[0] = coordinates[0];
-                        this.state.plane[1] = z;
                         this.state.plane[2] = coordinates[1];
                         this.state.plane[3] = coordinates[2];
-                        this.state.plane[4] = z;
                         this.state.plane[5] = coordinates[1];
                         this.state.plane[6] = coordinates[0];
-                        this.state.plane[7] = z;
                         this.state.plane[8] = coordinates[3];
                         this.state.plane[9] = coordinates[2];
-                        this.state.plane[10] = z;
                         this.state.plane[11] = coordinates[3];
                     } else if (this.state.orth == 2) {
                         this.state.plane[0] = coordinates[1];
-                        this.state.plane[1] = z;
                         this.state.plane[2] = coordinates[0];
                         this.state.plane[3] = coordinates[1];
-                        this.state.plane[4] = z;
                         this.state.plane[5] = coordinates[2];
                         this.state.plane[6] = coordinates[3];
-                        this.state.plane[7] = z;
                         this.state.plane[8] = coordinates[0];
                         this.state.plane[9] = coordinates[3];
-                        this.state.plane[10] = z;
                         this.state.plane[11] = coordinates[2];
                     }
-                    this.passPlane();
-                }else{
-                    this.state.planeUpdating = false;
                 }
+                z = this.props.dst - this.state.minDst;
+                if (this.state.orth == 0) {
+                    this.state.plane[2] = z;
+                    this.state.plane[5] = z;
+                    this.state.plane[8] = z;
+                    this.state.plane[11] = z;
+                } else if (this.state.orth == 1) {
+                    this.state.plane[1] = z;
+                    this.state.plane[4] = z;
+                    this.state.plane[7] = z;
+                    this.state.plane[10] = z;
+                } else if (this.state.orth == 2) {
+                    this.state.plane[1] = z;
+                    this.state.plane[4] = z;
+                    this.state.plane[7] = z;
+                    this.state.plane[10] = z;
+                }
+                this.passPlane();
                 // this.state.planeCount = 0;
                 // $.ajax({
                 //     url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',

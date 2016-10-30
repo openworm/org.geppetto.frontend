@@ -263,6 +263,8 @@ define(function (require) {
                         this.state.plane[11] = coordinates[2];
                     }
                     this.passPlane();
+                }else{
+                    this.state.planeUpdating = false;
                 }
                 // this.state.planeCount = 0;
                 // $.ajax({

@@ -255,10 +255,10 @@ define(function (require) {
 
         passPlane: function () {
             if (window.stackViewerPlane) {
-                console.log('Moving plane to: ' + this.state.plane);
+                // console.log('Moving plane to: ' + this.state.plane);
                 window.stackViewerPlane=GEPPETTO.SceneFactory.modify3DPlane(window.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
             }else{
-                console.log('Creating plane: ' + this.state.plane);
+                // console.log('Creating plane: ' + this.state.plane);
                 window.stackViewerPlane=GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
             }
             this.state.planeUpdating = false;

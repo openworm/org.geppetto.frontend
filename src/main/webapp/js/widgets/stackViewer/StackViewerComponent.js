@@ -93,7 +93,8 @@ define(function (require) {
             //start the display
             this.createImages();
             this.animate();
-           
+
+            this.callPlaneEdges();
 
         },
 
@@ -618,6 +619,7 @@ define(function (require) {
                 this.state.id = nextProps.id;
                 this.state.serverUrl = nextProps.serverUrl;
                 this.updateImages(nextProps);
+                this.callPlaneEdges();
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);

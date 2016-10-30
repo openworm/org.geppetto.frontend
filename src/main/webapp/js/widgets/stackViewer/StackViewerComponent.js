@@ -620,12 +620,18 @@ define(function (require) {
             }
             if (nextProps.pit !== this.state.pit) {
                 this.state.pit = nextProps.pit;
+                this.callDstRange();
+                console.log(this.state.pit + ' -pit-> ' + nextProps.pit);
             }
             if (nextProps.yaw !== this.state.yaw) {
                 this.state.yaw = nextProps.yaw;
+                this.callDstRange();
+                console.log(this.state.yaw + ' -yaw-> ' + nextProps.yaw);
             }
             if (nextProps.rol !== this.state.rol) {
                 this.state.rol = nextProps.rol;
+                this.callDstRange();
+                console.log(this.state.rol + ' -rol-> ' + nextProps.rol);
             }
         },
         /**

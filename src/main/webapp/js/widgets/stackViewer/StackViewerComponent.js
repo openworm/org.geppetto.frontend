@@ -844,9 +844,21 @@ define(function (require) {
                 var step = -1 * e.wheelDelta * 0.1;
                 // Max step of imposed
                 if (step > 3) {
-                    step = this.state.voxelZ;
+                    if (this.state.orth == 0){
+                        step = this.state.voxelZ;
+                    }else if (this.state.orth == 1){
+                        step = this.state.voxelY;
+                    }else if (this.state.orth == 2){
+                        step = this.state.voxelX;
+                    }
                 } else if (step < -3) {
-                    step = -this.state.voxelZ;
+                    if (this.state.orth == 0){
+                        step = -this.state.voxelZ;
+                    }else if (this.state.orth == 1){
+                        step = -this.state.voxelY;
+                    }else if (this.state.orth == 2){
+                        step = -this.state.voxelX;
+                    }
                 }
                 newdst += step;
                 

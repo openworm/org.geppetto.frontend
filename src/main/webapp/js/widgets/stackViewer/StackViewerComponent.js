@@ -210,7 +210,7 @@ define(function (require) {
                 } else {
                     x = x + $('#displayArea').width();
                 }
-                if ((this.state.imageY - (((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5))) <= $('#displayArea').height()) {
+                if ((this.stack.height - (((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5))) <= $('#displayArea').height()) {
                     y = this.stack.height;
                 } else {
                     y = y + $('#displayArea').height();

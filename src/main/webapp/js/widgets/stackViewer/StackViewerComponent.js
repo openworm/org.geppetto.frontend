@@ -816,15 +816,15 @@ define(function (require) {
                 this.state.loadingLabels = true;
                 this.stack.data = event.data;
                 var currentPosition = this.stack.data.getLocalPosition(this.stack);
-                console.log(currentPosition);
+                //console.log(currentPosition);
                 var xOffset = (this.state.imageX * 0.5) * (1 / this.disp.scale.x);
                 var yOffset = (this.state.imageY * 0.5) * (1 / this.disp.scale.y);
-                console.log(xOffset);
-                console.log(yOffset);
+                //console.log(xOffset);
+                //console.log(yOffset);
                 this.state.posX = (currentPosition.x + xOffset);
                 this.state.posY = (currentPosition.y + yOffset);
-                console.log(this.state.posX);
-                console.log(this.state.posY);
+                //console.log(this.state.posX);
+                //console.log(this.state.posY);
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {
                     this.listObjects();
                 }

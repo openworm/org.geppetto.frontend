@@ -188,6 +188,10 @@ define(function (require) {
 
         callPlaneEdges: function() {
             if (!this.state.planeUpdating) {
+                console.log('Render width: ' + this.renderer.view.width);
+                console.log('Stack width: ' + this.stack.width);
+                console.log('Stack pox x: ' + this.stack.position.x);
+                console.log('Display area width: ' + $('#displayArea').width());
                 this.state.planeUpdating = true;
                 var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
                 //get top left plane coordinate:

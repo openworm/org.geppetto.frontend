@@ -227,14 +227,14 @@ define(function (require) {
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[11] = coordinates[3];
                     } else if (this.state.orth == 2) { // sagital
-                        this.state.plane[1] = coordinates[1];
-                        this.state.plane[2] = coordinates[0];
-                        this.state.plane[4] = coordinates[1];
-                        this.state.plane[5] = coordinates[2];
-                        this.state.plane[7] = coordinates[3];
-                        this.state.plane[8] = coordinates[0];
-                        this.state.plane[10] = coordinates[3];
-                        this.state.plane[11] = coordinates[2];
+                        this.state.plane[2] = coordinates[1];
+                        this.state.plane[1] = coordinates[0];
+                        this.state.plane[5] = coordinates[1];
+                        this.state.plane[4] = coordinates[2];
+                        this.state.plane[8] = coordinates[3];
+                        this.state.plane[7] = coordinates[0];
+                        this.state.plane[11] = coordinates[3];
+                        this.state.plane[10] = coordinates[2];
                     }
                 }
                 // Pass Z coordinates

@@ -264,7 +264,7 @@ dd {
 
 .ERROR {
 	background: red;
-	cursor: hand;
+	cursor: pointer;
 }
 
 .COMPLETED {
@@ -489,4 +489,21 @@ a:hover {
 
 #errormodal-text {
 	overflow : auto;
+}
+
+#errormodal {
+    #error_code {
+        font-size : 14px;
+        color : #fd6808;
+    }
+
+    p{
+        text-align: left;
+        
+    }
+
+    #error_exception{
+        font-size: 12px;
+        line-height: 18px;
+    }
 }

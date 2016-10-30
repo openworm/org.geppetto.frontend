@@ -21,8 +21,10 @@ define([ 'jquery', 'underscore', 'backbone',
 				var details = $(this).data('id');
 				
 				if(details!="" || null){
-				   $("#errorModal").modal();
-				   $("#errormodal-text").html(details);
+				   $("#errormodal").modal();
+				   $("#errormodal-text").html(details.message);
+				   $("#error_code").html('Click for Details ' + details.error_code);
+				   $("#error_exception").html(details.exception);
 				}
 			});
 		},

@@ -1370,22 +1370,23 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	@Override
 	public void externalProcessError(String titleMessage, String logMessage, Exception exception, IExperiment experiment)
-	{
+	{	
+		Error error = new Error(GeppettoErrorCodes.EXCEPTION, titleMessage, logMessage, experiment.getId());
+		logger.error(logMessage, exception);
+		
+		String jsonError = this.getGson().toJson(error);
+	
 		
 		if(!geppettoProject.isVolatile())
 		{
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 			//stores only first 2000 characters of error message
-			if(logMessage.length() > 2000){
-				logMessage = logMessage.substring(0,1996) + "...";
+			if(jsonError.length() < 10000){
+				experiment.setDetails(jsonError);
+				dataManager.saveEntity(experiment);
 			}
-			experiment.setDetails(logMessage);
-			dataManager.saveEntity(experiment);
 		}
 		
-		Error error = new Error(GeppettoErrorCodes.EXCEPTION, titleMessage, logMessage, experiment.getId());
-		logger.error(logMessage, exception);
-		
-		websocketConnection.sendMessage(null, OutboundMessages.ERROR_RUNNING_EXPERIMENT, this.getGson().toJson(error));
+		websocketConnection.sendMessage(null, OutboundMessages.ERROR_RUNNING_EXPERIMENT, jsonError);
 	}
 }

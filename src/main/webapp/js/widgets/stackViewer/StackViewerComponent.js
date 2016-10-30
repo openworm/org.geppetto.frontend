@@ -632,38 +632,36 @@ define(function (require) {
         changeMode: function (mode) {
             console.log('Mode: ' + mode);
             this.state.mode = mode;
-            switch(Number(mode)) {
-                case 0:
-                    console.log('Selection');
-                    this.updateStatusText({statusText: 'Selection'});
-                case 1:
-                    console.log('Label');
-                    this.updateStatusText({statusText: 'Hover Labels'});
-                case 2:
-                    console.log('Add');
-                    this.updateStatusText({statusText: 'Add Anatomy'});
-                default:
-                    console.log('Mode:' + mode);
-                    this.updateStatusText({statusText: '...'});
+            if (mode == 0) {
+                console.log('Selection');
+                this.updateStatusText({statusText: 'Selection'});
+            }else if (mode == 1) {
+                console.log('Label');
+                this.updateStatusText({statusText: 'Hover Labels'});
+            }else if (mode == 2) {
+                console.log('Add');
+                this.updateStatusText({statusText: 'Add Anatomy'});
+            }else{
+                console.log('Mode:' + mode);
+                this.updateStatusText({statusText: '...'});
             }
         },
 
         changeOrth: function (orth) {
             console.log('Orth: ' + orth);
             this.state.orth = orth;
-            switch(Number(orth)) {
-                case 0:
-                    console.log('Frontal');
-                    this.updateStatusText({statusText: 'Frontal'});
-                case 1:
-                    console.log('Transverse');
-                    this.updateStatusText({statusText: 'Transverse'});
-                case 2:
-                    console.log('Sagital');
-                    this.updateStatusText({statusText: 'Sagital'});
-                default:
-                    console.log('Orth:' + orth);
-                    this.updateStatusText({statusText: '...'});
+            if (orth == 0) {
+                console.log('Frontal');
+                this.updateStatusText({statusText: 'Frontal'});
+            }else if (orth == 1) {
+                console.log('Transverse');
+                this.updateStatusText({statusText: 'Transverse'});
+            }else if (orth == 2) {
+                console.log('Sagital');
+                this.updateStatusText({statusText: 'Sagital'});
+            }else {
+                console.log('Orth:' + orth);
+                this.updateStatusText({statusText: '...'});
             }
         },
 
@@ -828,7 +826,7 @@ define(function (require) {
                 label: ['Adult Brain'],
                 id: ['VFB_00017894'],
                 mode: 0,
-                plane:null
+                plane: null
             }; // mode: 0=select, 1=label, 2=add.
         },
 

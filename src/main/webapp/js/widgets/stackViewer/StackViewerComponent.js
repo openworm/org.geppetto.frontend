@@ -200,28 +200,32 @@ define(function (require) {
                 var coordinates = [];
                 var x, y, z;
                 console.log(JSON.stringify(this.stack.position));
-                if (((this.stack.width * 0.5) - this.stack.position.x) <= $('#displayArea').width() * 0.5) {
-                    x = 0;
-                } else {
-                    x = ((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5);
-                }
-                if (((this.stack.height * 0.5) - this.stack.position.y) <= $('#displayArea').height() * 0.5) {
-                    y = 0;
-                } else {
-                    y = ((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5);
-                }
+                x = (this.stack.width * 0.5) - (this.stage.position.x + this.stack.position.x);
+                // if (((this.stack.width * 0.5) - this.stack.position.x) <= $('#displayArea').width() * 0.5) {
+                //     x = 0;
+                // } else {
+                //     x = ((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5);
+                // }
+                y = (this.stack.height * 0.5) - (this.stage.position.y + this.stack.position.y);
+                // if (((this.stack.height * 0.5) - this.stack.position.y) <= $('#displayArea').height() * 0.5) {
+                //     y = 0;
+                // } else {
+                //     y = ((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5);
+                // }
                 coordinates[0] = x.toFixed(0);
                 coordinates[1] = y.toFixed(0);
-                if ((this.stack.width - (((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5))) <= $('#displayArea').width()) {
-                    x = this.stack.width;
-                } else {
-                    x = x + $('#displayArea').width();
-                }
-                if ((this.stack.height - (((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5))) <= $('#displayArea').height()) {
-                    y = this.stack.height;
-                } else {
-                    y = y + $('#displayArea').height();
-                }
+                x = x + this.renderer.view.width;
+                y = y + this.renderer.view.height;
+                // if ((this.stack.width - (((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5))) <= $('#displayArea').width()) {
+                //     x = this.stack.width;
+                // } else {
+                //     x = x + $('#displayArea').width();
+                // }
+                // if ((this.stack.height - (((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5))) <= $('#displayArea').height()) {
+                //     y = this.stack.height;
+                // } else {
+                //     y = y + $('#displayArea').height();
+                // }
                 coordinates[2] = x.toFixed(0);
                 coordinates[3] = y.toFixed(0);
                 if (x > 1) {

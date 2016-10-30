@@ -25,7 +25,7 @@ define(function (require) {
                 voxelY: this.props.voxelY,
                 voxelZ: this.props.voxelZ,
                 visibleTiles: [0],
-                plane: [],
+                plane: [0,0,0,100,0,0,0,100,0,100,100,0],
                 planeUpdating: false,
                 lastUpdate: 0,
                 updating: false,

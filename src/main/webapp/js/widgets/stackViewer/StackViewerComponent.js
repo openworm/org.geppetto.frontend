@@ -135,6 +135,7 @@ define(function (require) {
                     this.props.setExtent(extent);
                     this.bufferStack(extent);
                     this.state.buffer[-1].text = '';
+                    console.log(image);
                     console.log(JSON.stringify({minDst: min, maxDst: max}));
                 }.bind(this),
                 error: function (xhr, status, err) {

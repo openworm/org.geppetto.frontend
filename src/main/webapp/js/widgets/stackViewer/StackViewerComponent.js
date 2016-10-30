@@ -219,7 +219,7 @@ define(function (require) {
                 coordinates[2] = x.toFixed(0);
                 coordinates[3] = y.toFixed(0);
                 console.log('Visible screen: ' + coordinates);
-                z = this.state.dst - this.state.minDst;
+                z = this.props.dst - this.state.minDst;
                 if (this.state.orth == 0) {
                     this.state.plane[0] = coordinates[0];
                     this.state.plane[1] = coordinates[1];

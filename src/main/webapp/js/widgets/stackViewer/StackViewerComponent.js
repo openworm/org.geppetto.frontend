@@ -606,6 +606,8 @@ define(function (require) {
             }
             if (nextProps.orth !== this.state.orth) {
                 this.changeOrth(nextProps.orth);
+                this.callImageSize();
+                this.callDstRange();
             }
 
         },

@@ -612,7 +612,7 @@ define(function (require) {
             }
             if (nextProps.stackX !== this.stack.position.x || nextProps.stackY !== this.stack.position.y) {
                 this.stack.position.x = nextProps.stackX;
-                this.stack.position.y = nextProps.stackX;
+                this.stack.position.y = nextProps.stackY;
             }
             if (nextProps.mode !== this.state.mode) {
                 this.changeMode(nextProps.mode);
@@ -1040,7 +1040,7 @@ define(function (require) {
                 yaw = 0;
                 rol = 90;
             }
-            this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0});
+            this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0, stackX: 0, stackY: 0});
         },
 
         /**

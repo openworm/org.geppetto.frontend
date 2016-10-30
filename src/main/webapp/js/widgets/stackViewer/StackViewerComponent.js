@@ -188,49 +188,21 @@ define(function (require) {
 
         callPlaneEdges: function() {
             if (!this.state.planeUpdating) {
-                console.log('Render width: ' + this.renderer.view.width);
-                console.log('Stack width: ' + this.stack.width);
-                console.log('Stack pox x: ' + this.stack.position.x);
-                console.log('Display area width: ' + $('#displayArea').width());
-                console.log('Stage width: ' + this.stage.width);
-                console.log('Stage pox x: ' + this.stage.position.x);
                 this.state.planeUpdating = true;
                 if (this.stack.width > 1) {
-                    // var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
-                    //get top left plane coordinate:
                     var coordinates = [];
                     var x, y, z;
-                    console.log(JSON.stringify(this.stack.position));
+                    // update widget window extents (X,Y) :
                     x = (this.stack.width * 0.5) - (this.stage.position.x + this.stack.position.x);
-                    // if (((this.stack.width * 0.5) - this.stack.position.x) <= $('#displayArea').width() * 0.5) {
-                    //     x = 0;
-                    // } else {
-                    //     x = ((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5);
-                    // }
                     y = (this.stack.height * 0.5) - (this.stage.position.y + this.stack.position.y);
-                    // if (((this.stack.height * 0.5) - this.stack.position.y) <= $('#displayArea').height() * 0.5) {
-                    //     y = 0;
-                    // } else {
-                    //     y = ((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5);
-                    // }
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
                     x = x + this.renderer.view.width;
                     y = y + this.renderer.view.height;
-                    // if ((this.stack.width - (((this.stack.width * 0.5) - this.stack.position.x) - ($('#displayArea').width()* 0.5))) <= $('#displayArea').width()) {
-                    //     x = this.stack.width;
-                    // } else {
-                    //     x = x + $('#displayArea').width();
-                    // }
-                    // if ((this.stack.height - (((this.stack.height * 0.5) - this.stack.position.y) - ($('#displayArea').height()* 0.5))) <= $('#displayArea').height()) {
-                    //     y = this.stack.height;
-                    // } else {
-                    //     y = y + $('#displayArea').height();
-                    // }
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);
-                    console.log('Visible screen: ' + coordinates);
-                    if (this.state.orth == 0) {
+                    // console.log('Visible screen: ' + coordinates);
+                    if (this.state.orth == 0) { // frontal
                         this.state.plane[0] = coordinates[0];
                         this.state.plane[1] = coordinates[1];
                         this.state.plane[3] = coordinates[2];
@@ -239,7 +211,7 @@ define(function (require) {
                         this.state.plane[7] = coordinates[3];
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[10] = coordinates[3];
-                    } else if (this.state.orth == 1) {
+                    } else if (this.state.orth == 1) { // transverse
                         this.state.plane[0] = coordinates[0];
                         this.state.plane[2] = coordinates[1];
                         this.state.plane[3] = coordinates[2];
@@ -248,7 +220,7 @@ define(function (require) {
                         this.state.plane[8] = coordinates[3];
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[11] = coordinates[3];
-                    } else if (this.state.orth == 2) {
+                    } else if (this.state.orth == 2) { // sagital
                         this.state.plane[0] = coordinates[1];
                         this.state.plane[2] = coordinates[0];
                         this.state.plane[3] = coordinates[1];
@@ -259,89 +231,25 @@ define(function (require) {
                         this.state.plane[11] = coordinates[2];
                     }
                 }
+                // Pass Z coordinates
                 z = this.props.dst - this.state.minDst;
-                if (this.state.orth == 0) {
+                if (this.state.orth == 0) { // frontal
                     this.state.plane[2] = z;
                     this.state.plane[5] = z;
                     this.state.plane[8] = z;
                     this.state.plane[11] = z;
-                } else if (this.state.orth == 1) {
+                } else if (this.state.orth == 1) { // transverse
                     this.state.plane[1] = z;
                     this.state.plane[4] = z;
                     this.state.plane[7] = z;
                     this.state.plane[10] = z;
-                } else if (this.state.orth == 2) {
+                } else if (this.state.orth == 2) { // sagital
                     this.state.plane[1] = z;
                     this.state.plane[4] = z;
                     this.state.plane[7] = z;
                     this.state.plane[10] = z;
                 }
                 this.passPlane();
-                // this.state.planeCount = 0;
-                // $.ajax({
-                //     url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
-                //     type: 'POST',
-                //     success: function (data) {
-                //         //console.log(data.trim());
-                //         var result = data.trim().split(':')[1].split(' ');
-                //         this.state.plane[0] = result[0] * this.state.voxelX;
-                //         this.state.plane[1] = result[1] * this.state.voxelY;
-                //         this.state.plane[2] = result[2] * this.state.voxelZ;
-                //         this.state.planeCount += 1;
-                //         this.passPlane();
-                //     }.bind(this),
-                //     error: function (xhr, status, err) {
-                //         console.error(this.props.url, status, err.toString());
-                //     }.bind(this)
-                // });
-                // $.ajax({
-                //     url: image + '&prl=-1,' + coordinates[0] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
-                //     type: 'POST',
-                //     success: function (data) {
-                //         //console.log(data.trim());
-                //         var result = data.trim().split(':')[1].split(' ');
-                //         this.state.plane[6] = result[0] * this.state.voxelX;
-                //         this.state.plane[7] = result[1] * this.state.voxelY;
-                //         this.state.plane[8] = result[2] * this.state.voxelZ;
-                //         this.state.planeCount += 1;
-                //         this.passPlane();
-                //     }.bind(this),
-                //     error: function (xhr, status, err) {
-                //         console.error(this.props.url, status, err.toString());
-                //     }.bind(this)
-                // });
-                // $.ajax({
-                //     url: image + '&prl=-1,' + coordinates[2] + ',' + coordinates[1] + '&obj=Wlz-coordinate-3d',
-                //     type: 'POST',
-                //     success: function (data) {
-                //         //console.log(data.trim());
-                //         var result = data.trim().split(':')[1].split(' ');
-                //         this.state.plane[3] = result[0] * this.state.voxelX;
-                //         this.state.plane[4] = result[1] * this.state.voxelY;
-                //         this.state.plane[5] = result[2] * this.state.voxelZ;
-                //         this.state.planeCount += 1;
-                //         this.passPlane();
-                //     }.bind(this),
-                //     error: function (xhr, status, err) {
-                //         console.error(this.props.url, status, err.toString());
-                //     }.bind(this)
-                // });
-                // $.ajax({
-                //     url: image + '&prl=-1,' + coordinates[2] + ',' + coordinates[3] + '&obj=Wlz-coordinate-3d',
-                //     type: 'POST',
-                //     success: function (data) {
-                //         //console.log(data.trim());
-                //         var result = data.trim().split(':')[1].split(' ');
-                //         this.state.plane[9] = result[0] * this.state.voxelX;
-                //         this.state.plane[10] = result[1] * this.state.voxelY;
-                //         this.state.plane[11] = result[2] * this.state.voxelZ;
-                //         this.state.planeCount += 1;
-                //         this.passPlane();
-                //     }.bind(this),
-                //     error: function (xhr, status, err) {
-                //         console.error(this.props.url, status, err.toString());
-                //     }.bind(this)
-                // });
             }
         },
 

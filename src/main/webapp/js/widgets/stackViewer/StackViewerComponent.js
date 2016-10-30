@@ -576,6 +576,7 @@ define(function (require) {
          * When we get new props, run the appropriate imperative functions
          **/
         componentWillReceiveProps: function (nextProps) {
+            var updDst = false;
             if (nextProps.text == 'View reset'){
                 console.log('Reseting position...');
                 this.stage.position.x = this.renderer.view.width * 0.5;
@@ -620,18 +621,18 @@ define(function (require) {
             }
             if (nextProps.pit !== this.state.pit) {
                 this.state.pit = nextProps.pit;
-                this.callDstRange();
-                console.log(this.state.pit + ' -pit-> ' + nextProps.pit);
+                updDst = true;
             }
             if (nextProps.yaw !== this.state.yaw) {
                 this.state.yaw = nextProps.yaw;
-                this.callDstRange();
-                console.log(this.state.yaw + ' -yaw-> ' + nextProps.yaw);
+                updDst = true;
             }
             if (nextProps.rol !== this.state.rol) {
                 this.state.rol = nextProps.rol;
+                updDst = true;
+            }
+            if (updDst) {
                 this.callDstRange();
-                console.log(this.state.rol + ' -rol-> ' + nextProps.rol);
             }
         },
         /**

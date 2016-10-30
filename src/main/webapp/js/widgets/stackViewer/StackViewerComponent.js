@@ -14,6 +14,10 @@ define(function (require) {
                 color: this.props.color,
                 stack: this.props.stack,
                 label: this.props.label,
+                pit: this.props.pit,
+                yaw: this.props.yaw,
+                rol: this.props.rol,
+                dst: this.props.dst,
                 id: this.props.id,
                 minDst: -100,
                 maxDst: 100,
@@ -116,7 +120,7 @@ define(function (require) {
         },
 
         callDstRange: function () {
-            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
             this.state.buffer[-1].text = 'Buffering stack...';
             //get distance range;
             $.ajax({
@@ -140,7 +144,7 @@ define(function (require) {
         },
 
         callTileSize: function () {
-            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
             //get tile size;
             $.ajax({
                 url: image + '&obj=Tile-size',
@@ -164,7 +168,7 @@ define(function (require) {
         },
 
         callImageSize: function () {
-            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+            var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
             //get image size;
             $.ajax({
                 url: image + '&obj=Max-size',
@@ -312,7 +316,7 @@ define(function (require) {
             var i, j, result;
             var that = this;
             for (i in this.state.stack) {
-                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.disp.scale.x.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0);
+                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.disp.scale.x.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
                 //get image size;
                 $.ajax({
                     url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
@@ -356,7 +360,7 @@ define(function (require) {
             };
             for (j = 0; j < this.state.numTiles; j++) {
                 for (i in this.state.stack) {
-                    image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
+                    image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                     if (!PIXI.loader.resources[image]) {
                         // console.log('buffering ' + this.state.stack[i].toString() + '...');
                         imageLoader.add(image, image, loaderOptions);
@@ -370,7 +374,7 @@ define(function (require) {
             if (this.state.numTiles < 10) {
                 for (j in this.state.visibleTiles) {
                     for (i in this.state.stack) {
-                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0.0&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
+                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0.0&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
                         if (!PIXI.loader.resources[image]) {
                             // console.log('buffering ' + this.state.stack[i].toString() + '...');
                             imageLoader.add(image, image, loaderOptions);
@@ -382,12 +386,12 @@ define(function (require) {
                     }
                     for (dst = 0.1; -dst > min || dst < max; dst += 0.1) {
                         for (i in this.state.stack) {
-                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
+                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
                             if (dst < max && !PIXI.loader.resources[image]) {
                                 imageLoader.add(image, image, loaderOptions);
                                 buffMax -= 1;
                             }
-                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(-dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
+                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(-dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
                             if (-dst > min && !PIXI.loader.resources[image]) {
                                 imageLoader.add(image, image, loaderOptions);
                                 buffMax -= 1;
@@ -402,7 +406,7 @@ define(function (require) {
                 console.log('Buffering neighbouring layers (' + this.state.numTiles.toString() + ') tiles...');
                 for (j = 0; j < this.state.numTiles; j++) {
                     for (i in this.state.stack) {
-                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst - 0.1).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
+                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst - 0.1).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                         if (!PIXI.loader.resources[image]) {
                             // console.log('buffering ' + this.state.stack[i].toString() + '...');
                             imageLoader.add(image, image, loaderOptions);
@@ -411,7 +415,7 @@ define(function (require) {
                         if (buffMax < 1) {
                             break;
                         }
-                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst + 0.1).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
+                        image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst + 0.1).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                         if (!PIXI.loader.resources[image]) {
                             // console.log('buffering ' + this.state.stack[i].toString() + '...');
                             imageLoader.add(image, image, loaderOptions);
@@ -492,7 +496,7 @@ define(function (require) {
                         d = i.toString() + ',' + t.toString();
                         if (!this.state.images[d]) {
                             // console.log('Adding ' + this.state.stack[i].toString());
-                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.props.dst).toFixed(1) + '&pit=' + Number(this.props.pit).toFixed(0) + '&yaw=' + Number(this.props.yaw).toFixed(0) + '&rol=' + Number(this.props.rol).toFixed(0) + '&qlt=80&jtl=' + t.toString();
+                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + t.toString();
                             // console.log(image);
                             this.state.images[d] = PIXI.Sprite.fromImage(image);
                             this.state.images[d].anchor.x = 0;
@@ -610,7 +614,18 @@ define(function (require) {
                 this.callImageSize();
                 this.callDstRange();
             }
-
+            if (nextProps.dst !== this.state.dst) {
+                this.state.dst = nextProps.dst;
+            }
+            if (nextProps.pit !== this.state.pit) {
+                this.state.pit = nextProps.pit;
+            }
+            if (nextProps.yaw !== this.state.yaw) {
+                this.state.yaw = nextProps.yaw;
+            }
+            if (nextProps.rol !== this.state.rol) {
+                this.state.rol = nextProps.rol;
+            }
         },
         /**
          * Update the stage "zoom" level by setting the scale

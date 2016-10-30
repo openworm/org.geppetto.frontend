@@ -646,7 +646,7 @@ define(function (require) {
             }
         },
 
-        changeMode: function (orth) {
+        changeOrth: function (orth) {
             console.log('Orth: ' + orth);
             this.state.orth = orth;
             switch(Number(orth)) {

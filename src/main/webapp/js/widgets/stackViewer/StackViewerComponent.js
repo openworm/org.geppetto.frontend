@@ -454,7 +454,7 @@ define(function (require) {
             }
 
             function setup() {
-                console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
+                // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
                 this.state.buffer[-1].text = '';
             }
         },

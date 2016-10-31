@@ -880,9 +880,9 @@ define(function (require) {
                 this.onZoomOut();
             } else {
                 // Mac keypad returns values (+/-)1-20 Mouse wheel (+/-)120
-                var step = -1 * e.wheelDelta * 0.1;
+                var step = -1 * e.wheelDelta;
                 // Max step of imposed
-                if (step > 3) {
+                if (step > 0) {
                     if (this.state.orth == 0){
                         step = this.state.voxelZ;
                     }else if (this.state.orth == 1){
@@ -890,7 +890,7 @@ define(function (require) {
                     }else if (this.state.orth == 2){
                         step = this.state.voxelX;
                     }
-                } else if (step < -3) {
+                } else if (step < 0) {
                     if (this.state.orth == 0){
                         step = -this.state.voxelZ;
                     }else if (this.state.orth == 1){

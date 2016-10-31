@@ -135,8 +135,9 @@ define(function (require) {
                     this.props.setExtent(extent);
                     this.bufferStack(extent);
                     this.state.buffer[-1].text = '';
-                    console.log(image);
-                    console.log(JSON.stringify({minDst: min, maxDst: max}));
+                    // console.log(image);
+                    // console.log(JSON.stringify({minDst: min, maxDst: max}));
+                    this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -151,7 +152,7 @@ define(function (require) {
                 url: image + '&obj=Tile-size',
                 type: 'POST',
                 success: function (data) {
-                    console.log(data.trim());
+                    // console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     var tileX = Number(result[0]);
                     var tileY = Number(result[1]);
@@ -160,7 +161,7 @@ define(function (require) {
                     // update slice view
                     this.state.lastUpdate = 0;
                     this.checkStack();
-
+                    this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -175,7 +176,7 @@ define(function (require) {
                 url: image + '&obj=Max-size',
                 type: 'POST',
                 success: function (data) {
-                    console.log(data.trim());
+                    // console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     var imageX = Number(result[0]);
                     var imageY = Number(result[1]);
@@ -184,7 +185,7 @@ define(function (require) {
                     // update slice view
                     this.state.lastUpdate = 0;
                     this.checkStack();
-
+                    this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -196,12 +197,12 @@ define(function (require) {
             if (!this.state.planeUpdating) {
                 this.state.planeUpdating = true;
                 if (this.stack.width > 1) {
-                    console.log('Render width: ' + this.renderer.view.width);
-                    console.log('Stack width: ' + this.stack.width);
-                    console.log('Stack pox x: ' + this.stack.position.x);
-                    console.log('Display area width: ' + $('#displayArea').width());
-                    console.log('Stage width: ' + this.stage.width);
-                    console.log('Stage pox x: ' + this.stage.position.x);
+                    // console.log('Render width: ' + this.renderer.view.width);
+                    // console.log('Stack width: ' + this.stack.width);
+                    // console.log('Stack pox x: ' + this.stack.position.x);
+                    // console.log('Display area width: ' + $('#displayArea').width());
+                    // console.log('Stage width: ' + this.stage.width);
+                    // console.log('Stage pox x: ' + this.stage.position.x);
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y) :
@@ -213,7 +214,7 @@ define(function (require) {
                     y = y + this.renderer.view.height;
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);
-                    console.log('Visible screen: ' + coordinates);
+                    // console.log('Visible screen: ' + coordinates);
                     if (this.state.orth == 0) { // frontal
                         this.state.plane[0] = coordinates[0];
                         this.state.plane[1] = coordinates[1];
@@ -245,7 +246,7 @@ define(function (require) {
                 }
                 // Pass Z coordinates
                 z = this.props.dst - (this.state.minDst);
-                console.log('z: ' + z);
+                // console.log('z: ' + z);
                 if (this.state.orth == 0) { // frontal
                     this.state.plane[2] = z;
                     this.state.plane[5] = z;
@@ -669,7 +670,7 @@ define(function (require) {
         },
 
         changeMode: function (mode) {
-            console.log('Mode: ' + mode);
+            // console.log('Mode: ' + mode);
             this.state.mode = mode;
             if (mode == 0) {
                 console.log('Selection');
@@ -687,7 +688,7 @@ define(function (require) {
         },
 
         changeOrth: function (orth) {
-            console.log('Orth: ' + orth);
+            // console.log('Orth: ' + orth);
             this.state.orth = orth;
             if (orth == 0) {
                 console.log('Frontal');

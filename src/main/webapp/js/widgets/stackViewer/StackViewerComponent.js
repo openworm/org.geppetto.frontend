@@ -392,7 +392,15 @@ define(function (require) {
                             break;
                         }
                     }
-                    for (dst = 0.1; -dst > min || dst < max; dst += 0.1) {
+                    var step;
+                    if (this.state.orth == 0){
+                        step = this.state.voxelZ;
+                    }else if (this.state.orth == 1){
+                        step = this.state.voxelY;
+                    }else if (this.state.orth == 2){
+                        step = this.state.voxelX;
+                    }
+                    for (dst = 0; -dst > min || dst < max; dst += step) {
                         for (i in this.state.stack) {
                             image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + this.state.visibleTiles[j].toString();
                             if (dst < max && !PIXI.loader.resources[image]) {

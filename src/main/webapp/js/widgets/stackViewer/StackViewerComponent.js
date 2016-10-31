@@ -603,18 +603,15 @@ define(function (require) {
                 this.state.label = nextProps.label;
                 this.state.id = nextProps.id;
                 this.state.serverUrl = nextProps.serverUrl;
+                this.createImages();
                 this.updateImages(nextProps);
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);
             }
-            if (nextProps.dst !== this.props.dst || nextProps.fxp !== this.props.fxp || nextProps.pit !== this.props.pit || nextProps.yaw !== this.props.yaw || nextProps.rol !== this.props.rol || nextProps.serverUrl !== this.props.serverUrl) {
-                this.updateImages(nextProps);
-            }
-            if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color) {
-                this.setState({stack: this.props.stack, color: this.props.color});
-                this.createImages();
-                this.updateImages(nextProps);
+            if (nextProps.fxp !== this.props.fxp) {
+                this.state.dst = nextProps.dst;
+                updDst = true;
             }
             if (nextProps.statusText !== this.state.buffer[-1].text) {
                 this.updateStatusText(nextProps);
@@ -633,6 +630,7 @@ define(function (require) {
             }
             if (nextProps.dst !== this.state.dst) {
                 this.state.dst = nextProps.dst;
+                updDst = true;
             }
             if (nextProps.pit !== this.state.pit) {
                 this.state.pit = nextProps.pit;
@@ -648,6 +646,7 @@ define(function (require) {
             }
             if (updDst) {
                 this.callDstRange();
+                this.updateImages(nextProps);
             }
         },
         /**

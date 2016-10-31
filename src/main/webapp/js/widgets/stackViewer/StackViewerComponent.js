@@ -244,7 +244,8 @@ define(function (require) {
                     }
                 }
                 // Pass Z coordinates
-                z = this.props.dst - this.state.minDst;
+                z = this.props.dst - (this.state.minDst);
+                console.log('z: ' + z);
                 if (this.state.orth == 0) { // frontal
                     this.state.plane[2] = z;
                     this.state.plane[5] = z;

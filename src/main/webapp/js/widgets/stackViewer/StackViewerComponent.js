@@ -646,6 +646,7 @@ define(function (require) {
             }
             if (updDst) {
                 this.callDstRange();
+                this.callImageSize();
                 this.updateImages(nextProps);
             }
         },

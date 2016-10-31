@@ -121,7 +121,7 @@ define(function (require) {
 
         callDstRange: function () {
             var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[0] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=0&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
-            this.state.buffer[-1].text = 'Buffering stack...';
+            // this.state.buffer[-1].text = 'Buffering stack...';
             //get distance range;
             $.ajax({
                 url: image + '&obj=Wlz-distance-range',

@@ -724,7 +724,7 @@ define(function (require) {
                             this.state.images[d].texture = PIXI.loader.resources[image].texture;
                         } else {
                             // console.log('Loading ' + image);
-                            this.state.buffer[-1].text = 'Loading slice ' + Number(props.dst).toFixed(1) + '...';
+                            this.state.buffer[-1].text = 'Loading slice ' + Number(props.dst-this.state.minDst).toFixed(1) + '...';
                             this.state.images[d].texture = PIXI.Texture.fromImage(image);
                             if (!PIXI.loader.resources[image]) {
                                 PIXI.loader.add(image, image, {

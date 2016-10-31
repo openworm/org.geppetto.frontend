@@ -55,10 +55,11 @@ define(function (require) {
             id: null,
             dialog: null,
             visible: true,
+            destroyed: false,
             size: {height: 300, width: 350},
             position: {left: "50%", top: "50%"},
             registeredEvents: null,
-
+            executedAction : 0,
 
             /**
              * Initializes the widget
@@ -75,6 +76,16 @@ define(function (require) {
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
                 this.registeredEvents = [];
+                
+                var self = this;
+                $(self.historyMenu.el).on('click', function (event) {
+                	var itemId = $(event.target).attr('id');
+                	var registeredItem = self.historyMenu.getClickedItem(itemId);
+                	if(registeredItem != null || undefined){
+                		var label = registeredItem["label"];
+                		$("#"+self.id).parent().find(".ui-dialog-title").html(label);
+                	}
+                });
             },
 
             /**
@@ -85,7 +96,7 @@ define(function (require) {
              */
             destroy: function () {
                 $("#" + this.id).remove();
-
+                this.destroyed=true;
                 return this.name + " destroyed";
             },
 
@@ -315,7 +326,7 @@ define(function (require) {
                     data.push({
                         "label": this.controller.history[i].label,
                         "action": [action],
-                        "icon": "fa-history",
+                        "icon": null,
                         "position": i
                     })
                 }
@@ -366,7 +377,7 @@ define(function (require) {
             },
 
             /**
-             * hides / shows the exit button
+             * hides / shows the title bar
              */
             showTitleBar: function (show) {
                 if (show) {
@@ -374,8 +385,61 @@ define(function (require) {
                 } else {
                     $("#" + this.id).parent().find(".ui-dialog-titlebar").hide();
                 }
-            }
-            ,
+            },
+            
+            updateNavigationHistoryBar : function(){
+            	var disabled = "arrow-disabled";
+    			if(this.getHistoryItems().length<=1){
+    				if(!$("#"+this.id + "-left-nav").hasClass(disabled)){
+    					$("#"+this.id + "-left-nav").addClass(disabled);
+    					$("#"+this.id + "-right-nav").addClass(disabled);
+    				}
+    			}else{
+    				if($("#"+this.id + "-left-nav").hasClass(disabled)){
+    					$("#"+this.id + "-left-nav").removeClass(disabled);
+    					$("#"+this.id + "-right-nav").removeClass(disabled);
+    				}
+    			}
+            },
+            
+            showHistoryNavigationBar : function(show){
+            	var leftNav = $("#"+this.id + "-left-nav");
+            	var rightNav = $("#"+this.id + "-right-nav");
+            	
+            	if (show) {
+            		if((leftNav.length ==0) && (rightNav.length == 0)){
+            			
+            			var disabled = "";
+            			if(this.getHistoryItems().length<=1){
+            				disabled = "arrow-disabled ";
+            			}
+            			
+            			var that = this;
+            			var button = $("<div id='" + this.id + "-left-nav' class='"+ disabled +"fa fa-arrow-left'></div>"+
+            			"<div id='"+ this.id + "-right-nav' class='"+disabled+"fa fa-arrow-right'></div>").click(function (event) {
+            				var historyItems = that.getHistoryItems();
+            				var item;
+            				if(event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")){
+            					that.executedAction = historyItems.length-1;
+            				}
+    						item = historyItems[that.executedAction].action[0];;
+    						GEPPETTO.Console.executeCommand(item);
+            				$("#"+this.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
+            				event.stopPropagation();
+            			});
+            			
+            			var dialogParent = this.$el.parent();
+            			button.insertBefore(dialogParent.find("span.ui-dialog-title"));
+            			$(button).addClass("widget-title-bar-button");
+            		}
+            	} else {
+            		if(leftNav.is(":visible") && rightNav.is(":visible")){
+            			leftNav.remove();
+            			rightNav.remove();
+            			this.executedAction =0;
+            		}
+            	}
+            },
 
             /**
              * hides / shows the exit button
@@ -388,8 +452,27 @@ define(function (require) {
                 }
             },
 
+            addButtonToTitleBar: function(button){
+            	var dialogParent = this.$el.parent();
+            	dialogParent.find("div.ui-dialog-titlebar").prepend(button);
+            	$(button).addClass("widget-title-bar-button");
+            },
+            
+            addHelpButton: function () {
+            	var that=this;
+                this.addButtonToTitleBar($("<div class='fa fa-question'></div>").click(function () {
+                    GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
+                        title: that.id.slice(0,-1) + ' help',
+                        content: that.getHelp(),
+                        show: true
+                    }, document.getElementById("modal-region"));
+                }));
+            },
+
             /**
-             * makes the widget draggable or not
+             * Makes the widget draggable or not
+             *
+             * @param draggable
              */
             setDraggable: function (draggable) {
                 if (draggable) {
@@ -400,21 +483,35 @@ define(function (require) {
                     $("#" + this.id).parent().draggable({disabled: true});
                     this.setClass('noStyleDisableDrag');
                 }
-            }
-            ,
+            },
+
+            /**
+             * Set background as transparent
+             *
+             * @param isTransparent
+             */
+            setTrasparentBackground: function(isTransparent) {
+                if(isTransparent){
+                    $("#" + this.id).parent().addClass('transparent-back');
+                } else {
+                    $("#" + this.id).parent().removeClass('transparent-back');
+                }
+            },
 
             /**
              * Inject CSS for custom behaviour
              */
             setClass: function (className) {
                 $("#" + this.id).dialog({dialogClass: className});
-            }
-            ,
+            },
 
             /**
              * Renders the widget dialog window
              */
             render: function () {
+            	
+            	var that = this;
+            	
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -426,32 +523,33 @@ define(function (require) {
                         close: function (event, ui) {
                             if (event.originalEvent &&
                                 $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
-                                $("#" + this.id).remove();
+                                that.destroy();
                             }
                         }
                     });
 
                 this.$el = $("#" + this.id);
                 var dialogParent = this.$el.parent();
-                var that = this;
+                
 
                 //add history
-                dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='fa fa-history historyIcon'></div>");
-                dialogParent.find("div.historyIcon").click(function (event) {
+                this.addButtonToTitleBar($("<div class='fa fa-history'></div>").click(function (event) {
                     that.showHistoryMenu(event);
                     event.stopPropagation();
-                });
+                }));
 
                 //remove the jQuery UI icon
-                dialogParent.find("button.ui-dialog-titlebar-close").html("")
+                dialogParent.find("button.ui-dialog-titlebar-close").html("");
                 dialogParent.find("button").append("<i class='fa fa-close'></i>");
 
 
                 //Take focus away from close button
                 dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
-            }
-            ,
+                //add help button
+                this.addHelpButton();
+
+            },
 
             /**
              * Register event with widget
@@ -460,8 +558,7 @@ define(function (require) {
              */
             registerEvent: function (event, callback) {
                 this.registeredEvents.push({id: event, callback: callback});
-            }
-            ,
+            },
 
             /**
              * Unregister event with widget
@@ -472,8 +569,12 @@ define(function (require) {
                 this.registeredEvents = _.reject(this.registeredEvents, function (el) {
                     return el.id === event
                 });
+            },
+
+            getHelp: function(){
+                return '### Inline help not yet available for this widget! \n\n' +
+                'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
             }
-            ,
         })
     }
         ;

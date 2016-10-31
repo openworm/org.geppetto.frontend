@@ -182,6 +182,27 @@ function getContrast50(hexcolor) {
     return (parseInt(hexcolor, 16) > 0xffffff / 2) ? 'black' : 'white';
 }
 
+function persistedAndWriteMessage(caller){
+	var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
+	if(!caller.login){
+		message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+	}else{
+		if(!window.Project.persisted && caller.writePermission){
+			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
+						+ GEPPETTO.Resources.PROJECT_NOT_PERSISTED;
+		}else if(window.Project.persisted && !caller.writePermission){
+			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
+						+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
+		}else if(!window.Project.persisted && !caller.writePermission){
+			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + 
+						GEPPETTO.Resources.PROJECT_NOT_PERSISTED + " and " 
+						+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
+		}
+	}
+	    		
+	return message;
+} 
+
 var saveData = (function () {
     var a = document.createElement("a");
     document.body.appendChild(a);

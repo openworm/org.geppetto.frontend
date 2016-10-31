@@ -1,3 +1,35 @@
+/*******************************************************************************
+ *
+ * Copyright (c) 2011, 2016 OpenWorm.
+ * http://openworm.org
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *      OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
+
 /**
  * @class GEPPETTO.Init
  */
@@ -21,10 +53,19 @@ define(function (require) {
                         else if (e.data.command == 'removeWidgets') {
                             GEPPETTO.Console.executeCommand('G.removeWidget()');
                         }
+                        else {
+                        	eval(e.data.command); 
+                        }
                     }
                 };
                 // we have to listen for 'message'
                 window.addEventListener('message', handleRequest, false);
+                if($.isArray(window.EMBEDDEDURL)){
+                	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL[0]);	
+                }
+                else{
+                	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                }
             }
         };
 
@@ -72,8 +113,12 @@ define(function (require) {
             GEPPETTO.getVARS().canvasCreated = true;
         };
 
-        var configureRenderer = function () {
+        var configureRenderer = function (shaders) {
 
+        	if(shaders==undefined){
+        		shaders=false;
+        	}
+        
             var color = new THREE.Color(GEPPETTO.getVARS().backgroundColor);
             GEPPETTO.getVARS().renderer.setClearColor(color, 1);
             var width = $(GEPPETTO.getVARS().container).width();
@@ -84,27 +129,32 @@ define(function (require) {
             GEPPETTO.getVARS().container.appendChild(GEPPETTO.getVARS().renderer.domElement);
 
             var renderModel = new THREE.RenderPass(GEPPETTO.getVARS().scene, GEPPETTO.getVARS().camera);
-            var effectBloom = new THREE.BloomPass(0.75);
-            var effectFilm = new THREE.FilmPass(0.5, 0.5, 1448, false);
-
-            effectFocus = new THREE.ShaderPass(THREE.FocusShader);
-
-            effectFocus.uniforms["screenWidth"].value = window.innerWidth;
-            effectFocus.uniforms["screenHeight"].value = window.innerHeight;
-
-            effectFocus.renderToScreen = true;
 
             GEPPETTO.getVARS().composer = new THREE.EffectComposer(GEPPETTO.getVARS().renderer);
 
+            if(shaders){
+                var effectBloom = new THREE.BloomPass(0.75);
+                var effectFilm = new THREE.FilmPass(0.5, 0.5, 1448, false);
+                var effectFocus = new THREE.ShaderPass(THREE.FocusShader);
 
-            var copyPass = new THREE.ShaderPass(THREE.CopyShader);
-            copyPass.renderToScreen = true;
+                effectFocus.uniforms["screenWidth"].value = window.innerWidth;
+                effectFocus.uniforms["screenHeight"].value = window.innerHeight;
 
-            GEPPETTO.getVARS().composer.addPass(renderModel);
-            //GEPPETTO.getVARS().composer.addPass( effectBloom );
-            GEPPETTO.getVARS().composer.addPass(copyPass);
-            //GEPPETTO.getVARS().composer.addPass( effectFilm );
-            //GEPPETTO.getVARS().composer.addPass( effectFocus );
+                effectFocus.renderToScreen = true;
+                
+            	GEPPETTO.getVARS().composer.addPass(renderModel);
+                GEPPETTO.getVARS().composer.addPass( effectBloom );
+                GEPPETTO.getVARS().composer.addPass( effectFilm );
+                GEPPETTO.getVARS().composer.addPass( effectFocus );
+            }
+            else{
+            	//standard
+                var copyPass = new THREE.ShaderPass(THREE.CopyShader);
+                copyPass.renderToScreen = true;
+            	GEPPETTO.getVARS().composer.addPass(renderModel);
+                GEPPETTO.getVARS().composer.addPass(copyPass);
+            }
+            
         };
 
         /**
@@ -112,7 +162,7 @@ define(function (require) {
          */
         var setupLights = function () {
             // Lights
-            GEPPETTO.getVARS().camera.add(new THREE.PointLight(0xffffff));
+        	GEPPETTO.getVARS().camera.add(new THREE.PointLight(0xffffff,1.5));
 
         };
 
@@ -246,6 +296,8 @@ define(function (require) {
         // ============================================================================
         GEPPETTO.Init = {
 
+        	initialised : false,
+        	
             /**
              *
              */
@@ -271,6 +323,8 @@ define(function (require) {
                 setupLights();
                 setupControls();
                 setupListeners();
+                this.initialised = true;
+                GEPPETTO.trigger(Events.Canvas_initialised);
                 return GEPPETTO.getVARS();
             },
 
@@ -287,6 +341,10 @@ define(function (require) {
                 GEPPETTO.getVARS().camera.direction = new THREE.Vector3(0, 0, -1);
                 setupControls();
                 GEPPETTO.resetCamera();
+            },
+            
+            movieMode: function(toggle){
+            	configureRenderer(toggle);
             }
         };
     };

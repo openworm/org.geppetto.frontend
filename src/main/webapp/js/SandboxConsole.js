@@ -503,8 +503,10 @@ define(function (require) {
                                 parameter = parameter[0].replace(/[()]/gi, '').split(',');
                             }
                         }
-                        mostCommon = mostCommon.replace(parameter, "");
-
+                        var holder = "";
+                        var pat = new RegExp('(\\b' + parameter + '\\b)(?!.*\\b\\1\\b)', 'i');
+                        mostCommon = mostCommon.replace(pat, holder);
+                                                
                         this.textarea.val(mostCommon);//change the input to the first match
 
                         // Get the value, and the parts between which the tab character will be inserted

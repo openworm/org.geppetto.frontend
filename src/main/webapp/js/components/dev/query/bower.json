@@ -1,0 +1,25 @@
+{
+  "name": "query",
+  "version": "0.0.1",
+  "author": {
+    "name": "Giovanni Idili",
+    "email": "giovanni@openworm.org"
+  },
+  "description": "Query component",
+  "moduleType": [
+    "amd"
+  ],
+  "main": "QueryBuilder",
+  "keywords": [
+    "query"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

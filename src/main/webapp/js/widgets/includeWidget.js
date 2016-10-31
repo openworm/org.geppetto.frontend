@@ -64,6 +64,9 @@ define(function (require) {
         //Plotly Widget
         require("widgets/plotly/config")(GEPPETTO);
 
+        //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
+        //require("widgets/template/config");
+
         loadCss("geppetto/js/widgets/Widget.css");
     };
 });

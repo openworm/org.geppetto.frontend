@@ -37,21 +37,17 @@
  * @module model/Pointer
  * @author Giovanni Idili
  */
-define(function (require) {
-    var ObjectWrapper = require('model/ObjectWrapper');
+define(function () {
 
-    return ObjectWrapper.Model.extend({
-        elements: [],
+    function Pointer(options) {
 
-        /**
-         * Initializes this node with passed attributes
-         *
-         * @param {Object} options - Object with options attributes to initialize node
-         */
-        initialize: function (options) {
-            this.set({"wrappedObj": options.wrappedObj});
-            this.set({"elements": options.elements});
-        },
+        this.elements = (options.elements != undefined) ? options.elements : [];
+        this.wrappedObj = options.wrappedObj;
+    }
+
+    Pointer.prototype = {
+
+        constructor: Pointer,
 
         /**
          * Gets the full path for this pointer
@@ -90,7 +86,11 @@ define(function (require) {
          * @returns {List<PointerElement>} - array of elements
          */
         getElements: function () {
-            return this.get('elements');
+            return this.elements;
         }
-    });
+    };
+
+    return Pointer;
+
 });
+

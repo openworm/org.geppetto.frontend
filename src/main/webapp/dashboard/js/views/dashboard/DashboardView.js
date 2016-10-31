@@ -25,6 +25,24 @@ define([ 'jquery', 'underscore', 'backbone',
 					'appendProjects', 'onError', 'filter', 'showProject',
 					'openProject'); 
 			this.subviews = [];
+			
+            // Change link from blank to self for embedded environments
+            if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
+            	handleRequest = function(e) {
+            	  if(window.EMBEDDEDURL.indexOf(e.origin) != -1) {
+            		  // This is where we have to create the API
+            		  eval(e.data.command);
+            	  };
+            	};
+            	// we have to listen for 'message'
+            	window.addEventListener('message', handleRequest, false);
+                if($.isArray(window.EMBEDDEDURL)){
+            		window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL[0]);	
+                }
+                else{
+                	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                }
+            }
 		},
 
 		render : function() {
@@ -71,7 +89,7 @@ define([ 'jquery', 'underscore', 'backbone',
 
 		renderProjects : function(collection) {
 			// $("#spinner").hide();
-			this.$el.find("#projects").empty();
+			this.$el.find(".project-preview").remove();
 			collection.each(this.appendProjects);
 			this.delegateEvents();
 			return this;

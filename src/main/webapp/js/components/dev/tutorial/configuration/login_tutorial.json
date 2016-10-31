@@ -1,0 +1,63 @@
+{
+	"name": "Geppetto Tutorial",
+	"steps": [{
+		"title": "Guided tour",
+		"message": "<strong>Welcome to geppetto! </strong>geppetto is an open-source platform built by engineers, scientists, and other hackers to simulate complex biological systems and their surrounding environment.This is an <strong>early access</strong> development release.",
+		"action": ""
+	}, {
+		"title": "Geppetto Projects",
+		"message": "A project in Geppetto can have multiple experiments, and only one experiment can be made active at a time. What you see now is an active experiment",
+		"action": "$('#Plot1').effect('bounce');$('#Plot2').effect('bounce');"
+	}, {
+		"title": "Simulation Controls",
+		"message": "Above this window you can find Simulation Controls, with them you can run/play/pause/stop an experiment.",
+		"action": "$('#sim-toolbar').effect('bounce');"
+	}, {
+		"title": "Camera Controls",
+		"message": "To the left of the screen, you'll find the camera controls. With this you can move around the scene, zoom in/out, and rotate the camera."
+	}, {
+		"title": "Console",
+		"icon" : "fa fa-terminal",
+		"message": "The console allows you to control the experiment via commands as an alternative to the simulation controls.",
+		"action": "$('#consoleButton').click();"
+	}, {
+		"title": " Experiments Table",
+		"icon" : "fa fa-flask",
+		"message": "The experiments table displays all the experiments within the loaded project. A click on a row show more information about the experiment.",
+		"action": "$('#experimentsButton').click();"
+	}, {
+		"title": " Experiments Table",
+		"icon" : "fa fa-flask",
+		"message": "Icons on the right side of the table allow for; setting an experiment active, downloading an experiment's model and results, deleting/cloning the experiment.",
+		"action": "$('.iconsDiv').effect('highlight')"
+	}, {
+		"title": " Experiments Table",
+		"icon" : "fa fa-flask",
+		"message": "Within the experiments table, you can have access to all the experiments within the loaded project.",
+		"action": ""
+	}, {
+		"title": " Control Panel",
+		"icon" : "fa fa-list",
+		"message": "The control panel allows for navigating variables and objects within an experiment.",
+		"action": ""
+	}, {
+		"title": "Search",
+		"icon" : "fa fa-search",
+		"message": "Pressing this button brings up a window where you can search variables and objects within Geppetto.",
+		"action": ""
+	},{
+		"title": "Help",
+		"icon" : "fa fa-info-circle",
+		"message": "To get more information about Geppetto, launch the help window located above this window. In it you'll find more detailed documentation on how to use Geppetto.",
+		"action": ""
+	},{
+		"title": "Open Tutorial Again",
+		"icon" : "fa fa-leanpub",
+		"message": "At anytime you wish to re-do this tutorial, look for the button with the same icon as the one in this window. It will start it again.",
+		"action": ""
+	},{
+		"title": " End of Guided Tour",
+		"message": "The end of this tutorial has come, time for you to keep exploring on your own.",
+		"action": ""
+	}]
+}

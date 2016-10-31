@@ -45,6 +45,8 @@ define(function (require) {
     VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
     ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
     PlotlyController = require('widgets/plotly/controllers/PlotlyController');
+    //Use as template for new widgets
+    //WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
 
     return function (GEPPETTO) {
 
@@ -66,6 +68,7 @@ define(function (require) {
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
             PLOTLY : 8,
+            //WIDGETNAME: N
         };
 
         /**
@@ -82,6 +85,8 @@ define(function (require) {
             treeVisDatController: null,
             treeVis3DController: null,
             plotlyController : null,
+            //WIDGETNAMEController: null
+            
             /**
              * Adds widget to Geppetto
              *
@@ -127,6 +132,11 @@ define(function (require) {
                     case GEPPETTO.Widgets.PLOTLY:
                         widget = this.getController(GEPPETTO.Widgets.PLOTLY).addPlotlyWidget();
                         break;
+                    //Use as template for new widgets
+                    //create WIDGETNAME
+                    //case GEPPETTO.Widgets.WIDGETNAME:
+                    //    widget = this.getController(GEPPETTO.Widgets.WIDGETNAME).addWIDGETNAMEWidget();
+                    //    break;
                     default:
                         break;
                 }
@@ -142,6 +152,7 @@ define(function (require) {
              */
             removeWidget: function (widgetType) {
                 this.getController(widgetType).removeWidgets();
+                //TODO Matteo: refactor this a complete custom string doesn't seem to be necessary
                 switch (widgetType) {
                     case GEPPETTO.Widgets.PLOT:
                         return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
@@ -161,6 +172,9 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
                     case GEPPETTO.Widgets.PLOTLY:
                         return GEPPETTO.Resources.REMOVE_PLOTLY_WIDGETS;
+                    //Use as template for new widgets
+                    //case GEPPETTO.Widgets.WIDGETNAME:
+                    //    return GEPPETTO.Resources.REMOVE_WIDGETNAME_WIDGETS;
                     default:
                         return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
                 }
@@ -221,6 +235,13 @@ define(function (require) {
                     }
                     return this.plotlyController;
                 }
+                //Use as template for new widgets
+                //else if (type == GEPPETTO.Widgets.WIDGETNAME) {
+                //    if (this.WIDGETNAMEController == null || undefined) {
+                //        this.WIDGETNAMEController = new WIDGETNAMEController();
+                //    }
+                //    return this.WIDGETNAMEController;
+                //}
 
             }
         };

@@ -96,6 +96,10 @@ define(function (require) {
             		case GEPPETTO.Resources.CONNECTION_CAPABILITY:
             			formattedValue = "";
             			break;
+            		case GEPPETTO.Resources.IMPORT_TYPE:
+                    	//AQP: Add sth! A button?
+            			formattedValue = "> Type not yet resolved";
+            			break;
             		default:
                     	throw "Unknown type";
             	}
@@ -231,7 +235,7 @@ define(function (require) {
             	
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getType().getMetaType() != GEPPETTO.Resources.HTML_TYPE) {
                 	if (node.getType().getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE || node.getType().getMetaType() == GEPPETTO.Resources.ARRAY_TYPE_NODE){
-                		if (node.getType().getSuperType() != undefined && node.getType().getSuperType().getId() == 'projection') {
+                		if (node.getType().getSuperType() != undefined && !(node.getType().getSuperType() instanceof Array) && node.getType().getSuperType().getId() == 'projection') {
                             var projectionChildren = node.getType().getChildren();
                             var numConnections = 0;
                             var projectionsChildrenNode = [];
@@ -264,9 +268,9 @@ define(function (require) {
                 	var formattedValue = undefined;
                 	var style = this.getStyle(node.getMetaType());
                 	//AQP: Do we want to do sth with every single capability?
-                	if (node.get("capabilities") != undefined && node.get("capabilities").length > 0 ){
-                		formattedValue = this.getFormattedValue(node, node.get("capabilities")[0], 0);
-                		style = this.getStyle(node.get("capabilities")[0]);
+                	if (node.capabilities != undefined && node.capabilities.length > 0 ){
+                		formattedValue = this.getFormattedValue(node, node.capabilities[0], 0);
+                		style = this.getStyle(node.capabilities[0]);
                 	}
                     return this.createTreeVisualiserNode({wrappedObj: node, formattedValue: formattedValue, style: style, _children: this.createTreeVisualiserNodeChildren(node)});
                 }

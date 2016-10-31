@@ -44,7 +44,6 @@
 		</script>
         <link rel="stylesheet/less" type="text/css" href="geppetto/less/main.less" />
         <script src="geppetto/js/vendor/less.min.js" type="text/javascript"></script>
-        <script src="geppetto/js/vendor/babel.min.js" charset="utf-8"></script>
         <script data-main="geppetto/js/main.js" src="geppetto/js/vendor/require.js"></script>
     /build -->
 
@@ -60,13 +59,15 @@
 <body>
 
 <div id="modal-region"></div>
+<div id="load-spinner"></div>
 
-<div id="controls">
+<div id="controls class="noSelection"">
 
 	<div id="SaveButton" class="row"></div>
 	<div id="HomeButton" class="row"></div>
+	<div id="ControlsMenuButton" class="row"></div>
     <div id="sim-toolbar" class="row"></div>
-
+	<div id="tutorial"></div>
     <div id="camera-controls"></div>
     <div id="foreground-toolbar" class="row"></div>
 
@@ -78,38 +79,25 @@
 </div>
 
 <div id="mainContainer">
-    <div id="geppettologo" ></div>
-    <div id="spotlight" ></div>
-    <div id="controlpanel" ></div>
-    <div id="sim"></div>
+    <div id="geppettologo" class="noSelection" ></div>
+    <div id="spotlight" class="hiddenStart" ></div>
+    <div id="controlpanel"  class="hiddenStart" ></div>
+    <div id="querybuilder"  class="hiddenStart" ></div>
+    <div id="sim" class="noSelection"></div>
 
     <div id="footer">
         <div id="footerHeader">
             <div id="consoleButtonContainer">
 	            <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
     				<li role="presentation" class="active" id="consoleButton"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i>  Console</a></li>
-    				<li role="presentation" id="experimentsButton"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>  Experiments</a></li>
+    				<li role="presentation" id="experimentsButton" style="display:none"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>  Experiments</a></li>
+					<li role="presentation" id="pythonConsoleButton" style="display:none"><a href="#pythonConsole" aria-controls="pythonConsole" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i>  Python</a></li>
 				</ul>
 
 				 <div class="tab-content">
     					<div role="tabpanel" class="tab-pane active" id="console">Console Loading...</div>
-    					<div role="tabpanel" id="experiments" class="tab-pane panel panel-default">
-            					<div class="col-lg-6 experimentsResults panel-body experimentsResultsOutput" id="experimentsOutput">
-									<table id="experimentsTable" class="table table-condensed experimentsTable" style="border-collapse:collapse;">
-										<thead class="experimentsTableColumn">
-        									<tr><th style="width:10%;text-align:center">Status</th>
-            								<th style="width:30%;">Name</th>
-            								<th style="width:15%;">Date</th>
-            								<th style="width:25%;"><div class="new_experiment" id="new_experiment" tile="New experiment"><i class='new_experiment_icon fa fa-plus fa-lg'></i></div></th>
-        									</tr>
-    									</thead>
-
-    								<tbody>
-    								</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
+    					<div role="tabpanel" id="experiments" class="tab-pane panel panel-default"></div>
+                        <div role="tabpanel" id="pythonConsole" class="tab-pane  panel panel-default"></div>
  				 </div>
             </div>
 
@@ -131,6 +119,9 @@
 </script>
 <script type="text/template" id="tplContextMenuItems">
     <li id="<%= this.cid %>">
+    	<% if (icon != null || undefined) { %>
+    		<i class="<%= icon %>" id="<%= this.cid %>"></i>
+		<% } %>
         <%= label %>
     </li>
 </script>
@@ -162,7 +153,6 @@
     ga('send', 'pageview');
 </script>
 
-<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" id="contact" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
-<!-- end olark code -->
+
 </body>
 </html>

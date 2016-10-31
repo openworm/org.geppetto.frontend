@@ -32,26 +32,37 @@
  *******************************************************************************/
 /**
  * Controller responsible to manage the experiments
- *
+ * TODO: Move to controllers folder
  * @author Matteo Cantarelli
  */
 define(function (require) {
     return function (GEPPETTO) {
+
+    	ExperimentStateEnum = {
+    		    STOPPED : 0,
+    		    PLAYING : 1,
+    		    PAUSED : 2
+    	}
+    	
         /**
          * @class GEPPETTO.ExperimentController
          */
         GEPPETTO.ExperimentsController =
         {
-
+       	
             playExperimentReady: false,
             worker: null,
             playOptions: {},
             maxSteps: 0,
-            paused: false,
+            state:ExperimentStateEnum.STOPPED,
 
+            isPlayExperimentReady: function(){
+            	return this.playExperimentReady;
+            },
 
             /** Update the instances of this experiment given the experiment state */
             updateExperiment: function (experiment, experimentState) {
+            	
                 this.playExperimentReady = false; //we reset
                 this.maxSteps = 0;
                 for (var i = 0; i < experimentState.recordedVariables.length; i++) {
@@ -86,6 +97,47 @@ define(function (require) {
                     //to update themselves
                     this.triggerPlayExperiment(experiment);
                 }
+                
+
+                GEPPETTO.trigger(Events.Experiment_updated);                
+            },
+            
+            setActive:function(experiment){
+                G.unSelectAll();
+                GEPPETTO.ExperimentsController.closeCurrentExperiment();
+                var parameters = {};
+                parameters["experimentId"] = experiment.id;
+                parameters["projectId"] = experiment.getParent().getId();
+                
+                /* ATTEMPT TO NOT REMOVE THE WIDGETS OPTIONALLY WHEN SWTICHING EXPERIMENT
+                 * To work we need to mark the old widget as inactive so that we don't try to update them 
+                if($("div.ui-widget").length>0){
+                	GEPPETTO.FE.inputDialog(
+                			"Do you want to remove the existing widgets?", 
+                			"You are loading a different experiment, do you want to retain the existing widgets? Note that the underlining data will cease existing as you are switching to a different experiment.", 
+                			"Remove widgets", 
+                			function(){
+                	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+                				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+                				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+                			}, 
+                			"Keep widgets", 
+                			function(){
+                	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+                				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+                			}
+        			);
+                }
+                else{
+    	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
+    				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+    				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+                }*/
+                
+	            GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
+				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+
             },
 
             /**
@@ -107,7 +159,7 @@ define(function (require) {
                     parameters["modelParameters"] = modelParameters;
 
                     for (var key in newParameters) {
-                        Project.getActiveExperiment().parameters.push(key);
+                        Project.getActiveExperiment().getSetParameters()[newParameters[index].getInstancePath()]=newParameters[index].getValue();
                     }
 
                     GEPPETTO.MessageSocket.send("set_parameters", parameters);
@@ -121,20 +173,26 @@ define(function (require) {
                     watchedVariables.push(variables[i].getInstancePath());
                     variables[i].setWatched(watch, false);
                 }
-                if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
-                    var parameters = {};
-                    parameters["experimentId"] = Project.getActiveExperiment().id;
-                    parameters["projectId"] = Project.getId();
-                    parameters["variables"] = watchedVariables;
-                    parameters["watch"] = watch;
-                    GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
+                if(Project.getActiveExperiment()!=null){
+                	if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
+                		var parameters = {};
+                		parameters["experimentId"] = Project.getActiveExperiment().id;
+                		parameters["projectId"] = Project.getId();
+                		parameters["variables"] = watchedVariables;
+                		parameters["watch"] = watch;
+                		GEPPETTO.MessageSocket.send("set_watched_variables", parameters);
+                	}
                 }
 
-
                 for (var v = 0; v < variables.length; v++) {
-                    if (Project.getActiveExperiment().variables.indexOf(variables[v]) == -1) {
-                        Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
-                    }
+                	if(Project.getActiveExperiment()!=null){
+                		var index = Project.getActiveExperiment().variables.indexOf(variables[v].getInstancePath());
+                		if (index == -1) {
+                			Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
+                		}else{
+                			Project.getActiveExperiment().variables.splice(index,1);
+                		}
+                	}
                 }
             },
 
@@ -168,6 +226,7 @@ define(function (require) {
                         parameters["projectId"] = experiment.getParent().getId();
                         //sending to the server request for data
                         GEPPETTO.MessageSocket.send("play_experiment", parameters);
+                        GEPPETTO.trigger('spin_logo');
                         return "Play Experiment";
                     } else {
                         this.triggerPlayExperiment();
@@ -182,23 +241,30 @@ define(function (require) {
             ,
 
             pause: function () {
-                this.paused = true;
+            	this.state=ExperimentStateEnum.PAUSED;
                 this.getWorker().postMessage([Events.Experiment_pause]);
                 GEPPETTO.trigger(Events.Experiment_pause);
             }
             ,
 
             isPaused: function () {
-                return this.paused;
-            }
-            ,
+                return this.state==ExperimentStateEnum.PAUSED;
+            },
+            
+            isPlaying: function () {
+                return this.state==ExperimentStateEnum.PLAYING;
+            },
+            
+            isStopped: function () {
+                return this.state==ExperimentStateEnum.STOPPED;
+            },
 
             resume: function () {
                 //we'll use a worker
-                if (this.paused) {
-                    GEPPETTO.ExperimentsController.getWorker().postMessage([Events.Experiment_resume]);
+                if (this.isPaused()) {
+                	this.state=ExperimentStateEnum.PLAYING;
+                	GEPPETTO.ExperimentsController.getWorker().postMessage([Events.Experiment_resume]);
                     GEPPETTO.trigger(Events.Experiment_resume);
-                    this.paused = false;
                     return "Pause Experiment";
                 }
             }
@@ -206,7 +272,7 @@ define(function (require) {
 
             stop: function () {
                 this.terminateWorker();
-                this.paused = false;
+                this.state=ExperimentStateEnum.STOPPED;
                 GEPPETTO.trigger(Events.Experiment_stop);
             }
             ,
@@ -227,21 +293,26 @@ define(function (require) {
 
             triggerPlayExperiment: function (experiment) {
 
-                GEPPETTO.trigger(Events.Experiment_play, {playAll: this.playOptions.playAll});
-
-                if (this.playOptions.playAll) {
-                    if (this.paused) {
+            	if (this.playOptions.playAll) {
+                	this.stop();
+            	}else{
+                    if (!this.isPaused()) {
                         this.stop();
                     }
+            	}
+            	
+            	this.state=ExperimentStateEnum.PLAYING;            	
+                GEPPETTO.trigger(Events.Experiment_play, this.playOptions);
+                
+                if (this.playOptions.playAll) {
                     GEPPETTO.ExperimentsController.terminateWorker();
                     GEPPETTO.trigger(Events.Experiment_update, {
                         step: this.maxSteps - 1,
                         playAll: true
                     });
-                    GEPPETTO.trigger(Events.Experiment_stop);
+                    this.stop();
                 }
                 else {
-
                     if (this.playOptions.step == null || undefined) {
                         this.playOptions.step = 0;
                     }
@@ -252,13 +323,16 @@ define(function (require) {
                     // tells worker to update each half a second
                     this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
 
+                    var that = this;
                     // receives message from web worker
                     this.worker.onmessage = function (event) {
                         // get current timeSteps to execute from web worker
                         var currentStep = event.data[0];
 
-                        if (currentStep >= this.maxSteps) {
+                        if (currentStep >= that.maxSteps) {
                             this.postMessage(["experiment:loop"]);
+                            Project.getActiveExperiment().stop();
+                            Project.getActiveExperiment().playAll();
                         } else {
                             GEPPETTO.trigger(Events.Experiment_update, {
                                 step: currentStep,

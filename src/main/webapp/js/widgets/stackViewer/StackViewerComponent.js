@@ -1163,7 +1163,7 @@ define(function (require) {
             var stepOutClass = 'btn fa fa-chevron-up';
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
-            var startOffset = 100;
+            var startOffset = 105;
             return (
                 <div id="displayArea" style={{position: 'absolute', top: -1, left: -1}}>
                     <button style={{position: 'absolute', left: startOffset, top: -21, padding: 0, border: 0}} className={homeClass} onClick={this.onHome}></button>

@@ -335,7 +335,7 @@ define(function (require) {
         
         clickStatus : function(e){
         	if(this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR ||
-        			GEPPETTO.Resources.ExperimentStatus.DESIGN){
+        			this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN){
         		var error = this.props.experiment.getDetails();
         		if(error!= null || undefined){
             		e.stopPropagation();

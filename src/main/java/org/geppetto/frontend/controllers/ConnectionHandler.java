@@ -1363,20 +1363,13 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	}
 
 	@Override
-	public void simulationError(String errorMessage, Exception exception)
-	{
-		this.error(exception, errorMessage);
-	}
-
-	@Override
-	public void externalProcessError(String titleMessage, String logMessage, Exception exception, IExperiment experiment)
+	public void experimentError(String titleMessage, String logMessage, Exception exception, IExperiment experiment)
 	{	
 		Error error = new Error(GeppettoErrorCodes.EXCEPTION, titleMessage, logMessage, experiment.getId());
 		logger.error(logMessage, exception);
 		
 		String jsonError = this.getGson().toJson(error);
 	
-		
 		if(!geppettoProject.isVolatile())
 		{
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
@@ -1386,7 +1379,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				dataManager.saveEntity(experiment);
 			}
 		}
-		
+				
 		websocketConnection.sendMessage(null, OutboundMessages.ERROR_RUNNING_EXPERIMENT, jsonError);
 	}
 }

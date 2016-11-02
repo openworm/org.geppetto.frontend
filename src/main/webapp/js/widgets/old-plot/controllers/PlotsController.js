@@ -38,29 +38,29 @@
 define(function (require) {
 
     var AWidgetController = require('widgets/AWidgetController');
-    var Plotly = require('widgets/plotly/Plotly');
+    var Plot = require('widgets/plot/Plot');
 
     /**
-     * @exports Widgets/Plotly/PlotlyController
+     * @exports Widgets/Plot/PlotsController
      */
     return AWidgetController.View.extend({
 
         initialize: function () {
             this.widgets = [];
-            var widgets = this.widgets;
+            this.history = [];
         },
 
         /**
          * Creates plotting widget
          */
-        addPlotlyWidget: function () {
+        addPlotWidget: function () {
 
             //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("Plotly", this.widgets);
+            var id = this.getAvailableWidgetId("Plot", this.widgets);
             var name = id;
 
             //create plotting widget
-            var p = window[name] = new Plotly({id: id, name: name, visible: true});
+            var p = window[name] = new Plot({id: id, name: name, visible: true, controller: this});
 
             //create help command for plot
             p.help = function () {
@@ -73,7 +73,7 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //add commands to console autocomplete and help option
-            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/widgets/plotly/Plotly.js"));
+            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/widgets/plot/Plot.js"));
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(p.getId(), p);
             return p;
@@ -93,17 +93,17 @@ define(function (require) {
             //reset plot's datasets
             else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
                 for (var i = 0; i < this.widgets.length; i++) {
-                    var plotly = this.widgets[i];
+                    var plot = this.widgets[i];
 
-                    plotly.cleanDataSets();
+                    plot.cleanDataSets();
                 }
             }
 
             //update plotting widgets
             else if (event == Events.Experiment_play) {
                 for (var i = 0; i < this.widgets.length; i++) {
-                    var plotly = this.widgets[i];
-                    plotly.clean(parameters.playAll);
+                    var plot = this.widgets[i];
+                    plot.clean(parameters.playAll);
                 }
 
             }
@@ -117,11 +117,11 @@ define(function (require) {
 
                 //loop through all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {
-                    var plotly = this.widgets[i];
+                    var plot = this.widgets[i];
                     //we need the playAll parameter here because the plot might be coming up after the play
                     //event was triggered and in that case we need to catch up knowing what kind of play
                     //it's happening
-                    plotly.updateDataSet(parameters.step, parameters.playAll);
+                    plot.updateDataSet(parameters.step, parameters.playAll);
                 }
             }
         },
@@ -142,7 +142,7 @@ define(function (require) {
                         action: ["var p = G.addWidget(Widgets.PLOT).plotFunctionNode(" + node.getPath() + ")", "p.setSize(200,450)"],
                     }];
 
-                    var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOTLY).getWidgets();
+                    var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
                     if (availableWidgets.length > 0) {
                         var group1Add = {
                             label: "Add to Plot Widget",

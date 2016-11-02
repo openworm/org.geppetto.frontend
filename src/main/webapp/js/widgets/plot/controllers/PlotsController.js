@@ -41,13 +41,13 @@ define(function (require) {
     var Plot = require('widgets/plot/Plot');
 
     /**
-     * @exports Widgets/Plot/PlotsController
+     * @exports Widgets/Plotly/PlotlyController
      */
     return AWidgetController.View.extend({
 
         initialize: function () {
             this.widgets = [];
-            this.history = [];
+            var widgets = this.widgets;
         },
 
         /**
@@ -60,7 +60,7 @@ define(function (require) {
             var name = id;
 
             //create plotting widget
-            var p = window[name] = new Plot({id: id, name: name, visible: true, controller: this});
+            var p = window[name] = new Plot({id: id, name: name, visible: true});
 
             //create help command for plot
             p.help = function () {

@@ -61,8 +61,6 @@ define(function (require) {
         require("widgets/connectivity/config");
         //Buttonbar widget
         require("widgets/buttonBar/config");
-        //Plotly Widget
-        require("widgets/plotly/config")(GEPPETTO);
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");

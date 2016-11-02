@@ -30,13 +30,28 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.plotly {
+.plot {
     width: 100%;
     height: 100%;
+    margin-top: 5px;
 }
 
-.ui-dialog .ui-dialog-content{
-	padding : 0;
+.plot-without-xaxis {
+    margin-bottom: 20px;
+}
+
+.flot-x-axis {
+    color: white;
+    width: 100%;
+}
+
+.flot-y-axis {
+    color: white;
+}
+
+.legendColorBox {
+    background: rgba(66, 59, 59, 0.90) !important;
+    color: white;
 }
 
 .legendLabel {
@@ -50,24 +65,25 @@
     margin-left: 5px;
 }
 
-.main-svg {
- 	width: 100%;
-    height: 100%;
+.plot a {
+    color: white;
 }
 
-
-.svg-container {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    padding-bottom: 100%;
-    vertical-align: top;
-    overflow: hidden;
-    max-width : 100%;
-}
-.svg-content {
-    display: inline-block;
+.axisLabel {
     position: absolute;
-    top: 0;
-    left: 0;
+    text-align: center;
+    font-size: 12px;
+}
+
+.xaxisLabel {
+    color: white;
+    bottom: 0%;
+    left: 50%;
+    width: 100%;
+}
+
+.yaxisLabel {
+    top: 50%;
+    left: 0px;
+    color: white;
 }

@@ -340,8 +340,7 @@ define(function (require) {
         		if(error!= null || undefined){
             		e.stopPropagation();
             		e.nativeEvent.stopImmediatePropagation();
-            		GEPPETTO.trigger('geppetto:error', error.msg);
-            		GEPPETTO.FE.errorDialog(GEPPETTO.Resources.ERROR, error.message, error.code, error.exception);
+            		GEPPETTO.FE.infoDialog("Experiment Failed ",  error.exception);
         		}
         	}
         },

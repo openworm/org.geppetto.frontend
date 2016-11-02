@@ -491,6 +491,10 @@ a:hover {
 	overflow : auto;
 }
 
+#error_exception {
+	overflow : auto;
+}
+
 #errormodal {
     #error_code {
         font-size : 14px;

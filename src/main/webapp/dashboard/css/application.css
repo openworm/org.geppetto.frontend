@@ -489,26 +489,10 @@ a:hover {
 
 #errormodal-text {
 	overflow : auto;
+	border-bottom: none;
 }
 
-#error_exception {
-	overflow : auto;
-}
-
-#errormodal {
-    #error_code {
-        font-size : 14px;
-        color : #fd6808;
-    }
-
-    p{
-        text-align: left;
-        
-    }
-
-    #error_exception{
-        font-size: 12px;
-        line-height: 18px;
-        overflow : auto;
-    }
+#errormodal .modal-body, #errormodal .modal-header, #errormodal .modal-footer{
+    border-bottom: 0;
+    border-top : 0;
 }

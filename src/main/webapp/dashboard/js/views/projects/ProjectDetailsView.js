@@ -22,9 +22,7 @@ define([ 'jquery', 'underscore', 'backbone',
 				
 				if(details!="" || null){
 				   $("#errormodal").modal();
-				   $("#errormodal-text").html(details.message);
-				   $("#error_code").html('Click for Details ' + details.error_code);
-				   $("#error_exception").html(details.exception);
+				   $("#errormodal-text").html(details.exception);
 				}
 			});
 		},

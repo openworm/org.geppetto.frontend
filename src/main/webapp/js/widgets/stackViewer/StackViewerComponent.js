@@ -1010,7 +1010,8 @@ define(function (require) {
         },
 
         componentWillUnmount: function () {
-        	React.unmountComponentAtNode(document.getElementById('displayArea'));
+        	// React.unmountComponentAtNode(document.getElementById('displayArea'));
+            return true;
         },
         /**
          * Event handler for clicking zoom in. Increments the zoom level

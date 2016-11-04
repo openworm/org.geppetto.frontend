@@ -126,7 +126,11 @@ define(function (require) {
 			paper_bgcolor: 'rgba(66, 59, 59, 0.90)',
 			plot_bgcolor: 'rgba(66, 59, 59, 0.90)',
 			hovermode: 'closest',
-			playAll : false,
+			playAll : false
+		},
+		
+		removeHoverBarButtons : {
+			modeBarButtonsToRemove: ['sendDataToCloud','hoverCompareCartesian','hoverClosestCartesian']
 		},
 
 		/**
@@ -172,6 +176,12 @@ define(function (require) {
             for(var i =0; i< this.datasets.length; i++){
             	if(this.datasets[i].name == instancePath){
             		this.datasets[i].name = legend;
+            		for(var key in this.variables){
+            			if(key==instancePath){
+            				this.variables[legend] = this.variables[key];
+            				delete this.variables[key];
+            			}
+            		}
             	}
             }
             
@@ -245,8 +255,7 @@ define(function (require) {
 			if(plotable){
 				if(this.plotly==null){
 					//Creates new plot using datasets and default options
-					this.plotly = Plotly.plot(this.plotDiv, this.datasets, this.defaultOptions);
-					this.resize();
+					this.plotly = Plotly.plot(this.plotDiv, this.datasets, this.defaultOptions,this.removeHoverBarButtons);
 					this.initialized = true;
 				}else{
 					Plotly.newPlot(this.plotDiv, this.datasets, this.defaultOptions);					
@@ -404,7 +413,7 @@ define(function (require) {
 			if(set!=null){
 				this.updateAxis(set.name);
 			}
-			Plotly.newPlot(this.plotDiv, this.datasets, this.defaultOptions);
+			Plotly.redraw(this.plotDiv);
 		},
 
 		/*

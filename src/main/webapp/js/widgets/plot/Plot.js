@@ -653,30 +653,26 @@ define(function (require) {
 			}
 
 			var labelsMap = this.labelsMap;
-			this.initializeLegend(function (label, series) {
-				var shortLabel = label;
-				//FIXME: Adhoc solution for org.neuroml.export
-				var split = label.split(/-(.+)?/);
-				if (split.length > 1) shortLabel = split[1];
-				labelsMap[label] = shortLabel;
-				return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
-			});
 
 			//Parse func as a mathjs object
 			var parser = math.parser();
 			var mathFunc = parser.eval(func);
 			var data = [];
 			data.name = options.legendText;
-			data.data = [];
+			data.data = {};
+			data.data["x"] = [];
+			data.data["y"] = [];
 			for (var data_xIndex in data_x) {
 				var dataElementString = data_x[data_xIndex].valueOf();
 				data_y = mathFunc(dataElementString);
 				//TODO: Understand why sometimes it returns an array and not a value
 				if (typeof value == 'object') {
-					data.data.push([data_x[data_xIndex][0], data_y[0]]);
+					data.data["x"].push(data_x[data_xIndex][0]);
+					data.data["y"].push(data_y[0]);
 				}
 				else {
-					data.data.push([data_x[data_xIndex][0], data_y]);
+					data.data["x"].push(data_x[data_xIndex][0]);
+					data.data["y"].push(data_y[0]);
 				}
 			}
 
@@ -688,14 +684,24 @@ define(function (require) {
 				}
 			}
 
-			this.datasets.push({
-				label: data.name,
-				data: data.data
-			});
+			newLine = {
+					x : data.data["x"],
+					y : data.data["y"],
+					modes : "lines",
+					type : "scatter",
+					name: data.name,
+					line: {
+						dash: 'solid',
+						width: 2
+					}
+			};
 
-			var plotHolder = $("#" + this.id);
+			this.datasets.push(newLine);
 
-			this.plot = $.plot(plotHolder, this.datasets, this.options);
+			//Creates new plot using datasets and default options
+			this.plotly = Plotly.plot(this.plotDiv, this.datasets, this.defaultOptions,this.removeHoverBarButtons);
+			this.initialized = true;
+			this.resize();
 			return this;
 		},
 

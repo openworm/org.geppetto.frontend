@@ -274,6 +274,9 @@ define(function (require) {
             }else{
                 // console.log('Creating plane: ' + this.state.plane);
                 window.stackViewerPlane=GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+                if (!window.stackViewerPlane.visible) {
+                    window.stackViewerPlane.visible = true;
+                }
             }
             this.state.planeUpdating = false;
         },

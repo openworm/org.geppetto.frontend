@@ -67,6 +67,7 @@ define(function (require) {
 			width : '100%',
 			height : '100%',
 			showgrid : false,
+			showlegend : true,
 			xaxis: {                  // all "layout.xaxis" attributes: #layout-xaxis
 				showgrid: false,
 				showline: true,
@@ -143,27 +144,42 @@ define(function (require) {
 			$.extend( this.defaultOptions, options);
 			this.render();
 			this.dialog.append("<div id='" + this.id + "'></div>");			
-			
-			var gd = this.getD3Node();
+
 			this.plotDiv = document.getElementById(this.id);
-//			//resizes d3 component of plotly once widget resizes
-			window.onresize = function() {
-				Plotly.Plots.resize(gd);
-			};
+
+			var that = this;
+			$("#"+this.id).dialog({
+				resize: function(event, ui) { that.resize(); }
+			});
+
+			$("#"+this.id).resize(function(){that.resize();});
 		},
 
-		/**
-		 * Retrieve the the D3 node (Div element) for the Plot, use to pass 
-		 * as a parameter to resize event
-		 */
-		getD3Node : function(){
-			var d3 = Plotly.d3;
-			var gd3 = d3.select("#" + this.id);
-			var gd = gd3.node();
+        /**
+         * Sets the legend for a variable
+         *
+         * @command setLegend(variable, legend)
+         * @param {Object} instance - variable to change display label in legends
+         * @param {String} legend - new legend name
+         */
+        setLegend: function (instance, legend) {
+            //Check if it is a string or a geppetto object
+            var instancePath = instance;
+            if ((typeof instance) != "string") {
+                instancePath = instance.getInstancePath();
+            }
 
-			return gd;
-		},
-
+            for(var i =0; i< this.datasets.length; i++){
+            	if(this.datasets[i].name == instancePath){
+            		this.datasets[i].name = legend;
+            	}
+            }
+            
+            Plotly.newPlot(this.plotDiv, this.datasets, this.defaultOptions);
+            
+            return this;
+        },
+        
 		/**
 		 * Takes data series and plots them. To plot array(s) , use it as
 		 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
@@ -199,7 +215,7 @@ define(function (require) {
 					}else{
 						plotable = false;
 					}
-					
+
 					/*
 					 * Create object with x, y data, and graph information. 
 					 * Object is used to plot on plotly library
@@ -211,13 +227,13 @@ define(function (require) {
 							type : "scatter",
 							name: instance.getInstancePath(),
 							line: {
-							    dash: 'solid',
-							    width: 2
+								dash: 'solid',
+								width: 2
 							}
 					};
 
 					this.datasets.push(newLine);
-					
+
 					//We stored the variable objects in its own array, using the instance path
 					//as index. Can't be put on this.datasets since plotly will reject it
 					this.variables[instance.getInstancePath()] = instance;
@@ -225,28 +241,35 @@ define(function (require) {
 					plotable = false;
 				}
 			}
-			
+
 			if(plotable){
 				if(this.plotly==null){
 					//Creates new plot using datasets and default options
-					this.plotly = Plotly.plot(this.id, this.datasets, this.defaultOptions);
+					this.plotly = Plotly.plot(this.plotDiv, this.datasets, this.defaultOptions);
+					this.resize();
 					this.initialized = true;
 				}else{
-					Plotly.newPlot(this.id, this.datasets, this.defaultOptions);					
+					Plotly.newPlot(this.plotDiv, this.datasets, this.defaultOptions);					
 				}
-				
-				//Update the axis of the plot 
-				this.updateAxis(instance.getInstancePath());
 
-				//resizes plot right after creation, needed for d3 to resize 
-				//to parent's widht and height
-				Plotly.Plots.resize(this.plotDiv);
+				//Update the axis of the plot 
+				this.resize();
 			}
 			return this;
 		},
-		
+
 		resize : function(){
-			Plotly.Plots.resize(this.getD3Node());
+			var divheight = $("#"+this.id).height();
+			var divwidth = $("#"+this.id).width();
+
+			var update = {
+					width:divwidth,  // or any new width
+					height:divheight // " "
+			};
+
+			//resizes plot right after creation, needed for d3 to resize 
+			//to parent's widht and height
+			Plotly.relayout(this.plotDiv,update);
 		},
 
 		/**
@@ -299,7 +322,7 @@ define(function (require) {
 						this.datasets.splice(key, 1);
 					}
 				}
-				
+
 				/*if variable to be removed is on the plot, call the plotly
 				library method to remove*/
 				if(matchKey != null){
@@ -316,301 +339,401 @@ define(function (require) {
 		/**
 		 * Updates the plot widget with new data
 		 */
-		 updateDataSet: function (step, playAll) {
-			 if(!this.defaultOptions.playAll&&!this.updateRange){
-				 var update = {
-						 'xaxis.range' : [0,this.limit],
-				 }
-				 GEPPETTO.Console.log("update limit");
-				 //update the axia labels for the plot
-				 Plotly.relayout(this.id, update);
-				 this.updateRange = true;
-			 }
-			 
-			 /*Clears the data of the plot widget if the initialized flag 
-			  *has not be set to true, which means arrays are populated but not yet plot*/
-			 if(!this.initialized){
-				 this.clean(playAll);
-			 }
+		updateDataSet: function (step, playAll) {
 
-			 var set, reIndex, newValue;
-			 var oldDataX = [];
-			 var oldDataY = [];
-			 var timeSeries = [];
-			 var update = {};
-			 for (var key in this.datasets) {
-				 set = this.datasets[key];
-				 if (this.defaultOptions.playAll) {
-					 //we simply set the whole time series
-					 timeSeries = this.getTimeSeriesData(this.variables[set.name]);
-					 this.datasets[key].x = timeSeries["x"];
-					 this.datasets[key].y = timeSeries["y"];
-				 }
-				 else {
-					 newValue = this.variables[set.name].getTimeSeries()[step];
+			/*Clears the data of the plot widget if the initialized flag 
+			 *has not be set to true, which means arrays are populated but not yet plot*/
+			if(!this.initialized){
+				this.clean(playAll);
+			}
 
-					 oldDataX = this.datasets[key].x;
-					 oldDataY = this.datasets[key].y;
+			var set, reIndex, newValue;
+			var oldDataX = [];
+			var oldDataY = [];
+			var timeSeries = [];
+			var update = {};
+			for (var key in this.datasets) {
+				set = this.datasets[key];
+				if (this.defaultOptions.playAll) {
+					//we simply set the whole time series
+					timeSeries = this.getTimeSeriesData(this.variables[set.name]);
+					this.datasets[key].x = timeSeries["x"];
+					this.datasets[key].y = timeSeries["y"];
+				}
+				else {
+					newValue = this.variables[set.name].getTimeSeries()[step];
 
-					 reIndex = false;
+					oldDataX = this.datasets[key].x;
+					oldDataY = this.datasets[key].y;
 
-					 if (oldDataX.length >= this.limit) {
-						 //this happens when we reach the end of the width of the plot
-						 //i.e. when we have already put all the points that it can contain
-						 oldDataX.splice(0, 1);
-						 oldDataY.splice(0,1);
-						 reIndex = true;
-					 }
+					reIndex = false;
 
-					 oldDataX.push(oldDataX.length);
-					 oldDataY.push(newValue);
+					if (oldDataX.length >= this.limit) {
+						//this happens when we reach the end of the width of the plot
+						//i.e. when we have already put all the points that it can contain
+						oldDataX.splice(0, 1);
+						oldDataY.splice(0,1);
+						reIndex = true;
+					}
 
-					 if (reIndex) {
-						 // re-index data
-						 var indexedDataX = [];
-						 var indexedDataY = [];
-						 for (var index = 0, len = oldDataX.length; index < len; index++) {
-							 var valueY = oldDataY[index];
-							 indexedDataX.push(index);
-							 indexedDataY.push(valueY);
-						 }
+					oldDataX.push(oldDataX.length);
+					oldDataY.push(newValue);
 
-						 this.datasets[key].x = indexedDataX;
-						 this.datasets[key].y = indexedDataY;
-					 }
-					 else {
-						 this.datasets[key].x = oldDataX;
-						 this.datasets[key].y = oldDataY;
-					 }
-				 }
+					if (reIndex) {
+						// re-index data
+						var indexedDataX = [];
+						var indexedDataY = [];
+						for (var index = 0, len = oldDataX.length; index < len; index++) {
+							var valueY = oldDataY[index];
+							indexedDataX.push(index);
+							indexedDataY.push(valueY);
+						}
 
-				 this.plotDiv.data[key].x = this.datasets[key].x;
-				 this.plotDiv.data[key].y = this.datasets[key].y;
-			 }
-			 if(set!=null){
-				 this.updateAxis(set.name);
-			 }
-			 Plotly.redraw(this.id);
-		 },
+						this.datasets[key].x = indexedDataX;
+						this.datasets[key].y = indexedDataY;
+					}
+					else {
+						this.datasets[key].x = oldDataX;
+						this.datasets[key].y = oldDataY;
+					}
+				}
 
-		 /*
-		  * Retrieves X and Y axis labels from the variables being plotted
-		  */
-		 updateAxis: function (key) {
-			 var update = {};
-			 if (!this.labelsUpdated) {
-				 var unit = this.variables[key].getUnit();
-				 if (unit != null) {
-					 var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
-					 var labelX = this.getUnitLabel(window.Instances.time.getUnit());
-					 this.labelsUpdated = true;
-					 update = {
-							 'yaxis.title' : labelY,
-							 'xaxis.title' : labelX
-					 }
-					 //update the axia labels for the plot
-					 Plotly.relayout(this.plotDiv, update);
-				 }
-			 }            
-		 },
+				this.plotDiv.data[key].x = this.datasets[key].x;
+				this.plotDiv.data[key].y = this.datasets[key].y;
+			}
+			if(set!=null){
+				this.updateAxis(set.name);
+			}
+			Plotly.newPlot(this.plotDiv, this.datasets, this.defaultOptions);
+		},
 
-		 /**
-		  * Utility function to get unit label given raw unit symbol string
-		  *
-		  * @param unitSymbol - string representing unit symbol
-		  */
-		 getUnitLabel: function (unitSymbol) {
+		/*
+		 * Retrieves X and Y axis labels from the variables being plotted
+		 */
+		updateAxis: function (key) {
+			var update = {};
+			if (!this.labelsUpdated) {
+				var unit = this.variables[key].getUnit();
+				if (unit != null) {
+					var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
+					var labelX = this.getUnitLabel(window.Instances.time.getUnit());
+					this.labelsUpdated = true;
+					update = {
+							'yaxis.title' : labelY,
+							'xaxis.title' : labelX
+					}
+					//update the axia labels for the plot
+					Plotly.relayout(this.plotDiv, update);
+				}
+			}            
+		},
 
-			 unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+		/**
+		 * Utility function to get unit label given raw unit symbol string
+		 *
+		 * @param unitSymbol - string representing unit symbol
+		 */
+		getUnitLabel: function (unitSymbol) {
 
-			 var unitLabel = unitSymbol;
+			unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
 
-			 if (unitSymbol != undefined && unitSymbol != null && unitSymbol != "") {
-				 var mathUnit = math.unit(1, unitSymbol);
+			var unitLabel = unitSymbol;
 
-				 var formattedUnitName = (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
+			if (unitSymbol != undefined && unitSymbol != null && unitSymbol != "") {
+				var mathUnit = math.unit(1, unitSymbol);
 
-				 if (formattedUnitName != "") {
-					 formattedUnitName = formattedUnitName.replace(/_/g, " ");
-					 formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();
-					 unitLabel = formattedUnitName + " (" + unitSymbol.replace(/-?[0-9]/g, function (letter) {
-						 return letter.sup();
-					 }) + ")";
-				 }
-			 }
+				var formattedUnitName = (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
 
-			 return unitLabel;
-		 },
+				if (formattedUnitName != "") {
+					formattedUnitName = formattedUnitName.replace(/_/g, " ");
+					formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();
+					unitLabel = formattedUnitName + " (" + unitSymbol.replace(/-?[0-9]/g, function (letter) {
+						return letter.sup();
+					}) + ")";
+				}
+			}
 
-		 /**
-		  * Plots a function against a data series
-		  *
-		  * @command dataFunction(func, data, options)
-		  * @param func - function to plot vs data
-		  * @param data - data series to plot against function
-		  * @param options - options for plotting widget
-		  */
-		 plotDataFunction: function (func, data_x, options) {
-			 // If no options specify by user, use default options
-			 if (options != null) {
-				 this.defaultOptions = options;
-				 if (this.defaultOptions.xaxis.max > this.limit) {
-					 this.limit = this.defaultOptions.xaxis.max;
-				 }
-			 }
+			return unitLabel;
+		},
 
-			 //Parse func as a mathjs object
-			 var parser = math.parser();
-			 var mathFunc = parser.eval(func);
-			 var data = [];
-			 data.name = options.legendText;
-			 data.data = [];
-			 for (var data_xIndex in data_x) {
-				 var dataElementString = data_x[data_xIndex].valueOf();
-				 data_y = mathFunc(dataElementString);
-				 //TODO: Understand why sometimes it returns an array and not a value
-				 if (typeof value == 'object') {
-					 data.data.push([data_x[data_xIndex][0], data_y[0]]);
-				 }
-				 else {
-					 data.data.push([data_x[data_xIndex][0], data_y]);
-				 }
-			 }
+		/**
+		 * Plots a function against a data series
+		 *
+		 * @command dataFunction(func, data, options)
+		 * @param func - function to plot vs data
+		 * @param data - data series to plot against function
+		 * @param options - options for plotting widget
+		 */
+		plotDataFunction: function (func, data_x, options) {
+			// If no options specify by user, use default options
+			if (options != null) {
+				this.defaultOptions = options;
+				if (this.defaultOptions.xaxis.max > this.limit) {
+					this.limit = this.defaultOptions.xaxis.max;
+				}
+			}
 
-			 //Plot values
-			 this.plotXYData(data);
-			 return this;
-		 },
+			//Parse func as a mathjs object
+			var parser = math.parser();
+			var mathFunc = parser.eval(func);
+			var data = [];
+			data.name = options.legendText;
+			data.data = [];
+			for (var data_xIndex in data_x) {
+				var dataElementString = data_x[data_xIndex].valueOf();
+				data_y = mathFunc(dataElementString);
+				//TODO: Understand why sometimes it returns an array and not a value
+				if (typeof value == 'object') {
+					data.data.push([data_x[data_xIndex][0], data_y[0]]);
+				}
+				else {
+					data.data.push([data_x[data_xIndex][0], data_y]);
+				}
+			}
 
-		 /**
-		  * Resets the plot widget, deletes all the data series but does not
-		  * destroy the widget window.
-		  *
-		  * @command resetPlot()
-		  */
-		 resetPlot: function () {
-			 if (this.plotly != null) {
-				 this.datasets = [];
-				 this.defaultOptions = jQuery.extend(true, {}, this.defaultPlotOptions);
-				 Plotly.newPlot(this.id, this.datasets, this.defaultOptions);
-			 }
-			 return this;
-		 },
+			//Plot values
+			this.plotXYData(data);
+			return this;
+		},
 
-		 /**
-		  *
-		  * Set the options for the plotting widget
-		  *
-		  * @command setOptions(options)
-		  * @param {Object} options - options to modify the plot widget
-		  */
-		 setOptions: function (options) {
-			 jQuery.extend(true, this.defaultOptions, this.defaultPlotOptions, options);
-			 if (options.xaxis && options.xaxis.max) {
-				 this.limit = options.xaxis.max;
-			 }
+		/**
+		 * Resets the plot widget, deletes all the data series but does not
+		 * destroy the widget window.
+		 *
+		 * @command resetPlot()
+		 */
+		resetPlot: function () {
+			if (this.plotly != null) {
+				this.datasets = [];
+				this.defaultOptions = jQuery.extend(true, {}, this.defaultPlotOptions);
+				Plotly.newPlot(this.id, this.datasets, this.defaultOptions);
+			}
+			return this;
+		},
 
-			 Plotly.relayout(this.id, update);
-			 return this;
-		 },
+		/**
+		 *
+		 * Set the options for the plotting widget
+		 *
+		 * @command setOptions(options)
+		 * @param {Object} options - options to modify the plot widget
+		 */
+		setOptions: function (options) {
+			jQuery.extend(true, this.defaultOptions, this.defaultPlotOptions, options);
+			if (options.xaxis && options.xaxis.max) {
+				this.limit = options.xaxis.max;
+			}
 
-		 clean: function (playAll) {
-			 this.defaultOptions.playAll = playAll;
-			 this.cleanDataSets();
-			 if (!playAll) {
-				 //this.defaultOptions.xaxis.show = false;
-				 this.defaultOptions.xaxis.max = this.limit;
-				 //this.defaultOptions.crosshair = {};
-				 //$("#" + this.id).addClass("plot-without-xaxis");
-			 }
-			 else {
-				 //thisl.defaultOptions.xaxis.show = true;
-				 this.defaultOptions.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
-				 //this.defaultOptions.crosshair.mode = "x";
-				 //$("#" + this.id).removeClass("plot-without-xaxis");
-				 //enables updating the legend on mouse hover, still few bugs
-			 }
-			 this.plotly = Plotly.newPlot(this.id, this.datasets, this.defaultOptions);
-			 Plotly.Plots.resize(this.getD3Node());
-			 this.initialized=true;
+			Plotly.relayout(this.id, update);
+			return this;
+		},
 
-		 },
+		clean: function (playAll) {
+			this.defaultOptions.playAll = playAll;
+			this.cleanDataSets();
+			if (!playAll) {
+				//this.defaultOptions.xaxis.show = false;
+				this.defaultOptions.xaxis.max = this.limit;
+				//this.defaultOptions.crosshair = {};
+				//$("#" + this.id).addClass("plot-without-xaxis");
+			}
+			else {
+				//thisl.defaultOptions.xaxis.show = true;
+				this.defaultOptions.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
+				//this.defaultOptions.crosshair.mode = "x";
+				//$("#" + this.id).removeClass("plot-without-xaxis");
+				//enables updating the legend on mouse hover, still few bugs
+			}
+			this.plotly = Plotly.newPlot(this.id, this.datasets, this.defaultOptions);
+			this.resize();
+			this.initialized=true;
 
-		 /**
-		  * Retrieve the data sets for the plot
-		  * @returns {Array}
-		  */
-		 getDataSets: function () {
-			 return this.datasets;
-		 },
+		},
 
-		 /**
-		  * Resets the datasets for the plot
-		  */
-		 cleanDataSets: function () {
-			 // update corresponding data set
-			 for (var key = 0; key < this.datasets.length; key++) {
-				 this.datasets[key].x = [];
-				 this.datasets[key].y = [];
-			 }
-		 },
+		/**
+		 * Retrieve the data sets for the plot
+		 * @returns {Array}
+		 */
+		getDataSets: function () {
+			return this.datasets;
+		},
 
-		 /**
-		  * Takes a FunctionNode and plots the expression and set the attributes from the plot metadata information
-		  *
-		  * @command plotFunctionNode(functionNode)
-		  * @param {Node} functionNode - Function Node to be displayed
-		  */
-		 plotFunctionNode: function (functionNode) {
+		/**
+		 * Resets the datasets for the plot
+		 */
+		cleanDataSets: function () {
+			// update corresponding data set
+			for (var key = 0; key < this.datasets.length; key++) {
+				this.datasets[key].x = [];
+				this.datasets[key].y = [];
+			}
+		},
 
-//			 node.getInitialValues()[0].value.arguments
-//			 node.getInitialValues()[0].value.expression.expression
+		/**
+		 * Takes a FunctionNode and plots the expression and set the attributes from the plot metadata information
+		 *
+		 * @command plotFunctionNode(functionNode)
+		 * @param {Node} functionNode - Function Node to be displayed
+		 */
+		plotFunctionNode: function (functionNode) {
 
-			 //Check there is metada information to plot
-			 if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
+//			node.getInitialValues()[0].value.arguments
+//			node.getInitialValues()[0].value.expression.expression
 
-				 //Read the information to plot
-				 var expression = functionNode.getInitialValues()[0].value.dynamics.expression.expression;
-				 var arguments = functionNode.getInitialValues()[0].value.dynamics.arguments;
-				 var plotMetadata = functionNode.getInitialValues()[0].value.dynamics.functionPlot;
+			//Check there is metada information to plot
+			if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
 
-				 var finalValue = parseFloat(plotMetadata["finalValue"]);
-				 var initialValue = parseFloat(plotMetadata["initialValue"]);
-				 var stepValue = parseFloat(plotMetadata["stepValue"]);
+				//Read the information to plot
+				var expression = functionNode.getInitialValues()[0].value.dynamics.expression.expression;
+				var arguments = functionNode.getInitialValues()[0].value.dynamics.arguments;
+				var plotMetadata = functionNode.getInitialValues()[0].value.dynamics.functionPlot;
 
-				 //Create data series for plot
-				 //TODO: What are we going to do if we have two arguments?
-				 var values = [];
-				 for (var i = initialValue; i < finalValue; i = i + stepValue) {
-					 values.push([i]);
-				 }
+				var finalValue = parseFloat(plotMetadata["finalValue"]);
+				var initialValue = parseFloat(plotMetadata["initialValue"]);
+				var stepValue = parseFloat(plotMetadata["stepValue"]);
 
-				 var plotTitle = plotMetadata["title"];
-				 var XAxisLabel = plotMetadata["xAxisLabel"];
-				 var YAxisLabel = plotMetadata["yAxisLabel"];
-				 //Generate options from metadata information
-				 options = {
-						 xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
-						 yaxis: {axisLabel: YAxisLabel},
-						 legendText: plotTitle
-				 };
+				//Create data series for plot
+				//TODO: What are we going to do if we have two arguments?
+				var values = [];
+				for (var i = initialValue; i < finalValue; i = i + stepValue) {
+					values.push([i]);
+				}
 
-				 //Convert from single expresion to parametired expresion (2x -> f(x)=2x)
-				 var parameterizedExpression = "f(";
-				 for (var argumentIndex in arguments) {
-					 parameterizedExpression += arguments[argumentIndex].argument + ",";
-				 }
-				 parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
-				 parameterizedExpression += ") =" + expression;
+				var plotTitle = plotMetadata["title"];
+				var XAxisLabel = plotMetadata["xAxisLabel"];
+				var YAxisLabel = plotMetadata["yAxisLabel"];
+				//Generate options from metadata information
+				options = {
+						xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
+						yaxis: {axisLabel: YAxisLabel},
+						legendText: plotTitle
+				};
 
-				 //Plot data function
-				 this.plotDataFunction(parameterizedExpression, values, options);
+				//Convert from single expresion to parametired expresion (2x -> f(x)=2x)
+				var parameterizedExpression = "f(";
+				for (var argumentIndex in arguments) {
+					parameterizedExpression += arguments[argumentIndex].argument + ",";
+				}
+				parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
+				parameterizedExpression += ") =" + expression;
 
-				 //Set title to widget
-				 this.setName(plotTitle);
-			 }
-			 return this;
-		 },
+				//Plot data function
+				this.plotDataFunction(parameterizedExpression, values, options);
+
+				//Set title to widget
+				this.setName(plotTitle);
+			}
+			return this;
+		},
+
+		/**
+		 * Plots a function against a data series
+		 *
+		 * @command dataFunction(func, data, options)
+		 * @param func - function to plot vs data
+		 * @param data - data series to plot against function
+		 * @param options - options for plotting widget
+		 */
+		plotDataFunction: function (func, data_x, options) {
+			// If no options specify by user, use default options
+			if (options != null) {
+				this.options = options;
+				if (this.options.xaxis.max > this.limit) {
+					this.limit = this.options.xaxis.max;
+				}
+			}
+
+			var labelsMap = this.labelsMap;
+			this.initializeLegend(function (label, series) {
+				var shortLabel = label;
+				//FIXME: Adhoc solution for org.neuroml.export
+				var split = label.split(/-(.+)?/);
+				if (split.length > 1) shortLabel = split[1];
+				labelsMap[label] = shortLabel;
+				return '<div class="legendLabel" id="' + label + '" title="' + label + '" shortLabel="' + shortLabel + '">' + shortLabel + '</div>';
+			});
+
+			//Parse func as a mathjs object
+			var parser = math.parser();
+			var mathFunc = parser.eval(func);
+			var data = [];
+			data.name = options.legendText;
+			data.data = [];
+			for (var data_xIndex in data_x) {
+				var dataElementString = data_x[data_xIndex].valueOf();
+				data_y = mathFunc(dataElementString);
+				//TODO: Understand why sometimes it returns an array and not a value
+				if (typeof value == 'object') {
+					data.data.push([data_x[data_xIndex][0], data_y[0]]);
+				}
+				else {
+					data.data.push([data_x[data_xIndex][0], data_y]);
+				}
+			}
+
+			//Plot values
+			if (options != null) {
+				this.options = options;
+				if (this.options.xaxis.max > this.limit) {
+					this.limit = this.options.xaxis.max;
+				}
+			}
+
+			this.datasets.push({
+				label: data.name,
+				data: data.data
+			});
+
+			var plotHolder = $("#" + this.id);
+
+			this.plot = $.plot(plotHolder, this.datasets, this.options);
+			return this;
+		},
+
+		plotXYData: function (dataY, dataX, options) {
+			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
+
+			// If no options specify by user, use default options
+			if (options != null) {
+				this.options = options;
+				if (this.options.xaxis.max > this.limit) {
+					this.limit = this.options.xaxis.max;
+				}
+			}
+
+			var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
+
+			this.datasets.push({
+				label: dataY.getInstancePath(),
+				variable: dataY,
+				data: timeSeriesData
+			});
+
+
+			if (this.datasets.length > 0) {
+
+				// check for inhomogeneousUnits and set flag
+				var refUnit = undefined;
+				for (var i = 0; i < this.datasets.length; i++) {
+					if (i == 0) {
+						refUnit = this.datasets[i].variable.getUnit();
+					} else if (refUnit != this.datasets[i].variable.getUnit()) {
+						this.inhomogeneousUnits = true;
+						this.labelsUpdated = false;
+						break;
+					}
+				}
+
+				this.updateAxis(this.datasets.length - 1);
+			}
+
+			var plotHolder = $("#" + this.id);
+
+			this.plot = $.plot(plotHolder, this.datasets, this.options);
+
+
+			return this;
+		}
 
 	});
 });

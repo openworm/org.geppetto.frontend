@@ -46,7 +46,7 @@ require.config({
      * E.G. If depenedency it's used more than once, it goes in here.
      */
     paths: {
-        'plotly': "widgets/plot/vendor/plotly-latest.min",
+        'plotly': "widgets/plot/vendor/plotly",
     },
 });
 

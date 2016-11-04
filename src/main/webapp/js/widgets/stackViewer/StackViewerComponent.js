@@ -450,7 +450,9 @@ define(function (require) {
                 .on('complete', setup.bind(this))
                 .load();
             function loadProgressHandler(loader, resource) {
-                this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
+                if (loader.progress < 100) {
+                    this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
+                }
             }
 
             function setup() {

@@ -271,7 +271,15 @@ define(function (require) {
                     Project.initialize();
                 }
                 GEPPETTO.G.listeners = [];
-                var update = JSON.parse(payload.project_loaded);
+
+                var update; 
+                if (typeof(payload) == "object"){
+                    update = payload.project_loaded;
+                }
+                else{
+                    update = JSON.parse(payload.project_loaded);
+                }
+                
                 var project = update.project;
                 var persisted = update.persisted;
                 window.Project = GEPPETTO.ProjectFactory.createProjectNode(project, persisted);
@@ -286,7 +294,16 @@ define(function (require) {
                 console.time(GEPPETTO.Resources.PARSING_MODEL);
                 GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.PARSING_MODEL);
 
-                var model = JSON.parse(payload.geppetto_model_loaded);
+                // var model = JSON.parse(payload.geppetto_model_loaded);
+
+                var model; 
+                if (typeof(payload) == "object"){
+                    model = payload.geppetto_model_loaded;
+                }
+                else{
+                    model = JSON.parse(payload.geppetto_model_loaded);
+                }
+
 
                 console.timeEnd(GEPPETTO.Resources.PARSING_MODEL);
 
@@ -355,7 +372,15 @@ define(function (require) {
              * @param payload
              */
             addVariableToModel: function (payload) {
-                var rawModel = JSON.parse(payload.variable_fetched);
+                //var rawModel = JSON.parse(payload.variable_fetched);
+
+                var rawModel; 
+                if (typeof(payload) == "object"){
+                    rawModel = payload.variable_fetched;
+                }
+                else{
+                    rawModel = JSON.parse(payload.variable_fetched);
+                }
 
                 console.time(GEPPETTO.Resources.ADDING_VARIABLE);
 

@@ -266,7 +266,7 @@ define(function (require) {
                 // Scale the plane by current zoom level:
                 if (Number(this.disp.scale.x) != 1) {
                     for (z in this.state.plane) {
-                        this.state.plane[z] = this.state.plane[z] * this.disp.scale.x;
+                        this.state.plane[z] = this.state.plane[z] / this.disp.scale.x;
                     }
                 }
                 this.passPlane();

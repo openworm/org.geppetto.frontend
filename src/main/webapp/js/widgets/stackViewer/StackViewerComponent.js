@@ -198,10 +198,10 @@ define(function (require) {
                 this.state.planeUpdating = true;
                 if (this.stack.width > 1) {
                     // console.log('Render width: ' + this.renderer.view.width);
-                    // console.log('Stack width: ' + this.stack.width);
+                    console.log('Stack width: ' + this.stack.width);
                     // console.log('Stack pox x: ' + this.stack.position.x);
                     // console.log('Display area width: ' + $('#displayArea').width());
-                    // console.log('Stage width: ' + this.stage.width);
+                    console.log('Stage width: ' + this.stage.width);
                     // console.log('Stage pox x: ' + this.stage.position.x);
                     var coordinates = [];
                     var x, y, z;

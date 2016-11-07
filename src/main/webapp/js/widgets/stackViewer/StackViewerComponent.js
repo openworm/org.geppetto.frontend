@@ -206,12 +206,12 @@ define(function (require) {
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y) :
-                    x = ((this.stack.width * 0.5) - (this.stage.position.x + this.stack.position.x))/this.disp.scale.x;
-                    y = ((this.stack.height * 0.5) - (this.stage.position.y + this.stack.position.y))/this.disp.scale.y;
+                    x = ((this.stack.width * 0.5) - (this.stage.position.x + this.stack.position.x));
+                    y = ((this.stack.height * 0.5) - (this.stage.position.y + this.stack.position.y));
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
-                    x = x + this.renderer.view.width;
-                    y = y + this.renderer.view.height;
+                    x = x + (this.renderer.view.width/this.disp.scale.x);
+                    y = y + (this.renderer.view.height/this.disp.scale.y);
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);
                     // console.log('Visible screen: ' + coordinates);

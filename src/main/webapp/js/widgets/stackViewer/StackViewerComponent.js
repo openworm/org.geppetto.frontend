@@ -269,7 +269,7 @@ define(function (require) {
                 //         this.state.plane[z] = this.state.plane[z] / this.disp.scale.x;
                 //     }
                 // }
-                // this.passPlane();
+                this.passPlane();
             }
         },
 

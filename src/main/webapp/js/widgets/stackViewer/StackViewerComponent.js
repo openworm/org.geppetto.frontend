@@ -507,71 +507,71 @@ define(function (require) {
             h = Math.ceil(this.state.imageY / this.state.tileY);
             // console.log('Tile grid is ' + w.toString() + ' wide by ' + h.toString() + ' high');
             this.state.numTiles = w * h;
-            if (this.state.numTiles > 1) {
-                for (t = 0; t < w * h; t++) {
-                    x = -(this.state.imageX * 0.5);
-                    y = -(this.state.imageY * 0.5);
-                    offY = 0;
-                    if ((t + 1) > w) {
-                        offY = Math.floor(t / w);
-                    }
-                    offX = (t - (offY * w));
-                    x += offX * this.state.tileX;
-                    y += offY * this.state.tileY;
-                    // console.log('Tiling: ' + [t,offX,offY,x,y,w,h]);
-                    if (((x * this.disp.scale.x) + this.stack.position.x) > -((this.renderer.view.width * 1) + (this.state.tileX * 2)) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + (this.state.tileX * 1)) && ((y * this.disp.scale.y) + this.stack.position.y) > -((this.renderer.view.height * 1) + (this.state.tileY * 2)) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + (this.state.tileY * 1))) {
-                        this.state.visibleTiles.push(t);
-                        for (i in this.state.stack) {
-                            d = i.toString() + ',' + t.toString();
-                            if (!this.state.images[d]) {
-                                // console.log('Adding ' + this.state.stack[i].toString());
-                                image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + t.toString();
-                                // console.log(image);
-                                this.state.images[d] = PIXI.Sprite.fromImage(image);
-                                this.state.images[d].anchor.x = 0;
-                                this.state.images[d].anchor.y = 0;
-                                this.state.images[d].position.x = x;
-                                this.state.images[d].position.y = y;
-                                this.state.images[d].zOrder = i;
-                                this.state.images[d].visible = true;
-                                if (!this.state.color[i]) {
-                                    this.generateColor();
-                                }
-                                this.state.images[d].tint = this.state.color[i];
-                                if (i > 0) {
-                                    // this.state.images[d].alpha = 0.9;
-                                    this.state.images[d].blendMode = PIXI.BLEND_MODES.SCREEN;
-                                }
-                                this.stack.addChild(this.state.images[d]);
-                            } else {
-                                this.state.images[d].anchor.x = 0;
-                                this.state.images[d].anchor.y = 0;
-                                this.state.images[d].position.x = x;
-                                this.state.images[d].position.y = y;
-                                this.state.images[d].zOrder = i;
-                                this.state.images[d].visible = true;
-                                if (!this.state.color[i]) {
-                                    this.generateColor();
-                                }
-                                this.state.images[d].tint = this.state.color[i];
-                                if (i > 0) {
-                                    // this.state.images[d].alpha = 0.9;
-                                    this.state.images[d].blendMode = PIXI.BLEND_MODES.SCREEN;
-                                }
+
+            for (t = 0; t < w * h; t++) {
+                x = -(this.state.imageX * 0.5);
+                y = -(this.state.imageY * 0.5);
+                offY = 0;
+                if ((t + 1) > w) {
+                    offY = Math.floor(t / w);
+                }
+                offX = (t - (offY * w));
+                x += offX * this.state.tileX;
+                y += offY * this.state.tileY;
+                // console.log('Tiling: ' + [t,offX,offY,x,y,w,h]);
+                if (((x * this.disp.scale.x) + this.stack.position.x) > -((this.renderer.view.width * 1) + ((this.state.tileX * 2) / this.disp.scale.x)) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1)/this.disp.scale.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > -((this.renderer.view.height * 1) + ((this.state.tileY * 2)/this.disp.scale.y)) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1)/this.disp.scale.y))) {
+                    this.state.visibleTiles.push(t);
+                    for (i in this.state.stack) {
+                        d = i.toString() + ',' + t.toString();
+                        if (!this.state.images[d]) {
+                            // console.log('Adding ' + this.state.stack[i].toString());
+                            image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + t.toString();
+                            // console.log(image);
+                            this.state.images[d] = PIXI.Sprite.fromImage(image);
+                            this.state.images[d].anchor.x = 0;
+                            this.state.images[d].anchor.y = 0;
+                            this.state.images[d].position.x = x;
+                            this.state.images[d].position.y = y;
+                            this.state.images[d].zOrder = i;
+                            this.state.images[d].visible = true;
+                            if (!this.state.color[i]) {
+                                this.generateColor();
+                            }
+                            this.state.images[d].tint = this.state.color[i];
+                            if (i > 0) {
+                                // this.state.images[d].alpha = 0.9;
+                                this.state.images[d].blendMode = PIXI.BLEND_MODES.SCREEN;
+                            }
+                            this.stack.addChild(this.state.images[d]);
+                        } else {
+                            this.state.images[d].anchor.x = 0;
+                            this.state.images[d].anchor.y = 0;
+                            this.state.images[d].position.x = x;
+                            this.state.images[d].position.y = y;
+                            this.state.images[d].zOrder = i;
+                            this.state.images[d].visible = true;
+                            if (!this.state.color[i]) {
+                                this.generateColor();
+                            }
+                            this.state.images[d].tint = this.state.color[i];
+                            if (i > 0) {
+                                // this.state.images[d].alpha = 0.9;
+                                this.state.images[d].blendMode = PIXI.BLEND_MODES.SCREEN;
                             }
                         }
-                    } else {
-                        for (i in this.state.stack) {
-                            d = i.toString() + ',' + t.toString();
-                            if (this.state.images[d] && this.state.images[d].visible) {
-                                this.state.images[d].visible = false;
-                                console.log('Hiding tile ' + d);
-                            }
-                        }
-                        // console.log('Tile ' + [offX,offY] + ' off screen.');
                     }
+                } else {
+                    for (i in this.state.stack) {
+                        d = i.toString() + ',' + t.toString();
+                        if (this.state.images[d] && this.state.images[d].visible) {
+                            this.state.images[d].visible = false;
+                            console.log('Hiding tile ' + d);
+                        }
+                    }
+                    // console.log('Tile ' + [offX,offY] + ' off screen.');
                 }
             }
+
         },
 
         createStatusText: function () {

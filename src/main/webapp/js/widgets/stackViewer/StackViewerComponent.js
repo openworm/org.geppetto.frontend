@@ -263,6 +263,12 @@ define(function (require) {
                     this.state.plane[6] = z;
                     this.state.plane[9] = z;
                 }
+                // Scale the plane by current zoom level:
+                if (this.state.zoomLevel != 1.0) {
+                    for (z in this.state.plane) {
+                        this.state.plane[z] = this.state.plane[z] * this.state.zoomLevel;
+                    }
+                }
                 this.passPlane();
             }
         },

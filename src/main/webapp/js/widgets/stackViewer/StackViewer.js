@@ -132,16 +132,31 @@ define(function (require) {
             return this;
         },
 
-        addSlice: function(instance){
-            console.log('Adding ' + instance.parent.getName() + ' to ' + this.data.instances.length);
-            this.data.instances = arrayUnique(this.data.instances.concat(instance));
+        addSlices: function(instances){
+            if (instances.length == undefined) {
+                console.log('Adding ' + instances.parent.getName() + ' to ' + this.data.instances.length);
+            }else{
+                console.log('Adding ' + instances.length + ' instances to ' + this.data.instances.length);
+            }
+            this.data.instances = arrayUnique(this.data.instances.concat(instances));
             console.log('Passing ' + this.data.instances.length + ' instances');
             this.updateScene();
         },
 
+        removeSlices: function(instances){
+            var i;
+            if (instances.length == undefined) {
+                this.removeSlice(instances);
+            }else{
+                for (i in instances){
+                    this.removeSlice(instances[i]);
+                }
+            }
+        },
+
         removeSlice: function(instance){
             console.log('Removing ' + instance.parent.getName() + ' from ' + this.data.instances.length);
-            var index = this.data.instances.indexOf(instance);
+            var index = this.data.instance.indexOf(instances);
             if (index > -1) {
                 this.data.instances.splice(index, 1);
                 console.log('Passing ' + this.data.instances.length + ' instances');

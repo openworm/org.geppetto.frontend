@@ -43,6 +43,18 @@ define(function (require) {
     var ReactDOM = require('react-dom');
     var StackViewerComponent = require('jsx!widgets/stackViewer/StackViewerComponent');
 
+    function arrayUnique(array) {
+        var a = array.concat();
+        for(var i=0; i<a.length; ++i) {
+            for(var j=i+1; j<a.length; ++j) {
+                if(a[i] === a[j])
+                    a.splice(j--, 1);
+            }
+        }
+
+        return a;
+    }
+
     return Widget.View.extend({
         variable: null,
         options: null,
@@ -120,10 +132,23 @@ define(function (require) {
             return this;
         },
 
-        setSlices: function(instances){
-            this.data.instances = this.data.instances.concat(instances);
-            console.log('Passing ' + this.data.instances.length + 'instances');
+        addSlice: function(instance){
+            console.log('Adding ' + instance.parent.getName() + ' to ' + this.data.instances.length);
+            this.data.instances = arrayUnique(this.data.instances.concat(instance));
+            console.log('Passing ' + this.data.instances.length + ' instances');
             this.updateScene();
+        },
+
+        removeSlice: function(instance){
+            console.log('Removing ' + instance.parent.getName() + ' from ' + this.data.instances.length);
+            var index = this.data.instances.indexOf(instance);
+            if (index > -1) {
+                this.data.instances.splice(index, 1);
+                console.log('Passing ' + this.data.instances.length + ' instances');
+                this.updateScene();
+            }else{
+                console.log(instance.parent.getName() + ' not found');
+            }
         },
 
         updateScene: function(){

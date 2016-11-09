@@ -766,7 +766,7 @@ define(function (require) {
             // store a reference to the data
             // the reason for this is because of multitouch
             // we want to track the movement of this particular touch
-            // console.log('drag start');
+            console.log('drag start');
             this.stack.data = event.data;
             this.stack.alpha = 0.7;
             this.stack.dragging = true;
@@ -779,12 +779,12 @@ define(function (require) {
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
             this.state.posY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
-            // console.log([this.state.posX,this.state.posY]);
+            console.log([this.state.posX,this.state.posY]);
         },
 
         onDragEnd: function () {
             if (this.stack.data !== null) {
-                // console.log('drag stop');
+                console.log('drag stop');
                 this.stack.alpha = 1;
 
                 this.stack.dragging = false;
@@ -792,7 +792,7 @@ define(function (require) {
                 var newPosX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
                 var newPosY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
-                    // console.log([newPosX, newPosY]);
+                    //console.log([newPosX, newPosY]);
                     this.callObjects();
                 }
                 // set the interaction data to null
@@ -826,6 +826,7 @@ define(function (require) {
                 var newPosition = this.stack.data.getLocalPosition(this.stack);
                 this.stack.position.x += newPosition.x - startPosition.x;
                 this.stack.position.y += newPosition.y - startPosition.y;
+                console.log(JSON.stringify(this.stack.position));
                 this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view

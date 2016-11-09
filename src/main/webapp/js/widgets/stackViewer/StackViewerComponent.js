@@ -298,7 +298,7 @@ define(function (require) {
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({
-                            url: image + '&prl=-1,' + (that.state.posX*that.disp.scale.x).toFixed(0) + ',' + (that.state.posY*that.disp.scale.y).toFixed(0) + '&obj=Wlz-foreground-objects',
+                            url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                             type: 'POST',
                             success: function (data) {
                                 result = data.trim().split(':')[1].trim().split(' ');

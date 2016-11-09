@@ -42,7 +42,7 @@ define(function (require) {
                 data: {},
                 dragOffset: {},
                 dragging: false,
-                dragMax: 50
+                dragMax: 200
             };
         },
         /**

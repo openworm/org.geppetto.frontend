@@ -823,7 +823,9 @@ define(function (require) {
         onDragMove: function (event) {
             if (this.stack.dragging) {
                 var startPosition = this.stack.dragOffset;
+                console.log('Start:' + JSON.stringify(startPosition));
                 var newPosition = this.stack.data.getLocalPosition(this.stack);
+                console.log('New:' + JSON.stringify(newPosition));
                 this.stack.position.x += newPosition.x - startPosition.x;
                 this.stack.position.y += newPosition.y - startPosition.y;
                 console.log(JSON.stringify(this.stack.position));

@@ -41,7 +41,8 @@ define(function (require) {
                 orth: this.props.orth,
                 data: {},
                 dragOffset: {},
-                dragging: false
+                dragging: false,
+                dragMax: 50
             };
         },
         /**
@@ -829,8 +830,8 @@ define(function (require) {
                 console.log('Start:' + JSON.stringify(startPosition));
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 console.log('New:' + JSON.stringify(newPosition));
-                // only allow jumps of < +/-20
-                if ((newPosition.x + 20) > startPosition.x && (newPosition.x - 20) < startPosition.x && (newPosition.y + 20) > startPosition.y && (newPosition.y - 20) < startPosition.y) {
+                // only allow jumps of < +/- dragMax
+                if ((newPosition.x + this.state.dragMax) > startPosition.x && (newPosition.x - this.state.dragMax) < startPosition.x && (newPosition.y + this.state.dragMax) > startPosition.y && (newPosition.y - this.state.dragMax) < startPosition.y) {
                     this.stack.position.x += newPosition.x - startPosition.x;
                     this.stack.position.y += newPosition.y - startPosition.y;
                     console.log(JSON.stringify(this.stack.position));

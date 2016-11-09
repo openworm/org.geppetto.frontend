@@ -793,8 +793,8 @@ define(function (require) {
 
                 this.state.dragging = false;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
-                var newPosX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
-                var newPosY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
+                var newPosX = startPosition.x + (this.state.imageX * 0.5);
+                var newPosY = startPosition.y + (this.state.imageY * 0.5);
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
                     //console.log([newPosX, newPosY]);
                     this.callObjects();

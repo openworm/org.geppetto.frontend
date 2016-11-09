@@ -137,7 +137,8 @@ define(function (require) {
                 if (instances.parent) {
                     console.log('Adding ' + instances.parent.getName() + ' to ' + this.data.instances.length);
                 }else{
-                    console.log('Adding ' + instances.getName() + ' to ' + this.data.instances.length);
+                    console.log('Adding ' + instances.toString() + ' to ' + this.data.instances.length);
+                    window.test = instances;
                 }
             }else{
                 console.log('Adding ' + instances.length + ' instances to ' + this.data.instances.length);

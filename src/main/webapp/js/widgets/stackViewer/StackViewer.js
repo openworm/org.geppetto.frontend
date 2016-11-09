@@ -134,7 +134,11 @@ define(function (require) {
 
         addSlices: function(instances){
             if (instances.length == undefined) {
-                console.log('Adding ' + instances.parent.getName() + ' to ' + this.data.instances.length);
+                if (instances.parent) {
+                    console.log('Adding ' + instances.parent.getName() + ' to ' + this.data.instances.length);
+                }else{
+                    console.log('Adding ' + instances.getName() + ' to ' + this.data.instances.length);
+                }
             }else{
                 console.log('Adding ' + instances.length + ' instances to ' + this.data.instances.length);
             }

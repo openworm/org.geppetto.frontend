@@ -829,13 +829,16 @@ define(function (require) {
                 console.log('Start:' + JSON.stringify(startPosition));
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 console.log('New:' + JSON.stringify(newPosition));
-                this.stack.position.x += newPosition.x - startPosition.x;
-                this.stack.position.y += newPosition.y - startPosition.y;
-                console.log(JSON.stringify(this.stack.position));
-                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
-                this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
-                // update slice view
-                this.checkStack();
+                // only allow jumps of < +/-20
+                if ((newPosition.x + 20) > startPosition.x && (newPosition.x - 20) < startPosition.x && (newPosition.y + 20) > startPosition.y && (newPosition.y - 20) < startPosition.y) {
+                    this.stack.position.x += newPosition.x - startPosition.x;
+                    this.stack.position.y += newPosition.y - startPosition.y;
+                    console.log(JSON.stringify(this.stack.position));
+                    this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
+                    this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
+                    // update slice view
+                    this.checkStack();
+                }
             } else {
                 this.onHoverEvent(event);
             }

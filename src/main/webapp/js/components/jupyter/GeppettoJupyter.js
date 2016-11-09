@@ -195,7 +195,7 @@ define(function (require, exports, module) {
 			id: '',
 			units: '',
 			anonymousTypes: [{ eClass: 'StateVariableType', id: 'StateVariable', name: 'StateVariable' }],
-			initialValues: [{value: {eClass: 'PhysicalQuantity', unit:{unit: 'ms'}}}],
+			initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: 'ms' } } }],
 			timeSeries: [],
 			geppettoInstance: null
 		}),
@@ -206,10 +206,7 @@ define(function (require, exports, module) {
 			// var payload =  {variable_fetched: this.attributes};
 			// GEPPETTO.SimulationHandler.addVariableToModel(payload);
 
-
 			this.on("change:timeSeries", function (model, value, options) {
-				console.log('timeSeries');
-
 				this.get('geppettoInstance').setTimeSeries(value);
 			});
 		}
@@ -227,25 +224,24 @@ define(function (require, exports, module) {
 
 			name: '',
 			id: '',
-			serialisedModel: '',
 			eClass: 'GeppettoModel',
 			libraries: [{ synched: true }],
 			stateVariables: [],
 			variables: []
 		}),
 
-		getPayload: function(){
+		getPayload: function () {
 
 			// Clear up variables
 			this.set('variables', []);
 
 			var geppettoStateVariables = [];
-			for (var i= 0; i < this.get('stateVariables').length; i++){
+			for (var i = 0; i < this.get('stateVariables').length; i++) {
 				// Add time as variable
-				if (this.get('stateVariables')[i].get('id') == 'time'){
+				if (this.get('stateVariables')[i].get('id') == 'time') {
 					this.get('variables').push(this.get('stateVariables')[i].attributes)
 				}
-				else{
+				else {
 					//Create array with states variables
 					geppettoStateVariables.push(this.get('stateVariables')[i].attributes)
 				}
@@ -275,40 +271,30 @@ define(function (require, exports, module) {
 		initialize: function () {
 			ModelSync.__super__.initialize.apply(this);
 
-			
-			GEPPETTO.SimulationHandler.loadModel({geppetto_model_loaded: this.getPayload()});
+			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: this.getPayload() });
 
 			this.on("change:stateVariables", function (model, value, options) {
-				console.log('New State Variable');
-
 				//TODO: Can we reuse this instead of realoading everything?
 				//GEPPETTO.SimulationHandler.addVariableToModel({variable_fetched: this.getPayload()});
 
-				GEPPETTO.SimulationHandler.loadModel({geppetto_model_loaded: this.getPayload()});
+				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: this.getPayload() });
 
 				//Create Instance for watch variables
-				for (var i= 0; i < this.get('stateVariables').length; i++){
+				for (var i = 0; i < this.get('stateVariables').length; i++) {
 					var instancePath = "";
-					if (this.get('stateVariables')[i].get('id') == 'time'){
+					if (this.get('stateVariables')[i].get('id') == 'time') {
 						instancePath = 'time'
 					}
-					else{
+					else {
 						instancePath = this.get('id') + "." + this.get('stateVariables')[i].get('id')
 					}
-
-
 					GEPPETTO.ModelFactory.addInstances(instancePath, window.Instances, window.Model);
 					var newInstance = window.Instances.getInstance([instancePath]);
+
+
 					this.get('stateVariables')[i].set('geppettoInstance', newInstance[0])
 					GEPPETTO.ExperimentsController.watchVariables(newInstance, true);
 				}
-
-				//Create Instance for time					
-				// GEPPETTO.ModelFactory.addInstances('time', window.Instances, window.Model);
-				// var newInstance = window.Instances.getInstance(['time']);
-				// GEPPETTO.ExperimentsController.watchVariables(newInstance, true);
-
-
 			});
 		}
 	}, {
@@ -317,14 +303,36 @@ define(function (require, exports, module) {
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 
+	var ExperimentSync = jupyter_widgets.WidgetModel.extend({
+		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
+			_model_name: 'ExperimentSync',
+			_model_module: "model",
+
+			id: '',
+			name: '',
+			lastModified: '',
+			state: ''
+		}),
+
+		initialize: function () {
+			ExperimentSync.__super__.initialize.apply(this);
+
+			this.on("change:state", function (model, value, options) {
+				console.log("changing state")
+				console.log(model)
+				console.log(value)
+			});
+		}
+	});
+
 	var ProjectSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'ProjectSync',
 			_model_module: "model",
 
-			name: '',
 			id: '',
-			serialisedProject: ''
+			name: '',
+			experiments: []
 		}),
 
 		initialize: function () {
@@ -332,13 +340,12 @@ define(function (require, exports, module) {
 
 			var payload = { project_loaded: { project: this.attributes, persisted: false } };
 			GEPPETTO.SimulationHandler.loadProject(payload);
-
-			this.on("change:serialisedProject", function (model, value, options) {
-				console.log('serialisedProject');
-
-			});
 		}
-	});
+	}, {
+			serializers: _.extend({
+				experiments: { deserialize: jupyter_widgets.unpack_models },
+			}, jupyter_widgets.WidgetModel.serializers)
+		});
 
 	module.exports = {
 		PanelView: PanelView,
@@ -347,6 +354,7 @@ define(function (require, exports, module) {
 		ComponentModel: ComponentModel,
 		StateVariableSync: StateVariableSync,
 		ModelSync: ModelSync,
+		ExperimentSync: ExperimentSync,
 		ProjectSync: ProjectSync
 	};
 });

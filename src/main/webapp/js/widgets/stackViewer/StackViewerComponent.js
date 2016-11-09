@@ -197,12 +197,12 @@ define(function (require) {
             if (!this.state.planeUpdating) {
                 this.state.planeUpdating = true;
                 if (this.stack.width > 1) {
-                    console.log('Render width: ' + this.renderer.view.width);
-                    console.log('Stack width: ' + this.stack.width);
-                    console.log('Stack pox x: ' + this.stack.position.x);
-                    console.log('Display area width: ' + $('#displayArea').width());
-                    console.log('Stage width: ' + this.stage.width);
-                    console.log('Stage pox x: ' + this.stage.position.x);
+                    // console.log('Render width: ' + this.renderer.view.width);
+                    // console.log('Stack width: ' + this.stack.width);
+                    // console.log('Stack pox x: ' + this.stack.position.x);
+                    // console.log('Display area width: ' + $('#displayArea').width());
+                    // console.log('Stage width: ' + this.stage.width);
+                    // console.log('Stage pox x: ' + this.stage.position.x);
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
@@ -263,12 +263,6 @@ define(function (require) {
                     this.state.plane[6] = z;
                     this.state.plane[9] = z;
                 }
-                // Scale the plane by current zoom level:
-                // if (Number(this.disp.scale.x) != 1) {
-                //     for (z in this.state.plane) {
-                //         this.state.plane[z] = this.state.plane[z] / this.disp.scale.x;
-                //     }
-                // }
                 this.passPlane();
             }
         },

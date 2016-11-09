@@ -781,8 +781,8 @@ define(function (require) {
             };
             startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
-            this.state.posX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
-            this.state.posY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
+            this.state.posX = startPosition.x + (this.state.imageX * 0.5);
+            this.state.posY = startPosition.y + (this.state.imageY * 0.5);
             console.log([this.state.posX,this.state.posY]);
         },
 

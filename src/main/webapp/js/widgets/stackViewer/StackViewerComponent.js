@@ -38,7 +38,10 @@ define(function (require) {
                 posY: 0,
                 loadingLabels: false,
                 mode: this.props.mode,
-                orth: this.props.orth
+                orth: this.props.orth,
+                data: {},
+                dragOffset: {},
+                dragging: false
             };
         },
         /**
@@ -767,15 +770,15 @@ define(function (require) {
             // the reason for this is because of multitouch
             // we want to track the movement of this particular touch
             console.log('drag start');
-            this.stack.data = event.data;
+            this.state.data = event.data;
             this.stack.alpha = 0.7;
-            this.stack.dragging = true;
-            var startPosition = this.stack.data.getLocalPosition(this.disp);
-            this.stack.dragOffset = {
+            this.state.dragging = true;
+            var startPosition = this.state.data.getLocalPosition(this.disp);
+            this.state.dragOffset = {
                 x: (startPosition.x - this.stack.position.x),
                 y: (startPosition.y - this.stack.position.y)
             };
-            startPosition = this.stack.data.getLocalPosition(this.stack);
+            startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
             this.state.posY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
@@ -783,12 +786,12 @@ define(function (require) {
         },
 
         onDragEnd: function () {
-            if (this.stack.data !== null) {
+            if (this.state.data !== null) {
                 console.log('drag stop');
                 this.stack.alpha = 1;
 
-                this.stack.dragging = false;
-                var startPosition = this.stack.data.getLocalPosition(this.stack);
+                this.state.dragging = false;
+                var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = startPosition.x + ((this.state.imageX * 0.5) * (1 / this.disp.scale.x));
                 var newPosY = startPosition.y + ((this.state.imageY * 0.5) * (1 / this.disp.scale.y));
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
@@ -796,15 +799,15 @@ define(function (require) {
                     this.callObjects();
                 }
                 // set the interaction data to null
-                this.stack.data = null;
+                this.state.data = null;
             }
         },
 
         onHoverEvent: function (event) {
             if (!this.state.loadingLabels) {
                 this.state.loadingLabels = true;
-                this.stack.data = event.data;
-                var currentPosition = this.stack.data.getLocalPosition(this.stack);
+                this.state.data = event.data;
+                var currentPosition = this.state.data.getLocalPosition(this.stack);
                 //console.log(currentPosition);
                 var xOffset = (this.state.imageX * 0.5) * (1 / this.disp.scale.x);
                 var yOffset = (this.state.imageY * 0.5) * (1 / this.disp.scale.y);
@@ -821,10 +824,10 @@ define(function (require) {
         },
 
         onDragMove: function (event) {
-            if (this.stack.dragging) {
-                var startPosition = this.stack.dragOffset;
+            if (this.state.dragging) {
+                var startPosition = this.state.dragOffset;
                 console.log('Start:' + JSON.stringify(startPosition));
-                var newPosition = this.stack.data.getLocalPosition(this.stack);
+                var newPosition = this.state.data.getLocalPosition(this.stack);
                 console.log('New:' + JSON.stringify(newPosition));
                 this.stack.position.x += newPosition.x - startPosition.x;
                 this.stack.position.y += newPosition.y - startPosition.y;

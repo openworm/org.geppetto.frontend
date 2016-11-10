@@ -831,7 +831,8 @@ define(function (require) {
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 console.log('New:' + JSON.stringify(newPosition));
                 // only allow jumps of < +/- dragMax
-                if ((newPosition.x + this.state.dragMax) > startPosition.x && (newPosition.x - this.state.dragMax) < startPosition.x && (newPosition.y + this.state.dragMax) > startPosition.y && (newPosition.y - this.state.dragMax) < startPosition.y) {
+                var dragMax = this.state.dragMax / this.disp.scale.x;
+                if ((newPosition.x + dragMax) > startPosition.x && (newPosition.x - dragMax) < startPosition.x && (newPosition.y + dragMax) > startPosition.y && (newPosition.y - dragMax) < startPosition.y) {
                     this.stack.position.x += newPosition.x - startPosition.x;
                     this.stack.position.y += newPosition.y - startPosition.y;
                     console.log(JSON.stringify(this.stack.position));

@@ -218,8 +218,8 @@ define(function (require) {
                         x = x + (this.renderer.view.width / this.disp.scale.x);
                         y = y + (this.renderer.view.height / this.disp.scale.y);
                     }else{
-                        x = x + (this.renderer.view.width);
-                        y = y + (this.renderer.view.height);
+                        x = x + (this.renderer.view.width / this.disp.scale.x);
+                        y = y + (this.renderer.view.height / this.disp.scale.y);
                     }
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);

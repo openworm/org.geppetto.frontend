@@ -214,13 +214,8 @@ define(function (require) {
                     y = ((this.stage.height * 0.5) - (this.stage.position.y + (this.stack.position.y*this.disp.scale.y)))/this.disp.scale.y;
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
-                    if (this.disp.scale.x > 1) {
-                        x = x + (this.renderer.view.width / this.disp.scale.x);
-                        y = y + (this.renderer.view.height / this.disp.scale.y);
-                    }else{
-                        x = x + (this.renderer.view.width / (this.disp.scale.x));
-                        y = y + (this.renderer.view.height / (this.disp.scale.y));
-                    }
+                    x = ((x*this.disp.scale.x) + this.renderer.view.width) / this.disp.scale.x;
+                    y = ((y*this.disp.scale.y) + this.renderer.view.height) / this.disp.scale.y;
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);
                     // console.log('Visible screen: ' + coordinates);

@@ -559,7 +559,15 @@ define(function (require) {
             loadExperiment: function (payload) {
                 console.time(GEPPETTO.Resources.LOADING_EXPERIMENT);
 
-                var message = JSON.parse(payload.experiment_loaded);
+                var message; 
+                if (typeof(payload) == "object"){
+                    message = payload.experiment_loaded;
+                }
+                else{
+                    message = JSON.parse(payload.experiment_loaded);
+                }
+
+                //var message = JSON.parse(payload.experiment_loaded);
 
                 var experimentId = message.experimentId;
                 var experiment = undefined;

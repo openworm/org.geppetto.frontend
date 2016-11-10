@@ -335,11 +335,23 @@ define(function (require, exports, module) {
 			experiments: []
 		}),
 
+		getPayload: function () {
+			var payload = {id: this.get('id'), name: this.get('name'), experiments: []}
+
+			for (var i = 0; i < this.get('experiments').length; i++) {
+				payload['experiments'].push(this.get('experiments')[i].attributes);
+			}
+			return payload
+		},	
+
 		initialize: function () {
 			ProjectSync.__super__.initialize.apply(this);
 
-			var payload = { project_loaded: { project: this.attributes, persisted: false } };
+			var payload = { project_loaded: { project: this.getPayload(), persisted: false } };
 			GEPPETTO.SimulationHandler.loadProject(payload);
+
+			payload = { experiment_loaded: {eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] } };
+			GEPPETTO.SimulationHandler.loadExperiment(payload)
 		}
 	}, {
 			serializers: _.extend({

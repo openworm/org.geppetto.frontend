@@ -190,15 +190,27 @@ define(function (require, exports, module) {
 			_model_name: 'StateVariableSync',
 			_model_module: "model",
 
-			eClass: 'Variable',
 			name: '',
 			id: '',
 			units: '',
-			anonymousTypes: [{ eClass: 'StateVariableType', id: 'StateVariable', name: 'StateVariable' }],
-			initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: 'ms' } } }],
 			timeSeries: [],
+
 			geppettoInstance: null
 		}),
+
+		getPayload: function () {
+			
+			var payload = {
+				eClass: 'Variable',
+				anonymousTypes:  [{ eClass: 'StateVariableType', id: 'StateVariable', name: 'StateVariable' }],
+				initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: this.get('units') } } }],
+				id: this.get('id'),
+				name: this.get('name'),
+				timeSeries: this.get('timeSeries')
+			}
+
+			return payload
+		},	
 
 		initialize: function () {
 			StateVariableSync.__super__.initialize.apply(this);
@@ -239,11 +251,11 @@ define(function (require, exports, module) {
 			for (var i = 0; i < this.get('stateVariables').length; i++) {
 				// Add time as variable
 				if (this.get('stateVariables')[i].get('id') == 'time') {
-					this.get('variables').push(this.get('stateVariables')[i].attributes)
+					this.get('variables').push(this.get('stateVariables')[i].getPayload())
 				}
 				else {
 					//Create array with states variables
-					geppettoStateVariables.push(this.get('stateVariables')[i].attributes)
+					geppettoStateVariables.push(this.get('stateVariables')[i].getPayload())
 				}
 			}
 
@@ -380,11 +392,6 @@ define(function (require, exports, module) {
 				var widget = G.addWidget(this.get('widget_id'))
 				this.set('widget_object', widget)
 
-				// if (this.get('data').length > 0) {
-				// 	for (var i = 0; i < this.get('data').length; i++){
-				// 		widget.setData(eval(this.get('data')[i]))
-				// 	}
-				// }
 				if (this.get('name') != '') {
 					widget.setName(this.get('name'))
 				}

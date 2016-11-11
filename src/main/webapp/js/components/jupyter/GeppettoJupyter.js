@@ -199,8 +199,7 @@ define(function (require, exports, module) {
 		}),
 
 		getPayload: function () {
-			
-			var payload = {
+			return {
 				eClass: 'Variable',
 				anonymousTypes:  [{ eClass: 'StateVariableType', id: 'StateVariable', name: 'StateVariable' }],
 				initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: this.get('units') } } }],
@@ -208,15 +207,10 @@ define(function (require, exports, module) {
 				name: this.get('name'),
 				timeSeries: this.get('timeSeries')
 			}
-
-			return payload
 		},	
 
 		initialize: function () {
 			StateVariableSync.__super__.initialize.apply(this);
-
-			// var payload =  {variable_fetched: this.attributes};
-			// GEPPETTO.SimulationHandler.addVariableToModel(payload);
 
 			this.on("change:timeSeries", function (model, value, options) {
 				this.get('geppettoInstance').setTimeSeries(value);
@@ -236,22 +230,17 @@ define(function (require, exports, module) {
 
 			name: '',
 			id: '',
-			eClass: 'GeppettoModel',
-			libraries: [{ synched: true }],
-			stateVariables: [],
-			variables: []
+			stateVariables: []
 		}),
 
 		getPayload: function () {
 
-			// Clear up variables
-			this.set('variables', []);
-
 			var geppettoStateVariables = [];
+			var geppettoVariables = [];
 			for (var i = 0; i < this.get('stateVariables').length; i++) {
 				// Add time as variable
 				if (this.get('stateVariables')[i].get('id') == 'time') {
-					this.get('variables').push(this.get('stateVariables')[i].getPayload())
+					geppettoVariables.push(this.get('stateVariables')[i].getPayload())
 				}
 				else {
 					//Create array with states variables
@@ -274,11 +263,14 @@ define(function (require, exports, module) {
 					}
 				]
 			}
-			this.get('variables').push(modelVariable)
+			geppettoVariables.push(modelVariable)
 
-			return this.attributes;
+			return {
+				eClass: 'GeppettoModel',
+				libraries: [{ synched: true }],
+				variables: geppettoVariables
+			}
 		},
-
 
 		initialize: function () {
 			ModelSync.__super__.initialize.apply(this);
@@ -286,9 +278,6 @@ define(function (require, exports, module) {
 			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: this.getPayload() });
 
 			this.on("change:stateVariables", function (model, value, options) {
-				//TODO: Can we reuse this instead of realoading everything?
-				//GEPPETTO.SimulationHandler.addVariableToModel({variable_fetched: this.getPayload()});
-
 				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: this.getPayload() });
 
 				//Create Instance for watch variables
@@ -302,7 +291,6 @@ define(function (require, exports, module) {
 					}
 					GEPPETTO.ModelFactory.addInstances(instancePath, window.Instances, window.Model);
 					var newInstance = window.Instances.getInstance([instancePath]);
-
 
 					this.get('stateVariables')[i].set('geppettoInstance', newInstance[0])
 					GEPPETTO.ExperimentsController.watchVariables(newInstance, true);
@@ -326,13 +314,15 @@ define(function (require, exports, module) {
 			state: ''
 		}),
 
+		getPayload : function(){
+			return { update: JSON.stringify([{"projectID":window.Project.id, "experimentID":Project.getActiveExperiment().id, "status":value}]) };
+		},
+
 		initialize: function () {
 			ExperimentSync.__super__.initialize.apply(this);
 
 			this.on("change:state", function (model, value, options) {
-				payload = { update: JSON.stringify([{"projectID":window.Project.id, "experimentID":Project.getActiveExperiment().id, "status":value}]) };
-				var message = {type: 'experiment_status', data: JSON.stringify(payload)}
-				GEPPETTO.SimulationHandler.onMessage(message);
+				GEPPETTO.SimulationHandler.onMessage({type: 'experiment_status', data: JSON.stringify(this.getPayload())});
 			});
 		}
 	});
@@ -356,15 +346,18 @@ define(function (require, exports, module) {
 			return payload
 		},	
 
+		getLoadExperimentPayload: function (){
+			return { experiment_loaded: {eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] } };
+		},
+
 		initialize: function () {
 			ProjectSync.__super__.initialize.apply(this);
 
-			var payload = { project_loaded: { project: this.getPayload(), persisted: false } };
-			GEPPETTO.SimulationHandler.loadProject(payload);
+			// Load the project
+			GEPPETTO.SimulationHandler.loadProject({ project_loaded: { project: this.getPayload(), persisted: false } });
 
-			payload = { experiment_loaded: {eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] } };
-			var message = {type: 'experiment_loaded', data: JSON.stringify(payload)}
-			GEPPETTO.SimulationHandler.onMessage(message);
+			// Load the first experiment
+			GEPPETTO.SimulationHandler.onMessage({type: 'experiment_loaded', data: JSON.stringify(this.getLoadExperimentPayload())});
 		}
 	}, {
 			serializers: _.extend({
@@ -385,8 +378,6 @@ define(function (require, exports, module) {
 
 		initialize: function () {
 			WidgetSync.__super__.initialize.apply(this);
-
-
 
 			if (this.get('widget_id') > -1) {
 				var widget = G.addWidget(this.get('widget_id'))

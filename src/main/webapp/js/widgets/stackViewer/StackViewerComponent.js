@@ -343,8 +343,8 @@ define(function (require) {
                         if (result !== '') {
                             for (j in result) {
                                 if (result[j] == '0') {
-                                    console.log(that.props.label[i]);
-                                    that.setStatusText(that.props.label[i]);
+                                    console.log(that.state.label[i]);
+                                    that.setStatusText(that.state.label[i]);
                                 } else {
                                     console.log('Odd value: ' + result[j].toString());
                                 }

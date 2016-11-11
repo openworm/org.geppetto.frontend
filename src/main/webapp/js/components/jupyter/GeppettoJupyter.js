@@ -318,9 +318,9 @@ define(function (require, exports, module) {
 			ExperimentSync.__super__.initialize.apply(this);
 
 			this.on("change:state", function (model, value, options) {
-				console.log("changing state")
-				console.log(model)
-				console.log(value)
+				payload = { update: JSON.stringify([{"projectID":window.Project.id, "experimentID":Project.getActiveExperiment().id, "status":value}]) };
+				var message = {type: 'experiment_status', data: JSON.stringify(payload)}
+				GEPPETTO.SimulationHandler.onMessage(message);
 			});
 		}
 	});
@@ -351,7 +351,8 @@ define(function (require, exports, module) {
 			GEPPETTO.SimulationHandler.loadProject(payload);
 
 			payload = { experiment_loaded: {eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] } };
-			GEPPETTO.SimulationHandler.loadExperiment(payload)
+			var message = {type: 'experiment_loaded', data: JSON.stringify(payload)}
+			GEPPETTO.SimulationHandler.onMessage(message);
 		}
 	}, {
 			serializers: _.extend({

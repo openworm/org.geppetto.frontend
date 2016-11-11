@@ -314,7 +314,7 @@ define(function (require, exports, module) {
 			state: ''
 		}),
 
-		getPayload : function(){
+		getPayload : function(value){
 			return { update: JSON.stringify([{"projectID":window.Project.id, "experimentID":Project.getActiveExperiment().id, "status":value}]) };
 		},
 
@@ -322,7 +322,7 @@ define(function (require, exports, module) {
 			ExperimentSync.__super__.initialize.apply(this);
 
 			this.on("change:state", function (model, value, options) {
-				GEPPETTO.SimulationHandler.onMessage({type: 'experiment_status', data: JSON.stringify(this.getPayload())});
+				GEPPETTO.SimulationHandler.onMessage({type: 'experiment_status', data: JSON.stringify(this.getPayload(value))});
 			});
 		}
 	});

@@ -14,95 +14,13 @@ define(function (require, exports, module) {
 
 	var $ = require('jquery');
 
-	var PanelView = jupyter_widgets.WidgetView.extend({
-		initialize: function (options) {
-			this.options = options || {};
-			this.options.parent = options.parent;
-			this.componentItems = [];
-
-			PanelView.__super__.initialize.apply(this, arguments);
-		},
-
-		add_item: function (model) {
-			var that = this;
-
-			var componentView = this.create_child_view(model)
-				.then(function (view) {
-					return view;
-				});
-			return componentView.then(function (view) {
-				return view.getComponent();
-			}).then(function (component) {
-				that.componentItems.push(component);
-				return componentView;
-			});
-
-		},
-
-		forceRender: function () {
-			this.componentItems = [];
-
-			var that = this;
-			Promise.all(this.itemsList.views).then(function (views) {
-
-				Promise.all(views.map(function (currentView) {
-					return currentView.getComponent().then(function (component) {
-						that.componentItems.push(component);
-						return component;
-					});
-				})).then(function () {
-					if (that.model.get("embedded") == false) {
-						that.model.get("component").setChildren(that.componentItems);
-					}
-					else {
-						that.options.parent.forceRender();
-					}
-				});
-			});
-		},
-
-		getComponent: function () {
-			var that = this;
-			return Promise.all(this.itemsList.views).then(function (views) {
-				return React.createFactory(PanelComp)({ id: that.model.get('widget_id'), name: that.model.get('widget_name'), items: that.componentItems, parentStyle: that.model.get('parentStyle') });
-			});
-		},
-
-		// Render the view.
-		render: function () {
-			//Serialize single instance
-			//var items_promise = this.set_Items(this.model.get("items"));
-
-			this.componentItems = [];
-
-			this.itemsList = new jupyter_widgets.ViewList(this.add_item, null, this);
-			this.itemsList.update(this.model.get("items"));
-
-
-			var that = this;
-			if (this.model.get("embedded") == false) {
-				this.getComponent().then(function (component) {
-					that.model.set("component", GEPPETTO.ComponentFactory.renderComponent(component));
-					that.$el = $("." + that.model.get('widget_id') + "_dialog");
-					if (that.model.get('positionX') > 0) {
-						that.$el.css({ left: that.model.get('positionX') });
-					}
-					if (that.model.get('positionY') > 0) {
-						that.$el.css({ top: that.model.get('positionY') });
-					}
-				});
-			}
-		}
-	});
-
 	var PanelModel = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: "PanelModel",
-			_view_name: "PanelView",
 			_model_module: "panel",
-			_view_module: "panel",
 
 			items: [],
+			parent: null,
 			component: null,
 			positionX: null,
 			positionY: null
@@ -110,42 +28,97 @@ define(function (require, exports, module) {
 
 		initialize: function () {
 			PanelModel.__super__.initialize.apply(this);
+
+			this.on("msg:custom", this.handle_custom_messages, this);
 		},
+
+		getComponent: function () {
+			var component = React.createFactory(PanelComp)({ id: this.get('widget_id'), name: this.get('widget_name'), items: this.getChildren(), parentStyle: this.get('parentStyle') });
+			this.set('component', component);
+			return component;
+		},
+
+		forceRender: function () {
+			if (this.get("embedded") == false) {
+				this.get("component").setChildren(this.getChildren());
+			}
+			else {
+				this.get("parent").forceRender();
+			}
+		},
+
+		getChildren: function() {
+			var children = [];
+			for (var i = 0; i < this.get('items').length; i++){
+				var item = this.get('items')[i];
+				item.set('parent', this);
+				children.push(item.getComponent())
+			}
+			return children;
+		},
+
+		display: function(){
+			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
+
+			//TODO: This can be done in a much more elegant way
+			if (this.get('positionX') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('positionX') });
+			}
+			if (this.get('positionY') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ top: this.get('positionY') });
+			}
+		},
+
+		handle_custom_messages: function(msg) {
+			if (msg.type === 'display') {
+				this.display();
+			}
+		}
 	}, {
 			serializers: _.extend({
 				items: { deserialize: jupyter_widgets.unpack_models },
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 
-	var ComponentView = jupyter_widgets.WidgetView.extend({
+	var ComponentModel = jupyter_widgets.WidgetModel.extend({
+		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
+			_model_name: 'ComponentModel',
+			_model_module: "component",
+
+			sync_value: undefined,
+			parent: null,
+			component: null
+		}),
+
 		initialize: function (options) {
-			this.options = options || {};
-			this.options.parent = options.parent;
-			ComponentView.__super__.initialize.apply(this, arguments);
+			ComponentModel.__super__.initialize.apply(this, arguments);
+			this.on("change:sync_value", function (model, value, options) {
+				model.get('parent').forceRender();
+			});
 		},
 
-		handleClick: function (view) {
+		handleClick: function (model) {
 			var data = { info: 'data sent' };
-			view.send({ event: 'click', data: data });
+			model.send({ event: 'click', data: data });
 		},
 
-		handleChange: function (view, value) {
+		handleChange: function (model, value) {
 			//TODO: Extract to an specific class (for checkbox component we need to save the value on change)
-			if (view.model.get('component_name') == 'CHECKBOX') {
-				view.model.set('sync_value', value);
-				view.touch();
+			if (model.get('component_name') == 'CHECKBOX') {
+				model.set('sync_value', value);
+				model.touch();
 			}
-			view.send({ event: 'change', data: parseFloat(value) });
+			model.send({ event: 'change', data: parseFloat(value) });
 		},
 
-		handleBlur: function (view, value) {
-			view.model.set('sync_value', value);
-			view.touch();
-			view.send({ event: 'blur', data: parseFloat(value) });
+		handleBlur: function (model, value) {
+			model.set('sync_value', value);
+			model.touch();
+			model.send({ event: 'blur', data: parseFloat(value) });
 		},
 
 		getComponent: function () {
-			var componentName = this.model.get('component_name');
+			var componentName = this.get('component_name');
 			var componentItem;
 			if (componentName == 'RAISEDBUTTON') {
 				componentItem = RaisedButtonComp;
@@ -156,32 +129,17 @@ define(function (require, exports, module) {
 			else if (componentName == 'CHECKBOX') {
 				componentItem = CheckboxComp;
 			}
-			return Promise.resolve(React.createFactory(componentItem)({ id: this.model.get('widget_id'), label: this.model.get('widget_name'), parentStyle: this.model.get('parentStyle'), sync_value: this.model.get('sync_value'), handleClick: this.handleClick.bind(null, this), handleChange: this.handleChange.bind(null, this), handleBlur: this.handleBlur.bind(null, this) }));
-			//return Promise.resolve(GEPPETTO.ComponentFactory.getComponent(this.model.get('component_name'),{id:this.model.get('widget_id'), label:this.model.get('widget_name'), parentStyle:this.model.get('parentStyle'), sync_value: this.model.get('sync_value'), handleClick: this.handleClick.bind(null, this), handleChange: this.handleChange.bind(null, this), handleBlur: this.handleBlur.bind(null, this)}));
-		},
-
-		// Render the view.
-		render: function () {
-			var that = this;
-			this.model.on("change:sync_value", function (model, value, options) {
-				that.options.parent.forceRender();
-			}, that);
-		}
-	});
-
-	var ComponentModel = jupyter_widgets.WidgetModel.extend({
-		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: 'ComponentModel',
-			_view_name: 'ComponentView',
-			_model_module: "component",
-			_view_module: "component",
-
-			sync_value: undefined,
-			component: null
-		}),
-
-		initialize: function () {
-			ComponentModel.__super__.initialize.apply(this);
+			
+			var component = React.createFactory(componentItem)({ 
+				id: this.get('widget_id'), 
+				label: this.get('widget_name'), 
+				parentStyle: this.get('parentStyle'), 
+				sync_value: this.get('sync_value'), 
+				handleClick: this.handleClick.bind(null, this), 
+				handleChange: this.handleChange.bind(null, this), 
+				handleBlur: this.handleBlur.bind(null, this) })
+			this.set('component', component);
+			return component;
 		}
 	});
 
@@ -410,9 +368,7 @@ define(function (require, exports, module) {
 
 
 	module.exports = {
-		PanelView: PanelView,
 		PanelModel: PanelModel,
-		ComponentView: ComponentView,
 		ComponentModel: ComponentModel,
 		StateVariableSync: StateVariableSync,
 		ModelSync: ModelSync,

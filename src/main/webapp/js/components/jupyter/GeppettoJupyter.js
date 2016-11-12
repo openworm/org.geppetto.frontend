@@ -172,6 +172,10 @@ define(function (require, exports, module) {
 
 			this.on("change:timeSeries", function (model, value, options) {
 				this.get('geppettoInstance').setTimeSeries(value);
+				//TODO This code is copy and paste from updateExperiment, reason why we should do this in a way we reuse all of that
+				if (value.length > GEPPETTO.ExperimentsController.maxSteps) {
+					GEPPETTO.ExperimentsController.maxSteps = value.length;
+				}
 			});
 		}
 	}, {
@@ -238,20 +242,21 @@ define(function (require, exports, module) {
 			this.on("change:stateVariables", function (model, value, options) {
 				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: this.getPayload() });
 
-				//Create Instance for watch variables
-				for (var i = 0; i < this.get('stateVariables').length; i++) {
-					var instancePath = "";
-					if (this.get('stateVariables')[i].get('id') == 'time') {
-						instancePath = 'time'
-					}
-					else {
-						instancePath = this.get('id') + "." + this.get('stateVariables')[i].get('id')
-					}
-					GEPPETTO.ModelFactory.addInstances(instancePath, window.Instances, window.Model);
-					var newInstance = window.Instances.getInstance([instancePath]);
+				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
+				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
+				var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+				GEPPETTO.ExperimentsController.watchVariables(instances, true);
+				GEPPETTO.ExperimentsController.playExperimentReady=true;
 
-					this.get('stateVariables')[i].set('geppettoInstance', newInstance[0])
-					GEPPETTO.ExperimentsController.watchVariables(newInstance, true);
+				for (var i = 0; i < this.get('stateVariables').length; i++) {
+					for (var j = 0; j < instances.length; j++) {
+						//TODO Wont work for more complex nesting, we'll need the path to come from Python
+						if(instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))){
+							this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
+
+							break;
+						}
+					}
 				}
 			});
 		}
@@ -272,7 +277,7 @@ define(function (require, exports, module) {
 			state: ''
 		}),
 
-		getPayload : function(){
+		getPayload : function(value){
 			return { update: JSON.stringify([{"projectID":window.Project.id, "experimentID":Project.getActiveExperiment().id, "status":value}]) };
 		},
 
@@ -280,7 +285,7 @@ define(function (require, exports, module) {
 			ExperimentSync.__super__.initialize.apply(this);
 
 			this.on("change:state", function (model, value, options) {
-				GEPPETTO.SimulationHandler.onMessage({type: 'experiment_status', data: JSON.stringify(this.getPayload())});
+				GEPPETTO.SimulationHandler.onMessage({type: 'experiment_status', data: JSON.stringify(this.getPayload(value))});
 			});
 		}
 	});

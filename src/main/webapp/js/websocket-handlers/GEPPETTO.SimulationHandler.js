@@ -147,6 +147,7 @@ define(function (require) {
                                 if (window.Project.getActiveExperiment().getId() == experimentID) {
                                     if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING &&
                                         status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                                        experiments[e].setStatus(status);
                                         GEPPETTO.trigger(Events.Experiment_completed, experimentID);
                                     }
                                     if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {

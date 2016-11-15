@@ -5,6 +5,8 @@ define(function (require) {
     var React = require('react');
 
     var Canvas = React.createClass({
+        _isMounted: false,
+
         getInitialState: function () {
             return {
                 buffer: {},
@@ -50,6 +52,9 @@ define(function (require) {
          * and hook up the PixiJS renderer
          **/
         componentDidMount: function () {
+            // signal component mounted (used to avoid calling isMounted() deprecated method)
+            this._isMounted = true;
+
             console.log('Loading....');
             //Setup PIXI Canvas in componentDidMount
             this.renderer = PIXI.autoDetectRenderer(this.props.width, this.props.height);
@@ -120,6 +125,10 @@ define(function (require) {
             this.renderer.destroy(true);
             this.renderer = null;
             GEPPETTO.getVARS().scene.remove(window.stackViewerPlane);
+
+            // signal component is now unmounted
+            this._isMounted = false;
+
             return true;
         },
 
@@ -761,9 +770,11 @@ define(function (require) {
          * Animation loop for updating Pixi Canvas
          **/
         animate: function () {
-            // render the stage container
-            this.renderer.render(this.stage);
-            this.frame = requestAnimationFrame(this.animate);
+            if(this._isMounted) {
+                // render the stage container (if the component is still mounted)
+                this.renderer.render(this.stage);
+                this.frame = requestAnimationFrame(this.animate);
+            }
         },
 
         onDragStart: function (event) {

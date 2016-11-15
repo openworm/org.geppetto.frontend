@@ -1139,6 +1139,7 @@ define(function (require) {
                     window[topInstances[k].getId()] = topInstances[k];
                     window.Instances[topInstances[k].getId()] = topInstances[k];
                 }
+                //TODO Should we trigger that instances were added?
             },
 
             /**

@@ -245,6 +245,7 @@ define(function (require, exports, module) {
 				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
 				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
 				var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+				GEPPETTO.ControlPanel.setData(instances);
 				GEPPETTO.ExperimentsController.watchVariables(instances, true);
 				GEPPETTO.ExperimentsController.playExperimentReady=true;
 

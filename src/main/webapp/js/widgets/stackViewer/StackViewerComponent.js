@@ -478,6 +478,11 @@ define(function (require) {
         },
 
         checkStack: function () {
+            if(!this._isMounted){
+                // check that component is still mounted
+                return;
+            }
+
             if (this.state.lastUpdate < (Date.now() - 2000)) {
                 this.state.lastUpdate = Date.now();
                 this.state.buffer[-1].text = '';
@@ -871,6 +876,8 @@ define(function (require) {
     var prefix = "", _addEventListener, onwheel, support;
 
     var StackViewerComponent = React.createClass({
+        _isMounted: false,
+
         getInitialState: function () {
             return {
                 zoomLevel: 1.0,
@@ -943,6 +950,8 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+            this._isMounted = true;
+
             // detect event model
             if (window.addEventListener) {
                 this._addEventListener = "addEventListener";
@@ -1035,6 +1044,8 @@ define(function (require) {
 
         componentWillUnmount: function () {
         	// React.unmountComponentAtNode(document.getElementById('displayArea'));
+            this._isMounted = false;
+
             return true;
         },
         /**

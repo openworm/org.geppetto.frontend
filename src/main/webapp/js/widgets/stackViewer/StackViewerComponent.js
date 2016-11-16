@@ -532,7 +532,7 @@ define(function (require) {
                 x += offX * this.state.tileX;
                 y += offY * this.state.tileY;
                 // console.log('Tiling: ' + [t,offX,offY,x,y,w,h]);
-                if (((x * this.disp.scale.x) + this.stack.position.x) > -((this.renderer.view.width * 1) + ((this.state.tileX * 2) * this.disp.scale.x)) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1)* this.disp.scale.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > -((this.renderer.view.height * 1) + ((this.state.tileY * 2)* this.disp.scale.y)) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1)* this.disp.scale.y))) {
+                if (((x * this.disp.scale.x) + this.stack.position.x) > (-((this.renderer.view.width * 1) + (this.state.tileX * 2)) + this.stack.position.x) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1)+ this.stack.position.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > (-((this.renderer.view.height * 1) + (this.state.tileY * 2))+this.stack.position.y) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1)+this.stack.position.y))) {
                     this.state.visibleTiles.push(t);
                     for (i in this.state.stack) {
                         d = i.toString() + ',' + t.toString();

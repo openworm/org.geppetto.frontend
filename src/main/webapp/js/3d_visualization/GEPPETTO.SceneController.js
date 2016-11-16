@@ -1224,21 +1224,26 @@ define(function (require) {
              * Animate simulation
              */
             animate: function () {
-                GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate;
-                // so that we log only the cycles when we are updating the scene
+                if (window.taka == undefined){
 
-                GEPPETTO.getVARS().controls.update();
+                    GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate;
+                    // so that we log only the cycles when we are updating the scene
 
-                requestAnimationFrame(GEPPETTO.SceneController.animate);
-                GEPPETTO.render();
+                    GEPPETTO.getVARS().controls.update();
 
-                if (GEPPETTO.getVARS().stats) {
-                    GEPPETTO.getVARS().stats.update();
+                    
+                    requestAnimationFrame(GEPPETTO.SceneController.animate);
+                    GEPPETTO.render();
+
+                    if (GEPPETTO.getVARS().stats) {
+                        GEPPETTO.getVARS().stats.update();
+                    }
+
+                    if (GEPPETTO.getVARS().debugUpdate) {
+                        GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
+                    }
                 }
-
-                if (GEPPETTO.getVARS().debugUpdate) {
-                    GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
-                }
+                window.taka = true;
             },
 
             /**

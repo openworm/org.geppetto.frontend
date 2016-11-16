@@ -67,6 +67,10 @@
 	margin-left : -2px;
 }
 
+.widget-title-bar-button:hover{
+	color : white;
+}
+
 .ui-icon:hover {
 	color : white;	
 }
@@ -113,10 +117,6 @@
     font-size: 15px;
     color: #fc6320;
     cursor: pointer;
-}
-
-.widget-title-bar-button:hover {
-    color: #fc401a;
 }
 
 .ui-dialog .ui-dialog-title {

@@ -556,6 +556,12 @@ define(function (require) {
                            },
                            "minimize" : function(evt, dlg){
                          	  $("#"+that.id).dialog({ title: that.name});
+                            },
+                            "maximize" : function(evt,dlg){
+                            	$(this).trigger('resizeEnd');
+                            },
+                            "restore" : function(evt,dlg){
+                            	$(this).trigger('resizeEnd');
                             }
                         });
 

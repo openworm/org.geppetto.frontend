@@ -47,6 +47,8 @@ require.config({
      */
     paths: {
         'plotly': "widgets/plot/vendor/plotly-latest.min",
+        'jszip': "widgets/plot/vendor/jszip.min",
+        'file-saver': "widgets/plot/vendor/FileSaver.min",
     },
 });
 
@@ -55,6 +57,8 @@ require.config({
  */
 var libraries = [];
 libraries.push("plotly");
+libraries.push("jszip");
+libraries.push("file-saver");
 define("math.global", ["mathjs"], function (_) {
     math = _;
 });

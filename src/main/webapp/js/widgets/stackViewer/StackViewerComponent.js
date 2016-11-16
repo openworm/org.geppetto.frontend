@@ -67,8 +67,8 @@ define(function (require) {
             this.stage = new PIXI.Container();
             this.stage.pivot.x = 0;
             this.stage.pivot.y = 0;
-            this.stage.position.x = this.renderer.view.width * 0.5;
-            this.stage.position.y = this.renderer.view.height * 0.5;
+            this.stage.position.x = ((this.renderer.view.width * 0.5) * this.props.zoomLevel);
+            this.stage.position.y = ((this.renderer.view.height * 0.5) * this.props.zoomLevel);
             this.disp = new PIXI.Container();
             this.disp.pivot.x = 0;
             this.disp.pivot.y = 0;

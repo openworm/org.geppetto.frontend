@@ -883,7 +883,7 @@ define(function (require) {
 
         getInitialState: function () {
             return {
-                zoomLevel: 1.0,
+                zoomLevel: 0.5,
                 dst: 0,
                 text: '',
                 serverUrl: 'http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi',
@@ -1147,7 +1147,7 @@ define(function (require) {
          * Event handler for clicking Home.
          **/
         onHome: function () {
-            this.setState({dst: 0, stackX: 0, stackY: 0, text: 'View reset', zoomLevel: 1.0});
+            this.setState({dst: 0, stackX: 0, stackY: 0, text: 'View reset', zoomLevel: 0.5});
         },
 
         onExtentChange: function (data) {
@@ -1206,17 +1206,17 @@ define(function (require) {
             var stepOutClass = 'btn fa fa-chevron-up';
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
-            var startOffset = 105;
-            var displayArea =  this.props.data.id + 'displayArea'
+            var startOffset = 2.5;
+            var displayArea =  this.props.data.id + 'displayArea';
             return (
                 <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
-                    <button style={{position: 'absolute', left: startOffset, top: -21, padding: 0, border: 0}} className={homeClass} onClick={this.onHome}></button>
-                    <button style={{position: 'absolute', left: startOffset+20, top: -21, padding: 0, border: 0}} className={zoomInClass} onClick={this.onZoomIn}></button>
-                    <button style={{position: 'absolute', left: startOffset+35, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomOut}></button>
-                    <button style={{position: 'absolute', left: startOffset+55, top: -21, padding: 0, border: 0}} className={stepInClass} onClick={this.onStepIn}></button>
-                    <button style={{position: 'absolute', left: startOffset+70, top: -21, padding: 0, border: 0}} className={stepOutClass} onClick={this.onStepOut}></button>
-                    <button style={{position: 'absolute', left: startOffset+90, top: -21, padding: 0, border: 0}} className={orthClass} onClick={this.toggleOrth}></button>
-                    <button style={{position: 'absolute', left: startOffset+110, top: -21, padding: 0, border: 0}} className={pointerClass} onClick={this.toggleMode}></button>
+                    <button style={{position: 'absolute', right: startOffset, padding: 0, border: 0, background: 'transparent'}} className={homeClass} onClick={this.onHome}/>
+                    <button style={{position: 'absolute', right: startOffset+20, padding: 0, border: 0, background: 'transparent'}} className={zoomInClass} onClick={this.onZoomIn}/>
+                    <button style={{position: 'absolute', right: startOffset+35, padding: 0, border: 0, background: 'transparent'}} className={zoomOutClass} onClick={this.onZoomOut}/>
+                    <button style={{position: 'absolute', right: startOffset+55, padding: 0, border: 0, background: 'transparent'}} className={stepInClass} onClick={this.onStepIn}/>
+                    <button style={{position: 'absolute', right: startOffset+70, padding: 0, border: 0, background: 'transparent'}} className={stepOutClass} onClick={this.onStepOut}/>
+                    <button style={{position: 'absolute', right: startOffset+90, padding: 0, border: 0, background: 'transparent'}} className={orthClass} onClick={this.toggleOrth}/>
+                    <button style={{position: 'absolute', right: startOffset+110, padding: 0, border: 0, background: 'transparent'}} className={pointerClass} onClick={this.toggleMode}/>
                     <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
                             fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                             stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}

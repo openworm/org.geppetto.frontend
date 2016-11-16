@@ -965,7 +965,7 @@ define(function (require) {
             support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
                 document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
                     "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
-            this.addWheelListener($('#displayArea')[0], function (e) {
+            this.addWheelListener($('#'+this.props.displayArea)[0], function (e) {
                 this.onWheelEvent(e);
             }.bind(this));
 
@@ -1206,8 +1206,9 @@ define(function (require) {
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
             var startOffset = 105;
+            var displayArea =  this.props.data.id + 'displayArea'
             return (
-                <div id="displayArea" style={{position: 'absolute', top: -1, left: -1}}>
+                <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
                     <button style={{position: 'absolute', left: startOffset, top: -21, padding: 0, border: 0}} className={homeClass} onClick={this.onHome}></button>
                     <button style={{position: 'absolute', left: startOffset+20, top: -21, padding: 0, border: 0}} className={zoomInClass} onClick={this.onZoomIn}></button>
                     <button style={{position: 'absolute', left: startOffset+35, top: -21, padding: 0, border: 0}} className={zoomOutClass} onClick={this.onZoomOut}></button>
@@ -1221,7 +1222,7 @@ define(function (require) {
                             statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                             scl={this.state.scl} orth={this.state.orth}
                             label={this.state.label} id={this.state.id} height={this.props.data.height}
-                            width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX} voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} />
+                            width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX} voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea} />
                 </div>
             );
         }

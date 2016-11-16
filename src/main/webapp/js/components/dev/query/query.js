@@ -227,11 +227,12 @@ define(function (require) {
         componentDidMount: function(){
             // apply carousel
             if(this.isCarousel) {
-                $('#' + this.imageContainerId + '.slickdiv').slick();
+                var slickDivElement = $('#' + this.imageContainerId + '.slickdiv');
+                slickDivElement.slick();
                 var that = this;
                 
                 //reload slick carousel if it's first time clicking on arrow in any direction
-                $('#' + this.imageContainerId + '.slickdiv').find(".slick-arrow").on("click", function(){
+                slickDivElement.find(".slick-arrow").on("click", function(){
                 	if(!that.fullyLoaded){
                 		that.setState({carouselFullyLoaded : true});
                 		that.fullyLoaded = true;
@@ -240,7 +241,7 @@ define(function (require) {
             }
         },
         
-        componentDidUpdate(params) {
+        componentDidUpdate() {
         	//on component refresh, update slick carousel
             $('#' + this.imageContainerId + '.slickdiv').slick('unslick').slick();
         },

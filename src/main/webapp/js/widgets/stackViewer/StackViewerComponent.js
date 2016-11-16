@@ -5,6 +5,8 @@ define(function (require) {
     var React = require('react');
 
     var Canvas = React.createClass({
+        _isMounted: false,
+
         getInitialState: function () {
             return {
                 buffer: {},
@@ -51,6 +53,9 @@ define(function (require) {
          * and hook up the PixiJS renderer
          **/
         componentDidMount: function () {
+            // signal component mounted (used to avoid calling isMounted() deprecated method)
+            this._isMounted = true;
+
             console.log('Loading....');
             //Setup PIXI Canvas in componentDidMount
             this.renderer = PIXI.autoDetectRenderer(this.props.width, this.props.height);
@@ -121,6 +126,10 @@ define(function (require) {
             this.renderer.destroy(true);
             this.renderer = null;
             GEPPETTO.getVARS().scene.remove(this.state.stackViewerPlane);
+
+            // signal component is now unmounted
+            this._isMounted = false;
+
             return true;
         },
 
@@ -470,6 +479,11 @@ define(function (require) {
         },
 
         checkStack: function () {
+            if(!this._isMounted){
+                // check that component is still mounted
+                return;
+            }
+
             if (this.state.lastUpdate < (Date.now() - 2000)) {
                 this.state.lastUpdate = Date.now();
                 this.state.buffer[-1].text = '';
@@ -762,9 +776,11 @@ define(function (require) {
          * Animation loop for updating Pixi Canvas
          **/
         animate: function () {
-            // render the stage container
-            this.renderer.render(this.stage);
-            this.frame = requestAnimationFrame(this.animate);
+            if(this._isMounted) {
+                // render the stage container (if the component is still mounted)
+                this.renderer.render(this.stage);
+                this.frame = requestAnimationFrame(this.animate);
+            }
         },
 
         onDragStart: function (event) {
@@ -861,6 +877,8 @@ define(function (require) {
     var prefix = "", _addEventListener, onwheel, support;
 
     var StackViewerComponent = React.createClass({
+        _isMounted: false,
+
         getInitialState: function () {
             return {
                 zoomLevel: 1.0,
@@ -933,6 +951,8 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+            this._isMounted = true;
+
             // detect event model
             if (window.addEventListener) {
                 this._addEventListener = "addEventListener";
@@ -1025,6 +1045,8 @@ define(function (require) {
 
         componentWillUnmount: function () {
         	// React.unmountComponentAtNode(document.getElementById('displayArea'));
+            this._isMounted = false;
+
             return true;
         },
         /**

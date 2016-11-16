@@ -126,7 +126,7 @@ define(function (require) {
             this.renderer.destroy(true);
             this.renderer = null;
             GEPPETTO.getVARS().scene.remove(this.state.stackViewerPlane);
-
+            PIXI.loader.reset();
             // signal component is now unmounted
             this._isMounted = false;
 

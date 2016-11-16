@@ -1044,7 +1044,6 @@ define(function (require) {
         },
 
         componentWillUnmount: function () {
-        	// React.unmountComponentAtNode(document.getElementById('displayArea'));
             this._isMounted = false;
 
             return true;

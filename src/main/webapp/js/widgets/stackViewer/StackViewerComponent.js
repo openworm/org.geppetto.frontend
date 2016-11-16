@@ -965,7 +965,7 @@ define(function (require) {
             support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
                 document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
                     "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
-            this.addWheelListener($('#'+this.props.displayArea)[0], function (e) {
+            this.addWheelListener($('#' + this.props.data.id + 'displayArea')[0], function (e) {
                 this.onWheelEvent(e);
             }.bind(this));
 

@@ -60,7 +60,7 @@ define(function (require) {
         options: null,
         defHeight: 400,
         defWidth: 600,
-        data: { height: this.defHeight, width: this.defWidth, instances: [], selected: [] },
+        data: { id: this.id, height: this.defHeight, width: this.defWidth, instances: [], selected: [] },
 
         /**
          * Initialises button bar

@@ -106,14 +106,14 @@ define(function (require, exports, module) {
 			//TODO: Extract to an specific class (for checkbox component we need to save the value on change)
 			if (model.get('component_name') == 'CHECKBOX') {
 				model.set('sync_value', value);
-				model.touch();
+				model.save_changes();
 			}
 			model.send({ event: 'change', data: parseFloat(value) });
 		},
 
 		handleBlur: function (model, value) {
 			model.set('sync_value', value);
-			model.touch();
+			model.save_changes();
 			model.send({ event: 'blur', data: parseFloat(value) });
 		},
 

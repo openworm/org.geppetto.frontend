@@ -29,6 +29,7 @@ define(function (require) {
                 voxelY: this.props.voxelY,
                 voxelZ: this.props.voxelZ,
                 visibleTiles: [0],
+                stackViewerPlane: false,
                 plane: [0,0,0,this.props.width,0,0,0,this.props.height,0,this.props.width,this.props.height,0],
                 planeUpdating: false,
                 lastUpdate: 0,
@@ -119,7 +120,7 @@ define(function (require) {
             this.refs.stackCanvas.removeChild(this.renderer.view);
             this.renderer.destroy(true);
             this.renderer = null;
-            GEPPETTO.getVARS().scene.remove(window.stackViewerPlane);
+            GEPPETTO.getVARS().scene.remove(this.state.stackViewerPlane);
             return true;
         },
 
@@ -272,14 +273,14 @@ define(function (require) {
         },
 
         passPlane: function () {
-            if (window.stackViewerPlane) {
+            if (this.state.stackViewerPlane) {
                 // console.log('Moving plane to: ' + this.state.plane);
-                window.stackViewerPlane=GEPPETTO.SceneFactory.modify3DPlane(window.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+                this.state.stackViewerPlane=GEPPETTO.SceneFactory.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
             }else{
                 // console.log('Creating plane: ' + this.state.plane);
-                window.stackViewerPlane=GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
-                if (!window.stackViewerPlane.visible) {
-                    window.stackViewerPlane.visible = true;
+                this.state.stackViewerPlane=GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+                if (this.state.stackViewerPlane.visible) {
+                    this.state.stackViewerPlane.visible = true;
                 }
             }
             this.state.planeUpdating = false;

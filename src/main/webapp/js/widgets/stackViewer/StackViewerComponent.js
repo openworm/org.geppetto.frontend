@@ -129,6 +129,15 @@ define(function (require) {
             this.renderer = null;
             GEPPETTO.getVARS().scene.remove(this.state.stackViewerPlane);
             PIXI.loader.reset();
+
+            // free texture caches
+            for (var textureUrl in PIXI.utils.BaseTextureCache) {
+                delete PIXI.utils.BaseTextureCache[textureUrl];
+            }
+            for (var textureUrl in PIXI.utils.TextureCache) {
+                delete PIXI.utils.TextureCache[textureUrl];
+            }
+
             // signal component is now unmounted
             this._isMounted = false;
 

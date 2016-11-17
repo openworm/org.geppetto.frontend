@@ -174,7 +174,7 @@ define(function (require) {
 			
 			$("#"+this.id).dialog({
 				resize: function(event, ui) { 
-					that.resize(); 
+					that.resize(true); 
 				}
 			});
 
@@ -300,10 +300,14 @@ define(function (require) {
 			return this;
 		},
 
-		resize : function(){
+		resize : function(draggedResize){
 			var divheight = $("#"+this.id).height();
 			var divwidth = $("#"+this.id).width();
 
+			if(draggedResize){
+				divheighth = divheight -5;
+				this.plotOptions.margin.b = 40;
+			}
 			this.plotOptions.width = divwidth;
 			this.plotOptions.height = divheight;
 			//resizes plot right after creation, needed for d3 to resize 

@@ -122,11 +122,9 @@ define(function (require) {
         function toggleFooterZIndex(focus){
         	if(G.isConsoleFocused()){
         		if(focus){
-        			$("#footer").removeClass("footerOutFocus");
-        			$("#footer").addClass("footerFocus");
+        			GEPPETTO.Console.focusFooter();
         		}else{
-        			$("#footer").removeClass("footerFocus");
-        			$("#footer").addClass("footerOutFocus");
+        			GEPPETTO.Console.unfocusFooter();
         		}
         	}
         }
@@ -279,6 +277,17 @@ define(function (require) {
             tags: [],
             objectTags: [],
 
+            
+            focusFooter : function(){
+            	$("#footer").removeClass("footerOutFocus");
+            	$("#footer").addClass("footerFocus");
+            },
+
+            unfocusFooter : function(){
+            	$("#footer").removeClass("footerFocus");
+            	$("#footer").addClass("footerOutFocus");
+            },
+            
             /**
              * Global help functions with all commands in global objects.
              *
@@ -320,10 +329,13 @@ define(function (require) {
                             output.scrollTop = output.scrollHeight;
                         }, 100);
                     }
+                  
+                     GEPPETTO.Console.focusFooter();
                 }
                 else {
                     $('#footer').height('');
                     $('#console').slideToggle(200);
+                    GEPPETTO.Console.unfocusFooter();
                 }
                 this.visible = mode;
             },

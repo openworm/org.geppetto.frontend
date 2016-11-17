@@ -67,8 +67,8 @@ define(function (require) {
             this.stage = new PIXI.Container();
             this.stage.pivot.x = 0;
             this.stage.pivot.y = 0;
-            this.stage.position.x = ((this.renderer.view.width * 0.5) * this.props.zoomLevel);
-            this.stage.position.y = ((this.renderer.view.height * 0.5) * this.props.zoomLevel);
+            this.stage.position.x = ((this.props.width * 0.5) * this.props.zoomLevel);
+            this.stage.position.y = ((this.props.height * 0.5) * this.props.zoomLevel);
             this.disp = new PIXI.Container();
             this.disp.pivot.x = 0;
             this.disp.pivot.y = 0;
@@ -347,10 +347,10 @@ define(function (require) {
                 var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.disp.scale.x.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
                 //get image size;
                 $.ajax({
-                    url: image + '&prl=-1,' + this.state.posX + ',' + this.state.posY + '&obj=Wlz-foreground-objects',
+                    url: image + '&prl=-1,' + this.state.posX.toFixed(0) + ',' + this.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                     type: 'POST',
                     success: function (data) {
-                        // console.log(that.props.label[i] + ' - ' + data.trim());
+                        console.log(that.props.label[i] + ' - ' + data.trim());
                         result = data.trim().split(':')[1].trim().split(' ');
                         if (result !== '') {
                             for (j in result) {
@@ -623,8 +623,8 @@ define(function (require) {
             var updDst = false;
             if (nextProps.text == 'View reset'){
                 console.log('Reseting position...');
-                this.stage.position.x = this.renderer.view.width * 0.5;
-                this.stage.position.y = this.renderer.view.height * 0.5;
+                this.stage.position.x = ((this.props.width * 0.5) * this.disp.scale.x);
+                this.stage.position.y = ((this.props.height * 0.5) * this.disp.scale.y);
             }
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
                 this.state.stack = nextProps.stack;

@@ -41,7 +41,7 @@ define(function (require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 	var Type = require('model/Type');
-	var anchorme = require('anchorme');
+	// var anchorme = require('anchorme');
 	/**
 	 * Private function to hookup custom event handlers
 	 *
@@ -253,14 +253,14 @@ define(function (require) {
 						var elements = "";
 						for (var j = 0; j < value.elements.length; j++) {
 							var image = value.elements[j].initialValue;
-							elements += "<div class='popup-slick-image'>" + image.name + "<a href='' instancepath='" + image.reference + "'><img  class='popup-image invert' src='" + image.data + "'/></a></div>";
+							elements += "<div class='popup-slick-image'>" + image.name + "<a href='' instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
 						}
 						html += "<div id='" + id + "' class='slickdiv popup-slick collapse in' data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}' >" + elements + "</div>";
 					}
 					else if (value.eClass == GEPPETTO.Resources.IMAGE) {
 						//otherwise we just show an image
 						var image = value;
-						html += "<div id='" + id + "' class='popup-image collapse in'><a href='' instancepath='" + image.reference + "'><img  class='popup-image invert' src='" + image.data + "'/></a></div>";
+						html += "<div id='" + id + "' class='popup-image collapse in'><a href='' instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
 					}
 				}
 			}

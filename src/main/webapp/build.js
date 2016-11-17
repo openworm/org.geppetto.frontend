@@ -2,7 +2,7 @@
     preserveLicenseComments: false,
     paths: {
     	jquery :'vendor/jquery-1.9.1.min',
-		three : 'vendor/three.min',
+    	three: 'vendor/three.min',
 		d3 : 'vendor/d3.min',
 		codemirror :"vendor/codemirror.min",
 		underscore : 'vendor/underscore.min',
@@ -20,7 +20,8 @@
         bloodhound: "vendor/bloodhound",
         text: 'vendor/text',
         pako:'vendor/pako.min',
-        mathjs:'vendor/math.min'
+        mathjs:'vendor/math.min',
+        json: 'vendor/require-json'
     },
     shim: {
         'vendor/jquery-ui': ["jquery"],
@@ -47,6 +48,9 @@
         'vendor/Detector': ["jquery"],
         'vendor/jquery.cookie': ["jquery"],
         'vendor/rAF': ["jquery"],
+        three: {
+            exports: 'THREE'
+        },
         typeahead: {
             deps: ['jquery'],
             init: function ($) {
@@ -58,6 +62,7 @@
             exports: 'Bloodhound'
         }
     },
+    wrapShim: true,
     name : "main",
     waitSeconds : 200,
 })

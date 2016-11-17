@@ -45,12 +45,14 @@ require.config({
     }
 });
 
-var reqs = [];
-reqs.push("slick");
-reqs.push("anchorme");
+var popupReqs = [];
+popupReqs.push("slick");
+popupReqs.push("anchorme");
 
 
-require(reqs, function () {
+require(popupReqs, function (slick, anchorme) {
+    window.anchorme = anchorme;
+
 	loadCss("geppetto/js/widgets/popup/Popup.css");
 	loadCss("geppetto/js/widgets/popup/vendor/slick.css");
 	loadCss("geppetto/js/widgets/popup/vendor/slick-theme.css");

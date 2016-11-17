@@ -101,11 +101,11 @@ define(function (require) {
                     }
 
                 }
+                //TODO This can be optimised, no need to create both
                 var materials =
                 {
                     "mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(color),
-                    "line": GEPPETTO.SceneFactory.getLineMaterial(thickness,color),
-                    "particle": GEPPETTO.SceneFactory.getParticleMaterial()
+                    "line": GEPPETTO.SceneFactory.getLineMaterial(thickness,color)
                 };
                 var instanceObjects = [];
                 var threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, materials, lines);

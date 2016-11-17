@@ -202,7 +202,7 @@ define(function (require) {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});						
-			GEPPETTO.on(Events.Experiment_completed, function () {
+			GEPPETTO.on(Events.Experiment_completed, function (experimentId) {
 				that.updateToolBarVisibilityState(that.checkHasWritePermission(experimentId));
 			});
 			

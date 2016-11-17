@@ -45,7 +45,7 @@ define(function (require) {
                 data: {},
                 dragOffset: {},
                 dragging: false,
-                dragMax: 150
+                dragMax: (this.props.height * 0.5)
             };
         },
         /**

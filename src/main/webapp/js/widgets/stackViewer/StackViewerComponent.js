@@ -131,10 +131,11 @@ define(function (require) {
             PIXI.loader.reset();
 
             // free texture caches
-            for (var textureUrl in PIXI.utils.BaseTextureCache) {
+            var textureUrl
+            for (textureUrl in PIXI.utils.BaseTextureCache) {
                 delete PIXI.utils.BaseTextureCache[textureUrl];
             }
-            for (var textureUrl in PIXI.utils.TextureCache) {
+            for (textureUrl in PIXI.utils.TextureCache) {
                 delete PIXI.utils.TextureCache[textureUrl];
             }
 

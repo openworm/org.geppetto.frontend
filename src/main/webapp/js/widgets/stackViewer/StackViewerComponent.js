@@ -208,10 +208,10 @@ define(function (require) {
                     var imageY = Number(result[1]);
                     this.setState({imageX: imageX, imageY: imageY});
                     if (this.stack.position.x == 0){
-                        this.stack.position.x = (imageX-this.props.width)*0.5
+                        this.stack.position.x = this.stage.position.x-this.stage.width;
                     }
                     if (this.stack.position.y == 0){
-                        this.stack.position.y = (imageY-this.props.height)*0.5
+                        this.stack.position.y = this.stage.position.y-this.stage.height;
                     }
                     // update slice view
                     this.state.lastUpdate = 0;

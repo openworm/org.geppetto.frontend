@@ -114,6 +114,10 @@ define(function (require) {
                         data.width = this.data.width;
                     }
 
+                    if (data.id == undefined) {
+                        data.id = this.data.id;
+                    }
+
                     this.data = data;
 
                     this.data.selected = sel;

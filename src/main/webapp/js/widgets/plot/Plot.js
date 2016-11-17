@@ -332,7 +332,7 @@ define(function (require) {
         },
 
         plotXYData: function (dataY, dataX, options) {
-            this.controller.addToHistory("Plot "+dataY.getId()+"/"+dataX.getId(),"plotXYData",[dataY,dataX,options]);
+            this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
 
             // If no options specify by user, use default options
             if (options != null) {

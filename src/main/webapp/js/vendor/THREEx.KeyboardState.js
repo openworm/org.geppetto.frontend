@@ -27,7 +27,7 @@
 
 /** @namespace */
 var THREEx	= THREEx 		|| {};
-
+window.THREEx=THREEx;
 /**
  * - NOTE: it would be quite easy to push event-driven too
  *   - microevent.js for events handling

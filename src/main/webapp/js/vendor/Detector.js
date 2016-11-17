@@ -57,3 +57,5 @@ var Detector = {
 	}
 
 };
+
+window.Detector=Detector;

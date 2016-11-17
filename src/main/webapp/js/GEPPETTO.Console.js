@@ -373,7 +373,7 @@ define(function (require) {
                     }
                 }, 100);
                 
-                $("#footer").addClass("footerFocus");
+                //$("#footer").addClass("footerFocus");
                 
                 return console;
             },

@@ -280,12 +280,12 @@ define(function (require) {
             
             focusFooter : function(){
             	$("#footer").removeClass("footerOutFocus");
-    			$("#footer").addClass("footerFocus");
+            	$("#footer").addClass("footerFocus");
             },
-            
+
             unfocusFooter : function(){
             	$("#footer").removeClass("footerFocus");
-    			$("#footer").addClass("footerOutFocus");
+            	$("#footer").addClass("footerOutFocus");
             },
             
             /**

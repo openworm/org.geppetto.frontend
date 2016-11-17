@@ -67,8 +67,8 @@ define(function (require) {
             this.stage = new PIXI.Container();
             this.stage.pivot.x = 0;
             this.stage.pivot.y = 0;
-            this.stage.position.x = ((this.props.width * 0.5) * this.props.zoomLevel);
-            this.stage.position.y = ((this.props.height * 0.5) * this.props.zoomLevel);
+            this.stage.position.x = ((this.props.width) * 0.5);
+            this.stage.position.y = ((this.props.height) * 0.5);
             this.disp = new PIXI.Container();
             this.disp.pivot.x = 0;
             this.disp.pivot.y = 0;
@@ -206,7 +206,12 @@ define(function (require) {
                     var imageX = Number(result[0]);
                     var imageY = Number(result[1]);
                     this.setState({imageX: imageX, imageY: imageY});
-
+                    if (this.stack.position.x == 0){
+                        this.stack.position.x = (imageX-this.props.width)*0.5
+                    }
+                    if (this.stack.position.y == 0){
+                        this.stack.position.y = (imageY-this.props.height)*0.5
+                    }
                     // update slice view
                     this.state.lastUpdate = 0;
                     this.checkStack();
@@ -632,8 +637,8 @@ define(function (require) {
             var updDst = false;
             if (nextProps.text == 'View reset'){
                 console.log('Reseting position...');
-                this.stage.position.x = ((this.props.width * 0.5) * this.disp.scale.x);
-                this.stage.position.y = ((this.props.height * 0.5) * this.disp.scale.y);
+                this.stage.position.x = (this.props.width * 0.5);
+                this.stage.position.y = (this.props.height * 0.5);
             }
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
                 this.state.stack = nextProps.stack;

@@ -67,8 +67,8 @@ define(function (require) {
             this.stage = new PIXI.Container();
             this.stage.pivot.x = 0;
             this.stage.pivot.y = 0;
-            this.stage.position.x = ((this.props.width) * 0.5);
-            this.stage.position.y = ((this.props.height) * 0.5);
+            this.stage.position.x = 0;
+            this.stage.position.y = 0;
             this.disp = new PIXI.Container();
             this.disp.pivot.x = 0;
             this.disp.pivot.y = 0;
@@ -237,12 +237,12 @@ define(function (require) {
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
-                    x = ((this.stage.width * 0.5) - (this.stage.position.x + (this.stack.position.x*this.disp.scale.x)))/this.disp.scale.x;
-                    y = ((this.stage.height * 0.5) - (this.stage.position.y + (this.stack.position.y*this.disp.scale.y)))/this.disp.scale.y;
+                    x = (-this.stack.position.x)/this.disp.scale.x;
+                    y = (-this.stack.position.y)/this.disp.scale.y;
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
-                    x = ((x*this.disp.scale.x) + this.renderer.view.width) / this.disp.scale.x;
-                    y = ((y*this.disp.scale.y) + this.renderer.view.height) / this.disp.scale.y;
+                    x = x + (this.renderer.width/this.disp.scale.x);
+                    y = y + (this.renderer.height/this.disp.scale.y);
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);
                     // console.log('Visible screen: ' + coordinates);
@@ -539,8 +539,8 @@ define(function (require) {
             this.state.numTiles = w * h;
 
             for (t = 0; t < w * h; t++) {
-                x = -(this.state.imageX * 0.5);
-                y = -(this.state.imageY * 0.5);
+                x = 0;
+                y = 0;
                 offY = 0;
                 if ((t + 1) > w) {
                     offY = Math.floor(t / w);

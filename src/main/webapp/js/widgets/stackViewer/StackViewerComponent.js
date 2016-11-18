@@ -810,8 +810,8 @@ define(function (require) {
             };
             startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
-            this.state.posX = startPosition.x + (this.state.imageX * 0.5);
-            this.state.posY = startPosition.y + (this.state.imageY * 0.5);
+            this.state.posX = startPosition.x;
+            this.state.posY = startPosition.y;
             console.log([this.state.posX,this.state.posY]);
         },
 
@@ -839,12 +839,12 @@ define(function (require) {
                 this.state.data = event.data;
                 var currentPosition = this.state.data.getLocalPosition(this.stack);
                 //console.log(currentPosition);
-                var xOffset = (this.state.imageX * 0.5) * (1 / this.disp.scale.x);
-                var yOffset = (this.state.imageY * 0.5) * (1 / this.disp.scale.y);
+                var xOffset = this.state.imageX / this.disp.scale.x;
+                var yOffset = this.state.imageY / this.disp.scale.y;
                 //console.log(xOffset);
                 //console.log(yOffset);
-                this.state.posX = (currentPosition.x + xOffset);
-                this.state.posY = (currentPosition.y + yOffset);
+                this.state.posX = (currentPosition.x);
+                this.state.posY = (currentPosition.y);
                 //console.log(this.state.posX);
                 //console.log(this.state.posY);
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {

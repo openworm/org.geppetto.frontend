@@ -636,11 +636,6 @@ define(function (require) {
          **/
         componentWillReceiveProps: function (nextProps) {
             var updDst = false;
-            if (nextProps.text == 'View reset'){
-                console.log('Reseting position...');
-                this.stage.position.x = (this.props.width * 0.5);
-                this.stage.position.y = (this.props.height * 0.5);
-            }
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
                 this.state.stack = nextProps.stack;
                 this.state.color = nextProps.color;

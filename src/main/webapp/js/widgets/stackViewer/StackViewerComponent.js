@@ -208,10 +208,10 @@ define(function (require) {
                     var imageY = Number(result[1]);
                     this.setState({imageX: imageX, imageY: imageY});
                     if (this.stack.position.x == 0){
-                        this.stack.position.x = -(this.stack.width*0.5);
+                        this.stack.position.x = (this.renderer.width-this.stage.width)/2;
                     }
                     if (this.stack.position.y == 0){
-                        this.stack.position.y = -(this.stack.height*0.5);
+                        this.stack.position.y = (this.renderer.height-this.stage.height)/2;
                     }
                     // update slice view
                     this.state.lastUpdate = 0;
@@ -822,8 +822,8 @@ define(function (require) {
 
                 this.state.dragging = false;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
-                var newPosX = startPosition.x + (this.state.imageX * 0.5);
-                var newPosY = startPosition.y + (this.state.imageY * 0.5);
+                var newPosX = startPosition.x;
+                var newPosY = startPosition.y;
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
                     //console.log([newPosX, newPosY]);
                     this.callObjects();

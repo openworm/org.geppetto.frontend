@@ -61,6 +61,7 @@ define(function (require) {
 
             //create plotting widget
             var p = window[name] = new Plot({id: id, name: name, visible: true});
+            p.setController(this);
 
             //create help command for plot
             p.help = function () {

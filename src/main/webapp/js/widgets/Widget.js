@@ -74,7 +74,6 @@ define(function (require) {
             initialize: function (options) {
                 this.id = options.id;
                 this.name = options.name;
-                this.controller = options.controller;
                 this.visible = options.visible;
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
@@ -611,6 +610,10 @@ define(function (require) {
             getHelp: function(){
                 return '### Inline help not yet available for this widget! \n\n' +
                 'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
+            },
+            
+            setController : function(controller){
+            	this.controller = controller;
             }
         })
     }

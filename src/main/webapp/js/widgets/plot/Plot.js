@@ -54,13 +54,14 @@ define(function (require) {
 		variables : [],
 		limit: 400,
 		options: null,
-		xaxisLabel: null,
-		yaxisLabel: null,
 		labelsUpdated: false,
 		initialized:null,
 		inhomogeneousUnits: false,
 		updateRange : false,
 		plotOptions : null,
+		reIndexUpdate : 0,
+		updateRedraw : 3,
+        functionNode: false,
 
 		/**
 		 * Default options for plot widget, used if none specified when plot
@@ -145,6 +146,7 @@ define(function (require) {
 		 * @param {Object} options - Object with options for the plot widget
 		 */
 		initialize: function (options) {
+        	Widget.View.prototype.initialize.call(this, options);
 			this.id = options.id;
 			this.name = options.name;
 			this.visible = options.visible;
@@ -213,7 +215,7 @@ define(function (require) {
             	}
             }
             
-            Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions);
+            Plotly.relayout(this.plotDiv, this.plotOptions);
             
             return this;
         },
@@ -233,6 +235,11 @@ define(function (require) {
 			if (!$.isArray(data)) {
 				data = [data];
 			}
+			
+        	for (var i = 0; i < data.length; i++) {
+        		this.controller.addToHistory("Plot "+data[i].getInstancePath(),"plotData",[data[i]],this.getId());
+        	}
+        	
 			// If no options specify by user, use default options
 			if (options != null) {	
 				// Merge object2 into object1
@@ -263,7 +270,6 @@ define(function (require) {
 							x : timeSeriesData["x"],
 							y : timeSeriesData["y"],
 							modes : "lines",
-							type : "scatter",
 							name: instance.getInstancePath(),
 							line: {
 								dash: 'solid',
@@ -306,14 +312,18 @@ define(function (require) {
 
 			if(draggedResize){
 				divheighth = divheight -5;
-				this.plotOptions.margin.b = 40;
+				this.plotOptions.margin.b = 30;
+			}else{
+				divheight= divheight+5;
+				divwidth = divwidth +5;
+				this.plotOptions.margin.b = 30;
 			}
+			
 			this.plotOptions.width = divwidth;
 			this.plotOptions.height = divheight;
 			//resizes plot right after creation, needed for d3 to resize 
 			//to parent's widht and height
 			Plotly.relayout(this.plotDiv,this.plotOptions);
-			GEPPETTO.Console.log("resize");
 		},
 		
 		downloadPNG : function(){
@@ -339,43 +349,21 @@ define(function (require) {
 				data.push(y);
 				names = names + this.datasets[key].name + "\n";
 			}
-			var zip = new JSZip();
-			zip.file("output.txt",data[0]);
-			zip.file("output.txt",data[1]);
-			zip.file("output-variables.txt", names);
-			zip.generateAsync({type:"blob"})
-			.then(function(content) {
-			    // see FileSaver.js
-			    saveAs(content, "example.zip");
-			});
-		},
-		
-		downloadPako : function(){
-			var data = new Array();
-			var xCopied = false;
-			var names = "";
-			for (var key in this.datasets) {
-				var x = this.datasets[key].x;
-				var y = this.datasets[key].y;
-				if(!xCopied){
-					data.push(x);
-					xCopied = true;
-				}
-				data.push(y);
-				names = names + this.datasets[key].name + "\n";
-			}
 			// Turn number array into byte-array
-		    var binData     = new Uint8Array(data);
+		    var binData     = new Uint8Array(data[0]);
 
-		    // Pako magic
-		    var dataArray        = pako.deflate(binData);
-		    var zip = new JSZip();
-			zip.file("output.txt",dataArray);
-			zip.generateAsync({type:"blob"})
-			.then(function(content) {
-			    // see FileSaver.js
-			    saveAs(content, "example.zip");
-			});
+		    //var zip = pako.inflate(binData);
+		    
+		    var bytes = new Uint8Array(names.length);
+		    for (var i=0; i<names.length; i++) {
+		        bytes[i] = names.charCodeAt(i);
+		    }
+
+		    var blob = new Blob([bytes]);
+		    saveAs(blob, "names.dat");
+		    
+		    var blob2 = new Blob(data);
+		    saveAs(blob2, "output.dat");
 		},
 		
 		resetAxes : function(){
@@ -453,68 +441,75 @@ define(function (require) {
 		 */
 		updateDataSet: function (step, playAll) {
 
-			/*Clears the data of the plot widget if the initialized flag 
-			 *has not be set to true, which means arrays are populated but not yet plot*/
-			if(!this.initialized){
-				this.clean(playAll);
-			}
-
-			var set, reIndex, newValue;
-			var oldDataX = [];
-			var oldDataY = [];
-			var timeSeries = [];
-			var update = {};
-			for (var key in this.datasets) {
-				set = this.datasets[key];
-				if (this.plotOptions.playAll) {
-					//we simply set the whole time series
-					timeSeries = this.getTimeSeriesData(this.variables[set.name]);
-					this.datasets[key].x = timeSeries["x"];
-					this.datasets[key].y = timeSeries["y"];
+			if(!this.functionNode){
+				/*Clears the data of the plot widget if the initialized flag 
+				 *has not be set to true, which means arrays are populated but not yet plot*/
+				if(!this.initialized){
+					this.clean(playAll);
 				}
-				else {
-					newValue = this.variables[set.name].getTimeSeries()[step];
 
-					oldDataX = this.datasets[key].x;
-					oldDataY = this.datasets[key].y;
-
-					reIndex = false;
-
-					if (oldDataX.length >= this.limit) {
-						//this happens when we reach the end of the width of the plot
-						//i.e. when we have already put all the points that it can contain
-						oldDataX.splice(0, 1);
-						oldDataY.splice(0,1);
-						reIndex = true;
-					}
-
-					oldDataX.push(oldDataX.length);
-					oldDataY.push(newValue);
-
-					if (reIndex) {
-						// re-index data
-						var indexedDataX = [];
-						var indexedDataY = [];
-						for (var index = 0, len = oldDataX.length; index < len; index++) {
-							var valueY = oldDataY[index];
-							indexedDataX.push(index);
-							indexedDataY.push(valueY);
-						}
-
-						this.datasets[key].x = indexedDataX;
-						this.datasets[key].y = indexedDataY;
+				var set, reIndex, newValue;
+				var oldDataX = [];
+				var oldDataY = [];
+				var timeSeries = [];
+				var update = {};
+				for (var key in this.datasets) {
+					set = this.datasets[key];
+					if (this.plotOptions.playAll) {
+						//we simply set the whole time series
+						timeSeries = this.getTimeSeriesData(this.variables[set.name]);
+						this.datasets[key].x = timeSeries["x"];
+						this.datasets[key].y = timeSeries["y"];
+						this.reIndexUpdate = 0;
 					}
 					else {
-						this.datasets[key].x = oldDataX;
-						this.datasets[key].y = oldDataY;
+						newValue = this.variables[set.name].getTimeSeries()[step];
+
+						oldDataX = this.datasets[key].x;
+						oldDataY = this.datasets[key].y;
+
+						reIndex = false;
+
+						if (oldDataX.length >= this.limit) {
+							//this happens when we reach the end of the width of the plot
+							//i.e. when we have already put all the points that it can contain
+							oldDataX.splice(0, 1);
+							oldDataY.splice(0,1);
+							reIndex = true;
+						}
+
+						oldDataX.push(oldDataX.length);
+						oldDataY.push(newValue);
+
+						if (reIndex) {
+							// re-index data
+							var indexedDataX = [];
+							var indexedDataY = [];
+							for (var index = 0, len = oldDataX.length; index < len; index++) {
+								var valueY = oldDataY[index];
+								indexedDataX.push(index);
+								indexedDataY.push(valueY);
+							}
+
+							this.datasets[key].x = indexedDataX;
+							this.datasets[key].y = indexedDataY;
+						}
+						else {
+							this.datasets[key].x = oldDataX;
+							this.datasets[key].y = oldDataY;
+						}
 					}
+
+					this.plotDiv.data[key].x = this.datasets[key].x;
+					this.plotDiv.data[key].y = this.datasets[key].y;
 				}
 
-				this.plotDiv.data[key].x = this.datasets[key].x;
-				this.plotDiv.data[key].y = this.datasets[key].y;
+				if(this.reIndexUpdate%this.updateRedraw==0){
+					Plotly.relayout(this.plotDiv, this.plotOptions);
+				}
+				
+				this.reIndexUpdate = this.reIndexUpdate + 1;
 			}
-			
-			Plotly.redraw(this.plotDiv);
 		},
 
 		/*
@@ -569,46 +564,6 @@ define(function (require) {
 		},
 
 		/**
-		 * Plots a function against a data series
-		 *
-		 * @command dataFunction(func, data, options)
-		 * @param func - function to plot vs data
-		 * @param data - data series to plot against function
-		 * @param options - options for plotting widget
-		 */
-		plotDataFunction: function (func, data_x, options) {
-			// If no options specify by user, use default options
-			if (options != null) {
-				this.plotOptions = options;
-				if (this.plotOptions.xaxis.max > this.limit) {
-					this.limit = this.plotOptions.xaxis.max;
-				}
-			}
-
-			//Parse func as a mathjs object
-			var parser = math.parser();
-			var mathFunc = parser.eval(func);
-			var data = [];
-			data.name = options.legendText;
-			data.data = [];
-			for (var data_xIndex in data_x) {
-				var dataElementString = data_x[data_xIndex].valueOf();
-				data_y = mathFunc(dataElementString);
-				//TODO: Understand why sometimes it returns an array and not a value
-				if (typeof value == 'object') {
-					data.data.push([data_x[data_xIndex][0], data_y[0]]);
-				}
-				else {
-					data.data.push([data_x[data_xIndex][0], data_y]);
-				}
-			}
-
-			//Plot values
-			this.plotXYData(data);
-			return this;
-		},
-
-		/**
 		 * Resets the plot widget, deletes all the data series but does not
 		 * destroy the widget window.
 		 *
@@ -618,7 +573,7 @@ define(function (require) {
 			if (this.plotly != null) {
 				this.datasets = [];
 				this.plotOptions = this.defaultOptions();
-				Plotly.newPlot(this.id, this.datasets, this.plotOptions);
+				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false});
 			}
 			return this;
 		},
@@ -641,25 +596,19 @@ define(function (require) {
 		},
 
 		clean: function (playAll) {
-			this.plotOptions.playAll = playAll;
-			this.cleanDataSets();
-			if (!playAll) {
-				//this.defaultOptions.xaxis.show = false;
-				this.plotOptions.xaxis.max = this.limit;
-				//this.defaultOptions.crosshair = {};
-				//$("#" + this.id).addClass("plot-without-xaxis");
+			if(!this.functionNode){
+				this.plotOptions.playAll = playAll;
+				this.cleanDataSets();
+				if (!playAll) {
+					this.plotOptions.xaxis.max = this.limit;
+				}
+				else {
+					this.plotOptions.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
+				}
+				this.plotly = Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false});
+				this.resize();
+				this.initialized=true;
 			}
-			else {
-				//thisl.defaultOptions.xaxis.show = true;
-				this.plotOptions.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
-				//this.defaultOptions.crosshair.mode = "x";
-				//$("#" + this.id).removeClass("plot-without-xaxis");
-				//enables updating the legend on mouse hover, still few bugs
-			}
-			this.plotly = Plotly.newPlot(this.id, this.datasets, this.plotOptions);
-			this.resize();
-			this.initialized=true;
-
 		},
 
 		/**
@@ -689,8 +638,7 @@ define(function (require) {
 		 */
 		plotFunctionNode: function (functionNode) {
 
-//			node.getInitialValues()[0].value.arguments
-//			node.getInitialValues()[0].value.expression.expression
+            this.functionNode = true;
 
 			//Check there is metada information to plot
 			if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
@@ -714,6 +662,7 @@ define(function (require) {
 				var plotTitle = plotMetadata["title"];
 				var XAxisLabel = plotMetadata["xAxisLabel"];
 				var YAxisLabel = plotMetadata["yAxisLabel"];
+				
 				//Generate options from metadata information
 				options = {
 						xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
@@ -779,20 +728,15 @@ define(function (require) {
 				}
 			}
 
-			//Plot values
-			if (options != null) {
-				this.options = options;
-				if (this.options.xaxis.max > this.limit) {
-					this.limit = this.options.xaxis.max;
-				}
-			}
-
+			this.plotOptions.yaxis.title = options.yaxis.axisLabel;
+			this.plotOptions.xaxis.title = options.xaxis.axisLabel;
+			this.plotOptions.xaxis.showticklabels = true;
+			
 			newLine = {
 					x : data.data["x"],
 					y : data.data["y"],
 					modes : "lines",
-					type : "scatter",
-					name: data.name,
+					name: options.legendText,
 					line: {
 						dash: 'solid',
 						width: 2
@@ -802,7 +746,7 @@ define(function (require) {
 			this.datasets.push(newLine);
 
 			//Creates new plot using datasets and default options
-			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,this.removeHoverBarButtons);
+			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false});
 			this.initialized = true;
 			this.resize();
 			return this;

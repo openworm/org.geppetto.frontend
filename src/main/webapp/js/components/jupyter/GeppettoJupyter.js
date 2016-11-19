@@ -237,10 +237,10 @@ define(function (require, exports, module) {
 		initialize: function () {
 			ModelSync.__super__.initialize.apply(this);
 
-			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: this.getPayload() });
+			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 			this.on("change:stateVariables", function (model, value, options) {
-				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: this.getPayload() });
+				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
 				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
@@ -318,7 +318,7 @@ define(function (require, exports, module) {
 			ProjectSync.__super__.initialize.apply(this);
 
 			// Load the project
-			GEPPETTO.SimulationHandler.loadProject({ project_loaded: { project: this.getPayload(), persisted: false } });
+			GEPPETTO.SimulationHandler.loadProject({ project_loaded: JSON.stringify({ project: this.getPayload(), persisted: false }) });
 
 			// Load the first experiment
 			GEPPETTO.SimulationHandler.onMessage({type: 'experiment_loaded', data: JSON.stringify(this.getLoadExperimentPayload())});

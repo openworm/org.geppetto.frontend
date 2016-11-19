@@ -273,13 +273,7 @@ define(function (require) {
                 }
                 GEPPETTO.G.listeners = [];
 
-                var update; 
-                if (typeof(payload) == "object"){
-                    update = payload.project_loaded;
-                }
-                else{
-                    update = JSON.parse(payload.project_loaded);
-                }
+                var update = JSON.parse(payload.project_loaded);
                 
                 var project = update.project;
                 var persisted = update.persisted;
@@ -295,16 +289,7 @@ define(function (require) {
                 console.time(GEPPETTO.Resources.PARSING_MODEL);
                 GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.PARSING_MODEL);
 
-                // var model = JSON.parse(payload.geppetto_model_loaded);
-
-                var model; 
-                if (typeof(payload) == "object"){
-                    model = payload.geppetto_model_loaded;
-                }
-                else{
-                    model = JSON.parse(payload.geppetto_model_loaded);
-                }
-
+                var model = JSON.parse(payload.geppetto_model_loaded);
 
                 console.timeEnd(GEPPETTO.Resources.PARSING_MODEL);
 
@@ -373,15 +358,7 @@ define(function (require) {
              * @param payload
              */
             addVariableToModel: function (payload) {
-                //var rawModel = JSON.parse(payload.variable_fetched);
-
-                var rawModel; 
-                if (typeof(payload) == "object"){
-                    rawModel = payload.variable_fetched;
-                }
-                else{
-                    rawModel = JSON.parse(payload.variable_fetched);
-                }
+                var rawModel = JSON.parse(payload.variable_fetched);
 
                 console.time(GEPPETTO.Resources.ADDING_VARIABLE);
 
@@ -560,15 +537,7 @@ define(function (require) {
             loadExperiment: function (payload) {
                 console.time(GEPPETTO.Resources.LOADING_EXPERIMENT);
 
-                var message; 
-                if (typeof(payload) == "object"){
-                    message = payload.experiment_loaded;
-                }
-                else{
-                    message = JSON.parse(payload.experiment_loaded);
-                }
-
-                //var message = JSON.parse(payload.experiment_loaded);
+                var message = JSON.parse(payload.experiment_loaded);
 
                 var experimentId = message.experimentId;
                 var experiment = undefined;

@@ -272,9 +272,7 @@ define(function (require) {
                     Project.initialize();
                 }
                 GEPPETTO.G.listeners = [];
-
                 var update = JSON.parse(payload.project_loaded);
-                
                 var project = update.project;
                 var persisted = update.persisted;
                 window.Project = GEPPETTO.ProjectFactory.createProjectNode(project, persisted);

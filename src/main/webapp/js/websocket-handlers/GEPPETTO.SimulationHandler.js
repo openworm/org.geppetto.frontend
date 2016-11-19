@@ -310,7 +310,7 @@ define(function (require) {
                 // Updates the simulation controls visibility
                 var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
-                if (webGLStarted) {
+                if (webGLStarted && !GEPPETTO.SceneController.isAnimated) {
                     // we call it only the first time
                     GEPPETTO.SceneController.animate();
                 }

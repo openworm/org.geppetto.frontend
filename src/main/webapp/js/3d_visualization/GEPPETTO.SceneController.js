@@ -18,6 +18,7 @@ define(function (require) {
             linesThreshold: 2000,
             aboveLinesThreshold: false,
             wireframe: false,
+            isAnimated: false,
 
             /**
              * Populate the scene with given instances
@@ -1224,26 +1225,25 @@ define(function (require) {
              * Animate simulation
              */
             animate: function () {
-                if (window.taka == undefined){
 
-                    GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate;
-                    // so that we log only the cycles when we are updating the scene
+                this.isAnimated = true;
 
-                    GEPPETTO.getVARS().controls.update();
+                GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate;
+                // so that we log only the cycles when we are updating the scene
 
-                    
-                    requestAnimationFrame(GEPPETTO.SceneController.animate);
-                    GEPPETTO.render();
+                GEPPETTO.getVARS().controls.update();
 
-                    if (GEPPETTO.getVARS().stats) {
-                        GEPPETTO.getVARS().stats.update();
-                    }
+                
+                requestAnimationFrame(GEPPETTO.SceneController.animate);
+                GEPPETTO.render();
 
-                    if (GEPPETTO.getVARS().debugUpdate) {
-                        GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
-                    }
+                if (GEPPETTO.getVARS().stats) {
+                    GEPPETTO.getVARS().stats.update();
                 }
-                window.taka = true;
+
+                if (GEPPETTO.getVARS().debugUpdate) {
+                    GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
+                }
             },
 
             /**

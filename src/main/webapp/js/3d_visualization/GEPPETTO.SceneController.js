@@ -1225,15 +1225,12 @@ define(function (require) {
              * Animate simulation
              */
             animate: function () {
-
-                this.isAnimated = true;
-
                 GEPPETTO.getVARS().debugUpdate = GEPPETTO.getVARS().needsUpdate;
                 // so that we log only the cycles when we are updating the scene
 
                 GEPPETTO.getVARS().controls.update();
 
-                
+                this.isAnimated = true;
                 requestAnimationFrame(GEPPETTO.SceneController.animate);
                 GEPPETTO.render();
 

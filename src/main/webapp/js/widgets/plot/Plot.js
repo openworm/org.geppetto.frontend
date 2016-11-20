@@ -43,7 +43,6 @@ define(function (require) {
 	var $ = require('jquery');
 	var math = require('mathjs');
 	var Plotly = require('plotly');
-	var JSZip = require('jszip');
 	var FileSaver = require('file-saver');
 	var pako = require('pako');
 
@@ -60,7 +59,7 @@ define(function (require) {
 		updateRange : false,
 		plotOptions : null,
 		reIndexUpdate : 0,
-		updateRedraw : 3,
+		updateRedraw : 4,
         functionNode: false,
 
 		/**
@@ -116,7 +115,7 @@ define(function (require) {
 				margin: {
 					l: 50,
 					r: 10,
-					b: 30,
+					b: 50,
 					t: 10,
 				},
 				legend : {
@@ -312,11 +311,11 @@ define(function (require) {
 
 			if(draggedResize){
 				divheighth = divheight -5;
-				this.plotOptions.margin.b = 30;
+				this.plotOptions.margin.b = 50;
 			}else{
 				divheight= divheight+5;
 				divwidth = divwidth +5;
-				this.plotOptions.margin.b = 30;
+				this.plotOptions.margin.b = 50;
 			}
 			
 			this.plotOptions.width = divwidth;
@@ -347,7 +346,7 @@ define(function (require) {
 					xCopied = true;
 				}
 				data.push(y);
-				names = names + this.datasets[key].name + "\n";
+				names = names + this.datasets[key].name + "\r\n";
 			}
 			// Turn number array into byte-array
 		    var binData     = new Uint8Array(data[0]);
@@ -360,10 +359,23 @@ define(function (require) {
 		    }
 
 		    var blob = new Blob([bytes]);
-		    saveAs(blob, "names.dat");
+		    saveAs(blob, "names.txt");
 		    
-		    var blob2 = new Blob(data);
-		    saveAs(blob2, "output.dat");
+		    var content = "";
+		    for (var i = 0; i < data.length; i += 2) {
+		        content += data[i] + "         ";
+		        content += data[i+1];
+		        content += "\r\n";
+		    }
+		    
+		    var bytes2 = new Uint8Array(content.length);
+		    for (var i=0; i<content.length; i++) {
+		        bytes2[i] = content.charCodeAt(i);
+		    }
+
+		    
+		    var blob2 = new Blob([bytes2]);
+		    saveAs(blob2, "output.txt");
 		},
 		
 		resetAxes : function(){
@@ -755,45 +767,40 @@ define(function (require) {
 		plotXYData: function (dataY, dataX, options) {
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
 
-			// If no options specify by user, use default options
-			if (options != null) {
-				this.options = options;
-				if (this.options.xaxis.max > this.limit) {
-					this.limit = this.options.xaxis.max;
-				}
-			}
-
 			var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
 
-			this.datasets.push({
-				label: dataY.getInstancePath(),
-				variable: dataY,
-				data: timeSeriesData
-			});
-
-
-			if (this.datasets.length > 0) {
-
-				// check for inhomogeneousUnits and set flag
-				var refUnit = undefined;
-				for (var i = 0; i < this.datasets.length; i++) {
-					if (i == 0) {
-						refUnit = this.datasets[i].variable.getUnit();
-					} else if (refUnit != this.datasets[i].variable.getUnit()) {
-						this.inhomogeneousUnits = true;
-						this.labelsUpdated = false;
-						break;
+			newLine = {
+					x : timeSeriesData["x"],
+					y : timeSeriesData["y"],
+					modes : "lines",
+					name: dataY.getInstancePath(),
+					line: {
+						dash: 'solid',
+						width: 2
 					}
-				}
+			};
 
-				this.updateAxis(this.datasets.length - 1);
-			}
+			this.variables[dataY.getInstancePath()] = dataY;
+			this.variables[dataX.getInstancePath()] = dataX;
 
-			var plotHolder = $("#" + this.id);
+			this.datasets.push(newLine);
+			
+			if (this.datasets.length > 0) {
+                // check for inhomogeneousUnits and set flag
+                var refUnit = undefined;
+                for (var i = 0; i < this.datasets.length; i++) {
+                    if (i == 0) {
+                        refUnit = this.variables[this.datasets[i].name].getUnit();
+                    } else if (refUnit != this.variables[this.datasets[i].name].getUnit()) {
+                        this.inhomogeneousUnits = true;
+                        this.labelsUpdated = false;
+                    }
+                }
+            }
 
-			this.plot = $.plot(plotHolder, this.datasets, this.options);
-
-
+			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false});
+			this.initialized = true;
+            this.updateAxis(dataY.getInstancePath());
 			return this;
 		}
 

@@ -59,8 +59,9 @@ define(function (require) {
 		updateRange : false,
 		plotOptions : null,
 		reIndexUpdate : 0,
-		updateRedraw : 4,
+		updateRedraw : 3,
         functionNode: false,
+        xaxisAutoRange : false,
 
 		/**
 		 * Default options for plot widget, used if none specified when plot
@@ -91,7 +92,7 @@ define(function (require) {
 					ticks: 'outside',
 					tickcolor: 'rgb(255, 255, 255)',
 					max: -9999999,
-					min: 9999999,
+					min: 9999999
 				},
 				yaxis : {
 					max: -9999999,
@@ -130,8 +131,8 @@ define(function (require) {
 				},
 				paper_bgcolor: 'rgba(66, 59, 59, 0.90)',
 				plot_bgcolor: 'rgba(66, 59, 59, 0.90)',
-				hovermode: 'closest',
-				playAll : false
+				playAll : false,
+				hovermode : 'none'
 			};
 		},
 		
@@ -158,7 +159,7 @@ define(function (require) {
 			this.dialog.append("<div id='" + this.id + "'></div>");			
 
 			this.plotDiv = document.getElementById(this.id);
-
+			this.plotOptions.xaxis.range =[0,this.limit]
 			var that = this;
 
 			this.addButtonToTitleBar($("<div class='fa fa-home'></div>").on('click', function(event) {
@@ -273,7 +274,8 @@ define(function (require) {
 							line: {
 								dash: 'solid',
 								width: 2
-							}
+							},
+							hoverinfo : 'none'
 					};
 
 					this.datasets.push(newLine);
@@ -289,7 +291,7 @@ define(function (require) {
 			if(plotable){
 				if(this.plotly==null){
 					//Creates new plot using datasets and default options
-					this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false});
+					this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
 					this.initialized = true;
 					this.plotDiv.on('plotly_doubleclick', function() {
 						that.resize();
@@ -362,9 +364,11 @@ define(function (require) {
 		    saveAs(blob, "names.txt");
 		    
 		    var content = "";
-		    for (var i = 0; i < data.length; i += 2) {
-		        content += data[i] + "         ";
-		        content += data[i+1];
+		    var space = "";
+		    for (var i = 0; i < data[0].length; i++) {
+		    	for(var j=0; j< data.length; j++){
+		    		content += data[j][i] + "      ";
+		    	}
 		        content += "\r\n";
 		    }
 		    
@@ -379,8 +383,9 @@ define(function (require) {
 		},
 		
 		resetAxes : function(){
-			this.plotOptions.xaxis.autorange = true;
+			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
 			this.plotOptions.yaxis.autorange = true;
+			this.plotOptions.xaxis.range =[0,this.limit];
 			Plotly.relayout(this.plotDiv, this.plotOptions);
 		},
 		
@@ -472,7 +477,12 @@ define(function (require) {
 						timeSeries = this.getTimeSeriesData(this.variables[set.name]);
 						this.datasets[key].x = timeSeries["x"];
 						this.datasets[key].y = timeSeries["y"];
+						this.plotOptions.xaxis.showticklabels = true;
+						this.plotOptions.xaxis.range = [];
+						this.plotOptions.margin.b = 60;
 						this.reIndexUpdate = 0;
+						this.plotOptions.xaxis.autorange = true;
+						this.xaxisAutoRange = true;
 					}
 					else {
 						newValue = this.variables[set.name].getTimeSeries()[step];
@@ -517,6 +527,10 @@ define(function (require) {
 				}
 
 				if(this.reIndexUpdate%this.updateRedraw==0){
+					if(this.plotOptions.xaxis.range[1]<this.limit){
+						this.plotOptions.xaxis.range = [0, this.limit];
+						this.plotOptions.xaxis.autorange = false;
+					}
 					Plotly.relayout(this.plotDiv, this.plotOptions);
 				}
 				
@@ -599,10 +613,6 @@ define(function (require) {
 		 */
 		setOptions: function (options) {
 			jQuery.extend(true, this.plotOptions, this.defaultPlotOptions, options);
-			if (options.xaxis && options.xaxis.max) {
-				this.limit = options.xaxis.max;
-			}
-
 			Plotly.relayout(this.id, update);
 			return this;
 		},
@@ -611,6 +621,7 @@ define(function (require) {
 			if(!this.functionNode){
 				this.plotOptions.playAll = playAll;
 				this.cleanDataSets();
+				this.plotOptions.xaxis.showticklabels = false;
 				if (!playAll) {
 					this.plotOptions.xaxis.max = this.limit;
 				}
@@ -743,6 +754,8 @@ define(function (require) {
 			this.plotOptions.yaxis.title = options.yaxis.axisLabel;
 			this.plotOptions.xaxis.title = options.xaxis.axisLabel;
 			this.plotOptions.xaxis.showticklabels = true;
+			this.plotOptions.xaxis.autorange = true;
+			this.xaxisAutoRange = true;
 			
 			newLine = {
 					x : data.data["x"],
@@ -758,7 +771,7 @@ define(function (require) {
 			this.datasets.push(newLine);
 
 			//Creates new plot using datasets and default options
-			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false});
+			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
 			this.initialized = true;
 			this.resize();
 			return this;
@@ -798,9 +811,10 @@ define(function (require) {
                 }
             }
 
-			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false});
+			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
 			this.initialized = true;
             this.updateAxis(dataY.getInstancePath());
+            this.resize();
 			return this;
 		}
 

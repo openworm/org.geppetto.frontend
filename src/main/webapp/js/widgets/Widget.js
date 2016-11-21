@@ -546,6 +546,14 @@ define(function (require) {
                         	 for(var i =0 ; i<icons.length; i++){
                         		 //remove text from span added by vendor library
                         		 $(icons[i]).text("");
+                        		 var title =  $(icons[i]).parent().prop('title');
+                        		 if(title=='minimize'){
+                        			 $(icons[i]).parent().prop('title','Minimize Widget')
+                        		 }else if(title=='maximize'){
+                        			 $(icons[i]).parent().prop('title','Maximize Widget')
+                        		 }else if(title=='collapse'){
+                        			 $(icons[i]).parent().prop('title','Collapse Widget')
+                        		 }
                         	 }
                           },
                           "beforeMinimize" : function(evt, dlg){

@@ -35,6 +35,10 @@
     height: 100%;
 }
 
+div.plotly-notifier {
+  visibility: hidden;
+}
+
 .ui-dialog .ui-dialog-content{
 	padding : 0;
 }

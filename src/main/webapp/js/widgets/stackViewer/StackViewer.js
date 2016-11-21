@@ -164,6 +164,7 @@ define(function (require) {
         },
 
         removeSlice: function(instance){
+            window.test = instance;
             console.log('Removing ' + instance.parent.getName() + ' from ' + this.data.instances.length);
             var index = this.data.instance.indexOf(instances);
             if (index > -1) {

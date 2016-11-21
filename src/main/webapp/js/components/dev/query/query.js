@@ -216,7 +216,20 @@ define(function (require) {
         isCarousel: false,
 
         imageContainerId: '',
-        fullyLoaded : false, 
+        fullyLoaded : false,
+
+        getImageClickAction: function(path){
+            var that = this;
+
+            var action = function (e) {
+                e.preventDefault();
+                var actionStr = that.props.metadata.actions;
+                actionStr = actionStr.replace(/\$entity\$/gi, path);
+                GEPPETTO.Console.executeCommand(actionStr);
+            };
+
+            return action;
+        },
         
         getInitialState: function () {
             return {
@@ -266,13 +279,17 @@ define(function (require) {
                     if(value.elements.length<=2){
                     	this.fullyLoaded = true;
                     }
-                    
+
+                    var that = this;
                     //if it's an array, create a carousel (relies on slick)
                     var elements = value.elements.map(function (item, key) {
                     	if(key<imagesToLoad){
                     		var image = item.initialValue;
+                            var action = that.getImageClickAction(image.reference);
                     		return <div key={key} className="query-results-slick-image"> {image.name}
-                    		<img className="popup-image invert" src={image.data}/>
+                                <a href='' onClick={action}>
+                                    <img className="popup-image invert" src={image.data}/>
+                                </a>
                     		</div>
                     	}
                     });
@@ -287,8 +304,11 @@ define(function (require) {
                 else if (value.eClass == GEPPETTO.Resources.IMAGE) {
                     //otherwise we just show an image
                     var image = value;
+                    var action = this.getImageClickAction(image.reference);
                     imgElement = <div id={imageContainerId} className="query-results-image collapse in">
-                        <img className="query-results-image invert" src={image.data}/>
+                        <a href='' onClick={action}>
+                            <img className="query-results-image invert" src={image.data}/>
+                        </a>
                     </div>
                 }
             }

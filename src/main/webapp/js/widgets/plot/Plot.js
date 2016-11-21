@@ -290,6 +290,8 @@ define(function (require) {
 
 			if(plotable){
 				if(this.plotly==null){
+					this.plotOptions.xaxis.autorange = true;
+					this.xaxisAutoRange = true;
 					//Creates new plot using datasets and default options
 					this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
 					this.initialized = true;
@@ -366,8 +368,14 @@ define(function (require) {
 		    var content = "";
 		    var space = "";
 		    for (var i = 0; i < data[0].length; i++) {
+
 		    	for(var j=0; j< data.length; j++){
-		    		content += data[j][i] + "      ";
+			    	var size =   Math.max(Math.floor(Math.log10(Math.abs(data[j][i]))), 0) + 1;
+			    	var space = "";
+			    	for(var l=25; l>size; l--){
+			    		space += " ";
+			    	}
+		    		content += data[j][i] + space;
 		    	}
 		        content += "\r\n";
 		    }
@@ -385,6 +393,7 @@ define(function (require) {
 		resetAxes : function(){
 			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
 			this.plotOptions.yaxis.autorange = true;
+			this.plotOptions.xaxis.range = [];
 			this.plotOptions.xaxis.range =[0,this.limit];
 			Plotly.relayout(this.plotDiv, this.plotOptions);
 		},
@@ -810,7 +819,8 @@ define(function (require) {
                     }
                 }
             }
-
+			
+			this.plotOptions.xaxis.autorange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
 			this.initialized = true;
             this.updateAxis(dataY.getInstancePath());

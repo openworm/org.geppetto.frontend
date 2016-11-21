@@ -207,15 +207,15 @@ define(function (require) {
                     var imageX = Number(result[0]);
                     var imageY = Number(result[1]);
                     this.setState({imageX: imageX, imageY: imageY});
+                    // update slice view
+                    this.state.lastUpdate = 0;
+                    this.checkStack();
                     if (this.stack.position.x == 0){
-                        this.stack.position.x = (this.renderer.width-this.disp.width)/2;
+                        this.stack.position.x = (this.renderer.width-this.disp.width);
                     }
                     if (this.stack.position.y == 0){
                         this.stack.position.y = (this.renderer.height-this.disp.height)/2;
                     }
-                    // update slice view
-                    this.state.lastUpdate = 0;
-                    this.checkStack();
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {

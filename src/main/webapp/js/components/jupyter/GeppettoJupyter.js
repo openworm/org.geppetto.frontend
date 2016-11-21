@@ -311,7 +311,7 @@ define(function (require, exports, module) {
 		},	
 
 		getLoadExperimentPayload: function (){
-			return { experiment_loaded: {eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] } };
+			return { experiment_loaded: JSON.stringify({eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] })};
 		},
 
 		initialize: function () {

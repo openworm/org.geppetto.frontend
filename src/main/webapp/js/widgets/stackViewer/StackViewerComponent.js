@@ -210,12 +210,6 @@ define(function (require) {
                     // update slice view
                     this.state.lastUpdate = 0;
                     this.checkStack();
-                    if (this.stack.position.x == 0){
-                        this.stack.position.x = (this.renderer.width-this.disp.width);
-                    }
-                    if (this.stack.position.y == 0){
-                        this.stack.position.y = (this.renderer.height-this.disp.height)/2;
-                    }
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -499,6 +493,13 @@ define(function (require) {
             if(!this._isMounted){
                 // check that component is still mounted
                 return;
+            }
+
+            if (this.stack.position.x == 0){
+                this.stack.position.x = (this.renderer.width-this.disp.width);
+            }
+            if (this.stack.position.y == 0){
+                this.stack.position.y = (this.renderer.height-this.disp.height);
             }
 
             if (this.state.lastUpdate < (Date.now() - 2000)) {

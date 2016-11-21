@@ -287,6 +287,9 @@ define(function (require, exports, module) {
 
 			this.on("change:state", function (model, value, options) {
 				GEPPETTO.SimulationHandler.onMessage({type: 'experiment_status', data: JSON.stringify(this.getPayload(value))});
+				if(value=="RUNNING"){
+					GEPPETTO.trigger(Events.Experiment_running);
+				}
 			});
 		}
 	});

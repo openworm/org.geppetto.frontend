@@ -665,6 +665,11 @@ define(function (require) {
                 this.updateImages(nextProps);
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
+                var centerAdjX = (this.state.imageX * this.props.zoomLevel) - (this.state.imageX * nextProps.zoomLevel);
+                var centerAdjY = (this.state.imageY * this.props.zoomLevel) - (this.state.imageY * nextProps.zoomLevel);
+                this.stack.position.x = nextProps.stackX + centerAdjX;
+                this.stack.position.y = nextProps.stackY + centerAdjY;
+                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                 this.updateZoomLevel(nextProps);
             }
             if (nextProps.fxp !== this.props.fxp) {
@@ -1092,12 +1097,8 @@ define(function (require) {
         onZoomIn: function () {
             let zoomLevel = this.state.zoomLevel += .1;
             if (zoomLevel < 10.0) {
-                var centerAdjX = (this.state.imageX * this.state.zoomLevel) - (this.state.imageX * (this.state.zoomLevel - 0.1));
-                var centerAdjY = (this.state.imageY * this.state.zoomLevel) - (this.state.imageY * (this.state.zoomLevel - 0.1));
                 this.setState({
                     zoomLevel: zoomLevel,
-                    stackX: this.state.stackX - centerAdjX,
-                    stackY: this.state.stackY - centerAdjY,
                     text: 'Zooming in to (X' + Number(zoomLevel).toFixed(1) + ')'
                 });
             } else {
@@ -1143,12 +1144,8 @@ define(function (require) {
             let zoomLevel = this.state.zoomLevel -= .1;
 
             if (zoomLevel > 0.1) {
-                var centerAdjX = (this.state.imageX * (this.state.zoomLevel - 0.1)) - (this.state.imageX * this.state.zoomLevel);
-                var centerAdjY = (this.state.imageY * (this.state.zoomLevel - 0.1)) - (this.state.imageY * this.state.zoomLevel);
                 this.setState({
                     zoomLevel: zoomLevel,
-                    stackX: this.state.stackX + centerAdjX,
-                    stackY: this.state.stackY + centerAdjY,
                     text: 'Zooming out to (X' + Number(zoomLevel).toFixed(1) + ')'
                 });
             } else {

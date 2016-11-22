@@ -506,8 +506,8 @@ define(function (require) {
 
             if (this.disp.width > 0) {
                 if (this.state.recenter) {
-                    this.stack.position.x = (this.renderer.width - this.disp.width);
-                    this.stack.position.y = (this.renderer.height - this.disp.height);
+                    this.stack.position.x = (this.props.width - this.disp.width);
+                    this.stack.position.y = (this.props.height - this.disp.height);
                     this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                     this.state.recenter = false;
                 }

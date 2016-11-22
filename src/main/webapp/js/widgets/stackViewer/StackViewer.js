@@ -152,28 +152,16 @@ define(function (require) {
             this.updateScene();
         },
 
-        removeSlices: function(instances){
+        removeSlice: function(path){
+            console.log('Removing ' + path.split('.')[0] + ' from ' + this.data.instances.length);
             var i;
-            if (instances.length == undefined) {
-                this.removeSlice(instances);
-            }else{
-                for (i in instances){
-                    this.removeSlice(instances[i]);
+            for (i in this.data.instance){
+                if (this.data.instance[i].parent.getId() == path.split('.')[0]){
+                    this.data.instance.splice(i,1);
                 }
             }
-        },
-
-        removeSlice: function(instance){
-            window.test = instance;
-            console.log('Removing ' + instance.parent.getName() + ' from ' + this.data.instances.length);
-            var index = this.data.instance.indexOf(instances);
-            if (index > -1) {
-                this.data.instances.splice(index, 1);
-                console.log('Passing ' + this.data.instances.length + ' instances');
-                this.updateScene();
-            }else{
-                console.log(instance.parent.getName() + ' not found');
-            }
+            console.log('Passing ' + this.data.instances.length + ' instances');
+            this.updateScene();
         },
 
         updateScene: function(){

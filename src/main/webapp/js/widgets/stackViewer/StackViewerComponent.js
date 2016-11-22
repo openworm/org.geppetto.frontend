@@ -520,6 +520,7 @@ define(function (require) {
                 // console.log('Updating scene...');
                 if (this.state.stack.length < 1){
                     this.state.images = [];
+                    this.stack.removeChildren();
                 }
                 this.createImages();
                 this.updateImages(this.props);

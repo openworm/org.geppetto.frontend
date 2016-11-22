@@ -45,7 +45,7 @@ define(function (require) {
                 data: {},
                 dragOffset: {},
                 dragging: false,
-                dragMax: (this.props.height * 0.5),
+                dragMax: (this.props.height * 0.3),
                 recenter: false
             };
         },
@@ -508,6 +508,7 @@ define(function (require) {
                 if (this.state.recenter) {
                     this.stack.position.x = (this.renderer.width - this.disp.width);
                     this.stack.position.y = (this.renderer.height - this.disp.height);
+                    this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                     this.state.recenter = false;
                 }
             }

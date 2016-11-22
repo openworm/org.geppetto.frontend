@@ -1073,9 +1073,7 @@ define(function (require) {
                 }
             }else{
                 console.log('No instances sent');
-                this.state.label = [];
-                this.state.stack = [];
-                this.state.color = [];
+                this.setState({label:[],stack:[],id:[]});
             }
         },
 

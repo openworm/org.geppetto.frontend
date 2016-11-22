@@ -495,11 +495,13 @@ define(function (require) {
                 return;
             }
 
-            if (this.stack.position.x == 0){
-                this.stack.position.x = (this.renderer.width-this.disp.width);
-            }
-            if (this.stack.position.y == 0){
-                this.stack.position.y = (this.renderer.height-this.disp.height);
+            if (this.disp.width > 0) {
+                if (this.stack.position.x == 0) {
+                    this.stack.position.x = (this.renderer.width - this.disp.width);
+                }
+                if (this.stack.position.y == 0) {
+                    this.stack.position.y = (this.renderer.height - this.disp.height);
+                }
             }
 
             if (this.state.lastUpdate < (Date.now() - 2000)) {

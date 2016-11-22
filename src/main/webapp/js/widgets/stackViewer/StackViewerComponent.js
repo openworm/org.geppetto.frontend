@@ -518,6 +518,9 @@ define(function (require) {
                 this.state.lastUpdate = Date.now();
                 this.state.buffer[-1].text = '';
                 // console.log('Updating scene...');
+                if (this.state.stack.length < 1){
+                    this.state.images = [];
+                }
                 this.createImages();
                 this.updateImages(this.props);
                 var extent = {minDst: this.state.minDst, maxDst: this.state.maxDst};

@@ -514,14 +514,15 @@ define(function (require) {
                 }
             }
 
+            if (this.state.stack.length < 1){
+                this.state.images = [];
+                this.stack.removeChildren();
+            }
+
             if (this.state.lastUpdate < (Date.now() - 2000)) {
                 this.state.lastUpdate = Date.now();
                 this.state.buffer[-1].text = '';
                 // console.log('Updating scene...');
-                if (this.state.stack.length < 1){
-                    this.state.images = [];
-                    this.stack.removeChildren();
-                }
                 this.createImages();
                 this.updateImages(this.props);
                 var extent = {minDst: this.state.minDst, maxDst: this.state.maxDst};

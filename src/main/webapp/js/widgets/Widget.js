@@ -463,7 +463,7 @@ define(function (require) {
             
             addHelpButton: function () {
             	var that=this;
-                this.addButtonToTitleBar($("<div class='fa fa-question'></div>").click(function () {
+                this.addButtonToTitleBar($("<div class='fa fa-question' title='Widget Help'></div>").click(function () {
                     GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
                         title: that.id.slice(0,-1) + ' help',
                         content: that.getHelp(),
@@ -577,7 +577,7 @@ define(function (require) {
                 
 
                 //add history
-                this.addButtonToTitleBar($("<div class='fa fa-history'></div>").click(function (event) {
+                this.addButtonToTitleBar($("<div class='fa fa-history' title='Show Navigation History'></div>").click(function (event) {
                     that.showHistoryMenu(event);
                     event.stopPropagation();
                 }));

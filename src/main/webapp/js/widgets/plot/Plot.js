@@ -62,7 +62,7 @@ define(function (require) {
 		updateRedraw : 3,
         functionNode: false,
         xaxisAutoRange : false,
-
+        
 		/**
 		 * Default options for plot widget, used if none specified when plot
 		 * is created
@@ -162,15 +162,15 @@ define(function (require) {
 			this.plotOptions.xaxis.range =[0,this.limit]
 			var that = this;
 
-			this.addButtonToTitleBar($("<div class='fa fa-home'></div>").on('click', function(event) {
+			this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset Graphs'></div>").on('click', function(event) {
 				that.resetAxes();
 			}));
 			
-			this.addButtonToTitleBar($("<div class='fa fa-picture-o'></div>").on('click', function(event) {
+			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Take Widget Screenshot'></div>").on('click', function(event) {
 				that.downloadPNG();
 			}));
 			
-			this.addButtonToTitleBar($("<div class='fa fa-download'></div>").on('click', function(event) {
+			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download Plot Data'></div>").on('click', function(event) {
 				that.downloadPlotData();
 			}));
 			
@@ -275,7 +275,7 @@ define(function (require) {
 								dash: 'solid',
 								width: 2
 							},
-							hoverinfo : 'none'
+							hoverinfo : 'all'
 					};
 
 					this.datasets.push(newLine);
@@ -288,6 +288,20 @@ define(function (require) {
 				}
 			}
 
+			if (this.datasets.length > 0) {
+                // check for inhomogeneousUnits and set flag
+                var refUnit = undefined;
+                for (var i = 0; i < this.datasets.length; i++) {
+                    if (i == 0) {
+                        refUnit = this.variables[this.datasets[i].name].getUnit();
+                    } else if (refUnit != this.variables[this.datasets[i].name].getUnit()) {
+                        this.inhomogeneousUnits = true;
+                        this.labelsUpdated = false;
+                        break;
+                    }
+                }
+            }
+			
 			if(plotable){
 				if(this.plotly==null){
 					this.plotOptions.xaxis.autorange = true;
@@ -301,10 +315,12 @@ define(function (require) {
 					this.plotDiv.on('plotly_click', function() {
 						that.resize();
 					});
-					this.updateAxis(instance.getInstancePath());
+				}else{
+					Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions);
 				}				
 			}
 			
+			this.updateAxis(instance.getInstancePath());
 			this.resize();
 			return this;
 		},
@@ -339,55 +355,57 @@ define(function (require) {
 		},
 		
 		downloadPlotData : function(){
-			var data = new Array();
-			var xCopied = false;
-			var names = "";
-			for (var key in this.datasets) {
-				var x = this.datasets[key].x;
-				var y = this.datasets[key].y;
-				if(!xCopied){
-					data.push(x);
-					xCopied = true;
+			if(!this.functionNode){
+				var data = new Array();
+				var xCopied = false;
+				var names = "";
+				for (var key in this.datasets) {
+					var x = this.datasets[key].x;
+					var y = this.datasets[key].y;
+					if(!xCopied){
+						data.push(x);
+						xCopied = true;
+					}
+					data.push(y);
+					names = names + this.variables[this.datasets[key].name].getInstancePath() + "\r\n";
 				}
-				data.push(y);
-				names = names + this.datasets[key].name + "\r\n";
+				// Turn number array into byte-array
+				var binData     = new Uint8Array(data[0]);
+
+				//var zip = pako.inflate(binData);
+
+				var bytes = new Uint8Array(names.length);
+				for (var i=0; i<names.length; i++) {
+					bytes[i] = names.charCodeAt(i);
+				}
+
+				var blob = new Blob([bytes]);
+				saveAs(blob, "variables-names.txt");
+
+				var content = "";
+				var space = "";
+				for (var i = 0; i < data[0].length; i++) {
+
+					for(var j=0; j< data.length; j++){
+						var size = data[j][i].toString().length;
+						var space = "";
+						for(var l=25; l>size; l--){
+							space += " ";
+						}
+						content += data[j][i] + space;
+					}
+					content += "\r\n";
+				}
+
+				var bytes2 = new Uint8Array(content.length);
+				for (var i=0; i<content.length; i++) {
+					bytes2[i] = content.charCodeAt(i);
+				}
+
+
+				var blob2 = new Blob([bytes2]);
+				saveAs(blob2, "output-data.txt");
 			}
-			// Turn number array into byte-array
-		    var binData     = new Uint8Array(data[0]);
-
-		    //var zip = pako.inflate(binData);
-		    
-		    var bytes = new Uint8Array(names.length);
-		    for (var i=0; i<names.length; i++) {
-		        bytes[i] = names.charCodeAt(i);
-		    }
-
-		    var blob = new Blob([bytes]);
-		    saveAs(blob, "names.txt");
-		    
-		    var content = "";
-		    var space = "";
-		    for (var i = 0; i < data[0].length; i++) {
-
-		    	for(var j=0; j< data.length; j++){
-			    	var size =   Math.max(Math.floor(Math.log10(Math.abs(data[j][i]))), 0) + 1;
-			    	var space = "";
-			    	for(var l=25; l>size; l--){
-			    		space += " ";
-			    	}
-		    		content += data[j][i] + space;
-		    	}
-		        content += "\r\n";
-		    }
-		    
-		    var bytes2 = new Uint8Array(content.length);
-		    for (var i=0; i<content.length; i++) {
-		        bytes2[i] = content.charCodeAt(i);
-		    }
-
-		    
-		    var blob2 = new Blob([bytes2]);
-		    saveAs(blob2, "output.txt");
 		},
 		
 		resetAxes : function(){
@@ -486,6 +504,7 @@ define(function (require) {
 						timeSeries = this.getTimeSeriesData(this.variables[set.name]);
 						this.datasets[key].x = timeSeries["x"];
 						this.datasets[key].y = timeSeries["y"];
+						this.datasets[key].hoverinfo = 'all';
 						this.plotOptions.xaxis.showticklabels = true;
 						this.plotOptions.xaxis.range = [];
 						this.plotOptions.margin.b = 60;
@@ -494,6 +513,9 @@ define(function (require) {
 						this.xaxisAutoRange = true;
 					}
 					else {
+						if(this.datasets[key].hoverinfo == 'all'){
+							this.datasets[key].hoverinfo = 'none';
+						}
 						newValue = this.variables[set.name].getTimeSeries()[step];
 
 						oldDataX = this.datasets[key].x;
@@ -736,8 +758,6 @@ define(function (require) {
 				}
 			}
 
-			var labelsMap = this.labelsMap;
-
 			//Parse func as a mathjs object
 			var parser = math.parser();
 			var mathFunc = parser.eval(func);
@@ -778,7 +798,7 @@ define(function (require) {
 			};
 
 			this.datasets.push(newLine);
-
+			
 			//Creates new plot using datasets and default options
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
 			this.initialized = true;
@@ -816,6 +836,7 @@ define(function (require) {
                     } else if (refUnit != this.variables[this.datasets[i].name].getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
+                        break;
                     }
                 }
             }

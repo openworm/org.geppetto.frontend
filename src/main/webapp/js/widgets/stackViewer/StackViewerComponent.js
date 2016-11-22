@@ -1252,24 +1252,69 @@ define(function (require) {
             var orthClass = 'btn fa fa-refresh';
             var startOffset = 2.5;
             var displayArea =  this.props.data.id + 'displayArea';
-            return (
-                <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
-                    <button style={{position: 'absolute', right: startOffset, padding: 0, border: 0, background: 'transparent'}} className={homeClass} onClick={this.onHome}/>
-                    <button style={{position: 'absolute', right: startOffset+20, padding: 0, border: 0, background: 'transparent'}} className={zoomInClass} onClick={this.onZoomIn}/>
-                    <button style={{position: 'absolute', right: startOffset+35, padding: 0, border: 0, background: 'transparent'}} className={zoomOutClass} onClick={this.onZoomOut}/>
-                    <button style={{position: 'absolute', right: startOffset+55, padding: 0, border: 0, background: 'transparent'}} className={stepInClass} onClick={this.onStepIn}/>
-                    <button style={{position: 'absolute', right: startOffset+70, padding: 0, border: 0, background: 'transparent'}} className={stepOutClass} onClick={this.onStepOut}/>
-                    <button style={{position: 'absolute', right: startOffset+90, padding: 0, border: 0, background: 'transparent'}} className={orthClass} onClick={this.toggleOrth}/>
-                    <button style={{position: 'absolute', right: startOffset+110, padding: 0, border: 0, background: 'transparent'}} className={pointerClass} onClick={this.toggleMode}/>
-                    <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
-                            fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
-                            stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
-                            statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
-                            scl={this.state.scl} orth={this.state.orth}
-                            label={this.state.label} id={this.state.id} height={this.props.data.height}
-                            width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX} voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea} />
-                </div>
-            );
+            if (this.state.stack.length > 0) {
+                return (
+                    <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
+                        <button style={{
+                            position: 'absolute',
+                            right: startOffset,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={homeClass} onClick={this.onHome}/>
+                        <button style={{
+                            position: 'absolute',
+                            right: startOffset + 20,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={zoomInClass} onClick={this.onZoomIn}/>
+                        <button style={{
+                            position: 'absolute',
+                            right: startOffset + 35,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={zoomOutClass} onClick={this.onZoomOut}/>
+                        <button style={{
+                            position: 'absolute',
+                            right: startOffset + 55,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={stepInClass} onClick={this.onStepIn}/>
+                        <button style={{
+                            position: 'absolute',
+                            right: startOffset + 70,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={stepOutClass} onClick={this.onStepOut}/>
+                        <button style={{
+                            position: 'absolute',
+                            right: startOffset + 90,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={orthClass} onClick={this.toggleOrth}/>
+                        <button style={{
+                            position: 'absolute',
+                            right: startOffset + 110,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={pointerClass} onClick={this.toggleMode}/>
+                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
+                                fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
+                                stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
+                                statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
+                                scl={this.state.scl} orth={this.state.orth}
+                                label={this.state.label} id={this.state.id} height={this.props.data.height}
+                                width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX}
+                                voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}/>
+                    </div>
+                );
+            }
         }
     });
 

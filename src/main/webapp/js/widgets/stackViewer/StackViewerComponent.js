@@ -1127,7 +1127,7 @@ define(function (require) {
                 yaw = 0;
                 rol = 90;
             }
-            this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0, stackX: 0, stackY: 0});
+            this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0, stackX: -10000, stackY: -10000});
         },
 
         /**

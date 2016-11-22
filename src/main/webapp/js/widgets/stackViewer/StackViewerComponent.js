@@ -882,6 +882,7 @@ define(function (require) {
                 var startPosition = this.state.dragOffset;
                 console.log('Start:' + JSON.stringify(startPosition));
                 var newPosition = this.state.data.getLocalPosition(this.stack);
+                window.test = this.state.data;
                 console.log('New:' + JSON.stringify(newPosition));
                 // only allow jumps of < +/- dragMax
                 var dragMax = this.state.dragMax / this.disp.scale.x;

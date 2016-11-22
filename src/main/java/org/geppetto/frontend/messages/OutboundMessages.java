@@ -48,6 +48,7 @@ public enum OutboundMessages {
 	RELOAD_CANVAS("reload_canvas"),
 	SIMULATION_CONFIGURATION("simulation_configuration"),
 	ERROR("generic_error"),
+	ERROR_RUNNING_EXPERIMENT("error_running_experiment"),
 	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config"),
 	ERROR_READING_SCRIPT("error_reading_script"),
 	ERROR_SETTING_WATCHED_VARIABLES("error_setting_watched_variables"),

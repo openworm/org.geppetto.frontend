@@ -1314,6 +1314,11 @@ define(function (require) {
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}/>
                     </div>
                 );
+            }else{
+                return (
+                    <div id={displayArea} style={{position: 'absolute', top: -1, left: -1, background: 'black', width: this.props.data.width, height: this.props.data.height}}>
+                    </div>
+                );
             }
         }
     });

@@ -933,10 +933,10 @@ define(function (require) {
                 minDst: -100,
                 maxDst: 100,
                 orth: 0,
-                color: [0xFFFFFF],
-                stack: ['/disk/data/VFB/IMAGE_DATA/VFB/i/0001/7894/volume.wlz'],
-                label: ['Adult Brain'],
-                id: ['VFB_00017894'],
+                color: [],
+                stack: [],
+                label: [],
+                id: [],
                 mode: 0,
                 plane: null
             }; // mode: 0=select, 1=label, 2=add.

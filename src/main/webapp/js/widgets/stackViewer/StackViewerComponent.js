@@ -926,7 +926,6 @@ define(function (require) {
                 zoomLevel: 0.5,
                 dst: 0,
                 text: '',
-                serverUrl: 'http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi',
                 stackX: -10000,
                 stackY: -10000,
                 fxp: [511, 255, 108],
@@ -1041,7 +1040,7 @@ define(function (require) {
                 var colors = [];
                 var labels = [];
                 var ids = [];
-                var server = this.state.serverUrl;
+                var server = this.props.config.serverUrl;
                 for (instance in instances) {
                     try {
                         vals = instances[instance].getVariable().getInitialValue().value;
@@ -1060,7 +1059,7 @@ define(function (require) {
                         console.log('Error handling ' + instance.data);
                     }
                 }
-                if (server != this.state.serverUrl && server != null) {
+                if (server != this.props.config.serverUrl && server != null) {
                     this.setState({serverURL: server});
                     // console.log('Changing IIP server to ' + server);
                 }
@@ -1249,8 +1248,10 @@ define(function (require) {
             var orthClass = 'btn fa fa-refresh';
             var startOffset = 2.5;
             var displayArea =  this.props.data.id + 'displayArea';
+
+            var markup = '';
             if (this.state.stack.length > 0) {
-                return (
+                markup = (
                     <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
                         <button style={{
                             position: 'absolute',
@@ -1301,7 +1302,7 @@ define(function (require) {
                             border: 0,
                             background: 'transparent'
                         }} className={pointerClass} onClick={this.toggleMode}/>
-                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.state.serverUrl}
+                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.props.config.serverUrl}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                                 stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                                 statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
@@ -1311,12 +1312,14 @@ define(function (require) {
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}/>
                     </div>
                 );
-            }else{
-                return (
+            } else {
+                markup = (
                     <div id={displayArea} style={{position: 'absolute', top: -1, left: -1, background: 'black', width: this.props.data.width, height: this.props.data.height}}>
                     </div>
                 );
             }
+
+            return markup;
         }
     });
 

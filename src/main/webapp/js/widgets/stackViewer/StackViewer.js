@@ -61,6 +61,7 @@ define(function (require) {
         defHeight: 400,
         defWidth: 600,
         data: { id: this.id, height: this.defHeight, width: this.defWidth, instances: [], selected: [] },
+        config: {},
 
         /**
          * Initialises button bar
@@ -88,6 +89,18 @@ define(function (require) {
 
             this.addBorders();
             this.updateScene();
+        },
+
+        /**
+         * Sets widget configuration
+         *
+         * @param config
+         */
+        setConfig: function(config){
+            this.config = config;
+
+            // return this for chaining
+            return this;
         },
 
         /**
@@ -166,7 +179,7 @@ define(function (require) {
 
         updateScene: function(){
             ReactDOM.render(
-                React.createElement(StackViewerComponent, {data: this.data}),
+                React.createElement(StackViewerComponent, {data: this.data, config: this.config}),
                 document.getElementById('stack-container' + this.id)
             );
         },

@@ -915,8 +915,8 @@ define(function (require) {
                 dst: 0,
                 text: '',
                 serverUrl: 'http://vfbdev.inf.ed.ac.uk/fcgi/wlziipsrv.fcgi',
-                stackX: 0,
-                stackY: 0,
+                stackX: -10000,
+                stackY: -10000,
                 fxp: [511, 255, 108],
                 pit: 0,
                 yaw: 0,
@@ -1070,6 +1070,9 @@ define(function (require) {
                 }
             }else{
                 console.log('No instances sent');
+                this.state.label = [];
+                this.state.stack = [];
+                this.state.color = [];
             }
         },
 

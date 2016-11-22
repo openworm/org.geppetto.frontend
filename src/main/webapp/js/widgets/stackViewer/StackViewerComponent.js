@@ -45,7 +45,8 @@ define(function (require) {
                 data: {},
                 dragOffset: {},
                 dragging: false,
-                dragMax: (this.props.height * 0.5)
+                dragMax: (this.props.height * 0.5),
+                recenter: false
             };
         },
         /**
@@ -78,6 +79,9 @@ define(function (require) {
             this.stack = new PIXI.Container();
             this.stack.pivot.x = 0;
             this.stack.pivot.y = 0;
+            this.stack.position.x = -10000;
+            this.stack.position.y = -10000;
+            this.state.recenter = true;
 
             this.createStatusText();
 
@@ -496,11 +500,10 @@ define(function (require) {
             }
 
             if (this.disp.width > 0) {
-                if (this.stack.position.x == 0) {
+                if (this.state.recenter) {
                     this.stack.position.x = (this.renderer.width - this.disp.width);
-                }
-                if (this.stack.position.y == 0) {
                     this.stack.position.y = (this.renderer.height - this.disp.height);
+                    this.state.recenter = false;
                 }
             }
 
@@ -661,6 +664,10 @@ define(function (require) {
             if (nextProps.stackX !== this.stack.position.x || nextProps.stackY !== this.stack.position.y) {
                 this.stack.position.x = nextProps.stackX;
                 this.stack.position.y = nextProps.stackY;
+                if (nextProps.stackX == -10000 && nextProps.stackY == -10000){
+                    this.state.recenter = true;
+                    this.checkStack();
+                }
             }
             if (nextProps.mode !== this.state.mode) {
                 this.changeMode(nextProps.mode);
@@ -1160,7 +1167,7 @@ define(function (require) {
          * Event handler for clicking Home.
          **/
         onHome: function () {
-            this.setState({dst: 0, stackX: 0, stackY: 0, text: 'View reset', zoomLevel: 0.5});
+            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'View reset', zoomLevel: 0.5});
         },
 
         onExtentChange: function (data) {

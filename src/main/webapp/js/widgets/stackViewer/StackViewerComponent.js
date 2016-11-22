@@ -679,6 +679,7 @@ define(function (require) {
             }
             if (nextProps.orth !== this.state.orth) {
                 this.changeOrth(nextProps.orth);
+                this.state.recenter = true;
                 this.callImageSize();
                 this.callDstRange();
             }

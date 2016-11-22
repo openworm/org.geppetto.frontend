@@ -458,7 +458,7 @@ define(function (require) {
                 }
             } else {
                 console.log('Buffering neighbouring layers (' + this.state.numTiles.toString() + ') tiles...');
-                for (j = 0; j < this.state.numTiles; j++) {
+                for (j = 0; j < this.state.numTiles && j<this.state.stack.length; j++) {
                     for (i in this.state.stack) {
                         image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst - 0.1).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                         if (!PIXI.loader.resources[image]) {

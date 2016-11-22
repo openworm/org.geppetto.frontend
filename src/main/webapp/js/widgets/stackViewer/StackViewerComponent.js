@@ -307,6 +307,11 @@ define(function (require) {
                     this.state.stackViewerPlane.visible = true;
                 }
             }
+            if (this.disp.width > 0) {
+                this.state.stackViewerPlane.visible = true;
+            }else{
+                this.state.stackViewerPlane.visible = false;
+            }
             this.state.planeUpdating = false;
         },
 

@@ -665,10 +665,14 @@ define(function (require) {
                 this.updateImages(nextProps);
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
+                var centerAdjX = ((this.props.width/2) - ((this.state.imageX * this.props.zoomLevel)/2))+this.stack.position.x;
+                var centerAdjY = ((this.props.height/2) - ((this.state.imageY * this.props.zoomLevel)/2))+this.stack.position.y;
+                centerAdjX = ((this.props.width/2) - ((this.state.imageX * nextProps.zoomLevel)/2)) - centerAdjX;
+                centerAdjY = ((this.props.height/2) - ((this.state.imageY * nextProps.zoomLevel)/2)) - centerAdjY;
                 // var centerAdjX = ((this.stack.position.x * this.props.zoomLevel)+((this.state.imageX * this.props.zoomLevel)/2)) - ((this.state.imageX * nextProps.zoomLevel)/2);
                 // var centerAdjY = ((this.stack.position.y * this.props.zoomLevel)+((this.state.imageY * this.props.zoomLevel)/2)) - ((this.state.imageY * nextProps.zoomLevel)/2);
-                // this.stack.position.x = centerAdjX;
-                // this.stack.position.y = centerAdjY;
+                this.stack.position.x = centerAdjX;
+                this.stack.position.y = centerAdjY;
                 this.updateZoomLevel(nextProps);
                 // this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
             }

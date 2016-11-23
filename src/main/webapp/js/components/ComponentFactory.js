@@ -40,29 +40,29 @@ define(function (require) {
 
 		//All the components potentially instantiable go here
 		var components = {
-			'FORM':'./dev/form/Form',
-			'PANEL':'./dev/panel/Panel',
-			'LOGO':'./dev/logo/Logo',
-			'LOADINGSPINNER':'./loadingspinner/LoadingSpinner',
-			'SAVECONTROL':'./dev/save/SaveControl',
-			'CONTROLPANEL':'./dev/controlpanel/controlpanel',
-			'SPOTLIGHT':'./dev/spotlight/spotlight',
-			'DROPDOWNBUTTON':'./dev/DropDownPanel/DropDownButton',
-			'DROPDOWNPANEL':'./dev/DropDownPanel/DropDownPanel',
-			'FOREGROUND':'./dev/foregroundcontrols/ForegroundControls',
-			'EXPERIMENTSTABLE':'./dev/ExperimentsTable/ExperimentsTable',
-			'HOME':'./dev/home/HomeControl',
-			'SIMULATIONCONTROLS':'./dev/simulationcontrols/ExperimentControls',
-			'CAMERACONTROLS': './dev/cameracontrols/CameraControls',
-			'SHARE':'./dev/share/share',
-			'INFOMODAL':'./popups/InfoModal',
-			'MDMODAL':'./popups/MarkDownModal',
-			'QUERY':'./dev/query/query',
-			'TUTORIAL':'./dev/tutorial/TutorialModule',
-			'PYTHONCONSOLE': './dev/PythonConsole/PythonConsole',
-			'CHECKBOX': './dev/BasicComponents/Checkbox',
-			'TEXTFIELD': './dev/BasicComponents/TextField',
-			'RAISEDBUTTON': './dev/BasicComponents/RaisedButton'
+			'FORM':'dev/form/Form',
+			'PANEL':'dev/panel/Panel',
+			'LOGO':'dev/logo/Logo',
+			'LOADINGSPINNER':'loadingspinner/LoadingSpinner',
+			'SAVECONTROL':'dev/save/SaveControl',
+			'CONTROLPANEL':'dev/controlpanel/controlpanel',
+			'SPOTLIGHT':'dev/spotlight/spotlight',
+			'DROPDOWNBUTTON':'dev/DropDownPanel/DropDownButton',
+			'DROPDOWNPANEL':'dev/DropDownPanel/DropDownPanel',
+			'FOREGROUND':'dev/foregroundcontrols/ForegroundControls',
+			'EXPERIMENTSTABLE':'dev/ExperimentsTable/ExperimentsTable',
+			'HOME':'dev/home/HomeControl',
+			'SIMULATIONCONTROLS':'dev/simulationcontrols/ExperimentControls',
+			'CAMERACONTROLS': 'dev/cameracontrols/CameraControls',
+			'SHARE':'dev/share/share',
+			'INFOMODAL':'popups/InfoModal',
+			'MDMODAL':'popups/MarkDownModal',
+			'QUERY':'dev/query/query',
+			'TUTORIAL':'dev/tutorial/TutorialModule',
+			'PYTHONCONSOLE': 'dev/PythonConsole/PythonConsole',
+			'CHECKBOX': 'dev/BasicComponents/Checkbox',
+			'TEXTFIELD': 'dev/BasicComponents/TextField',
+			'RAISEDBUTTON': 'dev/BasicComponents/RaisedButton'
 		}
 		
 	
@@ -75,7 +75,7 @@ define(function (require) {
 			
 			addComponent: function(componentID, properties, container, callback){
 				var that=this;
-				require([components[componentID]], function(loadedModule){
+				require(["./" + components[componentID]], function(loadedModule){
 					var component = React.createFactory(loadedModule)(properties)
 					var renderedComponent = that.renderComponent(component, container);
 					if(callback!=undefined){

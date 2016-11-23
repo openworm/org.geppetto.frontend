@@ -66,8 +66,8 @@ define(function (require) {
         xaxisAutoRange : false,
         
 		/**
-		 * Default options for plot widget, used if none specified when plot
-		 * is created
+		 * Default options for plotly widget, used if none specified when plot
+		 * is created. 
 		 */
 		defaultOptions : function(){	
 			return {
@@ -138,13 +138,9 @@ define(function (require) {
 				hovermode : 'none'
 			};
 		},
-		
-		removeHoverBarButtons : {
-			modeBarButtonsToRemove: ['sendDataToCloud','hoverCompareCartesian','hoverClosestCartesian']
-		},
 
 		/**
-		 * Initializes the plot given a set of options
+		 * Initializes the plotly widget given a set of options
 		 *
 		 * @param {Object} options - Object with options for the plot widget
 		 */
@@ -165,6 +161,7 @@ define(function (require) {
 			this.plotOptions.xaxis.range =[0,this.limit]
 			var that = this;
 
+			//adding functionality icon buttons on the left of the widget
 			this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset Graphs'></div>").on('click', function(event) {
 				that.resetAxes();
 			}));
@@ -176,7 +173,8 @@ define(function (require) {
 			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download Plot Data'></div>").on('click', function(event) {
 				that.downloadPlotData();
 			}));
-			
+
+			//resize handlers
 			$("#"+this.id).dialog({
 				resize: function(event, ui) { 
 					that.resize(true); 
@@ -193,7 +191,7 @@ define(function (require) {
 		},
 
         /**
-         * Sets the legend for a variable
+         * Sets the legend for a variable in the plotly widget
          *
          * @command setLegend(variable, legend)
          * @param {Object} instance - variable to change display label in legends
@@ -332,9 +330,11 @@ define(function (require) {
 		},
 
 		resize : function(draggedResize){
+			//retrieve div size
 			var divheight = $("#"+this.id).height();
 			var divwidth = $("#"+this.id).width();
 
+			//playing around with margin and height to make it resize how we want it
 			if(draggedResize){
 				divheighth = divheight -5;
 				this.plotOptions.margin.b = 50;
@@ -344,6 +344,7 @@ define(function (require) {
 				this.plotOptions.margin.b = 50;
 			}
 			
+			//sets the width and height on the plotOptions which is given to plotly on relayout
 			this.plotOptions.width = divwidth;
 			this.plotOptions.height = divheight;
 			//resizes plot right after creation, needed for d3 to resize 
@@ -351,15 +352,21 @@ define(function (require) {
 			Plotly.relayout(this.plotDiv,this.plotOptions);
 		},
 		
+		/**
+		 * Downloads a screenshot of the graphing plots
+		 */
 		downloadPNG : function(){
 			Plotly.downloadImage(
 					this.plotDiv,{
 					  format:'png',
-					  height:1280,
-					  width:1280,
+					  height:window.screen.availHeight,
+					  width:window.screen.availWidth,
 					});
 		},
 		
+		/**
+		 * Downloads a zip with the plotting data
+		 */
 		downloadPlotData : function(){
 			if(!this.functionNode){
 				var data = new Array();
@@ -418,6 +425,9 @@ define(function (require) {
 			}
 		},
 		
+		/**
+		 * Resets the axes of the graphs to defaults
+		 */
 		resetAxes : function(){
 			this.plotOptions.xaxis.range = [];
 			this.plotOptions.xaxis.range =[0,this.limit];
@@ -462,7 +472,7 @@ define(function (require) {
 		},
 
 		/**
-		 * Removes the data set from the plot. EX:
+		 * Removes the data set from the plot. 
 		 *
 		 * @command removeDataSet(state)
 		 * @param {Object} state -Data set to be removed from the plot
@@ -568,6 +578,8 @@ define(function (require) {
 					this.plotDiv.data[key].y = this.datasets[key].y;
 				}
 
+				//Repaints plotly graph only certain amount of time, that certain amount of times is 
+				//based on what's store on global variable this.updateRedraw
 				if(this.reIndexUpdate%this.updateRedraw==0){
 					if(this.plotOptions.xaxis.range[1]<this.limit){
 						this.plotOptions.xaxis.range = [0, this.limit];

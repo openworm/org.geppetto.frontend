@@ -57,7 +57,7 @@
 <div id="modal-region"></div>
 <div id="load-spinner"></div>
 
-<div id="controls">
+<div id="controls class="noSelection"">
 
 	<div id="SaveButton" class="row"></div>
 	<div id="HomeButton" class="row"></div>
@@ -75,11 +75,11 @@
 </div>
 
 <div id="mainContainer">
-    <div id="geppettologo" ></div>
-    <div id="spotlight" ></div>
-    <div id="controlpanel" ></div>
-    <div id="querybuilder" ></div>
-    <div id="sim"></div>
+    <div id="geppettologo" class="noSelection" ></div>
+    <div id="spotlight" class="hiddenStart" ></div>
+    <div id="controlpanel"  class="hiddenStart" ></div>
+    <div id="querybuilder"  class="hiddenStart" ></div>
+    <div id="sim" class="noSelection"></div>
 
     <div id="footer">
         <div id="footerHeader">
@@ -150,7 +150,6 @@
     ga('send', 'pageview');
 </script>
 
-<noscript><a href="https://www.olark.com/site/3330-945-10-6280/contact" title="Contact us" id="contact" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
-<!-- end olark code -->
+
 </body>
 </html>

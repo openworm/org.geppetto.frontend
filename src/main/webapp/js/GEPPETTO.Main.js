@@ -211,9 +211,11 @@ define(function(require) {
                         $('#experiments').show();
                         $(this).tab('show');
                         visibleExperiments = true;
+                        GEPPETTO.Console.focusFooter();
                     } else {
                         $('#experiments').hide();
                         visibleExperiments = false;
+                        GEPPETTO.Console.unfocusFooter();
                     }
                 });
 

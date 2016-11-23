@@ -54,6 +54,7 @@ define(function (require) {
 		variables : [],
 		limit: 400,
 		options: null,
+		labelsMap: {},
 		labelsUpdated: false,
 		initialized:null,
 		inhomogeneousUnits: false,
@@ -188,7 +189,7 @@ define(function (require) {
 			
 			$("#"+this.id).bind('resizeEnd', function() {
 				that.resize();
-			});
+			});			
 		},
 
         /**
@@ -208,16 +209,11 @@ define(function (require) {
             for(var i =0; i< this.datasets.length; i++){
             	if(this.datasets[i].name == instancePath){
             		this.datasets[i].name = legend;
-            		for(var key in this.variables){
-            			if(key==instancePath){
-            				this.variables[legend] = this.variables[key];
-            				delete this.variables[key];
-            			}
-            		}
             	}
             }
             
             Plotly.relayout(this.plotDiv, this.plotOptions);
+            this.labelsMap[instancePath] = legend;
             
             return this;
         },
@@ -263,7 +259,14 @@ define(function (require) {
 					}else{
 						plotable = false;
 					}
-
+					
+					var label = instance.getInstancePath();
+					var shortLabel = label;
+	                if (this.labelsMap[label] != undefined && this.labelsMap[label] != label) {
+	                    //a legend was set
+	                    shortLabel = this.labelsMap[label];
+	                }
+	                
 					/*
 					 * Create object with x, y data, and graph information. 
 					 * Object is used to plot on plotly library
@@ -272,7 +275,7 @@ define(function (require) {
 							x : timeSeriesData["x"],
 							y : timeSeriesData["y"],
 							mode : "lines",
-							name: instance.getInstancePath(),
+							name: shortLabel,
 							line: {
 								dash: 'solid',
 								width: 2
@@ -293,10 +296,12 @@ define(function (require) {
 			if (this.datasets.length > 0) {
                 // check for inhomogeneousUnits and set flag
                 var refUnit = undefined;
+                var variable;
                 for (var i = 0; i < this.datasets.length; i++) {
+                	variable = this.variables[this.getLegendInstancePath(this.datasets[i].name)];
                     if (i == 0) {
-                        refUnit = this.variables[this.datasets[i].name].getUnit();
-                    } else if (refUnit != this.variables[this.datasets[i].name].getUnit()) {
+                        refUnit = variable.getUnit();
+                    } else if (refUnit != variable.getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
                         break;
@@ -310,7 +315,6 @@ define(function (require) {
 					this.xaxisAutoRange = true;
 					//Creates new plot using datasets and default options
 					this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-					this.initialized = true;
 					this.plotDiv.on('plotly_doubleclick', function() {
 						that.resize();
 					});
@@ -371,7 +375,7 @@ define(function (require) {
 						xCopied = true;
 					}
 					data.push(y);
-					text = text + " " + this.variables[this.datasets[key].name].getInstancePath();
+					text = text + " " + this.variables[this.getLegendInstancePath(this.datasets[key].name)].getInstancePath();
 				}
 
 				//convert string containing variables names into bytes
@@ -415,10 +419,10 @@ define(function (require) {
 		},
 		
 		resetAxes : function(){
-			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
-			this.plotOptions.yaxis.autorange = true;
 			this.plotOptions.xaxis.range = [];
 			this.plotOptions.xaxis.range =[0,this.limit];
+			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
+			this.plotOptions.yaxis.autorange = true;
 			Plotly.relayout(this.plotDiv, this.plotOptions);
 		},
 		
@@ -496,6 +500,7 @@ define(function (require) {
 				 *has not be set to true, which means arrays are populated but not yet plot*/
 				if(!this.initialized){
 					this.clean(playAll);
+					this.initialized = true;
 				}
 
 				var set, reIndex, newValue;
@@ -507,7 +512,7 @@ define(function (require) {
 					set = this.datasets[key];
 					if (this.plotOptions.playAll) {
 						//we simply set the whole time series
-						timeSeries = this.getTimeSeriesData(this.variables[set.name]);
+						timeSeries = this.getTimeSeriesData(this.variables[this.getLegendInstancePath(set.name)]);
 						this.datasets[key].x = timeSeries["x"];
 						this.datasets[key].y = timeSeries["y"];
 						this.datasets[key].hoverinfo = 'all';
@@ -522,7 +527,7 @@ define(function (require) {
 						if(this.datasets[key].hoverinfo == 'all'){
 							this.datasets[key].hoverinfo = 'none';
 						}
-						newValue = this.variables[set.name].getTimeSeries()[step];
+						newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
 
 						oldDataX = this.datasets[key].x;
 						oldDataY = this.datasets[key].y;
@@ -581,7 +586,7 @@ define(function (require) {
 		updateAxis: function (key) {
 			var update = {};
 			if (!this.labelsUpdated) {
-				var unit = this.variables[key].getUnit();
+				var unit = this.variables[this.getLegendInstancePath(key)].getUnit();
 				if (unit != null) {
 					var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
 					var labelX = this.getUnitLabel(window.Instances.time.getUnit());
@@ -792,7 +797,7 @@ define(function (require) {
 			this.plotOptions.xaxis.showticklabels = true;
 			this.plotOptions.xaxis.autorange = true;
 			this.xaxisAutoRange = true;
-			
+			this.labelsMap[options.legendText] = data.data.name;
 			newLine = {
 					x : data.data["x"],
 					y : data.data["y"],
@@ -812,6 +817,17 @@ define(function (require) {
 			this.resize();
 			return this;
 		},
+		
+		getLegendInstancePath : function(legend){
+			var originalInstancePath = legend;
+			for(var key in this.labelsMap){
+    			if(this.labelsMap[key] == legend){
+    				originalInstancePath = key;
+    			}
+    		}
+			
+			return originalInstancePath;
+		},
 
 		plotXYData: function (dataY, dataX, options) {
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
@@ -821,26 +837,29 @@ define(function (require) {
 			newLine = {
 					x : timeSeriesData["x"],
 					y : timeSeriesData["y"],
-					modes : "lines",
+					mode : "lines",
 					name: dataY.getInstancePath(),
 					line: {
 						dash: 'solid',
 						width: 2
-					}
+					},
+					hoverinfo : 'all'
 			};
 
-			this.variables[dataY.getInstancePath()] = dataY;
-			this.variables[dataX.getInstancePath()] = dataX;
+			this.variables[this.getLegendInstancePath(dataY.getInstancePath())] = dataY;
+			this.variables[this.getLegendInstancePath(dataX.getInstancePath())] = dataX;
 
 			this.datasets.push(newLine);
 			
 			if (this.datasets.length > 0) {
                 // check for inhomogeneousUnits and set flag
                 var refUnit = undefined;
+                var legend;
                 for (var i = 0; i < this.datasets.length; i++) {
+                	legend = this.getLegendInstancePath(this.datasets[i].name);
                     if (i == 0) {
-                        refUnit = this.variables[this.datasets[i].name].getUnit();
-                    } else if (refUnit != this.variables[this.datasets[i].name].getUnit()) {
+                        refUnit = this.variables[legend].getUnit();
+                    } else if (refUnit != this.variables[legend].getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
                         break;
@@ -850,7 +869,6 @@ define(function (require) {
 			
 			this.plotOptions.xaxis.autorange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
-			this.initialized = true;
             this.updateAxis(dataY.getInstancePath());
             this.resize();
 			return this;

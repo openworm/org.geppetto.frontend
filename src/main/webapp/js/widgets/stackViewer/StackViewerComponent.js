@@ -1094,7 +1094,7 @@ define(function (require) {
          * Event handler for clicking zoom in. Increments the zoom level
          **/
         onZoomIn: function () {
-            let zoomLevel = (this.state.zoomLevel += .1).toFixed(1);
+            let zoomLevel = Number((this.state.zoomLevel + 0.1).toFixed(1));
             if (zoomLevel < 10.0) {
                 this.setState({
                     zoomLevel: zoomLevel,
@@ -1140,7 +1140,7 @@ define(function (require) {
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
         onZoomOut: function () {
-            let zoomLevel = (this.state.zoomLevel -= .1).toFixed(1);
+            let zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
 
             if (zoomLevel > 0.1) {
                 this.setState({

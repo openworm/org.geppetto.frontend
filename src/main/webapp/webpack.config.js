@@ -30,9 +30,9 @@ module.exports = {
 
   module: {
     loaders: [
-      { test: /\.css$/, loader: "style!css" },
+      
       {
-        test: /\.js?/,
+        test: /\.js$/,
         exclude: /node_modules/,
         loader: ['babel-loader'],
         query: {
@@ -40,6 +40,11 @@ module.exports = {
         }
       },
       { test: /\.json$/, loader: "json-loader" },
+
+      //TODO: This should not be needed, probably we need to use it because a wrong dynamic require
+      { test: /\.(py|png|css|md)$/, loader: 'ignore-loader' },
+
+      //{ test: /\.css$/, loader: "style!css" }
       // {
       //   test: /\.(jpe?g|png|gif|svg)$/i,
       //   loaders: [

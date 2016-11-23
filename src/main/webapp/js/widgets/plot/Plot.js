@@ -93,7 +93,8 @@ define(function (require) {
 					ticks: 'outside',
 					tickcolor: 'rgb(255, 255, 255)',
 					max: -9999999,
-					min: 9999999
+					min: 9999999,
+					range : []
 				},
 				yaxis : {
 					max: -9999999,
@@ -270,7 +271,7 @@ define(function (require) {
 					newLine = {
 							x : timeSeriesData["x"],
 							y : timeSeriesData["y"],
-							modes : "lines",
+							mode : "lines",
 							name: instance.getInstancePath(),
 							line: {
 								dash: 'solid',
@@ -475,7 +476,7 @@ define(function (require) {
 				/*if variable to be removed is on the plot, call the plotly
 				library method to remove*/
 				if(matchKey != null){
-					Plotly.deleteTraces(this.id, matchKey);
+					Plotly.relayout(this.plotDiv,this.plotOptions);
 				}
 			}
 
@@ -636,6 +637,7 @@ define(function (require) {
 				this.datasets = [];
 				this.plotOptions = this.defaultOptions();
 				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false});
+				this.resize();
 			}
 			return this;
 		},

@@ -568,7 +568,7 @@ define(function (require) {
                     x += offX * this.state.tileX;
                     y += offY * this.state.tileY;
                     // console.log('Tiling: ' + [t,offX,offY,x,y,w,h]);
-                    if (((x * this.disp.scale.x) + this.stack.position.x) > (-((this.renderer.view.width * 1) + (this.state.tileX * 2)) + this.stack.position.x) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1) + this.stack.position.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > (-((this.renderer.view.height * 1) + (this.state.tileY * 2)) + this.stack.position.y) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1) + this.stack.position.y))) {
+                    if ((w*h == 1) || (((x * this.disp.scale.x) + this.stack.position.x) > (-((this.renderer.view.width * 1) + (this.state.tileX * 2)) + this.stack.position.x) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1) + this.stack.position.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > (-((this.renderer.view.height * 1) + (this.state.tileY * 2)) + this.stack.position.y) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1) + this.stack.position.y)))) {
                         this.state.visibleTiles.push(t);
                         for (i in this.state.stack) {
                             d = i.toString() + ',' + t.toString();
@@ -643,8 +643,8 @@ define(function (require) {
                 this.state.buffer[-1].text = this.state.text;
             }
             // fix position
-            this.state.buffer[-1].x = -this.stage.position.x;
-            this.state.buffer[-1].y = -this.stage.position.y;
+            this.state.buffer[-1].x = -this.stage.position.x+20;
+            this.state.buffer[-1].y = -this.stage.position.y+20;
             this.state.buffer[-1].anchor.x = 0;
             this.state.buffer[-1].anchor.y = 0;
             this.state.buffer[-1].zOrder = 1000;

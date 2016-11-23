@@ -1255,49 +1255,56 @@ define(function (require) {
                     <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset,
+                            left: 2.5,
+                            top: startOffset,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={homeClass} onClick={this.onHome}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 20,
+                            left: 2.5,
+                            top: startOffset + 20,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={zoomInClass} onClick={this.onZoomIn}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 35,
+                            left: 2.5,
+                            top: startOffset + 35,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={zoomOutClass} onClick={this.onZoomOut}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 55,
+                            left: 2.5,
+                            top: startOffset + 55,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={stepInClass} onClick={this.onStepIn}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 70,
+                            left: 2.5,
+                            top: startOffset + 70,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={stepOutClass} onClick={this.onStepOut}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 90,
+                            left: 2.5,
+                            top: startOffset + 90,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={orthClass} onClick={this.toggleOrth}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 110,
+                            left: 2.5,
+                            top: startOffset + 110,
                             padding: 0,
                             border: 0,
                             background: 'transparent'

@@ -507,8 +507,8 @@ define(function (require) {
             if (this.disp.width > 1) {
                 if (this.state.recenter) {
                     console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide' );
-                    this.stack.position.x = (this.props.width - this.disp.width);
-                    this.stack.position.y = (this.props.height - this.disp.height);
+                    this.stack.position.x = (this.props.width/2) - (this.disp.width/2);
+                    this.stack.position.y = (this.props.height/2) - (this.disp.height/2);
                     this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                     this.state.recenter = false;
                 }
@@ -665,12 +665,12 @@ define(function (require) {
                 this.updateImages(nextProps);
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
-                var centerAdjX = (this.state.imageX * this.props.zoomLevel) - (this.state.imageX * nextProps.zoomLevel);
-                var centerAdjY = (this.state.imageY * this.props.zoomLevel) - (this.state.imageY * nextProps.zoomLevel);
-                this.stack.position.x = nextProps.stackX + centerAdjX;
-                this.stack.position.y = nextProps.stackY + centerAdjY;
-                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
+                var centerAdjX = (this.stack.position.x+((this.state.imageX * this.props.zoomLevel)/2)) - ((this.state.imageX * nextProps.zoomLevel)/2);
+                var centerAdjY = (this.stack.position.y+((this.state.imageY * this.props.zoomLevel)/2)) - ((this.state.imageY * nextProps.zoomLevel)/2);
+                this.stack.position.x = centerAdjX;
+                this.stack.position.y = centerAdjY;
                 this.updateZoomLevel(nextProps);
+                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
             }
             if (nextProps.fxp !== this.props.fxp) {
                 this.state.dst = nextProps.dst;
@@ -1094,7 +1094,7 @@ define(function (require) {
          * Event handler for clicking zoom in. Increments the zoom level
          **/
         onZoomIn: function () {
-            let zoomLevel = this.state.zoomLevel += .1;
+            let zoomLevel = Number((this.state.zoomLevel + 0.1).toFixed(1));
             if (zoomLevel < 10.0) {
                 this.setState({
                     zoomLevel: zoomLevel,
@@ -1140,7 +1140,7 @@ define(function (require) {
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
         onZoomOut: function () {
-            let zoomLevel = this.state.zoomLevel -= .1;
+            let zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
 
             if (zoomLevel > 0.1) {
                 this.setState({
@@ -1255,49 +1255,56 @@ define(function (require) {
                     <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset,
+                            left: 2.5,
+                            top: startOffset,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={homeClass} onClick={this.onHome}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 20,
+                            left: 2.5,
+                            top: startOffset + 20,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={zoomInClass} onClick={this.onZoomIn}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 35,
+                            left: 2.5,
+                            top: startOffset + 35,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={zoomOutClass} onClick={this.onZoomOut}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 55,
+                            left: 2.5,
+                            top: startOffset + 55,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={stepInClass} onClick={this.onStepIn}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 70,
+                            left: 2.5,
+                            top: startOffset + 70,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={stepOutClass} onClick={this.onStepOut}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 90,
+                            left: 2.5,
+                            top: startOffset + 90,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
                         }} className={orthClass} onClick={this.toggleOrth}/>
                         <button style={{
                             position: 'absolute',
-                            right: startOffset + 110,
+                            left: 2.5,
+                            top: startOffset + 110,
                             padding: 0,
                             border: 0,
                             background: 'transparent'

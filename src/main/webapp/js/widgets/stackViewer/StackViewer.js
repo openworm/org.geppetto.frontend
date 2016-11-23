@@ -128,7 +128,7 @@ define(function (require) {
                     }
 
                     if (data.id == undefined) {
-                        data.id = this.data.id;
+                        data.id = this.id;
                     }
 
                     this.data = data;

@@ -45,6 +45,7 @@ define(function (require) {
 	var Plotly = require('plotly');
 	var FileSaver = require('file-saver');
 	var pako = require('pako');
+	var JSZip = require("jszip");
 
 	return Widget.View.extend({
 		plotly: null,
@@ -358,7 +359,9 @@ define(function (require) {
 			if(!this.functionNode){
 				var data = new Array();
 				var xCopied = false;
-				var names = "";
+				
+				//stores path of file name containing data results for plot and names of variables
+				var text = "output/results.dat\r\ntime(StateVariable)";
 				for (var key in this.datasets) {
 					var x = this.datasets[key].x;
 					var y = this.datasets[key].y;
@@ -367,21 +370,16 @@ define(function (require) {
 						xCopied = true;
 					}
 					data.push(y);
-					names = names + this.variables[this.datasets[key].name].getInstancePath() + "\r\n";
-				}
-				// Turn number array into byte-array
-				var binData     = new Uint8Array(data[0]);
-
-				//var zip = pako.inflate(binData);
-
-				var bytes = new Uint8Array(names.length);
-				for (var i=0; i<names.length; i++) {
-					bytes[i] = names.charCodeAt(i);
+					text = text + " " + this.variables[this.datasets[key].name].getInstancePath();
 				}
 
-				var blob = new Blob([bytes]);
-				saveAs(blob, "variables-names.txt");
+				//convert string containing variables names into bytes
+				var bytesNames = new Uint8Array(text.length);
+				for (var i=0; i<text.length; i++) {
+					bytesNames[i] = text.charCodeAt(i);
+				}
 
+				//store data array into table like formatted string
 				var content = "";
 				var space = "";
 				for (var i = 0; i < data[0].length; i++) {
@@ -397,14 +395,21 @@ define(function (require) {
 					content += "\r\n";
 				}
 
-				var bytes2 = new Uint8Array(content.length);
+				//convert string with data array to bytes
+				var bytesResults = new Uint8Array(content.length);
 				for (var i=0; i<content.length; i++) {
-					bytes2[i] = content.charCodeAt(i);
+					bytesResults[i] = content.charCodeAt(i);
 				}
 
+				//create zip with two files using bytes
+				var zip = new JSZip();
+				zip.file("outputMapping.dat", bytesNames);
+				zip.file("results.dat", bytesResults);
 
-				var blob2 = new Blob([bytes2]);
-				saveAs(blob2, "output-data.txt");
+				zip.generateAsync({type:"blob"})
+				.then(function (blob) {
+    				saveAs(blob, "output.zip");
+				});
 			}
 		},
 		

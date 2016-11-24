@@ -46,7 +46,9 @@ define(function (require) {
                 dragOffset: {},
                 dragging: false,
                 dragMax: (this.props.height * 0.2),
-                recenter: false
+                recenter: false,
+                txtUpdated: Date.now(),
+                txtStay: 3000
             };
         },
         /**
@@ -164,7 +166,7 @@ define(function (require) {
                     var extent = {minDst: min, maxDst: max};
                     this.props.setExtent(extent);
                     this.bufferStack(extent);
-                    this.state.buffer[-1].text = '';
+                    if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
                     // console.log(image);
                     // console.log(JSON.stringify({minDst: min, maxDst: max}));
                     this.callPlaneEdges();
@@ -494,7 +496,7 @@ define(function (require) {
 
             function setup() {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
-                this.state.buffer[-1].text = '';
+                if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
             }
         },
 
@@ -523,7 +525,7 @@ define(function (require) {
 
             if (this.state.lastUpdate < (Date.now() - 2000)) {
                 this.state.lastUpdate = Date.now();
-                this.state.buffer[-1].text = '';
+                if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
                 // console.log('Updating scene...');
                 this.createImages();
                 this.updateImages(this.props);
@@ -732,7 +734,7 @@ define(function (require) {
          * Update the display text
          **/
         updateStatusText: function (props) {
-            this.state.buffer[-1].text = props.statusText;
+            this.setStatusText(props.statusText);
             this.setState({text: props.statusText});
         },
 
@@ -777,6 +779,7 @@ define(function (require) {
 
         setStatusText: function (text) {
             this.setState({text: text});
+            this.state.txtUpdated = Date.now();
         },
 
         /**

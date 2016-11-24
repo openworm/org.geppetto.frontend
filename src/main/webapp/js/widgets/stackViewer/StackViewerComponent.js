@@ -509,8 +509,8 @@ define(function (require) {
                     console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide' );
                     this.disp.position.x = ((this.props.width/2) - (this.disp.width/2));
                     this.disp.position.y = ((this.props.height/2) - (this.disp.height/2));
-                    this.disp.position.x = 0;
-                    this.disp.position.y = 0;
+                    this.stack.position.x = 0;
+                    this.stack.position.y = 0;
                     this.state.recenter = false;
                     this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                 }

@@ -779,6 +779,7 @@ define(function (require) {
 
         setStatusText: function (text) {
             this.setState({text: text});
+            this.state.buffer[-1].text = text;
             this.state.txtUpdated = Date.now();
         },
 

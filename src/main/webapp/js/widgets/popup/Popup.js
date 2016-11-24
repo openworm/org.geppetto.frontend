@@ -41,8 +41,9 @@ define(function (require) {
 	var Widget = require('../Widget');
 	var $ = require('jquery');
 	var Type = require('../../model/Type');
-	var anchorme = require('./vendor/anchorme.min');
-	var slick = require('./vendor/slick.min');
+	
+	var anchorme = require('anchorme');
+	var slick = require('slick-carousel');
 	
 	var widgetUtility = require("../WidgetUtility");
 	widgetUtility.loadCss("geppetto/js/widgets/popup/Popup.css");
@@ -250,7 +251,7 @@ define(function (require) {
 			}
 			else if (type.getMetaType() == GEPPETTO.Resources.TEXT_TYPE) {
 				var value = this.getVariable(anyInstance).getInitialValues()[0].value;
-				html += "<div id='" + id + "' class='collapse in popup-text'>" + anchorme.js(value.text, anchorOptions) + "</div>";
+				html += "<div id='" + id + "' class='collapse in popup-text'>" + anchorme(value.text, anchorOptions) + "</div>";
 			}
 			else if (type.getMetaType() == GEPPETTO.Resources.IMAGE_TYPE) {
 				if(this.getVariable(anyInstance).getInitialValues()[0] != undefined) {

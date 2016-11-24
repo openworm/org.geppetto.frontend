@@ -507,8 +507,10 @@ define(function (require) {
             if (this.disp.width > 1) {
                 if (this.state.recenter) {
                     console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide' );
-                    this.stack.position.x = ((this.props.width/2) - (this.disp.width/2))/this.disp.scale.x;
-                    this.stack.position.y = ((this.props.height/2) - (this.disp.height/2))/this.disp.scale.y;
+                    this.disp.position.x = ((this.props.width/2) - (this.disp.width/2));
+                    this.disp.position.y = ((this.props.height/2) - (this.disp.height/2));
+                    this.disp.position.x = 0;
+                    this.disp.position.y = 0;
                     this.state.recenter = false;
                     this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                 }
@@ -665,18 +667,10 @@ define(function (require) {
                 this.updateImages(nextProps);
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
-                var centerAdjX = ((this.props.width/2) - ((this.state.imageX * this.props.zoomLevel)/2))-this.stack.position.x;
-                var centerAdjY = ((this.props.height/2) - ((this.state.imageY * this.props.zoomLevel)/2))-this.stack.position.y;
-                if (centerAdjX == 0 && centerAdjY == 0){
-                    this.state.recenter = true;
-                }else{
-                    centerAdjX = ((this.props.width/2) - ((this.state.imageX * nextProps.zoomLevel)/2)) + centerAdjX;
-                    centerAdjY = ((this.props.height/2) - ((this.state.imageY * nextProps.zoomLevel)/2)) + centerAdjY;
-                    this.stack.position.x = centerAdjX;
-                    this.stack.position.y = centerAdjY;
-                    this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
-                }
                 this.updateZoomLevel(nextProps);
+                // recenter display for new image size keeping any stack offset.
+                this.disp.position.x = ((this.props.width/2) - (this.disp.width/2));
+                this.disp.position.y = ((this.props.height/2) - (this.disp.height/2));
             }
             if (nextProps.fxp !== this.props.fxp) {
                 this.state.dst = nextProps.dst;

@@ -1054,7 +1054,12 @@ define(function (require) {
                         data = JSON.parse(vals.data);
                         server = data.serverUrl;
                         files.push(data.fileLocation);
-                        ids.push(instances[instance].parent.getId());
+                        // Take multiple ID's for template
+                        if (typeof this.props.templateId !== 'undefined' && typeof this.props.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.templateId){
+                            ids.push(this.props.templateDomainIds);
+                        }else {
+                            ids.push([instances[instance].parent.getId()]);
+                        }
                         labels.push(instances[instance].parent.getName());
                         if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId()+'_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId()+'_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId()+'_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId()+'_swc'].isSelected())){
                             colors.push('0Xffcc00'); // selected

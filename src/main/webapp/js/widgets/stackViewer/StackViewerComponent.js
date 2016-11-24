@@ -744,15 +744,15 @@ define(function (require) {
             if (mode == 0) {
                 console.log('Selection');
                 this.updateStatusText({statusText: 'Selection'});
-                this.stack.defaultCursor='grabbing';
+                this.stack.defaultCursor='pointer';
             }else if (mode == 1) {
                 console.log('Label');
                 this.updateStatusText({statusText: 'Hover Labels'});
-                this.stack.defaultCursor='crosshair';
+                this.stack.defaultCursor='help';
             }else if (mode == 2) {
                 console.log('Add');
                 this.updateStatusText({statusText: 'Add Anatomy'});
-                this.stack.defaultCursor='pointer';
+                this.stack.defaultCursor='copy';
             }else{
                 console.log('Mode:' + mode);
                 this.updateStatusText({statusText: '...'});

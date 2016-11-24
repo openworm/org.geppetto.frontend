@@ -60,6 +60,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-processhtml');
 
     // Default task(s).
+    // FIXME: We are not using default/dev
     grunt.registerTask('default', ['less', 'processhtml:dev']);
     grunt.registerTask('dist', ['less', 'processhtml:dist']);
 

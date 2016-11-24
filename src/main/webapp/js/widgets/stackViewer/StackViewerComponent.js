@@ -742,12 +742,15 @@ define(function (require) {
             if (mode == 0) {
                 console.log('Selection');
                 this.updateStatusText({statusText: 'Selection'});
+                this.stack.defaultCursor='grabbing';
             }else if (mode == 1) {
                 console.log('Label');
                 this.updateStatusText({statusText: 'Hover Labels'});
+                this.stack.defaultCursor='crosshair';
             }else if (mode == 2) {
                 console.log('Add');
                 this.updateStatusText({statusText: 'Add Anatomy'});
+                this.stack.defaultCursor='pointer';
             }else{
                 console.log('Mode:' + mode);
                 this.updateStatusText({statusText: '...'});

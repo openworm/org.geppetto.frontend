@@ -235,8 +235,8 @@ define(function (require) {
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
-                    x = (-this.stack.position.x)+(-this.disp.position.x);
-                    y = (-this.stack.position.y)+(-this.disp.position.y);
+                    x = (-this.stack.position.x)+(-this.disp.position.x/this.disp.scale.x);
+                    y = (-this.stack.position.y)+(-this.disp.position.y/this.disp.scale.x);
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
                     x = x + (this.renderer.width/this.disp.scale.x);

@@ -343,18 +343,18 @@ define(function (require) {
                                                 that.setStatusText(that.state.label[i] + ' clicked!');
                                                 eval(that.state.id[i][Number(result[j])]).select();
                                             }else{
-                                                if (typeof this.props.templateDomainId !== 'undefined' && typeof this.props.templateDomainName !== 'undefined' && typeof this.props.templateDomainId[index] !== 'undefined' && typeof this.props.templateDomainName[index] !== 'undefined') {
-                                                    if (JSON.stringify(this.state.id).indexOf(this.props.templateDomainId[index]) > -1) {
-                                                        console.log(this.props.templateDomainName[index] + ' clicked');
-                                                        that.setStatusText(this.props.templateDomainName[index] + ' clicked!');
+                                                if (typeof that.props.templateDomainId !== 'undefined' && typeof that.props.templateDomainName !== 'undefined' && typeof that.props.templateDomainId[index] !== 'undefined' && typeof that.props.templateDomainName[index] !== 'undefined') {
+                                                    if (JSON.stringify(that.state.id).indexOf(that.props.templateDomainId[index]) > -1) {
+                                                        console.log(that.props.templateDomainName[index] + ' clicked');
+                                                        that.setStatusText(that.props.templateDomainName[index] + ' clicked!');
                                                         eval(that.state.id[i][Number(result[j])]).select();
                                                     }else{
-                                                        console.log(this.props.templateDomainName[index] + ' requsted');
-                                                        that.setStatusText(this.props.templateDomainName[index] + ' requsted');
-                                                        if (this.state.mode == 2) {
-                                                            console.log('Adding ' + this.props.templateDomainName[index]);
-                                                            that.setStatusText('Adding ' + this.props.templateDomainName[index]);
-                                                            Model.getDatasources()[0].fetchVariable(this.props.templateDomainId[index], function(){ var instance = Instances.getInstance(this.props.templateDomainId[index]+'.'+this.props.templateDomainId[index]+'_meta'); setTermInfo(instance, instance.getParent().getId());});
+                                                        console.log(that.props.templateDomainName[index] + ' requsted');
+                                                        that.setStatusText(that.props.templateDomainName[index] + ' requsted');
+                                                        if (that.state.mode == 2) {
+                                                            console.log('Adding ' + that.props.templateDomainName[index]);
+                                                            that.setStatusText('Adding ' + that.props.templateDomainName[index]);
+                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainId[index], function(){ var instance = Instances.getInstance(that.props.templateDomainId[index]+'.'+that.props.templateDomainId[index]+'_meta'); setTermInfo(instance, instance.getParent().getId());});
                                                         }
                                                     }
                                                 }else{

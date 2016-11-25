@@ -697,7 +697,7 @@ define(function (require) {
                 this.state.dst = nextProps.dst;
                 updDst = true;
             }
-            if (nextProps.statusText !== this.props.statusText) {
+            if (nextProps.statusText !== this.props.statusText && nextProps.statusText.trim() !== '') {
                 this.updateStatusText(nextProps);
             }
             if (nextProps.stackX !== this.stack.position.x || nextProps.stackY !== this.stack.position.y) {
@@ -754,7 +754,6 @@ define(function (require) {
          **/
         updateStatusText: function (props) {
             this.setStatusText(props.statusText);
-            this.setState({text: props.statusText});
         },
 
         changeMode: function (mode) {
@@ -762,19 +761,19 @@ define(function (require) {
             this.state.mode = mode;
             if (mode == 0) {
                 console.log('Selection');
-                this.updateStatusText({statusText: 'Selection'});
+                this.setStatusText('Selection');
                 this.stack.defaultCursor='pointer';
             }else if (mode == 1) {
                 console.log('Label');
-                this.updateStatusText({statusText: 'Hover Labels'});
+                this.setStatusText('Hover Labels');
                 this.stack.defaultCursor='help';
             }else if (mode == 2) {
                 console.log('Add');
-                this.updateStatusText({statusText: 'Add Anatomy'});
+                this.setStatusText('Add Anatomy');
                 this.stack.defaultCursor='copy';
             }else{
                 console.log('Mode:' + mode);
-                this.updateStatusText({statusText: '...'});
+                this.setStatusText('...');
             }
         },
 
@@ -783,16 +782,16 @@ define(function (require) {
             this.state.orth = orth;
             if (orth == 0) {
                 console.log('Frontal');
-                this.updateStatusText({statusText: 'Frontal'});
+                this.setStatusText('Frontal');
             }else if (orth == 1) {
                 console.log('Transverse');
-                this.updateStatusText({statusText: 'Transverse'});
+                this.setStatusText('Transverse');
             }else if (orth == 2) {
                 console.log('Sagital');
-                this.updateStatusText({statusText: 'Sagital'});
+                this.setStatusText('Sagital');
             }else {
                 console.log('Orth:' + orth);
-                this.updateStatusText({statusText: '...'});
+                this.setStatusText('...');
             }
         },
 

@@ -1346,7 +1346,9 @@ define(function (require) {
                                 scl={this.state.scl} orth={this.state.orth}
                                 label={this.state.label} id={this.state.id} height={this.props.data.height}
                                 width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX}
-                                voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}/>
+                                voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
+                                templateId={this.props.config.templateId} templateDomainIds={this.props.config.templateDomainIds}
+                                templateDomainNames={this.props.config.templateDomainNames}/>
                     </div>
                 );
             } else {

@@ -336,14 +336,28 @@ define(function (require) {
                                 result = data.trim().split(':')[1].trim().split(' ');
                                 if (result !== '') {
                                     for (j in result) {
-                                        if (result[j] == '0') {
-                                            console.log(that.state.label[i] + ' clicked');
-                                            eval(that.state.id[i][0]).select();
-                                            that.setStatusText(that.state.label[i] + ' clicked!');
-                                            that.setState({text: that.state.label[i] + ' clicked!'});
-                                        } else {
-                                            console.log('Odd value: ' + result[j].toString());
-                                            window.test = result[j];
+                                        if (result[j].trim() !== '') {
+                                            var index = Number(result[j]);
+                                            if (index == 0) {
+                                                console.log(that.state.label[i] + ' clicked');
+                                                that.setStatusText(that.state.label[i] + ' clicked!');
+                                                eval(that.state.id[i][Number(result[j])]).select();
+                                            }else{
+                                                if (typeof this.props.templateDomainId !== 'undefined' && typeof this.props.templateDomainName !== 'undefined' && typeof this.props.templateDomainId[index] !== 'undefined' && typeof this.props.templateDomainName[index] !== 'undefined') {
+                                                    if (JSON.stringify(this.state.id).indexOf(this.props.templateDomainId[index]) > -1) {
+                                                        console.log(this.props.templateDomainName[index] + ' clicked');
+                                                        that.setStatusText(this.props.templateDomainName[index] + ' clicked!');
+                                                        eval(that.state.id[i][Number(result[j])]).select();
+                                                    }else{
+                                                        console.log(this.props.templateDomainName[index] + ' requsted');
+                                                        that.setStatusText(this.props.templateDomainName[index] + ' requsted');
+                                                        // TODO: add instance if in add mode
+                                                    }
+                                                }else{
+                                                    console.log('Index not listed: ' + result[j]);
+                                                }
+                                            }
+
                                         }
                                     }
                                 }

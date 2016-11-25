@@ -351,7 +351,11 @@ define(function (require) {
                                                     }else{
                                                         console.log(this.props.templateDomainName[index] + ' requsted');
                                                         that.setStatusText(this.props.templateDomainName[index] + ' requsted');
-                                                        // TODO: add instance if in add mode
+                                                        if (this.state.mode == 2) {
+                                                            console.log('Adding ' + this.props.templateDomainName[index]);
+                                                            that.setStatusText('Adding ' + this.props.templateDomainName[index]);
+                                                            Model.getDatasources()[0].fetchVariable(this.props.templateDomainId[index], function(){ var instance = Instances.getInstance(this.props.templateDomainId[index]+'.'+this.props.templateDomainId[index]+'_meta'); setTermInfo(instance, instance.getParent().getId());});
+                                                        }
                                                     }
                                                 }else{
                                                     console.log('Index not listed: ' + result[j]);

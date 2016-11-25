@@ -338,30 +338,35 @@ define(function (require) {
                                     for (j in result) {
                                         if (result[j].trim() !== '') {
                                             var index = Number(result[j]);
-                                            if (index == 0) {
-                                                console.log(that.state.label[i] + ' clicked');
-                                                that.setStatusText(that.state.label[i] + ' clicked!');
-                                                eval(that.state.id[i][Number(result[j])]).select();
-                                            }else{
-                                                if (typeof that.props.templateDomainId !== 'undefined' && typeof that.props.templateDomainName !== 'undefined' && typeof that.props.templateDomainId[index] !== 'undefined' && typeof that.props.templateDomainName[index] !== 'undefined') {
-                                                    if (JSON.stringify(that.state.id).indexOf(that.props.templateDomainId[index]) > -1) {
-                                                        console.log(that.props.templateDomainName[index] + ' clicked');
-                                                        that.setStatusText(that.props.templateDomainName[index] + ' clicked');
-                                                        eval(that.state.id[i][Number(result[j])]).select();
-                                                    }else{
-                                                        console.log(that.props.templateDomainName[index] + ' requsted');
-                                                        that.setStatusText(that.props.templateDomainName[index] + ' requsted');
-                                                        if (that.state.mode == 2) {
-                                                            console.log('Adding ' + that.props.templateDomainName[index]);
-                                                            that.setStatusText('Adding ' + that.props.templateDomainName[index]);
-                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainId[index], function(){ var instance = Instances.getInstance(that.props.templateDomainId[index]+'.'+that.props.templateDomainId[index]+'_meta'); setTermInfo(instance, instance.getParent().getId());resolve3D(that.props.templateDomainId[index]);});
+                                            if (i !== 0 || index !== 0) { // don't select template
+                                                if (index == 0) {
+                                                    console.log(that.state.label[i] + ' clicked');
+                                                    that.setStatusText(that.state.label[i] + ' clicked!');
+                                                    eval(that.state.id[i][Number(result[j])]).select();
+                                                } else {
+                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainName !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainName[index] !== 'undefined') {
+                                                        if (JSON.stringify(that.state.id).indexOf(that.props.templateDomainIds[index]) > -1) {
+                                                            console.log(that.props.templateDomainName[index] + ' clicked');
+                                                            that.setStatusText(that.props.templateDomainName[index] + ' clicked');
+                                                            eval(that.state.id[i][Number(result[j])]).select();
+                                                        } else {
+                                                            console.log(that.props.templateDomainName[index] + ' requsted');
+                                                            that.setStatusText(that.props.templateDomainName[index] + ' requsted');
+                                                            if (that.state.mode == 2) {
+                                                                console.log('Adding ' + that.props.templateDomainName[index]);
+                                                                that.setStatusText('Adding ' + that.props.templateDomainName[index]);
+                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
+                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
+                                                                    setTermInfo(instance, instance.getParent().getId());
+                                                                    resolve3D(that.props.templateDomainIds[index]);
+                                                                });
+                                                            }
                                                         }
+                                                    } else {
+                                                        console.log('Index not listed: ' + result[j]);
                                                     }
-                                                }else{
-                                                    console.log('Index not listed: ' + result[j]);
                                                 }
                                             }
-
                                         }
                                     }
                                 }

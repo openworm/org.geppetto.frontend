@@ -346,7 +346,7 @@ define(function (require) {
                                                 if (typeof that.props.templateDomainId !== 'undefined' && typeof that.props.templateDomainName !== 'undefined' && typeof that.props.templateDomainId[index] !== 'undefined' && typeof that.props.templateDomainName[index] !== 'undefined') {
                                                     if (JSON.stringify(that.state.id).indexOf(that.props.templateDomainId[index]) > -1) {
                                                         console.log(that.props.templateDomainName[index] + ' clicked');
-                                                        that.setStatusText(that.props.templateDomainName[index] + ' clicked!');
+                                                        that.setStatusText(that.props.templateDomainName[index] + ' clicked');
                                                         eval(that.state.id[i][Number(result[j])]).select();
                                                     }else{
                                                         console.log(that.props.templateDomainName[index] + ' requsted');
@@ -354,7 +354,7 @@ define(function (require) {
                                                         if (that.state.mode == 2) {
                                                             console.log('Adding ' + that.props.templateDomainName[index]);
                                                             that.setStatusText('Adding ' + that.props.templateDomainName[index]);
-                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainId[index], function(){ var instance = Instances.getInstance(that.props.templateDomainId[index]+'.'+that.props.templateDomainId[index]+'_meta'); setTermInfo(instance, instance.getParent().getId());});
+                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainId[index], function(){ var instance = Instances.getInstance(that.props.templateDomainId[index]+'.'+that.props.templateDomainId[index]+'_meta'); setTermInfo(instance, instance.getParent().getId());resolve3D(that.props.templateDomainId[index]);});
                                                         }
                                                     }
                                                 }else{

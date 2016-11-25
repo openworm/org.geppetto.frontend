@@ -322,12 +322,12 @@ define(function (require) {
                 return current;
             },
 
-            getHistoryItems: function () {
+            getItems: function (history, name) {
                 var data = [];
-                for (var i = 0; i < this.controller.history.length; i++) {
-                    var action = this.getId() + "[" + this.getId() + ".controller.history[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + ".controller.history[" + i + "].arguments)";
+                for (var i = 0; i < history.length; i++) {
+                    var action = this.getId() + "[" + this.getId() + "."+name+"[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + "."+name+"[" + i + "].arguments)";
                     data.push({
-                        "label": this.controller.history[i].label,
+                        "label": history[i].label,
                         "action": [action],
                         "icon": null,
                         "position": i
@@ -343,7 +343,7 @@ define(function (require) {
                     this.historyMenu.show({
                         top: event.pageY,
                         left: event.pageX + 1,
-                        groups: that.getHistoryItems(),
+                        groups: that.getItems(that.controller.history, "controller.history"),
                         data: that
                     });
                 }
@@ -392,7 +392,7 @@ define(function (require) {
             
             updateNavigationHistoryBar : function(){
             	var disabled = "arrow-disabled";
-    			if(this.getHistoryItems().length<=1){
+    			if(this.getItems(this.controller.history, "controller.history").length<=1){
     				if(!$("#"+this.id + "-left-nav").hasClass(disabled)){
     					$("#"+this.id + "-left-nav").addClass(disabled);
     					$("#"+this.id + "-right-nav").addClass(disabled);
@@ -413,14 +413,14 @@ define(function (require) {
             		if((leftNav.length ==0) && (rightNav.length == 0)){
             			
             			var disabled = "";
-            			if(this.getHistoryItems().length<=1){
+            			if(this.getItems(this.controller.history, "controller.history").length<=1){
             				disabled = "arrow-disabled ";
             			}
             			
             			var that = this;
             			var button = $("<div id='" + this.id + "-left-nav' class='"+ disabled +"fa fa-arrow-left'></div>"+
             			"<div id='"+ this.id + "-right-nav' class='"+disabled+"fa fa-arrow-right'></div>").click(function (event) {
-            				var historyItems = that.getHistoryItems();
+            				var historyItems = that.getItems(this.controller.history, "controller.history");
             				var item;
             				if(event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")){
             					that.executedAction = historyItems.length-1;

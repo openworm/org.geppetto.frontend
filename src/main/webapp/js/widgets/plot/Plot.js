@@ -64,6 +64,7 @@ define(function (require) {
 		updateRedraw : 3,
         functionNode: false,
         xaxisAutoRange : false,
+        imageTypes : [],
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -156,7 +157,7 @@ define(function (require) {
 			$.extend( this.plotOptions, options);
 			this.render();
 			this.dialog.append("<div id='" + this.id + "'></div>");			
-
+			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
 			this.plotOptions.xaxis.range =[0,this.limit]
 			var that = this;
@@ -167,7 +168,8 @@ define(function (require) {
 			}));
 			
 			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Take Widget Screenshot'></div>").on('click', function(event) {
-				that.downloadPNG();
+				that.showImageMenu(event);
+                event.stopPropagation();
 			}));
 			
 			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download Plot Data'></div>").on('click', function(event) {
@@ -187,7 +189,27 @@ define(function (require) {
 			
 			$("#"+this.id).bind('resizeEnd', function() {
 				that.resize();
-			});			
+			});
+			
+			this.imageTypeMenu = new GEPPETTO.ContextMenuView();
+            
+            this.imageTypes.unshift({
+                "label": "PNG",
+                "method": "downloadImage",
+                "arguments": ["png"],
+            });
+            
+            this.imageTypes.unshift({
+                "label": "JPEG",
+                "method": "downloadImage",
+                "arguments": ["jpeg"],
+            });
+            
+            this.imageTypes.unshift({
+                "label": "SVG",
+                "method": "downloadImage",
+                "arguments": ["svg"],
+            });
 		},
 
         /**
@@ -352,16 +374,34 @@ define(function (require) {
 			Plotly.relayout(this.plotDiv,this.plotOptions);
 		},
 		
+		showImageMenu: function (event) {
+            var that = this;
+            if (this.imageTypes.length > 0) {
+
+                this.imageTypeMenu.show({
+                    top: event.pageY,
+                    left: event.pageX + 1,
+                    groups: that.getItems(that.imageTypes, "imageTypes"),
+                    data: that
+                });
+            }
+
+            if (event != null) {
+                event.preventDefault();
+            }
+            return false;
+        },
+        
 		/**
 		 * Downloads a screenshot of the graphing plots
 		 */
-		downloadPNG : function(){
+		downloadImage : function(imageType){
 			Plotly.downloadImage(
 					this.plotDiv,{
-					  format:'png',
+					  format:imageType,
 					  height:window.screen.availHeight,
 					  width:window.screen.availWidth,
-					});
+					});			
 		},
 		
 		/**

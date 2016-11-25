@@ -338,11 +338,12 @@ define(function (require) {
                                     for (j in result) {
                                         if (result[j] == '0') {
                                             console.log(that.state.label[i] + ' clicked');
-                                            eval(that.state.id[i]).select();
+                                            eval(that.state.id[i][0]).select();
                                             that.setStatusText(that.state.label[i] + ' clicked!');
                                             that.setState({text: that.state.label[i] + ' clicked!'});
                                         } else {
                                             console.log('Odd value: ' + result[j].toString());
+                                            window.test = result[j];
                                         }
                                     }
                                 }
@@ -659,7 +660,7 @@ define(function (require) {
          **/
         componentWillReceiveProps: function (nextProps) {
             var updDst = false;
-            if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl) {
+            if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl || this.state.id !== nextProps.id) {
                 this.state.stack = nextProps.stack;
                 this.state.color = nextProps.color;
                 this.state.label = nextProps.label;

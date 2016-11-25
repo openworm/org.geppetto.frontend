@@ -697,7 +697,7 @@ define(function (require) {
                 this.state.dst = nextProps.dst;
                 updDst = true;
             }
-            if (nextProps.statusText !== this.state.buffer[-1].text) {
+            if (nextProps.statusText !== this.props.statusText) {
                 this.updateStatusText(nextProps);
             }
             if (nextProps.stackX !== this.stack.position.x || nextProps.stackY !== this.stack.position.y) {
@@ -797,8 +797,8 @@ define(function (require) {
         },
 
         setStatusText: function (text) {
-            this.setState({text: text});
             this.state.buffer[-1].text = text;
+            this.state.text = text;
             this.state.txtUpdated = Date.now();
         },
 

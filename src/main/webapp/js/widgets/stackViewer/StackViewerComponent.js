@@ -344,17 +344,17 @@ define(function (require) {
                                                     that.setStatusText(that.state.label[i] + ' clicked!');
                                                     eval(that.state.id[i][Number(result[j])]).select();
                                                 } else {
-                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainName !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainName[index] !== 'undefined') {
+                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
                                                         if (JSON.stringify(that.state.id).indexOf(that.props.templateDomainIds[index]) > -1) {
-                                                            console.log(that.props.templateDomainName[index] + ' clicked');
-                                                            that.setStatusText(that.props.templateDomainName[index] + ' clicked');
+                                                            console.log(that.props.templateDomainNames[index] + ' clicked');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' clicked');
                                                             eval(that.state.id[i][Number(result[j])]).select();
                                                         } else {
-                                                            console.log(that.props.templateDomainName[index] + ' requsted');
-                                                            that.setStatusText(that.props.templateDomainName[index] + ' requsted');
+                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
                                                             if (that.state.mode == 2) {
-                                                                console.log('Adding ' + that.props.templateDomainName[index]);
-                                                                that.setStatusText('Adding ' + that.props.templateDomainName[index]);
+                                                                console.log('Adding ' + that.props.templateDomainNames[index]);
+                                                                that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
                                                                 Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
                                                                     var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
                                                                     setTermInfo(instance, instance.getParent().getId());

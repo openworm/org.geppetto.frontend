@@ -326,7 +326,7 @@ define(function (require) {
             }
             $.each(this.state.stack, function (i, item) {
                 (function(i, that) {
-                    if (i>0 || that.state.stack.length == 1) {
+                    if (i>0 || that.state.stack.length == 1 || that.state.mode == 2) {
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({
@@ -379,39 +379,40 @@ define(function (require) {
         },
 
         listObjects: function () {
-
-            var i, j, result;
-            var that = this;
-            for (i in this.state.stack) {
-                var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.disp.scale.x.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
-                //get image size;
-                $.ajax({
-                    url: image + '&prl=-1,' + this.state.posX.toFixed(0) + ',' + this.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
-                    type: 'POST',
-                    success: function (data) {
-                        console.log(that.props.label[i] + ' - ' + data.trim());
-                        result = data.trim().split(':')[1].trim().split(' ');
-                        if (result !== '') {
-                            for (j in result) {
-                                if (result[j] == '0') {
-                                    console.log(that.state.label[i]);
-                                    that.setStatusText(that.state.label[i]);
-                                } else {
-                                    console.log('Odd value: ' + result[j].toString());
+            if (this.state.mode == 1) {
+                var i, j, result;
+                var that = this;
+                for (i in this.state.stack) {
+                    var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.disp.scale.x.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
+                    //get image size;
+                    $.ajax({
+                        url: image + '&prl=-1,' + this.state.posX.toFixed(0) + ',' + this.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
+                        type: 'POST',
+                        success: function (data) {
+                            console.log(that.props.label[i] + ' - ' + data.trim());
+                            result = data.trim().split(':')[1].trim().split(' ');
+                            if (result !== '') {
+                                for (j in result) {
+                                    if (result[j] == '0') {
+                                        console.log(that.state.label[i]);
+                                        that.setStatusText(that.state.label[i]);
+                                    } else {
+                                        console.log('Odd value: ' + result[j].toString());
+                                    }
                                 }
                             }
-                        }
 
-                        // update slice view
-                        that.state.lastUpdate = 0;
-                        that.checkStack();
-                        that.state.loadingLabels = false;
+                            // update slice view
+                            that.state.lastUpdate = 0;
+                            that.checkStack();
+                            that.state.loadingLabels = false;
 
-                    }.bind({that: this, i: i}),
-                    error: function (xhr, status, err) {
-                        console.error(this.props.url, status, err.toString());
-                    }.bind(this)
-                });
+                        }.bind({that: this, i: i}),
+                        error: function (xhr, status, err) {
+                            console.error(this.props.url, status, err.toString());
+                        }.bind(this)
+                    });
+                }
             }
         },
 

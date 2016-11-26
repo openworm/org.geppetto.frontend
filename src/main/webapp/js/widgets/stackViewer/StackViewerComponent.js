@@ -787,6 +787,8 @@ define(function (require) {
         changeOrth: function (orth) {
             // console.log('Orth: ' + orth);
             this.state.orth = orth;
+            this.state.images = [];
+            this.stack.removeChildren();
             if (orth == 0) {
                 console.log('Frontal');
                 this.setStatusText('Frontal');

@@ -360,6 +360,7 @@ define(function (require) {
                                                                     setTermInfo(instance, instance.getParent().getId());
                                                                     resolve3D(that.props.templateDomainIds[index]);
                                                                 });
+                                                                break;
                                                             }
                                                         }
                                                     } else {

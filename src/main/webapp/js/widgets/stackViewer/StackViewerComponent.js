@@ -1080,8 +1080,8 @@ define(function (require) {
                         server = data.serverUrl;
                         files.push(data.fileLocation);
                         // Take multiple ID's for template
-                        if (typeof this.props.templateId !== 'undefined' && typeof this.props.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.templateId){
-                            ids.push(this.props.templateDomainIds);
+                        if (typeof this.props.config.templateId !== 'undefined' && typeof this.props.config.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.config.templateId){
+                            ids.push(this.props.config.templateDomainIds);
                         }else {
                             ids.push([instances[instance].parent.getId()]);
                         }

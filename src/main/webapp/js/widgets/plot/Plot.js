@@ -61,7 +61,7 @@ define(function (require) {
 		updateRange : false,
 		plotOptions : null,
 		reIndexUpdate : 0,
-		updateRedraw : 3,
+		updateRedraw : 5,
         functionNode: false,
         xaxisAutoRange : false,
         imageTypes : [],
@@ -300,7 +300,8 @@ define(function (require) {
 								dash: 'solid',
 								width: 2
 							},
-							hoverinfo : 'all'
+							hoverinfo : 'all',
+							type : 'scatter'
 					};
 
 					this.datasets.push(newLine);

@@ -14,8 +14,8 @@
 	<link rel="stylesheet" href="./geppetto/css/font-awesome.min.css" />
 
     <script>
-    window.EMBEDDED = false;
-    window.EMBEDDEDURL = "/";
+    window.EMBEDDED = true;
+    window.EMBEDDEDURL = "http://0.0.0.0:3000/";
     </script>
 
     <script data-main="js/main" src="js/libs/require/require.js"></script>

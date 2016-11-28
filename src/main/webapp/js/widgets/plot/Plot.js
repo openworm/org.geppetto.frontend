@@ -163,11 +163,11 @@ define(function (require) {
 			var that = this;
 
 			//adding functionality icon buttons on the left of the widget
-			this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset Graphs'></div>").on('click', function(event) {
+			this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset plot zoom'></div>").on('click', function(event) {
 				that.resetAxes();
 			}));
 			
-			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Take Widget Screenshot'></div>").on('click', function(event) {
+			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Save as image'></div>").on('click', function(event) {
 				that.showImageMenu(event);
                 event.stopPropagation();
 			}));
@@ -194,19 +194,19 @@ define(function (require) {
 			this.imageTypeMenu = new GEPPETTO.ContextMenuView();
             
             this.imageTypes.unshift({
-                "label": "PNG",
+                "label": "Save as PNG",
                 "method": "downloadImage",
                 "arguments": ["png"],
             });
             
             this.imageTypes.unshift({
-                "label": "JPEG",
+                "label": "Save as JPEG",
                 "method": "downloadImage",
                 "arguments": ["jpeg"],
             });
             
             this.imageTypes.unshift({
-                "label": "SVG",
+                "label": "Save as SVG",
                 "method": "downloadImage",
                 "arguments": ["svg"],
             });

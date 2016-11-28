@@ -420,7 +420,7 @@ define(function (require) {
             			var that = this;
             			var button = $("<div id='" + this.id + "-left-nav' class='"+ disabled +"fa fa-arrow-left'></div>"+
             			"<div id='"+ this.id + "-right-nav' class='"+disabled+"fa fa-arrow-right'></div>").click(function (event) {
-            				var historyItems = that.getItems(this.controller.history, "controller.history");
+            				var historyItems = that.getItems(that.controller.history, "controller.history");
             				var item;
             				if(event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")){
             					that.executedAction = historyItems.length-1;

@@ -388,6 +388,7 @@ define(function (require) {
                 } else {
                     $("#" + this.id).parent().find(".ui-dialog-titlebar").hide();
                 }
+                return this;
             },
             
             updateNavigationHistoryBar : function(){
@@ -499,6 +500,7 @@ define(function (require) {
                 } else {
                     $("#" + this.id).parent().removeClass('transparent-back');
                 }
+                return this;
             },
 
             /**

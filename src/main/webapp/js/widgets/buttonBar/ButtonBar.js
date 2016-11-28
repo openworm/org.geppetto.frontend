@@ -90,7 +90,7 @@ define(function (require) {
 
             createButton: function (button) {
                 return $('<button>')
-                    .addClass('btn btn-default btn-lg')
+                    .addClass('btn btn-default btn-lg button-bar-btn')
                     .append(this.createButtonContent(button))
                     .attr('data-toogle', 'tooltip')
                     .attr('data-placement', 'bottom')

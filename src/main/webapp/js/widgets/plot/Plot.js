@@ -45,6 +45,7 @@ define(function (require) {
 	var Plotly = require('plotly');
 	var FileSaver = require('file-saver');
 	var pako = require('pako');
+	var JSZip = require("jszip");
 
 	return Widget.View.extend({
 		plotly: null,
@@ -53,19 +54,21 @@ define(function (require) {
 		variables : [],
 		limit: 400,
 		options: null,
+		labelsMap: {},
 		labelsUpdated: false,
 		initialized:null,
 		inhomogeneousUnits: false,
 		updateRange : false,
 		plotOptions : null,
 		reIndexUpdate : 0,
-		updateRedraw : 3,
+		updateRedraw : 5,
         functionNode: false,
         xaxisAutoRange : false,
+        imageTypes : [],
         
 		/**
-		 * Default options for plot widget, used if none specified when plot
-		 * is created
+		 * Default options for plotly widget, used if none specified when plot
+		 * is created. 
 		 */
 		defaultOptions : function(){	
 			return {
@@ -92,7 +95,8 @@ define(function (require) {
 					ticks: 'outside',
 					tickcolor: 'rgb(255, 255, 255)',
 					max: -9999999,
-					min: 9999999
+					min: 9999999,
+					range : []
 				},
 				yaxis : {
 					max: -9999999,
@@ -135,13 +139,9 @@ define(function (require) {
 				hovermode : 'none'
 			};
 		},
-		
-		removeHoverBarButtons : {
-			modeBarButtonsToRemove: ['sendDataToCloud','hoverCompareCartesian','hoverClosestCartesian']
-		},
 
 		/**
-		 * Initializes the plot given a set of options
+		 * Initializes the plotly widget given a set of options
 		 *
 		 * @param {Object} options - Object with options for the plot widget
 		 */
@@ -157,23 +157,26 @@ define(function (require) {
 			$.extend( this.plotOptions, options);
 			this.render();
 			this.dialog.append("<div id='" + this.id + "'></div>");			
-
+			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
 			this.plotOptions.xaxis.range =[0,this.limit]
 			var that = this;
 
+			//adding functionality icon buttons on the left of the widget
 			this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset Graphs'></div>").on('click', function(event) {
 				that.resetAxes();
 			}));
 			
 			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Take Widget Screenshot'></div>").on('click', function(event) {
-				that.downloadPNG();
+				that.showImageMenu(event);
+                event.stopPropagation();
 			}));
 			
 			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download Plot Data'></div>").on('click', function(event) {
 				that.downloadPlotData();
 			}));
-			
+
+			//resize handlers
 			$("#"+this.id).dialog({
 				resize: function(event, ui) { 
 					that.resize(true); 
@@ -187,10 +190,30 @@ define(function (require) {
 			$("#"+this.id).bind('resizeEnd', function() {
 				that.resize();
 			});
+			
+			this.imageTypeMenu = new GEPPETTO.ContextMenuView();
+            
+            this.imageTypes.unshift({
+                "label": "PNG",
+                "method": "downloadImage",
+                "arguments": ["png"],
+            });
+            
+            this.imageTypes.unshift({
+                "label": "JPEG",
+                "method": "downloadImage",
+                "arguments": ["jpeg"],
+            });
+            
+            this.imageTypes.unshift({
+                "label": "SVG",
+                "method": "downloadImage",
+                "arguments": ["svg"],
+            });
 		},
 
         /**
-         * Sets the legend for a variable
+         * Sets the legend for a variable in the plotly widget
          *
          * @command setLegend(variable, legend)
          * @param {Object} instance - variable to change display label in legends
@@ -206,16 +229,11 @@ define(function (require) {
             for(var i =0; i< this.datasets.length; i++){
             	if(this.datasets[i].name == instancePath){
             		this.datasets[i].name = legend;
-            		for(var key in this.variables){
-            			if(key==instancePath){
-            				this.variables[legend] = this.variables[key];
-            				delete this.variables[key];
-            			}
-            		}
             	}
             }
             
             Plotly.relayout(this.plotDiv, this.plotOptions);
+            this.labelsMap[instancePath] = legend;
             
             return this;
         },
@@ -261,7 +279,14 @@ define(function (require) {
 					}else{
 						plotable = false;
 					}
-
+					
+					var label = instance.getInstancePath();
+					var shortLabel = label;
+	                if (this.labelsMap[label] != undefined && this.labelsMap[label] != label) {
+	                    //a legend was set
+	                    shortLabel = this.labelsMap[label];
+	                }
+	                
 					/*
 					 * Create object with x, y data, and graph information. 
 					 * Object is used to plot on plotly library
@@ -269,13 +294,14 @@ define(function (require) {
 					newLine = {
 							x : timeSeriesData["x"],
 							y : timeSeriesData["y"],
-							modes : "lines",
-							name: instance.getInstancePath(),
+							mode : "lines",
+							name: shortLabel,
 							line: {
 								dash: 'solid',
 								width: 2
 							},
-							hoverinfo : 'all'
+							hoverinfo : 'all',
+							type : 'scatter'
 					};
 
 					this.datasets.push(newLine);
@@ -291,10 +317,12 @@ define(function (require) {
 			if (this.datasets.length > 0) {
                 // check for inhomogeneousUnits and set flag
                 var refUnit = undefined;
+                var variable;
                 for (var i = 0; i < this.datasets.length; i++) {
+                	variable = this.variables[this.getLegendInstancePath(this.datasets[i].name)];
                     if (i == 0) {
-                        refUnit = this.variables[this.datasets[i].name].getUnit();
-                    } else if (refUnit != this.variables[this.datasets[i].name].getUnit()) {
+                        refUnit = variable.getUnit();
+                    } else if (refUnit != variable.getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
                         break;
@@ -308,7 +336,6 @@ define(function (require) {
 					this.xaxisAutoRange = true;
 					//Creates new plot using datasets and default options
 					this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-					this.initialized = true;
 					this.plotDiv.on('plotly_doubleclick', function() {
 						that.resize();
 					});
@@ -326,9 +353,11 @@ define(function (require) {
 		},
 
 		resize : function(draggedResize){
+			//retrieve div size
 			var divheight = $("#"+this.id).height();
 			var divwidth = $("#"+this.id).width();
 
+			//playing around with margin and height to make it resize how we want it
 			if(draggedResize){
 				divheighth = divheight -5;
 				this.plotOptions.margin.b = 50;
@@ -338,6 +367,7 @@ define(function (require) {
 				this.plotOptions.margin.b = 50;
 			}
 			
+			//sets the width and height on the plotOptions which is given to plotly on relayout
 			this.plotOptions.width = divwidth;
 			this.plotOptions.height = divheight;
 			//resizes plot right after creation, needed for d3 to resize 
@@ -345,20 +375,46 @@ define(function (require) {
 			Plotly.relayout(this.plotDiv,this.plotOptions);
 		},
 		
-		downloadPNG : function(){
+		showImageMenu: function (event) {
+            var that = this;
+            if (this.imageTypes.length > 0) {
+
+                this.imageTypeMenu.show({
+                    top: event.pageY,
+                    left: event.pageX + 1,
+                    groups: that.getItems(that.imageTypes, "imageTypes"),
+                    data: that
+                });
+            }
+
+            if (event != null) {
+                event.preventDefault();
+            }
+            return false;
+        },
+        
+		/**
+		 * Downloads a screenshot of the graphing plots
+		 */
+		downloadImage : function(imageType){
 			Plotly.downloadImage(
 					this.plotDiv,{
-					  format:'png',
-					  height:1280,
-					  width:1280,
-					});
+					  format:imageType,
+					  height:window.screen.availHeight,
+					  width:window.screen.availWidth,
+					});			
 		},
 		
+		/**
+		 * Downloads a zip with the plotting data
+		 */
 		downloadPlotData : function(){
 			if(!this.functionNode){
 				var data = new Array();
 				var xCopied = false;
-				var names = "";
+				
+				//stores path of file name containing data results for plot and names of variables
+				var text = "output/results.dat\r\ntime(StateVariable)";
 				for (var key in this.datasets) {
 					var x = this.datasets[key].x;
 					var y = this.datasets[key].y;
@@ -367,21 +423,16 @@ define(function (require) {
 						xCopied = true;
 					}
 					data.push(y);
-					names = names + this.variables[this.datasets[key].name].getInstancePath() + "\r\n";
-				}
-				// Turn number array into byte-array
-				var binData     = new Uint8Array(data[0]);
-
-				//var zip = pako.inflate(binData);
-
-				var bytes = new Uint8Array(names.length);
-				for (var i=0; i<names.length; i++) {
-					bytes[i] = names.charCodeAt(i);
+					text = text + " " + this.variables[this.getLegendInstancePath(this.datasets[key].name)].getInstancePath();
 				}
 
-				var blob = new Blob([bytes]);
-				saveAs(blob, "variables-names.txt");
+				//convert string containing variables names into bytes
+				var bytesNames = new Uint8Array(text.length);
+				for (var i=0; i<text.length; i++) {
+					bytesNames[i] = text.charCodeAt(i);
+				}
 
+				//store data array into table like formatted string
 				var content = "";
 				var space = "";
 				for (var i = 0; i < data[0].length; i++) {
@@ -397,22 +448,32 @@ define(function (require) {
 					content += "\r\n";
 				}
 
-				var bytes2 = new Uint8Array(content.length);
+				//convert string with data array to bytes
+				var bytesResults = new Uint8Array(content.length);
 				for (var i=0; i<content.length; i++) {
-					bytes2[i] = content.charCodeAt(i);
+					bytesResults[i] = content.charCodeAt(i);
 				}
 
+				//create zip with two files using bytes
+				var zip = new JSZip();
+				zip.file("outputMapping.dat", bytesNames);
+				zip.file("results.dat", bytesResults);
 
-				var blob2 = new Blob([bytes2]);
-				saveAs(blob2, "output-data.txt");
+				zip.generateAsync({type:"blob"})
+				.then(function (blob) {
+    				saveAs(blob, "output.zip");
+				});
 			}
 		},
 		
+		/**
+		 * Resets the axes of the graphs to defaults
+		 */
 		resetAxes : function(){
-			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
-			this.plotOptions.yaxis.autorange = true;
 			this.plotOptions.xaxis.range = [];
 			this.plotOptions.xaxis.range =[0,this.limit];
+			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
+			this.plotOptions.yaxis.autorange = true;
 			Plotly.relayout(this.plotDiv, this.plotOptions);
 		},
 		
@@ -452,7 +513,7 @@ define(function (require) {
 		},
 
 		/**
-		 * Removes the data set from the plot. EX:
+		 * Removes the data set from the plot. 
 		 *
 		 * @command removeDataSet(state)
 		 * @param {Object} state -Data set to be removed from the plot
@@ -470,7 +531,7 @@ define(function (require) {
 				/*if variable to be removed is on the plot, call the plotly
 				library method to remove*/
 				if(matchKey != null){
-					Plotly.deleteTraces(this.id, matchKey);
+					Plotly.relayout(this.plotDiv,this.plotOptions);
 				}
 			}
 
@@ -490,6 +551,7 @@ define(function (require) {
 				 *has not be set to true, which means arrays are populated but not yet plot*/
 				if(!this.initialized){
 					this.clean(playAll);
+					this.initialized = true;
 				}
 
 				var set, reIndex, newValue;
@@ -501,7 +563,7 @@ define(function (require) {
 					set = this.datasets[key];
 					if (this.plotOptions.playAll) {
 						//we simply set the whole time series
-						timeSeries = this.getTimeSeriesData(this.variables[set.name]);
+						timeSeries = this.getTimeSeriesData(this.variables[this.getLegendInstancePath(set.name)]);
 						this.datasets[key].x = timeSeries["x"];
 						this.datasets[key].y = timeSeries["y"];
 						this.datasets[key].hoverinfo = 'all';
@@ -516,7 +578,7 @@ define(function (require) {
 						if(this.datasets[key].hoverinfo == 'all'){
 							this.datasets[key].hoverinfo = 'none';
 						}
-						newValue = this.variables[set.name].getTimeSeries()[step];
+						newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
 
 						oldDataX = this.datasets[key].x;
 						oldDataY = this.datasets[key].y;
@@ -557,6 +619,8 @@ define(function (require) {
 					this.plotDiv.data[key].y = this.datasets[key].y;
 				}
 
+				//Repaints plotly graph only certain amount of time, that certain amount of times is 
+				//based on what's store on global variable this.updateRedraw
 				if(this.reIndexUpdate%this.updateRedraw==0){
 					if(this.plotOptions.xaxis.range[1]<this.limit){
 						this.plotOptions.xaxis.range = [0, this.limit];
@@ -575,7 +639,7 @@ define(function (require) {
 		updateAxis: function (key) {
 			var update = {};
 			if (!this.labelsUpdated) {
-				var unit = this.variables[key].getUnit();
+				var unit = this.variables[this.getLegendInstancePath(key)].getUnit();
 				if (unit != null) {
 					var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
 					var labelX = this.getUnitLabel(window.Instances.time.getUnit());
@@ -631,6 +695,7 @@ define(function (require) {
 				this.datasets = [];
 				this.plotOptions = this.defaultOptions();
 				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false});
+				this.resize();
 			}
 			return this;
 		},
@@ -785,7 +850,7 @@ define(function (require) {
 			this.plotOptions.xaxis.showticklabels = true;
 			this.plotOptions.xaxis.autorange = true;
 			this.xaxisAutoRange = true;
-			
+			this.labelsMap[options.legendText] = data.data.name;
 			newLine = {
 					x : data.data["x"],
 					y : data.data["y"],
@@ -805,6 +870,17 @@ define(function (require) {
 			this.resize();
 			return this;
 		},
+		
+		getLegendInstancePath : function(legend){
+			var originalInstancePath = legend;
+			for(var key in this.labelsMap){
+    			if(this.labelsMap[key] == legend){
+    				originalInstancePath = key;
+    			}
+    		}
+			
+			return originalInstancePath;
+		},
 
 		plotXYData: function (dataY, dataX, options) {
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
@@ -814,26 +890,29 @@ define(function (require) {
 			newLine = {
 					x : timeSeriesData["x"],
 					y : timeSeriesData["y"],
-					modes : "lines",
+					mode : "lines",
 					name: dataY.getInstancePath(),
 					line: {
 						dash: 'solid',
 						width: 2
-					}
+					},
+					hoverinfo : 'all'
 			};
 
-			this.variables[dataY.getInstancePath()] = dataY;
-			this.variables[dataX.getInstancePath()] = dataX;
+			this.variables[this.getLegendInstancePath(dataY.getInstancePath())] = dataY;
+			this.variables[this.getLegendInstancePath(dataX.getInstancePath())] = dataX;
 
 			this.datasets.push(newLine);
 			
 			if (this.datasets.length > 0) {
                 // check for inhomogeneousUnits and set flag
                 var refUnit = undefined;
+                var legend;
                 for (var i = 0; i < this.datasets.length; i++) {
+                	legend = this.getLegendInstancePath(this.datasets[i].name);
                     if (i == 0) {
-                        refUnit = this.variables[this.datasets[i].name].getUnit();
-                    } else if (refUnit != this.variables[this.datasets[i].name].getUnit()) {
+                        refUnit = this.variables[legend].getUnit();
+                    } else if (refUnit != this.variables[legend].getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
                         break;
@@ -843,7 +922,6 @@ define(function (require) {
 			
 			this.plotOptions.xaxis.autorange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
-			this.initialized = true;
             this.updateAxis(dataY.getInstancePath());
             this.resize();
 			return this;

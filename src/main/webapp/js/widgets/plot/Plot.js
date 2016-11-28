@@ -159,7 +159,7 @@ define(function (require) {
 			this.dialog.append("<div id='" + this.id + "'></div>");			
 			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
-			this.plotOptions.xaxis.range =[0,this.limit]
+			this.plotOptions.xaxis.range =[0,this.limit];
 			var that = this;
 
 			//adding functionality icon buttons on the left of the widget
@@ -392,17 +392,17 @@ define(function (require) {
             }
             return false;
         },
-        
+
 		/**
 		 * Downloads a screenshot of the graphing plots
 		 */
-		downloadImage : function(imageType){
+		downloadImage: function (imageType) {
 			Plotly.downloadImage(
-					this.plotDiv,{
-					  format:imageType,
-					  height:window.screen.availHeight,
-					  width:window.screen.availWidth,
-					});			
+				this.plotDiv, {
+					format: imageType,
+					height: window.screen.availHeight,
+					width: window.screen.availWidth,
+				});
 		},
 		
 		/**
@@ -434,7 +434,6 @@ define(function (require) {
 
 				//store data array into table like formatted string
 				var content = "";
-				var space = "";
 				for (var i = 0; i < data[0].length; i++) {
 
 					for(var j=0; j< data.length; j++){
@@ -558,7 +557,6 @@ define(function (require) {
 				var oldDataX = [];
 				var oldDataY = [];
 				var timeSeries = [];
-				var update = {};
 				for (var key in this.datasets) {
 					set = this.datasets[key];
 					if (this.plotOptions.playAll) {
@@ -619,8 +617,8 @@ define(function (require) {
 					this.plotDiv.data[key].y = this.datasets[key].y;
 				}
 
-				//Repaints plotly graph only certain amount of time, that certain amount of times is 
-				//based on what's store on global variable this.updateRedraw
+				//Repaints plotly graph only certain amount of times, that certain amount of times is
+				//based on what's stored on global variable this.updateRedraw
 				if(this.reIndexUpdate%this.updateRedraw==0){
 					if(this.plotOptions.xaxis.range[1]<this.limit){
 						this.plotOptions.xaxis.range = [0, this.limit];

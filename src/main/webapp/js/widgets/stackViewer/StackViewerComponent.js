@@ -345,11 +345,11 @@ define(function (require) {
                                                     eval(that.state.id[i][Number(result[j])]).select();
                                                 } else {
                                                     if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                        if (JSON.stringify(that.state.id).indexOf(that.props.templateDomainIds[index]) > -1) {
+                                                        try {
+                                                            eval(that.state.id[i][Number(result[j])]).select();
                                                             console.log(that.props.templateDomainNames[index] + ' clicked');
                                                             that.setStatusText(that.props.templateDomainNames[index] + ' clicked');
-                                                            eval(that.state.id[i][Number(result[j])]).select();
-                                                        } else {
+                                                        } catch (ignore) {
                                                             console.log(that.props.templateDomainNames[index] + ' requsted');
                                                             that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
                                                             if (that.state.mode == 2) {

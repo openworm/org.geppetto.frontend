@@ -448,7 +448,7 @@ define(function (require) {
                 "label": "Color",
                 "tooltip": "Color"
             },
-            randomcolor: {
+            "randomcolor": {
                 "id": "randomcolor",
                 "actions": [
                     "GEPPETTO.SceneController.assignRandomColor($instance$);"

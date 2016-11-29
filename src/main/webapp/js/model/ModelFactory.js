@@ -2420,7 +2420,7 @@ define(function (require) {
              *
              * @returns {Array}
              */
-            getAllVariablesOfType: function (typesToSearch, typeToMatch, recursive, variables) {
+            getAllVariablesOfType: function (typesToSearch, typeToMatch, recursive) {
                 // check if array and if not "make it so"
                 if (!(typesToSearch instanceof Array)) {
                     typesToSearch = [typesToSearch];

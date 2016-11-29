@@ -65,6 +65,7 @@ define(function (require) {
         functionNode: false,
         xaxisAutoRange : false,
         imageTypes : [],
+        plotElement : null,
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -72,7 +73,7 @@ define(function (require) {
 		 */
 		defaultOptions : function(){	
 			return {
-				autosize : true,
+				autosize : false,
 				width : '100%',
 				height : '100%',
 				showgrid : false,
@@ -87,9 +88,13 @@ define(function (require) {
 					tickcolor : 'rgb(255, 255, 255)',
 					linecolor: 'rgb(255, 255, 255)',
 					tickfont: {
+						family: 'Helvetica Neue',
+						size : 11,
 						color: 'rgb(255, 255, 255)'
 					},
 					titlefont : {
+						family: 'Helvetica Neue',
+						size : 12,
 						color: 'rgb(255, 255, 255)'
 					},
 					ticks: 'outside',
@@ -109,9 +114,13 @@ define(function (require) {
 					tickcolor : 'rgb(255, 255, 255)',
 					linecolor: 'rgb(255, 255, 255)',
 					tickfont: {
+						family: 'Helvetica Neue',
+						size : 11,
 						color: 'rgb(255, 255, 255)'
 					},
 					titlefont : {
+						family: 'Helvetica Neue',
+						size : 12,
 						color: 'rgb(255, 255, 255)'
 					},
 					ticks: 'outside',
@@ -119,22 +128,23 @@ define(function (require) {
 				},
 				margin: {
 					l: 50,
-					r: 10,
-					b: 50,
+					r: 0,
+					b: 40,
 					t: 10,
 				},
 				legend : {
 					xanchor : "auto",
 					yanchor : "auto",
 					font: {
-						size: 11,
+						family: 'Helvetica Neue',
+						size: 12,
 						color : '#fff'
 					},
 					x : 1,
 					bgcolor : 'rgba(66, 59, 59, 0.90)'
 				},
 				paper_bgcolor: 'rgba(66, 59, 59, 0.90)',
-				plot_bgcolor: 'rgba(66, 59, 59, 0.90)',
+				plot_bgcolor: 'transparent',
 				playAll : false,
 				hovermode : 'none'
 			};
@@ -162,9 +172,8 @@ define(function (require) {
 			this.plotOptions.xaxis.range =[0,this.limit];
 			var that = this;
 
-			//adding functionality icon buttons on the left of the widget
-			this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset plot zoom'></div>").on('click', function(event) {
-				that.resetAxes();
+			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download plot data'></div>").on('click', function(event) {
+				that.downloadPlotData();
 			}));
 			
 			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Save as image'></div>").on('click', function(event) {
@@ -172,22 +181,25 @@ define(function (require) {
                 event.stopPropagation();
 			}));
 			
-			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download Plot Data'></div>").on('click', function(event) {
-				that.downloadPlotData();
+			//adding functionality icon buttons on the left of the widget
+			this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset plot zoom'></div>").on('click', function(event) {
+				that.resetAxes();
 			}));
 
+			this.plotElement = $("#"+this.id);
+			
 			//resize handlers
-			$("#"+this.id).dialog({
+			this.plotElement.dialog({
 				resize: function(event, ui) { 
 					that.resize(true); 
 				}
 			});
 
-			$("#"+this.id).resize(function(){
+			this.plotElement.resize(function(){
 				that.resize();
 			});	
 			
-			$("#"+this.id).bind('resizeEnd', function() {
+			this.plotElement.bind('resizeEnd', function() {
 				that.resize();
 			});
 			
@@ -249,6 +261,11 @@ define(function (require) {
 		 * @param {Object} options - options for the plotting widget, if null uses default
 		 */
 		plotData: function (data, options) {
+			var validVariable = eval(data);
+			if(validVariable == null || undefined){
+				return "Can't plot undefined variable";
+			}
+			
 			var that = this;
 			if (!$.isArray(data)) {
 				data = [data];
@@ -291,7 +308,7 @@ define(function (require) {
 					 * Create object with x, y data, and graph information. 
 					 * Object is used to plot on plotly library
 					 */
-					newLine = {
+					var newLine = {
 							x : timeSeriesData["x"],
 							y : timeSeriesData["y"],
 							mode : "lines",
@@ -353,23 +370,9 @@ define(function (require) {
 		},
 
 		resize : function(draggedResize){
-			//retrieve div size
-			var divheight = $("#"+this.id).height();
-			var divwidth = $("#"+this.id).width();
-
-			//playing around with margin and height to make it resize how we want it
-			if(draggedResize){
-				divheighth = divheight -5;
-				this.plotOptions.margin.b = 50;
-			}else{
-				divheight= divheight+5;
-				divwidth = divwidth +5;
-				this.plotOptions.margin.b = 50;
-			}
-			
 			//sets the width and height on the plotOptions which is given to plotly on relayout
-			this.plotOptions.width = divwidth;
-			this.plotOptions.height = divheight;
+			this.plotOptions.width = this.plotElement.width()+ 10;
+			this.plotOptions.height = this.plotElement.height() + 5;
 			//resizes plot right after creation, needed for d3 to resize 
 			//to parent's widht and height
 			Plotly.relayout(this.plotDiv,this.plotOptions);
@@ -414,8 +417,8 @@ define(function (require) {
 				var xCopied = false;
 				
 				//stores path of file name containing data results for plot and names of variables
-				var text = "output/results.dat\r\ntime(StateVariable)";
-				for (var key in this.datasets) {
+				var text = "time";
+				for (var key=0; key<this.datasets.length; key++) {
 					var x = this.datasets[key].x;
 					var y = this.datasets[key].y;
 					if(!xCopied){
@@ -458,9 +461,12 @@ define(function (require) {
 				zip.file("outputMapping.dat", bytesNames);
 				zip.file("results.dat", bytesResults);
 
+				var that = this;
 				zip.generateAsync({type:"blob"})
 				.then(function (blob) {
-    				saveAs(blob, "output.zip");
+					var d = new Date();
+				    var n = d.getTime();
+    				saveAs(blob, that.id+"-"+n.toString()+".zip");
 				});
 			}
 		},
@@ -557,7 +563,7 @@ define(function (require) {
 				var oldDataX = [];
 				var oldDataY = [];
 				var timeSeries = [];
-				for (var key in this.datasets) {
+				for (var key = 0; key < this.datasets.length; key++) {
 					set = this.datasets[key];
 					if (this.plotOptions.playAll) {
 						//we simply set the whole time series
@@ -567,7 +573,8 @@ define(function (require) {
 						this.datasets[key].hoverinfo = 'all';
 						this.plotOptions.xaxis.showticklabels = true;
 						this.plotOptions.xaxis.range = [];
-						this.plotOptions.margin.b = 60;
+						this.plotOptions.margin.b = 50;
+						this.plotOptions.margin.r = 20;
 						this.reIndexUpdate = 0;
 						this.plotOptions.xaxis.autorange = true;
 						this.xaxisAutoRange = true;
@@ -849,7 +856,7 @@ define(function (require) {
 			this.plotOptions.xaxis.autorange = true;
 			this.xaxisAutoRange = true;
 			this.labelsMap[options.legendText] = data.data.name;
-			newLine = {
+			var newLine = {
 					x : data.data["x"],
 					y : data.data["y"],
 					modes : "lines",
@@ -885,7 +892,7 @@ define(function (require) {
 
 			var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
 
-			newLine = {
+			var newLine = {
 					x : timeSeriesData["x"],
 					y : timeSeriesData["y"],
 					mode : "lines",

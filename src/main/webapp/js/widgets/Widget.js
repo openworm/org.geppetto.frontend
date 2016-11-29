@@ -514,7 +514,7 @@ define(function (require) {
             render: function () {
             	
             	var that = this;
-            	
+
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -529,51 +529,53 @@ define(function (require) {
                                 that.destroy();
                             }
                         }
-                    }).dialogExtend({"closable" : true,
-                        "maximizable" : true,
-                        "minimizable" : true,
-                        "collapsable" : true,
-                        "restore" : true,
-                        "minimizeLocation": "right",
-                        "icons" : {
-                            "maximize" : "fa fa-expand",
-                            "minimize" : "fa fa-minus",
-                            "collapse" : "fa  fa-caret-square-o-down",
-                            "restore" : "fa fa-undo",
-                          },
-                         "load" : function(evt, dlg){ 
-                        	 var icons = $("#"+that.id).parent().find(".ui-icon"); 
-                        	 for(var i =0 ; i<icons.length; i++){
-                        		 //remove text from span added by vendor library
-                        		 $(icons[i]).text("");
-                        		 var title =  $(icons[i]).parent().prop('title');
-                        		 if(title=='minimize'){
-                        			 $(icons[i]).parent().prop('title','Minimize Widget')
-                        		 }else if(title=='maximize'){
-                        			 $(icons[i]).parent().prop('title','Maximize Widget')
-                        		 }else if(title=='collapse'){
-                        			 $(icons[i]).parent().prop('title','Collapse Widget')
-                        		 }
-                        	 }
-                          },
-                          "beforeMinimize" : function(evt, dlg){
-                        	  var label = that.name;
-                        	  label = label.substring(0, 6);
-                        	  $("#"+that.id).dialog({ title: label});
-                           },
-                           "minimize" : function(evt, dlg){
-                         	  $("#"+that.id).dialog({ title: that.name});
-                            },
-                            "maximize" : function(evt,dlg){
-                            	$(this).trigger('resizeEnd');
-                            	var divheight = $("#"+that.id).height()+50;
-                      			 var divwidth = $("#"+that.id).width()+50;
-                            	  $("#"+that.id).dialog({ height: divheight,width: divwidth});
-                            },
-                            "restore" : function(evt,dlg){
-                            	$(this).trigger('resizeEnd');
+                    }).dialogExtend({
+                    "closable": true,
+                    "maximizable": true,
+                    "minimizable": true,
+                    "collapsable": true,
+                    "restore": true,
+                    "minimizeLocation": "right",
+                    "icons": {
+                        "maximize": "fa fa-expand",
+                        "minimize": "fa fa-minus",
+                        "collapse": "fa  fa-caret-square-o-down",
+                        "restore": "fa fa-undo",
+                    },
+                    "load": function (evt, dlg) {
+                        var icons = $("#" + that.id).parent().find(".ui-icon");
+                        for (var i = 0; i < icons.length; i++) {
+                            //remove text from span added by vendor library
+                            $(icons[i]).text("");
+                            var title = $(icons[i]).parent().prop('title');
+                            if (title == 'minimize') {
+                                $(icons[i]).parent().prop('title', 'Minimize Widget')
+                            } else if (title == 'maximize') {
+                                $(icons[i]).parent().prop('title', 'Maximize Widget')
+                            } else if (title == 'collapse') {
+                                $(icons[i]).parent().prop('title', 'Collapse Widget')
                             }
-                        });
+                        }
+                    },
+                    "beforeMinimize": function (evt, dlg) {
+                        var label = that.name;
+                        label = label.substring(0, 6);
+                        $("#" + that.id).dialog({title: label});
+                    },
+                    "minimize": function (evt, dlg) {
+                        $("#" + that.id).dialog({title: that.name});
+                    },
+                    "maximize": function (evt, dlg) {
+                        $(this).trigger('resizeEnd');
+                        var elem = $("#" + that.id);
+                        var divheight = elem.height() + 50;
+                        var divwidth = elem.width() + 50;
+                        elem.dialog({height: divheight, width: divwidth});
+                    },
+                    "restore": function (evt, dlg) {
+                        $(this).trigger('resizeEnd');
+                    }
+                });
 
                 this.$el = $("#" + this.id);
                 var dialogParent = this.$el.parent();

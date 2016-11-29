@@ -537,8 +537,8 @@ define(function (require) {
                         "restore" : true,
                         "minimizeLocation": "right",
                         "icons" : {
-                            "maximize" : "fa fa-expand",
-                            "minimize" : "fa fa-minus",
+                            "maximize" : "fa fa-window-maximize",
+                            "minimize" : "fa fa-window-minimize",
                             "collapse" : "fa  fa-caret-square-o-down",
                             "restore" : "fa fa-undo",
                           },

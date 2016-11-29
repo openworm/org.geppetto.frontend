@@ -166,7 +166,7 @@ define(function (require) {
                     var extent = {minDst: min, maxDst: max};
                     this.props.setExtent(extent);
                     this.bufferStack(extent);
-                    if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
+                    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {this.state.buffer[-1].text = '';}
                     // console.log(image);
                     // console.log(JSON.stringify({minDst: min, maxDst: max}));
                     this.callPlaneEdges();
@@ -525,7 +525,7 @@ define(function (require) {
 
             function setup() {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
-                if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
+                if (this.state.txtUpdated < Date.now() - this.state.txtStay) {this.state.buffer[-1].text = '';}
             }
         },
 
@@ -554,7 +554,7 @@ define(function (require) {
 
             if (this.state.lastUpdate < (Date.now() - 2000)) {
                 this.state.lastUpdate = Date.now();
-                if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
+                if (this.state.txtUpdated < Date.now() - this.state.txtStay) {this.state.buffer[-1].text = '';}
                 // console.log('Updating scene...');
                 this.createImages();
                 this.updateImages(this.props);

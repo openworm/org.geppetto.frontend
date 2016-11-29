@@ -514,7 +514,7 @@ define(function (require) {
             render: function () {
             	
             	var that = this;
-            	
+
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -529,7 +529,8 @@ define(function (require) {
                                 that.destroy();
                             }
                         }
-                    }).dialogExtend({"closable" : true,
+                    }).dialogExtend({
+                        "closable" : true,
                         "maximizable" : true,
                         "minimizable" : true,
                         "collapsable" : true,
@@ -573,7 +574,27 @@ define(function (require) {
                             "restore" : function(evt,dlg){
                             	$(this).trigger('resizeEnd');
                             }
-                        });
+                        }
+                    },
+                    "beforeMinimize": function (evt, dlg) {
+                        var label = that.name;
+                        label = label.substring(0, 6);
+                        $("#" + that.id).dialog({title: label});
+                    },
+                    "minimize": function (evt, dlg) {
+                        $("#" + that.id).dialog({title: that.name});
+                    },
+                    "maximize": function (evt, dlg) {
+                        $(this).trigger('resizeEnd');
+                        var elem = $("#" + that.id);
+                        var divheight = elem.height() + 50;
+                        var divwidth = elem.width() + 50;
+                        elem.dialog({height: divheight, width: divwidth});
+                    },
+                    "restore": function (evt, dlg) {
+                        $(this).trigger('resizeEnd');
+                    }
+                });
 
                 this.$el = $("#" + this.id);
                 var dialogParent = this.$el.parent();

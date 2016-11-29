@@ -98,7 +98,7 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             destroy: function () {
-                $("#" + this.id).remove();
+               this.$el.remove();
                 this.destroyed=true;
                 return this.name + " destroyed";
             },
@@ -111,7 +111,7 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             hide: function () {
-                $("#" + this.id).dialog('close').dialogExtend();
+               this.$el.dialog('close').dialogExtend();
 
                 this.visible = false;
 
@@ -125,7 +125,7 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             show: function () {
-                $("#" + this.id).dialog('open').dialogExtend();
+               this.$el.dialog('open').dialogExtend();
                 this.visible = true;
 
                 //Unfocused close button
@@ -153,7 +153,7 @@ define(function (require) {
                 this.name = name;
 
                 // set name to widget window
-                $("#" + this.id).dialog("option", "title", this.name).dialogExtend();
+               this.$el.dialog("option", "title", this.name).dialogExtend();
 
                 return this;
             },
@@ -168,7 +168,7 @@ define(function (require) {
                 this.position.left = left;
                 this.position.top = top;
 
-                $("#" + this.id).dialog(
+               this.$el.dialog(
                     'option', 'position', {
                         my: "left+" + this.position.left + " top+" + this.position.top,
                         at: "left top",
@@ -186,7 +186,7 @@ define(function (require) {
             setSize: function (h, w) {
                 this.size.height = h;
                 this.size.width = w;
-                $("#" + this.id).dialog({height: this.size.height, width: this.size.width}).dialogExtend();
+               this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
 
                 return this;
             },
@@ -196,7 +196,7 @@ define(function (require) {
              * @param {Integer} h - Minimum Height of the widget
              */
             setMinHeight: function (h) {
-                $("#" + this.id).dialog('option', 'minHeight', h).dialogExtend();
+               this.$el.dialog('option', 'minHeight', h).dialogExtend();
                 return this;
             },
 
@@ -205,7 +205,7 @@ define(function (require) {
              * @param {Integer} w - Minimum Width of the widget
              */
             setMinWidth: function (w) {
-                $("#" + this.id).dialog('option', 'minWidth', w).dialogExtend();
+               this.$el.dialog('option', 'minWidth', w).dialogExtend();
                 return this;
             },
 
@@ -225,7 +225,7 @@ define(function (require) {
              * @param {Boolean} true|false - enables / disables resizability
              */
             setResizable: function (resize) {
-                $("#" + this.id).dialog('option', 'resizable', resize).dialogExtend();
+               this.$el.dialog('option', 'resizable', resize).dialogExtend();
                 return this;
             },
 
@@ -233,7 +233,7 @@ define(function (require) {
              * @command setAutoWidth()
              */
             setAutoWidth: function () {
-                $("#" + this.id).dialog('option', 'width', 'auto').dialogExtend();
+               this.$el.dialog('option', 'width', 'auto').dialogExtend();
                 return this;
             },
 
@@ -241,7 +241,7 @@ define(function (require) {
              * @command setAutoHeigth()
              */
             setAutoHeight: function () {
-                $("#" + this.id).dialog('option', 'height', 'auto').dialogExtend();
+               this.$el.dialog('option', 'height', 'auto').dialogExtend();
                 return this;
             },
 
@@ -384,9 +384,9 @@ define(function (require) {
              */
             showTitleBar: function (show) {
                 if (show) {
-                    $("#" + this.id).parent().find(".ui-dialog-titlebar").show();
+                   this.$el.parent().find(".ui-dialog-titlebar").show();
                 } else {
-                    $("#" + this.id).parent().find(".ui-dialog-titlebar").hide();
+                   this.$el.parent().find(".ui-dialog-titlebar").hide();
                 }
             },
             
@@ -449,9 +449,9 @@ define(function (require) {
              */
             showCloseButton: function (show) {
                 if (show) {
-                    $("#" + this.id).parent().find(".ui-dialog-titlebar-close").show();
+                   this.$el.parent().find(".ui-dialog-titlebar-close").show();
                 } else {
-                    $("#" + this.id).parent().find(".ui-dialog-titlebar-close").hide();
+                   this.$el.parent().find(".ui-dialog-titlebar-close").hide();
                 }
             },
 
@@ -479,11 +479,11 @@ define(function (require) {
              */
             setDraggable: function (draggable) {
                 if (draggable) {
-                    $("#" + this.id).parent().draggable({disabled: false});
+                   this.$el.parent().draggable({disabled: false});
                     // NOTE: this will wipe any class applied to the widget...
                     this.setClass('');
                 } else {
-                    $("#" + this.id).parent().draggable({disabled: true});
+                   this.$el.parent().draggable({disabled: true});
                     this.setClass('noStyleDisableDrag');
                 }
             },
@@ -495,9 +495,9 @@ define(function (require) {
              */
             setTrasparentBackground: function(isTransparent) {
                 if(isTransparent){
-                    $("#" + this.id).parent().addClass('transparent-back');
+                   this.$el.parent().addClass('transparent-back');
                 } else {
-                    $("#" + this.id).parent().removeClass('transparent-back');
+                   this.$el.parent().removeClass('transparent-back');
                 }
             },
 
@@ -505,7 +505,7 @@ define(function (require) {
              * Inject CSS for custom behaviour
              */
             setClass: function (className) {
-                $("#" + this.id).dialog({dialogClass: className}).dialogExtend();
+               this.$el.dialog({dialogClass: className}).dialogExtend();
             },
 
             /**
@@ -542,7 +542,7 @@ define(function (require) {
                             "restore" : "fa fa-undo",
                           },
                          "load" : function(evt, dlg){ 
-                        	 var icons = $("#"+that.id).parent().find(".ui-icon"); 
+                        	 var icons =that.$el.parent().find(".ui-icon"); 
                         	 for(var i =0 ; i<icons.length; i++){
                         		 //remove text from span added by vendor library
                         		 $(icons[i]).text("");
@@ -559,16 +559,16 @@ define(function (require) {
                           "beforeMinimize" : function(evt, dlg){
                         	  var label = that.name;
                         	  label = label.substring(0, 6);
-                        	  $("#"+that.id).dialog({ title: label});
+                        	 that.$el.dialog({ title: label});
                            },
                            "minimize" : function(evt, dlg){
-                         	  $("#"+that.id).dialog({ title: that.name});
+                         	 that.$el.dialog({ title: that.name});
                             },
                             "maximize" : function(evt,dlg){
                             	$(this).trigger('resizeEnd');
-                            	var divheight = $("#"+that.id).height()+50;
-                      			 var divwidth = $("#"+that.id).width()+50;
-                            	  $("#"+that.id).dialog({ height: divheight,width: divwidth});
+                            	var divheight =that.$el.height()+50;
+                      			 var divwidth =that.$el.width()+50;
+                            	 that.$el.dialog({ height: divheight,width: divwidth});
                             },
                             "restore" : function(evt,dlg){
                             	$(this).trigger('resizeEnd');

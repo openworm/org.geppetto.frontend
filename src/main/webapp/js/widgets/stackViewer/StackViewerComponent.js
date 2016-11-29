@@ -341,14 +341,14 @@ define(function (require) {
                                             if (i !== 0 || index !== 0) { // don't select template
                                                 if (index == 0) {
                                                     console.log(that.state.label[i] + ' clicked');
-                                                    that.setStatusText(that.state.label[i] + ' clicked!');
                                                     eval(that.state.id[i][Number(result[j])]).select();
+                                                    that.setStatusText(that.state.label[i] + ' selected');
                                                 } else {
                                                     if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
                                                         try {
                                                             eval(that.state.id[i][Number(result[j])]).select();
                                                             console.log(that.props.templateDomainNames[index] + ' clicked');
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' clicked');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' selected');
                                                         } catch (ignore) {
                                                             console.log(that.props.templateDomainNames[index] + ' requsted');
                                                             that.setStatusText(that.props.templateDomainNames[index] + ' requsted');

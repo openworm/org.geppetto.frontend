@@ -361,6 +361,9 @@ define(function (require) {
                                                                     resolve3D(that.props.templateDomainIds[index]);
                                                                 });
                                                                 break;
+                                                            }else if (that.state.mode==1){
+                                                                that.setStatusText(that.props.templateDomainNames[index]);
+                                                                break;
                                                             }
                                                         }
                                                     } else {

@@ -539,8 +539,8 @@ define(function (require) {
                         "icons" : {
                             "maximize" : "fa fa-window-maximize",
                             "minimize" : "fa fa-window-minimize",
-                            "collapse" : "fa  fa-caret-square-o-down",
-                            "restore" : "fa fa-undo",
+                            "collapse" : "fa  fa-chevron-circle-down",
+                            "restore" : "fa fa-window-restore",
                           },
                          "load" : function(evt, dlg){ 
                         	 var icons = $("#"+that.id).parent().find(".ui-icon"); 

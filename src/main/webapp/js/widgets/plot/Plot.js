@@ -257,6 +257,11 @@ define(function (require) {
 		 * @param {Object} options - options for the plotting widget, if null uses default
 		 */
 		plotData: function (data, options) {
+			var validVariable = eval(data);
+			if(validVariable == null || undefined){
+				return "Can't plot undefined variable";
+			}
+			
 			var that = this;
 			if (!$.isArray(data)) {
 				data = [data];

@@ -566,6 +566,9 @@ define(function (require) {
                             },
                             "maximize" : function(evt,dlg){
                             	$(this).trigger('resizeEnd');
+                            	var divheight = $("#"+that.id).height()+50;
+                      			 var divwidth = $("#"+that.id).width()+50;
+                            	  $("#"+that.id).dialog({ height: divheight,width: divwidth});
                             },
                             "restore" : function(evt,dlg){
                             	$(this).trigger('resizeEnd');

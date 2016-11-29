@@ -67,7 +67,6 @@ define(function (require) {
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
-            //PLOTLY : 8,
             //WIDGETNAME: N
         };
 
@@ -84,7 +83,6 @@ define(function (require) {
             ButtonBarController: null,
             treeVisDatController: null,
             treeVis3DController: null,
-            //plotlyController : null,
             //WIDGETNAMEController: null
             
             /**

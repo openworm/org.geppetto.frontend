@@ -33,14 +33,11 @@
 .plotly {
     width: 100%;
     height: 100%;
+    padding : 0;
 }
 
 div.plotly-notifier {
   visibility: hidden;
-}
-
-.ui-dialog .ui-dialog-content{
-	padding : 0;
 }
 
 .legendLabel {
@@ -64,7 +61,6 @@ div.plotly-notifier {
     display: inline-block;
     position: relative;
     width: 100%;
-    padding-bottom: 100%;
     vertical-align: top;
     overflow: hidden;
     max-width : 100%;

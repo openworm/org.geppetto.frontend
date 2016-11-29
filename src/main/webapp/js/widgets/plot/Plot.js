@@ -66,6 +66,7 @@ define(function (require) {
         xaxisAutoRange : false,
         imageTypes : [],
         plotElement : null,
+        XVariable : null,
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -73,7 +74,7 @@ define(function (require) {
 		 */
 		defaultOptions : function(){	
 			return {
-				autosize : false,
+				autosize : true,
 				width : '100%',
 				height : '100%',
 				showgrid : false,
@@ -98,7 +99,6 @@ define(function (require) {
 						color: 'rgb(255, 255, 255)'
 					},
 					ticks: 'outside',
-					tickcolor: 'rgb(255, 255, 255)',
 					max: -9999999,
 					min: 9999999,
 					range : []
@@ -124,7 +124,6 @@ define(function (require) {
 						color: 'rgb(255, 255, 255)'
 					},
 					ticks: 'outside',
-					tickcolor: 'rgb(102, 102, 102)'
 				},
 				margin: {
 					l: 50,
@@ -170,6 +169,8 @@ define(function (require) {
 			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
 			this.plotOptions.xaxis.range =[0,this.limit];
+			this.xVariable = time;
+			
 			var that = this;
 
 			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download plot data'></div>").on('click', function(event) {
@@ -365,14 +366,21 @@ define(function (require) {
 			}
 			
 			this.updateAxis(instance.getInstancePath());
-			this.resize();
+			this.resize(false);
 			return this;
 		},
 
-		resize : function(draggedResize){
+		resize : function(resizeHeight){
 			//sets the width and height on the plotOptions which is given to plotly on relayout
-			this.plotOptions.width = this.plotElement.width()+ 10;
-			this.plotOptions.height = this.plotElement.height() + 5;
+			
+			//for some reason, height is different when first plotted, 10 pixels makes the change
+			if(resizeHeight){
+				this.plotOptions.height = this.plotElement.height() + 10;
+				this.plotOptions.width = this.plotElement.width()+ 10;
+			}else{
+				this.plotOptions.height = this.plotElement.height();
+				this.plotOptions.width = this.plotElement.width();
+			}
 			//resizes plot right after creation, needed for d3 to resize 
 			//to parent's widht and height
 			Plotly.relayout(this.plotDiv,this.plotOptions);
@@ -417,7 +425,7 @@ define(function (require) {
 				var xCopied = false;
 				
 				//stores path of file name containing data results for plot and names of variables
-				var text = "time";
+				var text = this.xVariable.getInstancePath();
 				for (var key=0; key<this.datasets.length; key++) {
 					var x = this.datasets[key].x;
 					var y = this.datasets[key].y;
@@ -573,8 +581,6 @@ define(function (require) {
 						this.datasets[key].hoverinfo = 'all';
 						this.plotOptions.xaxis.showticklabels = true;
 						this.plotOptions.xaxis.range = [];
-						this.plotOptions.margin.b = 50;
-						this.plotOptions.margin.r = 20;
 						this.reIndexUpdate = 0;
 						this.plotOptions.xaxis.autorange = true;
 						this.xaxisAutoRange = true;
@@ -908,7 +914,7 @@ define(function (require) {
 			this.variables[this.getLegendInstancePath(dataX.getInstancePath())] = dataX;
 
 			this.datasets.push(newLine);
-			
+			this.xVariable = dataX;
 			if (this.datasets.length > 0) {
                 // check for inhomogeneousUnits and set flag
                 var refUnit = undefined;

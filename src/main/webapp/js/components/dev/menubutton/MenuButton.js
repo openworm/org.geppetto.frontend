@@ -115,6 +115,7 @@ define(function (require) {
 
     var DropDownControlComp = React.createClass({
     	onClickHandler : null,
+    	menuPosition : null,
     	
         getInitialState: function () {
             return {
@@ -124,17 +125,16 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-        	var menuPosition=null;
             var menuSize = null;
             var self = this;
             //if position wasn't specify for location of menu list
             if(self.props.configuration.menuPosition == null || undefined){
             	//compute best spot for menu to show up by getting the button's top
             	//and left values, and considering padding values as well
-            	menuPosition = self.getMenuPosition();
+            	this.menuPosition = self.getMenuPosition();
             }else{
             	//assign position of menu to what it is in configuration passed
-            	menuPosition = self.props.configuration.menuPosition;
+            	this.menuPosition = self.props.configuration.menuPosition;
             }
             
             //if position wasn't specify for location of menu list
@@ -147,8 +147,8 @@ define(function (require) {
             
             var selector = $("#"+this.props.configuration.id+"-dropDown");
             selector.css({
-                top: menuPosition.top, right: menuPosition.right,
-                bottom: menuPosition.bottom, left: menuPosition.left, position: 'fixed'
+                top: self.menuPosition.top, right: self.menuPosition.right,
+                bottom: self.menuPosition.bottom, left: self.menuPosition.left, position: 'fixed'
             });
         },
 
@@ -189,7 +189,19 @@ define(function (require) {
         	this.setState({visible: false});
         },
 
-        open: function () {            
+        open: function () {
+        	
+        	//makes sure that menu position is not offscreen or at 0,0
+        	if(this.menuPosition.top <=0 && this.menuPosition.left<=0){
+        		this.menuPosition = this.getMenuPosition();
+            	var selector = $("#"+this.props.configuration.id+"-dropDown");
+            	
+            	var that = this;
+            	selector.css({
+            		top: that.menuPosition.top, right: that.menuPosition.right,
+            		bottom: that.menuPosition.bottom, left: that.menuPosition.left, position: 'fixed'
+            	});
+        	}
             this.setState({visible: true});
         },
         

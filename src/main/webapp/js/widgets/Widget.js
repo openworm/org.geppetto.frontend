@@ -428,7 +428,7 @@ define(function (require) {
             				}
     						item = historyItems[that.executedAction].action[0];;
     						GEPPETTO.Console.executeCommand(item);
-            				$("#"+this.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
+            				$("#"+that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
             				event.stopPropagation();
             			});
             			
@@ -540,7 +540,7 @@ define(function (require) {
                         "icons" : {
                             "maximize" : "fa fa-window-maximize",
                             "minimize" : "fa fa-window-minimize",
-                            "collapse" : "fa  fa-chevron-circle-down",
+                            "collapse" : "fa  fa-chevron-circle-up",
                             "restore" : "fa fa-window-restore",
                           },
                          "load" : function(evt, dlg){ 

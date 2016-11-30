@@ -82,7 +82,6 @@ define(function (require) {
 				xaxis: {                  // all "layout.xaxis" attributes: #layout-xaxis
 					showgrid: false,
 					showline: true,
-					showticklabels : false,
 					zeroline : false,
 					mirror : true,
 					ticklen : 0,
@@ -637,6 +636,10 @@ define(function (require) {
 						this.plotOptions.xaxis.range = [0, this.limit];
 						this.plotOptions.xaxis.autorange = false;
 					}
+					if(!this.plotOptions.playAll){
+						this.plotOptions.xaxis.showticklabels = false;
+					}
+					
 					Plotly.relayout(this.plotDiv, this.plotOptions);
 				}
 				

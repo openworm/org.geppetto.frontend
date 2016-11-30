@@ -540,7 +540,7 @@ define(function (require) {
                         "icons" : {
                             "maximize" : "fa fa-window-maximize",
                             "minimize" : "fa fa-window-minimize",
-                            "collapse" : "fa  fa-chevron-circle-up",
+                            "collapse" : "fa  fa-chevron-circle-down",
                             "restore" : "fa fa-window-restore",
                           },
                          "load" : function(evt, dlg){ 
@@ -553,11 +553,20 @@ define(function (require) {
                           "beforeMinimize" : function(evt, dlg){
                         	  var label = that.name;
                         	  label = label.substring(0, 6);
-                        	  $("#"+that.id).dialog({ title: label});
+                        	  that.$el.dialog({ title: label});
                            },
                            "minimize" : function(evt, dlg){
-                         	  $("#"+that.id).dialog({ title: that.name});
-                            }
+                        	   that.$el.dialog({ title: that.name});
+                            },
+                            "maximize" : function(evt,dlg){
+                    			$(this).trigger('resizeEnd');
+                    			var divheight =that.$el.height()+50;
+                    			var divwidth =that.$el.width()+50;
+                    			that.$el.dialog({ height: divheight,width: divwidth});
+                    		},
+                    		"restore" : function(evt,dlg){
+                    			$(this).trigger('resizeEnd');
+                    		}
                         });
 
                 this.$el = $("#" + this.id);

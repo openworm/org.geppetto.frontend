@@ -7,7 +7,7 @@
 	width: 100%;
 }
 
-#controlpanel .griddle {
+#controlpanel #controlpanel-container {
 	position: absolute !important;
 	margin-left: auto;
 	margin-right: auto;
@@ -15,6 +15,10 @@
 	right: 0;
 	width: 75%;
 	top: 20%;
+}
+
+#controlpanel #controlPanelMenuButton {
+    margin-bottom: 10px;
 }
 
 #controlpanel .griddle-container {

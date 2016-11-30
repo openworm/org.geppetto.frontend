@@ -46,6 +46,7 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
+    var MenuButton = require('jsx!./../menubutton/MenuButton');
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
@@ -706,15 +707,41 @@ define(function (require) {
             }
             
             this.addData(window.Instances);
-            
         },
 
         render: function () {
-            return React.createElement(Griddle, {
-                columns: this.state.columns, results: this.state.data,
-                showFilter: true, showSettings: false, enableInfiniteScroll: true, bodyHeight: 400,
-                useGriddleStyles: false, columnMetadata: this.state.columnMeta
-            });
+            var menuButtonMarkup = '';
+            if (this.props.showMenuButton === true) {
+                var controlPanelMenuButtonConfig = {
+                    id: "controlPanelMenuButton",
+                    openByDefault: false,
+                    closeOnClick: true,
+                    label: ' Filters',
+                    iconOn: 'fa fa-caret-square-o-up',
+                    iconOff: 'fa fa-caret-square-o-down',
+                    menuPosition: null,
+                    menuSize: {
+                        height: "auto",
+                        width: 300
+                    },
+                    onClickHandler: function (value) {
+                        // write one if necessary
+                    },
+                    menuItems: this.props.menuButtonItemsConfig
+                };
+                menuButtonMarkup = (
+                    <MenuButton configuration={controlPanelMenuButtonConfig} />
+                );
+            }
+
+            return (
+                <div id="controlpanel-container">
+                    {menuButtonMarkup}
+                    <Griddle columns={this.state.columns} results={this.state.data}
+                    showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={400}
+                    useGriddleStyles={false} columnMetadata={this.state.columnMeta} />
+                </div>
+            );
         }
     });
 

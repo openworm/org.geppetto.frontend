@@ -746,7 +746,7 @@ define(function (require) {
                 var mesh = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 var inputs = {};
                 var outputs = {};
-                var origin = mesh.position.clone();
+                var defaultOrigin = mesh.position.clone();
 
                 for (var c = 0; c < connections.length; c++) {
 
@@ -762,8 +762,25 @@ define(function (require) {
 
                     var otherEndMesh = GEPPETTO.getVARS().meshes[otherEndPath];
 
-                    var destination = otherEndMesh.position.clone();
+                    var destination; 
+                    var origin;
+                    
+                    if(connection.getA().getPoint()==undefined){
+                    	origin=defaultOrigin;
+                    }
+                    else{
+                    	var p = connection.getA().getPoint();
+                    	origin= new THREE.Vector3(p.x,p.y,p.z);
+                    }
 
+                    if(connection.getA().getPoint()==undefined){
+                    	destination=otherEndMesh.position.clone();;
+                    }
+                    else{
+                    	var p = connection.getB().getPoint();
+                    	destination= new THREE.Vector3(p.x,p.y,p.z);
+                    }
+                    
                     var geometry = new THREE.Geometry();
 
                     geometry.vertices.push(origin, destination);

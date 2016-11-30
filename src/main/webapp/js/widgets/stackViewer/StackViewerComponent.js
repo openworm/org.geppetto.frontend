@@ -1,7 +1,7 @@
 define(function (require) {
 
     require('widgets/stackViewer/vendor/pixi.min');
-    require('widgets/stackViewer/vendor/browser.min');
+    //require('widgets/stackViewer/vendor/browser.min');
     var React = require('react');
 
     var Canvas = React.createClass({

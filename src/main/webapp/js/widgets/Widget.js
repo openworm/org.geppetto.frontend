@@ -540,7 +540,7 @@ define(function (require) {
                         "icons" : {
                             "maximize" : "fa fa-window-maximize",
                             "minimize" : "fa fa-window-minimize",
-                            "collapse" : "fa  fa-chevron-circle-down",
+                            "collapse" : "fa  fa-chevron-circle-up",
                             "restore" : "fa fa-window-restore",
                           },
                          "load" : function(evt, dlg){ 

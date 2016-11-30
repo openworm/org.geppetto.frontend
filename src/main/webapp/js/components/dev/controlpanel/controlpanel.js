@@ -724,10 +724,8 @@ define(function (require) {
                         height: "auto",
                         width: 300
                     },
-                    onClickHandler: function (value) {
-                        // write one if necessary
-                    },
-                    menuItems: this.props.menuButtonItemsConfig
+                    onClickHandler: this.props.menuButtonClickHandler,
+                    menuItems: this.props.menuButtonItems
                 };
                 menuButtonMarkup = (
                     <MenuButton configuration={controlPanelMenuButtonConfig} />

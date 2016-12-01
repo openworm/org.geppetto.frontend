@@ -770,7 +770,7 @@ define(function (require) {
                     }
                     else{
                     	var p = connection.getA().getPoint();
-                    	origin= new THREE.Vector3(p.x,p.y,p.z);
+                    	origin= new THREE.Vector3(p.x+mesh.position.x,p.y+mesh.position.y,p.z+mesh.position.z);
                     }
 
                     if(connection.getA().getPoint()==undefined){
@@ -778,7 +778,7 @@ define(function (require) {
                     }
                     else{
                     	var p = connection.getB().getPoint();
-                    	destination= new THREE.Vector3(p.x,p.y,p.z);
+                    	destination= new THREE.Vector3(p.x+otherEndMesh.position.x,p.y+otherEndMesh.position.y,p.z+otherEndMesh.position.z);
                     }
                     
                     var geometry = new THREE.Geometry();

@@ -249,7 +249,7 @@ define(function (require) {
                 // need to eval because this is a nested path - not simply a global on window
                 entity = eval(path)
             } catch (e) {
-                throw( "The instance " + path + " does not exist in the current model" );
+                // NOTE: The instance doesn't exist yet
             }
 
             // Add common control buttons to list
@@ -269,7 +269,7 @@ define(function (require) {
                 }
             }
 
-            if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
+            if (entity != undefined && entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                 // Add visual capability controls to list
                 for (var control in config.VisualCapability) {
                     if ($.inArray(control.toString(), showControls.VisualCapability) != -1) {
@@ -332,7 +332,7 @@ define(function (require) {
                         };
 
                         // figure out if we need to include the color picker (hook it up in didMount)
-                        if (controlConfig.id == "color") {
+                        if (entity != undefined && controlConfig.id == "color") {
                             that.colorPickerBtnId = idVal;
                             that.colorPickerActionFn = actionFn;
                             // set style val to color tint icon
@@ -530,20 +530,24 @@ define(function (require) {
                     if(!isDuplicate) {
                         // loop column meta and grab column names + source
                         for (var j = 0; j < columnMeta.length; j++) {
-                            var sourceActionStr = columnMeta[j].source;
-
-                            // replace token with path from input entity
-                            sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
-
                             // eval result - empty string by default so griddle doesn't complain
                             var result = '';
+                            if(columnMeta[j].source != undefined) {
+                                var sourceActionStr = columnMeta[j].source;
 
-                            try {
-                                if (sourceActionStr != "") {
-                                    result = eval(sourceActionStr);
+                                // replace token with path from input entity
+                                sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
+
+                                try {
+                                    if (sourceActionStr != "") {
+                                        result = eval(sourceActionStr);
+                                    }
+                                } catch (e) {
+                                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
                                 }
-                            } catch (e) {
-                                GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                            } else {
+                                // if no source assume the record has a property with the column name
+                                result = records[i][columnMeta[j].columnName]
                             }
 
                             gridRecord[columnMeta[j].columnName] = result;
@@ -599,21 +603,25 @@ define(function (require) {
 
                 // loop column meta and grab column names + source
                 for(var j=0; j<columnMeta.length; j++){
-                    var sourceActionStr = columnMeta[j].source;
-
-                    // replace token with path from input entity
-                    var entityPath = records[i].getPath();
-                    sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
-
                     // eval result - empty string by default so griddle doesn't complain
                     var result = '';
+                    if(columnMeta[j].source != undefined) {
+                        var sourceActionStr = columnMeta[j].source;
 
-                    try{
-                        if(sourceActionStr != "") {
-                            result = eval(sourceActionStr);
+                        // replace token with path from input entity
+                        var entityPath = records[i].getPath();
+                        sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
+
+                        try{
+                            if(sourceActionStr != "") {
+                                result = eval(sourceActionStr);
+                            }
+                        } catch(e){
+                            GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
                         }
-                    } catch(e){
-                        GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                    } else {
+                        // if no source assume the record has a property with the column name
+                        result = records[i][columnMeta[j].columnName];
                     }
 
                     gridRecord[columnMeta[j].columnName] = result;

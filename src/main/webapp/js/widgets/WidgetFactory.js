@@ -86,7 +86,7 @@ define(function (require) {
             treeVis3DController: null,
             stackViewer3DController: null,
             //WIDGETNAMEController: null
-
+            
             /**
              * Adds widget to Geppetto
              *

@@ -36,6 +36,10 @@ require.config({
             deps: ['jquery','underscore'],
             exports : 'Backbone'
         },
+        
+        bootstrap : {
+            deps: ['jquery']
+        },
 
         validation : {
              deps: ['backbone']
@@ -72,7 +76,8 @@ require([
     'app',
     'underscore',
     'backbone',
-    'validation'
+    'validation',
+    'bootstrap'
 
 ], function(App){
     // The "app" dependency is passed in as "App"

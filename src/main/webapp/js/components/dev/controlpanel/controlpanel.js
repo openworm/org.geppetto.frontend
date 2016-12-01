@@ -491,7 +491,8 @@ define(function (require) {
 
         getDefaultProps: function () {
             return {
-                "tableClassName": 'control-panel-table'
+                tableClassName: 'control-panel-table',
+                listenToInstanceCreationEvents: true
             };
         },
 
@@ -692,15 +693,17 @@ define(function (require) {
                 that.clearData();
             });
 
-            GEPPETTO.on(Events.Instance_deleted, function (parameters) {
-                that.deleteData([parameters]);
-            });
-            
-            GEPPETTO.on(Events.Instances_created, function(instances){
-            	if(instances!=undefined){
-            		that.addData(instances);
-            	}
-            });
+            if(this.props.listenToInstanceCreationEvents){
+                GEPPETTO.on(Events.Instance_deleted, function (parameters) {
+                    that.deleteData([parameters]);
+                });
+
+                GEPPETTO.on(Events.Instances_created, function(instances){
+                    if(instances!=undefined){
+                        that.addData(instances);
+                    }
+                });
+            }
 
             if (GEPPETTO.ForegroundControls != undefined) {
                 GEPPETTO.ForegroundControls.refresh();

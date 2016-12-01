@@ -84,6 +84,18 @@ define(function (require) {
                 that.configViaGUI();
             }));
 
+            //resizes connectivity widget when maximizing/restoring using buttons on top
+            $(".ui-dialog-titlebar-maximize, .ui-dialog-titlebar-restore").on("click",function(){
+            	var height = $("#"+that.id).parent().height();
+                var width = $("#"+that.id).parent().width();
+
+                GEPPETTO.Console.executeCommand(that.id + ".setSize(" + height + "," + width + ")");
+
+                var left = $("#"+that.id).parent().offset().left;
+                var top = $("#"+that.id).parent().offset().top;
+
+                window[that.id].setPosition(left, top);
+            });
         },
 
         setSize: function (h, w) {

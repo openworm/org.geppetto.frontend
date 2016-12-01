@@ -574,10 +574,7 @@ define(function (require) {
                 
 
                 //add history
-                this.addButtonToTitleBar($("<div class='fa fa-history' title='Show Navigation History'></div>").click(function (event) {
-                    that.showHistoryMenu(event);
-                    event.stopPropagation();
-                }));
+                this.showHistoryIcon(true);
 
                 //remove the jQuery UI icon
                 dialogParent.find("button.ui-dialog-titlebar-close").html("");
@@ -619,6 +616,19 @@ define(function (require) {
             
             setController : function(controller){
             	this.controller = controller;
+            },
+            
+            showHistoryIcon : function(show){
+            	var that=this;
+            	if(show && this.$el.parent().find(".history-icon").length==0){
+                    this.addButtonToTitleBar($("<div class='fa fa-history history-icon' title='Show Navigation History'></div>").click(function (event) {
+                        that.showHistoryMenu(event);
+                        event.stopPropagation();
+                    }));
+            	}
+            	else{
+            		this.$el.parent().find(".history-icon").remove();
+            	}
             }
         })
     }

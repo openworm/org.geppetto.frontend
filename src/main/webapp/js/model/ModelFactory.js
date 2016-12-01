@@ -2314,7 +2314,7 @@ define(function (require) {
             /**
              * Get all POTENTIAL instances of a given meta type
              */
-            getAllPotentialInstancesOfMetaType: function (metaType, paths) {
+            getAllPotentialInstancesOfMetaType: function (metaType, paths, includeType) {
                 if (paths == undefined) {
                     paths = this.allPaths;
                 }
@@ -2323,7 +2323,11 @@ define(function (require) {
 
                 for (var i = 0; i < paths.length; i++) {
                     if (paths[i].metaType == metaType) {
-                        matchingPotentialInstances.push(paths[i].path);
+                        var itemToPush = paths[i].path;
+                        if(includeType === true){
+                            itemToPush = paths[i];
+                        }
+                        matchingPotentialInstances.push(itemToPush);
                     }
                 }
 

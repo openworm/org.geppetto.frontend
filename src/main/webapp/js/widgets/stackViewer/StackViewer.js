@@ -168,9 +168,9 @@ define(function (require) {
         removeSlice: function(path){
             console.log('Removing ' + path.split('.')[0] + ' from ' + this.data.instances.length);
             var i;
-            for (i in this.data.instance){
-                if (this.data.instance[i].parent.getId() == path.split('.')[0]){
-                    this.data.instance.splice(i,1);
+            for (i in this.data.instances){
+                if (this.data.instances[i].parent.getId() == path.split('.')[0]){
+                    this.data.instances.splice(i,1);
                 }
             }
             console.log('Passing ' + this.data.instances.length + ' instances');

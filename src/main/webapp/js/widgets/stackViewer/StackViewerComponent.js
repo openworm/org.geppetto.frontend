@@ -350,7 +350,7 @@ define(function (require) {
                                                         } catch (ignore) {
                                                             console.log(that.props.templateDomainNames[index] + ' requsted');
                                                             that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                            if (that.state.mode == 2) {
+                                                            if (GEPPETTO.isKeyPressed("shift")) {
                                                                 console.log('Adding ' + that.props.templateDomainNames[index]);
                                                                 that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
                                                                 Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
@@ -359,8 +359,8 @@ define(function (require) {
                                                                     resolve3D(that.props.templateDomainIds[index]);
                                                                 });
                                                                 break;
-                                                            }else if (that.state.mode==1){
-                                                                that.setStatusText(that.props.templateDomainNames[index]);
+                                                            }else{
+                                                                that.setStatusText(that.props.templateDomainNames[index] + ' (&#x21E7;+&#xf245; to add)');
                                                                 break;
                                                             }
                                                         }
@@ -914,6 +914,11 @@ define(function (require) {
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {
                     this.listObjects();
                 }
+            }
+            if (GEPPETTO.isKeyPressed("shift")){
+                this.stack.defaultCursor='copy';
+            }else{
+                this.stack.defaultCursor='pointer';
             }
         },
 

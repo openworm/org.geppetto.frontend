@@ -347,7 +347,7 @@ define(function (require) {
                                                             });
                                                             break;
                                                         } else {
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (⇧& to add)');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
                                                             break;
                                                         }
                                                     }

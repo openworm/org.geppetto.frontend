@@ -405,7 +405,7 @@ define(function (require) {
                                         }
                                     }
                                 }
-                                that.state.objects = $.unique(that.state.objects);
+                                that.state.objects = $.unique(that.state.objects).sort();
                                 var objects = '';
                                 for (i in that.state.objects){
                                     objects = objects + that.state.objects[i] + '\n';

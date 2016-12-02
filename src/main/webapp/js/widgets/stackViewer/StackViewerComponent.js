@@ -372,7 +372,7 @@ define(function (require) {
         },
 
         listObjects: function () {
-            if (!that.state.loadingLabels) {
+            if (!this.state.loadingLabels) {
                 var i, j, result;
                 var that = this;
                 $.each(this.state.stack, function (i, item) {

@@ -389,7 +389,7 @@ define(function (require) {
                                 result = data.trim().split(':')[1].trim().split(' ');
                                 if (result !== '') {
                                     for (j in result) {
-                                        if (result[j].trim() !== '') {
+                                        if (result[j].trim() !== '' && ) {
                                             var index = Number(result[j]);
                                             if (i !== 0 || index !== 0) { // don't select template
                                                 if (index == 0) {
@@ -397,7 +397,7 @@ define(function (require) {
                                                     that.setStatusText(that.state.label[i]);
                                                 } else {
                                                     if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                        that.state.objects.push(that.state.label[i]);
+                                                        that.state.objects.push(that.props.templateDomainNames[index]);
                                                         break;
                                                     }
                                                 }

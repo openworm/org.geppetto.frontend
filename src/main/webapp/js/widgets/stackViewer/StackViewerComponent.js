@@ -165,8 +165,6 @@ define(function (require) {
                     this.props.setExtent(extent);
                     this.bufferStack(extent);
                     if (this.state.txtUpdated < Date.now() - this.state.txtStay) {this.state.buffer[-1].text = '';}
-                    // console.log(image);
-                    // console.log(JSON.stringify({minDst: min, maxDst: max}));
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -182,7 +180,6 @@ define(function (require) {
                 url: image + '&obj=Tile-size',
                 type: 'POST',
                 success: function (data) {
-                    // console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     var tileX = Number(result[0]);
                     var tileY = Number(result[1]);
@@ -206,7 +203,6 @@ define(function (require) {
                 url: image + '&obj=Max-size',
                 type: 'POST',
                 success: function (data) {
-                    // console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     var imageX = Number(result[0]);
                     var imageY = Number(result[1]);
@@ -226,12 +222,6 @@ define(function (require) {
             if (!this.state.planeUpdating) {
                 this.state.planeUpdating = true;
                 if (this.stack.width > 1) {
-                    // console.log('Render width: ' + this.renderer.view.width);
-                    // console.log('Stack width: ' + this.stack.width);
-                    // console.log('Stack pox x: ' + this.stack.position.x);
-                    // console.log('Display area width: ' + $('#displayArea').width());
-                    // console.log('Stage width: ' + this.stage.width);
-                    // console.log('Stage pox x: ' + this.stage.position.x);
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
@@ -243,7 +233,6 @@ define(function (require) {
                     y = y + (this.renderer.height/this.disp.scale.y);
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);
-                    // console.log('Visible screen: ' + coordinates);
                     if (this.state.orth == 0) { // frontal
                         this.state.plane[0] = coordinates[0];
                         this.state.plane[1] = coordinates[1];
@@ -275,7 +264,6 @@ define(function (require) {
                 }
                 // Pass Z coordinates
                 z = this.props.dst - (this.state.minDst);
-                // console.log('z: ' + z);
                 if (this.state.orth == 0) { // frontal
                     this.state.plane[2] = z;
                     this.state.plane[5] = z;
@@ -298,10 +286,8 @@ define(function (require) {
 
         passPlane: function () {
             if (this.state.stackViewerPlane) {
-                // console.log('Moving plane to: ' + this.state.plane);
                 this.state.stackViewerPlane=GEPPETTO.SceneFactory.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
             }else{
-                // console.log('Creating plane: ' + this.state.plane);
                 this.state.stackViewerPlane=GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/widgets/stackViewer/images/glass.jpg");
                 if (this.state.stackViewerPlane.visible) {
                     this.state.stackViewerPlane.visible = true;
@@ -869,7 +855,6 @@ define(function (require) {
             // store a reference to the data
             // the reason for this is because of multitouch
             // we want to track the movement of this particular touch
-            console.log('drag start');
             this.state.data = event.data;
             this.stack.alpha = 0.7;
             this.state.dragging = true;
@@ -887,15 +872,12 @@ define(function (require) {
 
         onDragEnd: function () {
             if (this.state.data !== null) {
-                console.log('drag stop');
                 this.stack.alpha = 1;
-
                 this.state.dragging = false;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = startPosition.x;
                 var newPosY = startPosition.y;
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
-                    //console.log([newPosX, newPosY]);
                     this.callObjects();
                 }
                 // set the interaction data to null
@@ -908,15 +890,10 @@ define(function (require) {
                 this.state.loadingLabels = true;
                 this.state.data = event.data;
                 var currentPosition = this.state.data.getLocalPosition(this.stack);
-                //console.log(currentPosition);
                 var xOffset = this.state.imageX / this.disp.scale.x;
                 var yOffset = this.state.imageY / this.disp.scale.y;
-                //console.log(xOffset);
-                //console.log(yOffset);
                 this.state.posX = (currentPosition.x);
                 this.state.posY = (currentPosition.y);
-                //console.log(this.state.posX);
-                //console.log(this.state.posY);
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {
                     this.listObjects();
                 }
@@ -931,13 +908,10 @@ define(function (require) {
         onDragMove: function (event) {
             if (this.state.dragging) {
                 var startPosition = this.state.dragOffset;
-                console.log('Start:' + JSON.stringify(startPosition));
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 window.test = this.state.data;
-                console.log('New:' + JSON.stringify(newPosition));
                 this.stack.position.x += newPosition.x - startPosition.x;
                 this.stack.position.y += newPosition.y - startPosition.y;
-                console.log(JSON.stringify(this.stack.position));
                 this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view
@@ -1058,8 +1032,6 @@ define(function (require) {
         },
 
         componentWillReceiveProps: function (nextProps) {
-            // console.log('Recieved Props:');
-            // console.log(nextProps);
             if (nextProps.data && nextProps.data != null) {
                 if (nextProps.data.instances && nextProps.data.instances != null) {
                     this.handleInstances(nextProps.data.instances);
@@ -1127,7 +1099,6 @@ define(function (require) {
                     // console.log('updating colours to ' + JSON.stringify(colors));
                 }
             }else{
-                console.log('No instances sent');
                 this.setState({label:[],stack:[],id:[],color:[]});
             }
         },

@@ -372,47 +372,50 @@ define(function (require) {
         },
 
         listObjects: function () {
-            var i, j, result;
-            var that = this;
-            $.each(this.state.stack, function (i, item) {
-                (function(i, that) {
-                    if (i>0 || that.state.stack.length == 1 || that.state.mode > 0) {
-                        var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
-                        //get image size;
-                        $.ajax({
-                            url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
-                            type: 'POST',
-                            success: function (data) {
-                                result = data.trim().split(':')[1].trim().split(' ');
-                                if (result !== '') {
-                                    for (j in result) {
-                                        if (result[j].trim() !== '') {
-                                            var index = Number(result[j]);
-                                            if (i !== 0 || index !== 0) { // don't select template
-                                                if (index == 0) {
-                                                    that.setStatusText(that.state.label[i]);
-                                                } else {
-                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                        that.setStatusText(that.props.templateDomainNames[index]);
-                                                        break;
+            if (!that.state.loadingLabels) {
+                that.state.loadingLabels = true;
+                var i, j, result;
+                var that = this;
+                $.each(this.state.stack, function (i, item) {
+                    (function (i, that) {
+                        if (i > 0 || that.state.stack.length == 1 || that.state.mode > 0) {
+                            var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
+                            //get image size;
+                            $.ajax({
+                                url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
+                                type: 'POST',
+                                success: function (data) {
+                                    result = data.trim().split(':')[1].trim().split(' ');
+                                    if (result !== '') {
+                                        for (j in result) {
+                                            if (result[j].trim() !== '') {
+                                                var index = Number(result[j]);
+                                                if (i !== 0 || index !== 0) { // don't select template
+                                                    if (index == 0) {
+                                                        that.setStatusText(that.state.label[i]);
+                                                    } else {
+                                                        if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                            that.setStatusText(that.props.templateDomainNames[index]);
+                                                            break;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                // update slice view
-                                that.state.lastUpdate = 0;
-                                that.checkStack();
-                                that.state.loadingLabels = false;
-                            },
-                            error: function (xhr, status, err) {
-                                console.error(that.props.url, status, err.toString());
-                            }.bind(this)
-                        });
-                    }
-                })(i, that);
-            });
+                                    // update slice view
+                                    that.state.lastUpdate = 0;
+                                    that.checkStack();
+                                    that.state.loadingLabels = false;
+                                },
+                                error: function (xhr, status, err) {
+                                    console.error(that.props.url, status, err.toString());
+                                }.bind(this)
+                            });
+                        }
+                    })(i, that);
+                });
+            }
         },
 
         bufferStack: function (extent) {

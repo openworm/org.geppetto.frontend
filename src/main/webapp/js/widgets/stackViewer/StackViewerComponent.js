@@ -44,7 +44,6 @@ define(function (require) {
                 data: {},
                 dragOffset: {},
                 dragging: false,
-                dragMax: (this.props.height * 0.2),
                 recenter: false,
                 txtUpdated: Date.now(),
                 txtStay: 3000
@@ -925,17 +924,13 @@ define(function (require) {
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 window.test = this.state.data;
                 console.log('New:' + JSON.stringify(newPosition));
-                // only allow jumps of < +/- dragMax
-                var dragMax = this.state.dragMax / this.disp.scale.x;
-                if ((newPosition.x + dragMax) > startPosition.x && (newPosition.x - dragMax) < startPosition.x && (newPosition.y + dragMax) > startPosition.y && (newPosition.y - dragMax) < startPosition.y) {
-                    this.stack.position.x += newPosition.x - startPosition.x;
-                    this.stack.position.y += newPosition.y - startPosition.y;
-                    console.log(JSON.stringify(this.stack.position));
-                    this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
-                    this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
-                    // update slice view
-                    this.checkStack();
-                }
+                this.stack.position.x += newPosition.x - startPosition.x;
+                this.stack.position.y += newPosition.y - startPosition.y;
+                console.log(JSON.stringify(this.stack.position));
+                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
+                this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
+                // update slice view
+                this.checkStack();
             } else {
                 this.onHoverEvent(event);
             }

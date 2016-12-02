@@ -46,7 +46,8 @@ define(function (require) {
                 dragging: false,
                 recenter: false,
                 txtUpdated: Date.now(),
-                txtStay: 3000
+                txtStay: 3000,
+                objects: []
             };
         },
         /**
@@ -373,6 +374,7 @@ define(function (require) {
 
         listObjects: function () {
             if (!this.state.loadingLabels) {
+                this.state.objects=[];
                 var i, j, result;
                 var that = this;
                 $.each(this.state.stack, function (i, item) {
@@ -391,10 +393,11 @@ define(function (require) {
                                             var index = Number(result[j]);
                                             if (i !== 0 || index !== 0) { // don't select template
                                                 if (index == 0) {
+                                                    that.state.objects.push(that.state.label[i]);
                                                     that.setStatusText(that.state.label[i]);
                                                 } else {
                                                     if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                        that.setStatusText(that.props.templateDomainNames[index]);
+                                                        that.state.objects.push(that.state.label[i]);
                                                         break;
                                                     }
                                                 }
@@ -402,6 +405,11 @@ define(function (require) {
                                         }
                                     }
                                 }
+                                var objects;
+                                for (i in that.state.objects){
+                                    objects = objects + that.state.objects[i] + '\n';
+                                }
+                                that.setStatusText(objects);
                                 // update slice view
                                 that.state.loadingLabels = false;
                                 that.state.lastUpdate = 0;

@@ -405,7 +405,7 @@ define(function (require) {
                                         }
                                     }
                                 }
-                                var objects;
+                                var objects = '';
                                 for (i in that.state.objects){
                                     objects = objects + that.state.objects[i] + '\n';
                                 }

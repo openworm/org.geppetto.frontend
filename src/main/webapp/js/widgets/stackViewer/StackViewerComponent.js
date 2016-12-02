@@ -347,7 +347,7 @@ define(function (require) {
                                                             });
                                                             break;
                                                         } else {
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (&#x21E7;+&#xf245; to add)');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (⇧& to add)');
                                                             break;
                                                         }
                                                     }

@@ -389,7 +389,7 @@ define(function (require) {
                                 result = data.trim().split(':')[1].trim().split(' ');
                                 if (result !== '') {
                                     for (j in result) {
-                                        if (result[j].trim() !== '' && ) {
+                                        if (result[j].trim() !== '') {
                                             var index = Number(result[j]);
                                             if (i !== 0 || index !== 0) { // don't select template
                                                 if (index == 0) {

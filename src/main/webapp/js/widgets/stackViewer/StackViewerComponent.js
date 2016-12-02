@@ -31,7 +31,7 @@ define(function (require) {
                 voxelZ: this.props.voxelZ,
                 visibleTiles: [0],
                 stackViewerPlane: false,
-                plane: [0,0,0,this.props.width,0,0,0,this.props.height,0,this.props.width,this.props.height,0],
+                plane: [0, 0, 0, this.props.width, 0, 0, 0, this.props.height, 0, this.props.width, this.props.height, 0],
                 planeUpdating: false,
                 lastUpdate: 0,
                 updating: false,
@@ -164,7 +164,9 @@ define(function (require) {
                     var extent = {minDst: min, maxDst: max};
                     this.props.setExtent(extent);
                     this.bufferStack(extent);
-                    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {this.state.buffer[-1].text = '';}
+                    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                        this.state.buffer[-1].text = '';
+                    }
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -218,19 +220,19 @@ define(function (require) {
             });
         },
 
-        callPlaneEdges: function() {
+        callPlaneEdges: function () {
             if (!this.state.planeUpdating) {
                 this.state.planeUpdating = true;
                 if (this.stack.width > 1) {
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
-                    x = (-this.stack.position.x)+(-this.disp.position.x/this.disp.scale.x);
-                    y = (-this.stack.position.y)+(-this.disp.position.y/this.disp.scale.x);
+                    x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
-                    x = x + (this.renderer.width/this.disp.scale.x);
-                    y = y + (this.renderer.height/this.disp.scale.y);
+                    x = x + (this.renderer.width / this.disp.scale.x);
+                    y = y + (this.renderer.height / this.disp.scale.y);
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);
                     if (this.state.orth == 0) { // frontal
@@ -286,16 +288,16 @@ define(function (require) {
 
         passPlane: function () {
             if (this.state.stackViewerPlane) {
-                this.state.stackViewerPlane=GEPPETTO.SceneFactory.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
-            }else{
-                this.state.stackViewerPlane=GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/widgets/stackViewer/images/glass.jpg");
+                this.state.stackViewerPlane = GEPPETTO.SceneFactory.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+            } else {
+                this.state.stackViewerPlane = GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/widgets/stackViewer/images/glass.jpg");
                 if (this.state.stackViewerPlane.visible) {
                     this.state.stackViewerPlane.visible = true;
                 }
             }
             if (this.disp.width > 0) {
                 this.state.stackViewerPlane.visible = true;
-            }else{
+            } else {
                 this.state.stackViewerPlane.visible = false;
             }
             this.state.planeUpdating = false;
@@ -309,64 +311,62 @@ define(function (require) {
                 GEPPETTO.G.getSelection()[0].deselect();
             }
             $.each(this.state.stack, function (i, item) {
-                (function(i, that) {
-                    if (i>0 || that.state.stack.length == 1 || that.state.mode > 0) {
-                        var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
-                        //get image size;
-                        $.ajax({
-                            url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
-                            type: 'POST',
-                            success: function (data) {
-                                result = data.trim().split(':')[1].trim().split(' ');
-                                if (result !== '') {
-                                    for (j in result) {
-                                        if (result[j].trim() !== '') {
-                                            var index = Number(result[j]);
-                                            if (i !== 0 || index !== 0) { // don't select template
-                                                if (index == 0) {
-                                                    console.log(that.state.label[i] + ' clicked');
-                                                    eval(that.state.id[i][Number(result[j])]).select();
-                                                    that.setStatusText(that.state.label[i] + ' selected');
-                                                } else {
-                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                        try {
-                                                            eval(that.state.id[i][Number(result[j])]).select();
-                                                            console.log(that.props.templateDomainNames[index] + ' clicked');
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' selected');
-                                                        } catch (ignore) {
-                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                            if (GEPPETTO.isKeyPressed("shift")) {
-                                                                console.log('Adding ' + that.props.templateDomainNames[index]);
-                                                                that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
-                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
-                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
-                                                                    setTermInfo(instance, instance.getParent().getId());
-                                                                    resolve3D(that.props.templateDomainIds[index]);
-                                                                });
-                                                                break;
-                                                            }else{
-                                                                that.setStatusText(that.props.templateDomainNames[index] + ' (&#x21E7;+&#xf245; to add)');
-                                                                break;
-                                                            }
+                (function (i, that) {
+                    var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
+                    //get image size;
+                    $.ajax({
+                        url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
+                        type: 'POST',
+                        success: function (data) {
+                            result = data.trim().split(':')[1].trim().split(' ');
+                            if (result !== '') {
+                                for (j in result) {
+                                    if (result[j].trim() !== '') {
+                                        var index = Number(result[j]);
+                                        if (i !== 0 || index !== 0) { // don't select template
+                                            if (index == 0) {
+                                                console.log(that.state.label[i] + ' clicked');
+                                                eval(that.state.id[i][Number(result[j])]).select();
+                                                that.setStatusText(that.state.label[i] + ' selected');
+                                            } else {
+                                                if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                    try {
+                                                        eval(that.state.id[i][Number(result[j])]).select();
+                                                        console.log(that.props.templateDomainNames[index] + ' clicked');
+                                                        that.setStatusText(that.props.templateDomainNames[index] + ' selected');
+                                                    } catch (ignore) {
+                                                        console.log(that.props.templateDomainNames[index] + ' requsted');
+                                                        that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
+                                                        if (GEPPETTO.isKeyPressed("shift")) {
+                                                            console.log('Adding ' + that.props.templateDomainNames[index]);
+                                                            that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
+                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
+                                                                var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
+                                                                setTermInfo(instance, instance.getParent().getId());
+                                                                resolve3D(that.props.templateDomainIds[index]);
+                                                            });
+                                                            break;
+                                                        } else {
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (&#x21E7;+&#xf245; to add)');
+                                                            break;
                                                         }
-                                                    } else {
-                                                        console.log('Index not listed: ' + result[j]);
                                                     }
+                                                } else {
+                                                    console.log('Index not listed: ' + result[j]);
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                // update slice view
-                                that.state.lastUpdate = 0;
-                                that.checkStack();
-                            },
-                            error: function (xhr, status, err) {
-                                console.error(that.props.url, status, err.toString());
-                            }.bind(this)
-                        });
-                    }
+                            }
+                            // update slice view
+                            that.state.lastUpdate = 0;
+                            that.checkStack();
+                        },
+                        error: function (xhr, status, err) {
+                            console.error(that.props.url, status, err.toString());
+                        }.bind(this)
+                    });
                 })(i, that);
             });
         },
@@ -455,11 +455,11 @@ define(function (require) {
                         }
                     }
                     var step;
-                    if (this.state.orth == 0){
+                    if (this.state.orth == 0) {
                         step = this.state.voxelZ;
-                    }else if (this.state.orth == 1){
+                    } else if (this.state.orth == 1) {
                         step = this.state.voxelY;
-                    }else if (this.state.orth == 2){
+                    } else if (this.state.orth == 2) {
                         step = this.state.voxelX;
                     }
                     for (dst = 0; -dst > min || dst < max; dst += step) {
@@ -482,7 +482,7 @@ define(function (require) {
                 }
             } else {
                 console.log('Buffering neighbouring layers (' + this.state.numTiles.toString() + ') tiles...');
-                for (j = 0; j < this.state.numTiles && j<this.state.stack.length; j++) {
+                for (j = 0; j < this.state.numTiles && j < this.state.stack.length; j++) {
                     for (i in this.state.stack) {
                         image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst - 0.1).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                         if (!PIXI.loader.resources[image]) {
@@ -518,21 +518,23 @@ define(function (require) {
 
             function setup() {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
-                if (this.state.txtUpdated < Date.now() - this.state.txtStay) {this.state.buffer[-1].text = '';}
+                if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                    this.state.buffer[-1].text = '';
+                }
             }
         },
 
         checkStack: function () {
-            if(!this._isMounted){
+            if (!this._isMounted) {
                 // check that component is still mounted
                 return;
             }
 
             if (this.disp.width > 1) {
                 if (this.state.recenter) {
-                    console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide' );
-                    this.disp.position.x = ((this.props.width/2) - (this.disp.width/2));
-                    this.disp.position.y = ((this.props.height/2) - (this.disp.height/2));
+                    console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide');
+                    this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
+                    this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
                     this.stack.position.x = 0;
                     this.stack.position.y = 0;
                     this.state.recenter = false;
@@ -540,14 +542,16 @@ define(function (require) {
                 }
             }
 
-            if (this.state.stack.length < 1){
+            if (this.state.stack.length < 1) {
                 this.state.images = [];
                 this.stack.removeChildren();
             }
 
             if (this.state.lastUpdate < (Date.now() - 2000)) {
                 this.state.lastUpdate = Date.now();
-                if (this.state.txtUpdated < Date.now() - this.state.txtStay) {this.state.buffer[-1].text = '';}
+                if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                    this.state.buffer[-1].text = '';
+                }
                 // console.log('Updating scene...');
                 this.createImages();
                 this.updateImages(this.props);
@@ -594,7 +598,7 @@ define(function (require) {
                     x += offX * this.state.tileX;
                     y += offY * this.state.tileY;
                     // console.log('Tiling: ' + [t,offX,offY,x,y,w,h]);
-                    if ((w*h == 1) || (((x * this.disp.scale.x) + this.stack.position.x) > (-((this.renderer.view.width * 1) + (this.state.tileX * 2)) + this.stack.position.x) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1) + this.stack.position.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > (-((this.renderer.view.height * 1) + (this.state.tileY * 2)) + this.stack.position.y) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1) + this.stack.position.y)))) {
+                    if ((w * h == 1) || (((x * this.disp.scale.x) + this.stack.position.x) > (-((this.renderer.view.width * 1) + (this.state.tileX * 2)) + this.stack.position.x) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1) + this.stack.position.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > (-((this.renderer.view.height * 1) + (this.state.tileY * 2)) + this.stack.position.y) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1) + this.stack.position.y)))) {
                         this.state.visibleTiles.push(t);
                         for (i in this.state.stack) {
                             d = i.toString() + ',' + t.toString();
@@ -669,7 +673,7 @@ define(function (require) {
                 this.state.buffer[-1].text = this.state.text;
             }
             // fix position
-            this.state.buffer[-1].x = -this.stage.position.x+20;
+            this.state.buffer[-1].x = -this.stage.position.x + 20;
             this.state.buffer[-1].y = -this.stage.position.y;
             this.state.buffer[-1].anchor.x = 0;
             this.state.buffer[-1].anchor.y = 0;
@@ -693,8 +697,8 @@ define(function (require) {
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);
                 // recenter display for new image size keeping any stack offset.
-                this.disp.position.x = ((this.props.width/2) - (this.disp.width/2));
-                this.disp.position.y = ((this.props.height/2) - (this.disp.height/2));
+                this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
+                this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
             }
             if (nextProps.fxp !== this.props.fxp) {
                 this.state.dst = nextProps.dst;
@@ -706,7 +710,7 @@ define(function (require) {
             if (nextProps.stackX !== this.stack.position.x || nextProps.stackY !== this.stack.position.y) {
                 this.stack.position.x = nextProps.stackX;
                 this.stack.position.y = nextProps.stackY;
-                if (nextProps.stackX == -10000 && nextProps.stackY == -10000){
+                if (nextProps.stackX == -10000 && nextProps.stackY == -10000) {
                     this.state.recenter = true;
                     this.checkStack();
                 }
@@ -765,16 +769,16 @@ define(function (require) {
             if (mode == 0) {
                 console.log('Selection');
                 this.setStatusText('Selection');
-                this.stack.defaultCursor='pointer';
-            }else if (mode == 1) {
+                this.stack.defaultCursor = 'pointer';
+            } else if (mode == 1) {
                 console.log('Label');
                 this.setStatusText('Hover Labels');
-                this.stack.defaultCursor='help';
-            }else if (mode == 2) {
+                this.stack.defaultCursor = 'help';
+            } else if (mode == 2) {
                 console.log('Add');
                 this.setStatusText('Add Anatomy');
-                this.stack.defaultCursor='copy';
-            }else{
+                this.stack.defaultCursor = 'copy';
+            } else {
                 console.log('Mode:' + mode);
                 this.setStatusText('...');
             }
@@ -788,13 +792,13 @@ define(function (require) {
             if (orth == 0) {
                 console.log('Frontal');
                 this.setStatusText('Frontal');
-            }else if (orth == 1) {
+            } else if (orth == 1) {
                 console.log('Transverse');
                 this.setStatusText('Transverse');
-            }else if (orth == 2) {
+            } else if (orth == 2) {
                 console.log('Sagital');
                 this.setStatusText('Sagital');
-            }else {
+            } else {
                 console.log('Orth:' + orth);
                 this.setStatusText('...');
             }
@@ -821,7 +825,7 @@ define(function (require) {
                             this.state.images[d].texture = PIXI.loader.resources[image].texture;
                         } else {
                             // console.log('Loading ' + image);
-                            this.state.buffer[-1].text = 'Loading slice ' + Number(props.dst-this.state.minDst).toFixed(1) + '...';
+                            this.state.buffer[-1].text = 'Loading slice ' + Number(props.dst - this.state.minDst).toFixed(1) + '...';
                             this.state.images[d].texture = PIXI.Texture.fromImage(image);
                             if (!PIXI.loader.resources[image]) {
                                 PIXI.loader.add(image, image, {
@@ -847,7 +851,7 @@ define(function (require) {
          * Animation loop for updating Pixi Canvas
          **/
         animate: function () {
-            if(this._isMounted) {
+            if (this._isMounted) {
                 // render the stage container (if the component is still mounted)
                 this.renderer.render(this.stage);
                 this.frame = requestAnimationFrame(this.animate);
@@ -870,7 +874,7 @@ define(function (require) {
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x;
             this.state.posY = startPosition.y;
-            console.log([this.state.posX,this.state.posY]);
+            console.log([this.state.posX, this.state.posY]);
         },
 
         onDragEnd: function () {
@@ -901,10 +905,10 @@ define(function (require) {
                     this.listObjects();
                 }
             }
-            if (GEPPETTO.isKeyPressed("shift")){
-                this.stack.defaultCursor='copy';
-            }else{
-                this.stack.defaultCursor='pointer';
+            if (GEPPETTO.isKeyPressed("shift")) {
+                this.stack.defaultCursor = 'copy';
+            } else {
+                this.stack.defaultCursor = 'pointer';
             }
         },
 
@@ -980,24 +984,24 @@ define(function (require) {
                 var step = -1 * e.wheelDelta;
                 // Max step of imposed
                 if (step > 0) {
-                    if (this.state.orth == 0){
+                    if (this.state.orth == 0) {
                         step = this.state.voxelZ;
-                    }else if (this.state.orth == 1){
+                    } else if (this.state.orth == 1) {
                         step = this.state.voxelY;
-                    }else if (this.state.orth == 2){
+                    } else if (this.state.orth == 2) {
                         step = this.state.voxelX;
                     }
                 } else if (step < 0) {
-                    if (this.state.orth == 0){
+                    if (this.state.orth == 0) {
                         step = -this.state.voxelZ;
-                    }else if (this.state.orth == 1){
+                    } else if (this.state.orth == 1) {
                         step = -this.state.voxelY;
-                    }else if (this.state.orth == 2){
+                    } else if (this.state.orth == 2) {
                         step = -this.state.voxelX;
                     }
                 }
                 newdst += step;
-                
+
                 if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                     this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
                 } else if (newdst < this.state.maxDst) {
@@ -1065,15 +1069,15 @@ define(function (require) {
                         server = data.serverUrl;
                         files.push(data.fileLocation);
                         // Take multiple ID's for template
-                        if (typeof this.props.config.templateId !== 'undefined' && typeof this.props.config.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.config.templateId){
+                        if (typeof this.props.config.templateId !== 'undefined' && typeof this.props.config.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.config.templateId) {
                             ids.push(this.props.config.templateDomainIds);
-                        }else {
+                        } else {
                             ids.push([instances[instance].parent.getId()]);
                         }
                         labels.push(instances[instance].parent.getName());
-                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId()+'_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId()+'_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId()+'_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId()+'_swc'].isSelected())){
+                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
                             colors.push('0Xffcc00'); // selected
-                        }else {
+                        } else {
                             colors.push(instances[instance].parent.getColor());
                         }
                     }
@@ -1101,8 +1105,8 @@ define(function (require) {
                     this.setState({color: colors});
                     // console.log('updating colours to ' + JSON.stringify(colors));
                 }
-            }else{
-                this.setState({label:[],stack:[],id:[],color:[]});
+            } else {
+                this.setState({label: [], stack: [], id: [], color: []});
             }
         },
 
@@ -1135,8 +1139,8 @@ define(function (require) {
         },
 
         toggleOrth: function () {
-            let orth = this.state.orth +=1;
-            var pit,yaw,rol;
+            let orth = this.state.orth += 1;
+            var pit, yaw, rol;
             if (orth > 2) {
                 orth = 0;
                 this.state.orth = orth;
@@ -1145,11 +1149,11 @@ define(function (require) {
                 pit = 0;
                 yaw = 0;
                 rol = 0;
-            }else if (orth == 1) {
+            } else if (orth == 1) {
                 pit = 90;
                 yaw = 90;
                 rol = 90;
-            }else if (orth == 2) {
+            } else if (orth == 2) {
                 pit = 90;
                 yaw = 0;
                 rol = 90;
@@ -1268,7 +1272,7 @@ define(function (require) {
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
             var startOffset = 2.5;
-            var displayArea =  this.props.data.id + 'displayArea';
+            var displayArea = this.props.data.id + 'displayArea';
 
             var markup = '';
             if (this.state.stack.length > 0) {
@@ -1330,7 +1334,8 @@ define(function (require) {
                             border: 0,
                             background: 'transparent'
                         }} className={pointerClass} onClick={this.toggleMode}/>
-                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.props.config.serverUrl}
+                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
+                                serverUrl={this.props.config.serverUrl}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                                 stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                                 statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
@@ -1338,13 +1343,21 @@ define(function (require) {
                                 label={this.state.label} id={this.state.id} height={this.props.data.height}
                                 width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX}
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
-                                templateId={this.props.config.templateId} templateDomainIds={this.props.config.templateDomainIds}
+                                templateId={this.props.config.templateId}
+                                templateDomainIds={this.props.config.templateDomainIds}
                                 templateDomainNames={this.props.config.templateDomainNames}/>
                     </div>
                 );
             } else {
                 markup = (
-                    <div id={displayArea} style={{position: 'absolute', top: -1, left: -1, background: 'black', width: this.props.data.width, height: this.props.data.height}}>
+                    <div id={displayArea} style={{
+                        position: 'absolute',
+                        top: -1,
+                        left: -1,
+                        background: 'black',
+                        width: this.props.data.width,
+                        height: this.props.data.height
+                    }}>
                     </div>
                 );
             }

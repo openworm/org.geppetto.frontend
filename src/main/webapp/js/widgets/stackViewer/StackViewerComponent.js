@@ -404,9 +404,9 @@ define(function (require) {
                                         }
                                     }
                                     // update slice view
+                                    that.state.loadingLabels = false;
                                     that.state.lastUpdate = 0;
                                     that.checkStack();
-                                    that.state.loadingLabels = false;
                                 },
                                 error: function (xhr, status, err) {
                                     console.error(that.props.url, status, err.toString());
@@ -894,7 +894,6 @@ define(function (require) {
 
         onHoverEvent: function (event) {
             if (!this.state.loadingLabels) {
-                this.state.loadingLabels = true;
                 this.state.data = event.data;
                 var currentPosition = this.state.data.getLocalPosition(this.stack);
                 var xOffset = this.state.imageX / this.disp.scale.x;

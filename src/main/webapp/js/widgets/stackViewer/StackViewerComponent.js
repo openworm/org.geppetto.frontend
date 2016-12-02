@@ -873,7 +873,6 @@ define(function (require) {
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x;
             this.state.posY = startPosition.y;
-            console.log([this.state.posX, this.state.posY]);
         },
 
         onDragEnd: function () {

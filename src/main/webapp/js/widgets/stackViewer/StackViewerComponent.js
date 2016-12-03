@@ -39,7 +39,6 @@ define(function (require) {
                 posX: 0,
                 posY: 0,
                 loadingLabels: false,
-                mode: this.props.mode,
                 orth: this.props.orth,
                 data: {},
                 dragOffset: {},
@@ -725,9 +724,6 @@ define(function (require) {
                     this.checkStack();
                 }
             }
-            if (nextProps.mode !== this.state.mode) {
-                this.changeMode(nextProps.mode);
-            }
             if (nextProps.orth !== this.state.orth) {
                 this.changeOrth(nextProps.orth);
                 this.state.recenter = true;
@@ -771,27 +767,6 @@ define(function (require) {
          **/
         updateStatusText: function (props) {
             this.setStatusText(props.statusText);
-        },
-
-        changeMode: function (mode) {
-            // console.log('Mode: ' + mode);
-            this.state.mode = mode;
-            if (mode == 0) {
-                console.log('Selection');
-                this.setStatusText('Selection');
-                this.stack.defaultCursor = 'pointer';
-            } else if (mode == 1) {
-                console.log('Label');
-                this.setStatusText('Hover Labels');
-                this.stack.defaultCursor = 'help';
-            } else if (mode == 2) {
-                console.log('Add');
-                this.setStatusText('Add Anatomy');
-                this.stack.defaultCursor = 'copy';
-            } else {
-                console.log('Mode:' + mode);
-                this.setStatusText('...');
-            }
         },
 
         changeOrth: function (orth) {
@@ -974,9 +949,7 @@ define(function (require) {
                 stack: [],
                 label: [],
                 id: [],
-                mode: 0,
                 plane: null
-            }; // mode: 0=select, 1=label, 2=add.
         },
 
         onWheelEvent: function (e) {
@@ -1136,14 +1109,6 @@ define(function (require) {
             } else {
                 this.setState({zoomLevel: 10.0, text: 'Max zoom! (X10)'});
             }
-        },
-
-        toggleMode: function () {
-            let mode = this.state.mode += 1;
-            if (mode > 2) {
-                mode = 0;
-            }
-            this.setState({mode: mode});
         },
 
         toggleOrth: function () {
@@ -1334,14 +1299,6 @@ define(function (require) {
                             border: 0,
                             background: 'transparent'
                         }} className={orthClass} onClick={this.toggleOrth}/>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 110,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={pointerClass} onClick={this.toggleMode}/>
                         <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
                                 serverUrl={this.props.config.serverUrl}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
@@ -1349,7 +1306,7 @@ define(function (require) {
                                 statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                                 scl={this.state.scl} orth={this.state.orth}
                                 label={this.state.label} id={this.state.id} height={this.props.data.height}
-                                width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX}
+                                width={this.props.data.width} voxelX={this.state.voxelX}
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
                                 templateId={this.props.config.templateId}
                                 templateDomainIds={this.props.config.templateDomainIds}

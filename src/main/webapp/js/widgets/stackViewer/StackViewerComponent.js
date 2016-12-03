@@ -520,7 +520,9 @@ define(function (require) {
                 .load();
             function loadProgressHandler(loader, resource) {
                 if (loader.progress < 100) {
-                    this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
+                    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                        this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
+                    }
                 }
             }
 

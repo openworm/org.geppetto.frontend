@@ -951,6 +951,7 @@ define(function (require) {
                 label: [],
                 id: [],
                 plane: null
+            }
         },
 
         onWheelEvent: function (e) {

@@ -66,8 +66,6 @@ define(function(require)
 
                 GEPPETTO.Console.createConsole();
 
-                GEPPETTO.Vanilla.enableKeyboard(false);
-
                 /*
                  * Dude to bootstrap bug, multiple modals can't be open at same
                  * time. This line allows multiple modals to be open
@@ -82,7 +80,7 @@ define(function(require)
              */
             postSocketConnection : function()
             {
-                GEPPETTO.Vanilla.enableKeyboard(true);
+
             },
             createContainer : function()
             {
@@ -205,8 +203,6 @@ define(function(require)
                 $('#consoleButton').attr('disabled', 'disabled');
                 $('#commandInputArea').attr('disabled', 'disabled');
 
-                // disable keyboard
-                document.removeEventListener("keydown", GEPPETTO.Vanilla.checkKeyboard);
             },
 
             

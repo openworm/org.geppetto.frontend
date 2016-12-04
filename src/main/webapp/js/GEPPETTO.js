@@ -466,7 +466,6 @@ define(function (require) {
     require('./GEPPETTO.Init')(GEPPETTO);
     require('./3d_visualization/GEPPETTO.SceneFactory')(GEPPETTO);
     require('./3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
-    require('./GEPPETTO.Vanilla')(GEPPETTO);
     require('./GEPPETTO.FE')(GEPPETTO);
     require('./GEPPETTO.UserController')(GEPPETTO);
     require('./GEPPETTO.Flows')(GEPPETTO);

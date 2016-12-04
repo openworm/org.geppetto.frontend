@@ -287,8 +287,6 @@ define(function (require) {
                         GEPPETTO.getVARS().composer.setSize(width, height);
                     }, false);
 
-                document.addEventListener("keydown",
-                    GEPPETTO.Vanilla.checkKeyboard, false);
                 GEPPETTO.getVARS().listenersCreated = true;
             }
         };

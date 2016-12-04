@@ -64,20 +64,15 @@ define(function (require) {
         renderer: null,
         clock: new THREE.Clock(),
         stats: null,
-        gui: null,
-        projector: null,
         keyboard: new THREEx.KeyboardState(),
         needsUpdate: false,
-        metadata: {},
         customUpdate: null,
         mouseClickListener: null,
-        rotationMode: false,
         mouse: {
             x: 0,
             y: 0
         },
         visualModelMap: null,
-        idCounter: 0,
         sceneCenter: new THREE.Vector3(),
         cameraPosition: new THREE.Vector3(),
         canvasCreated: false,
@@ -327,54 +322,11 @@ define(function (require) {
             }
         },
 
-        /**
-         * Create a GUI element based on the available metadata
-         */
-        setupGUI: function () {
-            var data = !(_.isEmpty(GEPPETTO.getVARS().metadata));
-
-            // GUI
-            if (!GEPPETTO.getVARS().gui && data) {
-                GEPPETTO.getVARS().gui = new dat.GUI({
-                    width: 400
-                });
-                GEPPETTO.addGUIControls(GEPPETTO.getVARS().gui, GEPPETTO
-                    .getVARS().metadata);
-            }
-            for (f in GEPPETTO.getVARS().gui.__folders) {
-                // opens only the root folders
-                GEPPETTO.getVARS().gui.__folders[f].open();
-            }
-
-        },
-
-        /**
-         * Adds GUI controls to GEPPETTO
-         *
-         * @param gui
-         * @param metadatap
-         */
-        addGUIControls: function (parent, current_metadata) {
-            if (current_metadata.hasOwnProperty("ID")) {
-                parent.add(current_metadata, "ID").listen();
-            }
-            for (var m in current_metadata) {
-                if (m != "ID") {
-                    if (typeof current_metadata[m] == "object") {
-                        var folder = parent.addFolder(m);
-                        // recursive call to populate the GUI with sub-metadata
-                        GEPPETTO.addGUIControls(folder, current_metadata[m]);
-                    } else {
-                        parent.add(current_metadata, m).listen();
-                    }
-                }
-            }
-        },
 
         /**
          * Adds debug axis to the scene
          */
-        setupAxis: function () {
+        showAxisHelper: function () {
             // To use enter the axis length
             GEPPETTO.getVARS().scene.add(new THREE.AxisHelper(200));
         },
@@ -426,55 +378,6 @@ define(function (require) {
          */
         isKeyPressed: function (key) {
             return GEPPETTO.getVARS().keyboard.pressed(key);
-        },
-
-        /**
-         * Generate new id
-         *
-         * @returns {Number} A new id
-         */
-        getNewId: function () {
-            return GEPPETTO.getVARS().idCounter++;
-        },
-
-        /**
-         * Show metadata
-         *
-         * @param {String}
-         *            entityIndex - the id of the entity for which we want to
-         *            display metadata
-         */
-        showMetadataForEntity: function (entityIndex) {
-            if (GEPPETTO.getVARS().gui) {
-                GEPPETTO.getVARS().gui.domElement.parentNode
-                    .removeChild(GEPPETTO.getVARS().gui.domElement);
-                GEPPETTO.getVARS().gui = null;
-            }
-
-            GEPPETTO.getVARS().metadata = GEPPETTO.getVARS().runtimetree[entityIndex].metadata;
-            GEPPETTO.getVARS().metadata.ID = GEPPETTO.getVARS().runtimetree[entityIndex].id;
-
-            GEPPETTO.setupGUI();
-
-        },
-
-        /**
-         * @param {Entity}
-         *            aroundObject - The object around which the rotation will
-         *            happen
-         */
-        enterRotationMode: function (aroundObject) {
-            GEPPETTO.getVARS().rotationMode = true;
-            if (aroundObject) {
-                GEPPETTO.getVARS().camera.lookAt(aroundObject);
-            }
-        },
-
-        /**
-         * Exit rotation mode
-         */
-        exitRotationMode: function () {
-            GEPPETTO.getVARS().rotationMode = false;
         },
 
         /**
@@ -568,7 +471,6 @@ define(function (require) {
     require('./GEPPETTO.UserController')(GEPPETTO);
     require('./GEPPETTO.Flows')(GEPPETTO);
     require('./GEPPETTO.ScriptRunner')(GEPPETTO);
-    // require('GEPPETTO.SimulationContentEditor')(GEPPETTO);
     require('./GEPPETTO.JSEditor')(GEPPETTO);
     require('./GEPPETTO.Console')(GEPPETTO);
     require('./GEPPETTO.Utility')(GEPPETTO);
@@ -578,7 +480,6 @@ define(function (require) {
     require('./websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
     require('./geppetto-objects/G')(GEPPETTO);
     require('./GEPPETTO.Main')(GEPPETTO);
-    // require('GEPPETTO.Tutorial')(GEPPETTO);
     require("./widgets/includeWidget")(GEPPETTO);
     require('./model/ProjectFactory')(GEPPETTO);
     require('./model/ModelFactory')(GEPPETTO);

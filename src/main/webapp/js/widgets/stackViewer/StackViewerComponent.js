@@ -318,6 +318,7 @@ define(function (require) {
                         url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                         type: 'POST',
                         success: function (data) {
+                            console.log(data.trim());
                             result = data.trim().split(':')[1].trim().split(' ');
                             if (result !== '') {
                                 for (j in result) {

@@ -373,7 +373,7 @@ define(function (require) {
 
         listObjects: function () {
             if (!this.state.loadingLabels) {
-                this.state.objects=[];
+                this.state.objects = [];
                 var i, j, result;
                 var that = this;
                 $.each(this.state.stack, function (i, item) {
@@ -407,7 +407,7 @@ define(function (require) {
                                 }
                                 that.state.objects = $.unique(that.state.objects).sort();
                                 var objects = '';
-                                for (i in that.state.objects){
+                                for (i in that.state.objects) {
                                     objects = objects + that.state.objects[i] + '\n';
                                 }
                                 that.setStatusText(objects);
@@ -918,8 +918,7 @@ define(function (require) {
          **/
         render: function () {
             return (
-                <div className="stack-canvas-container" ref="stackCanvas">
-                </div>
+                <div className="stack-canvas-container" ref="stackCanvas"></div>
             );
         }
     });
@@ -952,7 +951,7 @@ define(function (require) {
                 label: [],
                 id: [],
                 plane: null
-            }
+            };
         },
 
         onWheelEvent: function (e) {
@@ -1103,7 +1102,7 @@ define(function (require) {
          * Event handler for clicking zoom in. Increments the zoom level
          **/
         onZoomIn: function () {
-            let zoomLevel = Number((this.state.zoomLevel + 0.1).toFixed(1));
+            var zoomLevel = Number((this.state.zoomLevel + 0.1).toFixed(1));
             if (zoomLevel < 10.0) {
                 this.setState({
                     zoomLevel: zoomLevel,
@@ -1115,7 +1114,7 @@ define(function (require) {
         },
 
         toggleOrth: function () {
-            let orth = this.state.orth += 1;
+            var orth = this.state.orth += 1;
             var pit, yaw, rol;
             if (orth > 2) {
                 orth = 0;
@@ -1141,7 +1140,7 @@ define(function (require) {
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
         onZoomOut: function () {
-            let zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
+            var zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
 
             if (zoomLevel > 0.1) {
                 this.setState({

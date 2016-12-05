@@ -262,6 +262,9 @@ define(function (require) {
                     }
                 }
             }
+
+            GEPPETTO.trigger(Events.Color_set, {instance: this, color: color});
+
             return this;
         },
 

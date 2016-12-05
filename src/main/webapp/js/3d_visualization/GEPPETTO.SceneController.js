@@ -343,7 +343,9 @@ define(function (require) {
                 GEPPETTO.SceneController.wireframe = wireframe;
                 GEPPETTO.getVARS().scene.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
-                        child.material.wireframe = GEPPETTO.SceneController.wireframe;
+                    	if(!(child.material.nowireframe==true)){
+                    		child.material.wireframe = GEPPETTO.SceneController.wireframe;
+                    	}
                     }
                 });
             },

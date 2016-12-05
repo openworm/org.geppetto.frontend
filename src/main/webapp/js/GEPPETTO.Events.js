@@ -69,6 +69,7 @@ var Events = {
     Hide_Tutorial : "hide_tutorial",
     Show_spinner: "spinner:show",
     Hide_spinner: "spinner:hide",
+    Color_set: "color:set",
     Canvas_initialised: "canvas:initialised"
 };
 
@@ -137,8 +138,6 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);
                 });
                 GEPPETTO.on(Events.Experiment_stop, function (parameters) {
-                    //notify widgets a restart of data is needed
-                    GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
                 });
             }
         };

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *     	OpenWorm - http://openworm.org/people.html
+ *      OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,44 +30,15 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-.plotly {
-    width: 100%;
-    height: 100%;
-    padding : 0;
-}
 
-div.plotly-notifier {
-  visibility: hidden;
-}
-
-.legendLabel {
-    background: rgba(66, 59, 59, 0.90) !important;
-    color: white;
-    font-weight: 200;
-    font-style: normal;
-    font-size: 11px;
-    text-decoration: inherit;
-    -webkit-font-smoothing: antialiased;
-    margin-left: 5px;
-}
-
-.main-svg {
- 	width: 100%;
-    height: 100%;
-}
-
-
-.svg-container {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    vertical-align: top;
-    overflow: hidden;
-    max-width : 100%;
-}
-.svg-content {
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
+/**
+ * Load stackViewer dependencies
+ *
+ * @author Robbie1977
+ */
+/*
+ * Configure what dependencies are needed for each library
+ */
+require(reqs, function () {
+    loadCss("geppetto/js/widgets/stackViewer/stackViewer.css");
+});

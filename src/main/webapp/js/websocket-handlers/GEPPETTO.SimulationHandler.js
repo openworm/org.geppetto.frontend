@@ -72,7 +72,8 @@ define(function (require) {
             MODEL_UPLOADED: "model_uploaded",
             UPDATE_MODEL_TREE: "update_model_tree",
             DOWNLOAD_MODEL: "download_model",
-            DOWNLOAD_RESULTS: "download_results"
+            DOWNLOAD_RESULTS: "download_results",
+            ERROR_RUNNING_EXPERIMENT : "error_running_experiment"
         };
 
         var messageHandler = {};
@@ -88,6 +89,25 @@ define(function (require) {
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function (payload) {
             var newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
         };
+        
+        messageHandler[messageTypes.ERROR_RUNNING_EXPERIMENT] = function (payload) {
+        	var error = JSON.parse(payload.error_running_experiment);
+        	var experiments = window.Project.getExperiments();
+        	var experimentID = error.id;
+        	
+        	//changing status in matched experiment
+        	for (var e in experiments) {
+        		if (experiments[e].getId() == experimentID) {
+        			experiments[e].setDetails(error);
+        			break;
+        		}
+        	}
+        	
+            GEPPETTO.trigger('geppetto:error', error.msg);
+            GEPPETTO.FE.errorDialog(GEPPETTO.Resources.ERROR, error.message, error.code, error.exception);
+            GEPPETTO.trigger(Events.Hide_spinner);
+        };
+        
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function (payload) {
             GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
         };
@@ -147,7 +167,7 @@ define(function (require) {
                                 if (window.Project.getActiveExperiment().getId() == experimentID) {
                                     if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING &&
                                         status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                                        experiments[e].setStatus(status);
+                                    	experiments[e].setDetails("");
                                         GEPPETTO.trigger(Events.Experiment_completed, experimentID);
                                     }
                                     if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
@@ -310,7 +330,7 @@ define(function (require) {
                 // Updates the simulation controls visibility
                 var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
 
-                if (webGLStarted && !GEPPETTO.SceneController.isAnimated) {
+                if (webGLStarted) {
                     // we call it only the first time
                     GEPPETTO.SceneController.animate();
                 }

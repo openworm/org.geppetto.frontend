@@ -264,6 +264,7 @@ dd {
 
 .ERROR {
 	background: red;
+	cursor: pointer;
 }
 
 .COMPLETED {
@@ -484,4 +485,14 @@ a:hover {
    */
 	-ms-user-select: none;
 	user-select: none;
+}
+
+#errormodal-text {
+	overflow : auto;
+	border-bottom: none;
+}
+
+#errormodal .modal-body, #errormodal .modal-header, #errormodal .modal-footer{
+    border-bottom: 0;
+    border-top : 0;
 }

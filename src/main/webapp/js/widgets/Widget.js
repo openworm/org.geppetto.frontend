@@ -63,6 +63,7 @@ define(function (require) {
             registeredEvents: null,
             executedAction : 0,
             title : null,
+            previousMaxTransparency : false,
 
             /**
              * Initializes the widget
@@ -497,6 +498,7 @@ define(function (require) {
             setTrasparentBackground: function(isTransparent) {
                 if(isTransparent){
                    this.$el.parent().addClass('transparent-back');
+                   this.previousMaxTransparency = true;
                 } else {
                    this.$el.parent().removeClass('transparent-back');
                 }
@@ -559,12 +561,14 @@ define(function (require) {
                         	   that.$el.dialog({ title: that.name});
                             },
                             "maximize" : function(evt,dlg){
+                            	that.setTrasparentBackground(false);
                     			$(this).trigger('resizeEnd');
                     			var divheight =that.$el.height()+50;
                     			var divwidth =that.$el.width()+50;
                     			that.$el.dialog({ height: divheight,width: divwidth});
                     		},
                     		"restore" : function(evt,dlg){
+                    			that.setTrasparentBackground(that.previousMaxTransparency);
                     			$(this).trigger('resizeEnd');
                     		}
                         });

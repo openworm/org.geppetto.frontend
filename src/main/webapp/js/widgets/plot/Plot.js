@@ -194,10 +194,6 @@ define(function (require) {
 					that.resize(true); 
 				}
 			});
-
-			this.plotElement.resize(function(){
-				that.resize();
-			});	
 			
 			this.plotElement.bind('resizeEnd', function() {
 				that.resize();

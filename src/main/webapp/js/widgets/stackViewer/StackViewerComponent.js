@@ -890,13 +890,10 @@ define(function (require) {
 
         onHoverEvent: function (event) {
             if (!this.state.loadingLabels && !this.state.dragging) {
-                this.state.data = event.data;
-                var currentPosition = this.state.data.getLocalPosition(this.stack);
-                var xOffset = this.state.imageX / this.disp.scale.x;
-                var yOffset = this.state.imageY / this.disp.scale.y;
-                this.state.posX = (currentPosition.x);
-                this.state.posY = (currentPosition.y);
-                if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {
+                var currentPosition = event.data.getLocalPosition(this.stack);
+                this.state.posX = currentPosition.x;
+                this.state.posY = currentPosition.y;
+                if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < this.state.imageX && this.state.posY < this.state.imageY) {
                     this.listObjects();
                 }
             }

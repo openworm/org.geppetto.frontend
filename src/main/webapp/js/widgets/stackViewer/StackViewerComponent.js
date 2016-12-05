@@ -960,7 +960,8 @@ define(function (require) {
                 stack: [],
                 label: [],
                 id: [],
-                plane: null
+                plane: null,
+                initalised: false
             }
         },
 
@@ -1203,6 +1204,10 @@ define(function (require) {
 
         onExtentChange: function (data) {
             this.setState(data);
+            if (!this.state.initialised && JSON.stringify(data).indexOf('imageX')>-1){
+                this.state.initalised = true;
+                this.onHome();
+            }
         },
 
         addWheelListener: function (elem, callback, useCapture) {

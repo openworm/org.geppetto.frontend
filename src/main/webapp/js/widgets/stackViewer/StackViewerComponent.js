@@ -873,8 +873,6 @@ define(function (require) {
         onDragEnd: function () {
             if (this.state.data !== null) {
                 this.stack.alpha = 1;
-                this.state.dragging = false;
-                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = startPosition.x;
                 var newPosY = startPosition.y;
@@ -883,6 +881,8 @@ define(function (require) {
                 }
                 // set the interaction data to null
                 this.state.data = null;
+                this.state.dragging = false;
+                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
             }
         },
 

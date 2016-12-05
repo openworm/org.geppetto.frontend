@@ -8,6 +8,21 @@ casper.test.begin('Geppetto control panel tests', 4, function suite(test) {
         height: 768
     };
 
+    casper.options.verbose = true;
+    casper.options.logLevel ="debug";
+
+    casper.on('resource.received', function(resource) {
+        var status = resource.status;
+        if(status >= 400) {
+            casper.log('Resource ' + resource.url + ' failed to load (' + status + ')', 'error');
+
+            resourceErrors.push({
+                url: resource.url,
+                status: resource.status
+            });
+        }
+    });
+
     // open dashboard
     casper.start(DASHBOARD_URL, function () {
         this.waitForSelector('div#logo', function () {
@@ -19,7 +34,7 @@ casper.test.begin('Geppetto control panel tests', 4, function suite(test) {
 
     // open project, check for items in control panel + instances
     casper.thenOpen(PROJECT_URL, function () {
-        this.echo("Loading project at URL: " + PROJECT_URL_1);
+        this.echo("Loading project at URL: " + PROJECT_URL);
 
         casper.then(function() {
             // wait for page to finish loading
@@ -30,7 +45,7 @@ casper.test.begin('Geppetto control panel tests', 4, function suite(test) {
         });
 
         casper.then(function(){
-            this.waitForSelector('#controlpanel a:contains(SAD - painted domain JFRC2)', function () {
+            this.waitForSelector('a:contains(SAD - painted domain JFRC2)', function () {
                 test.assertEvalEquals(function () {
                     return VFB_00030600.getId();
                 }, 'VFB_00030600');
@@ -39,7 +54,7 @@ casper.test.begin('Geppetto control panel tests', 4, function suite(test) {
                 }, 'VFB_00017894');
 
                 this.echo("Elements appeared in control panel + Instances created correctly");
-            }, null, 50000);
+            }, null, 30000);
         });
     });
 

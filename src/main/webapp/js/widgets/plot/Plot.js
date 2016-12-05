@@ -282,7 +282,6 @@ define(function (require) {
 			}
 			var instance =  null;
 			var timeSeriesData = {};
-			var plotable = true;
 			for (var i = 0; i < data.length; i++) {
 				instance = data[i];
 				if (instance != null && instance != undefined){                	
@@ -293,8 +292,6 @@ define(function (require) {
 					}
 					if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
 						timeSeriesData = this.getTimeSeriesData(instance);
-					}else{
-						plotable = false;
 					}
 					
 					var label = instance.getInstancePath();
@@ -326,8 +323,6 @@ define(function (require) {
 					//We stored the variable objects in its own array, using the instance path
 					//as index. Can't be put on this.datasets since plotly will reject it
 					this.variables[instance.getInstancePath()] = instance;
-				}else{
-					plotable = false;
 				}
 			}
 
@@ -346,24 +341,22 @@ define(function (require) {
                     }
                 }
             }
-			
-			if(plotable){
-				if(this.plotly==null){
-					this.plotOptions.xaxis.autorange = true;
-					this.xaxisAutoRange = true;
-					//Creates new plot using datasets and default options
-					this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-					this.plotDiv.on('plotly_doubleclick', function() {
-						that.resize();
-					});
-					this.plotDiv.on('plotly_click', function() {
-						that.resize();
-					});
-				}else{
-					Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions);
-				}				
-			}
-			
+
+			if(this.plotly==null){
+				this.plotOptions.xaxis.autorange = true;
+				this.xaxisAutoRange = true;
+				//Creates new plot using datasets and default options
+				this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
+				this.plotDiv.on('plotly_doubleclick', function() {
+					that.resize();
+				});
+				this.plotDiv.on('plotly_click', function() {
+					that.resize();
+				});
+			}else{
+				Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions);
+			}				
+
 			this.updateAxis(instance.getInstancePath());
 			this.resize(false);
 			return this;

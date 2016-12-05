@@ -61,6 +61,8 @@ define(function (require) {
         require("widgets/connectivity/config");
         //Buttonbar widget
         require("widgets/buttonBar/config");
+        //StackViewer widget
+        require("widgets/stackViewer/config");
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");

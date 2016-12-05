@@ -41,6 +41,7 @@ define(['backbone'], function (require) {
     return Backbone.Model.extend({
         name: "",
         description: "",
+        details : "",
         id: "",
         lastModified: "",
         status: null,
@@ -65,6 +66,7 @@ define(['backbone'], function (require) {
             this.id = options.id;
             this.status = options.status;
             this.description = options.description;
+            this.details = options.details;
             this.lastModified = options.lastModified;
             this.variables = [];
             this.setParameters = {};
@@ -87,6 +89,21 @@ define(['backbone'], function (require) {
          */
         getName: function () {
             return this.name;
+        },
+        
+        /**
+         * Gets error details with this experiment
+         *
+         * @command ExperimentNode.getDetails()
+         * @returns {String} Error while running experiment
+         *
+         */
+        getDetails: function () {
+            return this.details;
+        },
+        
+        setDetails: function (details) {
+            this.details = details;
         },
 
         /**

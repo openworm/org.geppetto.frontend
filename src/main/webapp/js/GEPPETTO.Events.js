@@ -75,6 +75,7 @@ define(function (require) {
             Hide_Tutorial: "hide_tutorial",
             Show_spinner: "spinner:show",
             Hide_spinner: "spinner:hide",
+    		Color_set: "color:set",
             Canvas_initialised: "canvas:initialised",
 
             listening: false,
@@ -135,8 +136,6 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_update, parameters);
                 });
                 GEPPETTO.on(this.Experiment_stop, function (parameters) {
-                    //notify widgets a restart of data is needed
-                    GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA);
                 });
             }
         };

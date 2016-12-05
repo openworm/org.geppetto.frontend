@@ -106,7 +106,8 @@ define(function (require) {
             // NOTE: Recreating the renderer causes camera displacement on Chrome OSX.
             if (!GEPPETTO.getVARS().canvasCreated) {
                 GEPPETTO.getVARS().renderer = new THREE.WebGLRenderer({
-                    antialias: true
+                    antialias: true,
+                    alpha:true
                 });
 
             }
@@ -122,7 +123,7 @@ define(function (require) {
         	}
         
             var color = new THREE.Color(GEPPETTO.getVARS().backgroundColor);
-            GEPPETTO.getVARS().renderer.setClearColor(color, 1);
+            //GEPPETTO.getVARS().renderer.setClearColor(color, 1);
             var width = $(GEPPETTO.getVARS().container).width();
             var height = $(GEPPETTO.getVARS().container).height();
             GEPPETTO.getVARS().renderer.setPixelRatio(window.devicePixelRatio);

@@ -763,8 +763,7 @@ define(function (require) {
             setBackgroundColour: function (color) {
                 // set the VAR so that when the canvas refresh on timeout it keeps the color
                 GEPPETTO.getVARS().backgroundColor = color;
-                var threecolor = new THREE.Color(color);
-                GEPPETTO.getVARS().renderer.setClearColor(threecolor, 1);
+                $("body").css("background", color);
             },
 
             /**

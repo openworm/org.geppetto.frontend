@@ -47,24 +47,15 @@ define(function (require) {
         require("./ContextMenu")(GEPPETTO);
         //Plot Widget
         require("./plot/config")(GEPPETTO);
-        //Popup Widget
-        //require("./popup/config"); <-- Migrated
-//        //Scatter3d Widget
-//        require("./scatter3d/config"); <-- Migrated
-//        //TreeVisualiser DAT Widget
+		//TreeVisualiser DAT Widget
         require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
-//        //TreeVisualiser D3 Widget
+		//TreeVisualiser D3 Widget
         require("./treevisualiser/treevisualiserd3/config")(GEPPETTO);
-//        //VariableVisualiser widget
-//        require("./variablevisualiser/config"); <-- Migrated
-        //Connectivity Widget
-        //require("./connectivity/config");   <-- Migrated
-//        //Buttonbar widget
-//        require("./buttonBar/config"); <-- Migrated
+        //StackViewer widget
+        require("./stackViewer/config");
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");
-
         widgetUtility.loadCss("geppetto/js/widgets/Widget.css");
     };
 });

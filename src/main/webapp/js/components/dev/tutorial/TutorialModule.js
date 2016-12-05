@@ -178,6 +178,15 @@ define(function (require) {
 			this.tutorialMap[event] = configurationURL;			
 		},
 
+		loadTutorial : function(tutorialData){
+			this.setState({ tutorialData: tutorialData });
+			this.totalSteps = this.state.tutorialData.steps.length-1;
+			if(this.state.visible){
+				this.start();
+			}
+			this.tutorialLoaded = true;
+		},
+		
 		/**
 		 * Extracts tutorial data for given configuration
 		 */
@@ -189,12 +198,7 @@ define(function (require) {
 				dataType: 'json',
 				url: configurationURL,
 				success: function (responseData, textStatus, jqXHR) {
-					self.setState({ tutorialData: responseData });
-					self.totalSteps = self.state.tutorialData.steps.length-1;
-					if(self.state.visible){
-						self.start();
-					}
-					self.tutorialLoaded = true;
+					self.loadTutorial(responseData);
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
@@ -210,12 +214,17 @@ define(function (require) {
 			GEPPETTO.on(GEPPETTO.Events.Model_loaded,function(){
 				if(!self.dontShowTutorial){
 					//default tutorial when user doesn't specify one for this event
-					var tutorialURL = self.props.tutorial;
-					if(self.tutorialMap[GEPPETTO.Events.Model_loaded]!=null || undefined){
-						tutorialURL = self.tutorialMap[GEPPETTO.Events.Model_loaded];
+					if(self.props.tutorialURL){
+						var tutorialURL = self.props.tutorialURL;
+						if(self.tutorialMap[GEPPETTO.Events.Model_loaded]!=null || undefined){
+							tutorialURL = self.tutorialMap[GEPPETTO.Events.Model_loaded];
+						}
+						
+						self.tutorialData(tutorialURL);
 					}
-					
-					self.tutorialData(tutorialURL);
+					else if(self.props.tutorialData){
+						self.loadTutorial(self.props.tutorialData);
+					}
 					self.dontShowTutorial = true;
 				}
 			});

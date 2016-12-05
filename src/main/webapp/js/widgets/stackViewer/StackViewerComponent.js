@@ -385,7 +385,6 @@ define(function (require) {
                             url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                             type: 'POST',
                             success: function (data) {
-                                console.log(data.trim());
                                 result = data.trim().split(':')[1].trim().split(' ');
                                 if (result !== '') {
                                     for (j in result) {
@@ -1188,7 +1187,7 @@ define(function (require) {
          * Event handler for clicking Home.
          **/
         onHome: function () {
-            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'View reset', zoomLevel: 0.5});
+            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'Stack Centred', zoomLevel: 0.5});
         },
 
         onExtentChange: function (data) {
@@ -1261,7 +1260,7 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={homeClass} onClick={this.onHome}/>
+                        }} className={homeClass} onClick={this.onHome} title={'Center Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
@@ -1269,7 +1268,7 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={zoomInClass} onClick={this.onZoomIn}/>
+                        }} className={zoomInClass} onClick={this.onZoomIn} title={'Zoom In'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
@@ -1277,31 +1276,31 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={zoomOutClass} onClick={this.onZoomOut}/>
+                        }} className={zoomOutClass} onClick={this.onZoomOut} title={'Zoom Out'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 70,
+                            top: startOffset + 63,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={stepInClass} onClick={this.onStepIn}/>
+                        }} className={stepInClass} onClick={this.onStepIn} title={'Step Into Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 55,
+                            top: startOffset + 53,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={stepOutClass} onClick={this.onStepOut}/>
+                        }} className={stepOutClass} onClick={this.onStepOut} title={'Step Out Of Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 90,
+                            top: startOffset + 83,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={orthClass} onClick={this.toggleOrth}/>
+                        }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
                         <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
                                 serverUrl={this.props.config.serverUrl}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}

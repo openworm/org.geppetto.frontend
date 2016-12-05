@@ -208,7 +208,9 @@ define(function (require) {
                     var result = data.trim().split(':')[1].split(' ');
                     var imageX = Number(result[0]);
                     var imageY = Number(result[1]);
-                    this.setState({imageX: imageX, imageY: imageY});
+                    var extent = {imageX: imageX, imageY: imageY};
+                    this.setState(extent);
+                    this.props.setExtent(extent);
                     // update slice view
                     this.state.lastUpdate = 0;
                     this.checkStack();
@@ -318,50 +320,54 @@ define(function (require) {
                         url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                         type: 'POST',
                         success: function (data) {
-                            result = data.trim().split(':')[1].trim().split(' ');
-                            if (result !== '') {
-                                for (j in result) {
-                                    if (result[j].trim() !== '') {
-                                        var index = Number(result[j]);
-                                        if (i !== 0 || index !== 0) { // don't select template
-                                            if (index == 0) {
-                                                console.log(that.state.label[i] + ' clicked');
-                                                eval(that.state.id[i][Number(result[j])]).select();
-                                                that.setStatusText(that.state.label[i] + ' selected');
-                                            } else {
-                                                if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                    try {
-                                                        eval(that.state.id[i][Number(result[j])]).select();
-                                                        console.log(that.props.templateDomainNames[index] + ' clicked');
-                                                        that.setStatusText(that.props.templateDomainNames[index] + ' selected');
-                                                    } catch (ignore) {
-                                                        console.log(that.props.templateDomainNames[index] + ' requsted');
-                                                        that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                        if (GEPPETTO.isKeyPressed("shift")) {
-                                                            console.log('Adding ' + that.props.templateDomainNames[index]);
-                                                            that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
-                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
-                                                                var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
-                                                                setTermInfo(instance, instance.getParent().getId());
-                                                                resolve3D(that.props.templateDomainIds[index]);
-                                                            });
-                                                            break;
-                                                        } else {
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
-                                                            break;
-                                                        }
-                                                    }
+                            if (GEPPETTO.G.getSelection()[0] == undefined) { // check nothing already selected
+                                result = data.trim().split(':')[1].trim().split(' ');
+                                if (result !== '') {
+                                    for (j in result) {
+                                        if (result[j].trim() !== '') {
+                                            var index = Number(result[j]);
+                                            if (i !== 0 || index !== 0) { // don't select template
+                                                if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
+                                                    console.log(that.state.label[i] + ' clicked');
+                                                    eval(that.state.id[i][Number(result[j])]).select();
+                                                    that.setStatusText(that.state.label[i] + ' selected');
+                                                    break;
                                                 } else {
-                                                    console.log('Index not listed: ' + result[j]);
+                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                        try {
+                                                            eval(that.state.id[i][Number(result[j])]).select();
+                                                            console.log(that.props.templateDomainNames[index] + ' clicked');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' selected');
+                                                            break;
+                                                        } catch (ignore) {
+                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
+                                                            if (GEPPETTO.isKeyPressed("shift")) {
+                                                                console.log('Adding ' + that.props.templateDomainNames[index]);
+                                                                that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
+                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
+                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
+                                                                    setTermInfo(instance, instance.getParent().getId());
+                                                                    resolve3D(that.props.templateDomainIds[index]);
+                                                                });
+                                                                break;
+                                                            } else {
+                                                                that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
+                                                                break;
+                                                            }
+                                                        }
+                                                    } else {
+                                                        console.log('Index not listed: ' + result[j]);
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                // update slice view
+                                that.state.lastUpdate = 0;
+                                that.checkStack();
                             }
-                            // update slice view
-                            that.state.lastUpdate = 0;
-                            that.checkStack();
                         },
                         error: function (xhr, status, err) {
                             console.error(that.props.url, status, err.toString());
@@ -373,7 +379,7 @@ define(function (require) {
 
         listObjects: function () {
             if (!this.state.loadingLabels) {
-                this.state.objects=[];
+                this.state.objects = [];
                 var i, j, result;
                 var that = this;
                 $.each(this.state.stack, function (i, item) {
@@ -385,7 +391,6 @@ define(function (require) {
                             url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                             type: 'POST',
                             success: function (data) {
-                                console.log(data.trim());
                                 result = data.trim().split(':')[1].trim().split(' ');
                                 if (result !== '') {
                                     for (j in result) {
@@ -393,8 +398,9 @@ define(function (require) {
                                             var index = Number(result[j]);
                                             if (i !== 0 || index !== 0) { // don't select template
                                                 if (index == 0) {
-                                                    that.state.objects.push(that.state.label[i]);
-                                                    that.setStatusText(that.state.label[i]);
+                                                    if (!GEPPETTO.isKeyPressed("shift")) {
+                                                        that.state.objects.push(that.state.label[i]);
+                                                    }
                                                 } else {
                                                     if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
                                                         that.state.objects.push(that.props.templateDomainNames[index]);
@@ -407,7 +413,10 @@ define(function (require) {
                                 }
                                 that.state.objects = $.unique(that.state.objects).sort();
                                 var objects = '';
-                                for (i in that.state.objects){
+                                if (GEPPETTO.isKeyPressed("shift")) {
+                                    objects = 'Click to add: ';
+                                }
+                                for (i in that.state.objects) {
                                     objects = objects + that.state.objects[i] + '\n';
                                 }
                                 that.setStatusText(objects);
@@ -852,12 +861,12 @@ define(function (require) {
             this.state.data = event.data;
             this.stack.alpha = 0.7;
             this.state.dragging = true;
-            var startPosition = this.state.data.getLocalPosition(this.disp);
+            var offPosition = this.state.data.getLocalPosition(this.disp);
             this.state.dragOffset = {
-                x: (startPosition.x - this.stack.position.x),
-                y: (startPosition.y - this.stack.position.y)
+                x: (offPosition.x - this.stack.position.x),
+                y: (offPosition.y - this.stack.position.y)
             };
-            startPosition = this.state.data.getLocalPosition(this.stack);
+            var startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x;
             this.state.posY = startPosition.y;
@@ -866,7 +875,6 @@ define(function (require) {
         onDragEnd: function () {
             if (this.state.data !== null) {
                 this.stack.alpha = 1;
-                this.state.dragging = false;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = startPosition.x;
                 var newPosY = startPosition.y;
@@ -875,11 +883,13 @@ define(function (require) {
                 }
                 // set the interaction data to null
                 this.state.data = null;
+                this.state.dragging = false;
+                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
             }
         },
 
         onHoverEvent: function (event) {
-            if (!this.state.loadingLabels) {
+            if (!this.state.loadingLabels && !this.state.dragging) {
                 this.state.data = event.data;
                 var currentPosition = this.state.data.getLocalPosition(this.stack);
                 var xOffset = this.state.imageX / this.disp.scale.x;
@@ -899,12 +909,10 @@ define(function (require) {
 
         onDragMove: function (event) {
             if (this.state.dragging) {
-                var startPosition = this.state.dragOffset;
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 window.test = this.state.data;
-                this.stack.position.x += newPosition.x - startPosition.x;
-                this.stack.position.y += newPosition.y - startPosition.y;
-                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
+                this.stack.position.x += newPosition.x - this.state.dragOffset.x;
+                this.stack.position.y += newPosition.y - this.state.dragOffset.y;
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view
                 this.checkStack();
@@ -936,6 +944,8 @@ define(function (require) {
                 text: '',
                 stackX: -10000,
                 stackY: -10000,
+                imageX: 1024,
+                imageY: 1024,
                 fxp: [511, 255, 108],
                 pit: 0,
                 yaw: 0,
@@ -951,7 +961,8 @@ define(function (require) {
                 stack: [],
                 label: [],
                 id: [],
-                plane: null
+                plane: null,
+                initalised: false
             }
         },
 
@@ -1188,11 +1199,16 @@ define(function (require) {
          * Event handler for clicking Home.
          **/
         onHome: function () {
-            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'View reset', zoomLevel: 0.5});
+            var autoScale = Number(Math.min(this.props.data.height / this.state.imageY, this.props.data.width / this.state.imageX).toFixed(1));
+            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'Stack Centred', zoomLevel: autoScale});
         },
 
         onExtentChange: function (data) {
             this.setState(data);
+            if (!this.state.initalised && JSON.stringify(data).indexOf('imageX')>-1){
+                this.state.initalised = true;
+                this.onHome();
+            }
         },
 
         addWheelListener: function (elem, callback, useCapture) {
@@ -1261,7 +1277,7 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={homeClass} onClick={this.onHome}/>
+                        }} className={homeClass} onClick={this.onHome} title={'Center Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
@@ -1269,7 +1285,7 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={zoomInClass} onClick={this.onZoomIn}/>
+                        }} className={zoomInClass} onClick={this.onZoomIn} title={'Zoom In'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
@@ -1277,31 +1293,31 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={zoomOutClass} onClick={this.onZoomOut}/>
+                        }} className={zoomOutClass} onClick={this.onZoomOut} title={'Zoom Out'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 70,
+                            top: startOffset + 64,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={stepInClass} onClick={this.onStepIn}/>
+                        }} className={stepInClass} onClick={this.onStepIn} title={'Step Into Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 55,
+                            top: startOffset + 52,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={stepOutClass} onClick={this.onStepOut}/>
+                        }} className={stepOutClass} onClick={this.onStepOut} title={'Step Out Of Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 90,
+                            top: startOffset + 83,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={orthClass} onClick={this.toggleOrth}/>
+                        }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
                         <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
                                 serverUrl={this.props.config.serverUrl}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}

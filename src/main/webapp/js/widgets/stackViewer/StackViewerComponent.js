@@ -336,6 +336,7 @@ define(function (require) {
                                                         eval(that.state.id[i][Number(result[j])]).select();
                                                         console.log(that.props.templateDomainNames[index] + ' clicked');
                                                         that.setStatusText(that.props.templateDomainNames[index] + ' selected');
+                                                        break;
                                                     } catch (ignore) {
                                                         console.log(that.props.templateDomainNames[index] + ' requsted');
                                                         that.setStatusText(that.props.templateDomainNames[index] + ' requsted');

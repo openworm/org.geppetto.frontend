@@ -208,7 +208,9 @@ define(function (require) {
                     var result = data.trim().split(':')[1].split(' ');
                     var imageX = Number(result[0]);
                     var imageY = Number(result[1]);
-                    this.setState({imageX: imageX, imageY: imageY});
+                    var extent = {imageX: imageX, imageY: imageY};
+                    this.setState(extent);
+                    this.props.setExtent(extent);
                     // update slice view
                     this.state.lastUpdate = 0;
                     this.checkStack();
@@ -939,6 +941,8 @@ define(function (require) {
                 text: '',
                 stackX: -10000,
                 stackY: -10000,
+                imageX: 1024,
+                imageY: 1024,
                 fxp: [511, 255, 108],
                 pit: 0,
                 yaw: 0,
@@ -1191,7 +1195,8 @@ define(function (require) {
          * Event handler for clicking Home.
          **/
         onHome: function () {
-            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'Stack Centred', zoomLevel: 0.5});
+            var autoScale = Number(Math.min(this.props.data.height/this.state.imageY,this.props.data.width/this.state.imageX).toFixed(1));
+            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'Stack Centred', zoomLevel: autoScale});
         },
 
         onExtentChange: function (data) {

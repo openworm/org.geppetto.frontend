@@ -1284,7 +1284,7 @@ define(function (require) {
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 63,
+                            top: startOffset + 64,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
@@ -1292,7 +1292,7 @@ define(function (require) {
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 53,
+                            top: startOffset + 52,
                             padding: 0,
                             border: 0,
                             background: 'transparent'

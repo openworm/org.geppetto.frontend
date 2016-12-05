@@ -766,17 +766,21 @@ define(function (require) {
                     var origin;
                     
                     if(connection.getA().getPoint()==undefined){
+                    	//same as before
                     	origin=defaultOrigin;
                     }
                     else{
+                    	//the specified coordinate
                     	var p = connection.getA().getPoint();
                     	origin= new THREE.Vector3(p.x+mesh.position.x,p.y+mesh.position.y,p.z+mesh.position.z);
                     }
 
-                    if(connection.getA().getPoint()==undefined){
+                    if(connection.getB().getPoint()==undefined){
+                    	//same as before
                     	destination=otherEndMesh.position.clone();;
                     }
                     else{
+                    	//the specified coordinate
                     	var p = connection.getB().getPoint();
                     	destination= new THREE.Vector3(p.x+otherEndMesh.position.x,p.y+otherEndMesh.position.y,p.z+otherEndMesh.position.z);
                     }

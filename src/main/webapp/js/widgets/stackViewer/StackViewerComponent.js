@@ -874,6 +874,7 @@ define(function (require) {
             if (this.state.data !== null) {
                 this.stack.alpha = 1;
                 this.state.dragging = false;
+                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = startPosition.x;
                 var newPosY = startPosition.y;
@@ -906,12 +907,10 @@ define(function (require) {
 
         onDragMove: function (event) {
             if (this.state.dragging) {
-                var startPosition = this.state.dragOffset;
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 window.test = this.state.data;
-                this.stack.position.x += newPosition.x - startPosition.x;
-                this.stack.position.y += newPosition.y - startPosition.y;
-                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
+                this.stack.position.x += newPosition.x - this.state.dragOffset.x;
+                this.stack.position.y += newPosition.y - this.state.dragOffset.y;
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view
                 this.checkStack();

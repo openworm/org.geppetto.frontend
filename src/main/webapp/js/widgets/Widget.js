@@ -64,6 +64,7 @@ define(function (require) {
             executedAction : 0,
             title : null,
             previousMaxTransparency : false,
+            maximize : false,
 
             /**
              * Initializes the widget
@@ -88,6 +89,15 @@ define(function (require) {
                 		var label = registeredItem["label"];
                 		self.title = label;
                 		$("#"+self.id).parent().find(".ui-dialog-title").html(self.title);
+                	}
+                });
+
+                window.addEventListener('resize', function(event){
+                	if(self.maximize){
+                		self.maximize = false;
+                		self.setSize(window.innerHeight,window.innerWidth);
+                		self.$el.trigger('resizeEnd');
+                		self.maximize = true;
                 	}
                 });
             },
@@ -165,17 +175,19 @@ define(function (require) {
              * @param {Integer} top - Top position of the widget
              */
             setPosition: function (left, top) {
+            	if(this.maximize){
+            		this.$el.dialogExtend("restore");
+            	}
+            	this.position.left = left;
+            	this.position.top = top;
 
-                this.position.left = left;
-                this.position.top = top;
-
-               this.$el.dialog(
-                    'option', 'position', {
-                        my: "left+" + this.position.left + " top+" + this.position.top,
-                        at: "left top",
-                        of: $(window)
-                    }).dialogExtend();
-                return this;
+            	this.$el.dialog(
+            			'option', 'position', {
+            				my: "left+" + this.position.left + " top+" + this.position.top,
+            				at: "left top",
+            				of: $(window)
+            			}).dialogExtend();
+            	return this;
             },
 
             /**
@@ -185,11 +197,14 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize: function (h, w) {
-                this.size.height = h;
-                this.size.width = w;
-               this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
+            	if(this.maximize){
+            		this.$el.dialogExtend("restore");
+            	}
+            	this.size.height = h;
+            	this.size.width = w;
+            	this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
 
-                return this;
+            	return this;
             },
 
             /**
@@ -566,8 +581,10 @@ define(function (require) {
                     			var divheight =that.$el.height()+50;
                     			var divwidth =that.$el.width()+50;
                     			that.$el.dialog({ height: divheight,width: divwidth});
+                    			that.maximize = true;
                     		},
                     		"restore" : function(evt,dlg){
+                    			that.maximize = false;
                     			that.setTrasparentBackground(that.previousMaxTransparency);
                     			$(this).trigger('resizeEnd');
                     		}

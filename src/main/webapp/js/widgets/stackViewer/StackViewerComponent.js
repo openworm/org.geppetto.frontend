@@ -859,12 +859,12 @@ define(function (require) {
             this.state.data = event.data;
             this.stack.alpha = 0.7;
             this.state.dragging = true;
-            var startPosition = this.state.data.getLocalPosition(this.disp);
+            var offPosition = this.state.data.getLocalPosition(this.disp);
             this.state.dragOffset = {
-                x: (startPosition.x - this.stack.position.x),
-                y: (startPosition.y - this.stack.position.y)
+                x: (offPosition.x - this.stack.position.x),
+                y: (offPosition.y - this.stack.position.y)
             };
-            startPosition = this.state.data.getLocalPosition(this.stack);
+            var startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x;
             this.state.posY = startPosition.y;

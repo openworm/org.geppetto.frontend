@@ -1204,7 +1204,7 @@ define(function (require) {
 
         onExtentChange: function (data) {
             this.setState(data);
-            if (!this.state.initialised && JSON.stringify(data).indexOf('imageX')>-1){
+            if (!this.state.initalised && JSON.stringify(data).indexOf('imageX')>-1){
                 this.state.initalised = true;
                 this.onHome();
             }

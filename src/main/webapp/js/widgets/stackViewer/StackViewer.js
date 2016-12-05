@@ -80,13 +80,13 @@ define(function (require) {
             $('#' + this.id).append("<div id='stack-container" + this.id + "'></div>");
 
             this.setSize(this.defHeight, this.defWidth);
-            
-            var that = this;
-			this.stackElement = $("#"+this.id);
 
-			this.stackElement.bind('resizeEnd', function() {
-				that.resize();
-			});
+            var that = this;
+            this.stackElement = $("#"+this.id);
+
+            this.stackElement.bind('resizeEnd', function() {
+            	that.resize();
+            });
         },
 
         setSize: function (h, w) {
@@ -100,7 +100,7 @@ define(function (require) {
         
         resize : function(){
         	this.data.height = this.stackElement.height()+50;
-        	this.data.width = this.stackElement.width()+40;
+        	this.data.width = this.stackElement.width()+30;
         	
             Widget.View.prototype.setSize.call(this, this.data.height, this.data.width);
 

@@ -9,13 +9,16 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
         height: 768
     };
 
-    casper.options.verbose = true;
-    casper.options.logLevel = "debug";
+    // add for debug info
+    //casper.options.verbose = true;
+    //casper.options.logLevel = "debug";
 
+    // show unhandled js errors
     casper.on("page.error", function(msg, trace) {
         this.echo("Error: " + msg, "ERROR");
     });
 
+    // show page level errors
     casper.on('resource.received', function (resource) {
         var status = resource.status;
         if (status >= 400) {

@@ -887,7 +887,7 @@ define(function (require) {
         },
 
         onHoverEvent: function (event) {
-            if (!this.state.loadingLabels) {
+            if (!this.state.loadingLabels && !this.state.dragging) {
                 this.state.data = event.data;
                 var currentPosition = this.state.data.getLocalPosition(this.stack);
                 var xOffset = this.state.imageX / this.disp.scale.x;

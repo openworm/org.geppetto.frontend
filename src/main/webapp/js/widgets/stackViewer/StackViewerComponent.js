@@ -384,7 +384,9 @@ define(function (require) {
                 var that = this;
                 $.each(this.state.stack, function (i, item) {
                     (function (i, that) {
-                        that.state.loadingLabels = true;
+                        if (i == 0) {
+                            that.state.loadingLabels = true;
+                        }
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({
@@ -416,12 +418,14 @@ define(function (require) {
                                 if (GEPPETTO.isKeyPressed("shift")) {
                                     objects = 'Click to add: ';
                                 }
-                                for (i in that.state.objects) {
-                                    objects = objects + that.state.objects[i] + '\n';
+                                for (j in that.state.objects) {
+                                    objects = objects + that.state.objects[j] + '\n';
                                 }
                                 that.setStatusText(objects);
                                 // update slice view
-                                that.state.loadingLabels = false;
+                                if (i == 0) {
+                                    that.state.loadingLabels = false;
+                                }
                                 that.state.lastUpdate = 0;
                                 that.checkStack();
                             },

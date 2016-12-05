@@ -326,10 +326,11 @@ define(function (require) {
                                     if (result[j].trim() !== '') {
                                         var index = Number(result[j]);
                                         if (i !== 0 || index !== 0) { // don't select template
-                                            if (index == 0) {
+                                            if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
                                                 console.log(that.state.label[i] + ' clicked');
                                                 eval(that.state.id[i][Number(result[j])]).select();
                                                 that.setStatusText(that.state.label[i] + ' selected');
+                                                break;
                                             } else {
                                                 if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
                                                     try {
@@ -376,7 +377,7 @@ define(function (require) {
 
         listObjects: function () {
             if (!this.state.loadingLabels) {
-                this.state.objects=[];
+                this.state.objects = [];
                 var i, j, result;
                 var that = this;
                 $.each(this.state.stack, function (i, item) {
@@ -410,10 +411,10 @@ define(function (require) {
                                 }
                                 that.state.objects = $.unique(that.state.objects).sort();
                                 var objects = '';
-                                if (GEPPETTO.isKeyPressed("shift")){
+                                if (GEPPETTO.isKeyPressed("shift")) {
                                     objects = 'Click to add: ';
                                 }
-                                for (i in that.state.objects){
+                                for (i in that.state.objects) {
                                     objects = objects + that.state.objects[i] + '\n';
                                 }
                                 that.setStatusText(objects);
@@ -1196,7 +1197,7 @@ define(function (require) {
          * Event handler for clicking Home.
          **/
         onHome: function () {
-            var autoScale = Number(Math.min(this.props.data.height/this.state.imageY,this.props.data.width/this.state.imageX).toFixed(1));
+            var autoScale = Number(Math.min(this.props.data.height / this.state.imageY, this.props.data.width / this.state.imageX).toFixed(1));
             this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'Stack Centred', zoomLevel: autoScale});
         },
 

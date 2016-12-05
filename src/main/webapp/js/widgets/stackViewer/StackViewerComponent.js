@@ -320,52 +320,54 @@ define(function (require) {
                         url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                         type: 'POST',
                         success: function (data) {
-                            result = data.trim().split(':')[1].trim().split(' ');
-                            if (result !== '') {
-                                for (j in result) {
-                                    if (result[j].trim() !== '') {
-                                        var index = Number(result[j]);
-                                        if (i !== 0 || index !== 0) { // don't select template
-                                            if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
-                                                console.log(that.state.label[i] + ' clicked');
-                                                eval(that.state.id[i][Number(result[j])]).select();
-                                                that.setStatusText(that.state.label[i] + ' selected');
-                                                break;
-                                            } else {
-                                                if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                    try {
-                                                        eval(that.state.id[i][Number(result[j])]).select();
-                                                        console.log(that.props.templateDomainNames[index] + ' clicked');
-                                                        that.setStatusText(that.props.templateDomainNames[index] + ' selected');
-                                                        break;
-                                                    } catch (ignore) {
-                                                        console.log(that.props.templateDomainNames[index] + ' requsted');
-                                                        that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                        if (GEPPETTO.isKeyPressed("shift")) {
-                                                            console.log('Adding ' + that.props.templateDomainNames[index]);
-                                                            that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
-                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
-                                                                var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
-                                                                setTermInfo(instance, instance.getParent().getId());
-                                                                resolve3D(that.props.templateDomainIds[index]);
-                                                            });
-                                                            break;
-                                                        } else {
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
-                                                            break;
-                                                        }
-                                                    }
+                            if (GEPPETTO.G.getSelection()[0] == undefined) { // check nothing already selected
+                                result = data.trim().split(':')[1].trim().split(' ');
+                                if (result !== '') {
+                                    for (j in result) {
+                                        if (result[j].trim() !== '') {
+                                            var index = Number(result[j]);
+                                            if (i !== 0 || index !== 0) { // don't select template
+                                                if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
+                                                    console.log(that.state.label[i] + ' clicked');
+                                                    eval(that.state.id[i][Number(result[j])]).select();
+                                                    that.setStatusText(that.state.label[i] + ' selected');
+                                                    break;
                                                 } else {
-                                                    console.log('Index not listed: ' + result[j]);
+                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                        try {
+                                                            eval(that.state.id[i][Number(result[j])]).select();
+                                                            console.log(that.props.templateDomainNames[index] + ' clicked');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' selected');
+                                                            break;
+                                                        } catch (ignore) {
+                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
+                                                            if (GEPPETTO.isKeyPressed("shift")) {
+                                                                console.log('Adding ' + that.props.templateDomainNames[index]);
+                                                                that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
+                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
+                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
+                                                                    setTermInfo(instance, instance.getParent().getId());
+                                                                    resolve3D(that.props.templateDomainIds[index]);
+                                                                });
+                                                                break;
+                                                            } else {
+                                                                that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
+                                                                break;
+                                                            }
+                                                        }
+                                                    } else {
+                                                        console.log('Index not listed: ' + result[j]);
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                // update slice view
+                                that.state.lastUpdate = 0;
+                                that.checkStack();
                             }
-                            // update slice view
-                            that.state.lastUpdate = 0;
-                            that.checkStack();
                         },
                         error: function (xhr, status, err) {
                             console.error(that.props.url, status, err.toString());

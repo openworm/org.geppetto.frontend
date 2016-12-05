@@ -40,7 +40,7 @@ define(function (require) {
 
     var Backbone = require('backbone');
     var $ = require('jquery');
-    require("vendor/jquery.dialogextend.min");
+    require("../vendor/jquery.dialogextend.min");
     
     return {
 

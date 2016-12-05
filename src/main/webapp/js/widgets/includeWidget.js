@@ -51,8 +51,7 @@ define(function (require) {
         require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
 		//TreeVisualiser D3 Widget
         require("./treevisualiser/treevisualiserd3/config")(GEPPETTO);
-        //StackViewer widget
-        require("./stackViewer/config");
+
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");

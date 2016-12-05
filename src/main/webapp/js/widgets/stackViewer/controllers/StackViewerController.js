@@ -37,8 +37,8 @@
  */
 define(function (require) {
 
-    var AWidgetController = require('widgets/AWidgetController');
-    var Stack = require('widgets/stackViewer/StackViewer');
+    var AWidgetController = require('../../AWidgetController');
+    var Stack = require('../StackViewer');
 
     /**
      * @exports Widgets/stackViewer/stackViewerController

@@ -37,12 +37,16 @@
  */
 define(function (require) {
 
-    var Widget = require('widgets/Widget');
+    var Widget = require('../Widget');
     var $ = require('jquery');
     var React = require('react');
     var ReactDOM = require('react-dom');
-    var StackViewerComponent = require('jsx!widgets/stackViewer/StackViewerComponent');
+    var StackViewerComponent = require('./StackViewerComponent');
 
+    var widgetUtility = require("../WidgetUtility");
+    widgetUtility.loadCss("geppetto/js/widgets/stackViewer/stackViewer.css");
+    
+    
     function arrayUnique(array) {
         var a = array.concat();
         for(var i=0; i<a.length; ++i) {

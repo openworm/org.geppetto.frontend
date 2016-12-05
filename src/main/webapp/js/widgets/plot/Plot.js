@@ -39,13 +39,16 @@
  */
 define(function (require) {
 
-	var Widget = require('widgets/Widget');
+	var Widget = require('../Widget');
 	var $ = require('jquery');
 	var math = require('mathjs');
-	var Plotly = require('plotly');
+	var Plotly = require('plotly.js');
 	var FileSaver = require('file-saver');
 	var pako = require('pako');
 	var JSZip = require("jszip");
+	
+	var widgetUtility = require("../WidgetUtility");
+    widgetUtility.loadCss("geppetto/js/widgets/Plot/Plot.css");
 
 	return Widget.View.extend({
 		plotly: null,
@@ -469,7 +472,7 @@ define(function (require) {
 				.then(function (blob) {
 					var d = new Date();
 				    var n = d.getTime();
-    				saveAs(blob, that.id+"-"+n.toString()+".zip");
+				    FileSaver.saveAs(blob, that.id+"-"+n.toString()+".zip");
 				});
 			}
 		},
@@ -774,7 +777,7 @@ define(function (require) {
 
 				//Read the information to plot
 				var expression = functionNode.getInitialValues()[0].value.dynamics.expression.expression;
-				var arguments = functionNode.getInitialValues()[0].value.dynamics.arguments;
+				var args = functionNode.getInitialValues()[0].value.dynamics.arguments;
 				var plotMetadata = functionNode.getInitialValues()[0].value.dynamics.functionPlot;
 
 				var finalValue = parseFloat(plotMetadata["finalValue"]);
@@ -801,8 +804,8 @@ define(function (require) {
 
 				//Convert from single expresion to parametired expresion (2x -> f(x)=2x)
 				var parameterizedExpression = "f(";
-				for (var argumentIndex in arguments) {
-					parameterizedExpression += arguments[argumentIndex].argument + ",";
+				for (var argumentIndex in args) {
+					parameterizedExpression += args[argumentIndex].argument + ",";
 				}
 				parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
 				parameterizedExpression += ") =" + expression;

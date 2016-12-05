@@ -48,8 +48,8 @@ define(function (require) {
     var Griddle = require('griddle-react');
     //var Tabs = require('./vendor/js/react-simpletabs.js');
     var Tabs = require('react-simpletabs');
-    var typeahead = require('jquery-typeahead');
-    var Bloodhound = require('bloodhound-js');
+    var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
+    var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
     var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
 

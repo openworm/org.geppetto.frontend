@@ -40,37 +40,7 @@
  * Configure what dependencies are needed for each library
  */
 
-require.config({
-    /*
-     * Values in here are for dependencies that more than one module/script requires and/or needs.
-     * E.G. If depenedency it's used more than once, it goes in here.
-     */
-    paths: {
-        'plotly': "widgets/plot/vendor/plotly-latest.min",
-        'jszip': "widgets/plot/vendor/jszip.min",
-        'file-saver': "widgets/plot/vendor/FileSaver.min",
-    },
-});
 
-/*
- * Libraries used by plot widget
- */
-var libraries = [];
-libraries.push("plotly");
-libraries.push("jszip");
-libraries.push("file-saver");
-define("math.global", ["mathjs"], function (_) {
-    math = _;
-});
-
-/*
- * Load libraries, and CSS after libraries are loaded
- */
-require(libraries, function (flot, math) {
-//	console.log(math.parser());
-    window.math = math;
-    loadCss("geppetto/js/widgets/plot/Plot.css");
-});	
 
 //Load PlotsController and other classes using GEPPETTO
 define(function(require) {

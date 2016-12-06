@@ -578,9 +578,7 @@ define(function (require) {
                             "maximize" : function(evt,dlg){
                             	that.setTrasparentBackground(false);
                     			$(this).trigger('resizeEnd',["maximize"]);
-                    			var divheight =that.$el.height()+50;
-                    			var divwidth =that.$el.width()+50;
-                    			that.$el.dialog({ height: divheight,width: divwidth});
+                                that.setSize(that.$el.height()+40, that.$el.width()+45);
                     			that.maximize = true;
                     		},
                     		"restore" : function(evt,dlg){

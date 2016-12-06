@@ -868,7 +868,7 @@ define(function (require) {
             this.state.data = event.data;
             this.stack.alpha = 0.7;
             this.state.dragging = true;
-            var offPosition = this.state.data.getLocalPosition(this.disp);
+            var offPosition = this.state.data.getLocalPosition(this.stack);
             this.state.dragOffset = {
                 x: (offPosition.x - this.stack.position.x),
                 y: (offPosition.y - this.stack.position.y)

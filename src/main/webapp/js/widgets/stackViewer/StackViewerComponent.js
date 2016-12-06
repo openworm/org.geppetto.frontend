@@ -873,12 +873,12 @@ define(function (require) {
                 x: (offPosition.x - this.stack.position.x),
                 y: (offPosition.y - this.stack.position.y)
             };
-            console.log('DragStartOffset:'+JSON.stringify(this.state.dragOffset));
+            //console.log('DragStartOffset:'+JSON.stringify(this.state.dragOffset));
             var startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x;
             this.state.posY = startPosition.y;
-            console.log('DragStart:'+JSON.stringify(startPosition));
+            //console.log('DragStart:'+JSON.stringify(startPosition));
         },
 
         onDragEnd: function () {
@@ -887,7 +887,7 @@ define(function (require) {
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = startPosition.x;
                 var newPosY = startPosition.y;
-                console.log('DragEnd:'+JSON.stringify(startPosition));
+                //console.log('DragEnd:'+JSON.stringify(startPosition));
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
                     this.callObjects();
                 }
@@ -917,10 +917,11 @@ define(function (require) {
         onDragMove: function (event) {
             if (this.state.dragging) {
                 var newPosition = this.state.data.getLocalPosition(this.stack);
-                console.log('DragMove:'+JSON.stringify(newPosition));
+                //console.log('DragMove:'+JSON.stringify(newPosition));
                 window.test = this.state.data;
                 this.stack.position.x += newPosition.x - this.state.dragOffset.x;
                 this.stack.position.y += newPosition.y - this.state.dragOffset.y;
+                console.log(JSON.stringify(this.stack.position));
                 //console.log('DragMoveOffset:'+JSON.stringify(this.state.dragOffset));
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view

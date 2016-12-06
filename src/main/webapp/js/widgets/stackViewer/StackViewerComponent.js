@@ -901,19 +901,11 @@ define(function (require) {
 
         onHoverEvent: function (event) {
             if (!this.state.loadingLabels && !this.state.dragging) {
-                var currentPosition = event.data.getLocalPosition(this.stack);
-                if (currentPosition.x == this.state.posX && currentPosition.y == this.state.posY){
-                    if (this.state.hoverTime < Date.now() - 1000){
-                        this.listObjects();
-                    }else{
-                        if (GEPPETTO.isKeyPressed("shift")) {
-                            this.stack.defaultCursor = 'copy';
-                        } else {
-                            this.stack.defaultCursor = 'pointer';
-                        }
-                    }
-                }else{
-                    this.setState({posX: currentPosition.x, posY: currentPosition.y});
+                if (this.state.hoverTime < Date.now() - 1000) {
+                    var currentPosition = event.data.getLocalPosition(this.stack);
+                    this.state.posX = currentPosition.x;
+                    this.state.posY = currentPosition.y;
+                    this.listObjects();
                     this.state.hoverTime = Date.now();
                 }
             }
@@ -924,9 +916,11 @@ define(function (require) {
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 //console.log('DragMove:'+JSON.stringify(newPosition));
                 window.test = this.state.data;
-                this.stack.position.x += newPosition.x - this.state.dragOffset.x;
-                this.stack.position.y += newPosition.y - this.state.dragOffset.y;
-                console.log('Moving to:'+this.stack.position.x+','+this.stack.position.y);
+                var xmove = newPosition.x - this.state.dragOffset.x;
+                var ymove = newPosition.y - this.state.dragOffset.y;
+                this.stack.position.x = this.stack.position.x + xmove;
+                this.stack.position.y = this.stack.position.y + ymove;
+                console.log('Moving :'+xmove+','+ymove);
                 //console.log('DragMoveOffset:'+JSON.stringify(this.state.dragOffset));
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view

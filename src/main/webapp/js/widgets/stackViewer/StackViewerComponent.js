@@ -895,7 +895,7 @@ define(function (require) {
         onHoverEvent: function (event) {
             if (!this.state.loadingLabels && !this.state.dragging) {
                 var currentPosition = event.data.getLocalPosition(this.stack);
-                this.setStatus({posX: currentPosition.x, posY: currentPosition.y});
+                this.setState({posX: currentPosition.x, posY: currentPosition.y});
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < this.state.imageX && this.state.posY < this.state.imageY) {
                     this.listObjects();
                 }

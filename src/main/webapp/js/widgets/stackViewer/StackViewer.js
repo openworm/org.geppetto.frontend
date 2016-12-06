@@ -76,13 +76,14 @@ define(function (require) {
             Widget.View.prototype.initialize.call(this, options);
             this.render();
 
+            this.stackElement = $("#"+this.id);
+
             // add container for nested react component
-            $('#' + this.id).append("<div id='stack-container" + this.id + "'></div>");
+            this.stackElement.append("<div id='stack-container" + this.id + "'></div>");
 
             this.setSize(this.defHeight, this.defWidth);
 
             var that = this;
-            this.stackElement = $("#"+this.id);
 
             this.stackElement.bind('resizeEnd', function(event, mode) {
             	that.resize(mode);
@@ -94,18 +95,17 @@ define(function (require) {
             this.data.height = h;
             this.data.width = w;
 
-            this.removeBorders();
             this.addBorders();
             this.updateScene();
         },
         
         resize : function(mode){
         	if(mode == "maximize"){
-        		this.data.height = this.stackElement.height()+50;
+        		this.data.height = this.stackElement.height()+40;
             	this.data.width = this.stackElement.width()+30;
         	}else if(mode=="restore"){
-        		this.data.height = this.stackElement.height() + 30;
-            	this.data.width = this.stackElement.width() + 30;
+        		this.data.height = this.stackElement.height()+40;
+            	this.data.width = this.stackElement.width()+30;
         	}
         	
             Widget.View.prototype.setSize.call(this, this.data.height, this.data.width);

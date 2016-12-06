@@ -96,7 +96,7 @@ define(function (require) {
                 	if(self.maximize){
                 		self.maximize = false;
                 		self.setSize(window.innerHeight,window.innerWidth);
-                		self.$el.trigger('resizeEnd');
+                		self.$el.trigger('resizeEnd', ["maximize"]);
                 		self.maximize = true;
                 	}
                 });
@@ -577,7 +577,7 @@ define(function (require) {
                             },
                             "maximize" : function(evt,dlg){
                             	that.setTrasparentBackground(false);
-                    			$(this).trigger('resizeEnd');
+                    			$(this).trigger('resizeEnd',["maximize"]);
                     			var divheight =that.$el.height()+50;
                     			var divwidth =that.$el.width()+50;
                     			that.$el.dialog({ height: divheight,width: divwidth});
@@ -586,7 +586,8 @@ define(function (require) {
                     		"restore" : function(evt,dlg){
                     			that.maximize = false;
                     			that.setTrasparentBackground(that.previousMaxTransparency);
-                    			$(this).trigger('resizeEnd');
+                    			window.dispatchEvent(new Event('resize'));
+                    			$(this).trigger('resizeEnd',["restore"]);
                     		}
                         });
 

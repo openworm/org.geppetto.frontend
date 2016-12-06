@@ -555,7 +555,7 @@ define(function (require) {
 
             if (this.disp.width > 1) {
                 if (this.state.recenter) {
-                    console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide');
+                    //console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide');
                     this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
                     this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
                     this.stack.position.x = 0;
@@ -871,7 +871,7 @@ define(function (require) {
                 y: (offPosition.y - this.stack.position.y)
             };
             console.log('DragStartOffset:'+JSON.stringify(this.state.dragOffset));
-            var startPosition = this.state.data.getLocalPosition(this.stack);
+            var startPosition = this.state.data.getLocalPosition(this.disp);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x;
             this.state.posY = startPosition.y;
@@ -881,7 +881,7 @@ define(function (require) {
         onDragEnd: function () {
             if (this.state.data !== null) {
                 this.stack.alpha = 1;
-                var startPosition = this.state.data.getLocalPosition(this.stack);
+                var startPosition = this.state.data.getLocalPosition(this.disp);
                 var newPosX = startPosition.x;
                 var newPosY = startPosition.y;
                 console.log('DragEnd:'+JSON.stringify(startPosition));
@@ -897,9 +897,9 @@ define(function (require) {
 
         onHoverEvent: function (event) {
             if (!this.state.loadingLabels && !this.state.dragging) {
-                var currentPosition = event.data.getLocalPosition(this.stack);
+                var currentPosition = event.data.getLocalPosition(this.disp);
                 this.setStatus({posX: currentPosition.x, posY: currentPosition.y});
-                console.log('Hover:'+JSON.stringify(currentPosition));
+                //console.log('Hover:'+JSON.stringify(currentPosition));
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < this.state.imageX && this.state.posY < this.state.imageY) {
                     this.listObjects();
                 }
@@ -913,12 +913,12 @@ define(function (require) {
 
         onDragMove: function (event) {
             if (this.state.dragging) {
-                var newPosition = this.state.data.getLocalPosition(this.stack);
+                var newPosition = this.state.data.getLocalPosition(this.disp);
                 console.log('DragMove:'+JSON.stringify(newPosition));
                 window.test = this.state.data;
                 this.stack.position.x += newPosition.x - this.state.dragOffset.x;
                 this.stack.position.y += newPosition.y - this.state.dragOffset.y;
-                console.log('DragMoveOffset:'+JSON.stringify(this.state.dragOffset));
+                //console.log('DragMoveOffset:'+JSON.stringify(this.state.dragOffset));
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view
                 this.checkStack();

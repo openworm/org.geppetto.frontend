@@ -105,6 +105,9 @@ define(function (require) {
 
             this.disp.addChild(this.stack);
 
+            // block move event outside stack
+            this.renderer.plugins.interaction.moveWhenInside = true;
+
             //call metadata from server
             this.callDstRange();
             this.callTileSize();

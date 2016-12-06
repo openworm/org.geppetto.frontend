@@ -921,7 +921,7 @@ define(function (require) {
                 window.test = this.state.data;
                 this.stack.position.x += newPosition.x - this.state.dragOffset.x;
                 this.stack.position.y += newPosition.y - this.state.dragOffset.y;
-                console.log(JSON.stringify(this.stack.position));
+                console.log('Moving to:'+this.stack.position.x+','+this.stack.position.y);
                 //console.log('DragMoveOffset:'+JSON.stringify(this.state.dragOffset));
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view

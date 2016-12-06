@@ -547,8 +547,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param experimentId
 	 * @param projectId
+	 * @param variables 
 	 */
-	public void playExperiment(String requestID, long experimentId, long projectId)
+	public void getExperimentState(String requestID, long experimentId, long projectId, List<String> variables)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
@@ -557,8 +558,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			try
 			{
-				ExperimentState experimentState = geppettoManager.playExperiment(requestID, experiment, null);
-				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, GeppettoSerializer.serializeToJSON(experimentState));
+				ExperimentState experimentState = geppettoManager.getExperimentState(requestID, experiment, variables);
+				websocketConnection.sendMessage(requestID, OutboundMessages.GET_EXPERIMENT_STATE, GeppettoSerializer.serializeToJSON(experimentState));
 			}
 			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{

@@ -225,7 +225,7 @@ define(function (require) {
                         parameters["experimentId"] = experiment.id;
                         parameters["projectId"] = experiment.getParent().getId();
                         //sending to the server request for data
-                        GEPPETTO.MessageSocket.send("play_experiment", parameters);
+                        GEPPETTO.MessageSocket.send("get_experiment_state", parameters);
                         GEPPETTO.trigger('spin_logo');
                         return "Play Experiment";
                     } else {

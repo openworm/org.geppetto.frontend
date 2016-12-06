@@ -52,7 +52,7 @@ define(function (require) {
             VARIABLE_FETCHED: "variable_fetched",
             IMPORT_TYPE_RESOLVED: "import_type_resolved",
             IMPORT_VALUE_RESOLVED: "import_value_resolved",
-            PLAY_EXPERIMENT: "play_experiment",
+            GET_EXPERIMENT_STATE: "get_experiment_state",
             SET_WATCHED_VARIABLES: "set_watched_variables",
             WATCHED_VARIABLES_SET: "watched_variables_set",
             CLEAR_WATCH: "clear_watch",
@@ -141,7 +141,7 @@ define(function (require) {
             GEPPETTO.trigger('stop_spin_logo');
         };
         
-        messageHandler[messageTypes.PLAY_EXPERIMENT] = function (payload) {
+        messageHandler[messageTypes.GET_EXPERIMENT_STATE] = function (payload) {
 
             var experimentState = JSON.parse(payload.update);
             var experiment = window.Project.getActiveExperiment();

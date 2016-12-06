@@ -154,7 +154,7 @@ define(function (require) {
                                 Project.getActiveExperiment().play();
                             }
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PLAY_EXPERIMENT:
+                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_EXPERIMENT_STATE:
                             var payload = JSON.parse(parsedServerMessage.data);
                             var timeSeries = hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
                             assert.equal(timeSeries, null, "Checking that time series is still null in variable");

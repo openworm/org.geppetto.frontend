@@ -591,15 +591,17 @@ define(function (require) {
         	if(!this.initTypeAheadCreated){
         		var that = this;
 
-        		$("#query-typeahead").unbind('keydown');
-        		$("#query-typeahead").keydown(this, function (e) {
+                var queryTypeAheadElem = $("#query-typeahead");
+
+                queryTypeAheadElem.unbind('keydown');
+                queryTypeAheadElem.keydown(this, function (e) {
         			if (e.which == 9 || e.keyCode == 9) {
         				e.preventDefault();
         			}
         		});
 
-        		$("#query-typeahead").unbind('keypress');
-        		$("#query-typeahead").keypress(this, function (e) {
+                queryTypeAheadElem.unbind('keypress');
+                queryTypeAheadElem.keypress(this, function (e) {
         			if (e.which == 13 || e.keyCode == 13) {
         				that.confirmed($("#query-typeahead").val());
         			}
@@ -620,19 +622,19 @@ define(function (require) {
         		});
         		
         		//fire key event on paste
-                $('#query-typeahead').off("paste");
-                $('#query-typeahead').on("paste", function(){
+                queryTypeAheadElem.off("paste");
+                queryTypeAheadElem.on("paste", function(){
                     $(this).trigger("keypress",{ keyCode: 13 });
                 });
 
-        		$("#query-typeahead").unbind('typeahead:selected');
-        		$("#query-typeahead").bind('typeahead:selected', function (obj, datum, name) {
+                queryTypeAheadElem.unbind('typeahead:selected');
+                queryTypeAheadElem.bind('typeahead:selected', function (obj, datum, name) {
         			if (datum.hasOwnProperty("label")) {
         				that.confirmed(datum.label);
         			}
         		});
 
-        		$('#query-typeahead').typeahead({
+                queryTypeAheadElem.typeahead({
         			hint: true,
         			highlight: true,
         			minLength: 1
@@ -800,9 +802,10 @@ define(function (require) {
 
             //If it's an update request to show the drop down menu, this for it to show updated results
             if(this.updateResults){
-                var value = $("#query-typeahead").val();
-                $("#query-typeahead").typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
-                $("#query-typeahead").typeahead('val', value);
+                var queryTypeAheadElem = $("#query-typeahead");
+                var value = queryTypeAheadElem.val();
+                queryTypeAheadElem.typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
+                queryTypeAheadElem.typeahead('val', value);
             }
         },
 
@@ -995,9 +998,9 @@ define(function (require) {
                             for (var i = 0; i < that.props.model.items.length; i++) {
                                 queryLabel += ((i != 0) ? "/" : "")
                                     + that.props.model.items[i].term;
-                                verboseLabel += ((i != 0) ? "<span> / </span>" : "")
+                                verboseLabel += ((i != 0) ? "<span> AND </span>" : "")
                                     + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
-                                verboseLabelPlain += ((i != 0) ? " / " : "")
+                                verboseLabelPlain += ((i != 0) ? " AND " : "")
                                     + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
                             }
 
@@ -1018,8 +1021,8 @@ define(function (require) {
                                 id: compoundId,
                                 items: that.props.model.items.slice(0),
                                 label: queryLabel,
-                                verboseLabel: verboseLabel,
-                                verboseLabelPLain: verboseLabelPlain,
+                                verboseLabel: '<span>' + formattedRecords.length.toString() + '</span> ' + verboseLabel,
+                                verboseLabelPLain: formattedRecords.length.toString() + ' ' +verboseLabelPlain,
                                 records: formattedRecords,
                                 selected: true
                             });

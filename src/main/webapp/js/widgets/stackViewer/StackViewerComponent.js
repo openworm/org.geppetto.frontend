@@ -46,7 +46,8 @@ define(function (require) {
                 recenter: false,
                 txtUpdated: Date.now(),
                 txtStay: 3000,
-                objects: []
+                objects: [],
+                hoverTime: Date.now()
             };
         },
         /**
@@ -901,16 +902,20 @@ define(function (require) {
         onHoverEvent: function (event) {
             if (!this.state.loadingLabels && !this.state.dragging) {
                 var currentPosition = event.data.getLocalPosition(this.stack);
-                this.setState({posX: currentPosition.x, posY: currentPosition.y});
-                //console.log('Hover:'+JSON.stringify(currentPosition));
-                if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < this.state.imageX && this.state.posY < this.state.imageY) {
-                    this.listObjects();
+                if (currentPosition.x == this.state.posX && currentPosition.y == this.state.posY){
+                    if (this.state.hoverTime < Date.now() - 1000){
+                        this.listObjects();
+                    }else{
+                        if (GEPPETTO.isKeyPressed("shift")) {
+                            this.stack.defaultCursor = 'copy';
+                        } else {
+                            this.stack.defaultCursor = 'pointer';
+                        }
+                    }
+                }else{
+                    this.setState({posX: currentPosition.x, posY: currentPosition.y});
+                    this.state.hoverTime = Date.now();
                 }
-            }
-            if (GEPPETTO.isKeyPressed("shift")) {
-                this.stack.defaultCursor = 'copy';
-            } else {
-                this.stack.defaultCursor = 'pointer';
             }
         },
 

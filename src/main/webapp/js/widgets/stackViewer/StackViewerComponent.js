@@ -869,10 +869,10 @@ define(function (require) {
             this.state.data = event.data;
             this.stack.alpha = 0.7;
             this.state.dragging = true;
-            var offPosition = this.state.data.getLocalPosition(this.stack);
+            var offPosition = this.state.data.global;
             this.state.dragOffset = {
-                x: (offPosition.x - this.stack.position.x),
-                y: (offPosition.y - this.stack.position.y)
+                x: offPosition.x,
+                y: offPosition.y
             };
             //console.log('DragStartOffset:'+JSON.stringify(this.state.dragOffset));
             var startPosition = this.state.data.getLocalPosition(this.stack);
@@ -913,15 +913,14 @@ define(function (require) {
 
         onDragMove: function (event) {
             if (this.state.dragging) {
-                var newPosition = this.state.data.getLocalPosition(this.stack);
-                //console.log('DragMove:'+JSON.stringify(newPosition));
-                window.test = this.state.data;
-                var xmove = newPosition.x - this.state.dragOffset.x;
-                var ymove = newPosition.y - this.state.dragOffset.y;
-                this.stack.position.x = this.stack.position.x + xmove;
-                this.stack.position.y = this.stack.position.y + ymove;
-                console.log('Moving :'+xmove+','+ymove);
-                //console.log('DragMoveOffset:'+JSON.stringify(this.state.dragOffset));
+                var newPosition = this.state.data.global;
+                var xmove = (newPosition.x - this.state.dragOffset.x)/this.disp.scale.x;
+                var ymove = (newPosition.y - this.state.dragOffset.y)/this.disp.scale.y;
+                this.state.dragOffset.x = newPosition.x;
+                this.state.dragOffset.y = newPosition.y;
+                this.stack.position.x += xmove;
+                this.stack.position.y += ymove;
+                //console.log('Moving :'+xmove+','+ymove);
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view
                 this.checkStack();

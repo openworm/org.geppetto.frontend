@@ -61,7 +61,6 @@ define(function (require) {
 		updateRange : false,
 		plotOptions : null,
 		reIndexUpdate : 0,
-		updateRedraw : 5,
         functionNode: false,
         xaxisAutoRange : false,
         imageTypes : [],
@@ -625,21 +624,29 @@ define(function (require) {
 					this.plotDiv.data[key].y = this.datasets[key].y;
 				}
 
-				//Repaints plotly graph only certain amount of times, that certain amount of times is
-				//based on what's stored on global variable this.updateRedraw
-				if(this.reIndexUpdate%this.updateRedraw==0){
-					if(this.plotOptions.xaxis.range[1]<this.limit){
-						this.plotOptions.xaxis.range = [0, this.limit];
-						this.plotOptions.xaxis.autorange = false;
-					}
-					if(!this.plotOptions.playAll){
-						this.plotOptions.xaxis.showticklabels = false;
-					}
-					
+				if(this.plotOptions.xaxis.range[1]<this.limit){
+					this.plotOptions.xaxis.range = [0, this.limit];
+					this.plotOptions.xaxis.autorange = false;
+				}
+
+				//animate graph if it requires an update that is not play all
+				if(!this.plotOptions.playAll){
+					this.plotOptions.xaxis.showticklabels = false;
+					Plotly.animate(this.plotDiv, {
+					    data: this.datasets
+					  },{
+					    transition: {
+					      duration: 0
+					    },
+					    frame: {
+					      duration: 0,
+					      redraw: false
+					    }
+					  });
+				}else{
+					//redraws graph for play all mode
 					Plotly.relayout(this.plotDiv, this.plotOptions);
 				}
-				
-				this.reIndexUpdate = this.reIndexUpdate + 1;
 			}
 		},
 

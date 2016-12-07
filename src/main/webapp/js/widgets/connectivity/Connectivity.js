@@ -45,9 +45,12 @@ define(function (require) {
     var Instance = require('../../model/Instance');
     require('../../mixins/bootstrap/modal.js')
     
-	require('./vendor/d3.min');
-	require('./vendor/d3.hive.v0');
-	//var chords = require('./chords');
+	//require('./vendor/d3.min');
+	//require('./vendor/d3.hive.v0');
+
+    var d3 = require("d3");
+
+	var chords = require('./chords');
 	var hives = require('./hives');
 	var matrices = require('./matrices');
 	var forces = require('./forces');

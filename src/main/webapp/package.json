@@ -21,6 +21,7 @@
     "bootstrap": "^3.3.7",
     "codemirror": "^5.19.0",
     "d3": "^4.2.7",
+    "d3-plugins-dist": "^3.2.0",
     "detector-webgl": "^2.0.0",
     "express": "^4.14.0",
     "express-ws": "^2.0.0",

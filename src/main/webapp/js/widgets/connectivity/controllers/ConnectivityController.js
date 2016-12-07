@@ -109,7 +109,5 @@ define(function (require) {
                 }
             }
         }
-
-
     });
 });

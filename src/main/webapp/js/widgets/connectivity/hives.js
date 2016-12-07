@@ -6,15 +6,17 @@ define(function(require){
 
 	return {
 	   createHiveLayout: function (context) {
+		   var d3 = require("d3");
+		   var hiveLink = require("d3-plugins-dist/dist/mbostock/hive/cjs")["default"]();
 	
 	       innerRadius = 20,
 	       outerRadius = 180;
 	
-	       var angle = d3.scale.ordinal().domain(d3.range(context.dataset.nodeTypes.length + 1)).rangePoints([0, 2 * Math.PI]),
-	           quali_angle = d3.scale.ordinal().domain(context.dataset.nodeTypes).rangeBands([0, 2 * Math.PI]);
-	       radius = d3.scale.linear().range([innerRadius, outerRadius]),
-	           linkTypeScale = d3.scale.category10().domain(context.dataset.linkTypes);
-	       nodeTypeScale = d3.scale.category20().domain(context.dataset.nodeTypes);
+	       var angle = d3.scalePoint().domain(d3.range(context.dataset.nodeTypes.length + 1)).range([0, 2 * Math.PI]),
+	           quali_angle = d3.scaleBand().domain(context.dataset.nodeTypes).range([0, 2 * Math.PI]);
+	       radius = d3.scaleLinear().range([innerRadius, outerRadius]),
+	           linkTypeScale = d3.scaleOrdinal(d3.schemeCategory10).domain(context.dataset.linkTypes);
+	       nodeTypeScale = d3.scaleOrdinal(d3.schemeCategory20).domain(context.dataset.nodeTypes);
 	
 	       var nodes = context.dataset.nodes,
 	           links = [];
@@ -41,7 +43,7 @@ define(function(require){
 	           .data(links)
 	           .enter().append("path")
 	           .attr("class", "link")
-	           .attr("d", d3.hive.link()
+	           .attr("d", hiveLink
 	               .angle(function (d) {
 	                   return quali_angle(d.type);
 	               })

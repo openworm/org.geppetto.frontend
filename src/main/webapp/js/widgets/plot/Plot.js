@@ -765,6 +765,7 @@ define(function (require) {
 				this.resize();
 				this.initialized=true;
 				this.firstStep = 0;
+				this.reIndexUpdate = 0;
 			}
 		},
 
@@ -785,6 +786,7 @@ define(function (require) {
 				this.datasets[key].x = [];
 				this.datasets[key].y = [];
 			}
+			this.firstStep = 0;
 		},
 
 		/**

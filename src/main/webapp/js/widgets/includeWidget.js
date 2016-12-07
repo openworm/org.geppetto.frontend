@@ -49,9 +49,6 @@ define(function (require) {
         require("./plot/config")(GEPPETTO);
 		//TreeVisualiser DAT Widget
         require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
-		//TreeVisualiser D3 Widget
-        require("./treevisualiser/treevisualiserd3/config")(GEPPETTO);
-
 
         //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets
         //require("widgets/template/config");

@@ -40,7 +40,6 @@ define(function (require) {
     Scatter3dController = require('./scatter3d/controllers/Scatter3dController');
     ConnectivityController = require('./connectivity/controllers/ConnectivityController');
     PopupsController = require('./popup/controllers/PopupController');
-    TreeVisualiserControllerD3 = require('./treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
     TreeVisualiserControllerDAT = require('./treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
     VariableVisualizerController = require('./variablevisualiser/controllers/VariableVisualiserController');
     ButtonBarController = require('./buttonBar/controllers/ButtonBarController');
@@ -63,7 +62,6 @@ define(function (require) {
             POPUP: 1,
             SCATTER3D: 2,
             TREEVISUALISERDAT: 3,
-            TREEVISUALISERD3: 4,
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
@@ -112,10 +110,6 @@ define(function (require) {
                     case GEPPETTO.Widgets.TREEVISUALISERDAT:
                         widget = this.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).addTreeVisualiserDATWidget();
                         break;
-                    //create tree visualiser D3 widget
-                    case GEPPETTO.Widgets.TREEVISUALISERD3:
-                        widget = this.getController(GEPPETTO.Widgets.TREEVISUALISERD3).addTreeVisualiserD3Widget();
-                        break;
                     //create variable visualiser widget
                     case GEPPETTO.Widgets.VARIABLEVISUALISER:
                         widget = this.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).addVariableVisualiserWidget();
@@ -162,8 +156,6 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_SCATTER3D_WIDGETS;
                     case GEPPETTO.Widgets.TREEVISUALISERDAT:
                         return GEPPETTO.Resources.REMOVE_TREEVISUALISERDAT_WIDGETS;
-                    case GEPPETTO.Widgets.TREEVISUALISERD3:
-                        return GEPPETTO.Resources.REMOVE_TREEVISUALISERD3_WIDGETS;
                     case GEPPETTO.Widgets.VARIABLEVISUALISER:
                         return GEPPETTO.Resources.REMOVE_VARIABLEVISUALISER_WIDGETS;
                     case GEPPETTO.Widgets.CONNECTIVITY:
@@ -204,12 +196,6 @@ define(function (require) {
                         this.treeVisDatController = new TreeVisualiserControllerDAT();
                     }
                     return this.treeVisDatController;
-                }
-                else if (type == GEPPETTO.Widgets.TREEVISUALISERD3) {
-                    if (this.treeVis3DController == null || undefined) {
-                        this.treeVis3DController = new TreeVisualiserControllerD3();
-                    }
-                    return this.treeVis3DController;
                 }
                 else if (type == GEPPETTO.Widgets.VARIABLEVISUALISER) {
                     if (this.variableVisController == null || undefined) {

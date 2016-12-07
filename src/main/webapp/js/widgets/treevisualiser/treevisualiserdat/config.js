@@ -36,16 +36,6 @@
 //  *
 //  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
 //  */
-
-
-
-// // Libraries used by Tree Visualizer widget
-// var reqs = [];
-// reqs.push("widgets/treevisualiser/treevisualiserdat/vendor/dat.gui.min");
-// require(reqs, function(d3) {
-// 	loadCss("geppetto/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
-// });
-
  define(function(require) {
  	return function(GEPPETTO) {
  		// Register Commands

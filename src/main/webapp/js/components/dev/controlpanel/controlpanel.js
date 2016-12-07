@@ -236,6 +236,25 @@ define(function (require) {
             }
         },
 
+        // Utility method to iterate over a config property and populate a list of control buttons to be created
+        addControlButtons: function(controlsConfig, showControlsConfig, configPropertyName, buttonsList, targetPath){
+            for (var control in controlsConfig[configPropertyName]) {
+                if ($.inArray(control.toString(), showControlsConfig[configPropertyName]) != -1) {
+                    var add = true;
+
+                    // check show condition
+                    if(controlsConfig[configPropertyName][control].showCondition != undefined){
+                        var condition = this.replaceTokensWithPath(controlsConfig[configPropertyName][control].showCondition, targetPath);
+                        add = eval(condition);
+                    }
+
+                    if(add) {
+                        buttonsList.push(controlsConfig[configPropertyName][control]);
+                    }
+                }
+            }
+        },
+
         render: function () {
             // TODO: would be nicer to pass controls and config straight from the parent component rather than assume
             var showControls = GEPPETTO.ControlPanel.state.controls;
@@ -252,40 +271,18 @@ define(function (require) {
                 // NOTE: The instance doesn't exist yet
             }
 
+            // TODO: refactor adding buttons and capability checks into functions and re-use those
             // Add common control buttons to list
-            for (var control in config.Common) {
-                if ($.inArray(control.toString(), showControls.Common) != -1) {
-                    var add = true;
-
-                    // check show condition
-                    if(config.Common[control].showCondition != undefined){
-                        var condition = this.replaceTokensWithPath(config.Common[control].showCondition, path);
-                        add = eval(condition);
-                    }
-
-                    if(add) {
-                        ctrlButtons.push(config.Common[control]);
-                    }
-                }
-            }
+            this.addControlButtons(config, showControls, 'Common', ctrlButtons, path);
 
             if (entity != undefined && entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                 // Add visual capability controls to list
-                for (var control in config.VisualCapability) {
-                    if ($.inArray(control.toString(), showControls.VisualCapability) != -1) {
-                        var add = true;
+                this.addControlButtons(config, showControls, 'VisualCapability', ctrlButtons, path);
+            }
 
-                        // check show condition
-                        if(config.VisualCapability[control].showCondition != undefined){
-                            var condition = this.replaceTokensWithPath(config.VisualCapability[control].showCondition, path);
-                            add = eval(condition);
-                        }
-
-                        if(add) {
-                            ctrlButtons.push(config.VisualCapability[control]);
-                        }
-                    }
-                }
+            if (entity != undefined && entity.hasCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY)) {
+                // Add state variable capability controls to list
+                this.addControlButtons(config, showControls, 'StateVariableCapability', ctrlButtons, path);
             }
 
             var that = this;

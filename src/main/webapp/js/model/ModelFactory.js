@@ -1724,8 +1724,9 @@ define(function (require) {
             fetchAllPotentialInstancePaths: function (node, allPotentialPaths, allPotentialPathsForIndexing, parentPath) {
                 // build new path
                 var path = '';
+                var isStaticVar = node instanceof Variable && node.isStatic();
 
-                if (node instanceof Variable && node.isStatic()){
+                if (isStaticVar){
                     // NOTE: for static variables, we add the variable path to the indexing list as ...
                     // NOTE: it's the only way to access the variable since there are no instances for static variables
                     path = node.getPath();
@@ -1733,11 +1734,23 @@ define(function (require) {
                     path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
                 }
 
+                // build entry for path storing and indexing
                 var entry = {path: path, metaType: node.getType().getMetaType(), type: node.getType().getPath()};
-                allPotentialPaths.push(entry);
-                // only add to indexing if it's not a connection or nested in a composite type
-                if (this.includePotentialInstance(node, path)) {
-                    allPotentialPathsForIndexing.push(entry);
+
+                // if this is a static node check if we already added entry for the exact same path
+                // NOTE: can't do it always for instances as it would slow things down A LOT
+                var staticVarAlreadyAdded = false;
+                if(isStaticVar){
+                    staticVarAlreadyAdded = (allPotentialPaths.map(function(el) { return el.path; }).indexOf(entry.path) != -1);
+                }
+
+                // always add if not a static var, otherwise check that it wasnt already added
+                if(!isStaticVar || (isStaticVar && !staticVarAlreadyAdded)){
+                    allPotentialPaths.push(entry);
+                    // only add to indexing if it's not a connection or nested in a composite type
+                    if (this.includePotentialInstance(node, path)) {
+                        allPotentialPathsForIndexing.push(entry);
+                    }
                 }
 
                 var potentialParentPaths = [];

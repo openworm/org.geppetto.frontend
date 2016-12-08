@@ -235,20 +235,21 @@ define(function (require) {
                     });
                 },
 
-                executeCommand: function (command) {
+                executeCommand: function (command, implicitCommand) {
 
                     // If submitting a command, set the currentHistory to blank (empties the textarea on update)
                     this.currentHistory = "";
 
                     // Run the command past the special commands to check for 'help()' and ':clear' etc.
                     if (!this.specialCommands(command)) {
-
                         // If if wasn't a special command, pass off to the Sandbox Model to evaluate and save
-                        this.evaluate(command);
+                        this.evaluate(command, implicitCommand);
                     }
 
                     // Update the View's history state to reflect the latest history item
-                    this.historyState = this.model.get('history').length;
+                    if (!implicitCommand || G.isDebugOn()) {
+                        this.historyState = this.model.get('history').length;
+                    }
                 },
 
                 clear: function () {
@@ -654,7 +655,7 @@ define(function (require) {
                 },
 
                 // Evaluate a command and save it to history
-                evaluate: function (command) {
+                evaluate: function (command, implicitCommand = false) {
                     if (!command) {
                         return false;
                     }
@@ -693,15 +694,17 @@ define(function (require) {
                         item._class = "error";
                     }
 
-                    //Replace < and > commands with html equivalent in order to
-                    //display in console area
-                    str = command.replace(/\</g, "&lt;");
-                    var formattedCommand = str.replace(/\>/g, "&gt;");
+                    if (!implicitCommand || G.isDebugOn()) {
+                        //Replace < and > commands with html equivalent in order to
+                        //display in console area
+                        str = command.replace(/\</g, "&lt;");
+                        var formattedCommand = str.replace(/\>/g, "&gt;");
 
-                    item.command = formattedCommand;
+                        item.command = formattedCommand;
 
-                    // Add the item to the history
-                    this.addHistory(item);
+                        // Add the item to the history
+                        this.addHistory(item);
+                    }
                 },
 
 

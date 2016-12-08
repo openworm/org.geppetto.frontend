@@ -84,7 +84,7 @@ define(function (require) {
                 createButtonCallback: function (button) {
                     return function () {
                         button.actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommand(action)
+                            GEPPETTO.Console.executeImplicitCommand(action)
                         });
                     }
                 },

@@ -63,11 +63,11 @@ define(function (require) {
         loadSimulation: function() {
         	//Send command to load via console
             if(this.state.loadFromURL) {
-                GEPPETTO.Console.executeCommand('Simulation.load("' + this.state.simulationUrl + '")');
+                GEPPETTO.Console.executeImplicitCommand('Simulation.load("' + this.state.simulationUrl + '")');
             } else {
             	//Format XLM string before sending command to load simulation
             	var content = this.state.simulationXML.replace(/\s+/g, ' ');
-            	GEPPETTO.Console.executeCommand("Simulation.loadFromContent('" + content + "')");
+            	GEPPETTO.Console.executeImplicitCommand("Simulation.loadFromContent('" + content + "')");
             }
         },
 

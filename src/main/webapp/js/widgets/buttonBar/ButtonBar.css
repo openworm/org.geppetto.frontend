@@ -31,16 +31,11 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-/* 
-.bubar_body {
-    width: 100%;
-    height: 100%;
-    font-size: 32px;
-    font-weight: bold;
-    color: #287F86;
-    opacity: .6;
-    float: left;
-    text-align: center;
-    vertical-align: middle;
-    resize: both;
-} */
+.button-bar-btn {
+    border: none !important;
+    margin-right: 5px;
+    margin-left: 5px;
+    min-width: 35px;
+    min-height: 35px;
+}
+

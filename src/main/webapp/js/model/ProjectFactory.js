@@ -90,6 +90,11 @@ define(function (require) {
                     });
                 
 
+                if(node.details!=null || undefined){
+                    var details =  JSON.parse(node.details);
+                    e.setDetails(details);
+                }
+                
                 // create visualization subtree only at first
                 for (var key in node.aspectConfigurations) {
                     var aC = node.aspectConfigurations[key];

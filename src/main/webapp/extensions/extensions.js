@@ -1,4 +1,4 @@
-require(['json!../extensions/extensionsConfiguration.json', 'geppetto'], function(extensionConfiguration, GEPPETTO) {
+define(['json!../extensions/extensionsConfiguration.json', 'geppetto','components/ComponentFactory'],function(extensionConfiguration, GEPPETTO) {
 
 	//Require your extension in extensionConfiguration.json
 	for (var extension in extensionConfiguration){

@@ -408,7 +408,7 @@ define(function (require) {
 
             var visibleChildren = [];
             GEPPETTO.getVARS().scene.traverse(function (child) {
-                if (child.visible) {
+                if (child.visible && !(child.clickThrough==true)) {
                     if (child.geometry != null || undefined) {
                         child.geometry.computeBoundingBox();
                     }

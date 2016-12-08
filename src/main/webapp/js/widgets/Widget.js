@@ -63,6 +63,7 @@ define(function (require) {
             registeredEvents: null,
             executedAction : 0,
             title : null,
+            previousMaxTransparency : false,
 
             /**
              * Initializes the widget
@@ -497,6 +498,7 @@ define(function (require) {
             setTrasparentBackground: function(isTransparent) {
                 if(isTransparent){
                    this.$el.parent().addClass('transparent-back');
+                   this.previousMaxTransparency = true;
                 } else {
                    this.$el.parent().removeClass('transparent-back');
                 }
@@ -559,12 +561,14 @@ define(function (require) {
                         	   that.$el.dialog({ title: that.name});
                             },
                             "maximize" : function(evt,dlg){
+                            	that.setTrasparentBackground(false);
                     			$(this).trigger('resizeEnd');
                     			var divheight =that.$el.height()+50;
                     			var divwidth =that.$el.width()+50;
                     			that.$el.dialog({ height: divheight,width: divwidth});
                     		},
                     		"restore" : function(evt,dlg){
+                    			that.setTrasparentBackground(that.previousMaxTransparency);
                     			$(this).trigger('resizeEnd');
                     		}
                         });
@@ -574,10 +578,7 @@ define(function (require) {
                 
 
                 //add history
-                this.addButtonToTitleBar($("<div class='fa fa-history' title='Show Navigation History'></div>").click(function (event) {
-                    that.showHistoryMenu(event);
-                    event.stopPropagation();
-                }));
+                this.showHistoryIcon(true);
 
                 //remove the jQuery UI icon
                 dialogParent.find("button.ui-dialog-titlebar-close").html("");
@@ -619,6 +620,19 @@ define(function (require) {
             
             setController : function(controller){
             	this.controller = controller;
+            },
+            
+            showHistoryIcon : function(show){
+            	var that=this;
+            	if(show && this.$el.parent().find(".history-icon").length==0){
+                    this.addButtonToTitleBar($("<div class='fa fa-history history-icon' title='Show Navigation History'></div>").click(function (event) {
+                        that.showHistoryMenu(event);
+                        event.stopPropagation();
+                    }));
+            	}
+            	else{
+            		this.$el.parent().find(".history-icon").remove();
+            	}
             }
         })
     }

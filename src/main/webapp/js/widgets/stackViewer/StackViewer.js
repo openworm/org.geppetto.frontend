@@ -80,6 +80,13 @@ define(function (require) {
             $('#' + this.id).append("<div id='stack-container" + this.id + "'></div>");
 
             this.setSize(this.defHeight, this.defWidth);
+            
+            var that = this;
+			this.stackElement = $("#"+this.id);
+
+			this.stackElement.bind('resizeEnd', function() {
+				that.resize();
+			});
         },
 
         setSize: function (h, w) {
@@ -89,6 +96,17 @@ define(function (require) {
 
             this.addBorders();
             this.updateScene();
+        },
+        
+        resize : function(){
+        	this.data.height = this.stackElement.height()+50;
+        	this.data.width = this.stackElement.width()+40;
+        	
+            Widget.View.prototype.setSize.call(this, this.data.height, this.data.width);
+
+            this.addBorders();
+            this.updateScene();
+            this.stackElement.find(".fa-home").click()
         },
 
         /**
@@ -168,9 +186,9 @@ define(function (require) {
         removeSlice: function(path){
             console.log('Removing ' + path.split('.')[0] + ' from ' + this.data.instances.length);
             var i;
-            for (i in this.data.instance){
-                if (this.data.instance[i].parent.getId() == path.split('.')[0]){
-                    this.data.instance.splice(i,1);
+            for (i in this.data.instances){
+                if (this.data.instances[i].parent.getId() == path.split('.')[0]){
+                    this.data.instances.splice(i,1);
                 }
             }
             console.log('Passing ' + this.data.instances.length + ' instances');

@@ -61,12 +61,13 @@ define(function (require) {
 		updateRange : false,
 		plotOptions : null,
 		reIndexUpdate : 0,
-		updateRedraw : 5,
+		updateRedraw : 3,
         functionNode: false,
         xaxisAutoRange : false,
         imageTypes : [],
         plotElement : null,
         XVariable : null,
+        firstStep : 0,
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -80,6 +81,7 @@ define(function (require) {
 				showgrid : false,
 				showlegend : true,
 				xaxis: {                  // all "layout.xaxis" attributes: #layout-xaxis
+					autorange :false,
 					showgrid: false,
 					showline: true,
 					zeroline : false,
@@ -103,6 +105,7 @@ define(function (require) {
 					range : []
 				},
 				yaxis : {
+					autorange : false,
 					max: -9999999,
 					min: 9999999,
 					showgrid: false,
@@ -140,6 +143,13 @@ define(function (require) {
 					},
 					x : 1,
 					bgcolor : 'rgba(66, 59, 59, 0.90)'
+				},
+				transition: {
+				      duration: 0
+				},
+				frame: {
+				      duration: 0,
+				      redraw: false
 				},
 				paper_bgcolor: 'rgba(66, 59, 59, 0.90)',
 				plot_bgcolor: 'transparent',
@@ -194,10 +204,6 @@ define(function (require) {
 					that.resize(true); 
 				}
 			});
-
-			this.plotElement.resize(function(){
-				that.resize();
-			});	
 			
 			this.plotElement.bind('resizeEnd', function() {
 				that.resize();
@@ -362,10 +368,10 @@ define(function (require) {
 				}else{
 					Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions);
 				}				
+				this.updateAxis(instance.getInstancePath());
+				this.resize(false);
 			}
 			
-			this.updateAxis(instance.getInstancePath());
-			this.resize(false);
 			return this;
 		},
 
@@ -482,10 +488,9 @@ define(function (require) {
 		 * Resets the axes of the graphs to defaults
 		 */
 		resetAxes : function(){
-			this.plotOptions.xaxis.range = [];
 			this.plotOptions.xaxis.range =[0,this.limit];
 			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
-			this.plotOptions.yaxis.autorange = true;
+			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
 			Plotly.relayout(this.plotDiv, this.plotOptions);
 		},
 		
@@ -520,6 +525,8 @@ define(function (require) {
 
 			timeSeriesData["x"] = xData;
 			timeSeriesData["y"] = yData;
+
+			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
 
 			return timeSeriesData;
 		},
@@ -585,9 +592,6 @@ define(function (require) {
 						this.xaxisAutoRange = true;
 					}
 					else {
-						if(this.datasets[key].hoverinfo == 'all'){
-							this.datasets[key].hoverinfo = 'none';
-						}
 						newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
 
 						oldDataX = this.datasets[key].x;
@@ -629,21 +633,39 @@ define(function (require) {
 					this.plotDiv.data[key].y = this.datasets[key].y;
 				}
 
-				//Repaints plotly graph only certain amount of times, that certain amount of times is
-				//based on what's stored on global variable this.updateRedraw
+
 				if(this.reIndexUpdate%this.updateRedraw==0){
+
 					if(this.plotOptions.xaxis.range[1]<this.limit){
 						this.plotOptions.xaxis.range = [0, this.limit];
 						this.plotOptions.xaxis.autorange = false;
 					}
+					
+					//animate graph if it requires an update that is not play all
 					if(!this.plotOptions.playAll){
 						this.plotOptions.xaxis.showticklabels = false;
+						if(this.plotOptions.yaxis.range==null || undefined){
+							this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+
+						}
+						Plotly.animate(this.plotDiv, {
+							data: this.datasets
+							},this.plotOptions);
+						if(this.firstStep==0){
+							//redraws graph for play all mode
+							this.resize();
+						}
+					}else{
+						//redraws graph for play all mode
+						Plotly.relayout(this.plotDiv, this.plotOptions);
 					}
-					
-					Plotly.relayout(this.plotDiv, this.plotOptions);
 				}
 				
+				
+				
+				this.firstStep++;
 				this.reIndexUpdate = this.reIndexUpdate + 1;
+				
 			}
 		},
 
@@ -710,6 +732,7 @@ define(function (require) {
 				this.plotOptions = this.defaultOptions();
 				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false});
 				this.resize();
+				this.firstStep=0;
 			}
 			return this;
 		},
@@ -722,8 +745,8 @@ define(function (require) {
 		 * @param {Object} options - options to modify the plot widget
 		 */
 		setOptions: function (options) {
-			jQuery.extend(true, this.plotOptions, this.defaultPlotOptions, options);
-			Plotly.relayout(this.id, update);
+			this.plotOptions = $.extend(true,{}, this.plotOptions, options);
+			Plotly.relayout(this.id, this.plotOptions);
 			return this;
 		},
 
@@ -741,6 +764,8 @@ define(function (require) {
 				this.plotly = Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false});
 				this.resize();
 				this.initialized=true;
+				this.firstStep = 0;
+				this.reIndexUpdate = 0;
 			}
 		},
 
@@ -761,6 +786,7 @@ define(function (require) {
 				this.datasets[key].x = [];
 				this.datasets[key].y = [];
 			}
+			this.firstStep = 0;
 		},
 
 		/**
@@ -863,6 +889,7 @@ define(function (require) {
 			this.plotOptions.xaxis.title = options.xaxis.axisLabel;
 			this.plotOptions.xaxis.showticklabels = true;
 			this.plotOptions.xaxis.autorange = true;
+			this.plotOptions.yaxis.autorange = true;
 			this.xaxisAutoRange = true;
 			this.labelsMap[options.legendText] = data.data.name;
 			var newLine = {

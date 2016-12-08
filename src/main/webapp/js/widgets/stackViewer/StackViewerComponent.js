@@ -1,7 +1,6 @@
 define(function (require) {
 
     require('widgets/stackViewer/vendor/pixi.min');
-    require('widgets/stackViewer/vendor/browser.min');
     var React = require('react');
 
     var Canvas = React.createClass({
@@ -32,7 +31,7 @@ define(function (require) {
                 voxelZ: this.props.voxelZ,
                 visibleTiles: [0],
                 stackViewerPlane: false,
-                plane: [0,0,0,this.props.width,0,0,0,this.props.height,0,this.props.width,this.props.height,0],
+                plane: [0, 0, 0, this.props.width, 0, 0, 0, this.props.height, 0, this.props.width, this.props.height, 0],
                 planeUpdating: false,
                 lastUpdate: 0,
                 updating: false,
@@ -40,15 +39,14 @@ define(function (require) {
                 posX: 0,
                 posY: 0,
                 loadingLabels: false,
-                mode: this.props.mode,
                 orth: this.props.orth,
                 data: {},
                 dragOffset: {},
                 dragging: false,
-                dragMax: (this.props.height * 0.2),
                 recenter: false,
                 txtUpdated: Date.now(),
-                txtStay: 3000
+                txtStay: 3000,
+                objects: []
             };
         },
         /**
@@ -166,9 +164,9 @@ define(function (require) {
                     var extent = {minDst: min, maxDst: max};
                     this.props.setExtent(extent);
                     this.bufferStack(extent);
-                    if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
-                    // console.log(image);
-                    // console.log(JSON.stringify({minDst: min, maxDst: max}));
+                    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                        this.state.buffer[-1].text = '';
+                    }
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -184,7 +182,6 @@ define(function (require) {
                 url: image + '&obj=Tile-size',
                 type: 'POST',
                 success: function (data) {
-                    // console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     var tileX = Number(result[0]);
                     var tileY = Number(result[1]);
@@ -208,11 +205,12 @@ define(function (require) {
                 url: image + '&obj=Max-size',
                 type: 'POST',
                 success: function (data) {
-                    // console.log(data.trim());
                     var result = data.trim().split(':')[1].split(' ');
                     var imageX = Number(result[0]);
                     var imageY = Number(result[1]);
-                    this.setState({imageX: imageX, imageY: imageY});
+                    var extent = {imageX: imageX, imageY: imageY};
+                    this.setState(extent);
+                    this.props.setExtent(extent);
                     // update slice view
                     this.state.lastUpdate = 0;
                     this.checkStack();
@@ -224,28 +222,21 @@ define(function (require) {
             });
         },
 
-        callPlaneEdges: function() {
+        callPlaneEdges: function () {
             if (!this.state.planeUpdating) {
                 this.state.planeUpdating = true;
                 if (this.stack.width > 1) {
-                    // console.log('Render width: ' + this.renderer.view.width);
-                    // console.log('Stack width: ' + this.stack.width);
-                    // console.log('Stack pox x: ' + this.stack.position.x);
-                    // console.log('Display area width: ' + $('#displayArea').width());
-                    // console.log('Stage width: ' + this.stage.width);
-                    // console.log('Stage pox x: ' + this.stage.position.x);
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
-                    x = (-this.stack.position.x)+(-this.disp.position.x/this.disp.scale.x);
-                    y = (-this.stack.position.y)+(-this.disp.position.y/this.disp.scale.x);
+                    x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
-                    x = x + (this.renderer.width/this.disp.scale.x);
-                    y = y + (this.renderer.height/this.disp.scale.y);
+                    x = x + (this.renderer.width / this.disp.scale.x);
+                    y = y + (this.renderer.height / this.disp.scale.y);
                     coordinates[2] = x.toFixed(0);
                     coordinates[3] = y.toFixed(0);
-                    // console.log('Visible screen: ' + coordinates);
                     if (this.state.orth == 0) { // frontal
                         this.state.plane[0] = coordinates[0];
                         this.state.plane[1] = coordinates[1];
@@ -277,7 +268,6 @@ define(function (require) {
                 }
                 // Pass Z coordinates
                 z = this.props.dst - (this.state.minDst);
-                // console.log('z: ' + z);
                 if (this.state.orth == 0) { // frontal
                     this.state.plane[2] = z;
                     this.state.plane[5] = z;
@@ -300,18 +290,16 @@ define(function (require) {
 
         passPlane: function () {
             if (this.state.stackViewerPlane) {
-                // console.log('Moving plane to: ' + this.state.plane);
-                this.state.stackViewerPlane=GEPPETTO.SceneFactory.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
-            }else{
-                // console.log('Creating plane: ' + this.state.plane);
-                this.state.stackViewerPlane=GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/widgets/stackViewer/images/glass.jpg");
+                this.state.stackViewerPlane = GEPPETTO.SceneFactory.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+            } else {
+                this.state.stackViewerPlane = GEPPETTO.SceneFactory.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/widgets/stackViewer/images/glass.jpg");
                 if (this.state.stackViewerPlane.visible) {
                     this.state.stackViewerPlane.visible = true;
                 }
             }
             if (this.disp.width > 0) {
                 this.state.stackViewerPlane.visible = true;
-            }else{
+            } else {
                 this.state.stackViewerPlane.visible = false;
             }
             this.state.planeUpdating = false;
@@ -325,8 +313,76 @@ define(function (require) {
                 GEPPETTO.G.getSelection()[0].deselect();
             }
             $.each(this.state.stack, function (i, item) {
-                (function(i, that) {
-                    if (i>0 || that.state.stack.length == 1 || that.state.mode == 2) {
+                (function (i, that) {
+                    var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
+                    //get image size;
+                    $.ajax({
+                        url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
+                        type: 'POST',
+                        success: function (data) {
+                            result = data.trim().split(':')[1].trim().split(' ');
+                            if (result !== '') {
+                                for (j in result) {
+                                    if (result[j].trim() !== '') {
+                                        var index = Number(result[j]);
+                                        if (i !== 0 || index !== 0) { // don't select template
+                                            if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
+                                                console.log(that.state.label[i] + ' clicked');
+                                                eval(that.state.id[i][Number(result[j])]).select();
+                                                that.setStatusText(that.state.label[i] + ' selected');
+                                                break;
+                                            } else {
+                                                if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                    try {
+                                                        eval(that.state.id[i][Number(result[j])]).select();
+                                                        console.log(that.props.templateDomainNames[index] + ' clicked');
+                                                        that.setStatusText(that.props.templateDomainNames[index] + ' selected');
+                                                        break;
+                                                    } catch (ignore) {
+                                                        console.log(that.props.templateDomainNames[index] + ' requsted');
+                                                        that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
+                                                        if (GEPPETTO.isKeyPressed("shift")) {
+                                                            console.log('Adding ' + that.props.templateDomainNames[index]);
+                                                            that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
+                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
+                                                                var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
+                                                                setTermInfo(instance, instance.getParent().getId());
+                                                                resolve3D(that.props.templateDomainIds[index]);
+                                                            });
+                                                            break;
+                                                        } else {
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
+                                                            break;
+                                                        }
+                                                    }
+                                                } else {
+                                                    console.log('Index not listed: ' + result[j]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // update slice view
+                            that.state.lastUpdate = 0;
+                            that.checkStack();
+                        },
+                        error: function (xhr, status, err) {
+                            console.error(that.props.url, status, err.toString());
+                        }.bind(this)
+                    });
+                })(i, that);
+            });
+        },
+
+        listObjects: function () {
+            if (!this.state.loadingLabels) {
+                this.state.objects = [];
+                var i, j, result;
+                var that = this;
+                $.each(this.state.stack, function (i, item) {
+                    (function (i, that) {
+                        that.state.loadingLabels = true;
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({
@@ -340,85 +396,40 @@ define(function (require) {
                                             var index = Number(result[j]);
                                             if (i !== 0 || index !== 0) { // don't select template
                                                 if (index == 0) {
-                                                    console.log(that.state.label[i] + ' clicked');
-                                                    that.setStatusText(that.state.label[i] + ' clicked!');
-                                                    eval(that.state.id[i][Number(result[j])]).select();
+                                                    if (!GEPPETTO.isKeyPressed("shift")) {
+                                                        that.state.objects.push(that.state.label[i]);
+                                                    }
                                                 } else {
                                                     if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                        if (JSON.stringify(that.state.id).indexOf(that.props.templateDomainIds[index]) > -1) {
-                                                            console.log(that.props.templateDomainNames[index] + ' clicked');
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' clicked');
-                                                            eval(that.state.id[i][Number(result[j])]).select();
-                                                        } else {
-                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                            if (that.state.mode == 2) {
-                                                                console.log('Adding ' + that.props.templateDomainNames[index]);
-                                                                that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
-                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
-                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
-                                                                    setTermInfo(instance, instance.getParent().getId());
-                                                                    resolve3D(that.props.templateDomainIds[index]);
-                                                                });
-                                                                break;
-                                                            }
-                                                        }
-                                                    } else {
-                                                        console.log('Index not listed: ' + result[j]);
+                                                        that.state.objects.push(that.props.templateDomainNames[index]);
+                                                        break;
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                that.state.objects = $.unique(that.state.objects).sort();
+                                var objects = '';
+                                if (GEPPETTO.isKeyPressed("shift")) {
+                                    objects = 'Click to add: ';
+                                }
+                                for (i in that.state.objects) {
+                                    objects = objects + that.state.objects[i] + '\n';
+                                }
+                                that.setStatusText(objects);
                                 // update slice view
+                                that.state.loadingLabels = false;
                                 that.state.lastUpdate = 0;
                                 that.checkStack();
                             },
                             error: function (xhr, status, err) {
+                                that.state.loadingLabels = false;
                                 console.error(that.props.url, status, err.toString());
                             }.bind(this)
                         });
-                    }
-                })(i, that);
-            });
-        },
-
-        listObjects: function () {
-            if (this.state.mode == 1) {
-                var i, j, result;
-                var that = this;
-                for (i in this.state.stack) {
-                    var image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.disp.scale.x.toFixed(1) + '&dst=' + Number(this.state.dst).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0);
-                    //get image size;
-                    $.ajax({
-                        url: image + '&prl=-1,' + this.state.posX.toFixed(0) + ',' + this.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
-                        type: 'POST',
-                        success: function (data) {
-                            console.log(that.props.label[i] + ' - ' + data.trim());
-                            result = data.trim().split(':')[1].trim().split(' ');
-                            if (result !== '') {
-                                for (j in result) {
-                                    if (result[j] == '0') {
-                                        console.log(that.state.label[i]);
-                                        that.setStatusText(that.state.label[i]);
-                                    } else {
-                                        console.log('Odd value: ' + result[j].toString());
-                                    }
-                                }
-                            }
-
-                            // update slice view
-                            that.state.lastUpdate = 0;
-                            that.checkStack();
-                            that.state.loadingLabels = false;
-
-                        }.bind({that: this, i: i}),
-                        error: function (xhr, status, err) {
-                            console.error(this.props.url, status, err.toString());
-                        }.bind(this)
-                    });
-                }
+                    })(i, that);
+                });
             }
         },
 
@@ -459,11 +470,11 @@ define(function (require) {
                         }
                     }
                     var step;
-                    if (this.state.orth == 0){
+                    if (this.state.orth == 0) {
                         step = this.state.voxelZ;
-                    }else if (this.state.orth == 1){
+                    } else if (this.state.orth == 1) {
                         step = this.state.voxelY;
-                    }else if (this.state.orth == 2){
+                    } else if (this.state.orth == 2) {
                         step = this.state.voxelX;
                     }
                     for (dst = 0; -dst > min || dst < max; dst += step) {
@@ -486,7 +497,7 @@ define(function (require) {
                 }
             } else {
                 console.log('Buffering neighbouring layers (' + this.state.numTiles.toString() + ') tiles...');
-                for (j = 0; j < this.state.numTiles && j<this.state.stack.length; j++) {
+                for (j = 0; j < this.state.numTiles && j < this.state.stack.length; j++) {
                     for (i in this.state.stack) {
                         image = this.state.serverUrl.toString() + '?wlz=' + this.state.stack[i] + '&sel=0,255,255,255&mod=zeta&fxp=' + this.props.fxp.join(',') + '&scl=' + this.props.scl.toFixed(1) + '&dst=' + Number(this.state.dst - 0.1).toFixed(1) + '&pit=' + Number(this.state.pit).toFixed(0) + '&yaw=' + Number(this.state.yaw).toFixed(0) + '&rol=' + Number(this.state.rol).toFixed(0) + '&qlt=80&jtl=' + j.toString();
                         if (!PIXI.loader.resources[image]) {
@@ -516,27 +527,31 @@ define(function (require) {
                 .load();
             function loadProgressHandler(loader, resource) {
                 if (loader.progress < 100) {
-                    this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
+                    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                        this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
+                    }
                 }
             }
 
             function setup() {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
-                if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
+                if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                    this.state.buffer[-1].text = '';
+                }
             }
         },
 
         checkStack: function () {
-            if(!this._isMounted){
+            if (!this._isMounted) {
                 // check that component is still mounted
                 return;
             }
 
             if (this.disp.width > 1) {
                 if (this.state.recenter) {
-                    console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide' );
-                    this.disp.position.x = ((this.props.width/2) - (this.disp.width/2));
-                    this.disp.position.y = ((this.props.height/2) - (this.disp.height/2));
+                    console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide');
+                    this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
+                    this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
                     this.stack.position.x = 0;
                     this.stack.position.y = 0;
                     this.state.recenter = false;
@@ -544,14 +559,16 @@ define(function (require) {
                 }
             }
 
-            if (this.state.stack.length < 1){
+            if (this.state.stack.length < 1) {
                 this.state.images = [];
                 this.stack.removeChildren();
             }
 
             if (this.state.lastUpdate < (Date.now() - 2000)) {
                 this.state.lastUpdate = Date.now();
-                if (this.state.txtUpdated < Date.now() + this.state.txtStay) {this.state.buffer[-1].text = '';}
+                if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                    this.state.buffer[-1].text = '';
+                }
                 // console.log('Updating scene...');
                 this.createImages();
                 this.updateImages(this.props);
@@ -598,7 +615,7 @@ define(function (require) {
                     x += offX * this.state.tileX;
                     y += offY * this.state.tileY;
                     // console.log('Tiling: ' + [t,offX,offY,x,y,w,h]);
-                    if ((w*h == 1) || (((x * this.disp.scale.x) + this.stack.position.x) > (-((this.renderer.view.width * 1) + (this.state.tileX * 2)) + this.stack.position.x) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1) + this.stack.position.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > (-((this.renderer.view.height * 1) + (this.state.tileY * 2)) + this.stack.position.y) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1) + this.stack.position.y)))) {
+                    if ((w * h == 1) || (((x * this.disp.scale.x) + this.stack.position.x) > (-((this.renderer.view.width * 1) + (this.state.tileX * 2)) + this.stack.position.x) && ((x * this.disp.scale.x) + this.stack.position.x) < ((this.renderer.view.width * 1) + ((this.state.tileX * 1) + this.stack.position.x)) && ((y * this.disp.scale.y) + this.stack.position.y) > (-((this.renderer.view.height * 1) + (this.state.tileY * 2)) + this.stack.position.y) && ((y * this.disp.scale.y) + this.stack.position.y) < ((this.renderer.view.height * 1) + ((this.state.tileY * 1) + this.stack.position.y)))) {
                         this.state.visibleTiles.push(t);
                         for (i in this.state.stack) {
                             d = i.toString() + ',' + t.toString();
@@ -656,7 +673,7 @@ define(function (require) {
         createStatusText: function () {
             if (!this.state.buffer[-1]) {
                 var style = {
-                    font: '13px Helvetica',
+                    font: '9px Helvetica',
                     fill: '#ffffff',
                     stroke: '#000000',
                     strokeThickness: 2,
@@ -673,7 +690,7 @@ define(function (require) {
                 this.state.buffer[-1].text = this.state.text;
             }
             // fix position
-            this.state.buffer[-1].x = -this.stage.position.x+20;
+            this.state.buffer[-1].x = -this.stage.position.x + 20;
             this.state.buffer[-1].y = -this.stage.position.y;
             this.state.buffer[-1].anchor.x = 0;
             this.state.buffer[-1].anchor.y = 0;
@@ -697,8 +714,8 @@ define(function (require) {
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);
                 // recenter display for new image size keeping any stack offset.
-                this.disp.position.x = ((this.props.width/2) - (this.disp.width/2));
-                this.disp.position.y = ((this.props.height/2) - (this.disp.height/2));
+                this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
+                this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
             }
             if (nextProps.fxp !== this.props.fxp) {
                 this.state.dst = nextProps.dst;
@@ -710,13 +727,10 @@ define(function (require) {
             if (nextProps.stackX !== this.stack.position.x || nextProps.stackY !== this.stack.position.y) {
                 this.stack.position.x = nextProps.stackX;
                 this.stack.position.y = nextProps.stackY;
-                if (nextProps.stackX == -10000 && nextProps.stackY == -10000){
+                if (nextProps.stackX == -10000 && nextProps.stackY == -10000) {
                     this.state.recenter = true;
                     this.checkStack();
                 }
-            }
-            if (nextProps.mode !== this.state.mode) {
-                this.changeMode(nextProps.mode);
             }
             if (nextProps.orth !== this.state.orth) {
                 this.changeOrth(nextProps.orth);
@@ -763,27 +777,6 @@ define(function (require) {
             this.setStatusText(props.statusText);
         },
 
-        changeMode: function (mode) {
-            // console.log('Mode: ' + mode);
-            this.state.mode = mode;
-            if (mode == 0) {
-                console.log('Selection');
-                this.setStatusText('Selection');
-                this.stack.defaultCursor='pointer';
-            }else if (mode == 1) {
-                console.log('Label');
-                this.setStatusText('Hover Labels');
-                this.stack.defaultCursor='help';
-            }else if (mode == 2) {
-                console.log('Add');
-                this.setStatusText('Add Anatomy');
-                this.stack.defaultCursor='copy';
-            }else{
-                console.log('Mode:' + mode);
-                this.setStatusText('...');
-            }
-        },
-
         changeOrth: function (orth) {
             // console.log('Orth: ' + orth);
             this.state.orth = orth;
@@ -792,13 +785,13 @@ define(function (require) {
             if (orth == 0) {
                 console.log('Frontal');
                 this.setStatusText('Frontal');
-            }else if (orth == 1) {
+            } else if (orth == 1) {
                 console.log('Transverse');
                 this.setStatusText('Transverse');
-            }else if (orth == 2) {
+            } else if (orth == 2) {
                 console.log('Sagital');
                 this.setStatusText('Sagital');
-            }else {
+            } else {
                 console.log('Orth:' + orth);
                 this.setStatusText('...');
             }
@@ -824,8 +817,9 @@ define(function (require) {
                         if (PIXI.loader.resources[image] && PIXI.loader.resources[image].texture) {
                             this.state.images[d].texture = PIXI.loader.resources[image].texture;
                         } else {
-                            // console.log('Loading ' + image);
-                            this.state.buffer[-1].text = 'Loading slice ' + Number(props.dst-this.state.minDst).toFixed(1) + '...';
+                            if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+                                this.state.buffer[-1].text = 'Loading slice ' + Number(props.dst - this.state.minDst).toFixed(1) + '...';
+                            }
                             this.state.images[d].texture = PIXI.Texture.fromImage(image);
                             if (!PIXI.loader.resources[image]) {
                                 PIXI.loader.add(image, image, {
@@ -851,7 +845,7 @@ define(function (require) {
          * Animation loop for updating Pixi Canvas
          **/
         animate: function () {
-            if(this._isMounted) {
+            if (this._isMounted) {
                 // render the stage container (if the component is still mounted)
                 this.renderer.render(this.stage);
                 this.frame = requestAnimationFrame(this.animate);
@@ -862,78 +856,64 @@ define(function (require) {
             // store a reference to the data
             // the reason for this is because of multitouch
             // we want to track the movement of this particular touch
-            console.log('drag start');
             this.state.data = event.data;
             this.stack.alpha = 0.7;
             this.state.dragging = true;
-            var startPosition = this.state.data.getLocalPosition(this.disp);
+            var offPosition = this.state.data.getLocalPosition(this.disp);
             this.state.dragOffset = {
-                x: (startPosition.x - this.stack.position.x),
-                y: (startPosition.y - this.stack.position.y)
+                x: (offPosition.x - this.stack.position.x),
+                y: (offPosition.y - this.stack.position.y)
             };
-            startPosition = this.state.data.getLocalPosition(this.stack);
+            var startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
             this.state.posX = startPosition.x;
             this.state.posY = startPosition.y;
-            console.log([this.state.posX,this.state.posY]);
         },
 
         onDragEnd: function () {
             if (this.state.data !== null) {
-                console.log('drag stop');
                 this.stack.alpha = 1;
-
-                this.state.dragging = false;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = startPosition.x;
                 var newPosY = startPosition.y;
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
-                    //console.log([newPosX, newPosY]);
                     this.callObjects();
                 }
                 // set the interaction data to null
                 this.state.data = null;
+                this.state.dragging = false;
+                this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
             }
         },
 
         onHoverEvent: function (event) {
-            if (!this.state.loadingLabels) {
-                this.state.loadingLabels = true;
+            if (!this.state.loadingLabels && !this.state.dragging) {
                 this.state.data = event.data;
                 var currentPosition = this.state.data.getLocalPosition(this.stack);
-                //console.log(currentPosition);
                 var xOffset = this.state.imageX / this.disp.scale.x;
                 var yOffset = this.state.imageY / this.disp.scale.y;
-                //console.log(xOffset);
-                //console.log(yOffset);
                 this.state.posX = (currentPosition.x);
                 this.state.posY = (currentPosition.y);
-                //console.log(this.state.posX);
-                //console.log(this.state.posY);
                 if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {
                     this.listObjects();
                 }
+            }
+            if (GEPPETTO.isKeyPressed("shift")) {
+                this.stack.defaultCursor = 'copy';
+            } else {
+                this.stack.defaultCursor = 'pointer';
             }
         },
 
         onDragMove: function (event) {
             if (this.state.dragging) {
-                var startPosition = this.state.dragOffset;
-                console.log('Start:' + JSON.stringify(startPosition));
                 var newPosition = this.state.data.getLocalPosition(this.stack);
                 window.test = this.state.data;
-                console.log('New:' + JSON.stringify(newPosition));
-                // only allow jumps of < +/- dragMax
-                var dragMax = this.state.dragMax / this.disp.scale.x;
-                if ((newPosition.x + dragMax) > startPosition.x && (newPosition.x - dragMax) < startPosition.x && (newPosition.y + dragMax) > startPosition.y && (newPosition.y - dragMax) < startPosition.y) {
-                    this.stack.position.x += newPosition.x - startPosition.x;
-                    this.stack.position.y += newPosition.y - startPosition.y;
-                    console.log(JSON.stringify(this.stack.position));
-                    this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
-                    this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
-                    // update slice view
-                    this.checkStack();
-                }
+                this.stack.position.x += newPosition.x - this.state.dragOffset.x;
+                this.stack.position.y += newPosition.y - this.state.dragOffset.y;
+                this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
+                // update slice view
+                this.checkStack();
             } else {
                 this.onHoverEvent(event);
             }
@@ -962,6 +942,8 @@ define(function (require) {
                 text: '',
                 stackX: -10000,
                 stackY: -10000,
+                imageX: 1024,
+                imageY: 1024,
                 fxp: [511, 255, 108],
                 pit: 0,
                 yaw: 0,
@@ -977,9 +959,9 @@ define(function (require) {
                 stack: [],
                 label: [],
                 id: [],
-                mode: 0,
-                plane: null
-            }; // mode: 0=select, 1=label, 2=add.
+                plane: null,
+                initalised: false
+            }
         },
 
         onWheelEvent: function (e) {
@@ -995,24 +977,24 @@ define(function (require) {
                 var step = -1 * e.wheelDelta;
                 // Max step of imposed
                 if (step > 0) {
-                    if (this.state.orth == 0){
+                    if (this.state.orth == 0) {
                         step = this.state.voxelZ;
-                    }else if (this.state.orth == 1){
+                    } else if (this.state.orth == 1) {
                         step = this.state.voxelY;
-                    }else if (this.state.orth == 2){
+                    } else if (this.state.orth == 2) {
                         step = this.state.voxelX;
                     }
                 } else if (step < 0) {
-                    if (this.state.orth == 0){
+                    if (this.state.orth == 0) {
                         step = -this.state.voxelZ;
-                    }else if (this.state.orth == 1){
+                    } else if (this.state.orth == 1) {
                         step = -this.state.voxelY;
-                    }else if (this.state.orth == 2){
+                    } else if (this.state.orth == 2) {
                         step = -this.state.voxelX;
                     }
                 }
                 newdst += step;
-                
+
                 if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                     this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
                 } else if (newdst < this.state.maxDst) {
@@ -1050,8 +1032,6 @@ define(function (require) {
         },
 
         componentWillReceiveProps: function (nextProps) {
-            // console.log('Recieved Props:');
-            // console.log(nextProps);
             if (nextProps.data && nextProps.data != null) {
                 if (nextProps.data.instances && nextProps.data.instances != null) {
                     this.handleInstances(nextProps.data.instances);
@@ -1082,15 +1062,15 @@ define(function (require) {
                         server = data.serverUrl;
                         files.push(data.fileLocation);
                         // Take multiple ID's for template
-                        if (typeof this.props.config.templateId !== 'undefined' && typeof this.props.config.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.config.templateId){
+                        if (typeof this.props.config.templateId !== 'undefined' && typeof this.props.config.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.config.templateId) {
                             ids.push(this.props.config.templateDomainIds);
-                        }else {
+                        } else {
                             ids.push([instances[instance].parent.getId()]);
                         }
                         labels.push(instances[instance].parent.getName());
-                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId()+'_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId()+'_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId()+'_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId()+'_swc'].isSelected())){
+                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
                             colors.push('0Xffcc00'); // selected
-                        }else {
+                        } else {
                             colors.push(instances[instance].parent.getColor());
                         }
                     }
@@ -1118,9 +1098,8 @@ define(function (require) {
                     this.setState({color: colors});
                     // console.log('updating colours to ' + JSON.stringify(colors));
                 }
-            }else{
-                console.log('No instances sent');
-                this.setState({label:[],stack:[],id:[],color:[]});
+            } else {
+                this.setState({label: [], stack: [], id: [], color: []});
             }
         },
 
@@ -1144,17 +1123,9 @@ define(function (require) {
             }
         },
 
-        toggleMode: function () {
-            let mode = this.state.mode += 1;
-            if (mode > 2) {
-                mode = 0;
-            }
-            this.setState({mode: mode});
-        },
-
         toggleOrth: function () {
-            let orth = this.state.orth +=1;
-            var pit,yaw,rol;
+            let orth = this.state.orth += 1;
+            var pit, yaw, rol;
             if (orth > 2) {
                 orth = 0;
                 this.state.orth = orth;
@@ -1163,11 +1134,11 @@ define(function (require) {
                 pit = 0;
                 yaw = 0;
                 rol = 0;
-            }else if (orth == 1) {
+            } else if (orth == 1) {
                 pit = 90;
                 yaw = 90;
                 rol = 90;
-            }else if (orth == 2) {
+            } else if (orth == 2) {
                 pit = 90;
                 yaw = 0;
                 rol = 90;
@@ -1226,11 +1197,16 @@ define(function (require) {
          * Event handler for clicking Home.
          **/
         onHome: function () {
-            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'View reset', zoomLevel: 0.5});
+            var autoScale = Number(Math.min(this.props.data.height / this.state.imageY, this.props.data.width / this.state.imageX).toFixed(1));
+            this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'Stack Centred', zoomLevel: autoScale});
         },
 
         onExtentChange: function (data) {
             this.setState(data);
+            if (!this.state.initalised && JSON.stringify(data).indexOf('imageX')>-1){
+                this.state.initalised = true;
+                this.onHome();
+            }
         },
 
         addWheelListener: function (elem, callback, useCapture) {
@@ -1286,7 +1262,7 @@ define(function (require) {
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
             var startOffset = 2.5;
-            var displayArea =  this.props.data.id + 'displayArea';
+            var displayArea = this.props.data.id + 'displayArea';
 
             var markup = '';
             if (this.state.stack.length > 0) {
@@ -1299,7 +1275,7 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={homeClass} onClick={this.onHome}/>
+                        }} className={homeClass} onClick={this.onHome} title={'Center Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
@@ -1307,7 +1283,7 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={zoomInClass} onClick={this.onZoomIn}/>
+                        }} className={zoomInClass} onClick={this.onZoomIn} title={'Zoom In'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
@@ -1315,54 +1291,55 @@ define(function (require) {
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={zoomOutClass} onClick={this.onZoomOut}/>
+                        }} className={zoomOutClass} onClick={this.onZoomOut} title={'Zoom Out'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 70,
+                            top: startOffset + 64,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={stepInClass} onClick={this.onStepIn}/>
+                        }} className={stepInClass} onClick={this.onStepIn} title={'Step Into Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 55,
+                            top: startOffset + 52,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={stepOutClass} onClick={this.onStepOut}/>
+                        }} className={stepOutClass} onClick={this.onStepOut} title={'Step Out Of Stack'}/>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
-                            top: startOffset + 90,
+                            top: startOffset + 83,
                             padding: 0,
                             border: 0,
                             background: 'transparent'
-                        }} className={orthClass} onClick={this.toggleOrth}/>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 110,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={pointerClass} onClick={this.toggleMode}/>
-                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst} serverUrl={this.props.config.serverUrl}
+                        }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
+                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
+                                serverUrl={this.props.config.serverUrl}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                                 stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                                 statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
                                 scl={this.state.scl} orth={this.state.orth}
                                 label={this.state.label} id={this.state.id} height={this.props.data.height}
-                                width={this.props.data.width} mode={this.state.mode} voxelX={this.state.voxelX}
+                                width={this.props.data.width} voxelX={this.state.voxelX}
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
-                                templateId={this.props.config.templateId} templateDomainIds={this.props.config.templateDomainIds}
+                                templateId={this.props.config.templateId}
+                                templateDomainIds={this.props.config.templateDomainIds}
                                 templateDomainNames={this.props.config.templateDomainNames}/>
                     </div>
                 );
             } else {
                 markup = (
-                    <div id={displayArea} style={{position: 'absolute', top: -1, left: -1, background: 'black', width: this.props.data.width, height: this.props.data.height}}>
+                    <div id={displayArea} style={{
+                        position: 'absolute',
+                        top: -1,
+                        left: -1,
+                        background: 'black',
+                        width: this.props.data.width,
+                        height: this.props.data.height
+                    }}>
                     </div>
                 );
             }

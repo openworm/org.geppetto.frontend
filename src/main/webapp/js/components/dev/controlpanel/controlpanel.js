@@ -170,6 +170,30 @@ define(function (require) {
         }
     });
 
+    GEPPETTO.InputComponent = React.createClass({
+        render: function () {
+            // TODO: fetch unit
+            var unit = null;
+            // TODO: fetch value
+            var initialValue = null;
+            // TODO: get and ready action string
+            var actionStr = null;
+
+            var onInputChangeHandler = function(event){
+                var newVal = event.target.value;
+                actionStr = actionStr.replace(/\$VALUE\$/gi, newVal);
+                GEPPETTO.Console.executeCommand(actionStr);
+            };
+
+            return (
+                <div>
+                    <input value={initialValue} onChange={onInputChangeHandler} />
+                    <span>{unit}</span>
+                </div>
+            )
+        }
+    });
+
     GEPPETTO.ControlsComponent = React.createClass({
         colorPickerBtnId: '',
         colorPickerActionFn: '',

@@ -1705,6 +1705,9 @@ define(function (require) {
                 return path.length - path.replace(/\./g, '').length;
             },
 
+            /**
+             * Utility function to print instance tree to console
+             */
             printInstanceStats: function () {
                 var stats = {};
                 for (var i = 0; i < this.allPaths.length; i++) {
@@ -1716,7 +1719,6 @@ define(function (require) {
                 }
                 console.log(stats);
             },
-
 
             /**
              * Build list of potential instance paths (excluding connection instances)

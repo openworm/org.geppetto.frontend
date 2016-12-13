@@ -103,7 +103,11 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 doPrePersistenceExperimentsTableButtonsCheck(test);
 
-                this.mouseEvent('click', 'tr.experimentsTableColumn:nth-child(1)', "opening first experiment row");
+                // open first experiment row
+                this.evaluate(function() {
+                    $('tr.experimentsTableColumn:nth-child(1)').click();
+                });
+                this.mouseEvent('click', 'a[href="#experiments"]', "switch to experiments tab");
                 doExperimentsTableRowCheck(test);
             });
             casper.then(function () {
@@ -244,9 +248,8 @@ function doConsoleTest(test) {
 }
 
 function doExperimentsTableRowCheck(test) {
-    test.assertVisible('td[name="parameters"]', "Parameters column content exists");
-
-    test.assertVisible('td[name="variables"]', "Variables column content exists");
+    test.assertVisible('td[name=variables]', "Variables column content exists");
+    test.assertVisible('td[name=parameters]', "Parameters column content exists");
 }
 
 function doPrePersistenceExperimentsTableButtonsCheck(test) {

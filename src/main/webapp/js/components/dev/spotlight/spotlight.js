@@ -147,10 +147,11 @@ define(function (require) {
             //fire key event on paste
             typeAhead.on("paste", function(){$(this).trigger("keypress",{ keyCode: 13 });});
             
-            GEPPETTO.on(Events.Experiment_loaded, function () {
+            GEPPETTO.on(Events.Model_loaded, function () {
             	if(that.initialised){
             		that.initialised=false;
             		that.instances.initialize(true);
+                    that.addData(GEPPETTO.ModelFactory.allPathsIndexing);
             	}
             });
 

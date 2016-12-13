@@ -18,6 +18,7 @@ define(function (require) {
             linesThreshold: 2000,
             aboveLinesThreshold: false,
             wireframe: false,
+            isAnimated: false,
 
             /**
              * Populate the scene with given instances
@@ -1241,6 +1242,7 @@ define(function (require) {
 
                 GEPPETTO.getVARS().controls.update();
 
+                this.isAnimated = true;
                 requestAnimationFrame(GEPPETTO.SceneController.animate);
                 GEPPETTO.render();
 

@@ -80,6 +80,7 @@ casper.test.begin('Geppetto control panel tests', 6, function suite(test) {
                         selectElement[0].dispatchEvent(event);
                     });
 
+                    // not ideal - react injects strange markup in strings
                     this.waitForText('<div id="query-results-label"><!-- react-text: 9 -->84<!-- /react-text --><!-- react-text: 10 --> results<!-- /react-text --></div>', function () {
                         runQueryTests();
                     }, null, 10000);
@@ -93,7 +94,7 @@ casper.test.begin('Geppetto control panel tests', 6, function suite(test) {
         casper.mouseEvent('click', 'button[id=run-query-btn]', 'Running query');
 
         casper.waitForText('accessory medulla', function () {
-            this.echo("Results appeared");
+            this.echo("Results rows appeared");
             this.mouseEvent('click', 'button[id=FBbt_00045003_info_queryResults_btn]', 'Click on results info for accessory medulla');
 
             // wait for text to appear in the term info widget
@@ -108,18 +109,3 @@ casper.test.begin('Geppetto control panel tests', 6, function suite(test) {
         test.done();
     });
 });
-
-
-// TODO: wait for project to load, check we have query control and term info on the page
-
-    // TODO: open query control, put query in the box
-
-    // TODO: wait for results count, check that number of results is as expected
-
-    // TODO: run query
-
-    // TODO: wait for results
-
-    // TODO: check results are as expected
-
-    // TODO: click on image example, check that term info is populated as epxected

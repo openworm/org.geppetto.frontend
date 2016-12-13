@@ -772,7 +772,12 @@ define(function (require) {
                     else{
                     	//the specified coordinate
                     	var p = connection.getA().getPoint();
-                    	origin= new THREE.Vector3(p.x+mesh.position.x,p.y+mesh.position.y,p.z+mesh.position.z);
+                    	if (type == GEPPETTO.Resources.OUTPUT) {
+                    		origin= new THREE.Vector3(p.x+mesh.position.x,p.y+mesh.position.y,p.z+mesh.position.z);
+                    	}
+                    	else if(type == GEPPETTO.Resources.INPUT) {
+                    		origin= new THREE.Vector3(p.x+otherEndMesh.position.x,p.y+otherEndMesh.position.y,p.z+otherEndMesh.position.z);
+                    	}
                     }
 
                     if(connection.getB().getPoint()==undefined){
@@ -782,7 +787,12 @@ define(function (require) {
                     else{
                     	//the specified coordinate
                     	var p = connection.getB().getPoint();
-                    	destination= new THREE.Vector3(p.x+otherEndMesh.position.x,p.y+otherEndMesh.position.y,p.z+otherEndMesh.position.z);
+                    	if (type == GEPPETTO.Resources.OUTPUT) {
+                    		destination= new THREE.Vector3(p.x+otherEndMesh.position.x,p.y+otherEndMesh.position.y,p.z+otherEndMesh.position.z);
+                    	}
+                    	else if(type == GEPPETTO.Resources.INPUT) {
+                    		destination= new THREE.Vector3(p.x+mesh.position.x,p.y+mesh.position.y,p.z+mesh.position.z);
+                    	}
                     }
                     
                     var geometry = new THREE.Geometry();
@@ -792,8 +802,8 @@ define(function (require) {
                     geometry.dynamic = true;
 
                     var colour = null;
-                    var thickness = 0;
 
+                    
                     if (type == GEPPETTO.Resources.INPUT) {
 
                         colour = GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED;
@@ -801,26 +811,15 @@ define(function (require) {
                         // figure out if connection is both, input and output
                         if (outputs[otherEndPath]) {
                             colour = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
-
-                            var lastLine = outputs[otherEndPath][outputs[otherEndPath].length - 1];
-                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
-                            delete GEPPETTO.getVARS().connectionLines[lastLine];
-                            thickness = outputs[otherEndPath].length;
                         }
 
                         if (inputs[otherEndPath]) {
-                            var lastLine = inputs[otherEndPath][inputs[otherEndPath].length - 1];
-                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
-                            delete GEPPETTO.getVARS().connectionLines[lastLine];
                             inputs[otherEndPath].push(connection.getInstancePath());
                         }
                         else {
                             inputs[otherEndPath] = [];
                             inputs[otherEndPath].push(connection.getInstancePath());
                         }
-
-                        thickness = thickness + inputs[otherEndPath].length;
-
                     }
 
                     else if (type == GEPPETTO.Resources.OUTPUT) {
@@ -829,28 +828,18 @@ define(function (require) {
                         // figure out if connection is both, input and output
                         if (inputs[otherEndPath]) {
                             colour = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
-                            var lastLine = inputs[otherEndPath][inputs[otherEndPath].length - 1];
-                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
-                            delete GEPPETTO.getVARS().connectionLines[lastLine];
-                            thickness = inputs[otherEndPath].length;
                         }
 
                         if (outputs[otherEndPath]) {
-                            var lastLine = outputs[otherEndPath][outputs[otherEndPath].length - 1];
-                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
-                            delete GEPPETTO.getVARS().connectionLines[lastLine];
                             outputs[otherEndPath].push(connection.getInstancePath());
                         }
                         else {
                             outputs[otherEndPath] = [];
                             outputs[otherEndPath].push(connection.getInstancePath());
                         }
-
-                        thickness = thickness + outputs[otherEndPath].length;
-
                     }
 
-                    var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1, linewidth: thickness});
+                    var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1});
                     material.color.setHex(colour);
 
                     var line = new THREE.LineSegments(geometry, material);

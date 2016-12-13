@@ -44,9 +44,12 @@ define(function (require) {
      */
     return AWidgetController.View.extend({
 
-        initialize: function () {
+        initialize: function (config) {
             this.widgets = Array();
             this.history = [];
+            if(config!=null || undefined){
+            	this.buttonBarConfig = config.buttonBarConfiguration;
+            }
         },
 
         /**

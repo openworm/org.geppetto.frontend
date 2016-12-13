@@ -41,6 +41,10 @@ define(function (require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 	var Type = require('model/Type');
+	var React = require('react');
+    var ReactDOM = require('react-dom');
+    var ButtonBarComponent = require('jsx!widgets/popup/ButtonBarComponent');
+
 	// var anchorme = require('anchorme');
 	/**
 	 * Private function to hookup custom event handlers
@@ -88,7 +92,9 @@ define(function (require) {
 	return Widget.View.extend({
 
 		data: null,
-
+		buttonBarConfig : null,
+		buttonBarControls : null,
+		
 		/**
 		 * Initialize the popup widget
 		 */
@@ -182,6 +188,10 @@ define(function (require) {
 				changeIcon($(e.target));
 			});
 			$("#" + this.getId() + " .slickdiv").slick();
+			
+			if(this.buttonBarConfig !=null || undefined){
+				this.renderButtonBar();
+			}
 			return this;
 		},
 
@@ -295,6 +305,32 @@ define(function (require) {
 			// trigger routine that hooks up handlers
 			hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
 			return this;
-		}
+		},
+		
+		renderButtonBar: function(){
+			var buttonBarContainer = 'button-bar-container-' + this.id;
+			var barDiv = 'bar-div-'+this.id;
+			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" +
+									barDiv+"' class='button-bar-div'></div></div>");
+			
+			var dataInstancePath;
+			if(this.data!=null || undefined){
+				dataInstancePath = this.data.getInstancePath();
+			}
+			
+            ReactDOM.render(
+                React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,instancePath : dataInstancePath}),
+                document.getElementById(barDiv)
+            );
+        },
+        
+        setButtonBarControls : function(controls){
+        	this.buttonBarControls = controls;
+        },
+        
+        setButtonBarConfiguration : function(configuration){
+        	this.buttonBarConfig = configuration;
+        	this.renderButtonBar();
+        }
 	});
 });

@@ -86,12 +86,8 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         }
 
         casper.then(function () {
-            // wait for page to finish loading
-            this.echo("Waiting for load project logo to stop spinning");
-            casper.waitWhileSelector('div.spinner-container > div.fa-spin', function () {
-                doExperimentTableTest(test);
-                doConsoleTest(test);
-            }, null, 20000);
+            doExperimentTableTest(test);
+            doConsoleTest(test);
         });
 
         casper.then(function () {

@@ -101,17 +101,28 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         //do checks on the state of the project if it is not persisted
         if (persisted == false) {
             casper.then(function () {
+                // make sure experiment panel is open
+                this.evaluate(function() {
+                    $('a[href=experiments]').click();
+                });
+
                 //roll over the experiments row
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 doPrePersistenceExperimentsTableButtonsCheck(test);
-
-                // open first experiment row
-                this.evaluate(function() {
-                    $('tr.experimentsTableColumn:nth-child(1)').click();
-                });
-                this.mouseEvent('click', 'a[href="#experiments"]', "switch to experiments tab");
-                doExperimentsTableRowCheck(test);
             });
+
+            casper.then(function () {
+                this.echo("Checking content of experiment row");
+                // test or wait for control panel stuff to be there
+                if(this.exists('a[href="#experiments"]')){
+                    doExperimentsTableRowTests(test);
+                } else {
+                    this.waitForSelector('a[href="#experiments"]', function(){
+                        doExperimentsTableRowTests(test);
+                    }, null, 10000);
+                }
+            });
+
             casper.then(function () {
                 doPrePersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
             });
@@ -201,6 +212,28 @@ function doExperimentTableTest(test) {
     });
 }
 
+function doExperimentsTableRowTests(test){
+    casper.echo("Opening experiments panel");
+
+    // open first experiment row
+    casper.echo("Opening first experiment row");
+    casper.evaluate(function() {
+        $('tr.experimentsTableColumn:nth-child(1)').click();
+    });
+
+    casper.echo("Waiting for row contents to appear");
+    // make sure panel is open
+    casper.evaluate(function() {
+        if(!$('#experimentsOutput').is(':visible')){
+            $('#experimentsButton').click();
+        }
+    });
+    casper.waitUntilVisible('td[name=variables]', function(){
+        test.assertVisible('td[name=variables]', "Variables column content exists");
+        test.assertVisible('td[name=parameters]', "Parameters column content exists");
+    }, null, 10000);
+}
+
 function doConsoleTest(test) {
     casper.then(function () {
         test.assertExists('a[aria-controls="console"]', "Console tab anchor is present");
@@ -258,13 +291,7 @@ function doConsoleTest(test) {
     });
 }
 
-function doExperimentsTableRowCheck(test) {
-    test.assertVisible('td[name=variables]', "Variables column content exists");
-    test.assertVisible('td[name=parameters]', "Parameters column content exists");
-}
-
 function doPrePersistenceExperimentsTableButtonsCheck(test) {
-
     //Check presence of experiment console buttons before persistence
     casper.waitForSelector('a.activeIcon', function () {
         test.assertNotVisible('a.activeIcon', "active button exists and is correctly not enabled");

@@ -189,7 +189,7 @@ define(function (require) {
 			});
 			$("#" + this.getId() + " .slickdiv").slick();
 			
-			if(this.buttonBarConfig !=null || undefined){
+			if(this.buttonBarConfig!=null && this.buttonBarConfig!=undefined){
 				this.renderButtonBar();
 			}
 			return this;
@@ -310,8 +310,7 @@ define(function (require) {
 		renderButtonBar: function(){
 			var buttonBarContainer = 'button-bar-container-' + this.id;
 			var barDiv = 'bar-div-'+this.id;
-			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" +
-									barDiv+"' class='button-bar-div'></div></div>");
+			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" + barDiv+"' class='button-bar-div'></div></div>");
 			
 			var dataInstancePath;
 			if(this.data!=null || undefined){

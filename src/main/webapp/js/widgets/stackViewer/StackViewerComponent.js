@@ -893,6 +893,9 @@ define(function (require) {
                 //console.log('DragEnd:'+JSON.stringify(startPosition));
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
                     this.callObjects();
+                    this.state.oldX = newPosX;
+                    this.state.oldY = newPosY;
+                    this.state.hoverTime = Date.now();
                 }
                 // set the interaction data to null
                 this.state.data = null;

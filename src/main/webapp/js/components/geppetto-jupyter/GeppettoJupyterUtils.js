@@ -3,7 +3,6 @@ define(function (require, exports, module) {
     var geppettoCommonLibrary = require('json!./GeppettoCommonLibrary.json');
 
     function getTypeById(typeId){
-        console.log("get type by id");
         for (var typeIndex in geppettoCommonLibrary.types){
             if (geppettoCommonLibrary.types[typeIndex].id == typeId){
                 return "types." + typeIndex;

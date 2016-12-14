@@ -38,6 +38,8 @@ define(function (require) {
                 numTiles: 1,
                 posX: 0,
                 posY: 0,
+                oldX: 0,
+                oldY: 0,
                 loadingLabels: false,
                 orth: this.props.orth,
                 data: {},
@@ -903,9 +905,11 @@ define(function (require) {
             if (!this.state.loadingLabels && !this.state.dragging) {
                 repeat = typeof repeat !== 'undefined' ? repeat : true;
                 var currentPosition = this.renderer.plugins.interaction.mouse.getLocalPosition(this.stack);
-                if (this.state.hoverTime < Date.now() - 1000 && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
+                if (this.state.hoverTime < Date.now() - 1000 && !(this.state.posX == this.state.oldX && this.state.posY == this.state.oldY) && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
                     this.listObjects();
                     this.state.hoverTime = Date.now();
+                    this.state.oldX = currentPosition.x;
+                    this.state.oldY = currentPosition.y;
                 }else{
                     this.state.posX = currentPosition.x;
                     this.state.posY = currentPosition.y;

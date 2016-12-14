@@ -188,7 +188,10 @@ function doExperimentTableTest(test) {
     });
 
     casper.then(function () {
-        this.click('a[href="#experiments"]', "Opening experiment console");
+        this.echo("Opening experiment console");
+        this.evaluate(function() {
+            $('a[href=#experiments]').click();
+        });
 
         this.waitUntilVisible('div#experiments', function () {
             test.assertVisible('div#experiments', "The experiment panel is correctly open.");

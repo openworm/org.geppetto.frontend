@@ -52,17 +52,17 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
 
     casper.then(function () {
         testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
-            false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay');
+            false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay', true);
     });
 
     casper.then(function () {
         testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
-            false, 'c302_A_Pharyngeal.M1[0].v', 'c302_A_Pharyngeal.MI[0].C')
+            false, 'c302_A_Pharyngeal.M1[0].v', 'c302_A_Pharyngeal.MI[0].C', false);
     });
 
     casper.then(function () {
         testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-            false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay')
+            false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay', false);
     });
 
     //TODO: log back in as other users. Check more things
@@ -74,7 +74,7 @@ casper.test.begin('Geppetto basic tests', 99, function suite(test) {
 });
 
 
-function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter) {
+function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter, testConsole) {
 
     casper.thenOpen(url, function () {
         this.echo("Loading an external model that is not persisted at " + url);
@@ -87,7 +87,9 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
         casper.then(function () {
             doExperimentTableTest(test);
-            doConsoleTest(test);
+            if(testConsole){
+                doConsoleTest(test);
+            }
         });
 
         casper.then(function () {
@@ -214,7 +216,10 @@ function doConsoleTest(test) {
         this.waitUntilVisible('div#console', function () {
             test.assertVisible('div#console', "The console panel is correctly open.");
             //type into console command (getTimeSeries()) half finished for state variable
-            casper.sendKeys('textarea#commandInputArea', "hhcell.hhpop[0].v.getTi", {keepFocus: true});
+            casper.evaluate(function() {
+                $('textarea#commandInputArea').val('hhcell.hhpop[0].v.getTi');
+                $('textarea#commandInputArea').trigger('keydown');
+            });
             casper.wait(200, function () {
                 var nameCount = casper.evaluate(function () {
                     //retrieve console input via jquery
@@ -234,7 +239,10 @@ function doConsoleTest(test) {
         //type into console command (isSelected()) half finished for object, if
         //updated capability worked then isSelected() method from object VisualCapability
         //will be part of object hhcell
-        casper.sendKeys('textarea#commandInputArea', "hhcell.isS", {keepFocus: true});
+        casper.evaluate(function() {
+            $('textarea#commandInputArea').val('hhcell.isS');
+            $('textarea#commandInputArea').trigger('keydown');
+        });
         casper.wait(200, function () {
             var nameCount = casper.evaluate(function () {
                 //retrieve console input via jquery

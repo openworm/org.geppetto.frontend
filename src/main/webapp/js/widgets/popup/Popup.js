@@ -347,7 +347,9 @@ define(function (require) {
         
         setButtonBarConfiguration : function(configuration){
         	this.buttonBarConfig = configuration;
-        	this.renderButtonBar();
+        	if(this.data!=null||undefined){
+        		this.renderButtonBar();
+        	}
         }
 	});
 });

@@ -387,6 +387,7 @@ define(function (require) {
             if (!this.state.loadingLabels) {
                 this.state.objects = [];
                 var i, j, result;
+                var callX = that.state.posX.toFixed(0), callY = that.state.posY.toFixed(0);
                 var that = this;
                 $.each(this.state.stack, function (i, item) {
                     (function (i, that) {
@@ -396,23 +397,26 @@ define(function (require) {
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({
-                            url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
+                            url: image + '&prl=-1,' + callX + ',' + callY + '&obj=Wlz-foreground-objects',
                             type: 'POST',
                             success: function (data) {
                                 result = data.trim().split(':')[1].trim().split(' ');
                                 if (result !== '') {
-                                    for (j in result) {
-                                        if (result[j].trim() !== '') {
-                                            var index = Number(result[j]);
-                                            if (i !== 0 || index !== 0) { // don't select template
-                                                if (index == 0) {
-                                                    if (!GEPPETTO.isKeyPressed("shift")) {
-                                                        that.state.objects.push(that.state.label[i]);
-                                                    }
-                                                } else {
-                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                        that.state.objects.push(that.props.templateDomainNames[index]);
-                                                        break;
+                                    var currentPosition = that.renderer.plugins.interaction.mouse.getLocalPosition(that.stack);
+                                    if (callX == currentPosition.x.toFixed(0) && callY == currentPosition.y.toFixed(0)) {
+                                        for (j in result) {
+                                            if (result[j].trim() !== '') {
+                                                var index = Number(result[j]);
+                                                if (i !== 0 || index !== 0) { // don't select template
+                                                    if (index == 0) {
+                                                        if (!GEPPETTO.isKeyPressed("shift")) {
+                                                            that.state.objects.push(that.state.label[i]);
+                                                        }
+                                                    } else {
+                                                        if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                            that.state.objects.push(that.props.templateDomainNames[index]);
+                                                            break;
+                                                        }
                                                     }
                                                 }
                                             }
@@ -879,8 +883,8 @@ define(function (require) {
             //console.log('DragStartOffset:'+JSON.stringify(this.state.dragOffset));
             var startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
-            this.state.posX = startPosition.x;
-            this.state.posY = startPosition.y;
+            this.state.posX = Number(startPosition.x.toFixed(0));
+            this.state.posY = Number(startPosition.y.toFixed(0));
             //console.log('DragStart:'+JSON.stringify(startPosition));
         },
 
@@ -888,8 +892,8 @@ define(function (require) {
             if (this.state.data !== null) {
                 this.stack.alpha = 1;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
-                var newPosX = startPosition.x;
-                var newPosY = startPosition.y;
+                var newPosX = Number(startPosition.x.toFixed(0));
+                var newPosY = Number(startPosition.y.toFixed(0));
                 //console.log('DragEnd:'+JSON.stringify(startPosition));
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
                     this.callObjects();
@@ -908,6 +912,8 @@ define(function (require) {
             if (!this.state.loadingLabels && !this.state.dragging) {
                 repeat = typeof repeat !== 'undefined' ? repeat : true;
                 var currentPosition = this.renderer.plugins.interaction.mouse.getLocalPosition(this.stack);
+                currentPosition.x = Number(currentPosition.x.toFixed(0));
+                currentPosition.y = Number(currentPosition.y.toFixed(0));
                 if (this.state.hoverTime < Date.now() - 1000 && !(this.state.posX == this.state.oldX && this.state.posY == this.state.oldY) && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
                     this.listObjects();
                     this.state.hoverTime = Date.now();

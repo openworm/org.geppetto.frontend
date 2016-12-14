@@ -43,16 +43,24 @@ define(function (require) {
 
 			if(this.props.buttonBarConfig.Events !=null || undefined){
 				this.props.geppetto.on(Events.Visibility_changed, function (instance) {
-					if(that.props!=null || undefined){
+					if(!$.isEmptyObject(that.props) || undefined){
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
+						}else{
+							if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
+								that.forceUpdate();
+							}
 						}
 					}
 				});
 				this.props.geppetto.on(Events.Select, function (instance) {
-					if(that.props!=null || undefined){
+					if(!$.isEmptyObject(that.props) || undefined){
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
+						}else{
+							if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
+								that.forceUpdate();
+							}
 						}
 					}
 				});  

@@ -46,51 +46,51 @@ define(function(require) {
         popoverTemplate: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div><button class="btn btn-info tutorial-next"><i class="icon-check"></i></button></div>',
 
         panLeft: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraPan(-0.01, 0)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraPan(-0.01, 0)');
         },
 
         panRight: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraPan(0.01, 0)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0.01, 0)');
         },
 
         panUp: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraPan(0, -0.01)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, -0.01)');
         },
 
         panDown: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraPan(0, 0.01)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraPan(0, 0.01)');
         },
 
         rotateUp: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraRotate(0, 0.01)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, 0.01)');
         },
 
         rotateDown: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraRotate(0, -0.01)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0, -0.01)');
         },
 
         rotateLeft: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraRotate(-0.01, 0)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(-0.01, 0)');
         },
 
         rotateRight: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraRotate(0.01, 0)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraRotate(0.01, 0)');
         },
 
         rotate: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.autoRotate()');
+            GEPPETTO.Console.executeCommand('G.autoRotate()');
         },
         
         cameraHome: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.resetCamera()');
+            GEPPETTO.Console.executeCommand('G.resetCamera()');
         },
 
         zoomIn: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraZoom(-0.01)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraZoom(-0.01)');
         },
 
         zoomOut: function() {
-            GEPPETTO.Console.executeImplicitCommand('G.incrementCameraZoom(+0.01)');
+            GEPPETTO.Console.executeCommand('G.incrementCameraZoom(+0.01)');
         },
 
         componentDidMount: function() {

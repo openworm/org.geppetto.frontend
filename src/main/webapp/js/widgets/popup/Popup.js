@@ -190,7 +190,7 @@ define(function (require) {
 			});
 			$("#" + this.getId() + " .slickdiv").slick();
 			
-			if(this.buttonBarConfig !=null || undefined){
+			if(this.buttonBarConfig!=null && this.buttonBarConfig!=undefined){
 				this.renderButtonBar();
 			}
 			return this;
@@ -321,7 +321,7 @@ define(function (require) {
 									barDiv+"' class='button-bar-div'></div></div>");
 			
 			this.setSize(this.size.height,this.size.width);
-			
+
 			var dataInstancePath;
 			if(this.data!=null || undefined){
 				dataInstancePath = this.data.getInstancePath();

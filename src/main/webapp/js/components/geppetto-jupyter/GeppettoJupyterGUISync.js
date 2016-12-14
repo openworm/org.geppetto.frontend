@@ -13,9 +13,9 @@ define(function (require, exports, module) {
 
 	var $ = require('jquery');
 
-	var PanelModel = jupyter_widgets.WidgetModel.extend({
+	var PanelSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: "PanelModel",
+			_model_name: "PanelSync",
 			_model_module: "panel",
 
 			items: [],
@@ -26,7 +26,7 @@ define(function (require, exports, module) {
 		}),
 
 		initialize: function () {
-			PanelModel.__super__.initialize.apply(this);
+			PanelSync.__super__.initialize.apply(this);
 			this.on("msg:custom", this.handle_custom_messages, this);
 		},
 
@@ -78,9 +78,9 @@ define(function (require, exports, module) {
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 
-	var ComponentModel = jupyter_widgets.WidgetModel.extend({
+	var ComponentSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: 'ComponentModel',
+			_model_name: 'ComponentSync',
 			_model_module: "component",
 
 			sync_value: undefined,
@@ -89,7 +89,7 @@ define(function (require, exports, module) {
 		}),
 
 		initialize: function (options) {
-			ComponentModel.__super__.initialize.apply(this, arguments);
+			ComponentSync.__super__.initialize.apply(this, arguments);
 			this.on("change:sync_value", function (model, value, options) {
 				model.get('parent').forceRender();
 			});
@@ -142,7 +142,7 @@ define(function (require, exports, module) {
 	});
 
 	module.exports = {
-		PanelModel: PanelModel,
-		ComponentModel: ComponentModel
+		PanelSync: PanelSync,
+		ComponentSync: ComponentSync
 	};
 });

@@ -899,14 +899,21 @@ define(function (require) {
             }
         },
 
-        onHoverEvent: function (event) {
+        onHoverEvent: function (event, repeat) {
             if (!this.state.loadingLabels && !this.state.dragging) {
-                if (this.state.hoverTime < Date.now() - 1000) {
-                    var currentPosition = event.data.getLocalPosition(this.stack);
-                    this.state.posX = currentPosition.x;
-                    this.state.posY = currentPosition.y;
+                repeat = typeof repeat !== 'undefined' ? repeat : true;
+                var currentPosition = this.renderer.plugins.interaction.mouse.getLocalPosition(this.stack);
+                if (this.state.hoverTime < Date.now() - 1000 && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
                     this.listObjects();
                     this.state.hoverTime = Date.now();
+                }else{
+                    this.state.posX = currentPosition.x;
+                    this.state.posY = currentPosition.y;
+                    if (repeat) {
+                        setTimeout(function (func, event) {
+                            func(event, false);
+                        }, 1000, this.onHoverEvent, event);
+                    }
                 }
             }
         },

@@ -52,9 +52,9 @@ define(function (require, exports, module) {
 			_model_name: 'GeometrySync',
 			_model_module: "model",
 
+			id: '',
 			name: '',
-			// id: '',
-			 bottomRadius: -1,
+			bottomRadius: -1,
 			topRadius: -1,
 			positionX: -1,
 			positionY: -1,
@@ -77,25 +77,25 @@ define(function (require, exports, module) {
 							y:0,
 							z:0
 						},
-						radius: this.topRadius
+						radius: this.get('topRadius')
 					 }
 			}
 			else{
 				value = { 
 					eClass: 'Cylinder',
-					bottomRadius: this.bottomRadius,
-					topRadius: this.topRadius,
+					bottomRadius: this.get('bottomRadius'),
+					topRadius: this.get('topRadius'),
 					distal: {
 						eClass: "Point",
-						x: this.distalX,
-						y: this.distalY,
-						z: this.distalZ
+						x: this.get('distalX'),
+						y: this.get('distalY'),
+						z: this.get('distalZ')
 					},
 					position: {
 						eClass: "Point",
-						x: this.positionX,
-						y: this.positionY,
-						z: this.positionZ
+						x: this.get('positionX'),
+						y: this.get('positionY'),
+						z: this.get('positionZ')
 					}
 				}
 			}
@@ -186,15 +186,15 @@ define(function (require, exports, module) {
 				}
 				var compositeVisualType = {
 					eClass: 'CompositeVisualType',
-					id: this.get('id'),
-					name: this.get('name'),
+					id: this.get('id') + 'VisualType',
+					name: this.get('name') + ' Visual Type',
 					variables: geppettoMorphologiesVariables
 				}
 
 				var neuronLibrary = {
 					"eClass": "GeppettoLibrary",
-					"id": "common",
-					"name": "Geppetto Common Library",
+					"id": "neuron",
+					"name": "Geppetto Neuron Library",
 					"types": [compositeVisualType]
 				};
 
@@ -217,6 +217,8 @@ define(function (require, exports, module) {
 			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 			this.on("change:stateVariables", function (model, value, options) {
+				window.Instances = []
+
 				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
@@ -239,6 +241,8 @@ define(function (require, exports, module) {
 			});
 
 			this.on("change:geometries", function (model, value, options) {
+				window.Instances = []
+				GEPPETTO.ControlPanel.setData([]);
 				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server

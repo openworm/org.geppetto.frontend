@@ -13,7 +13,71 @@ define(function (require, exports, module) {
 	var GEPPETTO = require('geppetto');
 
 	var $ = require('jquery');
+	
+	var PopupModel = jupyter_widgets.WidgetModel.extend({
+		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
+			_model_name: "PopupModel",
+			_model_module: "popup",
 
+			items: [],
+			parent: null,
+			component: null,
+			positionX: null,
+			positionY: null
+		}),
+
+		initialize: function () {
+			PopupModel.__super__.initialize.apply(this);
+
+			this.on("msg:custom", this.handle_custom_messages, this);
+		},
+
+		getComponent: function () {
+			var component = React.createFactory(PopupComp)({ id: this.get('widget_id'), name: this.get('widget_name'), items: this.getChildren(), parentStyle: this.get('parentStyle') });
+			this.set('component', component);
+			return component;
+		},
+
+		forceRender: function () {
+			if (this.get("embedded") == false) {
+				this.get("component").setChildren(this.getChildren());
+			}
+			else {
+				this.get("parent").forceRender();
+			}
+		},
+
+		getChildren: function() {
+			var children = [];
+			for (var i = 0; i < this.get('items').length; i++){
+				var item = this.get('items')[i];
+				children.push(item.getComponent())
+			}
+			return children;
+		},
+
+		display: function(){
+			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
+			if (this.get('positionX') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('positionX') });
+			}
+			if (this.get('positionY') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ top: this.get('positionY') });
+			}
+		},
+
+		handle_custom_messages: function(msg) {
+			if (msg.type === 'display') {
+				this.display();
+			}
+		}
+	}, {
+
+			serializers: _.extend({
+				items: { deserialize: jupyter_widgets.unpack_models },
+			}, jupyter_widgets.WidgetModel.serializers)
+		});
+	
 	var PanelModel = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: "PanelModel",
@@ -359,7 +423,23 @@ define(function (require, exports, module) {
 			}
 		}
 	});
+	
+	var PopupWidgetSync = WidgetSync.extend({
+		_model_name: 'PopupWidgetSync',
+		_model_module: "model",
 
+		initialize: function () {
+			PopupWidgetSync.__super__.initialize.apply(this);
+
+			if (this.get('data').length > 0) {
+				for (var i = 0; i < this.get('data').length; i++){
+					this.get('widget_object').plotData(eval(this.get('data')[i]))
+				}
+			}
+		}
+	});
+
+	
 	var PlotWidgetSync = WidgetSync.extend({
 		_model_name: 'PlotWidgetSync',
 		_model_module: "model",
@@ -384,6 +464,7 @@ define(function (require, exports, module) {
 		ExperimentSync: ExperimentSync,
 		ProjectSync: ProjectSync,
 		WidgetSync: WidgetSync,
-		PlotWidgetSync: PlotWidgetSync
+		PlotWidgetSync: PlotWidgetSync,
+		PopupWidgetSync: PopupWidgetSync
 	};
 });

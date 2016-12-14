@@ -1,216 +1,246 @@
 define(function (require) {
 
-    loadCss("geppetto/js/widgets/popup/ButtonBarComponent.css");
+	loadCss("geppetto/js/widgets/popup/ButtonBarComponent.css");
 
-    var React = require('react');
-    var colorpicker = require('colorPicker');
+	var React = require('react');
+	var colorpicker = require('colorPicker');
 
-    var ButtonBarComponent = React.createClass({
-    	colorPickerBtnId: '',
-        colorPickerActionFn: '',
-        _isMounted: false,
+	var ButtonBarComponent = React.createClass({
+		colorPickerBtnId: '',
+		colorPickerActionFn: '',
 
-        getInitialState: function () {
-            return {
-                
-            };
-        },
-        
-        componentDidMount: function () {
-        	 // hookup color picker onChange
-            if (this.colorPickerBtnId != '') {
-                var path = this.props.instancePath;
-                var entity = eval(path);
-                var defColor = '0Xffffff';
+		getInitialState: function () {
+			return {
 
-                // grab default color from instance
-                if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
-                    defColor = entity.getColor();
-                }
+			};
+		},
 
-                // init dat color picker
-                var coloPickerElement = $('#' + this.colorPickerBtnId);
-                coloPickerElement.colorpicker({format: 'hex', customClass: 'buttonbar-colorpicker'});
-                coloPickerElement.colorpicker('setValue', defColor.replace(/0X/i, "#"));
+		componentDidMount: function () {
+			var that = this;
 
-                // closure on local scope at this point - hook on change event
-                var that = this;
-                coloPickerElement.on('changeColor', function (e) {
-                    that.colorPickerActionFn(e.color.toHex().replace("#", "0x"));
-                    $(this).css("color", e.color.toHex());
-                });
-            }
-        },
+			// hookup color picker onChange
+			if (this.colorPickerBtnId != '') {
+				var path = this.props.instancePath;
+				var entity = eval(path);
+				var defColor = '0Xffffff';
 
-        componentDidUpdate: function () {
-        
-        },
+				// grab default color from instance
+				if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
+					defColor = entity.getColor();
+				}
 
-        componentWillUnmount: function () {
-        
-        },
+				// init dat color picker
+				var coloPickerElement = $('#' + this.colorPickerBtnId);
+				coloPickerElement.colorpicker({format: 'hex', customClass: 'buttonbar-colorpicker'});
+				coloPickerElement.colorpicker('setValue', defColor.replace(/0X/i, "#"));
 
-        replaceTokensWithPath: function(inputStr, path){
-            return inputStr.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
-        },
-        
-        getActionString: function (control, path) {
-            var actionStr = '';
+				// closure on local scope at this point - hook on change event
+				coloPickerElement.on('changeColor', function (e) {
+					that.colorPickerActionFn(e.color.toHex().replace("#", "0x"));
+					$(this).css("color", e.color.toHex());
+				});
+			}
 
-            if (control.actions.length > 0) {
-                for (var i = 0; i < control.actions.length; i++) {
-                    actionStr += ((i != 0) ? ";" : "") + this.replaceTokensWithPath(control.actions[i], path);
-                }
-            }
+			if(this.props.buttonBarConfig.Events !=null || undefined){
+				this.props.geppetto.on(Events.Visibility_changed, function (instance) {
+					if(that.props!=null || undefined){
+						if(instance.getInstancePath() == that.props.instancePath){
+							that.forceUpdate();
+						}
+					}
+				});
+				this.props.geppetto.on(Events.Select, function (instance) {
+					if(that.props!=null || undefined){
+						if(instance.getInstancePath() == that.props.instancePath){
+							that.forceUpdate();
+						}
+					}
+				});  
+				this.props.geppetto.on(Events.Color_set, function (instance) {
+					if(that.props!=null || undefined){
+						if(instance.instance.getInstancePath() == that.props.instancePath){
+							that.forceUpdate();
+						}
+					}
+				});  
+			}
+		},
 
-            return actionStr;
-        },
 
-        resolveCondition: function (control, path, negateCondition) {
-            if (negateCondition == undefined) {
-                negateCondition = false;
-            }
+		componentWillUnmount: function () {
+			console.log("unmount");
+			this.props= {};
+		},
 
-            var resolvedConfig = control;
+		replaceTokensWithPath: function(inputStr, path){
+			return inputStr.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
+		},
 
-            if (resolvedConfig.hasOwnProperty('condition')) {
-                // evaluate condition and reassign control depending on results
-                var conditionStr = this.replaceTokensWithPath(control.condition, path);
-                if (eval(conditionStr)) {
-                    resolvedConfig = negateCondition ? resolvedConfig.false : resolvedConfig.true;
-                } else {
-                    resolvedConfig = negateCondition ? resolvedConfig.true : resolvedConfig.false;
-                }
-            }
+		getActionString: function (control, path) {
+			var actionStr = '';
 
-            return resolvedConfig;
-        },
-        
-        refresh: function() {
-            this.forceUpdate();
-        },
-        
-        render: function () {
-        	var showControls = this.props.showControls;
-            var config = this.props.buttonBarConfig;
-            var path = this.props.instancePath;
-            var ctrlButtons = [];
+			if (control.actions.length > 0) {
+				for (var i = 0; i < control.actions.length; i++) {
+					actionStr += ((i != 0) ? ";" : "") + this.replaceTokensWithPath(control.actions[i], path);
+				}
+			}
 
-            // retrieve entity/instance
-            var entity = undefined;
-            try {
-                // need to eval because this is a nested path - not simply a global on window
-                entity = eval(path)
-            } catch (e) {
-                throw( "The instance " + path + " does not exist in the current model" );
-                
-                return;
-            }
+			return actionStr;
+		},
 
-            // Add common control buttons to list
-            for (var control in config.Common) {
-                if ($.inArray(control.toString(), showControls.Common) != -1) {
-                    var add = true;
+		resolveCondition: function (control, path, negateCondition) {
+			if (negateCondition == undefined) {
+				negateCondition = false;
+			}
 
-                    // check show condition
-                    if(config.Common[control].showCondition != undefined){
-                        var condition = this.replaceTokensWithPath(config.Common[control].showCondition, path);
-                        add = eval(condition);
-                    }
+			var resolvedConfig = control;
 
-                    if(add) {
-                        ctrlButtons.push(config.Common[control]);
-                    }
-                }
-            }
+			if (resolvedConfig.hasOwnProperty('condition')) {
+				// evaluate condition and reassign control depending on results
+				var conditionStr = this.replaceTokensWithPath(control.condition, path);
+				if (eval(conditionStr)) {
+					resolvedConfig = negateCondition ? resolvedConfig.false : resolvedConfig.true;
+				} else {
+					resolvedConfig = negateCondition ? resolvedConfig.true : resolvedConfig.false;
+				}
+			}
 
-            if(entity!=null||undefined){
-            	if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
-            		// Add visual capability controls to list
-            		for (var control in config.VisualCapability) {
-            			if ($.inArray(control.toString(), showControls.VisualCapability) != -1) {
-            				var add = true;
+			return resolvedConfig;
+		},
 
-            				// check show condition
-            				if(config.VisualCapability[control].showCondition != undefined){
-            					var condition = this.replaceTokensWithPath(config.VisualCapability[control].showCondition, path);
-            					add = eval(condition);
-            				}
+		refresh: function() {
+			this.forceUpdate();
+		},
 
-            				if(add) {
-            					ctrlButtons.push(config.VisualCapability[control]);
-            				}
-            			}
-            		}
-            	}
-            }
+		render: function () {
+			var showControls = this.props.showControls;
+			var config = this.props.buttonBarConfig;
+			var path = this.props.instancePath;
+			var ctrlButtons = [];
 
-            var that = this;
+			// retrieve entity/instance
+			var entity = undefined;
+			try {
+				// need to eval because this is a nested path - not simply a global on window
+				entity = eval(path)
+			} catch (e) {
+				throw( "The instance " + path + " does not exist in the current model" );
 
-            return (
-                <div>
-                    {ctrlButtons.map(function (control, id) {
-                        // grab attributes to init button attributes
-                        var controlConfig = that.resolveCondition(control, path);
-                        var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_buttonBar_btn";
-                        var tooltip = controlConfig.tooltip;
-                        var classVal = "btn buttonBar-button fa " + controlConfig.icon;
-                        var styleVal = {};
+				return;
+			}
 
-                        // define action function
-                        var actionFn = function (param) {
-                            // NOTE: there is a closure on 'control' so it's always the right one
-                            var controlConfig = that.resolveCondition(control, path);
+			// Add common control buttons to list
+			for (var control in config.Common) {
+				if ($.inArray(control.toString(), showControls.Common) != -1) {
+					var add = true;
 
-                            // take out action string
-                            var actionStr = that.getActionString(controlConfig, path);
+					// check show condition
+					if(config.Common[control].showCondition != undefined){
+						var condition = this.replaceTokensWithPath(config.Common[control].showCondition, path);
+						add = eval(condition);
+					}
 
-                            if (param != undefined) {
-                                actionStr = actionStr.replace(/\$param\$/gi, param);
-                            }
+					if(add) {
+						ctrlButtons.push(config.Common[control]);
+					}
+				}
+			}
 
-                            // run action
-                            if (actionStr != '' && actionStr != undefined) {
-                                GEPPETTO.Console.executeCommand(actionStr);
-                                that.refresh();
-                            }
+			if(entity!=null||undefined){
+				if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
+					// Add visual capability controls to list
+					for (var control in config.VisualCapability) {
+						if ($.inArray(control.toString(), showControls.VisualCapability) != -1) {
+							var add = true;
 
-                            // if conditional, swap icon with the other condition outcome
-                            if (control.hasOwnProperty('condition')) {
-                                var otherConfig = that.resolveCondition(control, path);
-                                var element = $('#' + idVal);
-                                element.removeClass();
-                                element.addClass("btn buttonBar-button fa " + otherConfig.icon);
-                            }
-                        };
+							// check show condition
+							if(config.VisualCapability[control].showCondition != undefined){
+								var condition = this.replaceTokensWithPath(config.VisualCapability[control].showCondition, path);
+								add = eval(condition);
+							}
 
-                        // figure out if we need to include the color picker (hook it up in didMount)
-                        if (controlConfig.id == "color") {
-                            that.colorPickerBtnId = idVal;
-                            that.colorPickerActionFn = actionFn;
-                            // set style val to color tint icon
-                            var colorVal = String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0, 7);
-                            styleVal = {color: colorVal.startsWith('#') ? colorVal : ('#' + colorVal) };
-                            classVal += " color-picker-button";
-                        }
+							if(add) {
+								ctrlButtons.push(config.VisualCapability[control]);
+							}
+						}
+					}
+				}
+			}
 
-                        return (
-                            <span key={id}>
-                                <button id={idVal}
-                                        className={classVal}
-                                        style={styleVal}
-                                        title={tooltip}
-                                        onClick={
-                                            controlConfig.id == "color" ? function(){} : actionFn
-                                        }>
-                                </button>
-                            </span>
-                        )
-                    })}
-                </div>
-            )
-        }
-    });
+			var that = this;
 
-    return ButtonBarComponent;
+			return (
+					<div>
+					{ctrlButtons.map(function (control, id) {
+						// grab attributes to init button attributes
+						var controlConfig = that.resolveCondition(control, path);
+						var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_buttonBar_btn";
+						var tooltip = controlConfig.tooltip;
+						var classVal = "btn buttonBar-button fa " + controlConfig.icon;
+						var styleVal = {};
+
+						// define action function
+						var actionFn = function (param) {
+							// NOTE: there is a closure on 'control' so it's always the right one
+							var controlConfig = that.resolveCondition(control, path);
+
+							// take out action string
+							var actionStr = that.getActionString(controlConfig, path);
+
+							if (param != undefined) {
+								actionStr = actionStr.replace(/\$param\$/gi, param);
+							}
+
+							// run action
+							if (actionStr != '' && actionStr != undefined) {
+								GEPPETTO.Console.executeCommand(actionStr);
+								that.refresh();
+							}
+
+							// if conditional, swap icon with the other condition outcome
+							if (control.hasOwnProperty('condition')) {
+								var otherConfig = that.resolveCondition(control, path);
+								var element = $('#' + idVal);
+								element.removeClass();
+								element.addClass("btn buttonBar-button fa " + otherConfig.icon);
+							}
+						};
+
+						// if conditional, swap icon with the other condition outcome
+						if (control.hasOwnProperty('condition')) {
+							var otherConfig = that.resolveCondition(control, path);
+							var element = $('#' + idVal);
+							element.removeClass();
+							element.addClass("btn buttonBar-button fa " + otherConfig.icon);
+						}
+
+						// figure out if we need to include the color picker (hook it up in didMount)
+						if (controlConfig.id == "color") {
+							that.colorPickerBtnId = idVal;
+							that.colorPickerActionFn = actionFn;
+							// set style val to color tint icon
+							var colorVal = String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0, 7);
+							styleVal = {color: colorVal.startsWith('#') ? colorVal : ('#' + colorVal) };
+							classVal += " color-picker-button";
+						}
+
+						return (
+								<span key={id}>
+								<button id={idVal}
+								className={classVal}
+								style={styleVal}
+								title={tooltip}
+								onClick={
+										controlConfig.id == "color" ? function(){} : actionFn
+								}>
+								</button>
+								</span>
+						)
+					})}
+					</div>
+			)
+		}
+	});
+
+	return ButtonBarComponent;
 });

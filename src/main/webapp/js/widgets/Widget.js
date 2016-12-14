@@ -58,13 +58,14 @@ define(function (require) {
             dialog: null,
             visible: true,
             destroyed: false,
-            size: {height: 300, width: 350},
+            size: {},
             position: {left: "50%", top: "50%"},
             registeredEvents: null,
             executedAction : 0,
             title : null,
             previousMaxTransparency : false,
 
+            defaultSize : function(){return {height: 300, width: 350}},
             /**
              * Initializes the widget
              *
@@ -76,6 +77,7 @@ define(function (require) {
                 this.id = options.id;
                 this.name = options.name;
                 this.visible = options.visible;
+                this.size = this.defaultSize();
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
                 this.registeredEvents = [];

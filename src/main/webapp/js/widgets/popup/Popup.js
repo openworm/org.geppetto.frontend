@@ -94,6 +94,7 @@ define(function (require) {
 		data: null,
 		buttonBarConfig : null,
 		buttonBarControls : null,
+		buttonBar : null,
 		
 		/**
 		 * Initialize the popup widget
@@ -310,16 +311,33 @@ define(function (require) {
 		renderButtonBar: function(){
 			var buttonBarContainer = 'button-bar-container-' + this.id;
 			var barDiv = 'bar-div-'+this.id;
+			if(this.buttonBar != null){
+				ReactDOM.unmountComponentAtNode(document.getElementById(barDiv));
+				$("#"+buttonBarContainer).remove();
+			}
+
+
 			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" +
 									barDiv+"' class='button-bar-div'></div></div>");
+			
+			this.setSize(this.size.height,this.size.width);
 			
 			var dataInstancePath;
 			if(this.data!=null || undefined){
 				dataInstancePath = this.data.getInstancePath();
 			}
 			
-            ReactDOM.render(
-                React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,instancePath : dataInstancePath}),
+			if(this.buttonBarConfig.filter != null || undefined){
+				if(this.data!=null||undefined){
+					this.data = this.buttonBarConfig.filter(this.data);
+					dataInstancePath = this.data.getInstancePath();
+				}
+			}
+			
+
+            this.buttonBar = ReactDOM.render(
+                React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
+                	instancePath : dataInstancePath, instance : this.data, geppetto: GEPPETTO}),
                 document.getElementById(barDiv)
             );
         },

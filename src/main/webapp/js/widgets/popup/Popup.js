@@ -309,6 +309,7 @@ define(function (require) {
 		},
 		
 		renderButtonBar: function(){
+			var that = this;
 			var buttonBarContainer = 'button-bar-container-' + this.id;
 			var barDiv = 'bar-div-'+this.id;
 			if(this.buttonBar != null){
@@ -319,9 +320,7 @@ define(function (require) {
 
 			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" +
 									barDiv+"' class='button-bar-div'></div></div>");
-			
-			this.setSize(this.size.height,this.size.width);
-
+		
 			var dataInstancePath;
 			if(this.data!=null || undefined){
 				dataInstancePath = this.data.getInstancePath();
@@ -337,7 +336,7 @@ define(function (require) {
 
             this.buttonBar = ReactDOM.render(
                 React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
-                	instancePath : dataInstancePath, instance : this.data, geppetto: GEPPETTO}),
+                	instancePath : dataInstancePath, instance : this.data, geppetto: GEPPETTO, resize : function(){that.setSize(that.size.height,that.size.width);}}),
                 document.getElementById(barDiv)
             );
         },

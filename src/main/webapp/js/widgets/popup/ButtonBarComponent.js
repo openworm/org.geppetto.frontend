@@ -17,6 +17,10 @@ define(function (require) {
 
 		componentDidMount: function () {
 			var that = this;
+			
+			if(that.props.instance!=null || undefined){
+				that.props.resize();
+			}
 
 			// hookup color picker onChange
 			if (this.colorPickerBtnId != '') {
@@ -47,8 +51,10 @@ define(function (require) {
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
 						}else{
-							if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
-								that.forceUpdate();
+							if((that.props.instance!=null || undefined) && (instance.getParent()!=null || undefined)){
+								if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
+									that.forceUpdate();
+								}
 							}
 						}
 					}
@@ -58,8 +64,10 @@ define(function (require) {
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
 						}else{
-							if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
-								that.forceUpdate();
+							if((that.props.instance!=null || undefined) && (instance.getParent()!=null || undefined)){
+								if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
+									that.forceUpdate();
+								}
 							}
 						}
 					}
@@ -178,7 +186,7 @@ define(function (require) {
 			var that = this;
 
 			return (
-					<div>
+					<div className="buttonBarComponentDiv">
 					{ctrlButtons.map(function (control, id) {
 						// grab attributes to init button attributes
 						var controlConfig = that.resolveCondition(control, path);

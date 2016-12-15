@@ -122,11 +122,9 @@ define(function (require) {
         function toggleFooterZIndex(focus){
         	if(G.isConsoleFocused()){
         		if(focus){
-        			$("#footer").removeClass("footerOutFocus");
-        			$("#footer").addClass("footerFocus");
+        			GEPPETTO.Console.focusFooter();
         		}else{
-        			$("#footer").removeClass("footerFocus");
-        			$("#footer").addClass("footerOutFocus");
+        			GEPPETTO.Console.unfocusFooter();
         		}
         	}
         }
@@ -279,6 +277,17 @@ define(function (require) {
             tags: [],
             objectTags: [],
 
+            
+            focusFooter : function(){
+            	$("#footer").removeClass("footerOutFocus");
+            	$("#footer").addClass("footerFocus");
+            },
+
+            unfocusFooter : function(){
+            	$("#footer").removeClass("footerFocus");
+            	$("#footer").addClass("footerOutFocus");
+            },
+            
             /**
              * Global help functions with all commands in global objects.
              *
@@ -301,7 +310,7 @@ define(function (require) {
 
                 //user has clicked the console button
                 var command = ($("#console").css("display") === "none") ? "true" : "false";
-                GEPPETTO.Console.executeCommand("G.showConsole(" + command + ")");
+                GEPPETTO.Console.executeImplicitCommand("G.showConsole(" + command + ")");
             },
 
             /**
@@ -320,10 +329,13 @@ define(function (require) {
                             output.scrollTop = output.scrollHeight;
                         }, 100);
                     }
+                  
+                     GEPPETTO.Console.focusFooter();
                 }
                 else {
                     $('#footer').height('');
                     $('#console').slideToggle(200);
+                    GEPPETTO.Console.unfocusFooter();
                 }
                 this.visible = mode;
             },
@@ -372,9 +384,7 @@ define(function (require) {
                         clearInterval(sendMessage);
                     }
                 }, 100);
-                
-                $("#footer").addClass("footerFocus");
-                
+                                
                 return console;
             },
 
@@ -410,16 +420,20 @@ define(function (require) {
             },
 
             /*
-             * Executes commands to console
+             * Executes commands to console. Implicit commands only
+             * shown in debug mode.
              */
-            executeCommand: function (command) {
-                GEPPETTO.Console.getConsole().executeCommand(command);
+            executeCommand: function (command, implicitCommand = false) {
+                GEPPETTO.Console.getConsole().executeCommand(command, implicitCommand);
                 var justCommand = command.substring(0, command.indexOf("("));
                 var commandParams = command.substring(command.indexOf("(") + 1, command.lastIndexOf(")"));
                 GEPPETTO.trackActivity("Console", justCommand, commandParams);
             },
 
-
+            executeImplicitCommand: function(command) {
+                this.executeCommand(command, true);
+            },
+            
             /**
              * Available commands stored in an array, used for autocomplete.
              *

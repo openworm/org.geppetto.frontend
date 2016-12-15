@@ -60,7 +60,7 @@ define(function (require) {
                 onClick: function () {
 
                     if (GEPPETTO.ExperimentsController.isPaused()) {
-                        GEPPETTO.Console.executeCommand("Project.getActiveExperiment().resume();");
+                        GEPPETTO.Console.executeImplicitCommand("Project.getActiveExperiment().resume();");
                     }
                     else {
                         if (GEPPETTO.isKeyPressed("shift")) {

@@ -928,6 +928,12 @@ define(function (require) {
                         }, 1000, this.onHoverEvent, event);
                     }
                 }
+            }else if (this.state.loadingLabels){
+                if (repeat) {
+                    setTimeout(function (func, event) {
+                        func(event, false);
+                    }, 5000, this.onHoverEvent, event);
+                }
             }
         },
 

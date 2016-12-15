@@ -14,69 +14,69 @@ define(function (require, exports, module) {
 
 	var $ = require('jquery');
 	
-	var PopupModel = jupyter_widgets.WidgetModel.extend({
-		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: "PopupModel",
-			_model_module: "popup",
+	//var PopupModel = jupyter_widgets.WidgetModel.extend({
+	//	defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
+	//		_model_name: "PopupModel",
+	//		_model_module: "popup",
 
-			items: [],
-			parent: null,
-			component: null,
-			positionX: null,
-			positionY: null
-		}),
+	//		items: [],
+	//		parent: null,
+	//		component: null,
+	//		positionX: null,
+	//		positionY: null
+	//	}),
 
-		initialize: function () {
-			PopupModel.__super__.initialize.apply(this);
+	//	initialize: function () {
+	//		PopupModel.__super__.initialize.apply(this);
 
-			this.on("msg:custom", this.handle_custom_messages, this);
-		},
+	//		this.on("msg:custom", this.handle_custom_messages, this);
+	//	},
 
-		getComponent: function () {
-			var component = React.createFactory(PopupComp)({ id: this.get('widget_id'), name: this.get('widget_name'), items: this.getChildren(), parentStyle: this.get('parentStyle') });
-			this.set('component', component);
-			return component;
-		},
+	//	getComponent: function () {
+	//		var component = React.createFactory(PopupComp)({ id: this.get('widget_id'), name: this.get('widget_name'), items: this.getChildren(), parentStyle: this.get('parentStyle') });
+	//		this.set('component', component);
+	//		return component;
+	//	},
 
-		forceRender: function () {
-			if (this.get("embedded") == false) {
-				this.get("component").setChildren(this.getChildren());
-			}
-			else {
-				this.get("parent").forceRender();
-			}
-		},
+	//	forceRender: function () {
+	//		if (this.get("embedded") == false) {
+	//			this.get("component").setChildren(this.getChildren());
+	//		}
+	//		else {
+	//			this.get("parent").forceRender();
+	//		}
+	//	},
 
-		getChildren: function() {
-			var children = [];
-			for (var i = 0; i < this.get('items').length; i++){
-				var item = this.get('items')[i];
-				children.push(item.getComponent())
-			}
-			return children;
-		},
+	//	getChildren: function() {
+	//		var children = [];
+	//		for (var i = 0; i < this.get('items').length; i++){
+	//			var item = this.get('items')[i];
+	//			children.push(item.getComponent())
+	//		}
+	//		return children;
+	//	},
 
-		display: function(){
-			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
-			if (this.get('positionX') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('positionX') });
-			}
-			if (this.get('positionY') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ top: this.get('positionY') });
-			}
-		},
+	//	display: function(){
+	//		this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
+	//		if (this.get('positionX') > 0) {
+	//			$("." + this.get('widget_id') + "_dialog").css({ left: this.get('positionX') });
+	//		}
+	//		if (this.get('positionY') > 0) {
+	//			$("." + this.get('widget_id') + "_dialog").css({ top: this.get('positionY') });
+	//		}
+	//	},
 
-		handle_custom_messages: function(msg) {
-			if (msg.type === 'display') {
-				this.display();
-			}
-		}
-	}, {
+	//	handle_custom_messages: function(msg) {
+	//		if (msg.type === 'display') {
+	//			this.display();
+	//		}
+	//	}
+	//}, {
 
-			serializers: _.extend({
-				items: { deserialize: jupyter_widgets.unpack_models },
-			}, jupyter_widgets.WidgetModel.serializers)
-		});
+	//		serializers: _.extend({
+	//			items: { deserialize: jupyter_widgets.unpack_models },
+	//		}, jupyter_widgets.WidgetModel.serializers)
+	//	});
 	
 	var PanelModel = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {

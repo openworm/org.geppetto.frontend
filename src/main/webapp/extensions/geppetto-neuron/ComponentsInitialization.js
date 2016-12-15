@@ -2,17 +2,20 @@ define(function (require) {
     return function (GEPPETTO) {
 
         //Inject css stylesheet
-        var link = document.createElement("link");
+        
+	var link = document.createElement("link");
         link.type = "text/css";
         link.rel = "stylesheet";
         link.href = "geppetto/extensions/geppetto-neuron/css/material.css";
         document.getElementsByTagName("head")[0].appendChild(link);
 
         //Logo initialization
-        GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
+        
+	GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
 
         //Control panel initialization
-        GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"), function(){
+        
+	GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"), function(){
 
 
             GEPPETTO.ControlPanel.setColumnMeta([

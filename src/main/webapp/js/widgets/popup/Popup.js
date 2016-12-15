@@ -331,7 +331,7 @@ define(function (require) {
 			}
 			
 			if(this.buttonBarConfig.filter != null || undefined){
-				if(this.data!=null||undefined){
+				if(this.data!=null && this.data!=undefined){
 					this.data = this.buttonBarConfig.filter(this.data);
 					dataInstancePath = this.data.getInstancePath();
 				}

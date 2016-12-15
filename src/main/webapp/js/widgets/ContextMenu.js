@@ -150,16 +150,16 @@ define(function (require) {
                 //This works if we pass the action as a pointer to a function and we executes the code inside the function but the function itself
                 //var entire = registeredItem.toString();
                 //var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
-                //GEPPETTO.Console.executeCommand("var node = eval(" + this.data.getInstancePath() + ");");
-                //GEPPETTO.Console.executeCommand(body);
+                //GEPPETTO.Console.executeImplicitCommand("var node = eval(" + this.data.getInstancePath() + ");");
+                //GEPPETTO.Console.executeImplicitCommand(body);
 
                 //This works if we pass the action as the function name
-                //GEPPETTO.Console.executeCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
+                //GEPPETTO.Console.executeImplicitCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
 
                 //TODO: We are not using the option parameter (registeredItem["option"])
                 for (var i=0;i<registeredItem["action"].length;i++) {
                 	if(registeredItem["action"][i] != null || undefined){
-                		GEPPETTO.Console.executeCommand(registeredItem["action"][i]);
+                		GEPPETTO.Console.executeImplicitCommand(registeredItem["action"][i]);
                 	}
                 }
             },

@@ -394,14 +394,13 @@ define(function (require) {
             var entity = undefined;
             
 			try{
-            	var entity = eval(item);
+            	entity = eval(item);
             } catch(e){
 				// eval didn't work - keep going, could be a potential instance
 			}
 
             window._spotlightInstance = (entity != undefined)? entity : Instances.getInstance([item]);
 
-            window._spotlightInstance = Instances.getInstance([item]);
             if (window._spotlightInstance) {
                 instanceFound = true;
                 this.loadToolbarFor(window._spotlightInstance);
@@ -965,7 +964,7 @@ define(function (require) {
             }
         },
 
-        //Used to determined if toolbar for paramter and stateve variable can be shown.
+        //Used to determined if toolbar for parameter and state variable can be shown.
         //Flag set to false if user don't have enough permissions to modify parameters/state variables
         updateToolBarVisibilityState : function(visible){
         	this.modifiable = visible;

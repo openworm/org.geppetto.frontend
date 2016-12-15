@@ -84,8 +84,8 @@ define(function (require) {
             this.setSize(this.defHeight, this.defWidth);
 
             var that = this;
-			this.stackElement.bind('resizeEnd', function(event, mode) {
-				that.resize(mode);
+			this.stackElement.bind('resizeEnd', function() {
+				that.resize();
 			});
         },
 
@@ -98,17 +98,9 @@ define(function (require) {
             this.updateScene();
         },
         
-        resize : function(mode){
-        	if(mode == "maximize"){
-        		this.data.height = this.stackElement.height()+40;
-            	this.data.width = this.stackElement.width()+30;
-        	}else if(mode=="restore"){
-        		this.data.height = this.stackElement.height()+40;
-            	this.data.width = this.stackElement.width()+30;
-        	}
-            Widget.View.prototype.setSize.call(this, this.data.height, this.data.width);
-
-            this.addBorders();
+        resize : function(){
+        	this.data.height = this.stackElement.height();
+        	this.data.width = this.stackElement.parent().width();
             this.updateScene();
             this.stackElement.find(".fa-home").click()
         },

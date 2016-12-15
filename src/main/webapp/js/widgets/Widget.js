@@ -177,9 +177,6 @@ define(function (require) {
              * @param {Integer} top - Top position of the widget
              */
             setPosition: function (left, top) {
-            	if(this.maximize){
-            		this.$el.dialogExtend("restore");
-            	}
             	this.position.left = left;
             	this.position.top = top;
 
@@ -199,9 +196,6 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize: function (h, w) {
-            	if(this.maximize){
-            		this.$el.dialogExtend("restore");
-            	}
             	this.size.height = h;
             	this.size.width = w;
             	this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
@@ -579,7 +573,7 @@ define(function (require) {
                             },
                             "maximize" : function(evt,dlg){
                             	that.setTrasparentBackground(false);
-                    			$(this).trigger('resizeEnd', ["maximize"]);
+                    			$(this).trigger('resizeEnd');
                     			var divheight =$(window).height();  
                     			var divwidth =$(window).width();  
                     			that.$el.dialog({ height: divheight,width: divwidth});
@@ -589,7 +583,7 @@ define(function (require) {
                     			that.maximize = false;
                     			that.collapsed = false;
                     			that.setTrasparentBackground(that.previousMaxTransparency);
-                    			$(this).trigger('resizeEnd',["restore"]);
+                    			$(this).trigger('resizeEnd');
                     		},
                     		"collapse":function(evt,dlg){
                     			that.collapsed = true;

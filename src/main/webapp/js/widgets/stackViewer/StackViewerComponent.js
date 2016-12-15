@@ -430,6 +430,9 @@ define(function (require) {
                                             objects = objects + that.state.objects[j] + '\n';
                                         }
                                         that.setStatusText(objects);
+                                    }else if (i == 0) {
+                                        that.state.loadingLabels = false;
+                                        that.onHoverEvent();
                                     }
                                 }
                                 // update slice view

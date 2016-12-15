@@ -403,7 +403,7 @@ define(function (require) {
             var index = window.Project.getExperiments().indexOf(experiment);
             GEPPETTO.FE.inputDialog(
                 "Are you sure?",
-                'Delete ${experiment.name} ?',
+                "Delete " + experiment.name + "?",
                 "Yes",
                 function(){
                     GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");

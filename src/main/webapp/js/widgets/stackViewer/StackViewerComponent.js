@@ -387,8 +387,8 @@ define(function (require) {
             if (!this.state.loadingLabels) {
                 this.state.objects = [];
                 var i, j, result;
-                var callX = that.state.posX.toFixed(0), callY = that.state.posY.toFixed(0);
                 var that = this;
+                var callX = that.state.posX.toFixed(0), callY = that.state.posY.toFixed(0);
                 $.each(this.state.stack, function (i, item) {
                     (function (i, that) {
                         if (i == 0) {

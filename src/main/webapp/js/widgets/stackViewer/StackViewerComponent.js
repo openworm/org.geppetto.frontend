@@ -429,7 +429,9 @@ define(function (require) {
                                         for (j in that.state.objects) {
                                             objects = objects + that.state.objects[j] + '\n';
                                         }
-                                        that.setStatusText(objects);
+                                        if (objects !== '') {
+                                            that.setStatusText(objects);
+                                        }
                                     }else if (i == 0) {
                                         that.state.loadingLabels = false;
                                         that.onHoverEvent();

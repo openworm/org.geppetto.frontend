@@ -421,13 +421,13 @@ define(function (require) {
                                                 }
                                             }
                                         }
-                                        that.state.objects = $.unique(that.state.objects).sort();
+                                        var list = $.unique(that.state.objects).sort();
                                         var objects = '';
                                         if (GEPPETTO.isKeyPressed("shift")) {
                                             objects = 'Click to add: ';
                                         }
-                                        for (j in that.state.objects) {
-                                            objects = objects + that.state.objects[j] + '\n';
+                                        for (j in list) {
+                                            objects = objects + list[j] + '\n';
                                         }
                                         if (objects !== '') {
                                             that.setStatusText(objects);

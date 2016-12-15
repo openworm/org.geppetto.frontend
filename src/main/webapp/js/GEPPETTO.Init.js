@@ -104,7 +104,8 @@ define(function (require) {
             // NOTE: Recreating the renderer causes camera displacement on Chrome OSX.
             if (!GEPPETTO.getVARS().canvasCreated) {
                 GEPPETTO.getVARS().renderer = new THREE.WebGLRenderer({
-                    antialias: true
+                    antialias: true,
+                    alpha:true
                 });
 
             }
@@ -120,7 +121,7 @@ define(function (require) {
         	}
         
             var color = new THREE.Color(GEPPETTO.getVARS().backgroundColor);
-            GEPPETTO.getVARS().renderer.setClearColor(color, 1);
+            //GEPPETTO.getVARS().renderer.setClearColor(color, 1);
             var width = $(GEPPETTO.getVARS().container).width();
             var height = $(GEPPETTO.getVARS().container).height();
             GEPPETTO.getVARS().renderer.setPixelRatio(window.devicePixelRatio);
@@ -213,39 +214,39 @@ define(function (require) {
                                     }
                                     else {
                                         //weak assumption: if the object doesn't have an instancePath its parent will
-                                        instancePath = intersects[i].object.parent.instancePath;
+                                    	instancePath = intersects[i].object.parent.instancePath;
                                     }
-
-                                    var visible = eval(instancePath + '.visible');
-                                    if (intersects.length == 1 || i == intersects.length) {
-                                        //if there's only one element intersected we select it regardless of its opacity
-                                        if (visible) {
-                                            selected = instancePath;
-                                            break;
-                                        }
+                                    if(instancePath!=null||undefined){
+                                    	var visible = eval(instancePath + '.visible');
+                                    	if (intersects.length == 1 || i == intersects.length) {
+                                    		//if there's only one element intersected we select it regardless of its opacity
+                                    		if (visible) {
+                                    			selected = instancePath;
+                                    			break;
+                                    		}
+                                    	}
+                                    	else {
+                                    		//if there are more than one element intersected and opacity of the current one is less than 1
+                                    		//we skip it to realize a "pick through"
+                                    		var opacity = GEPPETTO.getVARS().meshes[instancePath].defaultOpacity;
+                                    		if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
+                                    			selected = instancePath;
+                                    			break;
+                                    		}
+                                    		else if (visible && opacity < 1 && opacity > 0) {
+                                    			//if only transparent objects intersected select first or the next down if
+                                    			//one is already selected in order to enable "burrow through" sample.
+                                    			if (selected == "" && !eval(instancePath + '.selected')) {
+                                    				selected = instancePath;
+                                    			}
+                                    			else {
+                                    				if (eval(instancePath + '.selected') && i != intersects.length - 1) {
+                                    					selected = "";
+                                    				}
+                                    			}
+                                    		}
+                                    	}
                                     }
-                                    else {
-                                        //if there are more than one element intersected and opacity of the current one is less than 1
-                                        //we skip it to realize a "pick through"
-                                        var opacity = GEPPETTO.getVARS().meshes[instancePath].defaultOpacity;
-                                        if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
-                                            selected = instancePath;
-                                            break;
-                                        }
-                                        else if (visible && opacity < 1 && opacity > 0) {
-                                            //if only transparent objects intersected select first or the next down if
-                                            //one is already selected in order to enable "burrow through" sample.
-                                            if (selected == "" && !eval(instancePath + '.selected')) {
-                                                selected = instancePath;
-                                            }
-                                            else {
-                                                if (eval(instancePath + '.selected') && i != intersects.length - 1) {
-                                                    selected = "";
-                                                }
-                                            }
-                                        }
-                                    }
-
                                 }
 
 

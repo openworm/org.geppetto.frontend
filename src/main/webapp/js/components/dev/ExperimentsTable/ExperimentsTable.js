@@ -332,6 +332,18 @@ define(function (require) {
         componentDidMount: function(){
             this.attachTooltip();
         },
+        
+        clickStatus : function(e){
+        	if(this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR ||
+        			this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN){
+        		var error = this.props.experiment.getDetails();
+        		if(error!= null || undefined){
+            		e.stopPropagation();
+            		e.nativeEvent.stopImmediatePropagation();
+            		GEPPETTO.FE.infoDialog("Experiment Failed ",  error.exception);
+        		}
+        	}
+        },
 
         render: function () {
             var experiment = this.props.experiment;
@@ -340,7 +352,7 @@ define(function (require) {
             var tdStatus = <td className="statusIcon">
                 <div className={"circle center-block " + experiment.getStatus()}
                      data-status={experiment.getStatus()}
-                     title=""
+                     title="" onClick={this.clickStatus}
                      data-custom-title={GEPPETTO.Resources.ExperimentStatus.Descriptions[experiment.getStatus()]}
                      rel="tooltip"></div>
             </td>;
@@ -391,7 +403,7 @@ define(function (require) {
             var index = window.Project.getExperiments().indexOf(experiment);
             GEPPETTO.FE.inputDialog(
                 "Are you sure?",
-                `Delete ${experiment.name} ?`,
+                'Delete ${experiment.name} ?',
                 "Yes",
                 function(){
                     GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");

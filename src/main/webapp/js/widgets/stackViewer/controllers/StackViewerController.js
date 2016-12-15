@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,16 +31,17 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Controller class for popup widget. Use to make calls to widget from inside Geppetto.
+ * Controller class for the stackViewer widget.
  *
- * @author Jesus R Martinez (jesus@metacell.us)
+ * @author Robbie1977
  */
 define(function (require) {
-    var Popup = require('widgets/popup/Popup');
+
     var AWidgetController = require('widgets/AWidgetController');
+    var Stack = require('widgets/stackViewer/StackViewer');
 
     /**
-     * @exports Widgets/Popup/PopupsController
+     * @exports Widgets/stackViewer/stackViewerController
      */
     return AWidgetController.View.extend({
 
@@ -50,46 +51,47 @@ define(function (require) {
         },
 
         /**
-         * Creates popup widget
+         * Creates new stack viewer widget
          */
-        addPopupWidget: function () {
+        addStackViewerWidget: function () {
             //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("Popup", this.widgets);
+            var id = this.getAvailableWidgetId("StackViewer", this.widgets);
             var name = id;
-
-            //create popup widget
-            var p = window[name] = new Popup({id: id, name: name, visible: true, controller: this});
-            p.setController(this);
-            p.setSize(394,490);
-            //create help command for plot
-            p.help = function () {
+            var vv = window[name] = new Stack({id: id, name: name, visible: true});
+            vv.help = function () {
                 return GEPPETTO.Console.getObjectCommands(id);
             };
-
-            //store in local stack
-            this.widgets.push(p);
-
+            this.widgets.push(vv);
 
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
-            //add commands to console autocomplete and help option
-            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/widgets/popup/Popup.js"));
+            //updates help command options
+            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/widgets/stackViewer/StackViewer.js"));
 
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(p.getId(), p);
-
-            return p;
+            GEPPETTO.Console.updateTags(vv.getId(), vv);
+            return vv;
         },
 
         /**
-         * Receives updates from widget listener class to update popup widget(s)
+         * Receives updates from widget listener class to update Button Bar widget(s)
          *
          * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
          */
         update: function (event) {
-            //delete popup widget(s)
+            //delete a widget(s)
             if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
                 this.removeWidgets();
+            }
+
+            //reset widget's datasets
+            else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+                //pass
+            }
+
+            //update widgets
+            else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
+                //pass
             }
         }
     });

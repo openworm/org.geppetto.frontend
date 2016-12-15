@@ -85,28 +85,6 @@ define(function (require) {
             equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
         });
 
-        QUnit.test("Test Plot Widget", function () {
-            G.addWidget(Widgets.PLOT);
-
-            equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
-
-            var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
-
-            equal(plot.isVisible(), true, "Test Default Widget Visibility");
-
-            plot.hide();
-
-            equal(plot.isVisible(), false, "Test hide()");
-
-            plot.show();
-
-            equal(plot.isVisible(), true, "Test show()");
-
-            plot.destroy();
-
-            equal($("#" + plot.getId()).html(), null, "Test destroy()");
-        });
-
         QUnit.test("Test Popup Widget", function () {
             G.addWidget(Widgets.POPUP);
 
@@ -129,7 +107,7 @@ define(function (require) {
             equal($("#" + pop.getId()).html(), null, "Test destroy()");
         });
 
-        QUnit.test("Test Scattered-3D Widget", function () {
+        QUnit.test("Test Scatter-3D Widget", function () {
             G.addWidget(Widgets.SCATTER3D);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");

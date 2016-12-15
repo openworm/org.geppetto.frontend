@@ -40,13 +40,53 @@
     user-select: none;
 }
 
+.ui-icon{
+    color: #fc6320;
+    text-shadow: none;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-image: none;
+    text-indent: 4px;
+    width: 18px;
+}
+
+.ui-dialog .ui-dialog-titlebar-buttonpane>a {
+	background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding-top: 2px;
+    margin-right: 4px;
+}
+
+
+.ui-dialog .ui-dialog-titlebar-maximize:hover,.ui-dialog .ui-dialog-titlebar-restore:hover,.ui-dialog .ui-dialog-titlebar-minimize:hover,.ui-dialog .ui-dialog-titlebar-collapse:hover {
+	margin-top: 2px;
+}
+
+.ui-dialog span{
+	margin-left : -2px;
+}
+
+.widget-title-bar-button:hover{
+	color : white;
+}
+
+.ui-icon:hover {
+	color : white;	
+}
+
+.ui-state-default .ui-icon {
+	background-image: none;
+}
+
 .ui-dialog .ui-dialog-titlebar-close {
-    margin-top: -10px !important;
     color: #fc6320;
     text-shadow: none;
     right: 0;
     font-size: 15px;
     opacity: 1 !important;
+    margin-top: -10px;
 }
 
 .ui-dialog .ui-dialog-titlebar-close:hover {
@@ -80,10 +120,6 @@
     cursor: pointer;
 }
 
-.widget-title-bar-button:hover {
-    color: #fc401a;
-}
-
 .ui-dialog .ui-dialog-title {
     padding: 0 !important;
     margin: 0 !important;
@@ -91,6 +127,8 @@
     font-weight: 200;
     color: #fd6808;
     margin-left: 5px;
+    width: 60%;
+    white-space: nowrap;
 }
 
 .ui-dialog {

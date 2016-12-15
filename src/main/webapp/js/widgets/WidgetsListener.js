@@ -94,7 +94,6 @@ define(function (require) {
 
                     for (var p in widgets) {
                         if (widgets[p].getId() == this.id) {
-                            widgets[p].destroy();
                             widgets.splice(p, 1);
                             break;
                         }

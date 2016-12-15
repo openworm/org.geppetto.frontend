@@ -39,6 +39,7 @@
 /*
  * Configure what dependencies are needed for each library
  */
-
 //Load PlotsController and other classes using GEPPETTO
-loadCss("geppetto/js/widgets/variablevisualiser/VariableVisualiser.css");
+require([], function () {
+    loadCss("geppetto/js/widgets/variablevisualiser/VariableVisualiser.css");
+});

@@ -421,17 +421,17 @@ define(function (require) {
                                                 }
                                             }
                                         }
+                                        that.state.objects = $.unique(that.state.objects).sort();
+                                        var objects = '';
+                                        if (GEPPETTO.isKeyPressed("shift")) {
+                                            objects = 'Click to add: ';
+                                        }
+                                        for (j in that.state.objects) {
+                                            objects = objects + that.state.objects[j] + '\n';
+                                        }
+                                        that.setStatusText(objects);
                                     }
                                 }
-                                that.state.objects = $.unique(that.state.objects).sort();
-                                var objects = '';
-                                if (GEPPETTO.isKeyPressed("shift")) {
-                                    objects = 'Click to add: ';
-                                }
-                                for (j in that.state.objects) {
-                                    objects = objects + that.state.objects[j] + '\n';
-                                }
-                                that.setStatusText(objects);
                                 // update slice view
                                 if (i == 0) {
                                     that.state.loadingLabels = false;

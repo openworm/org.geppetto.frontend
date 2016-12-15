@@ -688,6 +688,13 @@ define(function (require) {
             $("#controlpanel").hide();
         },
 
+        setFilter: function(filterText){
+            var filterElement = $('#controlpanel input.form-control[name=filter]');
+            filterElement.val(filterText);
+            // trigger input change the way react likes it
+            filterElement[0].dispatchEvent(new Event('input', { bubbles: true }));
+        },
+
         componentDidMount: function () {
             var escape = 27;
             var pKey = 80;

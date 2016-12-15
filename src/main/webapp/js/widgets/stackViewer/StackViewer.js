@@ -87,6 +87,10 @@ define(function (require) {
 			this.stackElement.bind('resizeEnd', function() {
 				that.resize();
 			});
+			
+			window.addEventListener('resize', function(event){
+				that.stackElement.find(".fa-home").click();
+            });
         },
 
         setSize: function (h, w) {
@@ -102,7 +106,7 @@ define(function (require) {
         	this.data.height = this.stackElement.height();
         	this.data.width = this.stackElement.parent().width();
             this.updateScene();
-            this.stackElement.find(".fa-home").click()
+            this.stackElement.find(".fa-home").click();
         },
 
         /**

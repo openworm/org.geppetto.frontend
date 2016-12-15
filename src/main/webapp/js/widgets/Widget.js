@@ -59,15 +59,17 @@ define(function (require) {
             visible: true,
             destroyed: false,
             size: {},
-            position: {left: "50%", top: "50%"},
+            position: {},
             registeredEvents: null,
             executedAction : 0,
             title : null,
             previousMaxTransparency : false,
+            previousMaxSize : {},
             maximize : false,
             collapsed : false,
 
             defaultSize : function(){return {height: 300, width: 350}},
+            defaultPosition : function(){return {left: "50%", top: "50%"}},
             /**
              * Initializes the widget
              *
@@ -80,6 +82,7 @@ define(function (require) {
                 this.name = options.name;
                 this.visible = options.visible;
                 this.size = this.defaultSize();
+                this.position = this.defaultPosition();
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
                 this.registeredEvents = [];
@@ -568,6 +571,11 @@ define(function (require) {
                         	  label = label.substring(0, 6);
                         	  that.$el.dialog({ title: label});
                            },
+                           "beforeMaximize" :function(evt,dlg){
+                        	   var divheight =that.size.height;  
+                        	   var divwidth =that.size.width;    
+                        	   that.previousMaxSize = {width: divwidth, height: divheight};
+                           },
                            "minimize" : function(evt, dlg){
                         	   that.$el.dialog({ title: that.name});
                             },
@@ -580,6 +588,9 @@ define(function (require) {
                     			that.maximize = true;
                     		},
                     		"restore" : function(evt,dlg){
+                    			if(that.maximize){
+                    				that.setSize(that.previousMaxSize.height,that.previousMaxSize.width);
+                    			}
                     			that.maximize = false;
                     			that.collapsed = false;
                     			that.setTrasparentBackground(that.previousMaxTransparency);

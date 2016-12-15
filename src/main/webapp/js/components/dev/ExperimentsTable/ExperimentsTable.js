@@ -399,11 +399,21 @@ define(function (require) {
         },
         
         deleteExperiment : function(e){
-        	var experiment = this.props.experiment;
-        	var index = window.Project.getExperiments().indexOf(experiment);
-            GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
-            e.stopPropagation();
-            e.nativeEvent.stopImmediatePropagation();
+            var experiment = this.props.experiment;
+            var index = window.Project.getExperiments().indexOf(experiment);
+            GEPPETTO.FE.inputDialog(
+                "Are you sure?",
+                "Delete " + experiment.name + "?",
+                "Yes",
+                function(){
+                    GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
+                    e.stopPropagation();
+                    e.nativeEvent.stopImmediatePropagation();
+                },
+                "Cancel",
+                function(){
+                }
+            );
         },
         
         cloneExperiment : function(e){

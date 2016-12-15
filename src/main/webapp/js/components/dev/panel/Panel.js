@@ -92,7 +92,7 @@ define(function (require) {
     		 });
        	 
              return (
-        		 <div className="panelContainer" id={this.props.id} style={this.state.parentStyle}>
+        		 <div className="panelContainer material" id={this.props.id} style={this.state.parentStyle}>
         		 	{itemComponents}
         		 </div>
              );

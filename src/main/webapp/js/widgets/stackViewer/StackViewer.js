@@ -84,8 +84,8 @@ define(function (require) {
             var that = this;
 			this.stackElement = $("#"+this.id);
 
-			this.stackElement.bind('resizeEnd', function() {
-				that.resize();
+			this.stackElement.bind('resizeEnd', function(event, mode) {
+				that.resize(mode);
 			});
         },
 
@@ -98,10 +98,15 @@ define(function (require) {
             this.updateScene();
         },
         
-        resize : function(){
-        	this.data.height = this.stackElement.height()+50;
-        	this.data.width = this.stackElement.width()+40;
-        	
+        resize : function(mode){
+        	if(mode == "maximize"){
+        		this.data.height = this.stackElement.height()+40;
+            	this.data.width = this.stackElement.width()+30;
+        	}else if(mode=="restore"){
+        		this.data.height = this.stackElement.height()+40;
+            	this.data.width = this.stackElement.width()+30;
+        	}
+
             Widget.View.prototype.setSize.call(this, this.data.height, this.data.width);
 
             this.addBorders();

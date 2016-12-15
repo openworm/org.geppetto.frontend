@@ -193,6 +193,10 @@ define(function (require) {
 			if(this.buttonBarConfig!=null && this.buttonBarConfig!=undefined){
 				this.renderButtonBar();
 			}
+			
+			if(this.collapsed){
+				this.$el.dialogExtend("collapse");
+			}
 			return this;
 		},
 

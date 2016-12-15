@@ -88,13 +88,12 @@ define(function (require) {
                 $(self.historyMenu.el).on('click', function (event) {
                 	var itemId = $(event.target).attr('id');
                 	var registeredItem = self.historyMenu.getClickedItem(itemId);
-                	if(registeredItem != null || undefined){
+                	if(registeredItem != null || registeredItem!=undefined){
                 		var label = registeredItem["label"];
                 		self.title = label;
                 		$("#"+self.id).parent().find(".ui-dialog-title").html(self.title);
                 	}
                 });
-                
                 window.addEventListener('resize', function(event){
                 	if(self.maximize){
                 		self.maximize = false;

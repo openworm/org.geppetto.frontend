@@ -39,5 +39,7 @@
 /*
  * Configure what dependencies are needed for each library
  */
-loadCss("geppetto/js/widgets/buttonBar/ButtonBar.css");
+require([], function () {
+    loadCss("geppetto/js/widgets/buttonBar/ButtonBar.css");
+});
 

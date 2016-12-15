@@ -18,7 +18,7 @@ define(function (require) {
 		componentDidMount: function () {
 			var that = this;
 			
-			if(that.props.instance!=null || undefined){
+			if(that.props.instance!=null || that.props.instance!=undefined){
 				that.props.resize();
 			}
 
@@ -45,13 +45,14 @@ define(function (require) {
 				});
 			}
 
-			if(this.props.buttonBarConfig.Events !=null || undefined){
+			if(this.props.buttonBarConfig.Events !=null || this.props.buttonBarConfig.Events!=undefined){
 				this.props.geppetto.on(Events.Visibility_changed, function (instance) {
-					if(!$.isEmptyObject(that.props) || undefined){
+					if(!$.isEmptyObject(that.props) || that.props != undefined){
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
 						}else{
-							if((that.props.instance!=null || undefined) && (instance.getParent()!=null || undefined)){
+							if((that.props.instance!=null || that.props.instance!=undefined) 
+									&& (instance.getParent()!=null || instance.getParent()!=undefined)){
 								if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
 									that.forceUpdate();
 								}
@@ -60,11 +61,12 @@ define(function (require) {
 					}
 				});
 				this.props.geppetto.on(Events.Select, function (instance) {
-					if(!$.isEmptyObject(that.props) || undefined){
+					if(!$.isEmptyObject(that.props) || that.props != undefined){
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
 						}else{
-							if((that.props.instance!=null || undefined) && (instance.getParent()!=null || undefined)){
+							if((that.props.instance!=null || that.props.instance!=undefined) 
+									&& (instance.getParent()!=null || instance.getParent()!=undefined)){
 								if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
 									that.forceUpdate();
 								}
@@ -73,7 +75,7 @@ define(function (require) {
 					}
 				});  
 				this.props.geppetto.on(Events.Color_set, function (instance) {
-					if(that.props!=null || undefined){
+					if(that.props!=null || that.props!=undefined){
 						if(instance.instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
 						}
@@ -162,7 +164,7 @@ define(function (require) {
 				}
 			}
 
-			if(entity!=null||undefined){
+			if(entity!=null||entity!=undefined){
 				if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
 					// Add visual capability controls to list
 					for (var control in config.VisualCapability) {

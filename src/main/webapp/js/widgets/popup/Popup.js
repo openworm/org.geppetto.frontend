@@ -45,7 +45,6 @@ define(function (require) {
     var ReactDOM = require('react-dom');
     var ButtonBarComponent = require('jsx!widgets/popup/ButtonBarComponent');
 
-	// var anchorme = require('anchorme');
 	/**
 	 * Private function to hookup custom event handlers
 	 *
@@ -301,7 +300,7 @@ define(function (require) {
 		 * Sets a custom handler for a given event for nodes that point to nodes via instancePath attribute on HTML anchors.
 		 *
 		 * @command addCustomNodeHandler(funct, eventType)
-		 * @param {fucntion} funct - Handler function
+		 * @param {function} funct - Handler function
 		 * @param {String} eventType - event that triggers the custom handler
 		 */
 		addCustomNodeHandler: function (funct, eventType, metaType) {
@@ -326,11 +325,11 @@ define(function (require) {
 									barDiv+"' class='button-bar-div'></div></div>");
 		
 			var dataInstancePath;
-			if(this.data!=null || undefined){
+			if(this.data!=null || this.data!=undefined){
 				dataInstancePath = this.data.getInstancePath();
 			}
 			
-			if(this.buttonBarConfig.filter != null || undefined){
+			if(this.buttonBarConfig.filter!=null || this.buttonBarConfig.filter!=undefined){
 				if(this.data!=null && this.data!=undefined){
 					this.data = this.buttonBarConfig.filter(this.data);
 					dataInstancePath = this.data.getInstancePath();
@@ -351,9 +350,14 @@ define(function (require) {
         
         setButtonBarConfiguration : function(configuration){
         	this.buttonBarConfig = configuration;
-        	if(this.data!=null||undefined){
+        	if(this.data!=null || this.data!=undefined){
         		this.renderButtonBar();
         	}
+        },
+        
+        destroy: function () {
+            ReactDOM.unmountComponentAtNode(document.getElementById('bar-div-'+this.id));
+            Widget.View.prototype.destroy.call(this);
         }
 	});
 });

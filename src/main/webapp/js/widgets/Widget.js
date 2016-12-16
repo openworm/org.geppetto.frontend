@@ -590,11 +590,12 @@ define(function (require) {
                     		"restore" : function(evt,dlg){
                     			if(that.maximize){
                     				that.setSize(that.previousMaxSize.height,that.previousMaxSize.width);
+                    				$(this).trigger('restored',[that.id]);
                     			}
-                    			that.maximize = false;
-                    			that.collapsed = false;
                     			that.setTrasparentBackground(that.previousMaxTransparency);
                     			$(this).trigger('resizeEnd');
+                    			that.maximize = false;
+                    			that.collapsed = false;
                     		},
                     		"collapse":function(evt,dlg){
                     			that.collapsed = true;

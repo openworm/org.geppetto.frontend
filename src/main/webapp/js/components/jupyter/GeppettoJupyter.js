@@ -13,7 +13,9 @@ define(function (require, exports, module) {
 	var GEPPETTO = require('geppetto');
 
 	var $ = require('jquery');
-		
+	
+	//Note there is no panel model for GeppettoJupyter.js
+	
 	var PanelModel = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: "PanelModel",

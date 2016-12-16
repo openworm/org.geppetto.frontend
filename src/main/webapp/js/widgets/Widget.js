@@ -443,7 +443,7 @@ define(function (require) {
             					that.executedAction = historyItems.length-1;
             				}
     						item = historyItems[that.executedAction].action[0];;
-    						GEPPETTO.Console.executeCommand(item);
+    						GEPPETTO.Console.executeImplicitCommand(item);
             				$("#"+that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
             				event.stopPropagation();
             			});

@@ -41,7 +41,7 @@
  */
 require.config({
     shim: {
-        "widgets/scatter3d/vendor/OrbitControls": ["three"]
+       "widgets/scatter3d/vendor/OrbitControls": ["three"]
     }
 });
 

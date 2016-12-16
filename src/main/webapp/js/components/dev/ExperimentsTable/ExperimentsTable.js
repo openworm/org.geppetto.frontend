@@ -64,7 +64,7 @@ define(function (require) {
 
                     if (field == "name") {
                         var expID = $(this).parent().attr("id").replace('#', '');
-                        GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
+                        GEPPETTO.Console.executeImplicitCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
                     }
             });
             
@@ -223,7 +223,7 @@ define(function (require) {
 
                     // get aspect instance path
                     var aspect = $(this).parent().find("td[name='aspect']").html();
-                    GEPPETTO.Console.executeCommand("Project.getExperimentById(" + expID + ").simulatorConfigurations['" + aspect + "']." + setterStr + "('" + val + "')");
+                    GEPPETTO.Console.executeImplicitCommand("Project.getExperimentById(" + expID + ").simulatorConfigurations['" + aspect + "']." + setterStr + "('" + val + "')");
                 }
             });
         },
@@ -385,7 +385,7 @@ define(function (require) {
         activeExperiment : function(e){
         	var experiment = this.props.experiment;
         	var index = window.Project.getExperiments().indexOf(experiment);
-            GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].setActive();");
+            GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].setActive();");
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();
             
@@ -406,7 +406,7 @@ define(function (require) {
                 "Delete " + experiment.name + "?",
                 "Yes",
                 function(){
-                    GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
+                    GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
                     e.stopPropagation();
                     e.nativeEvent.stopImmediatePropagation();
                 },
@@ -419,7 +419,7 @@ define(function (require) {
         cloneExperiment : function(e){
         	var experiment = this.props.experiment;
         	var index = window.Project.getExperiments().indexOf(experiment);
-        	GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].clone();");
+        	GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].clone();");
        	 	e.stopPropagation();
        	 	e.nativeEvent.stopImmediatePropagation();
         },
@@ -429,7 +429,7 @@ define(function (require) {
         	var simulatorConfigurations = experiment.simulatorConfigurations;
         	for (var config in simulatorConfigurations) {
         		var simulatorConfig = simulatorConfigurations[config];
-        		GEPPETTO.Console.executeCommand('Project.downloadModel("' + simulatorConfig["aspectInstancePath"] + '");');
+        		GEPPETTO.Console.executeImplicitCommand('Project.downloadModel("' + simulatorConfig["aspectInstancePath"] + '");');
         	}
         	e.stopPropagation();
         	e.nativeEvent.stopImmediatePropagation();
@@ -441,7 +441,7 @@ define(function (require) {
             var simulatorConfigurations = experiment.simulatorConfigurations;
             for (var config in simulatorConfigurations) {
                 var simulatorConfig = simulatorConfigurations[config];
-                GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].downloadResults('" + simulatorConfig["aspectInstancePath"] + "'," + "'RAW');");
+                GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].downloadResults('" + simulatorConfig["aspectInstancePath"] + "'," + "'RAW');");
             }
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();
@@ -501,7 +501,7 @@ define(function (require) {
             	var experiments = window.Project.getExperiments();
             	var experiment = window.Project.getActiveExperiment();
             	if(experiments.length==0){
-            		GEPPETTO.Console.executeCommand("Project.newExperiment();");
+            		GEPPETTO.Console.executeImplicitCommand("Project.newExperiment();");
             	}else{
             		var index =0;
             		if(experiment!=null || undefined){
@@ -512,7 +512,7 @@ define(function (require) {
             			}
             			index = window.Project.getExperiments().indexOf(experiment);
             		}
-            		GEPPETTO.Console.executeCommand("Project.getExperiments()[" + index + "].clone();");
+            		GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].clone();");
             	}
             });
 

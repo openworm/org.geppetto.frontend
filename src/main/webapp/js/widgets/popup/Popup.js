@@ -41,7 +41,7 @@ define(function (require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 	var Type = require('model/Type');
-	// var anchorme = require('anchorme');
+
 	/**
 	 * Private function to hookup custom event handlers
 	 *
@@ -286,7 +286,7 @@ define(function (require) {
 		 * Sets a custom handler for a given event for nodes that point to nodes via instancePath attribute on HTML anchors.
 		 *
 		 * @command addCustomNodeHandler(funct, eventType)
-		 * @param {fucntion} funct - Handler function
+		 * @param {function} funct - Handler function
 		 * @param {String} eventType - event that triggers the custom handler
 		 */
 		addCustomNodeHandler: function (funct, eventType, metaType) {

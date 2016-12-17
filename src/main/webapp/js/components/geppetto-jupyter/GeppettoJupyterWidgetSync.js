@@ -44,8 +44,24 @@ define(function (require, exports, module) {
 		}
 	});
 
+	var PopupWidgetSync = WidgetSync.extend({
+ 		_model_name: 'PopupWidgetSync',
+ 		_model_module: "model",
+ 
+ 		initialize: function () {
+ 			PopupWidgetSync.__super__.initialize.apply(this);
+ 
+ 			if (this.get('data').length > 0) {
+ 				for (var i = 0; i < this.get('data').length; i++){
+ 					this.get('widget_object').plotData(eval(this.get('data')[i]))
+ 				}
+ 			}
+ 		}
+ 	});
+
 	module.exports = {
 		WidgetSync: WidgetSync,
-		PlotWidgetSync: PlotWidgetSync
+		PlotWidgetSync: PlotWidgetSync,
+		PopupWidgetSync: PopupWidgetSync
 	};
 });

@@ -5,6 +5,22 @@ define(function (require, exports, module) {
 	var GEPPETTO = require('geppetto');
 	var GeppettoJupyterUtils = require('./GeppettoJupyterUtils');
 
+	var EventsSync = jupyter_widgets.WidgetModel.extend({
+		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
+			_model_name: 'EventsSync',
+			_model_module: "model",
+		}),
+
+		initialize: function () {
+			EventsSync.__super__.initialize.apply(this);
+			_this = this;
+
+			GEPPETTO.on(Events.Select, function (data) {
+				_this.send({ event: Events.Select, data: data.id });
+			});
+		}
+	});
+
 	var StateVariableSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'StateVariableSync',
@@ -21,14 +37,14 @@ define(function (require, exports, module) {
 		getPayload: function () {
 			return {
 				eClass: 'Variable',
-				types: [{$ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('StateVariable')}],
-				
+				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('StateVariable') }],
+
 				initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: this.get('units') } } }],
 				id: this.get('id'),
 				name: this.get('name'),
 				timeSeries: this.get('timeSeries')
 			}
-		},	
+		},
 
 		initialize: function () {
 			StateVariableSync.__super__.initialize.apply(this);
@@ -68,20 +84,20 @@ define(function (require, exports, module) {
 
 		getPayload: function () {
 			var value;
-			if (this.name == 'soma'){
-				value = { 
-						eClass: 'Sphere',
-						position: {
-							eClass: "Point",
-							x:0,
-							y:0,
-							z:0
-						},
-						radius: this.get('topRadius')
-					 }
+			if (this.name == 'soma') {
+				value = {
+					eClass: 'Sphere',
+					position: {
+						eClass: "Point",
+						x: 0,
+						y: 0,
+						z: 0
+					},
+					radius: this.get('topRadius')
+				}
 			}
-			else{
-				value = { 
+			else {
+				value = {
 					eClass: 'Cylinder',
 					bottomRadius: this.get('bottomRadius'),
 					topRadius: this.get('topRadius'),
@@ -108,9 +124,9 @@ define(function (require, exports, module) {
 				}],
 				id: this.get('id'),
 				name: this.get('name'),
-				types: [{$ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual')}],
+				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual') }],
 			}
-		},	
+		},
 
 		initialize: function () {
 			GeometrySync.__super__.initialize.apply(this);
@@ -124,7 +140,6 @@ define(function (require, exports, module) {
 			});
 		}
 	});
-
 
 	var ModelSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
@@ -145,7 +160,7 @@ define(function (require, exports, module) {
 				libraries: [GeppettoJupyterUtils.getGeppettoCommonLibrary()]
 			}
 
-			
+
 			var geppettoVariables = [];
 
 			// Add StateVariable
@@ -179,7 +194,7 @@ define(function (require, exports, module) {
 			geppettoVariables.push(modelVariable)
 
 			// Add morphologies
-			if (this.get('geometries').length > 0){
+			if (this.get('geometries').length > 0) {
 				var geppettoMorphologiesVariables = [];
 				for (var i = 0; i < this.get('geometries').length; i++) {
 					geppettoMorphologiesVariables.push(this.get('geometries')[i].getPayload());
@@ -197,17 +212,11 @@ define(function (require, exports, module) {
 					"name": "Geppetto Neuron Library",
 					"types": [compositeVisualType]
 				};
-
-				//modelVariable.anonymousTypes[0]['visualType'] = compositeVisualType
-
 				geppettoModelPayload.libraries.push(neuronLibrary)
-				modelVariable.anonymousTypes[0]['visualType'] = {$ref:"//@libraries.1/@types.0"}
+				modelVariable.anonymousTypes[0]['visualType'] = { $ref: "//@libraries.1/@types.0" }
 			}
 
 			geppettoModelPayload['variables'] = geppettoVariables;
-
-			
-
 			return geppettoModelPayload;
 		},
 
@@ -223,15 +232,15 @@ define(function (require, exports, module) {
 
 				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
 				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-				var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+				var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
 				GEPPETTO.ControlPanel.setData(instances);
 				GEPPETTO.ExperimentsController.watchVariables(instances, true);
-				GEPPETTO.ExperimentsController.playExperimentReady=true;
+				GEPPETTO.ExperimentsController.playExperimentReady = true;
 
 				for (var i = 0; i < this.get('stateVariables').length; i++) {
 					for (var j = 0; j < instances.length; j++) {
 						//TODO Wont work for more complex nesting, we'll need the path to come from Python
-						if(instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))){
+						if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
 							this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
 
 							break;
@@ -247,15 +256,15 @@ define(function (require, exports, module) {
 
 				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
 				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-				var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+				var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
 				GEPPETTO.ControlPanel.setData(instances);
 				GEPPETTO.ExperimentsController.watchVariables(instances, true);
-				GEPPETTO.ExperimentsController.playExperimentReady=true;
+				GEPPETTO.ExperimentsController.playExperimentReady = true;
 
 				for (var i = 0; i < this.get('stateVariables').length; i++) {
 					for (var j = 0; j < instances.length; j++) {
 						//TODO Wont work for more complex nesting, we'll need the path to come from Python
-						if(instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))){
+						if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
 							this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
 
 							break;
@@ -283,16 +292,16 @@ define(function (require, exports, module) {
 			state: ''
 		}),
 
-		getPayload : function(value){
-			return { update: JSON.stringify([{"projectID":window.Project.id, "experimentID":Project.getActiveExperiment().id, "status":value}]) };
+		getPayload: function (value) {
+			return { update: JSON.stringify([{ "projectID": window.Project.id, "experimentID": Project.getActiveExperiment().id, "status": value }]) };
 		},
 
 		initialize: function () {
 			ExperimentSync.__super__.initialize.apply(this);
 
 			this.on("change:state", function (model, value, options) {
-				GEPPETTO.SimulationHandler.onMessage({type: 'experiment_status', data: JSON.stringify(this.getPayload(value))});
-				if(value=="RUNNING"){
+				GEPPETTO.SimulationHandler.onMessage({ type: 'experiment_status', data: JSON.stringify(this.getPayload(value)) });
+				if (value == "RUNNING") {
 					GEPPETTO.trigger(Events.Experiment_running);
 				}
 			});
@@ -310,16 +319,16 @@ define(function (require, exports, module) {
 		}),
 
 		getPayload: function () {
-			var payload = {id: this.get('id'), name: this.get('name'), experiments: []}
+			var payload = { id: this.get('id'), name: this.get('name'), experiments: [] }
 
 			for (var i = 0; i < this.get('experiments').length; i++) {
 				payload['experiments'].push(this.get('experiments')[i].attributes);
 			}
 			return payload
-		},	
+		},
 
-		getLoadExperimentPayload: function (){
-			return { experiment_loaded: JSON.stringify({eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] })};
+		getLoadExperimentPayload: function () {
+			return { experiment_loaded: JSON.stringify({ eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] }) };
 		},
 
 		initialize: function () {
@@ -329,7 +338,7 @@ define(function (require, exports, module) {
 			GEPPETTO.SimulationHandler.loadProject({ project_loaded: JSON.stringify({ project: this.getPayload(), persisted: false }) });
 
 			// Load the first experiment
-			GEPPETTO.SimulationHandler.onMessage({type: 'experiment_loaded', data: JSON.stringify(this.getLoadExperimentPayload())});
+			GEPPETTO.SimulationHandler.onMessage({ type: 'experiment_loaded', data: JSON.stringify(this.getLoadExperimentPayload()) });
 		}
 	}, {
 			serializers: _.extend({
@@ -342,6 +351,7 @@ define(function (require, exports, module) {
 		GeometrySync: GeometrySync,
 		ModelSync: ModelSync,
 		ExperimentSync: ExperimentSync,
-		ProjectSync: ProjectSync
+		ProjectSync: ProjectSync,
+		EventsSync: EventsSync
 	};
 });

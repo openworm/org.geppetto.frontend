@@ -53,7 +53,7 @@ define(function (require, exports, module) {
  
  			if (this.get('data').length > 0) {
  				for (var i = 0; i < this.get('data').length; i++){
- 					this.get('widget_object').plotData(eval(this.get('data')[i]))
+ 					this.get('widget_object').setMessage(this.get('data')[i])
  				}
  			}
  		}

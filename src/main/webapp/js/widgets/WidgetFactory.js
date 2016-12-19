@@ -43,8 +43,8 @@ define(function (require) {
     TreeVisualiserControllerD3 = require('widgets/treevisualiser/treevisualiserd3/controllers/TreeVisualiserControllerD3');
     TreeVisualiserControllerDAT = require('widgets/treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
     VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
-    ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController')
-    MyNameController = require('widgets/myname/controllers/MyNameController');
+    ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
+    StackViewerController = require('widgets/stackViewer/controllers/StackViewerController');
     //Use as template for new widgets
     //WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
 
@@ -67,7 +67,7 @@ define(function (require) {
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
-            MYNAME: 8
+            STACKVIEWER: 8
             //WIDGETNAME: N
         };
 
@@ -84,7 +84,8 @@ define(function (require) {
             ButtonBarController: null,
             treeVisDatController: null,
             treeVis3DController: null,
-            mynameController: null,
+            stackViewer3DController: null,
+            //WIDGETNAMEController: null
 
             /**
              * Adds widget to Geppetto
@@ -131,6 +132,10 @@ define(function (require) {
                     case GEPPETTO.Widgets.MYNAME:
                         widget = this.getController(GEPPETTO.Widgets.MYNAME).addMyNameWidget();
                         break;
+                    //create stack viewer
+                    case GEPPETTO.Widgets.STACKVIEWER:
+                        widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget();
+                        break;
                     //Use as template for new widgets
                     //create WIDGETNAME
                     //case GEPPETTO.Widgets.WIDGETNAME:
@@ -169,8 +174,8 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
                     case GEPPETTO.Widgets.BUTTONBAR:
                         return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
-                    case GEPPETTO.Widgets.MYNAME:
-                        return GEPPETTO.Resources.REMOVE_MYNAME_WIDGETS;
+                    case GEPPETTO.Widgets.STACKVIEWER:
+                        return GEPPETTO.Resources.REMOVE_STACKVIEWER_WIDGETS;
                     //Use as template for new widgets
                     //case GEPPETTO.Widgets.WIDGETNAME:
                     //    return GEPPETTO.Resources.REMOVE_WIDGETNAME_WIDGETS;
@@ -228,13 +233,19 @@ define(function (require) {
                     }
                     return this.buttonBarController;
                 }
-                else if (type == GEPPETTO.Widgets.MYNAME) {
-                    if (this.myNameController == null || undefined) {
-                        this.myNameController = new MyNameController();
+                else if (type == GEPPETTO.Widgets.STACKVIEWER) {
+                    if (this.stackViewerController == null || undefined) {
+                        this.stackViewerController = new StackViewerController();
                     }
-                    return this.myNameController;
+                    return this.stackViewerController;
                 }
-
+                //Use as template for new widgets
+                //else if (type == GEPPETTO.Widgets.WIDGETNAME) {
+                //    if (this.WIDGETNAMEController == null || undefined) {
+                //        this.WIDGETNAMEController = new WIDGETNAMEController();
+                //    }
+                //    return this.WIDGETNAMEController;
+                //}
             }
         };
     };

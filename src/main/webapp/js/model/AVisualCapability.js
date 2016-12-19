@@ -86,6 +86,7 @@ define(function (require) {
 
                 var message = GEPPETTO.Resources.HIDE_ASPECT + this.getPath();
             }
+            GEPPETTO.trigger(Events.Visibility_changed, this);
 
             return message;
         },
@@ -127,6 +128,8 @@ define(function (require) {
 
                 var message = GEPPETTO.Resources.HIDE_ASPECT + this.getPath();
             }
+            
+            GEPPETTO.trigger(Events.Visibility_changed, this);
             return message;
         },
 
@@ -262,6 +265,9 @@ define(function (require) {
                     }
                 }
             }
+
+            GEPPETTO.trigger(Events.Color_set, {instance: this, color: color});
+
             return this;
         },
 

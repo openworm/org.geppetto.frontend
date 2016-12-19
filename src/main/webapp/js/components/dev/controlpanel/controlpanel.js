@@ -93,7 +93,7 @@ define(function (require) {
                 e.preventDefault();
                 var actionStr = that.props.metadata.actions;
                 actionStr = actionStr.replace(/\$entity\$/gi, path);
-                GEPPETTO.Console.executeCommand(actionStr);
+                GEPPETTO.Console.executeImplicitCommand(actionStr);
             };
 
             return (
@@ -122,7 +122,7 @@ define(function (require) {
                             var actionStr = that.props.metadata.actions.replace(/\$entity\$/gi, actionItem);
 
                             // set action
-                            var onClickActionStr = 'GEPPETTO.Console.executeCommand("' + actionStr + '")';
+                            var onClickActionStr = 'GEPPETTO.Console.executeImplicitCommand("' + actionStr + '")';
                             anchorElement.attr('onclick', onClickActionStr);
 
                             // retrieve markup to inject as string
@@ -154,7 +154,7 @@ define(function (require) {
                                 e.preventDefault();
                                 var actionStr = that.props.metadata.actions;
                                 actionStr = actionStr.replace(/\$entity\$/gi, item);
-                                GEPPETTO.Console.executeCommand(actionStr);
+                                GEPPETTO.Console.executeImplicitCommand(actionStr);
                             };
 
                             var separator = (i < originalArray.length - 1) ? <span>, </span> : <span></span>;
@@ -313,7 +313,7 @@ define(function (require) {
 
                             // run action
                             if (actionStr != '' && actionStr != undefined) {
-                                GEPPETTO.Console.executeCommand(actionStr);
+                                GEPPETTO.Console.executeImplicitCommand(actionStr);
                                 // check custom action to run after configured command
                                 if(that.props.metadata.actions != '' && that.props.metadata.actions != undefined) {
                                     // straight up eval as we don't want this to show on the geppetto console

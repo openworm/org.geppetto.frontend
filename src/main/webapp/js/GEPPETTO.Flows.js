@@ -84,13 +84,13 @@ define(function (require) {
                     GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
                 } else {
                     // nothing to do - run callbackCommand directly
-                    GEPPETTO.Console.executeCommand(callbackCommand);
+                    GEPPETTO.Console.executeImplicitCommand(callbackCommand);
                 }
             },
 
             showSpotlightForPlay: function(callbackCommand){
             	// nothing to do - run callbackCommand directly
-                GEPPETTO.Console.executeCommand(callbackCommand);
+                GEPPETTO.Console.executeImplicitCommand(callbackCommand);
                 var anyPlotUp = false;
 
                 // check if any plots are up
@@ -116,7 +116,7 @@ define(function (require) {
             	}
             	else{
             		$.each(this.compulsoryActions[GEPPETTO.Resources.RUN_FLOW], function (index, value) {
-            			GEPPETTO.Console.executeCommand(value + "('" + callbackCommand + "')");
+            			GEPPETTO.Console.executeImplicitCommand(value + "('" + callbackCommand + "')");
                     });	
             	}
             	
@@ -132,13 +132,13 @@ define(function (require) {
             	}
             	else{
             		$.each(this.compulsoryActions[GEPPETTO.Resources.PLAY_FLOW], function (index, value) {
-            			GEPPETTO.Console.executeCommand(value + "('" + callbackCommand + "')");
+            			GEPPETTO.Console.executeImplicitCommand(value + "('" + callbackCommand + "')");
                     });	
             	}
             },
 
             onSpotlightExitFlowCallback : function(){
-                GEPPETTO.Console.executeCommand(this.callbackCommand);
+                GEPPETTO.Console.executeImplicitCommand(this.callbackCommand);
                 GEPPETTO.off(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
             }
         };

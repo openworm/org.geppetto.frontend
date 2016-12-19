@@ -1,0 +1,65 @@
+.menuButtonIcon {
+	padding-right : 5px;	
+}
+
+.menuListContainer{
+	z-index: 100 !important;	
+}
+
+.dropDownButtonContainer:disabled{
+	background:0;
+	color:@orange;
+}
+
+.dropDownButtonContainer {
+    position: fixed;
+    z-index: 99;
+    height: auto;
+    width: auto;    
+    border-radius: 0px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: rgba(66, 59, 59, 0.90);
+}
+
+.dropDownTable {
+	color: #fd6808;
+    float: left;
+    padding-right: 10px;
+    white-space: nowrap;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+.dropDownTable label {
+    float: left;
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    font-size : 14px;
+}
+
+.dropDownItem {
+	display : inline-block;
+}
+
+.selectedStatus{
+	width : 50px;
+	padding-left: 15px;
+}
+
+.dropDownLabel {
+	padding: 5px 20px 5px 0;	
+}
+
+.dropDownTable tr{
+	cursor:pointer;
+}
+.dropDownTable tr:hover {
+	background-color:#fd6808;
+	color:white;
+}

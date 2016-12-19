@@ -85,28 +85,6 @@ define(function (require) {
             equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
         });
 
-        QUnit.test("Test Plot Widget", function () {
-            G.addWidget(Widgets.PLOT);
-
-            equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
-
-            var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
-
-            equal(plot.isVisible(), true, "Test Default Widget Visibility");
-
-            plot.hide();
-
-            equal(plot.isVisible(), false, "Test hide()");
-
-            plot.show();
-
-            equal(plot.isVisible(), true, "Test show()");
-
-            plot.destroy();
-
-            equal($("#" + plot.getId()).html(), null, "Test destroy()");
-        });
-
         QUnit.test("Test Popup Widget", function () {
             G.addWidget(Widgets.POPUP);
 
@@ -129,7 +107,7 @@ define(function (require) {
             equal($("#" + pop.getId()).html(), null, "Test destroy()");
         });
 
-        QUnit.test("Test Scattered-3D Widget", function () {
+        QUnit.test("Test Scatter-3D Widget", function () {
             G.addWidget(Widgets.SCATTER3D);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
@@ -268,8 +246,8 @@ define(function (require) {
                             // check visual groups are created
                             assert.ok(acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups().length == 3 &&
                                       acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[0].getId() == 'Cell_Regions' &&
-                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Na_bask' &&
-                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask', 'Visual groups created as expected');
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Na_bask' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Kdr_bask', 'Visual groups created as expected');
                             // test that ModelFactory.getInstanceOf gives expected results
                             assert.ok(GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType()).length == 12 &&
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType().getPath()).length == 12 &&
@@ -282,11 +260,11 @@ define(function (require) {
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
                                       'getAllInstanceOf returning instances as expected for Variable and Variable path.');
                             // check AllPotentialInstances
-                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 11084 &&
+                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 10938 &&
                                       GEPPETTO.ModelFactory.allPathsIndexing[0].path == 'acnet2' &&
                                       GEPPETTO.ModelFactory.allPathsIndexing[0].metaType == 'CompositeType' &&
-                                      GEPPETTO.ModelFactory.allPathsIndexing[11084 - 1].path == 'time' &&
-                                      GEPPETTO.ModelFactory.allPathsIndexing[11084 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                                      GEPPETTO.ModelFactory.allPathsIndexing[10938 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[10938 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
                             // check getAllPotentialInstancesEndingWith
                             assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
                                       GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&
@@ -379,9 +357,12 @@ define(function (require) {
                             // test if visual group capability is injected in visual groups
                             assert.ok(window.acnet2.pyramidals_48[0].hasCapability(GEPPETTO.Resources.VISUAL_GROUP_CAPABILITY), "Visual group capability injected to instances of visual types with visual groups");
                             // test if connection capability is injected in connection variables
-                            assert.ok(GEPPETTO.ModelFactory.getAllVariablesOfMetaType(GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE), 'ConnectionType')[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to variables of ConnectionType");
-                            assert.ok(window.acnet2.pyramidals_48[0].getConnections()[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to instances of connection types")
-
+                            
+                            Model.neuroml.resolveAllImportTypes(function(){
+                            	assert.ok(GEPPETTO.ModelFactory.getAllVariablesOfMetaType(GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE), 'ConnectionType')[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to variables of ConnectionType");
+                                assert.ok(window.acnet2.pyramidals_48[0].getConnections()[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to instances of connection types");
+                            });
+                            
                             done();
                             resetConnection();
 

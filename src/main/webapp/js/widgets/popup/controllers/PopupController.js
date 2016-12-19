@@ -44,9 +44,12 @@ define(function (require) {
      */
     return AWidgetController.View.extend({
 
-        initialize: function () {
+        initialize: function (config) {
             this.widgets = Array();
             this.history = [];
+            if(config!=null || undefined){
+            	this.buttonBarConfig = config.buttonBarConfiguration;
+            }
         },
 
         /**
@@ -59,6 +62,7 @@ define(function (require) {
 
             //create popup widget
             var p = window[name] = new Popup({id: id, name: name, visible: true, controller: this});
+            p.setController(this);
             p.setSize(394,490);
             //create help command for plot
             p.help = function () {

@@ -46,31 +46,19 @@ require.config({
      * E.G. If depenedency it's used more than once, it goes in here.
      */
     paths: {
-        'flot': "widgets/plot/vendor/jquery.flot.min",
+        'plotly': "widgets/plot/vendor/plotly-latest.min",
+        'jszip': "widgets/plot/vendor/jszip.min",
+        'file-saver': "widgets/plot/vendor/FileSaver.min",
     },
-    /*
-     * Notes what dependencies are needed prior to loading each library, values on the right
-     * of colon are dependencies. If dependency was declared in path above, then add it's dependencies
-     * to that object in here.
-     */
-    shim: {
-        "widgets/plot/vendor/jquery.flot.resize.min": ["flot"],
-        "widgets/plot/vendor/jquery.flot.axislabels.min": ["flot"],
-        "widgets/plot/vendor/jquery.flot.downsample": ["flot"],
-        "widgets/plot/vendor/jquery.flot.crosshair": ["flot"]
-    }
 });
 
 /*
  * Libraries used by plot widget
  */
 var libraries = [];
-libraries.push("flot");
-libraries.push("widgets/plot/vendor/jquery.flot.resize.min");
-libraries.push("widgets/plot/vendor/jquery.flot.axislabels.min");
-libraries.push("widgets/plot/vendor/jquery.flot.crosshair");
-libraries.push("widgets/plot/vendor/jquery.flot.downsample");
-
+libraries.push("plotly");
+libraries.push("jszip");
+libraries.push("file-saver");
 define("math.global", ["mathjs"], function (_) {
     math = _;
 });

@@ -14,6 +14,13 @@ define(function (require) {
 
         GEPPETTO.SceneFactory =
         {
+        	
+        	linesUserInput:false,
+        	linesUserPreference:undefined,
+        	
+        	setLinesUserInput:function(askUser){
+        		GEPPETTO.SceneFactory.linesUserInput=askUser;
+        	},
 
 
             buildVisualInstance: function (instance) {
@@ -94,11 +101,11 @@ define(function (require) {
                     }
 
                 }
+                //TODO This can be optimised, no need to create both
                 var materials =
                 {
                     "mesh": GEPPETTO.SceneFactory.getMeshPhongMaterial(color),
-                    "line": GEPPETTO.SceneFactory.getLineMaterial(thickness,color),
-                    "particle": GEPPETTO.SceneFactory.getParticleMaterial()
+                    "line": GEPPETTO.SceneFactory.getLineMaterial(thickness,color)
                 };
                 var instanceObjects = [];
                 var threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, materials, lines);
@@ -116,11 +123,12 @@ define(function (require) {
                             instanceObjects.push(threeDeeObjList[obj]);
                         }
                     }
-                } else if (threeDeeObjList.length == 1) {
-                    // only one object in list, add it to local array and set
-                    // instance path from aspect
-                    instanceObjects.push(threeDeeObjList[0]);
-                    instanceObjects[0].instancePath = instance.getInstancePath();
+                }
+                else if(threeDeeObjList.length==1)
+                {
+                	// only one object in list, add it to local array and set
+                	instanceObjects.push(threeDeeObjList[0]);
+                	instanceObjects[0].instancePath = instance.getInstancePath();
                 }
 
                 return instanceObjects;
@@ -240,18 +248,38 @@ define(function (require) {
              */
             visualizationTreeNodeTo3DObj: function (instance, node, id, materials, lines) {
                 var threeObject = null;
-
+                
                 if (lines === undefined) {
                     // Unless it's being forced we use a threshold to decide whether to use lines or cylinders
                     if (!GEPPETTO.SceneController.aboveLinesThreshold) {
                         //Unless we are already above the threshold...
                         GEPPETTO.SceneController.aboveLinesThreshold = GEPPETTO.SceneController.complexity > GEPPETTO.SceneController.linesThreshold;
+                        
                         if (GEPPETTO.SceneController.aboveLinesThreshold) {
-                            //we are over the threshold, we use lines for everything
-                            GEPPETTO.SceneController.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
+
+                        	if(GEPPETTO.SceneFactory.linesUserInput && GEPPETTO.SceneFactory.linesUserPreference==undefined){
+
+								//we need to ask the user
+								GEPPETTO.SceneFactory.linesUserPreference = confirm("The model you are loading has a complex morphology, would you like to render it using lines instead of 3D shapes? Be careful, choosing to use 3D shapes might crash your browser!");
+								
+								if (GEPPETTO.SceneFactory.linesUserPreference) {
+								  GEPPETTO.SceneController.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
+								}	             
+								else{
+								}
+							}
+                        	else{
+								GEPPETTO.SceneController.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
+							}
                         }
+                	}
+                    
+                    if(GEPPETTO.SceneController.aboveLinesThreshold && GEPPETTO.SceneFactory.linesUserInput){
+                    	lines = GEPPETTO.SceneFactory.linesUserPreference;
                     }
-                    lines = GEPPETTO.SceneController.aboveLinesThreshold;
+                    else{
+                    	lines = GEPPETTO.SceneController.aboveLinesThreshold;
+                    }
                 }
 
                 var material = lines ? materials["line"] : materials["mesh"];
@@ -435,6 +463,105 @@ define(function (require) {
 
                 threeObject.geometry.verticesNeedUpdate = true;
                 return threeObject;
+            },
+
+
+            /**
+             * Add a 3D plane to the scene at the given coordinates (4) points. 
+             * It could be any geometry really.
+             * @returns {THREE.Mesh}
+             */
+            add3DPlane: function (x1,y1,z1,x2,y2,z2,x3,y3,z3,x4,y4,z4, textureURL) {
+
+                var geometry=new THREE.Geometry();
+                geometry.vertices.push(
+                    new THREE.Vector3(x1,y1,z1),//vertex0
+                    new THREE.Vector3(x2,y2,z2),//1
+                    new THREE.Vector3(x3,y3,z3),//2
+                    new THREE.Vector3(x4,y4,z4)//3
+                );
+                geometry.faces.push(
+                    new THREE.Face3(2,1,0),//use vertices of rank 2,1,0
+                    new THREE.Face3(3,1,2)//vertices[3],1,2...
+                );
+                geometry.computeBoundingBox();
+
+                var max = geometry.boundingBox.max,
+                    min = geometry.boundingBox.min;
+                var offset = new THREE.Vector2(0 - min.x, 0 - min.y);
+                var range = new THREE.Vector2(max.x - min.x, max.y - min.y);
+                var faces = geometry.faces;
+
+                geometry.faceVertexUvs[0] = [];
+
+                for (var i = 0; i < faces.length ; i++) {
+
+                    var v1 = geometry.vertices[faces[i].a], 
+                        v2 = geometry.vertices[faces[i].b], 
+                        v3 = geometry.vertices[faces[i].c];
+
+                    geometry.faceVertexUvs[0].push([
+                        new THREE.Vector2((v1.x + offset.x)/range.x ,(v1.y + offset.y)/range.y),
+                        new THREE.Vector2((v2.x + offset.x)/range.x ,(v2.y + offset.y)/range.y),
+                        new THREE.Vector2((v3.x + offset.x)/range.x ,(v3.y + offset.y)/range.y)
+                    ]);
+                }
+                geometry.uvsNeedUpdate = true;
+                geometry.dynamic = true;
+
+                var material= new THREE.MeshBasicMaterial({side:THREE.DoubleSide});
+                material.nowireframe=true;
+                if(textureURL!=undefined){
+                	var loader = new THREE.TextureLoader();
+                	// load a resource
+                	loader.load(
+                		// resource URL
+                		textureURL,
+                		// Function when resource is loaded
+                		function ( texture ) {
+                			//texture.minFilter = THREE.LinearFilter;
+                			material.map=texture;
+                			texture.flipY = false;
+                			material.opacity= 0.3;
+                        	material.transparent=true;
+                			material.needsUpdate = true;
+                			
+                		},
+                		// Function called when download progresses
+                		function ( xhr ) {
+                			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+                		},
+                		// Function called when download errors
+                		function ( xhr ) {
+                			console.log( 'An error happened' );
+                		}
+                	);
+                	
+                }
+                else{
+                	material.opacity= 0.3;
+                	material.transparent=true;
+                	material.color.setHex("0xb0b0b0");
+                }
+                
+                var mesh = new THREE.Mesh(geometry, material);
+                mesh.renderOrder=1;
+                mesh.clickThrough=true;
+                GEPPETTO.getVARS().scene.add(mesh);
+                return mesh;
+            },
+            
+            /**
+             * Modify the coordinates (4) points of an existing plane. 
+             * @returns {THREE.Mesh}
+             */
+            modify3DPlane:function(object,x1,y1,z1,x2,y2,z2,x3,y3,z3,x4,y4,z4){
+            	object.geometry.vertices[0].set(x1,y1,z1);
+            	object.geometry.vertices[1].set(x2,y2,z2);
+            	object.geometry.vertices[2].set(x3,y3,z3);
+            	object.geometry.vertices[3].set(x4,y4,z4);
+            	object.geometry.verticesNeedUpdate = true;
+            	return object;
             },
 
 

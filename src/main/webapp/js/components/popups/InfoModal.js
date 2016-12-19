@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2016 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -60,8 +60,7 @@ define(function (require) {
         				<div className="modal-header" id="infomodal-header">
         					<h3 id="infomodal-title" className="text-center">{this.props.title}</h3>
         				</div>
-        				<div className="modal-body">
-        			 		<p id="infomodal-text">{this.props.text}</p>
+        				<div className="modal-body" dangerouslySetInnerHTML={{__html: this.props.text}}>
         			 	</div>
         			 	<div className="modal-footer" id="infomodal-footer">
         			 		<button  id="infomodal-btn" className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.onClick} dangerouslySetInnerHTML={{__html: this.props.buttonLabel}}>

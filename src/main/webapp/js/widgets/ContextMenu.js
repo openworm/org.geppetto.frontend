@@ -15,7 +15,7 @@ define(function (require) {
                 position: "Not specified",
                 label: "Not specified",
                 action: "Not specified",
-                icon: "Not specified",
+                icon: null,
                 option: "Not specified",
             },
             initialize: function (attributes) {
@@ -81,7 +81,9 @@ define(function (require) {
 
                 registeredItems[this.$el.find("li").attr("id")] = {
                     action: this.items.get("action"),
-                    option: this.items.get("option")
+                    label: this.items.get("label"),
+                    option: this.items.get("option"),
+                    icon : this.items.get("icon")
                 };
 
                 if (this.items.has("groups")) {
@@ -122,6 +124,7 @@ define(function (require) {
         GEPPETTO.ContextMenuView = Backbone.View.extend({
             className: 'contextMenuView',
             template: _.template($('#tplContextMenu').html()),
+            closeOnClick : true,
             parentSelector: 'body',
 
             /**
@@ -139,7 +142,7 @@ define(function (require) {
             manageMenuClickEvent: function (event) {
                 //TODO: Check if this can be done through and event in the menu view items
                 var itemId = $(event.target).attr('id');
-                var registeredItem = this.registeredItems[itemId];
+                var registeredItem = this.getClickedItem(itemId);
 
                 //This works if we pass the action as a pointer to a function
                 //if (typeof registeredItem === "function") registeredItem.apply(null, [this.data]);
@@ -147,18 +150,23 @@ define(function (require) {
                 //This works if we pass the action as a pointer to a function and we executes the code inside the function but the function itself
                 //var entire = registeredItem.toString();
                 //var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
-                //GEPPETTO.Console.executeCommand("var node = eval(" + this.data.getInstancePath() + ");");
-                //GEPPETTO.Console.executeCommand(body);
+                //GEPPETTO.Console.executeImplicitCommand("var node = eval(" + this.data.getInstancePath() + ");");
+                //GEPPETTO.Console.executeImplicitCommand(body);
 
                 //This works if we pass the action as the function name
-                //GEPPETTO.Console.executeCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
+                //GEPPETTO.Console.executeImplicitCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
 
                 //TODO: We are not using the option parameter (registeredItem["option"])
                 for (var i=0;i<registeredItem["action"].length;i++) {
-                    GEPPETTO.Console.executeCommand(registeredItem["action"][i]);
+                	if(registeredItem["action"][i] != null || undefined){
+                		GEPPETTO.Console.executeImplicitCommand(registeredItem["action"][i]);
+                	}
                 }
             },
 
+            getClickedItem : function(itemId){
+            	return this.registeredItems[itemId];
+            },
             /**
              * Renders the Context Menu widget
              */
@@ -191,6 +199,14 @@ define(function (require) {
                     top: this.top,
                     left: this.left
                 });
+                
+                if(this.height != null || undefined){
+                	this.$el.height(this.height);
+                }
+                
+                if(this.width != null || undefined){
+                	this.$el.width(this.width);
+                }
 
                 return this;
             },
@@ -206,10 +222,22 @@ define(function (require) {
                 var self = this;
                 //  Hide the context menu whenever any click occurs not just when selecting an item.
                 $(this.parentSelector).on('click', function () {
-                    self.$el.hide();
+                	if(self.closeOnClick){
+                		self.$el.hide();
+                	}
                 });
             },
 
+            hide : function(){
+            	this.$el.hide();
+            },
+            
+            applyCSS : function(className){
+            	if(className!=null || undefined){
+            		this.$el.addClass(className);
+            	}
+            },
+            
             /**
              * Shows the context menu
              *
@@ -219,8 +247,20 @@ define(function (require) {
                 if (options.top === undefined || options.left === undefined) throw "ContextMenu must be shown with top/left coordinates.";
                 if (options.groups === undefined) throw "ContextMenu needs ContextMenuGroups to be shown.";
 
+                if(options.closeOnClick !=null || undefined){
+                	this.closeOnClick = options.closeOnClick;
+                }
+                
                 this.top = options.top;
                 this.left = options.left;
+                
+                if(options.height != null || undefined){
+                	this.height = options.height;
+                }
+                if(options.width != null || undefined){
+                	this.width = options.width;
+                }
+                
                 this.model = new ContextMenuModel({
                     groups: options.groups
                 });

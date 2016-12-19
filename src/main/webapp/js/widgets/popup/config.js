@@ -40,18 +40,23 @@
 
 require.config({
     paths: {
-        "slick": "widgets/popup/vendor/slick.min"
+        "slick": "widgets/popup/vendor/slick.min",
+        "anchorme": "widgets/popup/vendor/anchorme.min",
+        "colorPicker" : "widgets/popup/vendor/bootstrap-colorpicker.min"
     }
 });
 
-var reqs = [];
-reqs.push("slick");
+var popupReqs = [];
+popupReqs.push("slick");
+popupReqs.push("anchorme");
+popupReqs.push("colorPicker");
 
+require(popupReqs, function (slick, anchorme) {
+    window.anchorme = anchorme;
 
-require(reqs, function () {
 	loadCss("geppetto/js/widgets/popup/Popup.css");
 	loadCss("geppetto/js/widgets/popup/vendor/slick.css");
 	loadCss("geppetto/js/widgets/popup/vendor/slick-theme.css");
-
+    loadCss("geppetto/js/widgets/popup/vendor/bootstrap-colorpicker.min.css");
 });
 

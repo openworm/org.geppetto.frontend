@@ -50,12 +50,18 @@ define(function (require) {
         GEPPETTO.Flows =
         {
             callbackCommand: null,
-
-            /*
-             * Handles flow on run experiment
-             */
-            onRun: function (callbackCommand) {
-                this.callbackCommand = callbackCommand;
+            compulsoryActions: {},
+            
+            addCompulsoryAction: function (suggestion, flow) {
+                
+                if (!this.compulsoryActions[flow]) {
+                    this.compulsoryActions[flow] = [];
+                }
+                this.compulsoryActions[flow].push(suggestion);
+            },
+            
+            showSpotlightForRun: function(callbackCommand){
+            	this.callbackCommand = callbackCommand;
                 var anythingRecorded = false;
 
                 // check if anything is being recorded
@@ -78,16 +84,13 @@ define(function (require) {
                     GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
                 } else {
                     // nothing to do - run callbackCommand directly
-                    GEPPETTO.Console.executeCommand(callbackCommand);
+                    GEPPETTO.Console.executeImplicitCommand(callbackCommand);
                 }
             },
 
-            /*
-             * Handles flow on play recording
-             */
-            onPlay: function (callbackCommand) {
-                // nothing to do - run callbackCommand directly
-                GEPPETTO.Console.executeCommand(callbackCommand);
+            showSpotlightForPlay: function(callbackCommand){
+            	// nothing to do - run callbackCommand directly
+                GEPPETTO.Console.executeImplicitCommand(callbackCommand);
                 var anyPlotUp = false;
 
                 // check if any plots are up
@@ -103,9 +106,39 @@ define(function (require) {
 
                 }
             },
+            
+            /*
+             * Handles flow on run experiment
+             */
+            onRun: function (callbackCommand) {
+            	if (this.compulsoryActions[GEPPETTO.Resources.RUN_FLOW] == undefined){
+            		this.showSpotlightForRun(callbackCommand);
+            	}
+            	else{
+            		$.each(this.compulsoryActions[GEPPETTO.Resources.RUN_FLOW], function (index, value) {
+            			GEPPETTO.Console.executeImplicitCommand(value + "('" + callbackCommand + "')");
+                    });	
+            	}
+            	
+        			
+            },
+
+            /*
+             * Handles flow on play recording
+             */
+            onPlay: function (callbackCommand) {
+            	if (this.compulsoryActions[GEPPETTO.Resources.PLAY_FLOW] == undefined){
+            		this.showSpotlightForPlay(callbackCommand);
+            	}
+            	else{
+            		$.each(this.compulsoryActions[GEPPETTO.Resources.PLAY_FLOW], function (index, value) {
+            			GEPPETTO.Console.executeImplicitCommand(value + "('" + callbackCommand + "')");
+                    });	
+            	}
+            },
 
             onSpotlightExitFlowCallback : function(){
-                GEPPETTO.Console.executeCommand(this.callbackCommand);
+                GEPPETTO.Console.executeImplicitCommand(this.callbackCommand);
                 GEPPETTO.off(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
             }
         };

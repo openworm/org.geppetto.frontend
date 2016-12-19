@@ -13,10 +13,11 @@ define(function (require) {
         getDefaultProps: function () {
             return {
                 label: '',
+                id: 'controlPanelBtn',
                 className: 'squareB',
                 icon: 'fa fa-list',
                 onClick: function () {
-                    $("#controlpanel").show();
+                    GEPPETTO.ControlPanel.open();
                 }
             };
         }

@@ -337,7 +337,7 @@ define(function (require) {
                 else if (data.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE){
                 	var set = this.dataset.valueDict[data.getPath()]["controller"].__gui;
 	                if (!set.__ul.closed) {
-	                	this.dataset.valueDict[data.getPath()][labelsInTV[data.getPath()]] = this.treeVisualiserController.getFormattedValue(data.getWrappedObj(), data.getWrappedObj().get("capabilities")[0], step);
+	                	this.dataset.valueDict[data.getPath()][labelsInTV[data.getPath()]] = this.treeVisualiserController.getFormattedValue(data.getWrappedObj(), data.getWrappedObj().capabilities[0], step);
 	                }
                 }
             }

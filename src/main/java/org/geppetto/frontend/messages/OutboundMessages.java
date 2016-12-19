@@ -48,6 +48,7 @@ public enum OutboundMessages {
 	RELOAD_CANVAS("reload_canvas"),
 	SIMULATION_CONFIGURATION("simulation_configuration"),
 	ERROR("generic_error"),
+	ERROR_RUNNING_EXPERIMENT("error_running_experiment"),
 	ERROR_LOADING_SIMULATION_CONFIG("error_loading_simulation_config"),
 	ERROR_READING_SCRIPT("error_reading_script"),
 	ERROR_SETTING_WATCHED_VARIABLES("error_setting_watched_variables"),
@@ -55,6 +56,7 @@ public enum OutboundMessages {
 	ERROR_DOWNLOADING_RESULTS("error_downloading_results"),
 	GEPPETTO_VERSION("geppetto_version"),
 	SCRIPT_FETCHED("script_fetched"),
+	DATASOURCE_RESULTS_FETCHED("data_source_results_fetched"),
 	GET_SCRIPTS("get_scripts"),
 	WATCHED_VARIABLES_SET("watched_variables_set"),
 	CLEAR_WATCH("clear_watch"),
@@ -72,16 +74,23 @@ public enum OutboundMessages {
 	PLAY_EXPERIMENT("play_experiment"), 
 	PROJECT_PERSISTED("project_persisted"),
 	PROJECT_PROPS_SAVED("project_props_saved"),
+	EXPERIMENT_PROPS_SAVED("experiment_props_saved"),
 	DROPBOX_LINKED("dropbox_linked"),
 	DROPBOX_UNLINKED("dropbox_unlinked"),
 	RESULTS_UPLOADED("results_uploaded"),
 	MODEL_UPLOADED("model_uploaded"),
 	DOWNLOAD_RESULTS("download_results"),
 	UPDATE_MODEL_TREE("update_model_tree"), 
-	EXPERIMENT_CREATED("experiment_created"), 
+	EXPERIMENT_CREATED("experiment_created"),
+	EXPERIMENT_CLONED("experiment_cloned"),
 	GEPPETTO_MODEL_LOADED("geppetto_model_loaded"), 
 	VARIABLE_FETCHED("variable_fetched"),
-	IMPORT_TYPE_RESOLVED("import_type_resolved");
+	USER_PRIVILEGES("user_privileges"),
+	IMPORT_TYPE_RESOLVED("import_type_resolved"), 
+	IMPORT_VALUE_RESOLVED("import_value_resolved"),
+	RETURN_QUERY("return_query"),
+	RETURN_QUERY_COUNT("return_query_count"), 
+	RETURN_QUERY_RESULTS("return_query_results");
 
 	private OutboundMessages(final String text) {
 		this.text = text;

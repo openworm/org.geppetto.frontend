@@ -8,10 +8,16 @@
 @import "components/footer";
 @import "components/icons/geppetto-logo";
 @import "components/icons/github-logo";
+@import "components/ExperimentsTable";
+@import "components/PythonConsole";
 
 html {
   height: 100%;
   width: 100%;
+}
+
+.hiddenStart{
+  display:none;
 }
 
 .noSelection {
@@ -24,7 +30,14 @@ html {
 }
 
 body {
-  background-color: #000000;
+  
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#141a1e+0,5c6268+50,60666d+73,515359+100 */
+  background: #141a1e; /* Old browsers */
+  background: -moz-linear-gradient(top,  #141a1e 0%, #5c6268 50%, #60666d 73%, #515359 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  #141a1e 0%,#5c6268 50%,#60666d 73%,#515359 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  #141a1e 0%,#5c6268 50%,#60666d 73%,#515359 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#141a1e', endColorstr='#515359',GradientType=0 ); /* IE6-9 */
+
   margin: 0px;
   overflow: hidden;
   height: 100%;

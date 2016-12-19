@@ -94,7 +94,6 @@ define(function (require) {
 
                     for (var p in widgets) {
                         if (widgets[p].getId() == this.id) {
-                            widgets[p].destroy();
                             widgets.splice(p, 1);
                             break;
                         }
@@ -107,7 +106,7 @@ define(function (require) {
                     var height = ui.size.height;
                     var width = ui.size.width;
 
-                    GEPPETTO.Console.executeCommand(widgetID + ".setSize(" + height + "," + width + ")");
+                    GEPPETTO.Console.executeImplicitCommand(widgetID + ".setSize(" + height + "," + width + ")");
 
                     var left = ui.position.left;
                     var top = ui.position.top;
@@ -121,7 +120,7 @@ define(function (require) {
                     var left = ui.position.left;
                     var top = ui.position.top;
 
-                    GEPPETTO.Console.executeCommand(widgetID + ".setPosition(" + left + "," + top + ")");
+                    GEPPETTO.Console.executeImplicitCommand(widgetID + ".setPosition(" + left + "," + top + ")");
                 });
             },
 

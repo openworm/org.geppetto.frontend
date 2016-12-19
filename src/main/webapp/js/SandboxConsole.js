@@ -143,6 +143,8 @@ define(function (require) {
 
                     // Render the textarea
                     this.render();
+
+                    this.showImplicitCommands = false;
                 },
 
                 // The templating functions for the View and each history item
@@ -235,20 +237,21 @@ define(function (require) {
                     });
                 },
 
-                executeCommand: function (command) {
+                executeCommand: function (command, isImplicit) {
 
                     // If submitting a command, set the currentHistory to blank (empties the textarea on update)
                     this.currentHistory = "";
 
                     // Run the command past the special commands to check for 'help()' and ':clear' etc.
                     if (!this.specialCommands(command)) {
-
                         // If if wasn't a special command, pass off to the Sandbox Model to evaluate and save
-                        this.evaluate(command);
+                        this.evaluate(command, isImplicit);
                     }
 
                     // Update the View's history state to reflect the latest history item
-                    this.historyState = this.model.get('history').length;
+                    if (!isImplicit || (isImplicit && this.showImplicitCommands) || G.isDebugOn()) {
+                        this.historyState = this.model.get('history').length;
+                    }
                 },
 
                 clear: function () {
@@ -452,6 +455,10 @@ define(function (require) {
                         this.evaluate("GEPPETTO.Console.help()");
                         return true;
                     }
+                    else if (command == "toggleImplicitCommands()") {
+                        this.evaluate("GEPPETTO.Console.toggleImplicitCommands()");
+                        return true;
+                    }
                     // If no special commands, return false so the command gets evaluated
                     return false;
                 },
@@ -503,8 +510,10 @@ define(function (require) {
                                 parameter = parameter[0].replace(/[()]/gi, '').split(',');
                             }
                         }
-                        mostCommon = mostCommon.replace(parameter, "");
-
+                        var holder = "";
+                        var pat = new RegExp('(\\b' + parameter + '\\b)(?!.*\\b\\1\\b)', 'i');
+                        mostCommon = mostCommon.replace(pat, holder);
+                                                
                         this.textarea.val(mostCommon);//change the input to the first match
 
                         // Get the value, and the parts between which the tab character will be inserted
@@ -652,7 +661,7 @@ define(function (require) {
                 },
 
                 // Evaluate a command and save it to history
-                evaluate: function (command) {
+                evaluate: function (command, isImplicit = false) {
                     if (!command) {
                         return false;
                     }
@@ -691,15 +700,17 @@ define(function (require) {
                         item._class = "error";
                     }
 
-                    //Replace < and > commands with html equivalent in order to
-                    //display in console area
-                    str = command.replace(/\</g, "&lt;");
-                    var formattedCommand = str.replace(/\>/g, "&gt;");
+                    if (!isImplicit || (isImplicit && this.showImplicitCommands) || G.isDebugOn()) {
+                        //Replace < and > commands with html equivalent in order to
+                        //display in console area
+                        str = command.replace(/\</g, "&lt;");
+                        var formattedCommand = str.replace(/\>/g, "&gt;");
 
-                    item.command = formattedCommand;
+                        item.command = formattedCommand;
 
-                    // Add the item to the history
-                    this.addHistory(item);
+                        // Add the item to the history
+                        this.addHistory(item);
+                    }
                 },
 
 

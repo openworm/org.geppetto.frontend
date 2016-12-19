@@ -1,3 +1,35 @@
+/*******************************************************************************
+ *
+ * Copyright (c) 2011, 2016 OpenWorm.
+ * http://openworm.org
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *      OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
+
 /**
  * @class GEPPETTO.Init
  */
@@ -21,10 +53,19 @@ define(function (require) {
                         else if (e.data.command == 'removeWidgets') {
                             GEPPETTO.Console.executeCommand('G.removeWidget()');
                         }
+                        else {
+                        	eval(e.data.command); 
+                        }
                     }
                 };
                 // we have to listen for 'message'
                 window.addEventListener('message', handleRequest, false);
+                if($.isArray(window.EMBEDDEDURL)){
+                	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL[0]);	
+                }
+                else{
+                	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                }
             }
         };
 
@@ -63,7 +104,8 @@ define(function (require) {
             // NOTE: Recreating the renderer causes camera displacement on Chrome OSX.
             if (!GEPPETTO.getVARS().canvasCreated) {
                 GEPPETTO.getVARS().renderer = new THREE.WebGLRenderer({
-                    antialias: true
+                    antialias: true,
+                    alpha:true
                 });
 
             }
@@ -72,10 +114,14 @@ define(function (require) {
             GEPPETTO.getVARS().canvasCreated = true;
         };
 
-        var configureRenderer = function () {
+        var configureRenderer = function (shaders) {
 
+        	if(shaders==undefined){
+        		shaders=false;
+        	}
+        
             var color = new THREE.Color(GEPPETTO.getVARS().backgroundColor);
-            GEPPETTO.getVARS().renderer.setClearColor(color, 1);
+            //GEPPETTO.getVARS().renderer.setClearColor(color, 1);
             var width = $(GEPPETTO.getVARS().container).width();
             var height = $(GEPPETTO.getVARS().container).height();
             GEPPETTO.getVARS().renderer.setPixelRatio(window.devicePixelRatio);
@@ -84,27 +130,32 @@ define(function (require) {
             GEPPETTO.getVARS().container.appendChild(GEPPETTO.getVARS().renderer.domElement);
 
             var renderModel = new THREE.RenderPass(GEPPETTO.getVARS().scene, GEPPETTO.getVARS().camera);
-            var effectBloom = new THREE.BloomPass(0.75);
-            var effectFilm = new THREE.FilmPass(0.5, 0.5, 1448, false);
-
-            effectFocus = new THREE.ShaderPass(THREE.FocusShader);
-
-            effectFocus.uniforms["screenWidth"].value = window.innerWidth;
-            effectFocus.uniforms["screenHeight"].value = window.innerHeight;
-
-            effectFocus.renderToScreen = true;
 
             GEPPETTO.getVARS().composer = new THREE.EffectComposer(GEPPETTO.getVARS().renderer);
 
+            if(shaders){
+                var effectBloom = new THREE.BloomPass(0.75);
+                var effectFilm = new THREE.FilmPass(0.5, 0.5, 1448, false);
+                var effectFocus = new THREE.ShaderPass(THREE.FocusShader);
 
-            var copyPass = new THREE.ShaderPass(THREE.CopyShader);
-            copyPass.renderToScreen = true;
+                effectFocus.uniforms["screenWidth"].value = window.innerWidth;
+                effectFocus.uniforms["screenHeight"].value = window.innerHeight;
 
-            GEPPETTO.getVARS().composer.addPass(renderModel);
-            //GEPPETTO.getVARS().composer.addPass( effectBloom );
-            GEPPETTO.getVARS().composer.addPass(copyPass);
-            //GEPPETTO.getVARS().composer.addPass( effectFilm );
-            //GEPPETTO.getVARS().composer.addPass( effectFocus );
+                effectFocus.renderToScreen = true;
+                
+            	GEPPETTO.getVARS().composer.addPass(renderModel);
+                GEPPETTO.getVARS().composer.addPass( effectBloom );
+                GEPPETTO.getVARS().composer.addPass( effectFilm );
+                GEPPETTO.getVARS().composer.addPass( effectFocus );
+            }
+            else{
+            	//standard
+                var copyPass = new THREE.ShaderPass(THREE.CopyShader);
+                copyPass.renderToScreen = true;
+            	GEPPETTO.getVARS().composer.addPass(renderModel);
+                GEPPETTO.getVARS().composer.addPass(copyPass);
+            }
+            
         };
 
         /**
@@ -112,7 +163,7 @@ define(function (require) {
          */
         var setupLights = function () {
             // Lights
-            GEPPETTO.getVARS().camera.add(new THREE.PointLight(0xffffff));
+        	GEPPETTO.getVARS().camera.add(new THREE.PointLight(0xffffff,1.5));
 
         };
 
@@ -163,39 +214,39 @@ define(function (require) {
                                     }
                                     else {
                                         //weak assumption: if the object doesn't have an instancePath its parent will
-                                        instancePath = intersects[i].object.parent.instancePath;
+                                    	instancePath = intersects[i].object.parent.instancePath;
                                     }
-
-                                    var visible = eval(instancePath + '.visible');
-                                    if (intersects.length == 1 || i == intersects.length) {
-                                        //if there's only one element intersected we select it regardless of its opacity
-                                        if (visible) {
-                                            selected = instancePath;
-                                            break;
-                                        }
+                                    if(instancePath!=null||undefined){
+                                    	var visible = eval(instancePath + '.visible');
+                                    	if (intersects.length == 1 || i == intersects.length) {
+                                    		//if there's only one element intersected we select it regardless of its opacity
+                                    		if (visible) {
+                                    			selected = instancePath;
+                                    			break;
+                                    		}
+                                    	}
+                                    	else {
+                                    		//if there are more than one element intersected and opacity of the current one is less than 1
+                                    		//we skip it to realize a "pick through"
+                                    		var opacity = GEPPETTO.getVARS().meshes[instancePath].defaultOpacity;
+                                    		if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
+                                    			selected = instancePath;
+                                    			break;
+                                    		}
+                                    		else if (visible && opacity < 1 && opacity > 0) {
+                                    			//if only transparent objects intersected select first or the next down if
+                                    			//one is already selected in order to enable "burrow through" sample.
+                                    			if (selected == "" && !eval(instancePath + '.selected')) {
+                                    				selected = instancePath;
+                                    			}
+                                    			else {
+                                    				if (eval(instancePath + '.selected') && i != intersects.length - 1) {
+                                    					selected = "";
+                                    				}
+                                    			}
+                                    		}
+                                    	}
                                     }
-                                    else {
-                                        //if there are more than one element intersected and opacity of the current one is less than 1
-                                        //we skip it to realize a "pick through"
-                                        var opacity = GEPPETTO.getVARS().meshes[instancePath].defaultOpacity;
-                                        if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
-                                            selected = instancePath;
-                                            break;
-                                        }
-                                        else if (visible && opacity < 1 && opacity > 0) {
-                                            //if only transparent objects intersected select first or the next down if
-                                            //one is already selected in order to enable "burrow through" sample.
-                                            if (selected == "" && !eval(instancePath + '.selected')) {
-                                                selected = instancePath;
-                                            }
-                                            else {
-                                                if (eval(instancePath + '.selected') && i != intersects.length - 1) {
-                                                    selected = "";
-                                                }
-                                            }
-                                        }
-                                    }
-
                                 }
 
 
@@ -246,6 +297,8 @@ define(function (require) {
         // ============================================================================
         GEPPETTO.Init = {
 
+        	initialised : false,
+        	
             /**
              *
              */
@@ -271,6 +324,8 @@ define(function (require) {
                 setupLights();
                 setupControls();
                 setupListeners();
+                this.initialised = true;
+                GEPPETTO.trigger(Events.Canvas_initialised);
                 return GEPPETTO.getVARS();
             },
 
@@ -287,6 +342,10 @@ define(function (require) {
                 GEPPETTO.getVARS().camera.direction = new THREE.Vector3(0, 0, -1);
                 setupControls();
                 GEPPETTO.resetCamera();
+            },
+            
+            movieMode: function(toggle){
+            	configureRenderer(toggle);
             }
         };
     };

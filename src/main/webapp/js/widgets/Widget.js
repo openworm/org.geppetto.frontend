@@ -40,6 +40,8 @@ define(function (require) {
 
     var Backbone = require('backbone');
     var $ = require('jquery');
+    require("vendor/jquery.dialogextend.min");
+    
     return {
 
         /**
@@ -55,11 +57,19 @@ define(function (require) {
             id: null,
             dialog: null,
             visible: true,
-            size: {height: 300, width: 350},
-            position: {left: "50%", top: "50%"},
+            destroyed: false,
+            size: {},
+            position: {},
             registeredEvents: null,
+            executedAction : 0,
+            title : null,
+            previousMaxTransparency : false,
+            previousMaxSize : {},
+            maximize : false,
+            collapsed : false,
 
-
+            defaultSize : function(){return {height: 300, width: 350}},
+            defaultPosition : function(){return {left: "50%", top: "50%"}},
             /**
              * Initializes the widget
              *
@@ -70,11 +80,31 @@ define(function (require) {
             initialize: function (options) {
                 this.id = options.id;
                 this.name = options.name;
-                this.controller = options.controller;
                 this.visible = options.visible;
+                this.size = this.defaultSize();
+                this.position = this.defaultPosition();
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
                 this.registeredEvents = [];
+                
+                var self = this;
+                $(self.historyMenu.el).on('click', function (event) {
+                	var itemId = $(event.target).attr('id');
+                	var registeredItem = self.historyMenu.getClickedItem(itemId);
+                	if(registeredItem != null || registeredItem!=undefined){
+                		var label = registeredItem["label"];
+                		self.title = label;
+                		$("#"+self.id).parent().find(".ui-dialog-title").html(self.title);
+                	}
+                });
+                window.addEventListener('resize', function(event){
+                	if(self.maximize){
+                		self.maximize = false;
+                		self.setSize(window.innerHeight,window.innerWidth);
+                		self.$el.trigger('resizeEnd', ["maximize"]);
+                		self.maximize = true;
+                	}
+                });
             },
 
             /**
@@ -84,20 +114,20 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             destroy: function () {
-                $("#" + this.id).remove();
-
+               this.$el.remove();
+                this.destroyed=true;
                 return this.name + " destroyed";
             },
 
             /**
-             *
+             *ff
              * Hides the widget
              *
              * @command hide()
              * @returns {String} - Action Message
              */
             hide: function () {
-                $("#" + this.id).dialog('close');
+               this.$el.dialog('close').dialogExtend();
 
                 this.visible = false;
 
@@ -111,7 +141,7 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             show: function () {
-                $("#" + this.id).dialog('open');
+               this.$el.dialog('open').dialogExtend();
                 this.visible = true;
 
                 //Unfocused close button
@@ -139,7 +169,7 @@ define(function (require) {
                 this.name = name;
 
                 // set name to widget window
-                $("#" + this.id).dialog("option", "title", this.name);
+               this.$el.dialog("option", "title", this.name).dialogExtend();
 
                 return this;
             },
@@ -150,17 +180,16 @@ define(function (require) {
              * @param {Integer} top - Top position of the widget
              */
             setPosition: function (left, top) {
+            	this.position.left = left;
+            	this.position.top = top;
 
-                this.position.left = left;
-                this.position.top = top;
-
-                $("#" + this.id).dialog(
-                    'option', 'position', {
-                        my: "left+" + this.position.left + " top+" + this.position.top,
-                        at: "left top",
-                        of: $(window)
-                    });
-                return this;
+            	this.$el.dialog(
+            			'option', 'position', {
+            				my: "left+" + this.position.left + " top+" + this.position.top,
+            				at: "left top",
+            				of: $(window)
+            			}).dialogExtend();
+            	return this;
             },
 
             /**
@@ -170,11 +199,11 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize: function (h, w) {
-                this.size.height = h;
-                this.size.width = w;
-                $("#" + this.id).dialog({height: this.size.height, width: this.size.width});
+            	this.size.height = h;
+            	this.size.width = w;
+            	this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
 
-                return this;
+            	return this;
             },
 
             /**
@@ -182,7 +211,7 @@ define(function (require) {
              * @param {Integer} h - Minimum Height of the widget
              */
             setMinHeight: function (h) {
-                $("#" + this.id).dialog('option', 'minHeight', h);
+               this.$el.dialog('option', 'minHeight', h).dialogExtend();
                 return this;
             },
 
@@ -191,7 +220,7 @@ define(function (require) {
              * @param {Integer} w - Minimum Width of the widget
              */
             setMinWidth: function (w) {
-                $("#" + this.id).dialog('option', 'minWidth', w);
+               this.$el.dialog('option', 'minWidth', w).dialogExtend();
                 return this;
             },
 
@@ -211,7 +240,7 @@ define(function (require) {
              * @param {Boolean} true|false - enables / disables resizability
              */
             setResizable: function (resize) {
-                $("#" + this.id).dialog('option', 'resizable', resize);
+               this.$el.dialog('option', 'resizable', resize).dialogExtend();
                 return this;
             },
 
@@ -219,7 +248,7 @@ define(function (require) {
              * @command setAutoWidth()
              */
             setAutoWidth: function () {
-                $("#" + this.id).dialog('option', 'width', 'auto');
+               this.$el.dialog('option', 'width', 'auto').dialogExtend();
                 return this;
             },
 
@@ -227,7 +256,7 @@ define(function (require) {
              * @command setAutoHeigth()
              */
             setAutoHeight: function () {
-                $("#" + this.id).dialog('option', 'height', 'auto');
+               this.$el.dialog('option', 'height', 'auto').dialogExtend();
                 return this;
             },
 
@@ -308,14 +337,14 @@ define(function (require) {
                 return current;
             },
 
-            getHistoryItems: function () {
+            getItems: function (history, name) {
                 var data = [];
-                for (var i = 0; i < this.controller.history.length; i++) {
-                    var action = this.getId() + "[" + this.getId() + ".controller.history[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + ".controller.history[" + i + "].arguments)";
+                for (var i = 0; i < history.length; i++) {
+                    var action = this.getId() + "[" + this.getId() + "."+name+"[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + "."+name+"[" + i + "].arguments)";
                     data.push({
-                        "label": this.controller.history[i].label,
+                        "label": history[i].label,
                         "action": [action],
-                        "icon": "fa-history",
+                        "icon": null,
                         "position": i
                     })
                 }
@@ -329,7 +358,7 @@ define(function (require) {
                     this.historyMenu.show({
                         top: event.pageY,
                         left: event.pageX + 1,
-                        groups: that.getHistoryItems(),
+                        groups: that.getItems(that.controller.history, "controller.history"),
                         data: that
                     });
                 }
@@ -366,55 +395,144 @@ define(function (require) {
             },
 
             /**
-             * hides / shows the exit button
+             * hides / shows the title bar
              */
             showTitleBar: function (show) {
                 if (show) {
-                    $("#" + this.id).parent().find(".ui-dialog-titlebar").show();
+                   this.$el.parent().find(".ui-dialog-titlebar").show();
                 } else {
-                    $("#" + this.id).parent().find(".ui-dialog-titlebar").hide();
+                   this.$el.parent().find(".ui-dialog-titlebar").hide();
                 }
-            }
-            ,
+                return this;
+            },
+            
+            updateNavigationHistoryBar : function(){
+            	var disabled = "arrow-disabled";
+    			if(this.getItems(this.controller.history, "controller.history").length<=1){
+    				if(!$("#"+this.id + "-left-nav").hasClass(disabled)){
+    					$("#"+this.id + "-left-nav").addClass(disabled);
+    					$("#"+this.id + "-right-nav").addClass(disabled);
+    				}
+    			}else{
+    				if($("#"+this.id + "-left-nav").hasClass(disabled)){
+    					$("#"+this.id + "-left-nav").removeClass(disabled);
+    					$("#"+this.id + "-right-nav").removeClass(disabled);
+    				}
+    			}
+            },
+            
+            showHistoryNavigationBar : function(show){
+            	var leftNav = $("#"+this.id + "-left-nav");
+            	var rightNav = $("#"+this.id + "-right-nav");
+            	
+            	if (show) {
+            		if((leftNav.length ==0) && (rightNav.length == 0)){
+            			
+            			var disabled = "";
+            			if(this.getItems(this.controller.history, "controller.history").length<=1){
+            				disabled = "arrow-disabled ";
+            			}
+            			
+            			var that = this;
+            			var button = $("<div id='" + this.id + "-left-nav' class='"+ disabled +"fa fa-arrow-left'></div>"+
+            			"<div id='"+ this.id + "-right-nav' class='"+disabled+"fa fa-arrow-right'></div>").click(function (event) {
+            				var historyItems = that.getItems(that.controller.history, "controller.history");
+            				var item;
+            				if(event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")){
+            					that.executedAction = historyItems.length-1;
+            				}
+    						item = historyItems[that.executedAction].action[0];;
+    						GEPPETTO.Console.executeImplicitCommand(item);
+            				$("#"+that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
+            				event.stopPropagation();
+            			});
+            			
+            			var dialogParent = this.$el.parent();
+            			button.insertBefore(dialogParent.find("span.ui-dialog-title"));
+            			$(button).addClass("widget-title-bar-button");
+            		}
+            	} else {
+            		if(leftNav.is(":visible") && rightNav.is(":visible")){
+            			leftNav.remove();
+            			rightNav.remove();
+            			this.executedAction =0;
+            		}
+            	}
+            },
 
             /**
              * hides / shows the exit button
              */
             showCloseButton: function (show) {
                 if (show) {
-                    $("#" + this.id).parent().find(".ui-dialog-titlebar-close").show();
+                   this.$el.parent().find(".ui-dialog-titlebar-close").show();
                 } else {
-                    $("#" + this.id).parent().find(".ui-dialog-titlebar-close").hide();
+                   this.$el.parent().find(".ui-dialog-titlebar-close").hide();
+                }
+            },
+
+            addButtonToTitleBar: function(button){
+            	var dialogParent = this.$el.parent();
+            	dialogParent.find("div.ui-dialog-titlebar").prepend(button);
+            	$(button).addClass("widget-title-bar-button");
+            },
+            
+            addHelpButton: function () {
+            	var that=this;
+                this.addButtonToTitleBar($("<div class='fa fa-question' title='Widget Help'></div>").click(function () {
+                    GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
+                        title: that.id.slice(0,-1) + ' help',
+                        content: that.getHelp(),
+                        show: true
+                    }, document.getElementById("modal-region"));
+                }));
+            },
+
+            /**
+             * Makes the widget draggable or not
+             *
+             * @param draggable
+             */
+            setDraggable: function (draggable) {
+                if (draggable) {
+                   this.$el.parent().draggable({disabled: false});
+                    // NOTE: this will wipe any class applied to the widget...
+                    this.setClass('');
+                } else {
+                   this.$el.parent().draggable({disabled: true});
+                    this.setClass('noStyleDisableDrag');
                 }
             },
 
             /**
-             * makes the widget draggable or not
+             * Set background as transparent
+             *
+             * @param isTransparent
              */
-            setDraggable: function (draggable) {
-                if (draggable) {
-                    $("#" + this.id).parent().draggable({disabled: false});
-                    // NOTE: this will wipe any class applied to the widget...
-                    this.setClass('');
+            setTrasparentBackground: function(isTransparent) {
+                if(isTransparent){
+                   this.$el.parent().addClass('transparent-back');
+                   this.previousMaxTransparency = true;
                 } else {
-                    $("#" + this.id).parent().draggable({disabled: true});
-                    this.setClass('noStyleDisableDrag');
+                   this.$el.parent().removeClass('transparent-back');
                 }
-            }
-            ,
+                return this;
+            },
 
             /**
              * Inject CSS for custom behaviour
              */
             setClass: function (className) {
-                $("#" + this.id).dialog({dialogClass: className});
-            }
-            ,
+               this.$el.dialog({dialogClass: className}).dialogExtend();
+            },
 
             /**
              * Renders the widget dialog window
              */
             render: function () {
+            	
+            	var that = this;
+
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -426,32 +544,83 @@ define(function (require) {
                         close: function (event, ui) {
                             if (event.originalEvent &&
                                 $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
-                                $("#" + this.id).remove();
+                                that.destroy();
                             }
                         }
-                    });
+                    }).dialogExtend({"closable" : true,
+                        "maximizable" : true,
+                        "minimizable" : true,
+                        "collapsable" : true,
+                        "restore" : true,
+                        "minimizeLocation": "right",
+                        "icons" : {
+                            "maximize" : "fa fa-window-maximize",
+                            "minimize" : "fa fa-window-minimize",
+                            "collapse" : "fa  fa-chevron-circle-up",
+                            "restore" : "fa fa-window-restore",
+                          },
+                         "load" : function(evt, dlg){ 
+                        	 var icons = $("#"+that.id).parent().find(".ui-icon"); 
+                        	 for(var i =0 ; i<icons.length; i++){
+                        		 //remove text from span added by vendor library
+                        		 $(icons[i]).text("");
+                        	 }
+                          },
+                          "beforeMinimize" : function(evt, dlg){
+                        	  var label = that.name;
+                        	  label = label.substring(0, 6);
+                        	  that.$el.dialog({ title: label});
+                           },
+                           "beforeMaximize" :function(evt,dlg){
+                        	   var divheight =that.size.height;  
+                        	   var divwidth =that.size.width;    
+                        	   that.previousMaxSize = {width: divwidth, height: divheight};
+                           },
+                           "minimize" : function(evt, dlg){
+                        	   that.$el.dialog({ title: that.name});
+                            },
+                            "maximize" : function(evt,dlg){
+                            	that.setTrasparentBackground(false);
+                    			$(this).trigger('resizeEnd');
+                    			var divheight =$(window).height();  
+                    			var divwidth =$(window).width();  
+                    			that.$el.dialog({ height: divheight,width: divwidth});
+                    			that.maximize = true;
+                    		},
+                    		"restore" : function(evt,dlg){
+                    			if(that.maximize){
+                    				that.setSize(that.previousMaxSize.height,that.previousMaxSize.width);
+                    				$(this).trigger('restored',[that.id]);
+                    			}
+                    			that.setTrasparentBackground(that.previousMaxTransparency);
+                    			$(this).trigger('resizeEnd');
+                    			that.maximize = false;
+                    			that.collapsed = false;
+                    		},
+                    		"collapse":function(evt,dlg){
+                    			that.collapsed = true;
+                    		}
+                        });
 
                 this.$el = $("#" + this.id);
                 var dialogParent = this.$el.parent();
-                var that = this;
+                
 
                 //add history
-                dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='fa fa-history historyIcon'></div>");
-                dialogParent.find("div.historyIcon").click(function (event) {
-                    that.showHistoryMenu(event);
-                    event.stopPropagation();
-                });
+                this.showHistoryIcon(true);
 
                 //remove the jQuery UI icon
-                dialogParent.find("button.ui-dialog-titlebar-close").html("")
+                dialogParent.find("button.ui-dialog-titlebar-close").html("");
                 dialogParent.find("button").append("<i class='fa fa-close'></i>");
 
 
                 //Take focus away from close button
                 dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
-            }
-            ,
+                //add help button
+                this.addHelpButton();
+
+            },
 
             /**
              * Register event with widget
@@ -460,8 +629,7 @@ define(function (require) {
              */
             registerEvent: function (event, callback) {
                 this.registeredEvents.push({id: event, callback: callback});
-            }
-            ,
+            },
 
             /**
              * Unregister event with widget
@@ -472,8 +640,29 @@ define(function (require) {
                 this.registeredEvents = _.reject(this.registeredEvents, function (el) {
                     return el.id === event
                 });
+            },
+
+            getHelp: function(){
+                return '### Inline help not yet available for this widget! \n\n' +
+                'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
+            },
+            
+            setController : function(controller){
+            	this.controller = controller;
+            },
+            
+            showHistoryIcon : function(show){
+            	var that=this;
+            	if(show && this.$el.parent().find(".history-icon").length==0){
+                    this.addButtonToTitleBar($("<div class='fa fa-history history-icon' title='Show Navigation History'></div>").click(function (event) {
+                        that.showHistoryMenu(event);
+                        event.stopPropagation();
+                    }));
+            	}
+            	else{
+            		this.$el.parent().find(".history-icon").remove();
+            	}
             }
-            ,
         })
     }
         ;

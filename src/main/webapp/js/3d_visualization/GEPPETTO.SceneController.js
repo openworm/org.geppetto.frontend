@@ -15,10 +15,10 @@ define(function (require) {
 
         GEPPETTO.SceneController =
         {
-
             linesThreshold: 2000,
             aboveLinesThreshold: false,
             wireframe: false,
+            isAnimated: false,
 
             /**
              * Populate the scene with given instances
@@ -116,10 +116,12 @@ define(function (require) {
                     threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
                 var baseColor = threeObject.material.defaultColor;
+                var tgtColor = intensity < 0.25 ? new THREE.Color(0,intensity*4,1) : (intensity < 0.5 ? new THREE.Color(0,1,1-(intensity-0.25)*4) : intensity < 0.75 ? new THREE.Color((intensity-0.55)*4,1,0) : new THREE.Color(1,1-(intensity-0.75)*4,0))
                 if (threeObject instanceof THREE.Line) {
-                    threeObject.material.color = new THREE.Color(d3.scale.linear().domain([0, 1]).range([baseColor, "red"])(intensity));
+                    threeObject.material.color = tgtColor;
                 } else {
-                    threeObject.material.emissive = new THREE.Color(d3.scale.linear().domain([0, 1]).range([baseColor, "red"])(intensity));
+                    threeObject.material.emissive = tgtColor;
+                    threeObject.material.color = tgtColor;
                 }
 
             },
@@ -217,7 +219,7 @@ define(function (require) {
                         var mesh = meshes[meshesIndex];
 
                         if (!mesh.visible) {
-                            GEPPETTO.SceneController.merge(instancePath);
+                            GEPPETTO.SceneController.merge(instancePath,true);
                         }
                         if (mesh.selected == false) {
                             if (mesh instanceof THREE.Object3D) {
@@ -282,7 +284,7 @@ define(function (require) {
                         var mesh = meshes[meshesIndex];
                         // match instancePath to mesh store in variables properties
                         if (!mesh.visible) {
-                            GEPPETTO.SceneController.merge(instancePath);
+                            GEPPETTO.SceneController.merge(instancePath,false);
                         }
                         // make sure that path was selected in the first place
                         if (mesh.selected == true) {
@@ -341,7 +343,9 @@ define(function (require) {
                 GEPPETTO.SceneController.wireframe = wireframe;
                 GEPPETTO.getVARS().scene.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
-                        child.material.wireframe = GEPPETTO.SceneController.wireframe;
+                    	if(!(child.material.nowireframe==true)){
+                    		child.material.wireframe = GEPPETTO.SceneController.wireframe;
+                    	}
                     }
                 });
             },
@@ -409,6 +413,34 @@ define(function (require) {
                     }
                 }
                 return false;
+            },
+
+            /**
+             * Assign random color to instance if leaf - if not leaf assign random colr to all leaf children recursively
+             * @param instance
+             */
+            assignRandomColor: function(instance){
+                var getRandomColor = function() {
+                    var letters = '0123456789ABCDEF';
+                    var color = '0x';
+                    for (var i = 0; i < 6; i++ ) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
+                };
+
+                if(instance.hasCapability('VisualCapability')) {
+                    var children = instance.getChildren();
+
+                    if (children.length == 0 || instance.getMetaType() == GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
+                        var randomColor = getRandomColor();
+                        instance.setColor(randomColor);
+                    } else {
+                        for (var i = 0; i < children.length; i++) {
+                            this.assignRandomColor(children[i]);
+                        }
+                    }
+                }
             },
 
             /**
@@ -715,7 +747,7 @@ define(function (require) {
                 var mesh = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 var inputs = {};
                 var outputs = {};
-                var origin = mesh.position.clone();
+                var defaultOrigin = mesh.position.clone();
 
                 for (var c = 0; c < connections.length; c++) {
 
@@ -731,8 +763,39 @@ define(function (require) {
 
                     var otherEndMesh = GEPPETTO.getVARS().meshes[otherEndPath];
 
-                    var destination = otherEndMesh.position.clone();
+                    var destination; 
+                    var origin;
+                    
+                    if(connection.getA().getPoint()==undefined){
+                    	//same as before
+                    	origin=defaultOrigin;
+                    }
+                    else{
+                    	//the specified coordinate
+                    	var p = connection.getA().getPoint();
+                    	if (type == GEPPETTO.Resources.OUTPUT) {
+                    		origin= new THREE.Vector3(p.x+mesh.position.x,p.y+mesh.position.y,p.z+mesh.position.z);
+                    	}
+                    	else if(type == GEPPETTO.Resources.INPUT) {
+                    		origin= new THREE.Vector3(p.x+otherEndMesh.position.x,p.y+otherEndMesh.position.y,p.z+otherEndMesh.position.z);
+                    	}
+                    }
 
+                    if(connection.getB().getPoint()==undefined){
+                    	//same as before
+                    	destination=otherEndMesh.position.clone();;
+                    }
+                    else{
+                    	//the specified coordinate
+                    	var p = connection.getB().getPoint();
+                    	if (type == GEPPETTO.Resources.OUTPUT) {
+                    		destination= new THREE.Vector3(p.x+otherEndMesh.position.x,p.y+otherEndMesh.position.y,p.z+otherEndMesh.position.z);
+                    	}
+                    	else if(type == GEPPETTO.Resources.INPUT) {
+                    		destination= new THREE.Vector3(p.x+mesh.position.x,p.y+mesh.position.y,p.z+mesh.position.z);
+                    	}
+                    }
+                    
                     var geometry = new THREE.Geometry();
 
                     geometry.vertices.push(origin, destination);
@@ -740,8 +803,8 @@ define(function (require) {
                     geometry.dynamic = true;
 
                     var colour = null;
-                    var thickness = 0;
 
+                    
                     if (type == GEPPETTO.Resources.INPUT) {
 
                         colour = GEPPETTO.Resources.COLORS.INPUT_TO_SELECTED;
@@ -749,26 +812,15 @@ define(function (require) {
                         // figure out if connection is both, input and output
                         if (outputs[otherEndPath]) {
                             colour = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
-
-                            var lastLine = outputs[otherEndPath][outputs[otherEndPath].length - 1];
-                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
-                            delete GEPPETTO.getVARS().connectionLines[lastLine];
-                            thickness = outputs[otherEndPath].length;
                         }
 
                         if (inputs[otherEndPath]) {
-                            var lastLine = inputs[otherEndPath][inputs[otherEndPath].length - 1];
-                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
-                            delete GEPPETTO.getVARS().connectionLines[lastLine];
                             inputs[otherEndPath].push(connection.getInstancePath());
                         }
                         else {
                             inputs[otherEndPath] = [];
                             inputs[otherEndPath].push(connection.getInstancePath());
                         }
-
-                        thickness = thickness + inputs[otherEndPath].length;
-
                     }
 
                     else if (type == GEPPETTO.Resources.OUTPUT) {
@@ -777,28 +829,18 @@ define(function (require) {
                         // figure out if connection is both, input and output
                         if (inputs[otherEndPath]) {
                             colour = GEPPETTO.Resources.COLORS.INPUT_AND_OUTPUT;
-                            var lastLine = inputs[otherEndPath][inputs[otherEndPath].length - 1];
-                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
-                            delete GEPPETTO.getVARS().connectionLines[lastLine];
-                            thickness = inputs[otherEndPath].length;
                         }
 
                         if (outputs[otherEndPath]) {
-                            var lastLine = outputs[otherEndPath][outputs[otherEndPath].length - 1];
-                            GEPPETTO.getVARS().scene.remove(GEPPETTO.getVARS().connectionLines[lastLine]);
-                            delete GEPPETTO.getVARS().connectionLines[lastLine];
                             outputs[otherEndPath].push(connection.getInstancePath());
                         }
                         else {
                             outputs[otherEndPath] = [];
                             outputs[otherEndPath].push(connection.getInstancePath());
                         }
-
-                        thickness = thickness + outputs[otherEndPath].length;
-
                     }
 
-                    var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1, linewidth: thickness});
+                    var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1});
                     material.color.setHex(colour);
 
                     var line = new THREE.LineSegments(geometry, material);
@@ -1091,7 +1133,7 @@ define(function (require) {
              * @param {String}
              *            aspectPath - Path to aspect that points to mesh
              */
-            merge: function (aspectPath) {
+            merge: function (aspectPath, visible) {
                 // get mesh from map
                 var mergedMesh = GEPPETTO.getVARS().meshes[aspectPath];
 
@@ -1109,9 +1151,11 @@ define(function (require) {
                             }
                         }
                     }
-                    // add merged mesh to scene and set flag to true
-                    mergedMesh.visible = true;
-                    GEPPETTO.getVARS().scene.add(mergedMesh);
+                    if(visible){
+                    	// add merged mesh to scene and set flag to true
+                    	mergedMesh.visible = true;
+                    	GEPPETTO.getVARS().scene.add(mergedMesh);
+                    }
                 }
             },
 
@@ -1119,37 +1163,59 @@ define(function (require) {
              * Shows a visual group
              */
             showVisualGroups: function (visualGroups, mode, instances) {
-                for (var i = 0; i < instances.length; i++) {
-                    var instance = instances[i];
-                    var instancePath = instance.getInstancePath();
-                    GEPPETTO.SceneController.merge(instancePath);
-                    if (mode) {
-                        GEPPETTO.SceneController.splitGroups(instance, visualGroups);
-                        for (g in visualGroups) {
-                            // retrieve visual group object
-                            var visualGroup = visualGroups[g];
+            	for (var i = 0; i < instances.length; i++) {
+            		var instance = instances[i];
+            		var instancePath = instance.getInstancePath();            				
+            		GEPPETTO.SceneController.merge(instancePath,true);
+            		if (mode) {
+            			var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
+            			var map = mergedMesh.mergedMeshesPaths;
+            			//no mergedMeshesPaths means object hasn't been merged, single object
+            			if(map!=undefined||null){
+            				GEPPETTO.SceneController.splitGroups(instance, visualGroups);
+            				for (g in visualGroups) {
+            					// retrieve visual group object
+            					var visualGroup = visualGroups[g];
 
-                            // get full group name to access group mesh
-                            var groupName = g;
-                            if (groupName.indexOf(instancePath) <= -1) {
-                                groupName = instancePath + "." + g;
-                            }
+            					// get full group name to access group mesh
+            					var groupName = g;
+            					if (groupName.indexOf(instancePath) <= -1) {
+            						groupName = instancePath + "." + g;
+            					}
 
-                            // get group mesh
-                            var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
-                            groupMesh.visible = true;
-                            GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
-                        }
-                    }
-                }
+            					// get group mesh
+            					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
+            					groupMesh.visible = true;
+            					GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
+            				}
+            			}else{
+            				for (g in visualGroups) {
+            					// retrieve visual group object
+            					var visualGroup = visualGroups[g];
+
+            					// get full group name to access group mesh
+            					var groupName = g;
+            					if (groupName.indexOf(instancePath) <= -1) {
+            						groupName = instancePath + "." + g;
+            					}
+
+            					// get original mesh and apply group color
+            					var mesh = GEPPETTO.getVARS().meshes[instancePath];
+            					mesh.visible = true;
+            					GEPPETTO.SceneController.setThreeColor(mesh.material.color, visualGroup.color);
+            				}        
+            			}
+
+            		}
+            	}
             },
 
 
             isVisible: function (variables) {
-                var visible = true;
+                var visible = false;
                 for (var i = 0; i < variables.length; i++) {
-                    if (!variables[i].isVisible()) {
-                        visible = false;
+                    if (variables[i].isVisible()) {
+                        visible = true;
                         break;
                     }
                 }
@@ -1157,10 +1223,10 @@ define(function (require) {
             },
 
             isSelected: function (variables) {
-                var selected = true;
+                var selected = false;
                 for (var i = 0; i < variables.length; i++) {
-                    if (!variables[i].isSelected()) {
-                        selected = false;
+                    if (variables[i].hasOwnProperty('isSelected') && variables[i].isSelected()) {
+                        selected = true;
                         break;
                     }
                 }
@@ -1176,6 +1242,7 @@ define(function (require) {
 
                 GEPPETTO.getVARS().controls.update();
 
+                this.isAnimated = true;
                 requestAnimationFrame(GEPPETTO.SceneController.animate);
                 GEPPETTO.render();
 

@@ -16,10 +16,10 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 config = load_json('bower.json')
 
 try:
-    print subprocess.check_output(['bower', 'install'],
-                                  stderr=subprocess.STDOUT)
+    print(subprocess.check_output(['bower', 'install'],
+                                  stderr=subprocess.STDOUT))
 except subprocess.CalledProcessError as e:
-    print 'ERROR: bower install returned:', e.returncode, ':', e.output
+    print('ERROR: bower install returned:', e.returncode, ':', e.output)
     sys.exit(1)
     
     

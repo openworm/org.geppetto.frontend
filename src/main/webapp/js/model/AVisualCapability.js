@@ -86,6 +86,7 @@ define(function (require) {
 
                 var message = GEPPETTO.Resources.HIDE_ASPECT + this.getPath();
             }
+            GEPPETTO.trigger(Events.Visibility_changed, this);
 
             return message;
         },
@@ -127,6 +128,8 @@ define(function (require) {
 
                 var message = GEPPETTO.Resources.HIDE_ASPECT + this.getPath();
             }
+            
+            GEPPETTO.trigger(Events.Visibility_changed, this);
             return message;
         },
 
@@ -262,6 +265,9 @@ define(function (require) {
                     }
                 }
             }
+
+            GEPPETTO.trigger(Events.Color_set, {instance: this, color: color});
+
             return this;
         },
 
@@ -322,8 +328,8 @@ define(function (require) {
                             GEPPETTO.SceneController.ghostEffect(allOtherMeshes, true);
                         }
                     }
-                    //signal selection has changed in simulation
-                    GEPPETTO.trigger(Events.Select);
+                    //signal selection has changed in simulation pass instance
+                    GEPPETTO.trigger(Events.Select, this);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
                 }
@@ -366,7 +372,7 @@ define(function (require) {
 
             if (this instanceof Instance || this instanceof ArrayInstance) {
                 if (this.selected) {
-                    message = GEPPETTO.Resources.DESELECTING_ASPECT + this.instancePath;
+                    message = GEPPETTO.Resources.DESELECTING_ASPECT + this.getInstancePath();
                     GEPPETTO.SceneController.deselectInstance(this.getInstancePath());
                     this.selected = false;
 
@@ -402,7 +408,7 @@ define(function (require) {
                     }
 
                     //trigger event that selection has been changed
-                    GEPPETTO.trigger(Events.Selection);
+                    GEPPETTO.trigger(Events.Select, this);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
                 }

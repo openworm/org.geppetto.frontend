@@ -40,6 +40,7 @@
  */
 var Events = {
     Select: "experiment:selection_changed",
+    Visibility_changed : "experiment:visibility_changed",
     Focus_changed: "experiment:focus_changed",
     Experiment_over: "experiment:over",
     Project_loading: "project:loading",

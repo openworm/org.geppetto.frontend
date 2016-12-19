@@ -10,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *      OpenWorm - http://openworm.org/people.html
+ *     	OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,33 +30,41 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+.buttonbar-colorpicker {
+	background-color: rgba(66, 59, 59, 0.70);
+	border: 1px solid rgba(255, 255, 255, 0.25) !important;
+	border-radius: 0px !important;
+}
 
-/**
- * Loads popup scripts
- *
- * @author Jesus Martinez (jesus@metacell.us)
- */
-//Load PopupsController and other classes using GEPPETTO
+.colorpicker:after {
+	border-bottom: 6px solid rgba(255, 255, 255, 0.27) !important;
+}
 
-require.config({
-    paths: {
-        "slick": "widgets/popup/vendor/slick.min",
-        "anchorme": "widgets/popup/vendor/anchorme.min",
-        "colorPicker" : "widgets/popup/vendor/bootstrap-colorpicker.min"
-    }
-});
+.buttonBar-button {
+	height: 25px;
+	width: 33px;
+	margin: 0px;
+	background: none !important;
+	color: #fd6808;
+	font-size: 18px !important;
+	border: 0 !important;
+}
 
-var popupReqs = [];
-popupReqs.push("slick");
-popupReqs.push("anchorme");
-popupReqs.push("colorPicker");
+.buttonBar-button:hover {
+	font-size: 20px !important;
+	background: none !important;
+	color: #fc4b19;
+}
 
-require(popupReqs, function (slick, anchorme) {
-    window.anchorme = anchorme;
+.buttonBarComponentDiv{
+	margin-bottom: 5px;
+}
 
-	loadCss("geppetto/js/widgets/popup/Popup.css");
-	loadCss("geppetto/js/widgets/popup/vendor/slick.css");
-	loadCss("geppetto/js/widgets/popup/vendor/slick-theme.css");
-    loadCss("geppetto/js/widgets/popup/vendor/bootstrap-colorpicker.min.css");
-});
+.button-bar-container {
+	width : 100%;
+	text-align: center;
+}
 
+.button-bar-div {
+	height: 100%;
+}

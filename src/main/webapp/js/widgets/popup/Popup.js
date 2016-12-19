@@ -41,6 +41,9 @@ define(function (require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 	var Type = require('model/Type');
+	var React = require('react');
+    var ReactDOM = require('react-dom');
+    var ButtonBarComponent = require('jsx!widgets/popup/ButtonBarComponent');
 
 	/**
 	 * Private function to hookup custom event handlers
@@ -88,7 +91,10 @@ define(function (require) {
 	return Widget.View.extend({
 
 		data: null,
-
+		buttonBarConfig : null,
+		buttonBarControls : null,
+		buttonBar : null,
+		
 		/**
 		 * Initialize the popup widget
 		 */
@@ -182,6 +188,14 @@ define(function (require) {
 				changeIcon($(e.target));
 			});
 			$("#" + this.getId() + " .slickdiv").slick();
+			
+			if(this.buttonBarConfig!=null && this.buttonBarConfig!=undefined){
+				this.renderButtonBar();
+			}
+			
+			if(this.collapsed){
+				this.$el.dialogExtend("collapse");
+			}
 			return this;
 		},
 
@@ -295,6 +309,55 @@ define(function (require) {
 			// trigger routine that hooks up handlers
 			hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
 			return this;
-		}
+		},
+		
+		renderButtonBar: function(){
+			var that = this;
+			var buttonBarContainer = 'button-bar-container-' + this.id;
+			var barDiv = 'bar-div-'+this.id;
+			if(this.buttonBar != null){
+				ReactDOM.unmountComponentAtNode(document.getElementById(barDiv));
+				$("#"+buttonBarContainer).remove();
+			}
+
+
+			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" +
+									barDiv+"' class='button-bar-div'></div></div>");
+		
+			var dataInstancePath;
+			if(this.data!=null || this.data!=undefined){
+				dataInstancePath = this.data.getInstancePath();
+			}
+			
+			if(this.buttonBarConfig.filter!=null || this.buttonBarConfig.filter!=undefined){
+				if(this.data!=null && this.data!=undefined){
+					this.data = this.buttonBarConfig.filter(this.data);
+					dataInstancePath = this.data.getInstancePath();
+				}
+			}
+			
+
+            this.buttonBar = ReactDOM.render(
+                React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
+                	instancePath : dataInstancePath, instance : this.data, geppetto: GEPPETTO, resize : function(){that.setSize(that.size.height,that.size.width);}}),
+                document.getElementById(barDiv)
+            );
+        },
+        
+        setButtonBarControls : function(controls){
+        	this.buttonBarControls = controls;
+        },
+        
+        setButtonBarConfiguration : function(configuration){
+        	this.buttonBarConfig = configuration;
+        	if(this.data!=null || this.data!=undefined){
+        		this.renderButtonBar();
+        	}
+        },
+        
+        destroy: function () {
+            ReactDOM.unmountComponentAtNode(document.getElementById('bar-div-'+this.id));
+            Widget.View.prototype.destroy.call(this);
+        }
 	});
 });

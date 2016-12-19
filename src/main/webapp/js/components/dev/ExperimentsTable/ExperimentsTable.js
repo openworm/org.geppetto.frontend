@@ -561,8 +561,10 @@ define(function (require) {
             });
             
             //As every other component this could be loaded after the project has been loaded so when we mount it we populate it with whatever is present
-            this.populate();
-            this.updateStatus();
+            if(window.Project!=undefined){
+	            this.populate();
+	            this.updateStatus();
+            }
          
             $("#experimentsButton").show();
         },

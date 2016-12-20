@@ -320,26 +320,21 @@ define(function (require) {
 				$("#"+buttonBarContainer).remove();
 			}
 
+			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" + barDiv + "' class='button-bar-div'></div></div>");
 
-			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" +
-									barDiv+"' class='button-bar-div'></div></div>");
-		
-			var dataInstancePath;
-			if(this.data!=null || this.data!=undefined){
-				dataInstancePath = this.data.getInstancePath();
-			}
+			var instance = null;
+			var instancePath = '';
 			
-			if(this.buttonBarConfig.filter!=null || this.buttonBarConfig.filter!=undefined){
+			if(this.buttonBarConfig.filter!=null && this.buttonBarConfig.filter!=undefined){
 				if(this.data!=null && this.data!=undefined){
-					this.data = this.buttonBarConfig.filter(this.data);
-					dataInstancePath = this.data.getInstancePath();
+					instance = this.buttonBarConfig.filter(this.data);
+					instancePath = instance.getPath();
 				}
 			}
-			
 
             this.buttonBar = ReactDOM.render(
                 React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
-                	instancePath : dataInstancePath, instance : this.data, geppetto: GEPPETTO, resize : function(){that.setSize(that.size.height,that.size.width);}}),
+                	instancePath : instancePath, instance : instance, geppetto: GEPPETTO, resize : function(){that.setSize(that.size.height,that.size.width);}}),
                 document.getElementById(barDiv)
             );
         },

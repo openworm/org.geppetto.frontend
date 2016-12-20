@@ -128,11 +128,6 @@ define(function (require) {
                     case GEPPETTO.Widgets.BUTTONBAR:
                         widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget();
                     break;
-                    //create myname
-                    case GEPPETTO.Widgets.MYNAME:
-                        widget = this.getController(GEPPETTO.Widgets.MYNAME).addMyNameWidget();
-                        break;
-                    //create stack viewer
                     case GEPPETTO.Widgets.STACKVIEWER:
                         widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget();
                         break;

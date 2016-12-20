@@ -85,28 +85,6 @@ define(function (require) {
             equal(G.clear(), GEPPETTO.Resources.CLEAR_HISTORY, "Console cleared");
         });
 
-        QUnit.test("Test Plot Widget", function () {
-            G.addWidget(Widgets.PLOT);
-
-            equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget created");
-
-            var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
-
-            equal(plot.isVisible(), true, "Test Default Widget Visibility");
-
-            plot.hide();
-
-            equal(plot.isVisible(), false, "Test hide()");
-
-            plot.show();
-
-            equal(plot.isVisible(), true, "Test show()");
-
-            plot.destroy();
-
-            equal($("#" + plot.getId()).html(), null, "Test destroy()");
-        });
-
         QUnit.test("Test Popup Widget", function () {
             G.addWidget(Widgets.POPUP);
 
@@ -129,7 +107,7 @@ define(function (require) {
             equal($("#" + pop.getId()).html(), null, "Test destroy()");
         });
 
-        QUnit.test("Test Scattered-3D Widget", function () {
+        QUnit.test("Test Scatter-3D Widget", function () {
             G.addWidget(Widgets.SCATTER3D);
 
             equal(GEPPETTO.WidgetFactory.getController(Widgets.SCATTER3D).getWidgets().length, 1, "Scatter widget created");
@@ -268,8 +246,8 @@ define(function (require) {
                             // check visual groups are created
                             assert.ok(acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups().length == 3 &&
                                       acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[0].getId() == 'Cell_Regions' &&
-                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Na_bask' &&
-                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask', 'Visual groups created as expected');
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Na_bask' &&
+                                      acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Kdr_bask', 'Visual groups created as expected');
                             // test that ModelFactory.getInstanceOf gives expected results
                             assert.ok(GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType()).length == 12 &&
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getType().getPath()).length == 12 &&

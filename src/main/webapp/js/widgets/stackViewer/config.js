@@ -39,6 +39,6 @@
 /*
  * Configure what dependencies are needed for each library
  */
-require(reqs, function () {
+require([], function () {
     loadCss("geppetto/js/widgets/stackViewer/stackViewer.css");
 });

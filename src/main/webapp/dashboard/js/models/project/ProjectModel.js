@@ -2,6 +2,7 @@ define([
     'jquery',
     'underscore',
     'backbone',
+    'libs/ginny/ginny'
 ], function($, _, Backbone){
 
     var ProjectModel = Backbone.Model.extend({

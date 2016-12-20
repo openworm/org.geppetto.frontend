@@ -3,7 +3,7 @@ define(function (require) {
 	loadCss("geppetto/js/widgets/popup/ButtonBarComponent.css");
 
 	var React = require('react');
-	var colorpicker = require('colorPicker');
+	var colorpicker = require('widgets/popup/vendor/bootstrap-colorpicker.min');
 
 	var ButtonBarComponent = React.createClass({
 		colorPickerBtnId: '',

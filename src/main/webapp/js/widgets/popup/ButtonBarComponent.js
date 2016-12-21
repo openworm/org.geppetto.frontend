@@ -1,6 +1,7 @@
 define(function (require) {
 
-	loadCss("geppetto/js/widgets/popup/ButtonBarComponent.css");
+	var widgetUtility = require("../WidgetUtility");
+	widgetUtility.loadCss("geppetto/js/widgets/popup/ButtonBarComponent.css");
 
 	var React = require('react');
 	var colorpicker = require('./vendor/bootstrap-colorpicker.min');

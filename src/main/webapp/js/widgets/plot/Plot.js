@@ -488,7 +488,9 @@ define(function (require) {
 		 * Resets the axes of the graphs to defaults
 		 */
 		resetAxes : function(){
-			this.plotOptions.xaxis.range =[0,this.limit];
+			if(!this.plotOptions.xaxis.autorange){
+			    this.plotOptions.xaxis.range =[0,this.limit];
+			}
 			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
 			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
 			Plotly.relayout(this.plotDiv, this.plotOptions);
@@ -962,6 +964,7 @@ define(function (require) {
             }
 			
 			this.plotOptions.xaxis.autorange = true;
+			this.xaxisAutoRange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
             this.updateAxis(dataY.getInstancePath());
             this.resize();

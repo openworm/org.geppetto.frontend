@@ -36,9 +36,9 @@
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function (require) {
-	var AWidgetController = require('widgets/AWidgetController');
+
 	var Popup = require('widgets/popup/Popup');
-    
+    var AWidgetController = require('widgets/AWidgetController');
 
     /**
      * @exports Widgets/Popup/PopupsController

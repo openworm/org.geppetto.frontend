@@ -36,10 +36,18 @@
  *
  * @author Jesus Martinez (jesus@metacell.us)
  */
-//Load PopupsController and other classes using GEPPETTO
+require.config({
+    paths: {
+        "slick": "widgets/popup/vendor/slick.min",
+        "anchorme": "widgets/popup/vendor/anchorme.min"
+    }
+});
 
+var popupReqs = [];
+popupReqs.push("slick");
+popupReqs.push("anchorme");
 
-require(function (slick, anchorme) {
+require(popupReqs, function (slick, anchorme) {
     window.anchorme = anchorme;
 
 	loadCss("geppetto/js/widgets/popup/Popup.css");

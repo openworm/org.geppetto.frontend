@@ -163,7 +163,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		var p = _this.object.position.toArray();
 
-		GEPPETTO.Console.executeCommand('G.setCameraPosition('+p[0].toFixed(places)+
+		GEPPETTO.Console.executeImplicitCommand('G.setCameraPosition('+p[0].toFixed(places)+
 																												 ','+p[1].toFixed(places)+
 																												 ','+p[2].toFixed(places)+
 																												 ')');
@@ -171,7 +171,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 		var u = _this.object.rotation.toArray();
 		var l = _eye.length();
 
-		GEPPETTO.Console.executeCommand('G.setCameraRotation('+u[0].toFixed(places)+
+		GEPPETTO.Console.executeImplicitCommand('G.setCameraRotation('+u[0].toFixed(places)+
 																												 ','+u[1].toFixed(places)+
 																												 ','+u[2].toFixed(places)+
 																												 ','+l.toFixed(places)+

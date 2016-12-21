@@ -49,7 +49,7 @@ define(function (require) {
                 label: 'Pause',
                 className: 'pull-right',
                 icon: 'fa fa-pause',
-                onClick: function(){ GEPPETTO.Console.executeCommand("Project.getActiveExperiment().pause()"); }
+                onClick: function(){ GEPPETTO.Console.executeImplicitCommand("Project.getActiveExperiment().pause()"); }
             }
         }
 

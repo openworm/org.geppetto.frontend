@@ -80,17 +80,21 @@ define(function (require) {
             Widget.View.prototype.initialize.call(this, options);
             this.render();
 
+            this.stackElement = $("#"+this.id);
+
             // add container for nested react component
-            $('#' + this.id).append("<div id='stack-container" + this.id + "'></div>");
+            this.stackElement.append("<div id='stack-container" + this.id + "'></div>");
 
             this.setSize(this.defHeight, this.defWidth);
-            
-            var that = this;
-			this.stackElement = $("#"+this.id);
 
+            var that = this;
 			this.stackElement.bind('resizeEnd', function() {
 				that.resize();
 			});
+			
+			window.addEventListener('resize', function(event){
+				that.stackElement.find(".fa-home").click();
+            });
         },
 
         setSize: function (h, w) {
@@ -103,14 +107,10 @@ define(function (require) {
         },
         
         resize : function(){
-        	this.data.height = this.stackElement.height()+50;
-        	this.data.width = this.stackElement.width()+40;
-        	
-            Widget.View.prototype.setSize.call(this, this.data.height, this.data.width);
-
-            this.addBorders();
+        	this.data.height = this.stackElement.height();
+        	this.data.width = this.stackElement.parent().width();
             this.updateScene();
-            this.stackElement.find(".fa-home").click()
+            this.stackElement.find(".fa-home").click();
         },
 
         /**

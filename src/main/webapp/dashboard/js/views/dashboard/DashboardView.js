@@ -159,8 +159,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			$(event.target).addClass("selected");
 			var id = $(event.target).attr("project-id");
 			if (id === undefined) {
-				id = $(event.target).parents(".project-preview").attr(
-						"project-id");
+				id = $(event.target).parents(".project-preview").attr("project-id");
 			}
 			var url = window.location.href;
 			if (url.indexOf('/dashboard') > 0) {

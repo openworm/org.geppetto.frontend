@@ -13,8 +13,18 @@
 							http://www.springframework.org/schema/mvc
 							http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
+	<!-- This makes it possible to user fasterxml 2 with Spring 3.1.1 it won't be needed once we move to newer Spring -->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean
+				class="org.geppetto.frontend.controllers.MappingJackson2HttpMessageConverter">
+				<property name="objectMapper">
+					<bean class="org.geppetto.frontend.controllers.GeppettoObjectMapper" />
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
 
-	<mvc:annotation-driven />
 	<!-- Map static resources to /assets/* url -->
 	<mvc:resources mapping="/geppetto/**" location="/" />
 
@@ -56,16 +66,15 @@
 		<property name="loadedScene" value="#{ null }" />
 		<property name="isSimulationLoaded" value="false" />
 	</bean>
-	
+
 	<bean id="geppettoManager" scope="session"
 		class="org.geppetto.simulation.manager.GeppettoManager">
 		<aop:scoped-proxy />
 	</bean>
-	
 
-	
-	<!--
-	 Configuration for the default message sender. queuingEnabled: If true 
+
+
+	<!-- Configuration for the default message sender. queuingEnabled: If true 
 		then use worker threads for processing and transmission. If false then do 
 		everything on calling thread. maxQueueSize: The maximum size of a processing 
 		or transmission queue. If the queue is full and discardMessagesIfQueueFull 
@@ -87,13 +96,13 @@
 		<property name="compressionEnabled" value="true" />
 		<property name="minMessageLengthForCompression" value="20000" />
 
-		<!-- <property name="queuedMessageTypes">
-			<set>
-				<value type="org.geppetto.frontend.messages.OutboundMessages">EXPERIMENT_UPDATE</value>
-			</set>
-		</property>
-		 -->
+		<!-- <property name="queuedMessageTypes"> <set> <value type="org.geppetto.frontend.messages.OutboundMessages">EXPERIMENT_UPDATE</value> 
+			</set> </property> -->
 
 	</bean>
+
+
+
+
 
 </beans>

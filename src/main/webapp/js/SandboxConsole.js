@@ -144,6 +144,8 @@ define(function (require) {
 
                     // Render the textarea
                     this.render();
+
+                    this.showImplicitCommands = false;
                 },
 
                 // The templating functions for the View and each history item
@@ -236,20 +238,21 @@ define(function (require) {
                     });
                 },
 
-                executeCommand: function (command) {
+                executeCommand: function (command, isImplicit) {
 
                     // If submitting a command, set the currentHistory to blank (empties the textarea on update)
                     this.currentHistory = "";
 
                     // Run the command past the special commands to check for 'help()' and ':clear' etc.
                     if (!this.specialCommands(command)) {
-
                         // If if wasn't a special command, pass off to the Sandbox Model to evaluate and save
-                        this.evaluate(command);
+                        this.evaluate(command, isImplicit);
                     }
 
                     // Update the View's history state to reflect the latest history item
-                    this.historyState = this.model.get('history').length;
+                    if (!isImplicit || (isImplicit && this.showImplicitCommands) || G.isDebugOn()) {
+                        this.historyState = this.model.get('history').length;
+                    }
                 },
 
                 clear: function () {
@@ -451,6 +454,10 @@ define(function (require) {
                 specialCommands: function (command) {
                     if (command == "help()") {
                         this.evaluate("GEPPETTO.Console.help()");
+                        return true;
+                    }
+                    else if (command == "toggleImplicitCommands()") {
+                        this.evaluate("GEPPETTO.Console.toggleImplicitCommands()");
                         return true;
                     }
                     // If no special commands, return false so the command gets evaluated
@@ -655,7 +662,7 @@ define(function (require) {
                 },
 
                 // Evaluate a command and save it to history
-                evaluate: function (command) {
+                evaluate: function (command, isImplicit = false) {
                     if (!command) {
                         return false;
                     }
@@ -694,15 +701,17 @@ define(function (require) {
                         item._class = "error";
                     }
 
-                    //Replace < and > commands with html equivalent in order to
-                    //display in console area
-                    str = command.replace(/\</g, "&lt;");
-                    var formattedCommand = str.replace(/\>/g, "&gt;");
+                    if (!isImplicit || (isImplicit && this.showImplicitCommands) || G.isDebugOn()) {
+                        //Replace < and > commands with html equivalent in order to
+                        //display in console area
+                        str = command.replace(/\</g, "&lt;");
+                        var formattedCommand = str.replace(/\>/g, "&gt;");
 
-                    item.command = formattedCommand;
+                        item.command = formattedCommand;
 
-                    // Add the item to the history
-                    this.addHistory(item);
+                        // Add the item to the history
+                        this.addHistory(item);
+                    }
                 },
 
 

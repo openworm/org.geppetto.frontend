@@ -65,7 +65,7 @@ define(function (require) {
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
-            STACKVIEWER: 8,
+            STACKVIEWER: 8
             //WIDGETNAME: N
         };
 
@@ -84,7 +84,7 @@ define(function (require) {
             treeVis3DController: null,
             stackViewer3DController: null,
             //WIDGETNAMEController: null
-            
+
             /**
              * Adds widget to Geppetto
              *
@@ -121,8 +121,7 @@ define(function (require) {
                     //create button bar
                     case GEPPETTO.Widgets.BUTTONBAR:
                         widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget();
-                        break;
-                    //create stack viewer
+                    break;
                     case GEPPETTO.Widgets.STACKVIEWER:
                         widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget();
                         break;
@@ -228,7 +227,6 @@ define(function (require) {
                 //    }
                 //    return this.WIDGETNAMEController;
                 //}
-
             }
         };
     };

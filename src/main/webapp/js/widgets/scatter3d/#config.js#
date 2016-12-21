@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2016 OpenWorm.
+ * Copyright (c) 2011, 2013 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -29,29 +30,24 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+/**
+ * Loads scatter3d scripts
+ *
+ * @author Boris Marin
+ * @author Adrian Quintana
+ */
+/*
+ * Configure what dependencies are needed for each library
+ */
+require.config({
+    shim: {
+       "widgets/scatter3d/vendor/OrbitControls": ["three"]
+    }
+});
 
-define(function (require) {
+var reqs = [];
+reqs.push("widgets/scatter3d/vendor/OrbitControls");
 
-    var React = require('react'),
-        GEPPETTO = require('geppetto');
-
-    return React.createClass({
-        mixins: [require('../../../../mixins/TutorialMixin'), require('../../../../mixins/Button')],
-
-        componentDidMount: function() {
-            if(GEPPETTO.tutorialEnabled) {
-                GEPPETTO.once('simulation:paused', this.showPopover);
-            }
-        },
-
-        getDefaultProps: function() {
-            return {
-                label: 'Stop',
-                className: 'pull-right',
-                icon:'fa fa-stop',
-                onClick: function(){ GEPPETTO.Console.executeImplicitCommand("Project.getActiveExperiment().stop()"); }
-            }
-        }
-
-    });
+require(reqs, function ($) {
+    loadCss("geppetto/js/widgets/scatter3d/Scatter3d.css");
 });

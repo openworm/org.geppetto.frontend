@@ -1139,6 +1139,7 @@ define(function (require) {
                     window[topInstances[k].getId()] = topInstances[k];
                     window.Instances[topInstances[k].getId()] = topInstances[k];
                 }
+                //TODO Should we trigger that instances were added?
             },
 
             /**
@@ -2062,11 +2063,6 @@ define(function (require) {
                     }
                 }
 
-                if (instance.connections) {
-                	instance.connections = instance.connections.concat(connectionInstances);
-                } else {
-                    instance.connections = connectionInstances;
-                }
             },
 
             /** Creates an instance */

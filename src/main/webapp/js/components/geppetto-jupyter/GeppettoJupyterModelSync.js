@@ -224,6 +224,7 @@ define(function (require, exports, module) {
 			ModelSync.__super__.initialize.apply(this);
 
 			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
+			
 
 			this.on("change:stateVariables", function (model, value, options) {
 				window.Instances = []
@@ -254,6 +255,8 @@ define(function (require, exports, module) {
 				GEPPETTO.ControlPanel.setData([]);
 				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
+				
+
 				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
 				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
 				var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
@@ -270,6 +273,14 @@ define(function (require, exports, module) {
 							break;
 						}
 					}
+				}
+
+				if (this.get('geometries').length > 0) {
+					var elements = {};
+					for (var i = 0; i < this.get('geometries').length; i++) {
+						elements[this.get('geometries')[i].get('id')] = "";
+					}
+					GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
 				}
 
 			})

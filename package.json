@@ -1,6 +1,6 @@
 {
   "name": "org.geppetto.frontend",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-cli": "~0.1.13",

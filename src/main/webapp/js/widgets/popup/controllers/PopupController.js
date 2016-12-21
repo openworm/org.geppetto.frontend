@@ -36,17 +36,21 @@
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function (require) {
-    var Popup = require('widgets/popup/Popup');
-    var AWidgetController = require('widgets/AWidgetController');
+	var AWidgetController = require('widgets/AWidgetController');
+	var Popup = require('widgets/popup/Popup');
+    
 
     /**
      * @exports Widgets/Popup/PopupsController
      */
     return AWidgetController.View.extend({
 
-        initialize: function () {
+        initialize: function (config) {
             this.widgets = Array();
             this.history = [];
+            if(config!=null || undefined){
+            	this.buttonBarConfig = config.buttonBarConfiguration;
+            }
         },
 
         /**

@@ -62,7 +62,7 @@ define(function (require) {
                 id: 'genericHelpBtn',
                 className: 'pull-right help-button',
                 icon:'fa fa-info-circle',
-                onClick: function(){ GEPPETTO.Console.executeCommand("G.showHelpWindow(true)"); }
+                onClick: function(){ GEPPETTO.Console.executeImplicitCommand("G.showHelpWindow(true)"); }
             }
         }
     });

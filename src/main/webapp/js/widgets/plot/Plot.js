@@ -42,10 +42,10 @@ define(function (require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 	var math = require('mathjs');
-	var Plotly = require('plotly');
-	var FileSaver = require('file-saver');
+	var Plotly = require('widgets/plot/vendor/plotly-latest.min');
+	var FileSaver = require('widgets/plot/vendor/FileSaver.min');
 	var pako = require('pako');
-	var JSZip = require("jszip");
+	var JSZip = require("widgets/plot/vendor/jszip.min");
 
 	return Widget.View.extend({
 		plotly: null,

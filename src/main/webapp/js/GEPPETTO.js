@@ -416,6 +416,16 @@ define(function (require) {
                 }
             });
 
+            for (var keySplitMeshes in GEPPETTO.getVARS().splitMeshes) {
+                var child = GEPPETTO.getVARS().splitMeshes[keySplitMeshes]
+                if (child.visible && !(child.clickThrough==true)) {
+                    if (child.geometry != null || undefined) {
+                        child.geometry.computeBoundingBox();
+                    }
+                    visibleChildren.push(child);
+                }
+            }
+
             // returns an array containing all objects in the scene with which
             // the ray intersects
             return raycaster.intersectObjects(visibleChildren);

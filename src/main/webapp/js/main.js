@@ -178,4 +178,3 @@ require(jqueryLib, function ($, geppetto) {
 
     });
 });
-

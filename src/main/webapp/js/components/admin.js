@@ -9,7 +9,7 @@ define(function(require) {
 	var ReactDOM = require('react-dom');		
 	var adminPanel = React.createFactory(require('jsx!./dev/adminPanel/AdminPanel'));
 
-	var height = window.innerHeight;
+	var height = window.innerHeight - 100;
 
-	ReactDOM.render(React.createFactory(adminPanel)(), document.getElementById('adminPanel'));
+	ReactDOM.render(React.createFactory(adminPanel)({height : height}), document.getElementById('adminPanel'));
 });

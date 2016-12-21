@@ -20,7 +20,7 @@
     </script>
     /build -->
 
-    <script data-main="js/main" src="js/libs/require/require.js"></script>
+    <script data-main="geppetto/js/main-admin.js" src="js/libs/require/require.js"></script>
 </head>
 <body>
 <div id="admnPanel"  class="hiddenStart" ></div>

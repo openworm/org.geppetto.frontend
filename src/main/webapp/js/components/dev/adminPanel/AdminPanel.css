@@ -4,3 +4,41 @@
 	width : 100%;
 	height : 100%;
 }
+
+#adminButtonHeader {
+	height : 100px;
+	width : 100%;
+	text-align : center;
+}
+
+#Users {
+	background: rgb(28, 184, 65);
+}
+
+#Simulations {
+	background: rgb(223, 117, 20);
+}
+
+#Errors {
+	background: rgb(202, 60, 60);
+}
+
+body {
+	top : 0px;
+}
+
+.button {
+	width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    margin-right: 50px;
+    color: white;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    font-size: 24px;
+}
+
+.button:focus {
+	outline:0;
+	text-decoration:underline;
+}

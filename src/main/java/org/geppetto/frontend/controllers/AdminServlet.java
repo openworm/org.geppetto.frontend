@@ -8,6 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.geppetto.core.auth.IAuthService;
+import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IGeppettoProject;
@@ -29,9 +31,10 @@ public class AdminServlet {
 	private IGeppettoManager geppettoManager;
 	
 	@RequestMapping(value = "/admin", method = RequestMethod.GET)
-	public String admin()
+	public String admin() throws GeppettoInitializationException
 	{
 		Subject currentUser = SecurityUtils.getSubject();
+		IAuthService authService = AuthServiceCreator.getService();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
 			IUser user = geppettoManager.getUser();
@@ -39,19 +42,61 @@ public class AdminServlet {
 			return "dist/admin";
 		}
 		
-		return "dist/admin";
+		return "redirect:" + authService.authFailureRedirect();
 	}
 	
 	@RequestMapping(value = "/user/{login}/users")
 	public @ResponseBody Collection<? extends IUser> getUsers(@PathVariable("login") String login)
 	{
-		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-		Collection<? extends IUser> users = null;
-		if(dataManager != null)
+		Subject currentUser = SecurityUtils.getSubject();
+		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			users =  dataManager.getAllUsers();
+			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+			Collection<? extends IUser> users = null;
+			if(dataManager != null)
+			{
+				users =  dataManager.getAllUsers();
+			}
+			return users;
 		}
-		return users;
+				
+		return null;
+	}
+
+	@RequestMapping(value = "/user/{login}/simulations")
+	public @ResponseBody Collection<? extends IUser> getSimulations(@PathVariable("login") String login)
+	{
+		Subject currentUser = SecurityUtils.getSubject();
+		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
+		{
+			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+			Collection<? extends IUser> users = null;
+			if(dataManager != null)
+			{
+				users =  dataManager.getAllUsers();
+			}
+			return users;
+		}
+				
+		return null;
+	}
+	
+	@RequestMapping(value = "/user/{login}/errors")
+	public @ResponseBody Collection<? extends IUser> getErrors(@PathVariable("login") String login)
+	{
+		Subject currentUser = SecurityUtils.getSubject();
+		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
+		{
+			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+			Collection<? extends IUser> users = null;
+			if(dataManager != null)
+			{
+				users =  dataManager.getAllUsers();
+			}
+			return users;
+		}
+				
+		return null;
 	}
 	
 	@RequestMapping(value = "/user/{login}/storage")

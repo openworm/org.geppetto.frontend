@@ -58,7 +58,8 @@ require.config({
         jsx: 'vendor/jsx',
         JSXTransformer: 'vendor/JSXTransformer',
         text: 'vendor/text',
-        json: 'vendor/require-json'
+        json: 'vendor/require-json',
+        bootstrap : 'vendor/bootstrap.min'
     },
     /*
      * Notes what dependencies are needed prior to loading each library, values on the right
@@ -67,10 +68,12 @@ require.config({
      */
     shim: {
         'vendor/jquery-ui.min': ["jquery"],
-        'vendor/bootstrap.min': ["jquery"],
         JSXTransformer: {
             exports: "JSXTransformer"
-        }
+        },
+        bootstrap : {
+            deps: ['jquery']
+        },
     }
 });
 
@@ -79,7 +82,7 @@ require.config({
  */
 var jqueryLib = [
     "jquery",
-    "vendor/bootstrap.min",
+    "bootstrap",
 ];
 
 require(jqueryLib, function () {

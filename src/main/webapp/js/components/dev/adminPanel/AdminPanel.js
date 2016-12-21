@@ -42,63 +42,88 @@ define(function (require) {
 
 	var React = require('react');
 	var Griddle = require('griddle');
-
-	var HeaderComponent = React.createClass({
-		textOnClick: function(e) {
-			e.stopPropagation();
-		},
+	
+	var ButtonComponent = React.createClass({
 
 		filterText: function(e) {
-			this.props.filterByColumn(e.target.value, this.props.columnName)
+			
 		},
 
 		render: function(){
 			return (
-					<span>
-					<div><strong style={{color: this.props.color}}>{this.props.displayName}</strong></div>
-					<input type='text' onChange={this.filterText} onClick={this.textOnClick} />
-					</span>
+				<button id={this.props.view} type="button" className="button" onClick={this.props.onClick}>{this.props.view}</button>
 			);
 		}
 	});
 
 	var adminPanelComponent = React.createClass({
 
+		user : null,
+		
+		views : ["Users","Simulations","Errors"],
+		
 		getInitialState: function() {
 			return {
-				columns: ['name', 'type', 'controls'],
-				//data: [],
-				columnMeta: [
-				             {
-				            	 "columnName": "city",
-				            	 "displayName": "City",
-				            	 "customHeaderComponent": HeaderComponent,
-				            	 "customHeaderComponentProps": { color: 'red' }
-				             },
-				             {
-				            	 "columnName": "state",
-				            	 "displayName": "State",
-				            	 "customHeaderComponent": HeaderComponent,
-				            	 "customHeaderComponentProps": { color: 'blue' }
-				             }
-				             ]
+				columns: [],
+				data : []
 			}
 		},
 
 		setPanelView : function(){
-
+			this.forceUpdate();
 		},
 
 		componentDidMount : function(){
-
+			this.getCurrentUser();
+		},
+		
+		getCurrentUser : function(){
+			var that = this;
+			var urlData = window.location.href.replace("admin","currentuser");
+			$.ajax({url: urlData, success: function(result){
+				that.user = result.name.replace(" ", "");
+				that.setDataSet(that.views[0]);
+			}});
 		},
 
+		setDataSet : function(mode){
+			var that = this;
+			var urlData = window.location.href.replace("admin","");
+			var newColumns;
+			
+			if(mode == this.views[0]){
+				urlData += "/user/"+this.user + "/users";
+				newColumns = ["UserName", "Experiments", "Storage"];
+			}else if(mode ==this.views[1]){
+				urlData += "/user/"+this.user + "/simulations";
+				newColumns = ["UserName", "Experiments", "Simulators", "Storage"];
+			}else if(mode ==this.views[2]){
+				urlData += "/user/"+this.user + "/errors";
+				newColumns = ["Details", "Experiment", "User Details"];
+			}
+			
+			$.ajax({url: urlData, success: function(result){
+				that.setState({data: result, columns: newColumns});
+			}});
+		},
+		
+		onButtonClick: function (view) {
+            this.setDataSet(view);
+        },
+		
 		render: function () {
-			return React.createElement(Griddle, {
-				columns: this.state.columns, results: this.state.data,
-				showFilter: false, showSettings: false, enableInfiniteScroll: true,
-				useGriddleStyles: false, columnMetadata: this.state.columnMeta
-			});
+			return (
+				<div>
+				  <div id="adminButtonHeader" className="adminButtonHeadverDiv">
+					<ButtonComponent view={"Users"} onClick={this.onButtonClick.bind(this,"Users")}/>
+					<ButtonComponent view={"Simulations"} onClick={this.onButtonClick.bind(this,"Simulations")}/>
+					<ButtonComponent view={"Errors"} onClick={this.onButtonClick.bind(this,"Errors")}/>
+				  </div>
+				  <Griddle results={this.state.data} columns={this.state.colums} bodyHeight={this.props.height}
+					         enableInfinteScroll={true} useGriddleStyles={false}/>
+			    </div>
+			);
+
 		}
 	});
 

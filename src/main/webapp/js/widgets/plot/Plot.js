@@ -42,10 +42,10 @@ define(function (require) {
 	var Widget = require('widgets/Widget');
 	var $ = require('jquery');
 	var math = require('mathjs');
-	var Plotly = require('plotly');
-	var FileSaver = require('file-saver');
+	var Plotly = require('widgets/plot/vendor/plotly-latest.min');
+	var FileSaver = require('widgets/plot/vendor/FileSaver.min');
 	var pako = require('pako');
-	var JSZip = require("jszip");
+	var JSZip = require("widgets/plot/vendor/jszip.min");
 
 	return Widget.View.extend({
 		plotly: null,
@@ -298,7 +298,7 @@ define(function (require) {
 						}
 					}
 					if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
-						timeSeriesData = this.getTimeSeriesData(instance);
+						timeSeriesData = this.getTimeSeriesData(instance,window.time);
 					}else{
 						plotable = false;
 					}
@@ -497,25 +497,25 @@ define(function (require) {
 		/**
 		 * Retrieve the x and y arrays for the time series
 		 */
-		getTimeSeriesData: function (instance) {
-			var timeSeries = instance.getTimeSeries();
-			var timeTimeSeries = window.time.getTimeSeries();
+		getTimeSeriesData: function (instanceY, instanceX) {
+			var timeSeriesX = instanceX.getTimeSeries();
+			var timeSeriesY = instanceY.getTimeSeries();
 			var timeSeriesData = {};
 			var xData = [];
 			var yData = [];
 
-			if (timeSeries && timeSeries.length > 1) {
-				for (var step = 0; step < timeSeries.length; step++) {
-					xData.push(timeTimeSeries[step]);
-					yData.push(timeSeries[step]);
+			if (timeSeriesY && timeSeriesY.length > 1 && timeSeriesX && timeSeriesX.length > 1) {
+				for (var step = 0; step < timeSeriesY.length; step++) {
+					xData.push(timeSeriesX[step]);
+					yData.push(timeSeriesY[step]);
 				}
 			}
-
-			var localxmin = Math.min.apply(null, timeTimeSeries);
-			var localymin = Math.min.apply(null, timeSeries);
+			
+			var localxmin = Math.min.apply(null, timeSeriesX);
+			var localymin = Math.min.apply(null, timeSeriesY);
 			localymin = localymin - Math.abs(localymin * 0.1);
-			var localxmax = Math.max.apply(null, timeTimeSeries);
-			var localymax = Math.max.apply(null, timeSeries);
+			var localxmax = Math.max.apply(null, timeSeriesX);
+			var localymax = Math.max.apply(null, timeSeriesY);
 			localymax = localymax + Math.abs(localymax * 0.1);
 
 			this.plotOptions.xaxis.min = Math.min(this.plotOptions.xaxis.min, localxmin);
@@ -581,7 +581,7 @@ define(function (require) {
 					set = this.datasets[key];
 					if (this.plotOptions.playAll) {
 						//we simply set the whole time series
-						timeSeries = this.getTimeSeriesData(this.variables[this.getLegendInstancePath(set.name)]);
+						timeSeries = this.getTimeSeriesData(this.variables[this.getLegendInstancePath(set.name)],window.time);
 						this.datasets[key].x = timeSeries["x"];
 						this.datasets[key].y = timeSeries["y"];
 						this.datasets[key].hoverinfo = 'all';

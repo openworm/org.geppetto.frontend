@@ -43,6 +43,7 @@
         'vendor/bootstrap.min': ["jquery"],
         'vendor/codemirror-formats.min': ["codemirror"],
         'vendor/backbone-localStorage.min': ["backbone"],
+        'vendor/jquery.dialogextend.min': ["jquery"],
         'vendor/dat.gui.min': ["jquery"],
         'vendor/stats.min': ["jquery"],
         'vendor/Detector': ["jquery"],

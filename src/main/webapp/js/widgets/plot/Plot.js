@@ -755,6 +755,7 @@ define(function (require) {
 		clean: function (playAll) {
 			if(!this.functionNode){
 				this.plotOptions.playAll = playAll;
+				this.plotOptions.margin.r = 10;
 				this.cleanDataSets();
 				this.plotOptions.xaxis.showticklabels = false;
 				if (!playAll) {

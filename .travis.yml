@@ -3,7 +3,8 @@ before_script:
 - npm install -g bower
 install:
 - ./travis-install.sh
-after_script:
+script:
+  mvn install
   mvn clean install -P master
 env:
   global:

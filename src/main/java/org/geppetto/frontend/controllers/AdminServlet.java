@@ -3,18 +3,15 @@ package org.geppetto.frontend.controllers;
 import java.util.Collection;
 import java.util.List;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.geppetto.core.auth.IAuthService;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
-import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
-import org.geppetto.core.data.model.local.LocalUser;
+import org.geppetto.core.data.model.UserPrivileges;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,15 +31,16 @@ public class AdminServlet {
 	public String admin() throws GeppettoInitializationException
 	{
 		Subject currentUser = SecurityUtils.getSubject();
-		IAuthService authService = AuthServiceCreator.getService();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
 			IUser user = geppettoManager.getUser();
-			user.getUserGroup().getPrivileges();
-			return "dist/admin";
+			List<UserPrivileges> privileges = user.getUserGroup().getPrivileges();
+			if(privileges.contains(UserPrivileges.ADMIN)){
+				return "dist/admin";
+			}
 		}
 		
-		return "redirect:" + authService.authFailureRedirect();
+		return "redirect:http://www.geppetto.org";
 	}
 	
 	@RequestMapping(value = "/user/{login}/users")

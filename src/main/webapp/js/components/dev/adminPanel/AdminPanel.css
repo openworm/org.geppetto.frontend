@@ -24,12 +24,19 @@
 }
 
 body {
-	top : 0px;
+	background-color: #eeeded;
+	font-family : Helvetica Neue;
 }
 
+table{
+    margin: 0 auto;
+    margin-top: 50px;
+    width: 100%;
+	table-layout: fixed;
+}
 .button {
-	width: 90px;
-    height: 90px;
+	width: 10%;
+    height: 90%;
     border-radius: 50%;
     border: 2px solid #ffffff;
     margin-right: 50px;
@@ -41,4 +48,25 @@ body {
 .button:focus {
 	outline:0;
 	text-decoration:underline;
+}
+
+.button:selected {
+	background : yellow;
+	text-decoration:underline;
+}
+
+.griddle th {
+	background-color: rgba(173, 158, 158, 0.7);
+	border: 0px;
+	color: ##000;
+	padding: 5px;
+	text-align: center;
+}
+
+.griddle td {
+	padding: 5px;
+	background-color: rgba(204, 185, 185, 0.7);
+	color: #000;
+	border-bottom: 1px dashed;
+	border-color: rgba(255, 255, 255, 0.2);
 }

@@ -507,7 +507,7 @@ define(function (require) {
 			var yData = [];
 
 			if (timeSeriesY && timeSeriesY.length > 1 && timeSeriesX && timeSeriesX.length > 1) {
-				for (var step = 0; step < timeSeriesY.length; step++) {
+				for (var step = 0; step < timeSeriesX.length; step++) {
 					xData.push(timeSeriesX[step]);
 					yData.push(timeSeriesY[step]);
 				}

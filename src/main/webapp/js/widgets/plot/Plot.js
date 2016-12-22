@@ -377,18 +377,19 @@ define(function (require) {
 
 		resize : function(resizeHeight){
 			//sets the width and height on the plotOptions which is given to plotly on relayout
-			
-			//for some reason, height is different when first plotted, 10 pixels makes the change
-			if(resizeHeight){
-				this.plotOptions.height = this.plotElement.height() + 10;
-				this.plotOptions.width = this.plotElement.width()+ 10;
-			}else{
-				this.plotOptions.height = this.plotElement.height();
-				this.plotOptions.width = this.plotElement.width();
+			if(this.datasets.length>0){
+				//for some reason, height is different when first plotted, 10 pixels makes the change
+				if(resizeHeight){
+					this.plotOptions.height = this.plotElement.height() + 10;
+					this.plotOptions.width = this.plotElement.width()+ 10;
+				}else{
+					this.plotOptions.height = this.plotElement.height();
+					this.plotOptions.width = this.plotElement.width();
+				}
+				//resizes plot right after creation, needed for d3 to resize 
+				//to parent's widht and height
+				Plotly.relayout(this.plotDiv,this.plotOptions);
 			}
-			//resizes plot right after creation, needed for d3 to resize 
-			//to parent's widht and height
-			Plotly.relayout(this.plotDiv,this.plotOptions);
 		},
 		
 		showImageMenu: function (event) {

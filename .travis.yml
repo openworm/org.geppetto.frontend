@@ -1,6 +1,8 @@
 language: java
 before_script:
+- npm install -g grunt
 - npm install -g bower
+- npm install -g grunt-processhtml
 install:
 - ./travis-install.sh
 script:

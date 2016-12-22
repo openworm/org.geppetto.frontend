@@ -202,7 +202,7 @@ define(function (require) {
             	this.size.height = h;
             	this.size.width = w;
             	this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
-
+            	this.$el.trigger('resizeEnd');
             	return this;
             },
 

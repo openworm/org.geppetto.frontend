@@ -45,13 +45,13 @@ define(function (require) {
 	
 	var ButtonComponent = React.createClass({
 
-		filterText: function(e) {
-			
-		},
-
 		render: function(){
+			var addClass = "";
+			if(this.props.selectedState){
+				addClass="selected ";
+			}
 			return (
-				<button id={this.props.view} type="button" className="button" onClick={this.props.onClick}>{this.props.view}</button>
+				<button id={this.props.view} type="button" className={addClass+"button"} onClick={this.props.onClick}>{this.props.view}</button>
 			);
 		}
 	});
@@ -59,12 +59,48 @@ define(function (require) {
 	var adminPanelComponent = React.createClass({
 
 		user : null,
+		resultsPerPage : 20,
+		usersViewSelected : true,
+		simulationsViewSelected : false,
+		errorsViewSelected : false,
 		
 		views : ["Users","Simulations","Errors"],
 		
 		getInitialState: function() {
 			return {
 				columns: [],
+				columnMeta : [
+				              {
+					              "columnName": "login",
+					              "order": 1,
+				                  "locked": false,
+				                  "displayName": "User Name"
+				              },
+				              {
+				            	  "columnName": "name",
+				            	  "order": 2,
+				            	  "locked": false,
+				            	  "displayName": "Name"
+				              },
+				              {
+				            	  "columnName": "lastLogin",
+					              "order": 3,
+				                  "locked": false,
+				                  "displayName": "Last Login"
+				              },
+				              {
+				            	  "columnName": "experiments",
+					              "order": 4,
+				                  "locked": false,
+				                  "displayName": "Number of Experiments"
+				              },
+				              {
+				            	  "columnName": "storage",
+					              "order": 5,
+				                  "locked": false,
+				                  "displayName": "Storage Size"
+				              }
+				            ],
 				data : []
 			}
 		},
@@ -81,7 +117,7 @@ define(function (require) {
 			var that = this;
 			var urlData = window.location.href.replace("admin","currentuser");
 			$.ajax({url: urlData, success: function(result){
-				that.user = result.name.replace(" ", "");
+				that.user = result.login.replace(" ", "");
 				that.setDataSet(that.views[0]);
 			}});
 		},
@@ -92,18 +128,38 @@ define(function (require) {
 			var newColumns;
 			
 			if(mode == this.views[0]){
-				urlData += "/user/"+this.user + "/users";
-				newColumns = ["UserName", "Experiments", "Storage"];
+				urlData += "user/"+this.user + "/users";
+				this.usersViewSelected = true;
+				this.simulationsViewSelected = false;
+				this.errorsViewSelected = false;
+				//newColumns = ["UserName", "Name", "Last Login", "Experiments", "Storage"];
 			}else if(mode ==this.views[1]){
 				urlData += "/user/"+this.user + "/simulations";
-				newColumns = ["UserName", "Experiments", "Simulators", "Storage"];
+				this.usersViewSelected = false;
+				this.simulationsViewSelected = true;
+				this.errorsViewSelected = false;
+				//newColumns = ["UserName", "Experiments", "Simulators", "Storage"];
 			}else if(mode ==this.views[2]){
 				urlData += "/user/"+this.user + "/errors";
-				newColumns = ["Details", "Experiment", "User Details"];
+				this.usersViewSelected = false;
+				this.simulationsViewSelected = false;
+				this.errorsViewSelected = true;
+				//newColumns = ["Details", "Experiment", "User Details"];
 			}
 			
 			$.ajax({url: urlData, success: function(result){
-				that.setState({data: result, columns: newColumns});
+				var users = new Array();
+				var obj;
+				for(var i =0; i<result.length; i++){
+					obj = {};
+					obj.login = result[i].login;
+					obj.name = result[i].name;
+					obj.lastLogin = result[i].lastLogin;
+					obj.experiments = "5";
+					obj.storage = "512kb";
+					users.push(obj);
+				}
+				that.setState({data: users});
 			}});
 		},
 		
@@ -115,12 +171,12 @@ define(function (require) {
 			return (
 				<div>
 				  <div id="adminButtonHeader" className="adminButtonHeadverDiv">
-					<ButtonComponent view={"Users"} onClick={this.onButtonClick.bind(this,"Users")}/>
-					<ButtonComponent view={"Simulations"} onClick={this.onButtonClick.bind(this,"Simulations")}/>
-					<ButtonComponent view={"Errors"} onClick={this.onButtonClick.bind(this,"Errors")}/>
+					<ButtonComponent view={"Users"} selectedState={this.usersViewSelected} onClick={this.onButtonClick.bind(this,"Users")}/>
+					<ButtonComponent view={"Simulations"} selectedState={this.simulationsViewSelected} onClick={this.onButtonClick.bind(this,"Simulations")}/>
+					<ButtonComponent view={"Errors"} selectedState={this.errorsViewSelected} onClick={this.onButtonClick.bind(this,"Errors")}/>
 				  </div>
-				  <Griddle results={this.state.data} columns={this.state.colums} bodyHeight={this.props.height}
-					         enableInfinteScroll={true} useGriddleStyles={false}/>
+				  <Griddle results={this.state.data} columnMetadata={this.state.columnMeta} bodyHeight={this.props.height}
+					         enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage}/>
 			    </div>
 			);
 

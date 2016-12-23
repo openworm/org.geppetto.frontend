@@ -6,21 +6,9 @@
 }
 
 #adminButtonHeader {
-	height : 100px;
-	width : 100%;
-	text-align : center;
-}
-
-#Users {
-	background: rgb(28, 184, 65);
-}
-
-#Simulations {
-	background: rgb(223, 117, 20);
-}
-
-#Errors {
-	background: rgb(202, 60, 60);
+	height : 70px;
+	width : 80%;
+	margin : 0 auto;
 }
 
 body {
@@ -30,19 +18,20 @@ body {
 
 table{
     margin: 0 auto;
-    margin-top: 50px;
+    margin-top: 10px;
     width: 100%;
 	table-layout: fixed;
 }
 .button {
-	width: 10%;
-    height: 90%;
-    border-radius: 50%;
-    border: 2px solid #ffffff;
-    margin-right: 50px;
+    margin-right: 10px;
     color: white;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-    font-size: 24px;
+    font-size: 18px;
+    border: 2px solid #666666;
+    border-radius: 5px;
+    width: 120px;
+    height: 60px;
+    float: left;
+    background: #979797;
 }
 
 .button:focus {
@@ -50,9 +39,8 @@ table{
 	text-decoration:underline;
 }
 
-.button:selected {
-	background : yellow;
-	text-decoration:underline;
+.selected {
+	background : rgba(39, 80, 140, 0.82);
 }
 
 .griddle th {
@@ -69,4 +57,9 @@ table{
 	color: #000;
 	border-bottom: 1px dashed;
 	border-color: rgba(255, 255, 255, 0.2);
+}
+
+.griddle{
+	width: 80%;
+	margin : 0 auto;
 }

@@ -1,6 +1,9 @@
 package org.geppetto.frontend.controllers;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -12,6 +15,8 @@ import org.geppetto.core.data.DataManagerHelper;
 import org.geppetto.core.data.IGeppettoDataManager;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.data.model.UserPrivileges;
+import org.geppetto.core.data.model.local.LocalGeppettoProject;
+import org.geppetto.core.data.model.local.LocalUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -50,11 +55,19 @@ public class AdminServlet {
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-			Collection<? extends IUser> users = null;
+			List<? extends IUser> users = null;
 			if(dataManager != null)
 			{
 				users =  dataManager.getAllUsers();
-			}
+				Collections.sort(users, new Comparator<IUser>() {
+
+					@Override
+					public int compare(IUser o1, IUser o2) {
+						return o1.getLastLogin().compareTo(o2.getLastLogin());
+					}
+					});
+				}
+			
 			return users;
 		}
 				

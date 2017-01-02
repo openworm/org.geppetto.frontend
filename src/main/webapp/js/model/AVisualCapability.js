@@ -295,7 +295,7 @@ define(function (require) {
 
                     // set selection flag local to the instance and add to geppetto selection list
                     this.selected = true;
-                    GEPPETTO.SceneController.selectInstance(this.getInstancePath());
+                    GEPPETTO.SceneController.selectInstance(this.getInstancePath(), nested);
                     message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
 
                     // Behaviour: help exploration of networks by ghosting and not highlighting non connected or selected
@@ -329,7 +329,7 @@ define(function (require) {
                         }
                     }
                     //signal selection has changed in simulation pass instance
-                    GEPPETTO.trigger(Events.Select, this);
+                    GEPPETTO.trigger(Events.Select, this, nested);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
                 }

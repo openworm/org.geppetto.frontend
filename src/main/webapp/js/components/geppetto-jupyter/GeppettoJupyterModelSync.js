@@ -15,8 +15,14 @@ define(function (require, exports, module) {
 			EventsSync.__super__.initialize.apply(this);
 			_this = this;
 
-			GEPPETTO.on(Events.Select, function (data) {
-				_this.send({ event: Events.Select, data: data.id });
+			GEPPETTO.on(Events.Select, function (data, raka) {
+				var selection = G.getSelection();
+				if (selection.length > 0){
+					console.log("pakito")
+					console.log(data)
+					console.log(raka)
+					_this.send({ event: Events.Select, data: data.id, groupNameIdentifier: raka});
+				}
 			});
 		}
 	});

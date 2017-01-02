@@ -125,6 +125,7 @@ public class AdminServlet {
 					for(IGeppettoProject p : projects){
 						experiments = p.getExperiments();
 						for(IExperiment e : experiments){
+							simulator = e.getAspectConfigurations().get(0).getSimulatorConfiguration().getSimulatorId();
 							if(e.getLastRan()!=null){
 								AdminSimulationObject simulation = new AdminSimulationObject();
 								simulation.setName(user.getName());
@@ -132,7 +133,6 @@ public class AdminServlet {
 								simulation.setLogin(user.getLogin());
 								simulation.setExperimentLastRun(e.getLastModified().toString());
 								simulation.setStorage("512kb");
-								simulator = e.getAspectConfigurations().get(0).getSimulatorConfiguration().getSimulatorId();
 								simulation.setSimulator(simulator);
 								simulationObjects.add(simulation);								
 							}

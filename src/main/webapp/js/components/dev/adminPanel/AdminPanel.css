@@ -57,6 +57,7 @@ table{
 	color: #000;
 	border-bottom: 1px dashed;
 	border-color: rgba(255, 255, 255, 0.2);
+	text-align: center;
 }
 
 .griddle{

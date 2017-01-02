@@ -134,16 +134,17 @@ public class AdminServlet {
 								simulation.setStorage("512kb");
 								simulator = e.getAspectConfigurations().get(0).getSimulatorConfiguration().getSimulatorId();
 								simulation.setSimulator(simulator);
-								simulationObjects.add(simulation);
-								
-								totalExperimentsAndSimulators+= e.getName() + " --- " + simulator + System.lineSeparator();
+								simulationObjects.add(simulation);								
 							}
+							totalExperimentsAndSimulators+= e.getName() + " --- " + simulator + System.lineSeparator();
 						}
 					}
 					
 					for(AdminSimulationObject object : simulationObjects){
 						object.setExperimentsAndSimulators(totalExperimentsAndSimulators);
 					}
+					
+					totalExperimentsAndSimulators = "";
 				}
 			}
 			return simulationObjects;

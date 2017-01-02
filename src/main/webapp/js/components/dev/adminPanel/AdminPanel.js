@@ -65,42 +65,91 @@ define(function (require) {
 		errorsViewSelected : false,
 		
 		views : ["Users","Simulations","Errors"],
-		
+		usersColumnMeta : [
+		              {   "columnName": "login",
+			              "order": 1,
+		                  "locked": false,
+		                  "displayName": "User Name"},
+		              {	  "columnName": "name",
+		            	  "order": 2,
+		            	  "locked": false,
+		            	  "displayName": "Name"},
+		              {   "columnName": "lastLogin",
+			              "order": 3,
+		                  "locked": false,
+		                  "displayName": "Last Login"},
+		              {	  "columnName": "projects",
+			              "order": 4,
+		                  "locked": false,
+		                  "displayName": "Number of Projects"},
+		              {   "columnName": "experiments",
+			              "order": 5,
+		                  "locked": false,
+		                  "displayName": "Number of Experiments"},
+		              {   "columnName": "storage",
+			              "order": 6,
+		                  "locked": false,
+		                  "displayName": "Storage Size"}],  
+		simulationsColumnMeta : [
+		              {   "columnName": "experiment",
+		              	  "order": 1,
+		              	  "locked": false,
+		              	  "displayName": "Experiment Name"},
+		              {	  "columnName": "experimentLastRun",
+		              	  "order": 2,
+		              		"locked": false,
+		              		"displayName": "Experiment Last Time Run"},
+		              {   "columnName": "simulator",
+		              		"order": 3,
+		              		"locked": false,
+		              		"displayName": "Simulator Name"},
+		              {   "columnName": "experimentsAndSimulators",
+			              "order": 4,
+			              "locked": false,
+			              "displayName": "Total Experiments and Simulators"},
+			          {   
+						  "columnName": "login",
+			              "order": 5,
+			              "locked": false,
+			              "displayName": "Username"},
+			          {	  "columnName": "name",
+			              "order": 6,
+			              "locked": false,
+			              "displayName": "Name"},
+			          {   "columnName": "storage",
+		              	  "order": 7,
+		              	  "locked": false,
+		              	  "displayName": "Storage Size"}],
+		errorsColumnMeta: [{
+		                  "columnName": "error",
+		              		"order": 1,
+		              		"locked": false,
+		              		"displayName": "Experiment Error"},
+		              {
+		              		"columnName": "experiment",
+		              		"order": 2,
+		              		"locked": false,
+		              		"displayName": "Experiment Name"},
+		              {
+		              		"columnName": "simulator",
+		              		"order": 3,
+		              		"locked": false,
+		              		"displayName": "Simulator Name"},
+		              {
+		              		"columnName": "login",
+		              		"order": 4,
+		              		"locked": false,
+		              		"displayName": "Username"},
+		              {
+		              		"columnName": "name",
+		              		"order": 5,
+		              		"locked": false,
+		              		"displayName": "Name"}],
+		columnMeta : [],
+	    
 		getInitialState: function() {
 			return {
 				columns: [],
-				columnMeta : [
-				              {
-					              "columnName": "login",
-					              "order": 1,
-				                  "locked": false,
-				                  "displayName": "User Name"
-				              },
-				              {
-				            	  "columnName": "name",
-				            	  "order": 2,
-				            	  "locked": false,
-				            	  "displayName": "Name"
-				              },
-				              {
-				            	  "columnName": "lastLogin",
-					              "order": 3,
-				                  "locked": false,
-				                  "displayName": "Last Login"
-				              },
-				              {
-				            	  "columnName": "experiments",
-					              "order": 4,
-				                  "locked": false,
-				                  "displayName": "Number of Experiments"
-				              },
-				              {
-				            	  "columnName": "storage",
-					              "order": 5,
-				                  "locked": false,
-				                  "displayName": "Storage Size"
-				              }
-				            ],
 				data : []
 			}
 		},
@@ -110,10 +159,10 @@ define(function (require) {
 		},
 
 		componentDidMount : function(){
-			this.getCurrentUser();
+			this.setCurrentUser();
 		},
 		
-		getCurrentUser : function(){
+		setCurrentUser : function(){
 			var that = this;
 			var urlData = window.location.href.replace("admin","currentuser");
 			$.ajax({url: urlData, success: function(result){
@@ -132,34 +181,23 @@ define(function (require) {
 				this.usersViewSelected = true;
 				this.simulationsViewSelected = false;
 				this.errorsViewSelected = false;
-				//newColumns = ["UserName", "Name", "Last Login", "Experiments", "Storage"];
+				this.columnMeta = this.usersColumnMeta;
 			}else if(mode ==this.views[1]){
 				urlData += "/user/"+this.user + "/simulations";
 				this.usersViewSelected = false;
 				this.simulationsViewSelected = true;
 				this.errorsViewSelected = false;
-				//newColumns = ["UserName", "Experiments", "Simulators", "Storage"];
+				this.columnMeta = this.simulationsColumnMeta;
 			}else if(mode ==this.views[2]){
 				urlData += "/user/"+this.user + "/errors";
 				this.usersViewSelected = false;
 				this.simulationsViewSelected = false;
 				this.errorsViewSelected = true;
-				//newColumns = ["Details", "Experiment", "User Details"];
+				this.columnMeta = this.errorsColumnMeta;
 			}
 			
 			$.ajax({url: urlData, success: function(result){
-				var users = new Array();
-				var obj;
-				for(var i =0; i<result.length; i++){
-					obj = {};
-					obj.login = result[i].login;
-					obj.name = result[i].name;
-					obj.lastLogin = result[i].lastLogin;
-					obj.experiments = "5";
-					obj.storage = "512kb";
-					users.push(obj);
-				}
-				that.setState({data: users});
+				that.setState({data: result, columnMeta : that.columnMeta});
 			}});
 		},
 		

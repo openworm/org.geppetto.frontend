@@ -71,10 +71,12 @@ public class AdminServlet {
 			
 			AdminUserObject userObject;
 			List<? extends IGeppettoProject> projects;
+			String storage;
 			for(IUser user: users){
 				int projectsSize = 0;
 				int experiments = 0;
 				userObject = new AdminUserObject();
+				storage = dataManager.getUserStorage(user.getLogin());
 				if(user.getGeppettoProjects() !=null){
 					projects = user.getGeppettoProjects();
 					for(IGeppettoProject p : projects){
@@ -87,7 +89,7 @@ public class AdminServlet {
 				userObject.setExperiments(experiments);
 				userObject.setName(user.getName());
 				userObject.setLastLogin(user.getLastLogin());
-				userObject.setStorage("512kb");
+				userObject.setStorage(storage);
 				userObjects.add(userObject);
 			}
 			
@@ -120,8 +122,10 @@ public class AdminServlet {
 				List<? extends IExperiment> experiments;
 				String totalExperimentsAndSimulators = "";
 				String simulator;
+				String storage;
 				for(IUser user: users){
 					projects = user.getGeppettoProjects();
+					storage = dataManager.getUserStorage(user.getLogin());
 					for(IGeppettoProject p : projects){
 						experiments = p.getExperiments();
 						for(IExperiment e : experiments){
@@ -132,7 +136,7 @@ public class AdminServlet {
 								simulation.setExperiment(e.getName());
 								simulation.setLogin(user.getLogin());
 								simulation.setExperimentLastRun(e.getLastModified().toString());
-								simulation.setStorage("512kb");
+								simulation.setStorage(storage);
 								simulation.setSimulator(simulator);
 								simulationObjects.add(simulation);								
 							}

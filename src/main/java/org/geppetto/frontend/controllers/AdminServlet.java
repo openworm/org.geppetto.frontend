@@ -21,6 +21,7 @@ import org.geppetto.core.data.model.UserPrivileges;
 import org.geppetto.core.data.model.local.LocalGeppettoProject;
 import org.geppetto.core.data.model.local.LocalUser;
 import org.geppetto.core.manager.IGeppettoManager;
+import org.geppetto.core.s3.S3Manager;
 import org.geppetto.frontend.controllers.objects.AdminErrorObject;
 import org.geppetto.frontend.controllers.objects.AdminSimulationObject;
 import org.geppetto.frontend.controllers.objects.AdminUserObject;
@@ -71,16 +72,16 @@ public class AdminServlet {
 			
 			AdminUserObject userObject;
 			List<? extends IGeppettoProject> projects;
-			String storage;
+			long totalSize = 0;
 			for(IUser user: users){
 				int projectsSize = 0;
 				int experiments = 0;
 				userObject = new AdminUserObject();
-				storage = dataManager.getUserStorage(user.getLogin());
 				if(user.getGeppettoProjects() !=null){
 					projects = user.getGeppettoProjects();
 					for(IGeppettoProject p : projects){
-						experiments = p.getExperiments().size();
+						totalSize  += S3Manager.getInstance().getFileStorage("projects/"+p.getId()+"/");
+						experiments += p.getExperiments().size();
 					}
 					projectsSize = projects.size();
 				}
@@ -89,7 +90,7 @@ public class AdminServlet {
 				userObject.setExperiments(experiments);
 				userObject.setName(user.getName());
 				userObject.setLastLogin(user.getLastLogin());
-				userObject.setStorage(storage);
+				userObject.setStorage(getStorageSize(totalSize));
 				userObjects.add(userObject);
 			}
 			
@@ -122,11 +123,11 @@ public class AdminServlet {
 				List<? extends IExperiment> experiments;
 				String totalExperimentsAndSimulators = "";
 				String simulator;
-				String storage;
+				long totalSize = 0;
 				for(IUser user: users){
 					projects = user.getGeppettoProjects();
-					storage = dataManager.getUserStorage(user.getLogin());
 					for(IGeppettoProject p : projects){
+						totalSize  += S3Manager.getInstance().getFileStorage("projects/"+p.getId()+"/");
 						experiments = p.getExperiments();
 						for(IExperiment e : experiments){
 							simulator = e.getAspectConfigurations().get(0).getSimulatorConfiguration().getSimulatorId();
@@ -136,16 +137,16 @@ public class AdminServlet {
 								simulation.setExperiment(e.getName());
 								simulation.setLogin(user.getLogin());
 								simulation.setExperimentLastRun(e.getLastModified().toString());
-								simulation.setStorage(storage);
 								simulation.setSimulator(simulator);
 								simulationObjects.add(simulation);								
 							}
 							totalExperimentsAndSimulators+= e.getName() + " --- " + simulator + System.lineSeparator();
 						}
 					}
-					
+
 					for(AdminSimulationObject object : simulationObjects){
 						object.setExperimentsAndSimulators(totalExperimentsAndSimulators);
+						object.setStorage(getStorageSize(totalSize));
 					}
 					
 					totalExperimentsAndSimulators = "";
@@ -155,6 +156,21 @@ public class AdminServlet {
 		}
 				
 		return null;
+	}
+	
+	private String getStorageSize(long size){
+		String storageUnit=" KB";
+		long formattedSize =0;
+		formattedSize = size/1024;
+		if(formattedSize>1000){
+			formattedSize = size/1024/1024;
+			storageUnit=" MB";
+		}else if(formattedSize>1000000){
+			formattedSize = size/1024/1024/104;
+			storageUnit=" GB";
+		}
+		
+		return String.valueOf(formattedSize)+storageUnit;
 	}
 	
 	@RequestMapping(value = "/user/{login}/errors")
@@ -192,17 +208,6 @@ public class AdminServlet {
 			return errorObjects;
 		}
 				
-		return null;
-	}
-	
-	@RequestMapping(value = "/user/{login}/storage")
-	public @ResponseBody String getUserStorage(@PathVariable("login") String login)
-	{
-		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-		if(dataManager != null)
-		{
-			return "512KB";
-		}
 		return null;
 	}
 }

@@ -213,16 +213,14 @@ define(function (require) {
              *            instancePath - Path of aspect of mesh to select
              */
             selectInstance: function (instancePath, groupNameIdentifier) {
-                //var meshes = this.getRealMeshesForInstancePath(instancePath);
-                var realInstancePath = instancePath + ((groupNameIdentifier != "")?"."+groupNameIdentifier:"");
-                var meshes = this.getRealMeshesForInstancePath(realInstancePath);
+                instancePath = instancePath + ((groupNameIdentifier != "")?"."+groupNameIdentifier:"");
+                var meshes = this.getRealMeshesForInstancePath(instancePath);
                 if (meshes.length > 0) {
                     for (var meshesIndex in meshes) {
                         var mesh = meshes[meshesIndex];
 
                         if (!mesh.visible) {
-                            // GEPPETTO.SceneController.merge(instancePath,true);
-                            GEPPETTO.SceneController.merge(realInstancePath,true);
+                            GEPPETTO.SceneController.merge(instancePath,true);
                         }
                         if (mesh.selected == false) {
                             if (mesh instanceof THREE.Object3D) {
@@ -1110,7 +1108,6 @@ define(function (require) {
                     }
                     groupMesh.instancePath = instancePath;
                     groupMesh.groupNameIdentifier = g;
-                    //groupMesh.instancePath = groupName;
                     groupMesh.geometry.dynamic = false;
                     groupMesh.position.copy(mergedMesh.position);
 

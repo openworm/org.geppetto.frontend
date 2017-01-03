@@ -212,8 +212,6 @@ define(function (require) {
                                     var instancePath = "";
                                     if (intersects[i].object.hasOwnProperty("instancePath")) {
                                         instancePath = intersects[i].object.instancePath;
-                                        console.log("taka");
-                                        console.log(intersects[i].object);
                                         groupNameIdentifier = intersects[i].object.groupNameIdentifier;
                                     }
                                     else {
@@ -222,7 +220,6 @@ define(function (require) {
                                     }
                                     if(instancePath!=null||undefined){
                                     	var visible = eval(instancePath + '.visible');
-                                        //var visible = intersects[i].object.visible;
                                     	if (intersects.length == 1 || i == intersects.length) {
                                     		//if there's only one element intersected we select it regardless of its opacity
                                     		if (visible) {
@@ -260,9 +257,7 @@ define(function (require) {
                                         if (!GEPPETTO.isKeyPressed("shift")) {
                                             GEPPETTO.G.unSelectAll();
                                         }
-                                        GEPPETTO.Console.executeCommand(selected + '.select("' + groupNameIdentifier + '")');
-                                        //SimpleCell.select("soma0")
-                                        //SimpleCell.soma0.select()
+                                        GEPPETTO.Console.executeCommand(selected + '.select(' + false + ', ' + '"' + groupNameIdentifier + '")');
                                     }
                                 }
                             }

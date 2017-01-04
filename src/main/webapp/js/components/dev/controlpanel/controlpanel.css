@@ -153,7 +153,7 @@
 	text-align: center !important;
 }
 
-#controlpanel .parameter-input {
+#controlpanel .control-panel-parameter-input {
 	border: 0;
 	color: white;
 	background-color: transparent;
@@ -162,7 +162,7 @@
 	width: 65%;
 }
 
-#controlpanel .parameter-unit {
+#controlpanel .control-panel-parameter-unit {
 	float: right;
 }
 

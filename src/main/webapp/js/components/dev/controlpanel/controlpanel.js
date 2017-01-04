@@ -185,15 +185,28 @@ define(function (require) {
             var actionStr = this.props.metadata.actions;
             var onInputChangeHandler = function(event){
                 var newVal = event.target.value;
-                actionStr = actionStr.replace(/\$VALUE\$/gi, newVal);
-                actionStr = actionStr.replace(/\$entity\$/gi, path);
-                GEPPETTO.Console.executeCommand(actionStr);
+
+                // only set if it's different than its current value, could be initial or set value
+                if(entity.getValue() != newVal) {
+                    actionStr = actionStr.replace(/\$VALUE\$/gi, newVal);
+                    actionStr = actionStr.replace(/\$entity\$/gi, path);
+                    GEPPETTO.Console.executeCommand(actionStr);
+                }
+            };
+
+            var onKeyPressHandler = function(event){
+                if(event.key == 'Enter'){
+                    onInputChangeHandler(event);
+                }
             };
 
             return (
                 <div>
-                    <input value={initialValue} onChange={onInputChangeHandler} className="parameter-input" />
-                    <span className="parameter-unit">{unit}</span>
+                    <input defaultValue={initialValue}
+                           onBlur={onInputChangeHandler}
+                           onKeyPress={onKeyPressHandler}
+                           className="control-panel-parameter-input" />
+                    <span className="control-panel-parameter-unit">{unit}</span>
                 </div>
             )
         }

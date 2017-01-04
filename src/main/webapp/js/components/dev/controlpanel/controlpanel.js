@@ -170,18 +170,23 @@ define(function (require) {
         }
     });
 
-    GEPPETTO.InputComponent = React.createClass({
+    GEPPETTO.ParameterInputComponent = React.createClass({
         render: function () {
-            // TODO: fetch unit
-            var unit = null;
-            // TODO: fetch value
-            var initialValue = null;
-            // TODO: get and ready action string
-            var actionStr = null;
+            // retrieve entity path
+            var path = this.props.rowData.path;
+            var entity = eval(path);
 
+            // fetch unit
+            var unit = entity.getUnit();
+            // fetch current or default value
+            var initialValue = entity.getValue();
+
+            // TODO: get and ready action string
+            var actionStr = this.props.metadata.actions;
             var onInputChangeHandler = function(event){
                 var newVal = event.target.value;
                 actionStr = actionStr.replace(/\$VALUE\$/gi, newVal);
+                actionStr = actionStr.replace(/\$entity\$/gi, path);
                 GEPPETTO.Console.executeCommand(actionStr);
             };
 

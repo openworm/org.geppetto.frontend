@@ -91,68 +91,68 @@ define(function (require) {
 		                  "locked": false,
 		                  "displayName": "Storage Size"}],  
 		simulationsColumnMeta : [
+		             {   
+		   				  "columnName": "login",
+		   			      "order": 1,
+		   			      "locked": false,
+		   			      "displayName": "Username"},
+		   			  {	  "columnName": "name",
+		   			      "order": 2,
+		   			      "locked": false,
+		   			      "displayName": "Name"},
 		              {   "columnName": "experiment",
-		              	  "order": 1,
+		              	  "order": 3,
 		              	  "locked": false,
 		              	  "displayName": "Experiment Name"},
 		              {	  "columnName": "experimentLastRun",
-		              	  "order": 2,
+		              	  "order": 4,
 		              		"locked": false,
 		              		"displayName": "Experiment Last Time Run"},
 		              {   "columnName": "simulator",
-		              		"order": 3,
+		              		"order": 5,
 		              		"locked": false,
 		              		"displayName": "Simulator Name"},
 		              {   "columnName": "status",
-			              "order": 4,
+			              "order": 6,
 			              "locked": false,
 			              "displayName": "Experiment Status"},
 		              {   "columnName": "experiments",
-			              "order": 5,
+			              "order": 7,
 			              "locked": false,
 			              "displayName": "All User Experiments"},
 			          {    "columnName": "simulators",
-			              "order": 6,
-			              "locked": false,
-			              "displayName": "All User Simulators"},
-			          {   
-						  "columnName": "login",
-			              "order": 7,
-			              "locked": false,
-			              "displayName": "Username"},
-			          {	  "columnName": "name",
 			              "order": 8,
 			              "locked": false,
-			              "displayName": "Name"},
+			              "displayName": "All User Simulators"},
 			          {   "columnName": "storage",
 		              	  "order": 9,
 		              	  "locked": false,
 		              	  "displayName": "Storage Size"}],
 		errorsColumnMeta: [{
+				      		"columnName": "login",
+				      		"order": 1,
+				      		"locked": false,
+				      		"displayName": "Username"},
+				      {
+				      		"columnName": "name",
+				      		"order": 2,
+				      		"locked": false,
+				      		"displayName": "Name"},
+		              {
 		                  "columnName": "error",
-		              		"order": 1,
+		              		"order": 3,
 		              		"locked": false,
 		              		"displayName": "Experiment Error"},
 		              {
 		              		"columnName": "experiment",
-		              		"order": 2,
+		              		"order": 4,
 		              		"locked": false,
 		              		"displayName": "Experiment Name"},
 		              {
 		              		"columnName": "simulator",
-		              		"order": 3,
-		              		"locked": false,
-		              		"displayName": "Simulator Name"},
-		              {
-		              		"columnName": "login",
-		              		"order": 4,
-		              		"locked": false,
-		              		"displayName": "Username"},
-		              {
-		              		"columnName": "name",
 		              		"order": 5,
 		              		"locked": false,
-		              		"displayName": "Name"}],
+		              		"displayName": "Simulator Name"}],
 		columnMeta : [],
 	    
 		getInitialState: function() {
@@ -226,10 +226,12 @@ define(function (require) {
 				  </div>
 					{this.state.loaded ?
 						<Griddle results={this.state.data} columnMetadata={this.state.columnMeta} bodyHeight={this.props.height}
-						enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage}/>
-
+						enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage} showPager={false}/>
 						:
-						<div className="loader"></div>
+						<div id="loading-container">
+							<div className="gpt-gpt_logo fa-spin"></div>
+							<p className="orange loadingText">Loading data...may take few seconds.</p>
+						</div>
 					}
 				</div>
 			);

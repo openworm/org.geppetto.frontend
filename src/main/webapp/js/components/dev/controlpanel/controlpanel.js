@@ -181,7 +181,7 @@ define(function (require) {
             // fetch current or default value
             var initialValue = entity.getValue();
 
-            // TODO: get and ready action string
+            // get and ready action string
             var actionStr = this.props.metadata.actions;
             var onInputChangeHandler = function(event){
                 var newVal = event.target.value;
@@ -192,8 +192,8 @@ define(function (require) {
 
             return (
                 <div>
-                    <input value={initialValue} onChange={onInputChangeHandler} />
-                    <span>{unit}</span>
+                    <input value={initialValue} onChange={onInputChangeHandler} className="parameter-input" />
+                    <span className="parameter-unit">{unit}</span>
                 </div>
             )
         }

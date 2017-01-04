@@ -153,6 +153,19 @@
 	text-align: center !important;
 }
 
+#controlpanel .parameter-input {
+	border: 0;
+	color: white;
+	background-color: transparent;
+	margin-right: 5px;
+	float: left;
+	width: 65%;
+}
+
+#controlpanel .parameter-unit {
+	float: right;
+}
+
 .thumbnail-img {
 	width: 40px;
 	display: block;

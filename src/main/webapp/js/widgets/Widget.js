@@ -58,13 +58,18 @@ define(function (require) {
             dialog: null,
             visible: true,
             destroyed: false,
-            size: {height: 300, width: 350},
-            position: {left: "50%", top: "50%"},
+            size: {},
+            position: {},
             registeredEvents: null,
             executedAction : 0,
             title : null,
             previousMaxTransparency : false,
+            previousMaxSize : {},
+            maximize : false,
+            collapsed : false,
 
+            defaultSize : function(){return {height: 300, width: 350}},
+            defaultPosition : function(){return {left: "50%", top: "50%"}},
             /**
              * Initializes the widget
              *
@@ -76,6 +81,8 @@ define(function (require) {
                 this.id = options.id;
                 this.name = options.name;
                 this.visible = options.visible;
+                this.size = this.defaultSize();
+                this.position = this.defaultPosition();
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
                 this.registeredEvents = [];
@@ -84,10 +91,18 @@ define(function (require) {
                 $(self.historyMenu.el).on('click', function (event) {
                 	var itemId = $(event.target).attr('id');
                 	var registeredItem = self.historyMenu.getClickedItem(itemId);
-                	if(registeredItem != null || undefined){
+                	if(registeredItem != null || registeredItem!=undefined){
                 		var label = registeredItem["label"];
                 		self.title = label;
                 		$("#"+self.id).parent().find(".ui-dialog-title").html(self.title);
+                	}
+                });
+                window.addEventListener('resize', function(event){
+                	if(self.maximize){
+                		self.maximize = false;
+                		self.setSize(window.innerHeight,window.innerWidth);
+                		self.$el.trigger('resizeEnd', ["maximize"]);
+                		self.maximize = true;
                 	}
                 });
             },
@@ -165,17 +180,16 @@ define(function (require) {
              * @param {Integer} top - Top position of the widget
              */
             setPosition: function (left, top) {
+            	this.position.left = left;
+            	this.position.top = top;
 
-                this.position.left = left;
-                this.position.top = top;
-
-               this.$el.dialog(
-                    'option', 'position', {
-                        my: "left+" + this.position.left + " top+" + this.position.top,
-                        at: "left top",
-                        of: $(window)
-                    }).dialogExtend();
-                return this;
+            	this.$el.dialog(
+            			'option', 'position', {
+            				my: "left+" + this.position.left + " top+" + this.position.top,
+            				at: "left top",
+            				of: $(window)
+            			}).dialogExtend();
+            	return this;
             },
 
             /**
@@ -185,11 +199,11 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize: function (h, w) {
-                this.size.height = h;
-                this.size.width = w;
-               this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
-
-                return this;
+            	this.size.height = h;
+            	this.size.width = w;
+            	this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
+            	this.$el.trigger('resizeEnd');
+            	return this;
             },
 
             /**
@@ -428,7 +442,7 @@ define(function (require) {
             					that.executedAction = historyItems.length-1;
             				}
     						item = historyItems[that.executedAction].action[0];;
-    						GEPPETTO.Console.executeCommand(item);
+    						GEPPETTO.Console.executeImplicitCommand(item);
             				$("#"+that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
             				event.stopPropagation();
             			});
@@ -557,19 +571,34 @@ define(function (require) {
                         	  label = label.substring(0, 6);
                         	  that.$el.dialog({ title: label});
                            },
+                           "beforeMaximize" :function(evt,dlg){
+                        	   var divheight =that.size.height;  
+                        	   var divwidth =that.size.width;    
+                        	   that.previousMaxSize = {width: divwidth, height: divheight};
+                           },
                            "minimize" : function(evt, dlg){
                         	   that.$el.dialog({ title: that.name});
                             },
                             "maximize" : function(evt,dlg){
                             	that.setTrasparentBackground(false);
                     			$(this).trigger('resizeEnd');
-                    			var divheight =that.$el.height()+50;
-                    			var divwidth =that.$el.width()+50;
+                    			var divheight =$(window).height();  
+                    			var divwidth =$(window).width();  
                     			that.$el.dialog({ height: divheight,width: divwidth});
+                    			that.maximize = true;
                     		},
                     		"restore" : function(evt,dlg){
+                    			if(that.maximize){
+                    				that.setSize(that.previousMaxSize.height,that.previousMaxSize.width);
+                    				$(this).trigger('restored',[that.id]);
+                    			}
                     			that.setTrasparentBackground(that.previousMaxTransparency);
                     			$(this).trigger('resizeEnd');
+                    			that.maximize = false;
+                    			that.collapsed = false;
+                    		},
+                    		"collapse":function(evt,dlg){
+                    			that.collapsed = true;
                     		}
                         });
 

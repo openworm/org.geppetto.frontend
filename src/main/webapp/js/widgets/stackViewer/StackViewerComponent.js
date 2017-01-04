@@ -38,6 +38,8 @@ define(function (require) {
                 numTiles: 1,
                 posX: 0,
                 posY: 0,
+                oldX: 0,
+                oldY: 0,
                 loadingLabels: false,
                 orth: this.props.orth,
                 data: {},
@@ -46,7 +48,8 @@ define(function (require) {
                 recenter: false,
                 txtUpdated: Date.now(),
                 txtStay: 3000,
-                objects: []
+                objects: [],
+                hoverTime: Date.now()
             };
         },
         /**
@@ -104,6 +107,9 @@ define(function (require) {
                 .on('DOMMouseScroll', this.onWheelEvent);
 
             this.disp.addChild(this.stack);
+
+            // block move event outside stack
+            this.renderer.plugins.interaction.moveWhenInside = true;
 
             //call metadata from server
             this.callDstRange();
@@ -320,52 +326,54 @@ define(function (require) {
                         url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                         type: 'POST',
                         success: function (data) {
-                            result = data.trim().split(':')[1].trim().split(' ');
-                            if (result !== '') {
-                                for (j in result) {
-                                    if (result[j].trim() !== '') {
-                                        var index = Number(result[j]);
-                                        if (i !== 0 || index !== 0) { // don't select template
-                                            if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
-                                                console.log(that.state.label[i] + ' clicked');
-                                                eval(that.state.id[i][Number(result[j])]).select();
-                                                that.setStatusText(that.state.label[i] + ' selected');
-                                                break;
-                                            } else {
-                                                if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                    try {
-                                                        eval(that.state.id[i][Number(result[j])]).select();
-                                                        console.log(that.props.templateDomainNames[index] + ' clicked');
-                                                        that.setStatusText(that.props.templateDomainNames[index] + ' selected');
-                                                        break;
-                                                    } catch (ignore) {
-                                                        console.log(that.props.templateDomainNames[index] + ' requsted');
-                                                        that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                        if (GEPPETTO.isKeyPressed("shift")) {
-                                                            console.log('Adding ' + that.props.templateDomainNames[index]);
-                                                            that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
-                                                            Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
-                                                                var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
-                                                                setTermInfo(instance, instance.getParent().getId());
-                                                                resolve3D(that.props.templateDomainIds[index]);
-                                                            });
-                                                            break;
-                                                        } else {
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
-                                                            break;
-                                                        }
-                                                    }
+                            if (GEPPETTO.G.getSelection()[0] == undefined) { // check nothing already selected
+                                result = data.trim().split(':')[1].trim().split(' ');
+                                if (result !== '') {
+                                    for (j in result) {
+                                        if (result[j].trim() !== '') {
+                                            var index = Number(result[j]);
+                                            if (i !== 0 || index !== 0) { // don't select template
+                                                if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
+                                                    console.log(that.state.label[i] + ' clicked');
+                                                    eval(that.state.id[i][Number(result[j])]).select();
+                                                    that.setStatusText(that.state.label[i] + ' selected');
+                                                    break;
                                                 } else {
-                                                    console.log('Index not listed: ' + result[j]);
+                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                        try {
+                                                            eval(that.state.id[i][Number(result[j])]).select();
+                                                            console.log(that.props.templateDomainNames[index] + ' clicked');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' selected');
+                                                            break;
+                                                        } catch (ignore) {
+                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
+                                                            if (GEPPETTO.isKeyPressed("shift")) {
+                                                                console.log('Adding ' + that.props.templateDomainNames[index]);
+                                                                that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
+                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
+                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
+                                                                    setTermInfo(instance, instance.getParent().getId());
+                                                                    resolve3D(that.props.templateDomainIds[index]);
+                                                                });
+                                                                break;
+                                                            } else {
+                                                                that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
+                                                                break;
+                                                            }
+                                                        }
+                                                    } else {
+                                                        console.log('Index not listed: ' + result[j]);
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                // update slice view
+                                that.state.lastUpdate = 0;
+                                that.checkStack();
                             }
-                            // update slice view
-                            that.state.lastUpdate = 0;
-                            that.checkStack();
                         },
                         error: function (xhr, status, err) {
                             console.error(that.props.url, status, err.toString());
@@ -380,46 +388,59 @@ define(function (require) {
                 this.state.objects = [];
                 var i, j, result;
                 var that = this;
+                var callX = that.state.posX.toFixed(0), callY = that.state.posY.toFixed(0);
                 $.each(this.state.stack, function (i, item) {
                     (function (i, that) {
-                        that.state.loadingLabels = true;
+                        if (i == 0) {
+                            that.state.loadingLabels = true;
+                        }
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({
-                            url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
+                            url: image + '&prl=-1,' + callX + ',' + callY + '&obj=Wlz-foreground-objects',
                             type: 'POST',
                             success: function (data) {
                                 result = data.trim().split(':')[1].trim().split(' ');
                                 if (result !== '') {
-                                    for (j in result) {
-                                        if (result[j].trim() !== '') {
-                                            var index = Number(result[j]);
-                                            if (i !== 0 || index !== 0) { // don't select template
-                                                if (index == 0) {
-                                                    if (!GEPPETTO.isKeyPressed("shift")) {
-                                                        that.state.objects.push(that.state.label[i]);
-                                                    }
-                                                } else {
-                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
-                                                        that.state.objects.push(that.props.templateDomainNames[index]);
-                                                        break;
+                                    var currentPosition = that.renderer.plugins.interaction.mouse.getLocalPosition(that.stack);
+                                    if (callX == currentPosition.x.toFixed(0) && callY == currentPosition.y.toFixed(0)) {
+                                        for (j in result) {
+                                            if (result[j].trim() !== '') {
+                                                var index = Number(result[j]);
+                                                if (i !== 0 || index !== 0) { // don't select template
+                                                    if (index == 0) {
+                                                        if (!GEPPETTO.isKeyPressed("shift")) {
+                                                            that.state.objects.push(that.state.label[i]);
+                                                        }
+                                                    } else {
+                                                        if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                            that.state.objects.push(that.props.templateDomainNames[index]);
+                                                            break;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
+                                        var list = $.unique(that.state.objects).sort();
+                                        var objects = '';
+                                        if (GEPPETTO.isKeyPressed("shift")) {
+                                            objects = 'Click to add: ';
+                                        }
+                                        for (j in list) {
+                                            objects = objects + list[j] + '\n';
+                                        }
+                                        if (objects !== '') {
+                                            that.setStatusText(objects);
+                                        }
+                                    }else if (i == 0) {
+                                        that.state.loadingLabels = false;
+                                        that.onHoverEvent();
                                     }
                                 }
-                                that.state.objects = $.unique(that.state.objects).sort();
-                                var objects = '';
-                                if (GEPPETTO.isKeyPressed("shift")) {
-                                    objects = 'Click to add: ';
-                                }
-                                for (i in that.state.objects) {
-                                    objects = objects + that.state.objects[i] + '\n';
-                                }
-                                that.setStatusText(objects);
                                 // update slice view
-                                that.state.loadingLabels = false;
+                                if (i == 0) {
+                                    that.state.loadingLabels = false;
+                                }
                                 that.state.lastUpdate = 0;
                                 that.checkStack();
                             },
@@ -549,7 +570,7 @@ define(function (require) {
 
             if (this.disp.width > 1) {
                 if (this.state.recenter) {
-                    console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide');
+                    //console.log('centering image ' + this.disp.width + ' inside window ' + this.props.width + ' wide');
                     this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
                     this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
                     this.stack.position.x = 0;
@@ -859,25 +880,31 @@ define(function (require) {
             this.state.data = event.data;
             this.stack.alpha = 0.7;
             this.state.dragging = true;
-            var offPosition = this.state.data.getLocalPosition(this.disp);
+            var offPosition = this.state.data.global;
             this.state.dragOffset = {
-                x: (offPosition.x - this.stack.position.x),
-                y: (offPosition.y - this.stack.position.y)
+                x: offPosition.x,
+                y: offPosition.y
             };
+            //console.log('DragStartOffset:'+JSON.stringify(this.state.dragOffset));
             var startPosition = this.state.data.getLocalPosition(this.stack);
             // console.log([startPosition.x,this.state.imageX*0.5,1/this.disp.scale.x]);
-            this.state.posX = startPosition.x;
-            this.state.posY = startPosition.y;
+            this.state.posX = Number(startPosition.x.toFixed(0));
+            this.state.posY = Number(startPosition.y.toFixed(0));
+            //console.log('DragStart:'+JSON.stringify(startPosition));
         },
 
         onDragEnd: function () {
             if (this.state.data !== null) {
                 this.stack.alpha = 1;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
-                var newPosX = startPosition.x;
-                var newPosY = startPosition.y;
+                var newPosX = Number(startPosition.x.toFixed(0));
+                var newPosY = Number(startPosition.y.toFixed(0));
+                //console.log('DragEnd:'+JSON.stringify(startPosition));
                 if (newPosX == this.state.posX && newPosY == this.state.posY) {
                     this.callObjects();
+                    this.state.oldX = newPosX;
+                    this.state.oldY = newPosY;
+                    this.state.hoverTime = Date.now();
                 }
                 // set the interaction data to null
                 this.state.data = null;
@@ -886,31 +913,45 @@ define(function (require) {
             }
         },
 
-        onHoverEvent: function (event) {
+        onHoverEvent: function (event, repeat) {
             if (!this.state.loadingLabels && !this.state.dragging) {
-                this.state.data = event.data;
-                var currentPosition = this.state.data.getLocalPosition(this.stack);
-                var xOffset = this.state.imageX / this.disp.scale.x;
-                var yOffset = this.state.imageY / this.disp.scale.y;
-                this.state.posX = (currentPosition.x);
-                this.state.posY = (currentPosition.y);
-                if (this.state.posX > 0 && this.state.posY > 0 && this.state.posX < (xOffset * 2.0) && this.state.posY < (yOffset * 2.0)) {
+                repeat = typeof repeat !== 'undefined' ? repeat : true;
+                var currentPosition = this.renderer.plugins.interaction.mouse.getLocalPosition(this.stack);
+                currentPosition.x = Number(currentPosition.x.toFixed(0));
+                currentPosition.y = Number(currentPosition.y.toFixed(0));
+                if (this.state.hoverTime < Date.now() - 1000 && !(this.state.posX == this.state.oldX && this.state.posY == this.state.oldY) && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
                     this.listObjects();
+                    this.state.hoverTime = Date.now();
+                    this.state.oldX = currentPosition.x;
+                    this.state.oldY = currentPosition.y;
+                }else{
+                    this.state.posX = currentPosition.x;
+                    this.state.posY = currentPosition.y;
+                    if (repeat) {
+                        setTimeout(function (func, event) {
+                            func(event, false);
+                        }, 1000, this.onHoverEvent, event);
+                    }
                 }
-            }
-            if (GEPPETTO.isKeyPressed("shift")) {
-                this.stack.defaultCursor = 'copy';
-            } else {
-                this.stack.defaultCursor = 'pointer';
+            }else if (this.state.loadingLabels){
+                if (repeat) {
+                    setTimeout(function (func, event) {
+                        func(event, false);
+                    }, 5000, this.onHoverEvent, event);
+                }
             }
         },
 
         onDragMove: function (event) {
             if (this.state.dragging) {
-                var newPosition = this.state.data.getLocalPosition(this.stack);
-                window.test = this.state.data;
-                this.stack.position.x += newPosition.x - this.state.dragOffset.x;
-                this.stack.position.y += newPosition.y - this.state.dragOffset.y;
+                var newPosition = this.state.data.global;
+                var xmove = (newPosition.x - this.state.dragOffset.x)/this.disp.scale.x;
+                var ymove = (newPosition.y - this.state.dragOffset.y)/this.disp.scale.y;
+                this.state.dragOffset.x = newPosition.x;
+                this.state.dragOffset.y = newPosition.y;
+                this.stack.position.x += xmove;
+                this.stack.position.y += ymove;
+                //console.log('Moving :'+xmove+','+ymove);
                 this.state.buffer[-1].text = 'Moving stack... (X:' + Number(this.stack.position.x).toFixed(2) + ',Y:' + Number(this.stack.position.y).toFixed(2) + ')';
                 // update slice view
                 this.checkStack();
@@ -924,8 +965,7 @@ define(function (require) {
          **/
         render: function () {
             return (
-                <div className="stack-canvas-container" ref="stackCanvas">
-                </div>
+                <div className="stack-canvas-container" ref="stackCanvas"></div>
             );
         }
     });
@@ -961,7 +1001,7 @@ define(function (require) {
                 id: [],
                 plane: null,
                 initalised: false
-            }
+            };
         },
 
         onWheelEvent: function (e) {
@@ -1112,7 +1152,7 @@ define(function (require) {
          * Event handler for clicking zoom in. Increments the zoom level
          **/
         onZoomIn: function () {
-            let zoomLevel = Number((this.state.zoomLevel + 0.1).toFixed(1));
+            var zoomLevel = Number((this.state.zoomLevel + 0.1).toFixed(1));
             if (zoomLevel < 10.0) {
                 this.setState({
                     zoomLevel: zoomLevel,
@@ -1124,7 +1164,7 @@ define(function (require) {
         },
 
         toggleOrth: function () {
-            let orth = this.state.orth += 1;
+            var orth = this.state.orth += 1;
             var pit, yaw, rol;
             if (orth > 2) {
                 orth = 0;
@@ -1150,7 +1190,7 @@ define(function (require) {
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
         onZoomOut: function () {
-            let zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
+            var zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
 
             if (zoomLevel > 0.1) {
                 this.setState({

@@ -36,7 +36,8 @@
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function (require) {
-    var Popup = require('widgets/popup/Popup');
+
+	var Popup = require('widgets/popup/Popup');
     var AWidgetController = require('widgets/AWidgetController');
 
     /**
@@ -44,9 +45,12 @@ define(function (require) {
      */
     return AWidgetController.View.extend({
 
-        initialize: function () {
+        initialize: function (config) {
             this.widgets = Array();
             this.history = [];
+            if(config!=null || undefined){
+            	this.buttonBarConfig = config.buttonBarConfiguration;
+            }
         },
 
         /**

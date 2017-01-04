@@ -8,13 +8,27 @@ public class AdminSimulationObject {
 	private String experiment;
 	private String simulator;
 	private String storage;
-	private String experimentsAndSimulators;
+	private String experiments;
+	private String simulators;
+	private String status;
 	
-	public String getExperimentsAndSimulators() {
-		return experimentsAndSimulators;
+	public String getStatus() {
+		return status;
 	}
-	public void setExperimentsAndSimulators(String experimentsAndSimulators) {
-		this.experimentsAndSimulators = experimentsAndSimulators;
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getExperiments() {
+		return experiments;
+	}
+	public void setExperiments(String experiments) {
+		this.experiments = experiments;
+	}
+	public String getSimulators() {
+		return simulators;
+	}
+	public void setSimulators(String simulators) {
+		this.simulators = simulators;
 	}
 	public String getLogin() {
 		return login;

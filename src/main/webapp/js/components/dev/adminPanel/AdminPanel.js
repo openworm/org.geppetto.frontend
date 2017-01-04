@@ -103,21 +103,29 @@ define(function (require) {
 		              		"order": 3,
 		              		"locked": false,
 		              		"displayName": "Simulator Name"},
-		              {   "columnName": "experimentsAndSimulators",
+		              {   "columnName": "status",
 			              "order": 4,
 			              "locked": false,
-			              "displayName": "Total Experiments and Simulators"},
+			              "displayName": "Experiment Status"},
+		              {   "columnName": "experiments",
+			              "order": 5,
+			              "locked": false,
+			              "displayName": "All User Experiments"},
+			          {    "columnName": "simulators",
+			              "order": 6,
+			              "locked": false,
+			              "displayName": "All User Simulators"},
 			          {   
 						  "columnName": "login",
-			              "order": 5,
+			              "order": 7,
 			              "locked": false,
 			              "displayName": "Username"},
 			          {	  "columnName": "name",
-			              "order": 6,
+			              "order": 8,
 			              "locked": false,
 			              "displayName": "Name"},
 			          {   "columnName": "storage",
-		              	  "order": 7,
+		              	  "order": 9,
 		              	  "locked": false,
 		              	  "displayName": "Storage Size"}],
 		errorsColumnMeta: [{
@@ -150,7 +158,8 @@ define(function (require) {
 		getInitialState: function() {
 			return {
 				columns: [],
-				data : []
+				data : [],
+				loaded : false
 			}
 		},
 
@@ -196,8 +205,10 @@ define(function (require) {
 				this.columnMeta = this.errorsColumnMeta;
 			}
 			
+			this.setState({loaded : false});
+			
 			$.ajax({url: urlData, success: function(result){
-				that.setState({data: result, columnMeta : that.columnMeta});
+				that.setState({data: result, columnMeta : that.columnMeta, loaded : true});
 			}});
 		},
 		
@@ -213,9 +224,14 @@ define(function (require) {
 					<ButtonComponent view={"Simulations"} selectedState={this.simulationsViewSelected} onClick={this.onButtonClick.bind(this,"Simulations")}/>
 					<ButtonComponent view={"Errors"} selectedState={this.errorsViewSelected} onClick={this.onButtonClick.bind(this,"Errors")}/>
 				  </div>
-				  <Griddle results={this.state.data} columnMetadata={this.state.columnMeta} bodyHeight={this.props.height}
-					         enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage}/>
-			    </div>
+					{this.state.loaded ?
+						<Griddle results={this.state.data} columnMetadata={this.state.columnMeta} bodyHeight={this.props.height}
+						enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage}/>
+
+						:
+						<div className="loader"></div>
+					}
+				</div>
 			);
 
 		}

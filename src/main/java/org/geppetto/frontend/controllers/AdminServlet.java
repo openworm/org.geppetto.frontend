@@ -1,10 +1,15 @@
 package org.geppetto.frontend.controllers;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,10 +77,10 @@ public class AdminServlet {
 			
 			AdminUserObject userObject;
 			List<? extends IGeppettoProject> projects;
-			long totalSize = 0;
 			for(IUser user: users){
 				int projectsSize = 0;
 				int experiments = 0;
+				long totalSize = 0;
 				userObject = new AdminUserObject();
 				if(user.getGeppettoProjects() !=null){
 					projects = user.getGeppettoProjects();
@@ -96,9 +101,19 @@ public class AdminServlet {
 			
 			Collections.sort(userObjects, new Comparator<AdminUserObject>() {
 
+				SimpleDateFormat formatDate = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy");
+
 				@Override
 				public int compare(AdminUserObject o1, AdminUserObject o2) {
-					return o1.getLastLogin().compareTo(o2.getLastLogin());
+					Date date = null, date2 = null;
+					formatDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+					try {
+						date = formatDate.parse(o1.getLastLogin());
+						date2 = formatDate.parse(o2.getLastLogin());						
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					return date.compareTo(date2);
 				}
 			});
 			return userObjects;
@@ -121,10 +136,11 @@ public class AdminServlet {
 				users =  dataManager.getAllUsers();
 				List<? extends IGeppettoProject> projects;
 				List<? extends IExperiment> experiments;
-				String totalExperimentsAndSimulators = "";
+				String totalExperiments = "";
+				String totalSimulators = "";
 				String simulator;
-				long totalSize = 0;
 				for(IUser user: users){
+					long totalSize = 0;
 					projects = user.getGeppettoProjects();
 					for(IGeppettoProject p : projects){
 						totalSize  += S3Manager.getInstance().getFileStorage("projects/"+p.getId()+"/");
@@ -138,18 +154,21 @@ public class AdminServlet {
 								simulation.setLogin(user.getLogin());
 								simulation.setExperimentLastRun(e.getLastModified().toString());
 								simulation.setSimulator(simulator);
+								simulation.setStatus(e.getStatus().toString());
+								simulation.setStorage(getStorageSize(totalSize));
 								simulationObjects.add(simulation);								
 							}
-							totalExperimentsAndSimulators+= e.getName() + " --- " + simulator + System.lineSeparator();
+							totalExperiments+= e.getName() + System.lineSeparator();
+							totalSimulators+= simulator + System.lineSeparator();
 						}
 					}
 
 					for(AdminSimulationObject object : simulationObjects){
-						object.setExperimentsAndSimulators(totalExperimentsAndSimulators);
-						object.setStorage(getStorageSize(totalSize));
+						object.setExperiments(totalExperiments);
+						object.setSimulators(totalSimulators);
 					}
-					
-					totalExperimentsAndSimulators = "";
+					totalExperiments = "";
+					totalSimulators="";
 				}
 			}
 			return simulationObjects;
@@ -160,17 +179,17 @@ public class AdminServlet {
 	
 	private String getStorageSize(long size){
 		String storageUnit=" KB";
-		long formattedSize =0;
+		double formattedSize =0;
 		formattedSize = size/1024;
 		if(formattedSize>1000){
-			formattedSize = size/1024/1024;
+			formattedSize = formattedSize/1024;
 			storageUnit=" MB";
 		}else if(formattedSize>1000000){
-			formattedSize = size/1024/1024/104;
+			formattedSize = formattedSize/1024/104;
 			storageUnit=" GB";
 		}
 		
-		return String.valueOf(formattedSize)+storageUnit;
+		return String.format( "%.2f", formattedSize )+storageUnit;
 	}
 	
 	@RequestMapping(value = "/user/{login}/errors")

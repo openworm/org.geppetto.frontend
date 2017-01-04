@@ -33,11 +33,6 @@ table{
     background: #979797;
 }
 
-.button:focus {
-	outline:0;
-	text-decoration:underline;
-}
-
 .selected {
 	background : #fc6320;
 }
@@ -58,10 +53,11 @@ table{
 	border-color: rgba(255, 255, 255, 0.2);
 	text-align: center;
 	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .griddle{
-	width: 80%;
+	width: 90%;
 	margin : 0 auto;
 }
 

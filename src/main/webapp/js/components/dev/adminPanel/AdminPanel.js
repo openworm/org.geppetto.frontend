@@ -63,7 +63,8 @@ define(function (require) {
 		usersViewSelected : true,
 		simulationsViewSelected : false,
 		errorsViewSelected : false,
-		
+		currentView : null,
+		storedData :[],
 		views : ["Users","Simulations","Errors"],
 		usersColumnMeta : [
 		              {   "columnName": "login",
@@ -205,11 +206,17 @@ define(function (require) {
 				this.columnMeta = this.errorsColumnMeta;
 			}
 			
+			this.currentView = mode;
 			this.setState({loaded : false});
 			
-			$.ajax({url: urlData, success: function(result){
-				that.setState({data: result, columnMeta : that.columnMeta, loaded : true});
-			}});
+			if(this.storedData[this.currentView]==null){
+				$.ajax({url: urlData, success: function(result){
+					that.storedData[that.currentView] = result;
+					that.setState({data: result, columnMeta : that.columnMeta, loaded : true});
+				}});
+			}else{
+				this.setState({data: this.storedData[this.currentView], columnMeta : this.columnMeta, loaded : true});
+			}
 		},
 		
 		onButtonClick: function (view) {
@@ -230,7 +237,7 @@ define(function (require) {
 						:
 						<div id="loading-container">
 							<div className="gpt-gpt_logo fa-spin"></div>
-							<p className="orange loadingText">Loading data...may take few seconds.</p>
+							<p className="orange loadingText">Fetching data (might take a few seconds depending on your network)</p>
 						</div>
 					}
 				</div>

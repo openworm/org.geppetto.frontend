@@ -1,6 +1,5 @@
 package org.geppetto.frontend.controllers;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ import org.geppetto.core.data.model.IExperiment;
 import org.geppetto.core.data.model.IGeppettoProject;
 import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.data.model.UserPrivileges;
-import org.geppetto.core.data.model.local.LocalGeppettoProject;
-import org.geppetto.core.data.model.local.LocalUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.s3.S3Manager;
 import org.geppetto.frontend.controllers.objects.AdminErrorObject;
@@ -158,8 +155,8 @@ public class AdminServlet {
 								simulation.setStorage(getStorageSize(totalSize));
 								simulationObjects.add(simulation);								
 							}
-							totalExperiments+= e.getName() + System.lineSeparator();
-							totalSimulators+= simulator + System.lineSeparator();
+							totalExperiments+= e.getName()+'\n';
+							totalSimulators+= simulator+'\n';
 						}
 					}
 

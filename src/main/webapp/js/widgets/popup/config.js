@@ -36,20 +36,16 @@
  *
  * @author Jesus Martinez (jesus@metacell.us)
  */
-//Load PopupsController and other classes using GEPPETTO
-
 require.config({
     paths: {
         "slick": "widgets/popup/vendor/slick.min",
-        "anchorme": "widgets/popup/vendor/anchorme.min",
-        "colorPicker" : "widgets/popup/vendor/bootstrap-colorpicker.min"
+        "anchorme": "widgets/popup/vendor/anchorme.min"
     }
 });
 
 var popupReqs = [];
 popupReqs.push("slick");
 popupReqs.push("anchorme");
-popupReqs.push("colorPicker");
 
 require(popupReqs, function (slick, anchorme) {
     window.anchorme = anchorme;

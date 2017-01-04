@@ -30,36 +30,24 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Loads plot scripts
+ * Loads scatter3d scripts
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @author Boris Marin
+ * @author Adrian Quintana
  */
 /*
  * Configure what dependencies are needed for each library
  */
-
-
-define("math.global", ["mathjs"], function (_) {
-    math = _;
+require.config({
+    shim: {
+       "widgets/scatter3d/vendor/OrbitControls": ["three"]
+    }
 });
 
-/*
- * Load libraries, and CSS after libraries are loaded
- */
-require([], function (flot, math) {
-//	console.log(math.parser());
-    window.math = math;
-    loadCss("geppetto/js/widgets/plot/Plot.css");
-});	
+var reqs = [];
+reqs.push("widgets/scatter3d/vendor/OrbitControls");
 
-//Load PlotsController and other classes using GEPPETTO
-define(function(require) {
-	return function(GEPPETTO) {
-		// Register Commands
-		GEPPETTO.MenuManager.registerNewCommandProvider([GEPPETTO.Resources.DYNAMICS_TYPE,GEPPETTO.Resources.VARIABLE_NODE],
-				GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getCommands);
-	};
+require(reqs, function ($) {
+    loadCss("geppetto/js/widgets/scatter3d/Scatter3d.css");
 });
-

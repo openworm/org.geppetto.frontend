@@ -8,7 +8,6 @@ src/main/webapp/js/components/dist/
 src/main/webapp/dashboard/api/session.json
 
 # Build js, css
-bin/
 src/main/webapp/js/main-built.js
 src/main/webapp/css/main.css
 src/main/webapp/js/extensions/*

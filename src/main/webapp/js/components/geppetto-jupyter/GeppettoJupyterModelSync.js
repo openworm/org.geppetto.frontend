@@ -155,6 +155,52 @@ define(function (require, exports, module) {
 			geometries: []
 		}),
 
+		getGeometryPayload: function(geometry) {
+			var value;
+			if (geometry.name.substr(0,4) == 'soma') {
+				value = {
+					eClass: 'Sphere',
+					position: {
+						eClass: "Point",
+						x: 0,
+						y: 0,
+						z: 0
+					},
+					radius: geometry.topRadius
+				}
+			}
+			else {
+				value = {
+					eClass: 'Cylinder',
+					bottomRadius: geometry.bottomRadius,
+					topRadius: geometry.topRadius,
+					distal: {
+						eClass: "Point",
+						x: geometry.distalX,
+						y: geometry.distalY,
+						z: geometry.distalZ
+					},
+					position: {
+						eClass: "Point",
+						x: geometry.positionX,
+						y: geometry.positionY,
+						z: geometry.positionZ
+					}
+				}
+			}
+
+			return {
+				eClass: 'Variable',
+				initialValues: [{
+					key: "geppettoModel#//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual'),
+					value: value
+				}],
+				id: geometry.id,
+				name: geometry.name,
+				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual') }],
+			}
+		},
+
 		getPayload: function () {
 
 			var geppettoModelPayload = {
@@ -200,7 +246,8 @@ define(function (require, exports, module) {
 			if (this.get('geometries').length > 0) {
 				var geppettoMorphologiesVariables = [];
 				for (var i = 0; i < this.get('geometries').length; i++) {
-					geppettoMorphologiesVariables.push(this.get('geometries')[i].getPayload());
+					//geppettoMorphologiesVariables.push(this.get('geometries')[i].getPayload());
+					geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i]));
 				}
 				var compositeVisualType = {
 					eClass: 'CompositeVisualType',
@@ -294,7 +341,7 @@ define(function (require, exports, module) {
 				if (this.get('geometries').length > 0) {
 					var elements = {};
 					for (var i = 0; i < this.get('geometries').length; i++) {
-						elements[this.get('geometries')[i].get('id')] = "";
+						elements[this.get('geometries')[i].id] = "";
 					}
 					GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
 				}
@@ -360,8 +407,7 @@ define(function (require, exports, module) {
 		}
 	}, {
 			serializers: _.extend({
-				stateVariables: { deserialize: jupyter_widgets.unpack_models },
-				geometries: { deserialize: jupyter_widgets.unpack_models }
+				stateVariables: { deserialize: jupyter_widgets.unpack_models }
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 

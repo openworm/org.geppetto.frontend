@@ -95,16 +95,19 @@ define(['jquery'], function (require) {
          * @returns {String} Unit for quantity
          */
         getUnit: function () {
-            //returns the unit associated with the initial value
-            var unit = undefined;
-            var initialValues = this.getVariable().getWrappedObj().initialValues;
-
-            for (var i = 0; i < initialValues.length; i++) {
-                if (initialValues[i].value.eClass === 'PhysicalQuantity' || initialValues[i].value.eClass === 'TimeSeries') {
-                    unit = initialValues[i].value.unit.unit
-                }
-            }
-            return unit;
+        	if (!this.timeSeries) {
+		        //returns the unit associated with the initial value
+		        var unit = undefined;
+		        var initialValues = this.getVariable().getWrappedObj().initialValues;
+		
+		        for (var i = 0; i < initialValues.length; i++) {
+		            if (initialValues[i].value.eClass === 'PhysicalQuantity' || initialValues[i].value.eClass === 'TimeSeries') {
+		                unit = initialValues[i].value.unit.unit
+		            }
+		        }
+		        return unit;
+        	}
+        	else return this.timeSeries.unit;
         },
 
         /**

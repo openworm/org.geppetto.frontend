@@ -145,8 +145,15 @@ define(function (require) {
 
             var experimentState = JSON.parse(payload.update);
             var experiment = window.Project.getActiveExperiment();
-
-            GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);
+            
+            if(experimentState.projectId==window.Project.getId() && experimentState.experimentId==experiment.getId()){
+            	//if we fetched data for the current project/experiment 
+            	GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);	
+            }
+            else{
+            	GEPPETTO.ExperimentsController.addExternalExperimentState(experimentState);
+            }
+            
             GEPPETTO.trigger("stop_spin_logo");
         };
 

@@ -241,7 +241,7 @@ define(function (require) {
 				visible = false;
 			}
 
-			if(window.Project!= undefined && window.Project.getActiveExperiment()!=null || undefined){
+			if(window.Project!= undefined && window.Project.getActiveExperiment()!=null || window.Project.getActiveExperiment()!=undefined){
 				if(window.Project.getActiveExperiment().getId() == experimentId){
 					visible = false;
 				}

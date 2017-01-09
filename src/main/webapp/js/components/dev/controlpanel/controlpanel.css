@@ -97,6 +97,10 @@
 	border-color: rgba(255, 255, 255, 0.2);
 }
 
+.menuButtonStyle td{
+    color: #FD6808;
+}
+
 #controlpanel .griddle .footer-container {
 	padding: 0px;
 	color: #ffffff;

@@ -425,6 +425,7 @@ define(function (require) {
                                 buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
                                 menuPosition: null,
                                 menuSize: null,
+                                menuCSS : 'menuButtonStyle',
                                 menuItems: menuButtonItems,
                                 onClickHandler: actionFn
                             };

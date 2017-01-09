@@ -72,7 +72,6 @@ var Events = {
     Hide_spinner: "spinner:hide",
     Color_set: "color:set",
     Canvas_initialised: "canvas:initialised",
-    Plot_created : "plot_created",
 };
 
 define(function (require) {

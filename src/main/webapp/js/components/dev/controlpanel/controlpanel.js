@@ -277,19 +277,6 @@ define(function (require) {
                     $(this).css("color", e.color.toHex());
                 });
             }
-
-            var that = this;
-            GEPPETTO.on(Events.Plot_created, function (plot) {
-            	for (var key in that.refs) {
-            		if(that.refs[key].props.type=="dynamic"){
-            			that.refs[key].addMenuItem({
-            				label: "Add to " +plot.getName(),
-            				action:plot.getId()+".plotData("+that.props.rowData.path+")",
-            				value: "plot_variable"
-            			});
-            		}
-            	}
-            });
         },
 
         // Utility method to iterate over a config property and populate a list of control buttons to be created
@@ -398,13 +385,26 @@ define(function (require) {
                             classVal += " color-picker-button";
                         }
 
+                        var menuButtonItems = new Array();
                         if(control.menuItems!=null || control.menuItems != undefined){
                         	for(var i =0; i<control.menuItems.length; i++){
                         		var action = that.replaceTokensWithPath(control.menuItems[i].action, path)
                         		control.menuItems[i].action = action;
                         	}
+                        	menuButtonItems = control.menuItems;
+                        }else{
+                        	if(control.menuItemsType == "dynamic_plot"){
+                        		var plots = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
+                        		for(var i =0 ; i<plots.length; i++){
+                        			menuButtonItems.push({
+                        				label: "Add to " +plots[i].getName(),
+                        				action:plots[i].getId()+".plotData("+that.props.rowData.path+")",
+                        				value: "plot_variable"
+                        			});
+                        		}
+                        	}
                         }
-                        
+
                         var controlPanelMenuButtonConfig = {
                                 id: idVal,
                                 openByDefault: false,
@@ -416,7 +416,7 @@ define(function (require) {
                                 buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
                                 menuPosition: null,
                                 menuSize: null,
-                                menuItems: control.menuItems,
+                                menuItems: menuButtonItems,
                                 onClickHandler: actionFn
                             };
                         

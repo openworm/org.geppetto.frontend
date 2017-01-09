@@ -31,6 +31,7 @@ table{
     height: 60px;
     float: left;
     background: #979797;
+    cursor:pointer;
 }
 
 .selected {
@@ -73,6 +74,7 @@ table{
 	font-size: 24px;
     font-weight: bold;
     text-align: center;
+    font-size: 18px;
 }
 
 #loading-container {

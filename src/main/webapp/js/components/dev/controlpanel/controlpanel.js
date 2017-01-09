@@ -200,12 +200,21 @@ define(function (require) {
                 }
             };
 
+            // figure out if input is readonly
+            var readOnly = true;
+            try {
+                readOnly = eval(this.props.metadata.readOnlyCondition)
+            } catch(e){
+                // nothing to do here readOnly defaults to true if evaluation failed
+            }
+
             return (
                 <div>
                     <input defaultValue={initialValue}
                            onBlur={onInputChangeHandler}
                            onKeyPress={onKeyPressHandler}
-                           className="control-panel-parameter-input" />
+                           className="control-panel-parameter-input"
+                           readOnly={readOnly}/>
                     <span className="control-panel-parameter-unit">{unit}</span>
                 </div>
             )

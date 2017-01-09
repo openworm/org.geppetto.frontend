@@ -306,11 +306,17 @@ define(function (require) {
                 return helpMsg;
             },
 
+            toggleImplicitCommands: function () {
+                var cur = GEPPETTO.Console.getConsole().showImplicitCommands;
+                GEPPETTO.Console.getConsole().showImplicitCommands = !cur;
+                return "showImplicitCommands = " + !cur;
+            },
+
             toggleConsole: function () {
 
                 //user has clicked the console button
                 var command = ($("#console").css("display") === "none") ? "true" : "false";
-                GEPPETTO.Console.executeCommand("G.showConsole(" + command + ")");
+                GEPPETTO.Console.executeImplicitCommand("G.showConsole(" + command + ")");
             },
 
             /**
@@ -420,16 +426,20 @@ define(function (require) {
             },
 
             /*
-             * Executes commands to console
+             * Executes commands to console. Implicit commands only
+             * shown in debug mode, or if showImplicitCommands true.
              */
-            executeCommand: function (command) {
-                GEPPETTO.Console.getConsole().executeCommand(command);
+            executeCommand: function (command, isImplicit = false) {
+                GEPPETTO.Console.getConsole().executeCommand(command, isImplicit);
                 var justCommand = command.substring(0, command.indexOf("("));
                 var commandParams = command.substring(command.indexOf("(") + 1, command.lastIndexOf(")"));
                 GEPPETTO.trackActivity("Console", justCommand, commandParams);
             },
 
-
+            executeImplicitCommand: function(command){
+                this.executeCommand(command, true);
+            },
+            
             /**
              * Available commands stored in an array, used for autocomplete.
              *

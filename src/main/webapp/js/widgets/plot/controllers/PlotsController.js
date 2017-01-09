@@ -77,6 +77,8 @@ define(function (require) {
             GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/widgets/plot/Plot.js"));
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(p.getId(), p);
+            
+            GEPPETTO.trigger(Events.Plot_created, p);
             return p;
         },
 

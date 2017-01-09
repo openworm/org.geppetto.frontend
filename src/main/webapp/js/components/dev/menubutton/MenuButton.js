@@ -63,7 +63,7 @@ define(function (require) {
 
             // execute action
             if(action != null){
-                GEPPETTO.Console.executeCommand(action);
+                GEPPETTO.Console.executeImplicitCommand(action);
             }
 
             this.setState({icon: iconState});
@@ -128,7 +128,7 @@ define(function (require) {
             var menuSize = null;
             var self = this;
             //if position wasn't specify for location of menu list
-            if(self.props.configuration.menuPosition == null || undefined){
+            if(self.props.configuration.menuPosition == null || self.props.configuration.menuPosition == undefined){
             	//compute best spot for menu to show up by getting the button's top
             	//and left values, and considering padding values as well
             	this.menuPosition = self.getMenuPosition();
@@ -138,7 +138,7 @@ define(function (require) {
             }
             
             //if position wasn't specify for location of menu list
-            if(self.props.configuration.menuSize != null || undefined){
+            if(self.props.configuration.menuSize != null && self.props.configuration.menuSize != undefined){
             	menuSize = { 
             			width : self.props.configuration.menuSize.width,
             			height: self.props.configuration.menuSize.height
@@ -148,15 +148,27 @@ define(function (require) {
             var selector = $("#"+this.props.configuration.id+"-dropDown");
             selector.css({
                 top: self.menuPosition.top, right: self.menuPosition.right,
-                bottom: self.menuPosition.bottom, left: self.menuPosition.left, position: 'fixed'
+                bottom: self.menuPosition.bottom, left: self.menuPosition.left, position: 'fixed',
             });
+            
+            var table = $("#"+this.props.configuration.id+"-dropDownTable");
+            if(menuSize!=null){
+            	if(menuSize.width != undefined && menuSize.height!=undefined){
+            		table.css({
+            			width: menuSize.width,
+            			height: menuSize.height,
+            		});
+            	}
+            }
         },
 
         renderListItems: function () {
             var items = [];
-            for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
-                var item = this.props.configuration.menuItems[i];
-                items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
+            if(this.props.configuration.menuItems != undefined || null){
+            	for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
+            		var item = this.props.configuration.menuItems[i];
+            		items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
+            	}
             }
             return items;
         },
@@ -207,7 +219,7 @@ define(function (require) {
         
         render: function () {
             return (
-                <div id={this.props.configuration.id+"-dropDown"} className={(this.state.visible ? 'show' : 'hide') + " dropDownButtonContainer"}>
+                <div id={this.props.configuration.id+"-dropDownTable"} className={(this.state.visible ? 'show' : 'hide') + " dropDownButtonContainer"}>
                     <table className={this.props.configuration.menuCSS + " dropDownTable"} id="dropDownTable">
                         <tbody>
                             {this.renderListItems()}
@@ -228,10 +240,26 @@ define(function (require) {
             return {
                 icon: this.props.configuration.iconOff,
                 open: false,
-                menuItems : null,        
+                menuItems : this.props.configuration.menuItems,        
             };
         },
                 
+        refresh : function(){
+        	this.forceUpdate();
+        },
+        
+        updateMenuItems : function(items){
+        	this.setState({menuItems : items});
+        },
+        
+        addMenuItem : function(item){
+        	if(this.props.configuration.menuItems== null || this.props.configuration.menuItems== undefined){
+        		this.props.configuration.menuItems = new Array();
+        	}
+        	this.props.configuration.menuItems.push(item);
+    		this.refresh();
+        },
+        
         //Makes the drop down menu visible
         showMenu: function () {
             var self = this;
@@ -293,19 +321,14 @@ define(function (require) {
         },
         
         render: function () {
-        	//initializes drop down items from configuration
-        	this.state.menuItems = this.props.configuration.menuItems;
-
             return (
-                <div className="menuButtonContainer">
-                    <button className={this.props.configuration.id + " btn"} type="button" title=''
+                    <button className={this.props.configuration.id + " btn "+ this.props.configuration.buttonClassName} type="button" title=''
                           id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.props.configuration.buttonDisabled} ref="menuButton">
                         <i className={this.state.icon + " menuButtonIcon"}></i>
                         {this.props.configuration.label}
-                    </button>
-                    <div id={this.props.configuration.id+"-dropDown"} className="menuListContainer">
-                    <DropDownControlComp handleSelect={this.selectionChanged}  ref="dropDown" configuration={this.props.configuration}/></div>
-                </div>
+                        <div id={this.props.configuration.id+"-dropDown"} className="menuListContainer">
+                        <DropDownControlComp handleSelect={this.selectionChanged}  ref="dropDown" configuration={this.props.configuration}/></div>
+                     </button>
             );
         }
     });

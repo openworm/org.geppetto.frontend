@@ -202,3 +202,8 @@
 .colorpicker:after {
 	border-bottom: 6px solid rgba(255, 255, 255, 0.27) !important;
 }
+
+.menuButtonContainer{
+	width : 33px;
+	height : 25px;
+}

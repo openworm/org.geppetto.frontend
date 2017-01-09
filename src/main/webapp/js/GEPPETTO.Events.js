@@ -40,6 +40,7 @@
  */
 var Events = {
     Select: "experiment:selection_changed",
+    Visibility_changed : "experiment:visibility_changed",
     Focus_changed: "experiment:focus_changed",
     Experiment_over: "experiment:over",
     Project_loading: "project:loading",
@@ -70,7 +71,8 @@ var Events = {
     Show_spinner: "spinner:show",
     Hide_spinner: "spinner:hide",
     Color_set: "color:set",
-    Canvas_initialised: "canvas:initialised"
+    Canvas_initialised: "canvas:initialised",
+    Plot_created : "plot_created",
 };
 
 define(function (require) {

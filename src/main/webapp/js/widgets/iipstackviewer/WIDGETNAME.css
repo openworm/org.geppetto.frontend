@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2016 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -9,7 +10,7 @@
  * http://opensource.org/licenses/MIT
  *
  * Contributors:
- *      OpenWorm - http://openworm.org/people.html
+ *     	OpenWorm - http://openworm.org/people.html
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,28 +31,5 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-define(function (require) {
 
-    var React = require('react'),
-        GEPPETTO = require('geppetto');
-
-    return React.createClass({
-        mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
-
-        componentDidMount: function() {
-            if(GEPPETTO.tutorialEnabled) {
-                GEPPETTO.once('simulation:paused', this.showPopover);
-            }
-        },
-
-        getDefaultProps: function() {
-            return {
-                label: 'Stop',
-                className: 'pull-right',
-                icon:'fa fa-stop',
-                onClick: function(){ GEPPETTO.Console.executeImplicitCommand("Project.getActiveExperiment().stop()"); }
-            }
-        }
-
-    });
-});
+/* PUT HERE THE CSS FOR YOUR WIDGET*/

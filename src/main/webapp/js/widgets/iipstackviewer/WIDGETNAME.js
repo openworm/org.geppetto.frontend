@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2016 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -29,29 +30,54 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
+/**
+ *
+ * @module Widgets/iipstackviewer
+ * @author robbie1977
+ */
 define(function (require) {
 
-    var React = require('react'),
-        GEPPETTO = require('geppetto');
+    var Widget = require('widgets/Widget');
+    var $ = require('jquery');
 
-    return React.createClass({
-        mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
+    return Widget.View
+        .extend({
+            variable: null,
+            options: null,
 
-        componentDidMount: function() {
-            if(GEPPETTO.tutorialEnabled) {
-                GEPPETTO.once('simulation:paused', this.showPopover);
-            }
-        },
+            /**
+             * Initialises button bar
+             *
+             * @param {Object}
+             *            options - Object with options for the widget
+             */
+            /**
+             * Initialize the popup widget
+             */
+            initialize: function (options) {
+                Widget.View.prototype.initialize.call(this, options);
+                this.render();
+                this.setSize(100, 300);
+                this.customHandlers = [];
 
-        getDefaultProps: function() {
-            return {
-                label: 'Stop',
-                className: 'pull-right',
-                icon:'fa fa-stop',
-                onClick: function(){ GEPPETTO.Console.executeImplicitCommand("Project.getActiveExperiment().stop()"); }
-            }
-        }
+                //in case you need some styling add it to the CSS $("#" + this.id).addClass("yourStyle");
 
-    });
+            },
+
+
+            /**
+             * Sets the content of this widget
+             * This is a sample method of the widget's API, in this case the user would use the widget by passing an instance to a setData method
+             * Customise/remove/add more depending on what widget you are creating
+             *
+             * @command setData(anyInstance)
+             * @param {Object} anyInstance - An instance of any type
+             */
+            setData: function (anyInstance) {
+                this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
+
+                return this;
+            },
+
+        });
 });

@@ -284,7 +284,7 @@ define(function (require) {
             		if(that.refs[key].props.type=="dynamic"){
             			that.refs[key].addMenuItem({
             				label: "Add to " +plot.getName(),
-            				action: window[plot.getId()]+".plotData("+path+")",
+            				action:plot.getId()+".plotData("+that.props.rowData.path+")",
             				value: "plot_variable"
             			});
             		}
@@ -398,6 +398,13 @@ define(function (require) {
                             classVal += " color-picker-button";
                         }
 
+                        if(control.menuItems!=null || control.menuItems != undefined){
+                        	for(var i =0; i<control.menuItems.length; i++){
+                        		var action = that.replaceTokensWithPath(control.menuItems[i].action, path)
+                        		control.menuItems[i].action = action;
+                        	}
+                        }
+                        
                         var controlPanelMenuButtonConfig = {
                                 id: idVal,
                                 openByDefault: false,

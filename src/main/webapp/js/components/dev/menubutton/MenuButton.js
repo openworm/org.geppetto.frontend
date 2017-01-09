@@ -263,7 +263,7 @@ define(function (require) {
         //Makes the drop down menu visible
         showMenu: function () {
             var self = this;
-            if (self.state.menuItems.length > 0) {
+            if (self.props.configuration.menuItems.length > 0) {
                 self.refs.dropDown.open();    
             }
             return false;

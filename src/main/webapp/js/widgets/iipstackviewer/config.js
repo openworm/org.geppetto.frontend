@@ -1,6 +1,7 @@
 /*******************************************************************************
+ * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2016 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -30,28 +31,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 
-define(function (require) {
-
-    var React = require('react'),
-        GEPPETTO = require('geppetto');
-
-    return React.createClass({
-        mixins: [require('mixins/TutorialMixin'), require('mixins/Button')],
-
-        componentDidMount: function() {
-            if(GEPPETTO.tutorialEnabled) {
-                GEPPETTO.once('simulation:paused', this.showPopover);
-            }
-        },
-
-        getDefaultProps: function() {
-            return {
-                label: 'Stop',
-                className: 'pull-right',
-                icon:'fa fa-stop',
-                onClick: function(){ GEPPETTO.Console.executeImplicitCommand("Project.getActiveExperiment().stop()"); }
-            }
-        }
-
-    });
-});
+/**
+ * Load WIDGETNAME dependencies
+ *
+ * @author robbie1977
+ */
+/*
+ * Configure what dependencies are needed for each library
+ */
+loadCss("geppetto/js/widgets/template/WIDGETNAME.css");

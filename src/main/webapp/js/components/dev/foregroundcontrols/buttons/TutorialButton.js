@@ -16,7 +16,7 @@ define(function (require) {
                 id: 'tutorialBtn',
                 className: 'squareB',
                 icon:'fa fa-leanpub',
-                onClick: function(){ GEPPETTO.Console.executeCommand("G.toggleTutorial()"); }
+                onClick: function(){ GEPPETTO.Console.executeImplicitCommand("G.toggleTutorial()"); }
             }
         }
     });

@@ -97,6 +97,7 @@ require.config({
         'vendor/codemirror-formats.min': ["codemirror"],
         'vendor/backbone-localStorage.min': ["backbone"],
         'vendor/dat.gui.min': ["jquery"],
+        'vendor/jquery.dialogextend.min': ["jquery"],
         'vendor/stats.min': ["jquery"],
         'vendor/Detector': ["jquery"],
         'vendor/jquery.cookie': ["jquery"],
@@ -178,4 +179,3 @@ require(jqueryLib, function ($, geppetto) {
 
     });
 });
-

@@ -94,7 +94,7 @@ define(function (require) {
                 e.preventDefault();
                 var actionStr = that.props.metadata.actions;
                 actionStr = actionStr.replace(/\$entity\$/gi, path);
-                GEPPETTO.Console.executeCommand(actionStr);
+                GEPPETTO.Console.executeImplicitCommand(actionStr);
             };
 
             return (
@@ -123,7 +123,7 @@ define(function (require) {
                             var actionStr = that.props.metadata.actions.replace(/\$entity\$/gi, actionItem);
 
                             // set action
-                            var onClickActionStr = 'GEPPETTO.Console.executeCommand("' + actionStr + '")';
+                            var onClickActionStr = 'GEPPETTO.Console.executeImplicitCommand("' + actionStr + '")';
                             anchorElement.attr('onclick', onClickActionStr);
 
                             // retrieve markup to inject as string
@@ -155,7 +155,7 @@ define(function (require) {
                                 e.preventDefault();
                                 var actionStr = that.props.metadata.actions;
                                 actionStr = actionStr.replace(/\$entity\$/gi, item);
-                                GEPPETTO.Console.executeCommand(actionStr);
+                                GEPPETTO.Console.executeImplicitCommand(actionStr);
                             };
 
                             var separator = (i < originalArray.length - 1) ? <span>, </span> : <span></span>;
@@ -232,12 +232,13 @@ define(function (require) {
         getActionString: function (control, path) {
             var actionStr = '';
 
-            if (control.actions.length > 0) {
-                for (var i = 0; i < control.actions.length; i++) {
-                    actionStr += ((i != 0) ? ";" : "") + this.replaceTokensWithPath(control.actions[i], path);
-                }
+            if(control.actions!=null || undefined){
+            	if (control.actions.length > 0) {
+            		for (var i = 0; i < control.actions.length; i++) {
+            			actionStr += ((i != 0) ? ";" : "") + this.replaceTokensWithPath(control.actions[i], path);
+            		}
+            	}
             }
-
             return actionStr;
         },
 
@@ -285,6 +286,19 @@ define(function (require) {
                     $(this).css("color", e.color.toHex());
                 });
             }
+
+            var that = this;
+            GEPPETTO.on(Events.Plot_created, function (plot) {
+            	for (var key in that.refs) {
+            		if(that.refs[key].props.type=="dynamic"){
+            			that.refs[key].addMenuItem({
+            				label: "Add to " +plot.getName(),
+            				action:plot.getId()+".plotData("+that.props.rowData.path+")",
+            				value: "plot_variable"
+            			});
+            		}
+            	}
+            });
         },
 
         // Utility method to iterate over a config property and populate a list of control buttons to be created
@@ -341,6 +355,10 @@ define(function (require) {
             return (
                 <div>
                     {ctrlButtons.map(function (control, id) {
+                        var menuButton = false;
+                    	if(control.menu!=undefined && control.menu!=null){
+                    		menuButton = control.menu;
+                    	}
                         // grab attributes to init button attributes
                         var controlConfig = that.resolveCondition(control, path);
                         var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
@@ -362,7 +380,7 @@ define(function (require) {
 
                             // run action
                             if (actionStr != '' && actionStr != undefined) {
-                                GEPPETTO.Console.executeCommand(actionStr);
+                                GEPPETTO.Console.executeImplicitCommand(actionStr);
                                 // check custom action to run after configured command
                                 if(that.props.metadata.actions != '' && that.props.metadata.actions != undefined) {
                                     // straight up eval as we don't want this to show on the geppetto console
@@ -389,16 +407,42 @@ define(function (require) {
                             classVal += " color-picker-button";
                         }
 
+                        if(control.menuItems!=null || control.menuItems != undefined){
+                        	for(var i =0; i<control.menuItems.length; i++){
+                        		var action = that.replaceTokensWithPath(control.menuItems[i].action, path)
+                        		control.menuItems[i].action = action;
+                        	}
+                        }
+                        
+                        var controlPanelMenuButtonConfig = {
+                                id: idVal,
+                                openByDefault: false,
+                                closeOnClick: true,
+                                label: '',
+                                iconOff: "",
+                                iconOn: "",
+                                containerClassName : "menuButtonContainer",
+                                buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
+                                menuPosition: null,
+                                menuSize: null,
+                                menuItems: control.menuItems,
+                                onClickHandler: actionFn
+                            };
+                        
                         return (
                             <span key={id}>
-                                <button id={idVal}
+                            {menuButton ?
+                            		<MenuButton ref={idVal} type={control.menuItemsType} configuration={controlPanelMenuButtonConfig} />
+                             	:
+                             		<button id={idVal}
                                         className={classVal}
                                         style={styleVal}
                                         title={tooltip}
                                         onClick={
                                             controlConfig.id == "color" ? function(){} : actionFn
                                         }>
-                                </button>
+                             	    </button>
+                            }
                             </span>
                         )
                     })}
@@ -786,10 +830,7 @@ define(function (require) {
                     iconOn: 'fa fa-caret-square-o-up',
                     iconOff: 'fa fa-caret-square-o-down',
                     menuPosition: null,
-                    menuSize: {
-                        height: "auto",
-                        width: 300
-                    },
+                    menuSize: null,
                     onClickHandler: this.props.menuButtonClickHandler,
                     menuItems: this.props.menuButtonItems
                 };

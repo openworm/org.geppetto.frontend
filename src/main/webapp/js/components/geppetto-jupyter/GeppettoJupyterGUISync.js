@@ -7,6 +7,7 @@ define(function (require, exports, module) {
 	var CheckboxComp = require('jsx!components/dev/BasicComponents/Checkbox');
 	var TextFieldComp = require('jsx!components/dev/BasicComponents/TextField');
 	var RaisedButtonComp = require('jsx!components/dev/BasicComponents/RaisedButton');
+	var LabelComp = require('jsx!components/dev/BasicComponents/Label');
 
 	require('./vendor/jupyter_widgets');
 	var GEPPETTO = require('geppetto');
@@ -126,6 +127,9 @@ define(function (require, exports, module) {
 			}
 			else if (componentName == 'CHECKBOX') {
 				componentItem = CheckboxComp;
+			}
+			else if (componentName == 'LABEL') {
+				componentItem = LabelComp;
 			}
 			
 			var component = React.createFactory(componentItem)({ 

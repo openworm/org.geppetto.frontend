@@ -429,7 +429,7 @@ define(function (require) {
                         var menuButtonItems = new Array();
                         if(control.menuItems!=null || control.menuItems != undefined){
                         	for(var i =0; i<control.menuItems.length; i++){
-                        		var action = that.replaceTokensWithPath(control.menuItems[i].action, path)
+                        		var action = that.replaceTokensWithPath(control.menuItems[i].action, path);
                         		control.menuItems[i].action = action;
                         	}
                         	menuButtonItems = control.menuItems;

@@ -201,6 +201,39 @@ define(function (require, exports, module) {
 			}
 		},
 
+		loadModel: function() {
+			window.Instances = []
+			GEPPETTO.ControlPanel.setData([]);
+			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
+
+			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
+			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
+			var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+			GEPPETTO.ControlPanel.setData(instances);
+			GEPPETTO.ExperimentsController.watchVariables(instances, true);
+			GEPPETTO.ExperimentsController.playExperimentReady = true;
+
+			for (var i = 0; i < this.get('stateVariables').length; i++) {
+				for (var j = 0; j < instances.length; j++) {
+					//TODO Wont work for more complex nesting, we'll need the path to come from Python
+					if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
+						this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
+
+						break;
+					}
+				}
+			}
+
+			// Split every single segment
+			if (this.get('geometries').length > 0) {
+				var elements = {};
+				for (var i = 0; i < this.get('geometries').length; i++) {
+					elements[this.get('geometries')[i].id] = "";
+				}
+				GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
+			}
+		},
+
 		getPayload: function () {
 
 			var geppettoModelPayload = {
@@ -272,39 +305,7 @@ define(function (require, exports, module) {
 
 		handle_custom_messages: function(msg) {
 			if (msg.type === 'load') {
-				//ADD load method TAKA
-				//GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-				window.Instances = []
-				GEPPETTO.ControlPanel.setData([]);
-				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-				var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-				GEPPETTO.ControlPanel.setData(instances);
-				GEPPETTO.ExperimentsController.watchVariables(instances, true);
-				GEPPETTO.ExperimentsController.playExperimentReady = true;
-
-				for (var i = 0; i < this.get('stateVariables').length; i++) {
-					for (var j = 0; j < instances.length; j++) {
-						//TODO Wont work for more complex nesting, we'll need the path to come from Python
-						if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
-							this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
-
-							break;
-						}
-					}
-				}
-
-				// Split every single segment
-				if (this.get('geometries').length > 0) {
-					var elements = {};
-					for (var i = 0; i < this.get('geometries').length; i++) {
-						elements[this.get('geometries')[i].get('id')] = "";
-					}
-					GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
-				}
+				this.loadModel();
 			}
 		},
 
@@ -313,97 +314,8 @@ define(function (require, exports, module) {
 			this.on("msg:custom", this.handle_custom_messages, this);
 
 			this.on("change:geometries", function (model, value, options) {
-				console.log("geometries changed")
-				
-				window.Instances = []
-				GEPPETTO.ControlPanel.setData([]);
-				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-				var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-				GEPPETTO.ControlPanel.setData(instances);
-				GEPPETTO.ExperimentsController.watchVariables(instances, true);
-				GEPPETTO.ExperimentsController.playExperimentReady = true;
-
-				for (var i = 0; i < this.get('stateVariables').length; i++) {
-					for (var j = 0; j < instances.length; j++) {
-						//TODO Wont work for more complex nesting, we'll need the path to come from Python
-						if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
-							this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
-
-							break;
-						}
-					}
-				}
-
-				// Split every single segment
-				if (this.get('geometries').length > 0) {
-					var elements = {};
-					for (var i = 0; i < this.get('geometries').length; i++) {
-						elements[this.get('geometries')[i].id] = "";
-					}
-					GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
-				}
-			})
-
-			// this.on("change:stateVariables", function (model, value, options) {
-			// 	window.Instances = []
-
-			// 	// GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-			// 	//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-			// 	//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-			// 	var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-			// 	GEPPETTO.ControlPanel.setData(instances);
-			// 	GEPPETTO.ExperimentsController.watchVariables(instances, true);
-			// 	GEPPETTO.ExperimentsController.playExperimentReady = true;
-
-			// 	for (var i = 0; i < this.get('stateVariables').length; i++) {
-			// 		for (var j = 0; j < instances.length; j++) {
-			// 			//TODO Wont work for more complex nesting, we'll need the path to come from Python
-			// 			if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
-			// 				this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
-
-			// 				break;
-			// 			}
-			// 		}
-			// 	}
-			// });
-
-			// this.on("change:geometries", function (model, value, options) {
-			// 	window.Instances = []
-			// 	GEPPETTO.ControlPanel.setData([]);
-			// 	// GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-			// 	//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-			// 	//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-			// 	var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-			// 	GEPPETTO.ControlPanel.setData(instances);
-			// 	GEPPETTO.ExperimentsController.watchVariables(instances, true);
-			// 	GEPPETTO.ExperimentsController.playExperimentReady = true;
-
-			// 	for (var i = 0; i < this.get('stateVariables').length; i++) {
-			// 		for (var j = 0; j < instances.length; j++) {
-			// 			//TODO Wont work for more complex nesting, we'll need the path to come from Python
-			// 			if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
-			// 				this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
-
-			// 				break;
-			// 			}
-			// 		}
-			// 	}
-
-			// 	// Split every single segment
-			// 	if (this.get('geometries').length > 0) {
-			// 		var elements = {};
-			// 		for (var i = 0; i < this.get('geometries').length; i++) {
-			// 			elements[this.get('geometries')[i].get('id')] = "";
-			// 		}
-			// 		GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
-			// 	}
-
-			// })
+				this.loadModel();
+			});
 		}
 	}, {
 			serializers: _.extend({

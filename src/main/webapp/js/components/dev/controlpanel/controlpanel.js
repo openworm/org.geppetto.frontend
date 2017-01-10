@@ -171,6 +171,23 @@ define(function (require) {
     });
 
     GEPPETTO.ParameterInputComponent = React.createClass({
+        refresh: function() {
+            this.forceUpdate();
+        },
+
+        componentDidMount: function () {
+            // listen to experiment status change and trigger a re-render to refresh input / read-only status
+            GEPPETTO.on(Events.Experiment_completed, function () {
+                this.refresh();
+            });
+            GEPPETTO.on(Events.Experiment_running, function () {
+                this.refresh();
+            });
+            GEPPETTO.on(Events.Experiment_failed, function () {
+                this.refresh();
+            });
+        },
+
         render: function () {
             // retrieve entity path
             var path = this.props.rowData.path;
@@ -224,6 +241,10 @@ define(function (require) {
     GEPPETTO.ControlsComponent = React.createClass({
         colorPickerBtnId: '',
         colorPickerActionFn: '',
+
+        refresh: function() {
+            this.forceUpdate();
+        },
 
         replaceTokensWithPath: function(inputStr, path){
             return inputStr.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
@@ -286,6 +307,17 @@ define(function (require) {
                     $(this).css("color", e.color.toHex());
                 });
             }
+
+            // listen to experiment status change and trigger a re-render to update controls
+            GEPPETTO.on(Events.Experiment_completed, function () {
+                this.refresh();
+            });
+            GEPPETTO.on(Events.Experiment_running, function () {
+                this.refresh();
+            });
+            GEPPETTO.on(Events.Experiment_failed, function () {
+                this.refresh();
+            });
         },
 
         // Utility method to iterate over a config property and populate a list of control buttons to be created

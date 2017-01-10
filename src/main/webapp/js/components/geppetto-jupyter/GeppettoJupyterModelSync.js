@@ -15,8 +15,11 @@ define(function (require, exports, module) {
 			EventsSync.__super__.initialize.apply(this);
 			_this = this;
 
-			GEPPETTO.on(Events.Select, function (data) {
-				_this.send({ event: Events.Select, data: data.id });
+			GEPPETTO.on(Events.Select, function (instance, groupNameIdentifier) {
+				var selection = G.getSelection();
+				if (selection.length > 0){
+					_this.send({ event: Events.Select, data: instance.id, groupNameIdentifier: groupNameIdentifier});
+				}
 			});
 		}
 	});
@@ -132,12 +135,12 @@ define(function (require, exports, module) {
 			GeometrySync.__super__.initialize.apply(this);
 
 			//TODO: We need to use another way of handling this event: group them. Review bqplot
-			this.on("change:bottomRadius", function (model, value, options) {
-				console.log("changing radius");
-			});
-			this.on("change:topRadius", function (model, value, options) {
-				console.log("changing radius");
-			});
+			// this.on("change:bottomRadius", function (model, value, options) {
+			// 	console.log("changing radius");
+			// });
+			// this.on("change:topRadius", function (model, value, options) {
+			// 	console.log("changing radius");
+			// });
 		}
 	});
 
@@ -151,6 +154,85 @@ define(function (require, exports, module) {
 			stateVariables: [],
 			geometries: []
 		}),
+
+		getGeometryPayload: function(geometry) {
+			var value;
+			if (geometry.name.substr(0,4) == 'soma') {
+				value = {
+					eClass: 'Sphere',
+					position: {
+						eClass: "Point",
+						x: 0,
+						y: 0,
+						z: 0
+					},
+					radius: geometry.topRadius
+				}
+			}
+			else {
+				value = {
+					eClass: 'Cylinder',
+					bottomRadius: geometry.bottomRadius,
+					topRadius: geometry.topRadius,
+					distal: {
+						eClass: "Point",
+						x: geometry.distalX,
+						y: geometry.distalY,
+						z: geometry.distalZ
+					},
+					position: {
+						eClass: "Point",
+						x: geometry.positionX,
+						y: geometry.positionY,
+						z: geometry.positionZ
+					}
+				}
+			}
+
+			return {
+				eClass: 'Variable',
+				initialValues: [{
+					key: "geppettoModel#//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual'),
+					value: value
+				}],
+				id: geometry.id,
+				name: geometry.name,
+				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual') }],
+			}
+		},
+
+		loadModel: function() {
+			window.Instances = []
+			GEPPETTO.ControlPanel.setData([]);
+			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
+
+			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
+			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
+			var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+			GEPPETTO.ControlPanel.setData(instances);
+			GEPPETTO.ExperimentsController.watchVariables(instances, true);
+			GEPPETTO.ExperimentsController.playExperimentReady = true;
+
+			for (var i = 0; i < this.get('stateVariables').length; i++) {
+				for (var j = 0; j < instances.length; j++) {
+					//TODO Wont work for more complex nesting, we'll need the path to come from Python
+					if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
+						this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
+
+						break;
+					}
+				}
+			}
+
+			// Split every single segment
+			if (this.get('geometries').length > 0) {
+				var elements = {};
+				for (var i = 0; i < this.get('geometries').length; i++) {
+					elements[this.get('geometries')[i].id] = "";
+				}
+				GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
+			}
+		},
 
 		getPayload: function () {
 
@@ -197,7 +279,8 @@ define(function (require, exports, module) {
 			if (this.get('geometries').length > 0) {
 				var geppettoMorphologiesVariables = [];
 				for (var i = 0; i < this.get('geometries').length; i++) {
-					geppettoMorphologiesVariables.push(this.get('geometries')[i].getPayload());
+					//geppettoMorphologiesVariables.push(this.get('geometries')[i].getPayload());
+					geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i]));
 				}
 				var compositeVisualType = {
 					eClass: 'CompositeVisualType',
@@ -220,64 +303,23 @@ define(function (require, exports, module) {
 			return geppettoModelPayload;
 		},
 
+		handle_custom_messages: function(msg) {
+			if (msg.type === 'load') {
+				this.loadModel();
+			}
+		},
+
 		initialize: function () {
 			ModelSync.__super__.initialize.apply(this);
-
-			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-			this.on("change:stateVariables", function (model, value, options) {
-				window.Instances = []
-
-				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-				var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-				GEPPETTO.ControlPanel.setData(instances);
-				GEPPETTO.ExperimentsController.watchVariables(instances, true);
-				GEPPETTO.ExperimentsController.playExperimentReady = true;
-
-				for (var i = 0; i < this.get('stateVariables').length; i++) {
-					for (var j = 0; j < instances.length; j++) {
-						//TODO Wont work for more complex nesting, we'll need the path to come from Python
-						if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
-							this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
-
-							break;
-						}
-					}
-				}
-			});
+			this.on("msg:custom", this.handle_custom_messages, this);
 
 			this.on("change:geometries", function (model, value, options) {
-				window.Instances = []
-				GEPPETTO.ControlPanel.setData([]);
-				GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-				//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-				//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-				var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-				GEPPETTO.ControlPanel.setData(instances);
-				GEPPETTO.ExperimentsController.watchVariables(instances, true);
-				GEPPETTO.ExperimentsController.playExperimentReady = true;
-
-				for (var i = 0; i < this.get('stateVariables').length; i++) {
-					for (var j = 0; j < instances.length; j++) {
-						//TODO Wont work for more complex nesting, we'll need the path to come from Python
-						if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
-							this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
-
-							break;
-						}
-					}
-				}
-
-			})
+				this.loadModel();
+			});
 		}
 	}, {
 			serializers: _.extend({
-				stateVariables: { deserialize: jupyter_widgets.unpack_models },
-				geometries: { deserialize: jupyter_widgets.unpack_models }
+				stateVariables: { deserialize: jupyter_widgets.unpack_models }
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 

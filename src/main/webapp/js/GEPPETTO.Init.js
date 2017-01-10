@@ -193,6 +193,7 @@ define(function (require) {
 
                             if (intersects.length > 0) {
                                 var selected = "";
+                                var groupNameIdentifier = "";
 
                                 // sort intersects
                                 var compare = function (a, b) {
@@ -211,6 +212,7 @@ define(function (require) {
                                     var instancePath = "";
                                     if (intersects[i].object.hasOwnProperty("instancePath")) {
                                         instancePath = intersects[i].object.instancePath;
+                                        groupNameIdentifier = intersects[i].object.groupNameIdentifier;
                                     }
                                     else {
                                         //weak assumption: if the object doesn't have an instancePath its parent will
@@ -255,7 +257,7 @@ define(function (require) {
                                         if (!GEPPETTO.isKeyPressed("shift")) {
                                             GEPPETTO.G.unSelectAll();
                                         }
-                                        GEPPETTO.Console.executeCommand(selected + '.select()');
+                                        GEPPETTO.Console.executeCommand(selected + '.select(' + false + ', ' + '"' + groupNameIdentifier + '")');
                                     }
                                 }
                             }

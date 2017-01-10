@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -32,34 +32,11 @@
  *******************************************************************************/
 
 /**
- * Loads plot scripts
+ * Load WIDGETNAME dependencies
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @author robbie1977
  */
 /*
  * Configure what dependencies are needed for each library
  */
-
-
-define("math.global", ["mathjs"], function (_) {
-    math = _;
-});
-
-/*
- * Load libraries, and CSS after libraries are loaded
- */
-require([], function (flot, math) {
-//	console.log(math.parser());
-    window.math = math;
-    loadCss("geppetto/js/widgets/plot/Plot.css");
-});	
-
-//Load PlotsController and other classes using GEPPETTO
-define(function(require) {
-	return function(GEPPETTO) {
-		// Register Commands
-		GEPPETTO.MenuManager.registerNewCommandProvider([GEPPETTO.Resources.DYNAMICS_TYPE,GEPPETTO.Resources.VARIABLE_NODE],
-				GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getCommands);
-	};
-});
-
+loadCss("geppetto/js/widgets/template/WIDGETNAME.css");

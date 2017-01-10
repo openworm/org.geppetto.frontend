@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2011, 2013 OpenWorm.
+ * Copyright (c) 2011, 2014 OpenWorm.
  * http://openworm.org
  *
  * All rights reserved. This program and the accompanying materials
@@ -30,36 +30,54 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-
 /**
- * Loads plot scripts
  *
- * @author Jesus Martinez (jesus@metacell.us)
+ * @module Widgets/iipstackviewer
+ * @author robbie1977
  */
-/*
- * Configure what dependencies are needed for each library
- */
+define(function (require) {
+
+    var Widget = require('widgets/Widget');
+    var $ = require('jquery');
+
+    return Widget.View
+        .extend({
+            variable: null,
+            options: null,
+
+            /**
+             * Initialises button bar
+             *
+             * @param {Object}
+             *            options - Object with options for the widget
+             */
+            /**
+             * Initialize the popup widget
+             */
+            initialize: function (options) {
+                Widget.View.prototype.initialize.call(this, options);
+                this.render();
+                this.setSize(100, 300);
+                this.customHandlers = [];
+
+                //in case you need some styling add it to the CSS $("#" + this.id).addClass("yourStyle");
+
+            },
 
 
-define("math.global", ["mathjs"], function (_) {
-    math = _;
+            /**
+             * Sets the content of this widget
+             * This is a sample method of the widget's API, in this case the user would use the widget by passing an instance to a setData method
+             * Customise/remove/add more depending on what widget you are creating
+             *
+             * @command setData(anyInstance)
+             * @param {Object} anyInstance - An instance of any type
+             */
+            setData: function (anyInstance) {
+                this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
+
+                return this;
+            },
+
+        });
 });
-
-/*
- * Load libraries, and CSS after libraries are loaded
- */
-require([], function (flot, math) {
-//	console.log(math.parser());
-    window.math = math;
-    loadCss("geppetto/js/widgets/plot/Plot.css");
-});	
-
-//Load PlotsController and other classes using GEPPETTO
-define(function(require) {
-	return function(GEPPETTO) {
-		// Register Commands
-		GEPPETTO.MenuManager.registerNewCommandProvider([GEPPETTO.Resources.DYNAMICS_TYPE,GEPPETTO.Resources.VARIABLE_NODE],
-				GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getCommands);
-	};
-});
-

@@ -115,7 +115,7 @@ public class TransportMessageFactory {
 			case DOWNLOAD_MODEL:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
-			case PLAY_EXPERIMENT:
+			case GET_EXPERIMENT_STATE:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case DELETE_EXPERIMENT:

@@ -71,7 +71,7 @@ public enum OutboundMessages {
 	EXPERIMENT_LOADED("experiment_loaded"),
 	EXPERIMENT_STATUS("experiment_status"),
 	DELETE_EXPERIMENT("experiment_deleted"), 
-	PLAY_EXPERIMENT("play_experiment"), 
+	GET_EXPERIMENT_STATE("get_experiment_state"), 
 	PROJECT_PERSISTED("project_persisted"),
 	PROJECT_PROPS_SAVED("project_props_saved"),
 	EXPERIMENT_PROPS_SAVED("experiment_props_saved"),

@@ -56,7 +56,7 @@ public enum InboundMessages {
 	LOAD_EXPERIMENT("load_experiment"),
 	SAVE_EXPERIMENT_PROPERTIES("save_experiment_properties"),
 	DELETE_EXPERIMENT("delete_experiment"),
-	PLAY_EXPERIMENT("play_experiment"),
+	GET_EXPERIMENT_STATE("get_experiment_state"),
 	EXPERIMENT_STATUS("experiment_status"), 
 	RUN_EXPERIMENT("run_experiment"), 
 	

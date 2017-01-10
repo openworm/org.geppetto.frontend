@@ -52,6 +52,7 @@ define(function (require) {
         var ImportType = require('model/ImportType');
         var ImportValue = require('model/ImportValue');
         var Instance = require('model/Instance');
+        var ExternalInstance = require('model/ExternalInstance');
         var ArrayInstance = require('model/ArrayInstance');
         var ArrayElementInstance = require('model/ArrayElementInstance');
         var VisualGroup = require('model/VisualGroup');
@@ -2090,6 +2091,16 @@ define(function (require) {
 
             },
 
+            /** Creates an instance */
+            createExternalInstance: function (path) {
+                var options = {
+            		_metaType: GEPPETTO.Resources.INSTANCE_NODE,
+            		path:path
+        		};
+          
+                return new ExternalInstance(options);
+            },
+            
             /** Creates an instance */
             createInstance: function (options) {
                 if (options == null || options == undefined) {

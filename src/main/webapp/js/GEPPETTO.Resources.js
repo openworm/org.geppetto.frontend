@@ -486,7 +486,7 @@ define(function (require) {
             PARTICLE: "Particle",
             //GEPPETTO MODEL
             GEPPETTO_MODEL_NODE: "GeppettoModel",
-            LIBRARY_NODE: "Library",
+            LIBRARY_NODE: "GeppettoLibrary",
             //INSTANCES
             INSTANCE_NODE: "Instance",
             ARRAY_INSTANCE_NODE: "ArrayInstance",

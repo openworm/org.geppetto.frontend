@@ -89,10 +89,21 @@ define(function (require) {
                 if (experimentState.setParameters) {
                     for (var i = 0; i < experimentState.setParameters.length; i++) {
                         var setParameter = experimentState.setParameters[i];
-                        var instancePath = this.getInstancePathFromPointer(setParameter.pointer, false);
-                        var instance = Instances.getInstance(instancePath);
+                        var path = setParameter.pointer.path;
+                        var firstToken = path.split(".")[0];
+                        var firstEntity = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+"."+firstToken);
+                        var parameter=undefined
+                        if(firstEntity.getMetaType()==GEPPETTO.Resources.VARIABLE_NODE){
+                        	parameter = Instances.getInstance(instancePath);
+                        }
+                        else if(firstEntity.getMetaType()==GEPPETTO.Resources.LIBRARY_NODE){
+                        	parameter = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+"."+path);
+                        }
+                        else{
+                        	throw "Path unrecognised: "+path;
+                        }
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
-                            instance.setValue(setParameter.value.value, false);
+                        	parameter.setValue(setParameter.value.value, false);
                         }
                     }
                 }
@@ -205,7 +216,7 @@ define(function (require) {
                 if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                     var modelParameters = {};
                     for (var index in newParameters) {
-                        modelParameters[newParameters[index].getPath()] = newParameters[index].getValue();
+                        modelParameters[newParameters[index].getPath().replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".","")] = newParameters[index].getValue();
                     }
                     Project.getActiveExperiment().parameters = [];
                     var parameters = {};

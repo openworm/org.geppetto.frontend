@@ -450,7 +450,7 @@ define(function (require) {
                         				//add default item
                         				menuButtonItems.push({
                     						label: "Add new plot ",
-                    						action:"G.addWidget(0).plotData("+that.props.rowData.path+")",
+                    						action:"G.addWidget(0).plotData("+that.props.rowData.path+"); GEPPETTO.ControlPanel.refresh();",
                     						value: "plot_variable"
                     					});
                         			}

@@ -426,42 +426,53 @@ define(function (require) {
                             classVal += " color-picker-button";
                         }
 
-                        var menuButtonItems = new Array();
-                        if(control.menuItems!=null || control.menuItems != undefined){
-                        	for(var i =0; i<control.menuItems.length; i++){
-                        		var action = that.replaceTokensWithPath(control.menuItems[i].action, path);
-                        		control.menuItems[i].action = action;
-                        	}
-                        	menuButtonItems = control.menuItems;
-                        }else{
-                        	if(control.menuItemsType == "dynamic_plot"){
-                        		var plots = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
-                        		for(var i =0 ; i<plots.length; i++){
-                        			menuButtonItems.push({
-                        				label: "Add to " +plots[i].getName(),
-                        				action:plots[i].getId()+".plotData("+that.props.rowData.path+")",
-                        				value: "plot_variable"
-                        			});
+                        var controlPanelMenuButtonConfig= {};
+                        if(control.menu){
+                        	var menuButtonItems = new Array();
+                        	if(control.menuItems!=null || control.menuItems != undefined){
+                        		for(var i =0; i<control.menuItems.length; i++){
+                        			var action = that.replaceTokensWithPath(control.menuItems[i].action, path);
+                        			control.menuItems[i].action = action;
+                        		}
+                        		menuButtonItems = control.menuItems;
+                        	}else{
+                        		if(control.menuItemsType == "dynamic_plot"){
+                        			var plots = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
+                        			if(plots.length > 0){
+                        				for(var i =0 ; i<plots.length; i++){
+                        					menuButtonItems.push({
+                        						label: "Add to " +plots[i].getName(),
+                        						action:plots[i].getId()+".plotData("+that.props.rowData.path+")",
+                        						value: "plot_variable"
+                        					});
+                        				}
+                        			}else{
+                        				//add default item
+                        				menuButtonItems.push({
+                    						label: "Add new plot ",
+                    						action:"G.addWidget(0).plotData("+that.props.rowData.path+")",
+                    						value: "plot_variable"
+                    					});
+                        			}
                         		}
                         	}
-                        }
 
-                        var controlPanelMenuButtonConfig = {
-                                id: idVal,
-                                openByDefault: false,
-                                closeOnClick: true,
-                                label: '',
-                                iconOff: "",
-                                iconOn: "",
-                                containerClassName : "menuButtonContainer",
-                                buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
-                                menuPosition: null,
-                                menuSize: null,
-                                menuCSS : 'menuButtonStyle',
-                                menuItems: menuButtonItems,
-                                onClickHandler: actionFn
-                            };
-                        
+                        	controlPanelMenuButtonConfig = {
+                        			id: idVal,
+                        			openByDefault: false,
+                        			closeOnClick: true,
+                        			label: '',
+                        			iconOff: "",
+                        			iconOn: "",
+                        			containerClassName : "menuButtonContainer",
+                        			buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
+                        			menuPosition: null,
+                        			menuSize: null,
+                        			menuCSS : 'menuButtonStyle',
+                        			menuItems: menuButtonItems,
+                        			onClickHandler: actionFn
+                        	};
+                        }
                         return (
                             <span key={id}>
                             {menuButton ?

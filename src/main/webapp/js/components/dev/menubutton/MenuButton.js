@@ -160,6 +160,15 @@ define(function (require) {
             		});
             	}
             }
+            
+            window.addEventListener('resize', function(event){
+            	self.menuPosition = self.getMenuPosition();
+            	
+                selector.css({
+                    top: self.menuPosition.top, right: self.menuPosition.right,
+                    bottom: self.menuPosition.bottom, left: self.menuPosition.left, position: 'fixed',
+                });
+            });
         },
 
         renderListItems: function () {
@@ -266,19 +275,24 @@ define(function (require) {
             if (self.props.configuration.menuItems.length > 0) {
                 self.refs.dropDown.open();    
             }
+            
+            var showIcon = this.props.configuration.iconOn;
+            this.setState({open: true, icon: showIcon});
             return false;
         },
         
         hideMenu : function(){
         	this.refs.dropDown.close();
+        	var showIcon = this.props.configuration.iconOff;
+            this.setState({open: false, icon: showIcon});
         },
         
         //Adds external handler for click events, notifies it when a drop down item is clicked
         selectionChanged : function(value){
         	if(this.props.configuration.closeOnClick){
 				this.toggleMenu();
+				this.onClickHandler(value);
 			}
-			this.onClickHandler(value);
         },
         
         //Adds external load handler, gets notified when component is mounted and ready
@@ -302,7 +316,18 @@ define(function (require) {
             self.onClickHandler = self.props.configuration.onClickHandler;
             
             //attach external handler for clicking events
-            self.addExternalLoadHandler();                    
+            self.addExternalLoadHandler();
+            if(this.props.configuration.closeOnClick){
+            	$('body').click(function(e) {
+            	    if (!$(e.target).closest(".btn").length){
+            	    	if(self.props.configuration.closeOnClick){
+             				if(self.state.open){
+             					self.hideMenu();
+             				}
+             			}
+            	    }
+            	});
+            }
         },
 
         //toggles visibility of drop down menu
@@ -311,12 +336,8 @@ define(function (require) {
         	
             if (this.state.open) {
                 this.hideMenu();
-            	showIcon = this.props.configuration.iconOff;
-                this.setState({open: false, icon: showIcon});
             } else {
             	this.showMenu();
-                showIcon = this.props.configuration.iconOn;
-                this.setState({open: true, icon: showIcon});
             }
         },
         

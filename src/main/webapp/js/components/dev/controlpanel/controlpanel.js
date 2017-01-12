@@ -250,20 +250,29 @@ define(function (require) {
             return inputStr.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
         },
 
-        getActionString: function (control, path) {
+        replaceTokensWithProjectExperimentIds: function(inputStr, projectId, experimentId){
+            return inputStr.replace(/\$projectId\$/gi, projectId).replace(/\$experimentId\$/gi, experimentId);
+        },
+
+        replaceAllTokensKnownToMan: function(inputStr, path, projectId, experimentId){
+            return this.replaceTokensWithProjectExperimentIds(this.replaceTokensWithPath(inputStr, path), projectId, experimentId);
+        },
+
+        getActionString: function (control, path, projectId, experimentId) {
             var actionStr = '';
 
             if(control.actions!=null || undefined){
             	if (control.actions.length > 0) {
             		for (var i = 0; i < control.actions.length; i++) {
-            			actionStr += ((i != 0) ? ";" : "") + this.replaceTokensWithPath(control.actions[i], path);
+                        var deTokenizedStr = this.replaceAllTokensKnownToMan(control.actions[i], path, projectId, experimentId);
+            			actionStr += ((i != 0) ? ";" : "") + deTokenizedStr;
             		}
             	}
             }
             return actionStr;
         },
 
-        resolveCondition: function (control, path, negateCondition) {
+        resolveCondition: function (control, path, negateCondition, projectId, experimentId) {
             if (negateCondition == undefined) {
                 negateCondition = false;
             }
@@ -272,7 +281,7 @@ define(function (require) {
 
             if (resolvedConfig.hasOwnProperty('condition')) {
                 // evaluate condition and reassign control depending on results
-                var conditionStr = this.replaceTokensWithPath(control.condition, path);
+                var conditionStr = this.replaceAllTokensKnownToMan(control.condition, path, projectId, experimentId);
                 if (eval(conditionStr)) {
                     resolvedConfig = negateCondition ? resolvedConfig.false : resolvedConfig.true;
                 } else {
@@ -321,14 +330,14 @@ define(function (require) {
         },
 
         // Utility method to iterate over a config property and populate a list of control buttons to be created
-        addControlButtons: function(controlsConfig, showControlsConfig, configPropertyName, buttonsList, targetPath){
+        addControlButtons: function(controlsConfig, showControlsConfig, configPropertyName, buttonsList, targetPath, projectId, experimentId){
             for (var control in controlsConfig[configPropertyName]) {
                 if ($.inArray(control.toString(), showControlsConfig[configPropertyName]) != -1) {
                     var add = true;
 
                     // check show condition
                     if(controlsConfig[configPropertyName][control].showCondition != undefined){
-                        var condition = this.replaceTokensWithPath(controlsConfig[configPropertyName][control].showCondition, targetPath);
+                        var condition = this.replaceAllTokensKnownToMan(controlsConfig[configPropertyName][control].showCondition, targetPath, projectId, experimentId);
                         add = eval(condition);
                     }
 
@@ -344,6 +353,8 @@ define(function (require) {
             var showControls = GEPPETTO.ControlPanel.state.controls;
             var config = GEPPETTO.ControlPanel.state.controlsConfig;
             var path = this.props.rowData.path;
+            var projectId = this.props.rowData.projectId;
+            var experimentId = this.props.rowData.experimentId;
             var ctrlButtons = [];
 
             // retrieve entity/instance
@@ -357,16 +368,16 @@ define(function (require) {
 
             // TODO: refactor adding buttons and capability checks into functions and re-use those
             // Add common control buttons to list
-            this.addControlButtons(config, showControls, 'Common', ctrlButtons, path);
+            this.addControlButtons(config, showControls, 'Common', ctrlButtons, path, projectId, experimentId);
 
             if (entity != undefined && entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                 // Add visual capability controls to list
-                this.addControlButtons(config, showControls, 'VisualCapability', ctrlButtons, path);
+                this.addControlButtons(config, showControls, 'VisualCapability', ctrlButtons, path, projectId, experimentId);
             }
 
             if (entity != undefined && entity.hasCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY)) {
                 // Add state variable capability controls to list
-                this.addControlButtons(config, showControls, 'StateVariableCapability', ctrlButtons, path);
+                this.addControlButtons(config, showControls, 'StateVariableCapability', ctrlButtons, path, projectId, experimentId);
             }
 
             var that = this;
@@ -379,7 +390,7 @@ define(function (require) {
                     		menuButton = control.menu;
                     	}
                         // grab attributes to init button attributes
-                        var controlConfig = that.resolveCondition(control, path);
+                        var controlConfig = that.resolveCondition(control, path, false, projectId, experimentId);
                         var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
                         var tooltip = controlConfig.tooltip;
                         var classVal = "btn ctrlpanel-button fa " + controlConfig.icon;
@@ -388,10 +399,10 @@ define(function (require) {
                         // define action function
                         var actionFn = function (param) {
                             // NOTE: there is a closure on 'control' so it's always the right one
-                            var controlConfig = that.resolveCondition(control, path);
+                            var controlConfig = that.resolveCondition(control, path, false, projectId, experimentId);
 
                             // take out action string
-                            var actionStr = that.getActionString(controlConfig, path);
+                            var actionStr = that.getActionString(controlConfig, path, projectId, experimentId);
 
                             if (param != undefined) {
                                 actionStr = actionStr.replace(/\$param\$/gi, param);
@@ -403,13 +414,14 @@ define(function (require) {
                                 // check custom action to run after configured command
                                 if(that.props.metadata.actions != '' && that.props.metadata.actions != undefined) {
                                     // straight up eval as we don't want this to show on the geppetto console
-                                    eval(that.props.metadata.actions.replace(/\$entity\$/gi, path));
+                                    var evalString = that.replaceAllTokensKnownToMan(that.props.metadata.actions, path, projectId, experimentId);
+                                    eval(evalString);
                                 }
                             }
 
                             // if conditional, swap icon with the other condition outcome
                             if (control.hasOwnProperty('condition')) {
-                                var otherConfig = that.resolveCondition(control, path);
+                                var otherConfig = that.resolveCondition(control, path, false, projectId, experimentId);
                                 var element = $('#' + idVal);
                                 element.removeClass();
                                 element.addClass("btn ctrlpanel-button fa " + otherConfig.icon);
@@ -428,16 +440,15 @@ define(function (require) {
 
                         var controlPanelMenuButtonConfig= {};
                         if(control.menu){
-                        	var menuButtonItems = new Array();
+                        	var menuButtonItems = [];
                         	if(control.menuItems!=null || control.menuItems != undefined){
                         		for(var i =0; i<control.menuItems.length; i++){
-                        			var action = that.replaceTokensWithPath(control.menuItems[i].action, path);
+                        			var action = that.replaceAllTokensKnownToMan(control.menuItems[i].action, path, projectId, experimentId);
                         			control.menuItems[i].action = action;
                         		}
                         		menuButtonItems = control.menuItems;
                         	}else{
-                        		menuButtonItems = 
-                        			control.menuMaker(that.props.rowData.path);
+                        		menuButtonItems = control.menuMaker(that.props.rowData.path);
                         	}
 
                         	controlPanelMenuButtonConfig = {

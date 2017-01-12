@@ -55,7 +55,7 @@ define(function (require) {
        	
             playExperimentReady: false,
             worker: null,
-            playOptions: {},
+            playOptions: { playAll: true },
             maxSteps: 0,
             externalExperiments: {},
             state:ExperimentStateEnum.STOPPED,
@@ -313,8 +313,7 @@ define(function (require) {
             	this.state=ExperimentStateEnum.PAUSED;
                 this.getWorker().postMessage([Events.Experiment_pause]);
                 GEPPETTO.trigger(Events.Experiment_pause);
-            }
-            ,
+            },
 
             isPaused: function () {
                 return this.state==ExperimentStateEnum.PAUSED;
@@ -336,15 +335,13 @@ define(function (require) {
                     GEPPETTO.trigger(Events.Experiment_resume);
                     return "Pause Experiment";
                 }
-            }
-            ,
+            },
 
             stop: function () {
                 this.terminateWorker();
                 this.state=ExperimentStateEnum.STOPPED;
                 GEPPETTO.trigger(Events.Experiment_stop);
-            }
-            ,
+            },
 
             closeCurrentExperiment: function () {
                 var experiment = Project.getActiveExperiment();
@@ -357,8 +354,7 @@ define(function (require) {
                 GEPPETTO.ModelFactory.cleanupInstanceTreeState();
 
                 this.playExperimentReady = false;
-            }
-            ,
+            },
 
             triggerPlayExperiment: function (experiment) {
 

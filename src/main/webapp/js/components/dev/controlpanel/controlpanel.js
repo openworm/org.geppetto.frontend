@@ -448,7 +448,7 @@ define(function (require) {
                         		}
                         		menuButtonItems = control.menuItems;
                         	}else{
-                        		menuButtonItems = control.menuMaker(that.props.rowData.path);
+                        		menuButtonItems = control.menuMaker(projectId, experimentId, path);
                         	}
 
                         	controlPanelMenuButtonConfig = {

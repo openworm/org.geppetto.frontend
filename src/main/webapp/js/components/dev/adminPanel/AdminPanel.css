@@ -6,8 +6,24 @@
 
 #adminButtonHeader {
 	height : 70px;
-	width : 400px;
+	width : 500px;
 	margin : 0 auto;
+	text-align : center;
+}
+
+.timeFrameButtonHeadverDiv{
+	height : 70px;
+	width : 500px;
+	margin : 0 auto;
+	padding-left : 100px
+}
+
+.timeFrameButtonHeadverDiv label{
+	font-family : Helvetica Neue;
+	font-weight: bold;
+    text-align: center;
+    font-size: 18px;
+    margin-right: 10px;
 }
 
 body {
@@ -71,7 +87,6 @@ table{
 }
 
 .loadingText{
-	font-size: 24px;
     font-weight: bold;
     text-align: center;
     font-size: 18px;
@@ -79,4 +94,5 @@ table{
 
 #loading-container {
 	padding-top : 100px;
+	padding-right : 100px;
 }

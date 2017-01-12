@@ -216,17 +216,15 @@ define(function (require) {
                 if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                     var modelParameters = {};
                     for (var index in newParameters) {
-                        modelParameters[newParameters[index].getPath().replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".","")] = newParameters[index].getValue();
+                    	var path=newParameters[index].getPath().replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".","");
+                        modelParameters[path] = newParameters[index].getValue();
+                        Project.getActiveExperiment().getSetParameters()[path]=newParameters[index].getValue();
                     }
                     Project.getActiveExperiment().parameters = [];
                     var parameters = {};
                     parameters["experimentId"] = Project.getActiveExperiment().getId();
                     parameters["projectId"] = Project.getId();
                     parameters["modelParameters"] = modelParameters;
-
-                    for (var key in newParameters) {
-                        Project.getActiveExperiment().getSetParameters()[newParameters[index].getPath()]=newParameters[index].getValue();
-                    }
 
                     GEPPETTO.MessageSocket.send("set_parameters", parameters);
 
@@ -287,12 +285,7 @@ define(function (require) {
                 if (experiment.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
 
                     if (!this.playExperimentReady) {
-                        var parameters = {};
-                        parameters["experimentId"] = experiment.id;
-                        parameters["projectId"] = experiment.getParent().getId();
-                        //sending to the server request for data
-                        GEPPETTO.MessageSocket.send("get_experiment_state", parameters);
-                        GEPPETTO.trigger('spin_logo');
+                    	this.getExperimentState(experiment.getParent().getId(), experiment.id, null);
                         return "Play Experiment";
                     } else {
                         this.triggerPlayExperiment();
@@ -302,9 +295,19 @@ define(function (require) {
                 } else {
                     GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + experiment.name + " with id " + experiment.id + " isn't completed, and can't be played.");
                 }
-            }
-
-            ,
+            },
+            
+            getExperimentState: function(projectId,experimentId,instances,callback){
+                var parameters = {};
+                parameters["experimentId"] = projectId;
+                parameters["projectId"] = experimentId;
+                if(instances!=null){
+                	parameters["variables"] = instances;
+                }
+                //sending to the server request for data
+                GEPPETTO.MessageSocket.send("get_experiment_state", parameters, callback);
+                GEPPETTO.trigger('spin_logo');
+            },
 
             pause: function () {
             	this.state=ExperimentStateEnum.PAUSED;

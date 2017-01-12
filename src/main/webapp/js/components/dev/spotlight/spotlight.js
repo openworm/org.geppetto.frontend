@@ -153,6 +153,19 @@ define(function (require) {
             		that.instances.initialize(true);
                     that.addData(GEPPETTO.ModelFactory.allPathsIndexing);
             	}
+
+                var icCaConcInstances = GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.intracellularProperties.caConc');
+                if (icCaConcInstances.length > 0){
+                    var recordCaConc = {
+                        "label": "Record Ca2+ concentrations",
+                        "actions": [
+            	            "GEPPETTO.ExperimentsController.watchVariables(Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.intracellularProperties.caConc')),true);"
+            	        ],
+            	        "icon": "fa-dot-circle-o"
+                    };
+
+                    GEPPETTO.Spotlight.addSuggestion(recordCaConc, GEPPETTO.Resources.RUN_FLOW);
+            }
             });
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions

@@ -299,8 +299,8 @@ define(function (require) {
             
             getExperimentState: function(projectId,experimentId,instances,callback){
                 var parameters = {};
-                parameters["experimentId"] = projectId;
-                parameters["projectId"] = experimentId;
+                parameters["projectId"] = projectId;
+                parameters["experimentId"] = experimentId;
                 if(instances!=null){
                 	parameters["variables"] = instances;
                 }

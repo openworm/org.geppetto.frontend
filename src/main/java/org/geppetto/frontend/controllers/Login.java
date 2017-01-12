@@ -95,6 +95,7 @@ public class Login
 				SimpleDateFormat formatDate2 = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 				String date = formatDate.format(new Date());
 				user.setLastLoginDate(formatDate2.parse(date).toString());
+				user.upLoginCount();
 				DataManagerHelper.getDataManager().saveEntity(user);
 				geppettoManager.setUser(user);
 			}

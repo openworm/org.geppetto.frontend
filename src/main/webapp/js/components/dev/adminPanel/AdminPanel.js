@@ -181,6 +181,7 @@ define(function (require) {
 			this.setCurrentUser();
 		},
 		
+		//sets initial data view when component mounts
 		setCurrentUser : function(){
 			var that = this;
 			var urlData = window.location.href.replace("admin","currentuser");
@@ -190,6 +191,7 @@ define(function (require) {
 			}});
 		},
 
+		//switches the data set to show in component
 		setDataSet : function(mode){
 			var that = this;
 			var urlData = window.location.href.replace("admin","");
@@ -223,12 +225,14 @@ define(function (require) {
 			}
 		},
 		
+		//toggle flags that keep track of what's being displayed
 		setDataViewFlags : function(user, simulation, errors){
 			this.usersViewSelected = user;
 			this.simulationsViewSelected = simulation;
 			this.errorsViewSelected = errors;
 		},
 		
+		//toggle flags that keep track of what's being displayed
 		setDataTimeFlags : function(day, week, month, allTime){
 			this.lastDaySelected = day;
 			this.lastWeekSelected = week;
@@ -251,9 +255,10 @@ define(function (require) {
 			}else if(timeFrame == "month"){
 				this.setDataTimeFlags(false,false,true,false);
 			}
+			
+			//uncheck all previously selected checked boxes
             this.setDataSet(this.currentView);
-			// the selector will match all input controls of type :checkbox
-			// and attach a click event handler 
+			// uncheck all other checked boxes 
 			$("input:checkbox").on('click', function() {
 			  // in the handler, 'this' refers to the box clicked on
 			  var $box = $(this);

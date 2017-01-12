@@ -322,7 +322,9 @@ define(function (require) {
             	    if (!$(e.target).closest(".btn").length){
             	    	if(self.props.configuration.closeOnClick){
              				if(self.state.open){
-             					self.hideMenu();
+             					if(self.isMounted()){
+             						self.hideMenu();
+             					}
              				}
              			}
             	    }

@@ -436,25 +436,8 @@ define(function (require) {
                         		}
                         		menuButtonItems = control.menuItems;
                         	}else{
-                        		if(control.menuItemsType == "dynamic_plot"){
-                        			var plots = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
-                        			if(plots.length > 0){
-                        				for(var i =0 ; i<plots.length; i++){
-                        					menuButtonItems.push({
-                        						label: "Add to " +plots[i].getName(),
-                        						action:plots[i].getId()+".plotData("+that.props.rowData.path+")",
-                        						value: "plot_variable"
-                        					});
-                        				}
-                        			}else{
-                        				//add default item
-                        				menuButtonItems.push({
-                    						label: "Add new plot ",
-                    						action:"G.addWidget(0).plotData("+that.props.rowData.path+"); GEPPETTO.ControlPanel.refresh();",
-                    						value: "plot_variable"
-                    					});
-                        			}
-                        		}
+                        		menuButtonItems = 
+                        			control.menuMaker(that.props.rowData.path);
                         	}
 
                         	controlPanelMenuButtonConfig = {
@@ -467,7 +450,7 @@ define(function (require) {
                         			containerClassName : "menuButtonContainer",
                         			buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
                         			menuPosition: null,
-                        			menuSize: null,
+                        			menuSize: {width : 150, height : 'auto'},
                         			menuCSS : 'menuButtonStyle',
                         			menuItems: menuButtonItems,
                         			onClickHandler: actionFn

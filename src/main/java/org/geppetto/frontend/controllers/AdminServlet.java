@@ -1,14 +1,8 @@
 package org.geppetto.frontend.controllers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,23 +90,6 @@ public class AdminServlet {
 				userObjects.add(userObject);
 			}
 			
-			Collections.sort(userObjects, new Comparator<AdminUserObject>() {
-
-				SimpleDateFormat formatDate = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy");
-
-				@Override
-				public int compare(AdminUserObject o1, AdminUserObject o2) {
-					Date date = null, date2 = null;
-					formatDate.setTimeZone(TimeZone.getTimeZone("GMT"));
-					try {
-						date = formatDate.parse(o1.getLastLogin());
-						date2 = formatDate.parse(o2.getLastLogin());						
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-					return date.compareTo(date2);
-				}
-			});
 			return userObjects;
 		}
 				
@@ -143,20 +120,27 @@ public class AdminServlet {
 						totalSize  += S3Manager.getInstance().getFileStorage("projects/"+p.getId()+"/");
 						experiments = p.getExperiments();
 						for(IExperiment e : experiments){
-							simulator = e.getAspectConfigurations().get(0).getSimulatorConfiguration().getSimulatorId();
-							if(e.getLastRan()!=null){
+							if(!e.getStatus().equals(ExperimentStatus.DESIGN) && e.getAspectConfigurations().size()>0){
+								
 								AdminSimulationObject simulation = new AdminSimulationObject();
 								simulation.setName(user.getName());
 								simulation.setExperiment(e.getName());
 								simulation.setLogin(user.getLogin());
 								simulation.setExperimentLastRun(e.getLastModified().toString());
-								simulation.setSimulator(simulator);
+								
 								simulation.setStatus(e.getStatus().toString());
 								simulation.setStorage(getStorageSize(totalSize));
-								simulationObjects.add(simulation);								
+								simulationObjects.add(simulation);	
+								
+								if(e.getAspectConfigurations().get(0).getSimulatorConfiguration()!=null){
+									simulator = e.getAspectConfigurations().get(0).getSimulatorConfiguration().getSimulatorId();
+									simulation.setSimulator(simulator);
+									totalSimulators+= simulator+'\n';
+								}
+
+								totalExperiments+= e.getName()+'\n';
+								
 							}
-							totalExperiments+= e.getName()+'\n';
-							totalSimulators+= simulator+'\n';
 						}
 					}
 

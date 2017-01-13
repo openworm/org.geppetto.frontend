@@ -42,7 +42,7 @@ define(function (require) {
 
 	var React = require('react');
 	var Griddle = require('griddle');
-	
+
 	var ButtonComponent = React.createClass({
 
 		render: function(){
@@ -58,7 +58,7 @@ define(function (require) {
 
 	var adminPanelComponent = React.createClass({
 
-		user : null,
+		user : "admin",
 		resultsPerPage : 20,
 		usersViewSelected : true,
 		simulationsViewSelected : false,
@@ -68,7 +68,7 @@ define(function (require) {
 		lastMonthSelected : false,
 		allTimeSelected : false,
 		currentView : null,
-		timeFrame : "all",
+		timeFrame : "week",
 		storedData :[],
 		views : ["Users","Simulations","Errors"],
 		usersColumnMeta : [
@@ -110,32 +110,36 @@ define(function (require) {
 		   			      "order": 2,
 		   			      "locked": false,
 		   			      "displayName": "Name"},
+		   			  {   "columnName": "project",
+			              "order": 3,
+			              "locked": false,
+			              "displayName": "Project Name"},
 		              {   "columnName": "experiment",
-		              	  "order": 3,
+		              	  "order": 4,
 		              	  "locked": false,
 		              	  "displayName": "Experiment Name"},
 		              {	  "columnName": "experimentLastRun",
-		              	  "order": 4,
+		              	  "order": 5,
 		              		"locked": false,
 		              		"displayName": "Experiment Last Time Run"},
 		              {   "columnName": "simulator",
-		              		"order": 5,
+		              		"order": 6,
 		              		"locked": false,
 		              		"displayName": "Simulator Name"},
 		              {   "columnName": "status",
-			              "order": 6,
+			              "order": 7,
 			              "locked": false,
 			              "displayName": "Experiment Status"},
 		              {   "columnName": "experiments",
-			              "order": 7,
+			              "order": 8,
 			              "locked": false,
 			              "displayName": "All User Experiments"},
 			          {    "columnName": "simulators",
-			              "order": 8,
+			              "order": 9,
 			              "locked": false,
 			              "displayName": "All User Simulators"},
 			          {   "columnName": "storage",
-		              	  "order": 9,
+		              	  "order": 10,
 		              	  "locked": false,
 		              	  "displayName": "Storage Size"}],
 		errorsColumnMeta: [{
@@ -153,14 +157,18 @@ define(function (require) {
 		              		"order": 3,
 		              		"locked": false,
 		              		"displayName": "Experiment Error"},
+		              {   "columnName": "project",
+					      "order": 4,
+					      "locked": false,
+					      "displayName": "Project Name"},
 		              {
 		              		"columnName": "experiment",
-		              		"order": 4,
+		              		"order": 5,
 		              		"locked": false,
 		              		"displayName": "Experiment Name"},
 		              {
 		              		"columnName": "simulator",
-		              		"order": 5,
+		              		"order": 6,
 		              		"locked": false,
 		              		"displayName": "Simulator Name"}],
 		columnMeta : [],
@@ -178,15 +186,15 @@ define(function (require) {
 		},
 
 		componentDidMount : function(){
-			this.setCurrentUser();
+			this.setInitialData();
 		},
 		
 		//sets initial data view when component mounts
-		setCurrentUser : function(){
+		setInitialData : function(){
 			var that = this;
-			var urlData = window.location.href.replace("admin","currentuser");
+			var urlData = window.location.href.replace("admin","");
+			urlData += "user/admin/users/"+this.timeFrame;
 			$.ajax({url: urlData, success: function(result){
-				that.user = result.login.replace(" ", "");
 				that.setDataSet(that.views[0]);
 			}});
 		},
@@ -277,6 +285,56 @@ define(function (require) {
 			});
 		},
 		
+		sortData: function(sort, sortAscending, data){
+			//sorting should generally happen wherever the data is coming from
+			sortedData = _.sortBy(data, function(item){
+				return item[sort];
+			});
+
+			if(sortAscending === false){
+				sortedData.reverse();
+			}
+			return {
+				"currentPage": 0,
+				"externalSortColumn": sort,
+				"externalSortAscending": sortAscending,
+				"pretendServerData": sortedData,
+				"results": sortedData.slice(0,this.state.externalResultsPerPage)
+			};
+		},
+
+		
+		sort: function(sort, sortAscending){
+			 this.setState(this.sortData(sort, sortAscending, this.state.data));
+		},
+		
+		onRowClick : function(rowData, event) {
+			var td = event.target;
+			if(td.textContent == "Show Size"){
+				var login = rowData.props.data.login;
+
+				var urlData = window.location.href.replace("admin","");
+				urlData += "user/"+this.user + "/storage/"+login;
+
+				td.textContent = "Fetching Data";
+				var self = this;
+				$.ajax({url: urlData, success: function(result){
+					var data =  self.state.data;
+					if(self.storedData[self.currentView+"/"+self.timeFrame]!=null){
+						for(var key in data){
+							var object = data[key];
+							if(object.login == login){
+								object.storage = result;
+							}
+						}
+					}
+					td.textContent = result;
+					self.setState({data : data});
+					alert("Storage size for user " + login + " is: " + result);
+				}});
+			}
+	    },
+		
 		render: function () {
 			return (
 				<div>
@@ -303,7 +361,7 @@ define(function (require) {
 					{this.state.loaded ?
 						<Griddle results={this.state.data} columnMetadata={this.state.columnMeta} bodyHeight={this.props.height}
 						enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage} showPager={false}
-						showFilter ={true}/>
+						showFilter ={true} onRowClick={this.onRowClick} />
 						:
 						<div id="loading-container">
 							<div className="gpt-gpt_logo fa-spin"></div>

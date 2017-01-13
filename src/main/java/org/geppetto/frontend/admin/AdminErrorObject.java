@@ -1,4 +1,4 @@
-package org.geppetto.frontend.controllers.objects;
+package org.geppetto.frontend.admin;
 
 public class AdminErrorObject {
 	
@@ -7,7 +7,14 @@ public class AdminErrorObject {
 	private String error;
 	private String experiment;
 	private String simulator;
-	
+	private String project;
+
+	public String getProject() {
+		return project;
+	}
+	public void setProject(String project) {
+		this.project = project;
+	}
 	public String getLogin() {
 		return login;
 	}

@@ -1,4 +1,4 @@
-package org.geppetto.frontend.controllers.objects;
+package org.geppetto.frontend.admin;
 
 public class AdminSimulationObject {
 	
@@ -11,7 +11,14 @@ public class AdminSimulationObject {
 	private String experiments;
 	private String simulators;
 	private String status;
-	
+	private String project;
+
+	public String getProject() {
+		return project;
+	}
+	public void setProject(String project) {
+		this.project = project;
+	}
 	public String getStatus() {
 		return status;
 	}

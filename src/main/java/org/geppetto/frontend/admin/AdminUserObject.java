@@ -1,4 +1,4 @@
-package org.geppetto.frontend.controllers.objects;
+package org.geppetto.frontend.admin;
 
 public class AdminUserObject {
 	

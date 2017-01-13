@@ -89,20 +89,12 @@ public class Login
 			try
 			{
 				IUser user = (IUser) currentUser.getPrincipal();
-				SimpleDateFormat formatDate = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-				formatDate.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-				SimpleDateFormat formatDate2 = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-				String date = formatDate.format(new Date());
-				user.setLastLoginDate(formatDate2.parse(date).toString());
-				user.upLoginCount();
+				user.addLoginTimeStamp(new Date());
 				DataManagerHelper.getDataManager().saveEntity(user);
 				geppettoManager.setUser(user);
 			}
 			catch(GeppettoExecutionException e)
 			{
-				logger.error(e);
-			} catch (ParseException e) {
 				logger.error(e);
 			}
 		}

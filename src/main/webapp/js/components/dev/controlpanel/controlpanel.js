@@ -196,8 +196,10 @@ define(function (require) {
             // fetch unit
             var unit = entity.getUnit();
             // fetch current or default value
+            var defaultValue = entity.getInitialValue();
             var initialValue = entity.getValue();
 
+            var that = this;
             // get and ready action string
             var actionStr = this.props.metadata.actions;
             var onInputChangeHandler = function(event){
@@ -208,6 +210,10 @@ define(function (require) {
                     actionStr = actionStr.replace(/\$VALUE\$/gi, newVal);
                     actionStr = actionStr.replace(/\$entity\$/gi, path);
                     GEPPETTO.Console.executeCommand(actionStr);
+                    // refresh to trigger color update if edited from default
+                    if(newVal != defaultValue){
+                        that.refresh();
+                    }
                 }
             };
 
@@ -225,12 +231,15 @@ define(function (require) {
                 // nothing to do here readOnly defaults to true if evaluation failed
             }
 
+            // if value is not default give it a different background
+            var classString = (defaultValue === initialValue) ? "control-panel-parameter-input" : "control-panel-parameter-input control-panel-parameter-edited";
+
             return (
                 <div>
                     <input defaultValue={initialValue}
                            onBlur={onInputChangeHandler}
                            onKeyPress={onKeyPressHandler}
-                           className="control-panel-parameter-input"
+                           className={classString}
                            readOnly={readOnly}/>
                     <span className="control-panel-parameter-unit">{unit}</span>
                 </div>

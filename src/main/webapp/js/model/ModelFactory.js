@@ -77,6 +77,7 @@ define(function (require) {
             geppettoModel: null,
             instances: null,
             allPaths: [],
+            allStaticVarsPaths: {},
             allPathsIndexing: [],
             newPathsIndexing: [],
             instanceTags: {},
@@ -1745,7 +1746,10 @@ define(function (require) {
                 // NOTE: can't do it always for instances as it would slow things down A LOT
                 var staticVarAlreadyAdded = false;
                 if(isStaticVar){
-                    staticVarAlreadyAdded = (allPotentialPaths.map(function(el) { return el.path; }).indexOf(entry.path) != -1);
+                    staticVarAlreadyAdded = (this.allStaticVarsPaths[entry.path] != undefined);
+                    if(!staticVarAlreadyAdded){
+                        this.allStaticVarsPaths[entry.path] = entry;
+                    }
                 }
 
                 // always add if not a static var, otherwise check that it wasnt already added

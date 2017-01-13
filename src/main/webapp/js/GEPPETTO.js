@@ -353,7 +353,7 @@ define(function (require) {
          * Adds GUI controls to GEPPETTO
          *
          * @param gui
-         * @param metadatap
+         * @param metadata
          */
         addGUIControls: function (parent, current_metadata) {
             if (current_metadata.hasOwnProperty("ID")) {
@@ -395,9 +395,7 @@ define(function (require) {
          *          coordinates
          */
         getIntersectedObjects: function () {
-            // create a Ray with origin at the mouse position and direction into
-            // the
-            // scene (camera direction)
+            // create a Ray with origin at the mouse position and direction into th scene (camera direction)
             var vector = new THREE.Vector3(GEPPETTO.getVARS().mouse.x, GEPPETTO
                 .getVARS().mouse.y, 1);
             vector.unproject(GEPPETTO.getVARS().camera);
@@ -441,9 +439,7 @@ define(function (require) {
         /**
          * Show metadata
          *
-         * @param {String}
-         *            entityIndex - the id of the entity for which we want to
-         *            display metadata
+         * @param {String} entityIndex - the id of the entity for which we want to display metadata
          */
         showMetadataForEntity: function (entityIndex) {
             if (GEPPETTO.getVARS().gui) {
@@ -460,9 +456,7 @@ define(function (require) {
         },
 
         /**
-         * @param {Entity}
-         *            aroundObject - The object around which the rotation will
-         *            happen
+         * @param {Entity} aroundObject - The object around which the rotation will happen
          */
         enterRotationMode: function (aroundObject) {
             GEPPETTO.getVARS().rotationMode = true;
@@ -589,5 +583,4 @@ define(function (require) {
     require('components/ComponentsController')(GEPPETTO);
 
     return GEPPETTO;
-
 });

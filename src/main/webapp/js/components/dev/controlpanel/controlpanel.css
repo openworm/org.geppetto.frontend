@@ -168,6 +168,10 @@
 	width: 65%;
 }
 
+#controlpanel .control-panel-parameter-edited {
+	color: yellow;
+}
+
 #controlpanel .control-panel-parameter-unit {
 	float: right;
 }

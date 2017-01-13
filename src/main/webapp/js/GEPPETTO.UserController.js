@@ -82,7 +82,7 @@ define(function(require)
             	return false;
             },
 
-            canUserEditProject: function(){
+            canUserEditExperiment: function(){
                 var hasPermission = false;
 
                 if(

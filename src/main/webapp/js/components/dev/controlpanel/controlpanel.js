@@ -175,6 +175,10 @@ define(function (require) {
             this.forceUpdate();
         },
 
+        replaceTokensWithProjectExperimentIds: function(inputStr, projectId, experimentId){
+            return inputStr.replace(/\$projectId\$/gi, projectId).replace(/\$experimentId\$/gi, experimentId);
+        },
+
         componentDidMount: function () {
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
             GEPPETTO.on(Events.Experiment_completed, function () {
@@ -191,6 +195,8 @@ define(function (require) {
         render: function () {
             // retrieve entity path
             var path = this.props.rowData.path;
+            var projectId = this.props.rowData.projectId;
+            var experimentId = this.props.rowData.experimentId;
             var entity = eval(path);
 
             // fetch unit
@@ -226,7 +232,8 @@ define(function (require) {
             // figure out if input is readonly
             var readOnly = true;
             try {
-                readOnly = eval(this.props.metadata.readOnlyCondition)
+                var deTokenizedCondition = this.replaceTokensWithProjectExperimentIds(this.props.metadata.readOnlyCondition, projectId, experimentId);
+                readOnly = eval(deTokenizedCondition);
             } catch(e){
                 // nothing to do here readOnly defaults to true if evaluation failed
             }

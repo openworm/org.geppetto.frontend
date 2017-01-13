@@ -37,19 +37,16 @@
 define(function (require) {
     return function (GEPPETTO) {
 
-
         /**
          * @class GEPPETTO.ProjectsController
          */
         GEPPETTO.ProjectsController =
         {
-       	
             userProjects: null,
 
             getUserProjects: function(){
             	return this.userProjects;
             }
-            
         };
         
         //We execute an asynchronous call to fetch all the projects for the current user
@@ -60,6 +57,4 @@ define(function (require) {
 	    });
         
     }
-
-
 });

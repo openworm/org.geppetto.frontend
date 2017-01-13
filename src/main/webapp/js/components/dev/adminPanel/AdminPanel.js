@@ -51,7 +51,7 @@ define(function (require) {
 				addClass="selected ";
 			}
 			return (
-				<button id={this.props.view} type="button" className={addClass+"button"} onClick={this.props.onClick}>{this.props.view}</button>
+				<button id={this.props.id} type="button" className={addClass+"button"} onClick={this.props.onClick}>{this.props.id}</button>
 			);
 		}
 	});
@@ -63,7 +63,12 @@ define(function (require) {
 		usersViewSelected : true,
 		simulationsViewSelected : false,
 		errorsViewSelected : false,
+		lastDaySelected : false,
+		lastWeekSelected: true,
+		lastMonthSelected : false,
+		allTimeSelected : false,
 		currentView : null,
+		timeFrame : "all",
 		storedData :[],
 		views : ["Users","Simulations","Errors"],
 		usersColumnMeta : [
@@ -75,20 +80,24 @@ define(function (require) {
 		            	  "order": 2,
 		            	  "locked": false,
 		            	  "displayName": "Name"},
+		              {   "columnName": "loginCount",
+				          "order": 4,
+			              "locked": false,
+			              "displayName": "Login Count"},
 		              {   "columnName": "lastLogin",
 			              "order": 3,
 		                  "locked": false,
 		                  "displayName": "Last Login"},
 		              {	  "columnName": "projects",
-			              "order": 4,
+			              "order": 5,
 		                  "locked": false,
 		                  "displayName": "Number of Projects"},
 		              {   "columnName": "experiments",
-			              "order": 5,
+			              "order": 6,
 		                  "locked": false,
 		                  "displayName": "Number of Experiments"},
 		              {   "columnName": "storage",
-			              "order": 6,
+			              "order": 7,
 		                  "locked": false,
 		                  "displayName": "Storage Size"}],  
 		simulationsColumnMeta : [
@@ -172,6 +181,7 @@ define(function (require) {
 			this.setCurrentUser();
 		},
 		
+		//sets initial data view when component mounts
 		setCurrentUser : function(){
 			var that = this;
 			var urlData = window.location.href.replace("admin","currentuser");
@@ -181,59 +191,119 @@ define(function (require) {
 			}});
 		},
 
+		//switches the data set to show in component
 		setDataSet : function(mode){
 			var that = this;
 			var urlData = window.location.href.replace("admin","");
 			var newColumns;
 			
 			if(mode == this.views[0]){
-				urlData += "user/"+this.user + "/users";
-				this.usersViewSelected = true;
-				this.simulationsViewSelected = false;
-				this.errorsViewSelected = false;
+				urlData += "user/"+this.user + "/users/"+this.timeFrame;
+				this.setDataViewFlags(true,false,false);
 				this.columnMeta = this.usersColumnMeta;
 			}else if(mode ==this.views[1]){
-				urlData += "/user/"+this.user + "/simulations";
-				this.usersViewSelected = false;
-				this.simulationsViewSelected = true;
-				this.errorsViewSelected = false;
+				urlData += "user/"+this.user + "/simulations/"+this.timeFrame;
+				this.setDataViewFlags(false,true,false);
 				this.columnMeta = this.simulationsColumnMeta;
 			}else if(mode ==this.views[2]){
-				urlData += "/user/"+this.user + "/errors";
-				this.usersViewSelected = false;
-				this.simulationsViewSelected = false;
-				this.errorsViewSelected = true;
+				urlData += "user/"+this.user + "/errors/"+this.timeFrame;
+				this.setDataViewFlags(false,false,true);
 				this.columnMeta = this.errorsColumnMeta;
 			}
 			
 			this.currentView = mode;
 			this.setState({loaded : false});
 			
-			if(this.storedData[this.currentView]==null){
+			var timeFrame = this.timeFrame;
+			if(this.storedData[this.currentView+"/"+timeFrame]==null){
 				$.ajax({url: urlData, success: function(result){
-					that.storedData[that.currentView] = result;
+					that.storedData[that.currentView+"/"+timeFrame] = result;
 					that.setState({data: result, columnMeta : that.columnMeta, loaded : true});
 				}});
 			}else{
-				this.setState({data: this.storedData[this.currentView], columnMeta : this.columnMeta, loaded : true});
+				this.setState({data: this.storedData[this.currentView+"/"+timeFrame], columnMeta : this.columnMeta, loaded : true});
 			}
 		},
 		
-		onButtonClick: function (view) {
+		//toggle flags that keep track of what's being displayed
+		setDataViewFlags : function(user, simulation, errors){
+			this.usersViewSelected = user;
+			this.simulationsViewSelected = simulation;
+			this.errorsViewSelected = errors;
+		},
+		
+		//toggle flags that keep track of what's being displayed
+		setDataTimeFlags : function(day, week, month, allTime){
+			this.lastDaySelected = day;
+			this.lastWeekSelected = week;
+			this.lastMonthSelected = month;
+			this.allTimeSelected = allTime;
+		},
+		
+		changeViewData: function (view) {
             this.setDataSet(view);
         },
+        
+		changeTimeData: function (timeFrame) {
+			this.timeFrame = timeFrame;
+			if(timeFrame == "all"){
+				this.setDataTimeFlags(false,false,false,true);
+			}else if(timeFrame == "day"){
+				this.setDataTimeFlags(true,false,false,false);
+			}else if(timeFrame == "week"){
+				this.setDataTimeFlags(false,true,false,false);
+			}else if(timeFrame == "month"){
+				this.setDataTimeFlags(false,false,true,false);
+			}
+			
+			//uncheck all previously selected checked boxes
+            this.setDataSet(this.currentView);
+			// uncheck all other checked boxes 
+			$("input:checkbox").on('click', function() {
+			  // in the handler, 'this' refers to the box clicked on
+			  var $box = $(this);
+			  if ($box.is(":checked")) {
+			    // the name of the box is retrieved using the .attr() method
+			    // as it is assumed and expected to be immutable
+			    var group = "input:checkbox[name='" + $box.attr("name") + "']";
+			    // the checked state of the group/box on the other hand will change
+			    // and the current value is retrieved using .prop() method
+			    $(group).prop("checked", false);
+			    $box.prop("checked", true);
+			  } else {
+			    $box.prop("checked", false);
+			  }
+			  $box.prop("disabled", true);
+			});
+		},
 		
 		render: function () {
 			return (
 				<div>
 				  <div id="adminButtonHeader" className="adminButtonHeadverDiv">
-					<ButtonComponent view={"Users"} selectedState={this.usersViewSelected} onClick={this.onButtonClick.bind(this,"Users")}/>
-					<ButtonComponent view={"Simulations"} selectedState={this.simulationsViewSelected} onClick={this.onButtonClick.bind(this,"Simulations")}/>
-					<ButtonComponent view={"Errors"} selectedState={this.errorsViewSelected} onClick={this.onButtonClick.bind(this,"Errors")}/>
+					<ButtonComponent id={"Users"} selectedState={this.usersViewSelected} onClick={this.changeViewData.bind(this,"Users")}/>
+					<ButtonComponent id={"Simulations"} selectedState={this.simulationsViewSelected} onClick={this.changeViewData.bind(this,"Simulations")}/>
+					<ButtonComponent id={"Errors"} selectedState={this.errorsViewSelected} onClick={this.changeViewData.bind(this,"Errors")}/>
 				  </div>
+				 <div id="timeFrameButtonHeader" className="timeFrameButtonHeadverDiv">
+				  <label>
+				    <input type="checkbox" className="radio" name="checkbox" value="1" disabled={this.lastDaySelected ? "disabled" :"" } checked={this.lastDaySelected ? "checked" :"" }
+				    	  onClick={this.changeTimeData.bind(this,"day")} />Day</label>
+				  <label>
+				    <input type="checkbox" className="radio" name="checkbox" value="1" disabled={this.lastWeekSelected ? "disabled" :"" } checked={this.lastWeekSelected ? "checked" :"" }
+				    	onClick={this.changeTimeData.bind(this,"week")}/>Week</label>
+				  <label>
+				    <input type="checkbox" className="radio" name="checkbox" value="1" disabled={this.lastMonthSelected ? "disabled" :"" } checked={this.lastMonthSelected ? "checked" :"" }
+				    	onClick={this.changeTimeData.bind(this,"month")}/>Month</label>
+				  <label>
+				    <input type="checkbox" className="radio" name="checkbox" value="1" checked={this.allTimeSelected ? "checked" :"" }
+				    disabled={this.allTimeSelected ? "disabled" :"" } onClick={this.changeTimeData.bind(this,"all")}/>All Time</label>
+				    
+				</div>
 					{this.state.loaded ?
 						<Griddle results={this.state.data} columnMetadata={this.state.columnMeta} bodyHeight={this.props.height}
-						enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage} showPager={false}/>
+						enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage} showPager={false}
+						showFilter ={true}/>
 						:
 						<div id="loading-container">
 							<div className="gpt-gpt_logo fa-spin"></div>

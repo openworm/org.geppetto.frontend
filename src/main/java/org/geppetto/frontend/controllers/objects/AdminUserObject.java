@@ -8,6 +8,7 @@ public class AdminUserObject {
 	private int projects;
 	private int experiments;
 	private String storage;
+	private int loginCount;
 	
 	public String getLogin() {
 		return login;
@@ -15,6 +16,14 @@ public class AdminUserObject {
 	public void setLogin(String login) {
 		this.login = login;
 	}
+	
+	public int getLoginCount() {
+		return loginCount;
+	}
+	public void setLoginCount(int count) {
+		this.loginCount = count;
+	}
+	
 	public String getName() {
 		return name;
 	}

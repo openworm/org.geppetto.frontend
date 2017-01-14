@@ -361,7 +361,7 @@ define(function (require) {
 					{this.state.loaded ?
 						<Griddle results={this.state.data} columnMetadata={this.state.columnMeta} bodyHeight={this.props.height}
 						enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage} showPager={false}
-						showFilter ={true} onRowClick={this.onRowClick} />
+						showFilter ={true} onRowClick={this.onRowClick} initialSort={"lastLogin"} initialSortAscending={false}/>
 						:
 						<div id="loading-container">
 							<div className="gpt-gpt_logo fa-spin"></div>

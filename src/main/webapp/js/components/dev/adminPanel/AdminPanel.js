@@ -87,6 +87,7 @@ define(function (require) {
 		              {   "columnName": "lastLogin",
 			              "order": 3,
 		                  "locked": false,
+		                  "sortDirectionCycle" :["desc","asc"],
 		                  "displayName": "Last Login"},
 		              {	  "columnName": "projects",
 			              "order": 5,

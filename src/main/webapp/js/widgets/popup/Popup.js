@@ -351,7 +351,10 @@ define(function (require) {
         },
         
         destroy: function () {
-            ReactDOM.unmountComponentAtNode(document.getElementById('bar-div-'+this.id));
+        	var bar = document.getElementById('bar-div-'+this.id);
+        	if(bar!=null || bar!=undefined){
+        		ReactDOM.unmountComponentAtNode(bar);
+        	}
             Widget.View.prototype.destroy.call(this);
         }
 	});

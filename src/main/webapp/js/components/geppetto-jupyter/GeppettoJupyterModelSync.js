@@ -225,7 +225,7 @@ define(function (require, exports, module) {
 			}
 
 			// Split every single segment
-			if (this.get('geometries').length > 0) {
+			if (this.get('geometries').length > 1) {
 				var elements = {};
 				for (var i = 0; i < this.get('geometries').length; i++) {
 					elements[this.get('geometries')[i].id] = "";

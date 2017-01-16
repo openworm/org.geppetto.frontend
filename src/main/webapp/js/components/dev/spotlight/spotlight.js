@@ -356,7 +356,7 @@ define(function (require) {
                             // one does not simply assign buttons without deep cloning them
                             var buttons = JSON.parse(JSON.stringify(found[0].buttons));
                             //data source item has buttons
-                            if(buttons!=null || undefined){
+                            if(buttons!=null && buttons!=undefined){
                                 var button;
                                 //format button actions to have proper values instead of placeholders
                                 for (var prop in buttons) {

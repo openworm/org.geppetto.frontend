@@ -49,6 +49,7 @@ public enum InboundMessages {
 	LOAD_PROJECT_FROM_CONTENT("load_project_from_content"),
 	SAVE_PROJECT_PROPERTIES("save_project_properties"),
 	PERSIST_PROJECT("persist_project"),
+	MAKE_PROJECT_PUBLIC("make_project_public"),
 	
 	//EXPERIMENT MESSAGES
 	NEW_EXPERIMENT("new_experiment"),

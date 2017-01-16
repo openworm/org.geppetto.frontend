@@ -74,6 +74,7 @@ public enum OutboundMessages {
 	GET_EXPERIMENT_STATE("get_experiment_state"), 
 	PROJECT_PERSISTED("project_persisted"),
 	PROJECT_PROPS_SAVED("project_props_saved"),
+	PROJECT_MADE_PUBLIC("project_made_public"),
 	EXPERIMENT_PROPS_SAVED("experiment_props_saved"),
 	DROPBOX_LINKED("dropbox_linked"),
 	DROPBOX_UNLINKED("dropbox_unlinked"),

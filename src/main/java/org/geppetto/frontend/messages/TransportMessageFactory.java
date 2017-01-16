@@ -131,6 +131,9 @@ public class TransportMessageFactory {
 			case PROJECT_PERSISTED:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
+			case PROJECT_MADE_PUBLIC:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
 			case PROJECT_PROPS_SAVED:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;

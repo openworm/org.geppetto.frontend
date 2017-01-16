@@ -51,24 +51,26 @@ public class AdminServlet
 		return "redirect:http://www.geppetto.org";
 	}
 
-	private boolean hasAdminRights(){
+	private boolean hasAdminRights()
+	{
 		IUser user = geppettoManager.getUser();
 		List<UserPrivileges> privileges = user.getUserGroup().getPrivileges();
 		if(privileges.contains(UserPrivileges.ADMIN))
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	@RequestMapping(value = "/user/{login}/users/all")
 	public @ResponseBody Collection<? extends AdminUserObject> getUsers(@PathVariable("login") String login)
 	{
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
+			if(this.hasAdminRights())
+			{
 				return this.getUserObjects(9999);
 			}
 		}
@@ -82,7 +84,8 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
+			if(this.hasAdminRights())
+			{
 				return this.getUserObjects(1);
 			}
 		}
@@ -96,7 +99,8 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
+			if(this.hasAdminRights())
+			{
 				return this.getUserObjects(7);
 			}
 		}
@@ -110,7 +114,8 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
+			if(this.hasAdminRights())
+			{
 				return this.getUserObjects(30);
 			}
 		}
@@ -154,8 +159,9 @@ public class AdminServlet
 			long days = -1;
 			List<Date> timeStamps = user.getLoginTimeStamps();
 			Date lastLogin = null;
-			if(timeStamps.size()>0){
-				lastLogin = timeStamps.get(timeStamps.size()-1);
+			if(timeStamps.size() > 0)
+			{
+				lastLogin = timeStamps.get(timeStamps.size() - 1);
 			}
 			if(lastLogin != null)
 			{
@@ -203,7 +209,8 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
+			if(this.hasAdminRights())
+			{
 				return this.getSimulationObjects(99999);
 			}
 		}
@@ -217,7 +224,8 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
+			if(this.hasAdminRights())
+			{
 				return this.getSimulationObjects(1);
 			}
 		}
@@ -231,7 +239,8 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
+			if(this.hasAdminRights())
+			{
 				return this.getSimulationObjects(7);
 			}
 		}
@@ -245,7 +254,8 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
+			if(this.hasAdminRights())
+			{
 				return this.getSimulationObjects(30);
 			}
 		}
@@ -287,12 +297,7 @@ public class AdminServlet
 							simulation.setStorage("Show Size");
 							simulation.setProject(p.getName());
 
-							long days = -1;
-							if(e.getEndDate() != null)
-							{
-
-								days = this.daysAgo(e.getEndDate(), new Date());
-							}
+							long days = this.daysAgo(e.getEndDate(), new Date());
 
 							if(days <= timeFrame || (days == -1 && timeFrame > 30))
 							{
@@ -329,10 +334,10 @@ public class AdminServlet
 	}
 
 	@RequestMapping(value = "/user/{login}/storage/{user}")
-	private @ResponseBody String getStorageSize(@PathVariable("login") String login,@PathVariable("user") String user)
+	private @ResponseBody String getStorageSize(@PathVariable("login") String login, @PathVariable("user") String user)
 	{
 		Subject currentUser = SecurityUtils.getSubject();
-		long totalSize=0;
+		long totalSize = 0;
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
@@ -342,7 +347,8 @@ public class AdminServlet
 				users = dataManager.getAllUsers();
 				for(IUser u : users)
 				{
-					if(u.getLogin().equals(user)){
+					if(u.getLogin().equals(user))
+					{
 						if(u.getGeppettoProjects() != null)
 						{
 							List<? extends IGeppettoProject> projects = u.getGeppettoProjects();
@@ -358,9 +364,10 @@ public class AdminServlet
 
 		return calculateStorage(totalSize);
 	}
-	
-	private String calculateStorage(long size){
-		
+
+	private String calculateStorage(long size)
+	{
+
 		String storageUnit = " KB";
 		double formattedSize = 0;
 		formattedSize = size / 1024;
@@ -384,8 +391,9 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
-				return this.getErroObjects(9999);
+			if(this.hasAdminRights())
+			{
+				return this.getErrorObjects(9999);
 			}
 		}
 
@@ -398,8 +406,9 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
-				return this.getErroObjects(1);
+			if(this.hasAdminRights())
+			{
+				return this.getErrorObjects(1);
 			}
 		}
 
@@ -412,8 +421,9 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
-				return this.getErroObjects(7);
+			if(this.hasAdminRights())
+			{
+				return this.getErrorObjects(7);
 			}
 		}
 
@@ -426,15 +436,16 @@ public class AdminServlet
 		Subject currentUser = SecurityUtils.getSubject();
 		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
-			if(this.hasAdminRights()){
-				return this.getErroObjects(30);
+			if(this.hasAdminRights())
+			{
+				return this.getErrorObjects(30);
 			}
 		}
 
 		return null;
 	}
 
-	public Collection<? extends AdminErrorObject> getErroObjects(int timeFrame)
+	public Collection<? extends AdminErrorObject> getErrorObjects(int timeFrame)
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 		Collection<? extends IUser> users = null;
@@ -475,16 +486,25 @@ public class AdminServlet
 		return errorObjects;
 	}
 
+	/**
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	public long daysAgo(Date startDate, Date endDate)
 	{
+		long elapsedDays = -1;
+		if(startDate != null && endDate != null)
+		{
+			long different = endDate.getTime() - startDate.getTime();
+			long secondsInMilli = 1000;
+			long minutesInMilli = secondsInMilli * 60;
+			long hoursInMilli = minutesInMilli * 60;
+			long daysInMilli = hoursInMilli * 24;
 
-		long different = endDate.getTime() - startDate.getTime();
-		long secondsInMilli = 1000;
-		long minutesInMilli = secondsInMilli * 60;
-		long hoursInMilli = minutesInMilli * 60;
-		long daysInMilli = hoursInMilli * 24;
+			elapsedDays = different / daysInMilli;
 
-		long elapsedDays = different / daysInMilli;
+		}
 
 		return elapsedDays;
 

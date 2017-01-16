@@ -96,9 +96,14 @@ define(function (require) {
                 var experiments = project.experiments;
                 for (var j = 0; j < experiments.length; j++) {
                     if (experiments[j].status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ?
-                            experiments[j].aspectConfigurations[0].watchedVariables :
-                            experiments[j].aspectConfigurations[0].modelParameter;
+                        var dataSource = [];
+
+                        if(experiments[j].aspectConfigurations[0] != undefined){
+                            dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ?
+                                experiments[j].aspectConfigurations[0].watchedVariables :
+                                experiments[j].aspectConfigurations[0].modelParameter;
+                        }
+
                         data = data.concat(dataSource.map(
                             function (item) {
                                 return {

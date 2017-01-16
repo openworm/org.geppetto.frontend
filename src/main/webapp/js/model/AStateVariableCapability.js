@@ -96,18 +96,29 @@ define(['jquery'], function (require) {
          */
         getUnit: function () {
         	if (!this.timeSeries) {
-		        //returns the unit associated with the initial value
-		        var unit = undefined;
-		        var initialValues = this.getVariable().getWrappedObj().initialValues;
-		
-		        for (var i = 0; i < initialValues.length; i++) {
-		            if (initialValues[i].value.eClass === 'PhysicalQuantity' || initialValues[i].value.eClass === 'TimeSeries') {
-		                unit = initialValues[i].value.unit.unit
-		            }
-		        }
-		        return unit;
+        		return this.extractUnit();
         	}
-        	else return this.timeSeries.unit;
+        	else {
+        		if(this.timeSeries.unit== null || this.timeSeries.unit== undefined){
+        			if(this.getVariable()!= undefined || this.getVariable()!=null){	
+        		        return this.extractUnit();
+        			}
+        		}else{
+        			return this.timeSeries.unit;
+        		}
+        	}
+        },
+        
+        extractUnit : function(){
+        	var unit = undefined;
+        	var initialValues = this.getVariable().getWrappedObj().initialValues;
+
+        	for (var i = 0; i < initialValues.length; i++) {
+        		if (initialValues[i].value.eClass === 'PhysicalQuantity' || initialValues[i].value.eClass === 'TimeSeries') {
+        			unit = initialValues[i].value.unit.unit
+        		}
+        	}
+        	return unit;
         },
 
         /**

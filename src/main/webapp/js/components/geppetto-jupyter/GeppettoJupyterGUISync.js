@@ -14,76 +14,8 @@ define(function (require, exports, module) {
 
 	var $ = require('jquery');
 
-	var PanelSync = jupyter_widgets.WidgetModel.extend({
-		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: "PanelSync",
-			_model_module: "panel",
-
-			items: [],
-			parent: null,
-			component: null,
-			positionX: null,
-			positionY: null
-		}),
-
-		initialize: function () {
-			PanelSync.__super__.initialize.apply(this);
-			this.on("msg:custom", this.handle_custom_messages, this);
-		},
-
-		getComponent: function () {
-			var component = React.createFactory(PanelComp)({ id: this.get('widget_id'), name: this.get('widget_name'), items: this.getChildren(), parentStyle: this.get('parentStyle') });
-			this.set('component', component);
-			return component;
-		},
-
-		forceRender: function () {
-			if (this.get("embedded") == false) {
-				this.get("component").setChildren(this.getChildren());
-			}
-			else {
-				this.get("parent").forceRender();
-			}
-		},
-
-		getChildren: function() {
-			var children = [];
-			for (var i = 0; i < this.get('items').length; i++){
-				var item = this.get('items')[i];
-				item.set('parent', this);
-				children.push(item.getComponent())
-			}
-			return children;
-		},
-
-		display: function(){
-			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
-
-			//TODO: This can be done in a much more elegant way
-			if (this.get('positionX') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('positionX') });
-			}
-			if (this.get('positionY') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ top: this.get('positionY') });
-			}
-		},
-
-		handle_custom_messages: function(msg) {
-			if (msg.type === 'display') {
-				this.display();
-			}
-		}
-	}, {
-			serializers: _.extend({
-				items: { deserialize: jupyter_widgets.unpack_models },
-			}, jupyter_widgets.WidgetModel.serializers)
-		});
-
 	var ComponentSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: 'ComponentSync',
-			_model_module: "component",
-
 			sync_value: undefined,
 			parent: null,
 			component: null
@@ -96,17 +28,7 @@ define(function (require, exports, module) {
 			});
 		},
 
-		handleClick: function (model) {
-			var data = { info: 'data sent' };
-			model.send({ event: 'click', data: data });
-		},
-
 		handleChange: function (model, value) {
-			//TODO: Extract to an specific class (for checkbox component we need to save the value on change)
-			if (model.get('component_name') == 'CHECKBOX') {
-				model.set('sync_value', value);
-				model.save_changes();
-			}
 			model.send({ event: 'change', data: parseFloat(value) });
 		},
 
@@ -116,37 +38,145 @@ define(function (require, exports, module) {
 			model.send({ event: 'blur', data: parseFloat(value) });
 		},
 
-		getComponent: function () {
-			var componentName = this.get('component_name');
-			var componentItem;
-			if (componentName == 'RAISEDBUTTON') {
-				componentItem = RaisedButtonComp;
-			}
-			else if (componentName == 'TEXTFIELD') {
-				componentItem = TextFieldComp;
-			}
-			else if (componentName == 'CHECKBOX') {
-				componentItem = CheckboxComp;
-			}
-			else if (componentName == 'LABEL') {
-				componentItem = LabelComp;
-			}
-			
-			var component = React.createFactory(componentItem)({ 
-				id: this.get('widget_id'), 
-				label: this.get('widget_name'), 
-				parentStyle: this.get('parentStyle'), 
-				sync_value: this.get('sync_value'), 
-				handleClick: this.handleClick.bind(null, this), 
-				handleChange: this.handleChange.bind(null, this), 
-				handleBlur: this.handleBlur.bind(null, this) })
+		getComponent: function (componentItem, parameters) {
+			parameters['id'] = this.get('widget_id')
+			parameters['label'] = this.get('widget_name')
+			parameters['sync_value'] = this.get('sync_value')
+			parameters['handleChange'] = this.handleChange.bind(null, this)
+			parameters['handleBlur'] = this.handleBlur.bind(null, this)
+
+			var component = React.createFactory(componentItem)(parameters)
 			this.set('component', component);
 			return component;
 		}
 	});
 
+	var PanelSync = ComponentSync.extend({
+		defaults: _.extend({}, ComponentSync.prototype.defaults, {
+			items: [],
+			positionX: null,
+			positionY: null
+		}),
+
+		initialize: function () {
+			PanelSync.__super__.initialize.apply(this);
+			this.on("msg:custom", this.handle_custom_messages, this);
+		},
+
+		getComponent: function () {
+			var parameters = { items: this.getChildren(), parentStyle: this.get('parentStyle') }
+			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters]);
+		},
+
+		forceRender: function () {
+			if (this.get("embedded") == false) {
+				this.get("component").setChildren(this.getChildren());
+			}
+			else {
+				this.get("parent").forceRender();
+			}
+		},
+
+		getChildren: function () {
+			var children = [];
+			for (var i = 0; i < this.get('items').length; i++) {
+				var item = this.get('items')[i];
+				item.set('parent', this);
+				children.push(item.getComponent())
+			}
+			return children;
+		},
+
+		display: function () {
+			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
+
+			//TODO: This can be done in a much more elegant way
+			if (this.get('positionX') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('positionX') });
+			}
+			if (this.get('positionY') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ top: this.get('positionY') });
+			}
+		},
+
+		handle_custom_messages: function (msg) {
+			if (msg.type === 'display') {
+				this.display();
+			}
+		}
+	}, {
+			serializers: _.extend({
+				items: { deserialize: jupyter_widgets.unpack_models },
+			}, jupyter_widgets.WidgetModel.serializers)
+		});
+
+	var TextFieldSync = ComponentSync.extend({
+
+		defaults: _.extend({}, ComponentSync.prototype.defaults, {
+			read_only: false
+		}),
+		initialize: function (options) {
+			TextFieldSync.__super__.initialize.apply(this, arguments);
+		},
+		getComponent: function () {
+			var parameters = { readOnly: this.get('read_only') }
+			return TextFieldSync.__super__.getComponent.apply(this, [TextFieldComp, parameters]);
+		}
+	});
+
+	var CheckboxSync = ComponentSync.extend({
+
+		defaults: _.extend({}, ComponentSync.prototype.defaults, {
+
+		}),
+		initialize: function (options) {
+			CheckboxSync.__super__.initialize.apply(this, arguments);
+		},
+		handleChange: function (model, value) {
+			model.set('sync_value', value);
+			model.save_changes();
+			CheckboxSync.__super__.handleChange.apply(this, [model, value]);
+		},
+		getComponent: function () {
+			return CheckboxSync.__super__.getComponent.apply(this, [CheckboxComp, {}]);
+		}
+	});
+
+	var ButtonSync = ComponentSync.extend({
+
+		defaults: _.extend({}, ComponentSync.prototype.defaults, {
+
+		}),
+		initialize: function (options) {
+			ButtonSync.__super__.initialize.apply(this, arguments);
+		},
+		getComponent: function () {
+			var parameters = { handleClick: this.handleClick.bind(null, this) }
+			return ButtonSync.__super__.getComponent.apply(this, [RaisedButtonComp, parameters]);
+		},
+
+		handleClick: function (model) {
+			model.send({ event: 'click', data: { info: 'data sent' } });
+		}
+	});
+
+	var LabelSync = ComponentSync.extend({
+
+		defaults: _.extend({}, ComponentSync.prototype.defaults, {
+		}),
+		initialize: function (options) {
+			LabelSync.__super__.initialize.apply(this, arguments);
+		},
+		getComponent: function () {
+			return CheckboxSync.__super__.getComponent.apply(this, [LabelComp, {}]);
+		}
+	});
+
 	module.exports = {
 		PanelSync: PanelSync,
-		ComponentSync: ComponentSync
+		TextFieldSync: TextFieldSync,
+		CheckboxSync: CheckboxSync,
+		ButtonSync: ButtonSync,
+		LabelSync: LabelSync
 	};
 });

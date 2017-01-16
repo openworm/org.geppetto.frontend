@@ -107,8 +107,8 @@ define(function (require) {
                         data = data.concat(dataSource.map(
                             function (item) {
                                 return {
-                                    path: item,
-                                    name: item,
+                                    path: (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ? item : item.variable,
+                                    name: (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ? item : item.variable,
                                     type: ['Model.common.' + (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ? 'StateVariable' : 'Parameter'],
                                     projectId: project.id,
                                     projectName: project.name,

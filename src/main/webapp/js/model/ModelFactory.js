@@ -161,6 +161,17 @@ define(function (require) {
                     if (children != undefined) {
                         for (var i = 0; i < children.length; i++) {
                             // do not populate shortcuts for array instances - children are accessed as array elements
+                        	if(node instanceof Variable && children[i] instanceof Type){
+                        		//it's an anonymous type we don't want it to be in the path
+                        		this.populateChildrenShortcuts(children[i]);
+                        		
+                        		var grandChildren = children[i].getChildren();
+                        		for (var j = 0; j < grandChildren.length; j++) {
+                        			node[grandChildren[j].getId()] = grandChildren[j];	
+                        		}
+                        		
+                        		continue;
+                        	}
                             if (node.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                                 node[children[i].getId()] = children[i];
                             }
@@ -172,7 +183,7 @@ define(function (require) {
             },
 
             /**
-             * Populate type references
+             * Populate type references+
              */
             populateTypeReferences: function (node) {
 

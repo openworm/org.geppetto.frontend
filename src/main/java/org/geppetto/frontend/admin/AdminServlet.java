@@ -155,7 +155,7 @@ public class AdminServlet
 			List<Date> timeStamps = user.getLoginTimeStamps();
 			Date lastLogin = null;
 			if(timeStamps.size()>0){
-				lastLogin = timeStamps.get(0);
+				lastLogin = timeStamps.get(timeStamps.size()-1);
 			}
 			if(lastLogin != null)
 			{

@@ -77,9 +77,6 @@ define(function (require) {
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
                         //if at least one of the varialbes has a value we consider the experiment as ready to be played
                         this.playExperimentReady = true;
-                        if (recordedVariable.value.unit && recordedVariable.value.unit.unit) {
-                            instance.setUnit(recordedVariable.value.unit.unit);
-                        }
                         instance.setTimeSeries(recordedVariable.value.value);
                         if (recordedVariable.value.value.length > this.maxSteps) {
                             this.maxSteps = recordedVariable.value.value.length;
@@ -103,6 +100,7 @@ define(function (require) {
                         	throw "Path unrecognised: "+path;
                         }
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
+                        	parameter.extendApi(AParameterCapability);
                         	parameter.setValue(setParameter.value.value, false);
                         }
                     }

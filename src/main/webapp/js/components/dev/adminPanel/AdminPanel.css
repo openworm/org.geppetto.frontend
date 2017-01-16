@@ -101,3 +101,8 @@ table {
 	padding-top: 100px;
 	padding-right: 100px;
 }
+
+.linkDisabled {
+	 pointer-events: none;
+	 text-decoration : none;
+}

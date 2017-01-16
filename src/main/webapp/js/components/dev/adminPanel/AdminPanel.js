@@ -43,6 +43,29 @@ define(function (require) {
 	var React = require('react');
 	var Griddle = require('griddle');
 
+    var linkComponent = React.createClass({
+        render: function () {
+
+            var displayText = this.props.data;
+            var that = this;
+
+            var action = function (e) {
+                e.preventDefault();
+            };
+            
+            var linkDisabled = "";
+            if(displayText != "Show Size"){
+            	linkDisabled = "linkDisabled";
+            }
+
+            return (
+                <div>
+                    <a href='#' onClick={action} className={linkDisabled}>{displayText}</a>
+                </div>
+            )
+        }
+    });
+    
 	var ButtonComponent = React.createClass({
 
 		render: function(){
@@ -98,6 +121,7 @@ define(function (require) {
 		                  "locked": false,
 		                  "displayName": "Number of Experiments"},
 		              {   "columnName": "storage",
+		                  "customComponent": linkComponent,
 			              "order": 7,
 		                  "locked": false,
 		                  "displayName": "Storage Size"}],  
@@ -140,6 +164,7 @@ define(function (require) {
 			              "locked": false,
 			              "displayName": "All User Simulators"},
 			          {   "columnName": "storage",
+			              "customComponent": linkComponent,
 		              	  "order": 10,
 		              	  "locked": false,
 		              	  "displayName": "Storage Size"}],

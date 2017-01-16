@@ -290,7 +290,7 @@ define(function (require) {
 
         formatButtonActions : function(button, id, label){
 		    var actions, newActions;
-		    if(button.condition!=null || undefined){
+		    if(button.condition!=null && button.condition!=undefined){
 		    	actions = button[false].actions;
 		    	newActions = this.replaceActionHolders(actions, id,label);
 			    button[false].actions = newActions;
@@ -948,9 +948,8 @@ define(function (require) {
                 			tbar.append(that.createButtonGroup(groupName, groupDef, instance));
                 		}else{
                 			//don't load default toolbar for these two types if modifiable flag set to false,
-                			if(groupName!="StateVariableCapability" 
-                				&& groupName!="ParameterCapability"){
-                        tbar.append(that.createButtonGroup(groupName, groupDef, instance));
+                			if(groupName!="StateVariableCapability" && groupName!="ParameterCapability"){
+                                tbar.append(that.createButtonGroup(groupName, groupDef, instance));
                 			}else{
                 				//don't show watch button if no permissions
                 				if(groupName == "StateVariableCapability"){

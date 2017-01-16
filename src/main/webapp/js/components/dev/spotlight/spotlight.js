@@ -45,6 +45,8 @@ define(function (require) {
         handlebars = require('handlebars'),
         GEPPETTO = require('geppetto');
 
+    var PlotController = require('widgets/plot/controllers/PlotsController');
+
     var Instance = require('model/Instance');
     var Variable = require('model/Variable');
 
@@ -58,6 +60,7 @@ define(function (require) {
         updateResults : false,
         initialised:false,
         modifiable : true,
+        plotController: new PlotController(),
         
         close : function () {
             $("#spotlight").hide();
@@ -266,7 +269,7 @@ define(function (require) {
             "label": "Plot all recorded variables",
             "actions": [
                 "var p=G.addWidget(0).setName('Recorded Variables');",
-                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
+                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),value.getPath(), p);});"
             ],
             "icon": "fa-area-chart"
         },
@@ -1091,7 +1094,7 @@ define(function (require) {
                     },
                     "plot": {
                         "actions": [
-                            "G.addWidget(0).plotData($instances$).setName('$label$')",
+                            "GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),$instances$.getPath())",
                         ],
                         "icon": "fa-area-chart",
                         "label": "Plot",

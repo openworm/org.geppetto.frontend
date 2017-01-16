@@ -194,7 +194,7 @@ define(function (require) {
                     if(plotWidget != undefined){
                         plotWidget.plotData(inst);
                     } else {
-                        G.addWidget(0).plotData(inst);
+                        G.addWidget(0).plotData(inst).setName(path);
                     }
                 } else {
                     var cb = function(){
@@ -202,7 +202,7 @@ define(function (require) {
                         if(plotWidget != undefined){
                             plotWidget.plotData(i);
                         } else {
-                            G.addWidget(0).plotData(i);
+                            G.addWidget(0).plotData(i).setName(path);
                         }
                     };
                     // trigger get experiment data with projectId, experimentId and path, and callback to plot
@@ -216,7 +216,7 @@ define(function (require) {
                     if(plotWidget != undefined){
                         plotWidget.plotXYData(i,t);
                     } else {
-                        G.addWidget(0).plotXYData(i,t);
+                        G.addWidget(0).plotXYData(i,t).setName(path);
                     }
                 };
 

@@ -100,7 +100,6 @@ define(function (require) {
                         	throw "Path unrecognised: "+path;
                         }
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
-                        	parameter.extendApi(AParameterCapability);
                         	parameter.setValue(setParameter.value.value, false);
                         }
                     }

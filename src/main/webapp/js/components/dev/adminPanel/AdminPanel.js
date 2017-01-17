@@ -162,12 +162,7 @@ define(function (require) {
 			          {    "columnName": "simulators",
 			              "order": 9,
 			              "locked": false,
-			              "displayName": "All User Simulators"},
-			          {   "columnName": "storage",
-			              "customComponent": linkComponent,
-		              	  "order": 10,
-		              	  "locked": false,
-		              	  "displayName": "Storage Size"}],
+			              "displayName": "All User Simulators"}],
 		errorsColumnMeta: [{
 				      		"columnName": "login",
 				      		"order": 1,

@@ -73,7 +73,8 @@ define(function (require) {
             UPDATE_MODEL_TREE: "update_model_tree",
             DOWNLOAD_MODEL: "download_model",
             DOWNLOAD_RESULTS: "download_results",
-            ERROR_RUNNING_EXPERIMENT : "error_running_experiment"
+            ERROR_RUNNING_EXPERIMENT : "error_running_experiment",
+            PROJECT_MADE_PUBLIC : "project_made_public"
         };
 
         var messageHandler = {};
@@ -110,6 +111,13 @@ define(function (require) {
         
         messageHandler[messageTypes.EXPERIMENT_LOADING] = function (payload) {
             GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
+        };
+        
+        messageHandler[messageTypes.PROJECT_MADE_PUBLIC] = function (payload) {
+            var data = JSON.parse(payload.update);
+            window.Project.isPublic = data.isPublic;
+            GEPPETTO.trigger(Events.Project_made_public);
+            console.log("Project was made public");
         };
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function (payload) {

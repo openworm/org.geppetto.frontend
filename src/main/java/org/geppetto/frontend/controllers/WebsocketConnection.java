@@ -257,7 +257,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 						{
 						}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
-				boolean isPublic = Boolean.parseBoolean(parameters.get("public"));
+				boolean isPublic = Boolean.parseBoolean(parameters.get("isPublic"));
 				connectionHandler.makeProjectPublic(requestID, projectId,isPublic);
 				break;
 			}

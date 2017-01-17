@@ -294,7 +294,6 @@ public class AdminServlet
 							simulation.setExperimentLastRun(e.getLastModified().toString());
 
 							simulation.setStatus(e.getStatus().toString());
-							simulation.setStorage("Show Size");
 							simulation.setProject(p.getName());
 
 							long days = this.daysAgo(e.getEndDate(), new Date());
@@ -335,6 +334,39 @@ public class AdminServlet
 
 	@RequestMapping(value = "/user/{login}/storage/{user}")
 	private @ResponseBody String getStorageSize(@PathVariable("login") String login, @PathVariable("user") String user)
+	{
+		Subject currentUser = SecurityUtils.getSubject();
+		long totalSize = 0;
+		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
+		{
+			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+			Collection<? extends IUser> users = null;
+			if(dataManager != null)
+			{
+				users = dataManager.getAllUsers();
+				for(IUser u : users)
+				{
+					if(u.getLogin().equals(user))
+					{
+						if(u.getGeppettoProjects() != null)
+						{
+							List<? extends IGeppettoProject> projects = u.getGeppettoProjects();
+							for(IGeppettoProject p : projects)
+							{
+								totalSize += S3Manager.getInstance().getFileStorage("projects/" + p.getId() + "/");
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return calculateStorage(totalSize);
+	}
+	
+	@RequestMapping(value = "/user/{login}/storage/{user}/{simulationId}")
+	private @ResponseBody String getStorageSizeSimulation(@PathVariable("login") String login, @PathVariable("user") String user, 
+			@PathVariable("simulationId") String simulationId)
 	{
 		Subject currentUser = SecurityUtils.getSubject();
 		long totalSize = 0;

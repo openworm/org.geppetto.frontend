@@ -153,18 +153,6 @@ define(function (require) {
             		that.instances.initialize(true);
                     that.addData(GEPPETTO.ModelFactory.allPathsIndexing);
             	}
-
-                var icCaConcInstances = GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.intracellularProperties.caConc');
-                if (icCaConcInstances.length > 0){
-                    var recordCaConc = {
-                        "label": "Record Ca2+ concentrations",
-                        "actions": [
-            	            "GEPPETTO.ExperimentsController.watchVariables(Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.intracellularProperties.caConc')),true);"
-            	        ],
-            	        "icon": "fa-dot-circle-o"
-                    };
-
-                    GEPPETTO.Spotlight.addSuggestion(recordCaConc, GEPPETTO.Resources.RUN_FLOW);
             }
             });
 
@@ -263,32 +251,6 @@ define(function (require) {
 			return visible;
         },
 
-        recordSample: {
-            "label": "Record all membrane potentials",
-            "actions": [
-                "var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'));",
-                "GEPPETTO.ExperimentsController.watchVariables(instances,true);"
-            ],
-            "icon": "fa-dot-circle-o"
-        },
-
-        plotSample: {
-            "label": "Plot all recorded variables",
-            "actions": [
-                "var p=G.addWidget(0).setName('Recorded Variables');",
-                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
-            ],
-            "icon": "fa-area-chart"
-        },
-
-        lightUpSample: {
-            "label": "Link morphology colour to recorded membrane potentials",
-            "actions": [
-                "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
-            ],
-            "icon": "fa-lightbulb-o"
-        },
-        
         focusButtonBar : function(){
 			$(".tt-menu").hide();
 			$(".spotlight-button").eq(0).focus();

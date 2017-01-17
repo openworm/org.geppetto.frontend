@@ -44,6 +44,19 @@ define(function (require) {
         {
             userProjects: null,
 
+            refreshUserProjects: function(callback){
+                var that = this;
+                //We execute an asynchronous call to fetch all the projects for the current user
+                $.ajax({
+                    url: window.location.origin + window.location.pathname + "projects"
+                }).then(function(data) {
+                    that.userProjects=data;
+                    if(callback!=undefined){
+                        callback();
+                    }
+                });
+            },
+
             getUserProjects: function(){
             	return this.userProjects;
             },
@@ -95,46 +108,39 @@ define(function (require) {
                 // get all state variables for completed experiments
                 var experiments = project.experiments;
                 for (var j = 0; j < experiments.length; j++) {
-                    if (experiments[j].status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var dataSource = [];
+                    var dataSource = [];
 
-                        if(experiments[j].aspectConfigurations[0] != undefined){
-                            dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE) ?
-                                experiments[j].aspectConfigurations[0].watchedVariables :
-                                experiments[j].aspectConfigurations[0].modelParameter;
-                        }
-
-                        data = data.concat(dataSource.map(
-                            function (item) {
-                                return {
-                                    path: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
-                                    name: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
-                                    fetched_value: (dataType == GEPPETTO.Resources.PARAMETER) ? item.value : undefined,
-                                    unit: (dataType == GEPPETTO.Resources.PARAMETER) ? item.unit : undefined,
-                                    type: ['Model.common.' + dataType],
-                                    projectId: project.id,
-                                    projectName: project.name,
-                                    experimentId: experiments[j].id,
-                                    experimentName: experiments[j].name,
-                                    getPath: function () {
-                                        return this.path;
-                                    }
-                                }
-                            })
-                        );
+                    if (experiments[j].aspectConfigurations[0] != undefined) {
+                        dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE) ?
+                            experiments[j].aspectConfigurations[0].watchedVariables :
+                            experiments[j].aspectConfigurations[0].modelParameter;
                     }
+
+                    data = data.concat(dataSource.map(
+                        function (item) {
+                            return {
+                                path: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
+                                name: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
+                                fetched_value: (dataType == GEPPETTO.Resources.PARAMETER) ? item.value : undefined,
+                                unit: (dataType == GEPPETTO.Resources.PARAMETER) ? item.unit : undefined,
+                                type: ['Model.common.' + dataType],
+                                projectId: project.id,
+                                projectName: project.name,
+                                experimentId: experiments[j].id,
+                                experimentName: experiments[j].name,
+                                getPath: function () {
+                                    return this.path;
+                                }
+                            }
+                        })
+                    );
                 }
 
                 return data;
             }
         };
 
-        //We execute an asynchronous call to fetch all the projects for the current user
-        $.ajax({
-	        url: window.location.origin + window.location.pathname + "projects"
-	    }).then(function(data) {
-	    	GEPPETTO.ProjectsController.userProjects=data;
-	    });
-        
+        // fetch on load
+        GEPPETTO.ProjectsController.refreshUserProjects();
     }
 });

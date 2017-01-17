@@ -140,7 +140,9 @@ define(function (require) {
             }
         };
 
-        // fetch on load
-        GEPPETTO.ProjectsController.refreshUserProjects();
+        GEPPETTO.on(Events.Experiment_loaded, function() {
+            // fetch at least every time and experiment is loaded
+            GEPPETTO.ProjectsController.refreshUserProjects();
+        });
     }
 });

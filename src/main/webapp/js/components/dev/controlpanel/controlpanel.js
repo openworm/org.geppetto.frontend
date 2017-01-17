@@ -197,14 +197,25 @@ define(function (require) {
             var path = this.props.rowData.path;
             var projectId = this.props.rowData.projectId;
             var experimentId = this.props.rowData.experimentId;
-            var entity = eval(path);
+            var entity=undefined;
+            var unit = undefined;
+            var defaultValue = undefined;
+            var initialValue = undefined;
 
-            // fetch unit
-            var unit = entity.getUnit();
-            // fetch current or default value
-            var defaultValue = entity.getInitialValue();
-            var initialValue = entity.getValue();
-
+            try{
+            	entity=eval(path);
+                // fetch unit
+                unit = entity.getUnit();
+                // fetch current or default value
+                defaultValue = entity.getInitialValue();
+                initialValue = entity.getValue();
+            }
+            catch(e){
+            	unit = this.props.rowData.unit;
+            	defaultValue = this.props.rowData.fetched_value -1; //we don't have the default value and will never show it, this only allows for the value to show as edited
+            	initialValue = this.props.rowData.fetched_value;
+            }
+            
             var that = this;
             // get and ready action string
             var actionStr = this.props.metadata.actions;

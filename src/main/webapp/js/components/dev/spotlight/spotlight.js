@@ -45,6 +45,8 @@ define(function (require) {
         handlebars = require('handlebars'),
         GEPPETTO = require('geppetto');
 
+    var PlotController = require('widgets/plot/controllers/PlotsController');
+
     var Instance = require('model/Instance');
     var Variable = require('model/Variable');
 
@@ -58,6 +60,7 @@ define(function (require) {
         updateResults : false,
         initialised:false,
         modifiable : true,
+        plotController: new PlotController(),
         
         close : function () {
             $("#spotlight").hide();
@@ -266,7 +269,7 @@ define(function (require) {
             "label": "Plot all recorded variables",
             "actions": [
                 "var p=G.addWidget(0).setName('Recorded Variables');",
-                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
+                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),value.getPath(), p);});"
             ],
             "icon": "fa-area-chart"
         },
@@ -287,7 +290,7 @@ define(function (require) {
 
         formatButtonActions : function(button, id, label){
 		    var actions, newActions;
-		    if(button.condition!=null || undefined){
+		    if(button.condition!=null && button.condition!=undefined){
 		    	actions = button[false].actions;
 		    	newActions = this.replaceActionHolders(actions, id,label);
 			    button[false].actions = newActions;
@@ -353,7 +356,7 @@ define(function (require) {
                             // one does not simply assign buttons without deep cloning them
                             var buttons = JSON.parse(JSON.stringify(found[0].buttons));
                             //data source item has buttons
-                            if(buttons!=null || undefined){
+                            if(buttons!=null && buttons!=undefined){
                                 var button;
                                 //format button actions to have proper values instead of placeholders
                                 for (var prop in buttons) {
@@ -945,9 +948,8 @@ define(function (require) {
                 			tbar.append(that.createButtonGroup(groupName, groupDef, instance));
                 		}else{
                 			//don't load default toolbar for these two types if modifiable flag set to false,
-                			if(groupName!="StateVariableCapability" 
-                				&& groupName!="ParameterCapability"){
-                        tbar.append(that.createButtonGroup(groupName, groupDef, instance));
+                			if(groupName!="StateVariableCapability" && groupName!="ParameterCapability"){
+                                tbar.append(that.createButtonGroup(groupName, groupDef, instance));
                 			}else{
                 				//don't show watch button if no permissions
                 				if(groupName == "StateVariableCapability"){
@@ -1091,7 +1093,7 @@ define(function (require) {
                     },
                     "plot": {
                         "actions": [
-                            "G.addWidget(0).plotData($instances$).setName('$label$')",
+                            "GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),$instances$.getPath())",
                         ],
                         "icon": "fa-area-chart",
                         "label": "Plot",

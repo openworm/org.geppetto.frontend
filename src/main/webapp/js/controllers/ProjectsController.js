@@ -49,19 +49,19 @@ define(function (require) {
             },
 
             getProjectStateVariables: function(projectId){
-                return this.getProjectData(projectId, GEPPETTO.Resources.STATE_VARIABLE_TYPE);
+                return this.getProjectData(projectId, GEPPETTO.Resources.STATE_VARIABLE);
             },
 
             getGlobalStateVariables: function(projectId, includeProject){
-                return this.getProjectData(projectId, GEPPETTO.Resources.STATE_VARIABLE_TYPE, true, includeProject);
+                return this.getProjectData(projectId, GEPPETTO.Resources.STATE_VARIABLE, true, includeProject);
             },
 
             getProjectParameters: function(projectId){
-                return this.getProjectData(projectId, GEPPETTO.Resources.PARAMETER_TYPE);
+                return this.getProjectData(projectId, GEPPETTO.Resources.PARAMETER);
             },
 
             getGlobalParameters: function(projectId, includeProject){
-                return this.getProjectData(projectId, GEPPETTO.Resources.PARAMETER_TYPE, true, includeProject);
+                return this.getProjectData(projectId, GEPPETTO.Resources.PARAMETER, true, includeProject);
             },
 
             getProjectData: function (projectId, dataType, globalScope, includeProject) {
@@ -99,7 +99,7 @@ define(function (require) {
                         var dataSource = [];
 
                         if(experiments[j].aspectConfigurations[0] != undefined){
-                            dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ?
+                            dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE) ?
                                 experiments[j].aspectConfigurations[0].watchedVariables :
                                 experiments[j].aspectConfigurations[0].modelParameter;
                         }
@@ -107,9 +107,11 @@ define(function (require) {
                         data = data.concat(dataSource.map(
                             function (item) {
                                 return {
-                                    path: (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ? item : item.variable,
-                                    name: (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ? item : item.variable,
-                                    type: ['Model.common.' + (dataType == GEPPETTO.Resources.STATE_VARIABLE_TYPE) ? 'StateVariable' : 'Parameter'],
+                                    path: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
+                                    name: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
+                                    fetched_value: (dataType == GEPPETTO.Resources.PARAMETER) ? item.value : undefined,
+                                    unit: (dataType == GEPPETTO.Resources.PARAMETER) ? item.unit : undefined,
+                                    type: ['Model.common.' + dataType],
                                     projectId: project.id,
                                     projectName: project.name,
                                     experimentId: experiments[j].id,

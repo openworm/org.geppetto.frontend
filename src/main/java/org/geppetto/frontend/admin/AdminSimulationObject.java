@@ -7,7 +7,6 @@ public class AdminSimulationObject {
 	private String experimentLastRun;
 	private String experiment;
 	private String simulator;
-	private String storage;
 	private String experiments;
 	private String simulators;
 	private String status;
@@ -66,11 +65,5 @@ public class AdminSimulationObject {
 	}
 	public void setSimulator(String simulator) {
 		this.simulator = simulator;
-	}
-	public String getStorage() {
-		return storage;
-	}
-	public void setStorage(String storage) {
-		this.storage = storage;
 	}
 }

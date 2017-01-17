@@ -40,7 +40,7 @@ define(function (require, exports, module) {
 
 		getComponent: function (componentItem, parameters) {
 			parameters['id'] = this.get('widget_id')
-			parameters['label'] = this.get('widget_name')
+			parameters['name'] = this.get('widget_name')
 			parameters['sync_value'] = this.get('sync_value')
 			parameters['handleChange'] = this.handleChange.bind(null, this)
 			parameters['handleBlur'] = this.handleBlur.bind(null, this)

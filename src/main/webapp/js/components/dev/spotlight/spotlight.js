@@ -403,7 +403,7 @@ define(function (require) {
 				// eval didn't work - keep going, could be a potential instance
 			}
 
-            window._spotlightInstance = (entity != undefined)? entity : Instances.getInstance([item]);
+            window._spotlightInstance = (entity != undefined)? [entity] : Instances.getInstance([item]);
 
             if (window._spotlightInstance) {
                 instanceFound = true;
@@ -786,20 +786,14 @@ define(function (require) {
                     processed = processed.split("$type$").join(instance[0].getType().getPath());
                     processed = processed.split("$typeid$").join(instance[0].getType().getId());
                     processed = processed.split("$variableid$").join(instance[0].getVariable().getId());
-                } else if (instance instanceof Instance) {
-                    processed = action.split("$instances$").join(instance.getPath());
-                    processed = processed.split("$label$").join(instance.getPath());
+                } else if ($.isArray(instance) && instance[0] instanceof Variable) {
+                	processed = action.split("$instances$").join("_spotlightInstance");
+                	processed = processed.split("$instance0$").join("_spotlightInstance[0]");
+                    processed = processed.split("$label$").join(instance[0].getPath());
                     processed = processed.split("$value$").join(value);
-                    processed = processed.split("$type$").join(instance.getType().getPath());
-                    processed = processed.split("$typeid$").join(instance.getType().getId());
-                    processed = processed.split("$variableid$").join(instance.getVariable().getId());
-                } else if (instance instanceof Variable) {
-                    processed = action.split("$instances$").join(instance.getPath());
-                    processed = processed.split("$label$").join(instance.getPath());
-                    processed = processed.split("$value$").join(value);
-                    processed = processed.split("$type$").join(instance.getType().getPath());
-                    processed = processed.split("$typeid$").join(instance.getType().getId());
-                    processed = processed.split("$variableid$").join(instance.getId());
+                    processed = processed.split("$type$").join(instance[0].getType().getPath());
+                    processed = processed.split("$typeid$").join(instance[0].getType().getId());
+                    processed = processed.split("$variableid$").join(instance[0].getId());
                 }
 
                 return processed;
@@ -831,13 +825,10 @@ define(function (require) {
                 else if (element.hasOwnProperty("inputValue")) {
                     //an input box
 
-                    // check if we are dealing with an array - cannot assume because we are working with variables too
-                    var entity = (instance instanceof Array) ? instance[0] : instance;
-
                     if(!(instance.length>1)){
                         uiElement=$("<div>");
-                        var value=eval(this.getCommand(element.inputValue, entity));
-                        var unit=eval(this.getCommand(element.label, entity));
+                        var value=eval(this.getCommand(element.inputValue, instance));
+                        var unit=eval(this.getCommand(element.label, instance));
                         label = $("<div class='spotlight-input-label'>").html(unit);
                         var staticLabel=$("<div class='spotlight-input-label-info'>").html("This parameter is declared as <span class='code'>STATIC</span> in the underlying model, changing it will affect all of its instances.");
                         var input = $('<input>')
@@ -845,14 +836,14 @@ define(function (require) {
                             .attr('value', value)
                             .on('change', function() {
                                 var value=$("#" + name + " .spotlight-input").val();
-                                GEPPETTO.Console.executeImplicitCommand(that.getCommand(element.onChange, instance[0],value));
+                                GEPPETTO.Console.executeImplicitCommand(that.getCommand(element.onChange, instance,value));
                             })
                             .css("width",((value.length + 1) * 14) + 'px')
                             .on('keyup',function() {
                                 this.style.width = ((this.value.length + 1) * 14) + 'px';
                             });
 
-                        if(entity instanceof Variable && entity.isStatic()){
+                        if(instance[0] instanceof Variable && instance[0].isStatic()){
                             uiElement.append(staticLabel);
                         }
 
@@ -1068,9 +1059,9 @@ define(function (require) {
                 },
                 "ParameterCapability": {
                     "parameterInput": {
-                        "inputValue":"$instances$.getValue()",
-                        "label":"$instances$.getUnit()",
-                        "onChange":"$instances$.setValue($value$);",
+                        "inputValue":"$instance0$.getValue()",
+                        "label":"$instance0$.getUnit()",
+                        "onChange":"$instance0$.setValue($value$);",
                         "tooltip": "Set parameter value",
                         "multipleInstances":false
                     }

@@ -110,7 +110,6 @@ define(function (require) {
                     //to update themselves
                     this.triggerPlayExperiment(experiment);
                 }
-                
 
                 GEPPETTO.trigger(Events.Experiment_updated);                
             },

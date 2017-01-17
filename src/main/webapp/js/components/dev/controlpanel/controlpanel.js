@@ -202,34 +202,54 @@ define(function (require) {
             var defaultValue = undefined;
             var initialValue = undefined;
 
-            try{
-            	entity=eval(path);
-                // fetch unit
-                unit = entity.getUnit();
-                // fetch current or default value
-                defaultValue = entity.getInitialValue();
-                initialValue = entity.getValue();
+            if(this.props.rowData.fetched_value != undefined){
+                // we have a value in the record, we are dealing with an external item, it's not an actual entity that can be evaluated
+                unit = this.props.rowData.unit;
+                defaultValue = this.props.rowData.fetched_value -1; //we don't have the default value and will never show it, this only allows for the value to show as edited
+                initialValue = this.props.rowData.fetched_value;
+            } else {
+                try{
+                    entity=eval(path);
+                    // fetch unit
+                    unit = entity.getUnit();
+                    // fetch current or default value
+                    defaultValue = entity.getInitialValue();
+                    initialValue = entity.getValue();
+                }
+                catch(e){
+                    // something went horribly wrong - this should never happen
+                    throw "ParameterInputComponent - could not eval path: " + path;
+                }
             }
-            catch(e){
-            	unit = this.props.rowData.unit;
-            	defaultValue = this.props.rowData.fetched_value -1; //we don't have the default value and will never show it, this only allows for the value to show as edited
-            	initialValue = this.props.rowData.fetched_value;
+
+            // figure out if input is readonly, this is always true if not dealing with entities (entity == undefined)
+            var readOnly = true;
+            if(entity != undefined) {
+                try {
+                    var deTokenizedCondition = this.replaceTokensWithProjectExperimentIds(this.props.metadata.readOnlyCondition, projectId, experimentId);
+                    // eval condition + make sure we have a real entity
+                    readOnly = eval(deTokenizedCondition) && entity != undefined;
+                } catch (e) {
+                    // nothing to do here readOnly defaults to true if evaluation failed
+                }
             }
             
             var that = this;
             // get and ready action string
             var actionStr = this.props.metadata.actions;
             var onInputChangeHandler = function(event){
-                var newVal = event.target.value;
+                if(!readOnly) {
+                    var newVal = event.target.value;
 
-                // only set if it's different than its current value, could be initial or set value
-                if(entity.getValue() != newVal) {
-                    actionStr = actionStr.replace(/\$VALUE\$/gi, newVal);
-                    actionStr = actionStr.replace(/\$entity\$/gi, path);
-                    GEPPETTO.Console.executeCommand(actionStr);
-                    // refresh to trigger color update if edited from default
-                    if(newVal != defaultValue){
-                        that.refresh();
+                    // only set if it's different than its current value, could be initial or set value
+                    if (entity.getValue() != newVal) {
+                        actionStr = actionStr.replace(/\$VALUE\$/gi, newVal);
+                        actionStr = actionStr.replace(/\$entity\$/gi, path);
+                        GEPPETTO.Console.executeCommand(actionStr);
+                        // refresh to trigger color update if edited from default
+                        if (newVal != defaultValue) {
+                            that.refresh();
+                        }
                     }
                 }
             };
@@ -239,15 +259,6 @@ define(function (require) {
                     onInputChangeHandler(event);
                 }
             };
-
-            // figure out if input is readonly
-            var readOnly = true;
-            try {
-                var deTokenizedCondition = this.replaceTokensWithProjectExperimentIds(this.props.metadata.readOnlyCondition, projectId, experimentId);
-                readOnly = eval(deTokenizedCondition);
-            } catch(e){
-                // nothing to do here readOnly defaults to true if evaluation failed
-            }
 
             // if value is not default give it a different background
             var classString = (defaultValue === initialValue) ? "control-panel-parameter-input" : "control-panel-parameter-input control-panel-parameter-edited";

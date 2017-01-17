@@ -110,30 +110,36 @@ define(function (require) {
                 for (var j = 0; j < experiments.length; j++) {
                     var dataSource = [];
 
-                    if (experiments[j].aspectConfigurations[0] != undefined) {
-                        dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE) ?
-                            experiments[j].aspectConfigurations[0].watchedVariables :
-                            experiments[j].aspectConfigurations[0].modelParameter;
-                    }
+                    // only get results from COMPLETED experiment for state variables, get everything for parameters
+                    if(
+                        dataType == GEPPETTO.Resources.STATE_VARIABLE && experiments[j].status == GEPPETTO.Resources.ExperimentStatus.COMPLETED
+                        || dataType == GEPPETTO.Resources.PARAMETER
+                    ){
+                        if (experiments[j].aspectConfigurations[0] != undefined) {
+                            dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE) ?
+                                experiments[j].aspectConfigurations[0].watchedVariables :
+                                experiments[j].aspectConfigurations[0].modelParameter;
+                        }
 
-                    data = data.concat(dataSource.map(
-                        function (item) {
-                            return {
-                                path: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
-                                name: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
-                                fetched_value: (dataType == GEPPETTO.Resources.PARAMETER) ? item.value : undefined,
-                                unit: (dataType == GEPPETTO.Resources.PARAMETER) ? item.unit : undefined,
-                                type: ['Model.common.' + dataType],
-                                projectId: project.id,
-                                projectName: project.name,
-                                experimentId: experiments[j].id,
-                                experimentName: experiments[j].name,
-                                getPath: function () {
-                                    return this.path;
+                        data = data.concat(dataSource.map(
+                            function (item) {
+                                return {
+                                    path: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
+                                    name: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
+                                    fetched_value: (dataType == GEPPETTO.Resources.PARAMETER) ? item.value : undefined,
+                                    unit: (dataType == GEPPETTO.Resources.PARAMETER) ? item.unit : undefined,
+                                    type: ['Model.common.' + dataType],
+                                    projectId: project.id,
+                                    projectName: project.name,
+                                    experimentId: experiments[j].id,
+                                    experimentName: experiments[j].name,
+                                    getPath: function () {
+                                        return this.path;
+                                    }
                                 }
-                            }
-                        })
-                    );
+                            })
+                        );
+                    }
                 }
 
                 return data;

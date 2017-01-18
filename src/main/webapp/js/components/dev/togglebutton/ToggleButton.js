@@ -84,7 +84,7 @@ define(function(require) {
     		this.evaluateState();
 
 			// attach handlers if any
-			if(this.props.configuation.eventHandler!=undefined){
+			if(this.props.configuration.eventHandler!=undefined){
 				this.props.configuration.eventHandler(this);
 			}
         },

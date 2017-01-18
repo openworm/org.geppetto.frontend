@@ -195,6 +195,15 @@
 
 #controlpanel .built-in-filter {
     width: 99%;
+    margin-bottom: 60px;
+    position: relative;
+}
+
+#controlpanel .built-in-filter .toggleButton button{
+    height: 40px;
+    width: 50px;
+    font-size:25px;
+    opacity:1;
 }
 
 #controlpanel .left-filter-panel {

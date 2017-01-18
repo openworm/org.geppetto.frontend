@@ -1,3 +1,4 @@
 .toggle-button-toggled {
-    background: orange;
+    color: white !important;
+    background: orange !important;
 }

@@ -193,6 +193,27 @@
 	text-align: center;
 }
 
+#controlpanel .built-in-filter {
+    width: 99%;
+}
+
+#controlpanel .left-filter-panel {
+    float: left;
+}
+
+#controlpanel .right-filter-panel {
+    float: right;
+}
+
+#controlpanel .toggleButton {
+    margin: 5px;
+    float: left;
+}
+
+#controlpanel .clearer {
+    clear: both;
+}
+
 .thumbnail-img {
 	width: 40px;
 	display: block;

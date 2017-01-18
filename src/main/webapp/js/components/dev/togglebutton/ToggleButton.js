@@ -84,13 +84,16 @@ define(function(require) {
     		this.evaluateState();
     		
     		var self = this;
-    		GEPPETTO.on(Events.Project_loaded,function(){
-    			self.evaluateState();
-    		});
-    		
-    		GEPPETTO.on(Events.Project_made_public,function(){
-    			self.evaluateState();
-    		});
+
+			if(this.props.ignoreProjectEvents === true){
+				GEPPETTO.on(Events.Project_loaded,function(){
+					self.evaluateState();
+				});
+
+				GEPPETTO.on(Events.Project_made_public,function(){
+					self.evaluateState();
+				});
+			}
         },
 
         clickEvent : function(){
@@ -108,26 +111,25 @@ define(function(require) {
         },
         
         evaluateState : function(){
-        	var condition = this.props.configuration.condition;
-        	condition = condition.replace(/['"]+/g, '');
-        	var hideCondition =this.props.configuration.hideCondition;
-        	hideCondition = hideCondition.replace(/['"]+/g, '');
-
+			var hideCondition =this.props.configuration.hideCondition;
 			// figure out if disabled
 			var disableBtn = this.props.disabled;
 			if(disableBtn==undefined){
 				// fall back on hideCondition from config if any
 				if(hideCondition!=''){
+					hideCondition = hideCondition.replace(/['"]+/g, '');
 					disableBtn = eval(hideCondition);
 				}
 			}
 
 			// condition could be function or string
+			var condition = this.props.configuration.condition;
 			var conditionResult = false;
 			if(typeof condition === 'function'){
 				conditionResult = condition();
 			} else {
 				if(condition != ''){
+					condition = condition.replace(/['"]+/g, '');
 					conditionResult = eval(condition);
 				}
 			}
@@ -145,7 +147,7 @@ define(function(require) {
         	}
         	
         	if(this.isMounted()){
-        		this.setState({icon:this.icon, action:this.action, label: this.label, tooltip: this.tooltip, disabled : disableBtn});
+        		this.setState({icon:this.icon, action:this.action, label: this.label, tooltip: this.tooltip, disabled: disableBtn});
         	}
         },
         
@@ -158,7 +160,7 @@ define(function(require) {
         	return (
         			<div className="toggleButton">
         				<button id={this.props.configuration.id} className={cssClass} type="button"
-        				rel="tooltip" onClick={this.clickEvent} disabled={this.state.disabled}>
+        				rel="tooltip" onClick={this.clickEvent} disabled={this.props.disabled || this.state.disabled}>
         					<i className={this.state.icon}></i>{this.state.label}
         				</button>
         			</div>

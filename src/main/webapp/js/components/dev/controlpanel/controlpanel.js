@@ -742,16 +742,16 @@ define(function (require) {
                 id: 'visualInstancesFilterBtn',
                 condition: function(){return that.state.visualFilterToggled;},
                 true: {
-                    icon: '',
+                    icon: 'gpt-3dshape',
                     action: '',
-                    label: 'Visual Instances',
-                    tooltip: ''
+                    label: '',
+                    tooltip: 'Visual objects'
                 },
                 false: {
-                    icon: '',
+                	icon: 'gpt-3dshape',
                     action: '',
-                    label: 'Visual Instances',
-                    tooltip: ''
+                    label: '',
+                    tooltip: 'Visual objects'
                 },
                 clickHandler: this.computeResult
             };
@@ -759,16 +759,16 @@ define(function (require) {
                 id: 'stateVariablesFilterBtn',
                 condition: function(){return that.state.stateVarsFilterToggled;},
                 true: {
-                    icon: '',
+                    icon: 'fa fa-superscript',
                     action: '',
-                    label: 'State Vars',
-                    tooltip: ''
+                    label: '',
+                    tooltip: 'State variables'
                 },
                 false: {
-                    icon: '',
+                    icon: 'fa fa-superscript',
                     action: '',
-                    label: 'State Vars',
-                    tooltip: ''
+                    label: '',
+                    tooltip: 'State variables'
                 },
                 clickHandler: this.computeResult
             };
@@ -776,16 +776,16 @@ define(function (require) {
                 id: 'parametersFilterBtn',
                 condition: function(){return that.state.paramsFilterToggled;},
                 true: {
-                    icon: '',
+                    icon: 'fa fa-sign-in',
                     action: '',
-                    label: 'Parameters',
-                    tooltip: ''
+                    label: '',
+                    tooltip: 'Parameters'
                 },
                 false: {
-                    icon: '',
+                	icon: 'fa fa-sign-in',
                     action: '',
-                    label: 'Parameters',
-                    tooltip: ''
+                    label: '',
+                    tooltip: 'Parameters'
                 },
                 clickHandler: this.computeResult
             };
@@ -793,16 +793,16 @@ define(function (require) {
                 id: 'activeExperimentFilterBtn',
                 condition: function(){return that.state.activeExperimentFilterToggled;},
                 true: {
-                    icon: '',
+                    icon: 'gpt-activeExp',
                     action: '',
-                    label: 'Active Experiment',
-                    tooltip: 'Active Experiment toggled'
+                    tooltip: 'Active Experiment',
+                    label: ''
                 },
                 false: {
-                    icon: '',
+                	icon: 'gpt-activeExp',
                     action: '',
-                    label: 'Active Experiment',
-                    tooltip: ''
+                    tooltip: 'Active Experiment',
+                    label: ''
                 },
                 clickHandler: this.computeResult
             };
@@ -810,16 +810,16 @@ define(function (require) {
                 id: 'anyExperimentFilterBtn',
                 condition: function(){return that.state.anyExperimentFilterToggled;},
                 true: {
-                    icon: '',
+                	icon: 'fa fa-flask',
                     action: '',
-                    label: 'Any Experiment',
-                    tooltip: ''
+                    tooltip: 'Look in any Experiment for the current project',
+                    label: ''
                 },
                 false: {
-                    icon: '',
+                	icon: 'fa fa-flask',
                     action: '',
-                    label: 'Any Experiment',
-                    tooltip: ''
+                    tooltip: 'Look in any Experiment for the current project',
+                    label: ''
                 },
                 clickHandler: this.computeResult
             };
@@ -827,16 +827,16 @@ define(function (require) {
                 id: 'anyProjectFilterBtn',
                 condition: function(){return that.state.anyProjectFilterToggled;},
                 true: {
-                    icon: '',
+                    icon: 'fa fa-globe',
                     action: '',
-                    label: 'Any Project',
-                    tooltip: ''
+                    tooltip: 'Look in any of your projects',
+                    label: ''
                 },
                 false: {
-                    icon: '',
+                	icon: 'fa fa-globe',
                     action: '',
-                    label: 'Any Project',
-                    tooltip: ''
+                    tooltip: 'Look in any of your projects',
+                    label: ''
                 },
                 clickHandler: this.computeResult
             };
@@ -844,16 +844,16 @@ define(function (require) {
                 id: 'recordedFilterBtn',
                 condition: function(){return that.state.recordedFilterToggled;},
                 true: {
-                    icon: '',
+                    icon: 'fa fa-dot-circle-o',
                     action: '',
-                    label: 'Recorded',
-                    tooltip: ''
+                    tooltip: 'Recorded variables',
+                    label: ''
                 },
                 false: {
-                    icon: '',
+                	icon: 'fa fa-dot-circle-o',
                     action: '',
-                    label: 'Recorded',
-                    tooltip: ''
+                    tooltip: 'Recorded variables',
+                    label: ''
                 },
                 clickHandler: this.computeResult
             };
@@ -1183,7 +1183,7 @@ define(function (require) {
                 "actions" :["GEPPETTO.ControlPanel.refresh();"],
                 "showCondition": "GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal($projectId$, $experimentId$, '$instance$');",
                 "id": "plot2",
-                "icon": "fa-line-chart",
+                "icon": "gpt-addplot",
                 "label": "Plot2",
                 "tooltip": "Plot state variable in a an existing widget"
             }

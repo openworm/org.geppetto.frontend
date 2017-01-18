@@ -74,15 +74,7 @@ define(function(require) {
         componentDidMount: function() {
         	this.attachTooltip();
     		this.evaluateState();
-    		
-    		var self = this;
-    		GEPPETTO.on(Events.Project_loaded,function(){
-    			self.evaluateState();
-    		});
-    		
-    		GEPPETTO.on(Events.Project_made_public,function(){
-    			self.evaluateState();
-    		});
+    		this.props.configuration.eventHandler(this);
         },
 
         clickEvent : function(){

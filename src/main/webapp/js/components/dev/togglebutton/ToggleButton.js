@@ -50,7 +50,7 @@ define(function(require) {
     	 action : null,
          attachTooltip: function(){
         	 var self = this;
-             $('button[rel="tooltip"]').uitooltip({
+             $("#"+self.props.configuration.id).uitooltip({
                  position: { my: "right center", at : "left-25 center"},
                  tooltipClass: "tooltip-toggle",
                  show: {
@@ -80,9 +80,9 @@ define(function(require) {
         },
         
         componentDidMount: function() {
-        	this.attachTooltip();
+        	//this.attachTooltip();
     		this.evaluateState();
-
+    		
 			// attach handlers if any
 			if(this.props.configuration.eventHandler!=undefined){
 				this.props.configuration.eventHandler(this);
@@ -91,8 +91,6 @@ define(function(require) {
 
         clickEvent : function(){
         	this.evaluateState();
-        	// update contents of what's displayed on tooltip
-        	this.showToolTip();
 			// there may or may not be a dynamic action to be executed via console
 			if(this.action!='') {
 				GEPPETTO.Console.executeCommand(this.action);
@@ -103,7 +101,8 @@ define(function(require) {
         
         showToolTip : function(){
         	var self = this;
-        	$('button[rel="tooltip"]').uitooltip({content: self.state.tooltip});
+        	$('button[rel="tooltip"]').uitooltip({content: self.state.tooltip,
+       	 		position: { my: "right center", at : "left center"}});
         	$("#"+self.props.configuration.id).mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
         },
         

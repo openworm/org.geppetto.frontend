@@ -1169,7 +1169,7 @@ define(function (require) {
             "plot": {
                 "id": "plot",
                 "actions": [
-                    "window.PlotController.plotStateVariable($projectId$, $experimentId$, '$instance$')",
+                    "GEPPETTO.ControlPanel.plotController.plotStateVariable($projectId$, $experimentId$, '$instance$')",
                 ],
                 "showCondition": "GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal($projectId$, $experimentId$, '$instance$');",
                 "icon": "fa-area-chart",
@@ -1288,7 +1288,7 @@ define(function (require) {
                 "showCondition": "GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal($projectId$, $experimentId$, '$instance$');",
                 "id": "plot",
                 "actions": [
-                    "window.PlotController.plotStateVariable($projectId$, $experimentId$, '$instance$')",
+                    "GEPPETTO.ControlPanel.plotController.plotStateVariable($projectId$, $experimentId$, '$instance$')",
                 ],
                 "icon": "fa-area-chart",
                 "label": "Plot",

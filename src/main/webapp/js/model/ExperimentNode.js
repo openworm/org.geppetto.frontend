@@ -232,7 +232,7 @@ define(['backbone'], function (require) {
          */
         run: function () {
             var activeExperimentId = window.Project.getActiveExperiment().getId();
-            if (this.writePermission && this.getParent().persisted && this.login && this.runPermission) {
+            if (this.writePermission && this.getParent().persisted && this.login && this.runPermission && !this.getParent().isReadOnly()) {
                 if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
                     this.status == GEPPETTO.Resources.ExperimentStatus.ERROR)
                     && activeExperimentId == this.id) {
@@ -334,7 +334,7 @@ define(['backbone'], function (require) {
 
 
         saveExperimentProperties: function (properties) {
-            if (this.writePermission && this.getParent().persisted && this.login) {
+            if (this.writePermission && this.getParent().persisted && this.login && !this.getParent().isReadOnly()) {
                 var parameters =
                 {};
                 parameters["experimentId"] = this.id;
@@ -435,7 +435,7 @@ define(['backbone'], function (require) {
          * @returns {ExperimentNode} Creates a new ExperimentNode
          */
         clone: function () {
-            if (this.writePermission && this.getParent().persisted && this.login) {
+            if (this.writePermission && this.getParent().persisted && this.login && !this.getParent().isReadOnly()) {
                 var parameters = {};
                 parameters["projectId"] = this.getParent().getId();
                 parameters["experimentId"] = this.id;

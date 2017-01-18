@@ -189,11 +189,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			geppettoManager.loadProject(requestID, geppettoProject);
+			boolean readOnly = true;
+			List<? extends IGeppettoProject> userProjects = geppettoManager.getUser().getGeppettoProjects();
+			for(IGeppettoProject p : userProjects){
+				if(p.getId() == geppettoProject.getId()){
+					readOnly = false;
+				}
+			}
+			
 			// serialize project prior to sending it to client
 			Gson gson = new Gson();
 			String projectJSON = gson.toJson(geppettoProject);
 			boolean persisted = geppettoProject.isVolatile();
-			String update = "{\"persisted\":" + !persisted + ",\"project\":" + projectJSON + "}";
+			String update = "{\"persisted\":" + !persisted + ",\"project\":" + projectJSON + ",\"isReadOnly\":" + readOnly +"}";
 
 			setConnectionProject(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, update);

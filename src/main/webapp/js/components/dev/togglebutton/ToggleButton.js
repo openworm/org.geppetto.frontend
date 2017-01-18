@@ -51,20 +51,20 @@ define(function(require) {
          attachTooltip: function(){
         	 var self = this;
              $('button[rel="tooltip"]').uitooltip({
-                 position: { my: "right center", at : "left-250 center"},
-                 tooltipClass: "tooltip-persist",
+                 position: { my: "right center", at : "left-25 center"},
+                 tooltipClass: "tooltip-toggle",
                  show: {
                      effect: "slide",
                      direction: "right",
-                     delay: 10
+                     delay: 200
                  },
                  hide: {
                      effect: "slide",
                      direction: "right",
-                     delay: 10
+                     delay: 200
                  },
                  content: function () {
-                     return self.tooltip;
+                     return self.state.tooltip;
                  },
              });
          },
@@ -92,15 +92,19 @@ define(function(require) {
         clickEvent : function(){
         	this.evaluateState();
         	// update contents of what's displayed on tooltip
-       	 	$('button[rel="tooltip"]').uitooltip({content: this.tooltip});
-        	$("#"+this.props.configuration.id).mouseover().delay(200).queue(function(){$(this).mouseout().dequeue();});
-
+        	this.showToolTip();
 			// there may or may not be a dynamic action to be executed via console
 			if(this.action!='') {
 				GEPPETTO.Console.executeCommand(this.action);
 			}
 
         	this.props.configuration.clickHandler(this.props.id);
+        },
+        
+        showToolTip : function(){
+        	var self = this;
+        	$('button[rel="tooltip"]').uitooltip({content: self.state.tooltip});
+        	$("#"+self.props.configuration.id).mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
         },
         
         evaluateState : function(){
@@ -166,7 +170,7 @@ define(function(require) {
 
         	return (
         			<div className="toggleButton">
-        				<button id={this.props.configuration.id} className={cssClass} type="button"
+        				<button id={this.props.configuration.id} className={cssClass} type="button" title=''
         				rel="tooltip" onClick={this.clickEvent} disabled={this.props.disabled===true || this.state.disabled===true}>
         					<i className={this.state.icon}></i>{this.state.label}
         				</button>

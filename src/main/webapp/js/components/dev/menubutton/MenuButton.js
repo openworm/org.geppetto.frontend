@@ -200,10 +200,17 @@ define(function (require) {
 
         getMenuPosition : function(){
             var selector = $("#"+this.props.configuration.id);
-        	return { 
-        		top : selector.offset().top + selector.outerHeight(),
-        		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()))
-        	};
+            var position = {};
+            if(selector!=null && selector != undefined){
+            	var offset = selector.offset();
+            	if(offset != null && offset != undefined){
+            		position = { 
+                		top : selector.offset().top + selector.outerHeight(),
+                		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()))
+                	};
+            	}
+            }
+        	return position;
         },
         
         close: function () {

@@ -251,6 +251,16 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.persistProject(requestID, projectId);
 				break;
 			}
+			case MAKE_PROJECT_PUBLIC:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+						{
+						}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				boolean isPublic = Boolean.parseBoolean(parameters.get("isPublic"));
+				connectionHandler.makeProjectPublic(requestID, projectId,isPublic);
+				break;
+			}
 			case SAVE_PROJECT_PROPERTIES:
 			{
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);

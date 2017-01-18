@@ -72,6 +72,7 @@ var Events = {
     Hide_spinner: "spinner:hide",
     Color_set: "color:set",
     Canvas_initialised: "canvas:initialised",
+    Project_made_public : "project_made_public"
 };
 
 define(function (require) {

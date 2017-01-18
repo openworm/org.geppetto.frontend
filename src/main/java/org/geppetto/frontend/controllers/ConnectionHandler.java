@@ -928,7 +928,37 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 
 	}
+	
+	/**
+	 * @param requestID
+	 * @param projectId
+	 */
+	public void makeProjectPublic(String requestID, long projectId,boolean isPublic)
+	{
 
+		try
+		{
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+
+			if(geppettoProject != null)
+			{
+
+				geppettoManager.makeProjectPublic(requestID, geppettoProject, isPublic);
+				String update = "{\"id\":" + '"' + geppettoProject.getId() + '"' + ",\"isPublic\":" + geppettoProject.isPublic() + "}";
+				websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_MADE_PUBLIC, update);
+			}
+			else
+			{
+				error(null, "Error making project  public " + projectId + ".");
+			}
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error making project public");
+		}
+
+	}
+	
 	/**
 	 * @param requestID
 	 * @param projectId

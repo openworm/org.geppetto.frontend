@@ -86,21 +86,22 @@ define(function (require) {
                 if (experimentState.setParameters) {
                     for (var i = 0; i < experimentState.setParameters.length; i++) {
                         var setParameter = experimentState.setParameters[i];
-                        var path = setParameter.pointer.path;
-                        var firstToken = path.split(".")[0];
-                        var firstEntity = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+"."+firstToken);
-                        var parameter=undefined
-                        if(firstEntity.getMetaType()==GEPPETTO.Resources.VARIABLE_NODE){
-                        	parameter = Instances.getInstance(instancePath);
-                        }
-                        else if(firstEntity.getMetaType()==GEPPETTO.Resources.LIBRARY_NODE){
-                        	parameter = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+"."+path);
-                        }
-                        else{
-                        	throw "Path unrecognised: "+path;
-                        }
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
-                        	parameter.setValue(setParameter.value.value, false);
+                            var path = setParameter.pointer.path;
+                            var firstToken = path.split(".")[0];
+                            var parameter = undefined;
+                            try {
+                                var firstEntity = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT + "." + firstToken);
+                                if (firstEntity.getMetaType() == GEPPETTO.Resources.LIBRARY_NODE) {
+                                    parameter = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT + "." + path);
+                                } else {
+                                    throw "Path unrecognised: " + path;
+                                }
+                            } catch (e) {
+                                //it's not a static parameter, it's an instance
+                                parameter = Instances.getInstance(path);
+                            }
+                            parameter.setValue(setParameter.value.value, false);
                         }
                     }
                 }
@@ -144,7 +145,7 @@ define(function (require) {
                         var setParameter = experimentState.setParameters[i];
                         var instancePath = setParameter.pointer.path;
                         var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath);
-                        instance.extendApi(AStateVariableCapability);
+                        instance.extendApi(AParameterCapability);
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
                             instance.setValue(setParameter.value.value, false);
                         }

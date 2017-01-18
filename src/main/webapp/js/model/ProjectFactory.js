@@ -58,7 +58,6 @@ define(function (require) {
                     });
 
                 p.persisted = persisted;
-                p.readOnly = project.isReadOnly;
                 p.isPublicProject = project.isPublic;
                 
                 for (var key in project.experiments) {

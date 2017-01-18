@@ -115,7 +115,7 @@ define(function (require) {
         
         messageHandler[messageTypes.PROJECT_MADE_PUBLIC] = function (payload) {
             var data = JSON.parse(payload.update);
-            window.Project.isPublic = data.isPublic;
+            window.Project.isPublicProject = data.isPublic;
             GEPPETTO.trigger(Events.Project_made_public);
             console.log("Project was made public");
         };

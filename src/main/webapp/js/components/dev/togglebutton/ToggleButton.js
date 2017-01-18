@@ -36,80 +36,96 @@ define(function(require) {
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
     var ToggleButton = React.createClass({
+    	 icon : null,
+    	 tooltip : null,
+    	 label : null,
+    	 action : null,
          attachTooltip: function(){
         	 var self = this;
              $('button[rel="tooltip"]').uitooltip({
-                 position: { my: "right center", at : "left-25 center"},
+                 position: { my: "right center", at : "left-250 center"},
                  tooltipClass: "tooltip-persist",
                  show: {
                      effect: "slide",
                      direction: "right",
-                     delay: 200
+                     delay: 10
                  },
                  hide: {
                      effect: "slide",
                      direction: "right",
-                     delay: 200
+                     delay: 10
                  },
                  content: function () {
-                     return self.state.tooltipLabel;
+                     return self.tooltip;
                  },
              });
          },
          
     	getInitialState: function() {
             return {
-            	disableButton : false,
-            	tooltipLabel :this.props.tooltip,
-            	icon: this.props.icon
+            	icon : this.icon,
+            	label : this.label,
+            	tooltip : this.tooltip,
+            	action : this.action,
+            	disabled : false
             };
         },
         
         componentDidMount: function() {
-
-            var self = this;
-
-            GEPPETTO.on(Events.Project_made_public, function(){
-            	self.setState({disableButton: true});
-            	// update contents of what's displayed on tooltip
-           	 	$('button[rel="tooltip"]').uitooltip({content: "The project was persisted and added to your dashboard!",
-           	 		position: { my: "right center", at : "left center"}});
-            	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
-            	self.setState({disableSave: true});
-            });
-            
-        	self.attachTooltip();
-        	
-			GEPPETTO.on(Events.Project_loaded, function(){
-				self.setState(self.evaluateState());
-			});
-			
-			if(window.Project!=undefined){
-				this.setState(this.evaluateState());
-			}
+        	this.attachTooltip();
+    		this.evaluateState();
+    		
+    		var self = this;
+    		GEPPETTO.on(Events.Project_loaded,function(){
+    			self.evaluateState();
+    		});
         },
 
         clickEvent : function(){
-        	var self = this;
+        	this.evaluateState();
         	// update contents of what's displayed on tooltip
-       	 	$('button[rel="tooltip"]').uitooltip({content: self.props.text});
-        	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
-        	self.setState({disableSave: true});
-        	GEPPETTO.Console.executeCommand("Project.persist();");
+       	 	$('button[rel="tooltip"]').uitooltip({content: this.tooltip});
+        	$("#"+this.props.configuration.id).mouseover().delay(200).queue(function(){$(this).mouseout().dequeue();});
+        	GEPPETTO.Console.executeCommand(this.action);
+        	this.props.configuration.clickHandler();
+        },
+        
+        evaluateState : function(){
+        	var condition = this.props.configuration.condition;
+        	condition = condition.replace(/['"]+/g, '');
+        	var hideCondition =this.props.configuration.hideCondition;
+        	hideCondition = hideCondition.replace(/['"]+/g, '');
+        	var hide = eval(hideCondition);
+        	var conditionResult = eval(condition);
+        	if(!conditionResult){
+        		this.icon = this.props.configuration.false.icon
+        		this.action = this.props.configuration.false.action;
+        		this.label = this.props.configuration.false.label;
+        		this.tooltip = this.props.configuration.false.tooltip;
+        	}else{
+        		this.icon = this.props.configuration.true.icon;
+        		this.action = this.props.configuration.true.action;
+        		this.label = this.props.configuration.true.label;
+        		this.tooltip = this.props.configuration.true.tooltip;
+        	}
+        	
+        	if(this.isMounted()){
+        		this.setState({icon:this.icon, action:this.action, label: this.label, tooltip: this.tooltip, disabled : hide});
+        	}
         },
         
         render:  function () {
         	return (
         			<div className="toggleButton">
-        				<button className="btn ToggleButton pull-right" type="button" title={this.props.text}
-        				rel="tooltip" onClick={this.clickEvent} disabled={this.state.disableSave}>
-        					<i className={this.state.icon}></i>
+        				<button id={this.props.configuration.id} className={this.props.configuration.id + " btn pull-right"} type="button"
+        				rel="tooltip" onClick={this.clickEvent} disabled={this.state.disabled}>
+        					<i className={this.state.icon}></i>{this.state.label}
         				</button>
         			</div>
         	);
         }
     });
     
-    return saveControlComp;
+    return ToggleButton;
 
 });

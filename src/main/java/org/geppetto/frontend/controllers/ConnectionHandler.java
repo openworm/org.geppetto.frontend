@@ -944,7 +944,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 
 				geppettoManager.makeProjectPublic(requestID, geppettoProject, isPublic);
-				String update = "{\"id\":" + '"' + geppettoProject.getId() + '"' + ",\"isPublic\":" + '"' + geppettoProject.isPublic() + '"' + "}";
+				String update = "{\"id\":" + '"' + geppettoProject.getId() + '"' + ",\"isPublic\":" + geppettoProject.isPublic() + "}";
 				websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_MADE_PUBLIC, update);
 			}
 			else

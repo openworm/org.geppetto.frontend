@@ -50,7 +50,8 @@ define(['backbone'], function (require) {
         writePermission :  null,
         runPermission : null,
         downloadPermission : null,
-        isReadOnly : false,
+        readOnly : false,
+        isPublicProject : false,
 
         /**
          * Initializes this project with passed attributes
@@ -338,7 +339,11 @@ define(['backbone'], function (require) {
         },
         
         isPublic : function(){
-        	return this.isPublic;
+        	return this.isPublicProject;
+        },
+        
+        isReadOnly : function(){
+        	return this.readOnly;
         },
 
         /**

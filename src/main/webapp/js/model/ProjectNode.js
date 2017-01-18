@@ -307,7 +307,7 @@ define(['backbone'], function (require) {
         },
 
         saveProjectProperties: function (properties) {
-        	if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()){
+        	if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()&& !this.isReadOnly()){
         		var parameters = {};
         		parameters["projectId"] = this.getId();
         		parameters["properties"] = properties;
@@ -318,7 +318,7 @@ define(['backbone'], function (require) {
         },
 
         persist: function () {
-        	if(this.writePermission && GEPPETTO.UserController.isLoggedIn()){
+        	if(this.writePermission && GEPPETTO.UserController.isLoggedIn() && !this.isReadOnly()){
         		var parameters = {};
         		parameters["projectId"] = this.id;
         		GEPPETTO.MessageSocket.send("persist_project", parameters);

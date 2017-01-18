@@ -87,6 +87,7 @@ define(function (require) {
                     for (var i = 0; i < experimentState.setParameters.length; i++) {
                         var setParameter = experimentState.setParameters[i];
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
+<<<<<<< HEAD
                             var path = setParameter.pointer.path;
                             var firstToken = path.split(".")[0];
                             var parameter = undefined;
@@ -102,6 +103,25 @@ define(function (require) {
                                 parameter = Instances.getInstance(path);
                             }
                             parameter.setValue(setParameter.value.value, false);
+=======
+	                        var path = setParameter.pointer.path;
+	                        var firstToken = path.split(".")[0];
+	                        var parameter=undefined;
+	                        try{
+	                        	var firstEntity = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+"."+firstToken);
+	                            if(firstEntity.getMetaType()==GEPPETTO.Resources.LIBRARY_NODE){
+	                            	parameter = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+"."+path);
+	                            }
+	                            else{
+	                            	throw "Path unrecognised: "+path;
+	                            }
+	                        }
+	                        catch(e){
+	                        	//it's not a static parameter, it's an instance
+	                        	parameter = Instances.getInstance(path);
+	                        }
+                        	parameter.setValue(setParameter.value.value, false);
+>>>>>>> refs/remotes/origin/public_project
                         }
                     }
                 }

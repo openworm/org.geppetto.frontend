@@ -82,17 +82,10 @@ define(function(require) {
         componentDidMount: function() {
         	this.attachTooltip();
     		this.evaluateState();
-    		
-    		var self = this;
 
-			if(this.props.ignoreProjectEvents === true){
-				GEPPETTO.on(Events.Project_loaded,function(){
-					self.evaluateState();
-				});
-
-				GEPPETTO.on(Events.Project_made_public,function(){
-					self.evaluateState();
-				});
+			// attach handlers if any
+			if(this.props.configuation.eventHandler!=undefined){
+				this.props.configuration.eventHandler(this);
 			}
         },
 
@@ -111,7 +104,7 @@ define(function(require) {
         },
         
         evaluateState : function(){
-			var hideCondition =this.props.configuration.hideCondition;
+			var hideCondition = this.props.configuration.hideCondition;
 			// figure out if disabled
 			var disableBtn = this.props.disabled;
 			if(disableBtn==undefined){

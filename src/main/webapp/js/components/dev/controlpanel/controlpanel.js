@@ -609,7 +609,7 @@ define(function (require) {
 
                         this.setTogglesState(
                             // state variables being toggled on, untoggle visual instances and params, leave the rest untouched
-                            false, true, false, activeExperimentToggleStatus, this.state.anyExperimentFilterToggled, this.state.anyProjectFilterToggled, false,
+                            false, true, false, activeExperimentToggleStatus, this.state.anyExperimentFilterToggled, this.state.anyProjectFilterToggled, activeExperimentToggleStatus,
                             // whatever is toggled is disabled
                             true, false, true, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, activeExperimentToggleStatus
                         );
@@ -667,8 +667,9 @@ define(function (require) {
                     }
                     break;
                 case 'recordedFilterBtn':
-                    // this filter is independent, if it's enabled it can toggle/untoggle itself
-                    this.setState({ recordedFilterToggled: !this.state.recordedFilterToggled});
+                    // just flip the toggle status on click, this filter is independent, if it's enabled it can toggle/untoggle itself
+                    this.state.recordedFilterToggled = !this.state.recordedFilterToggled;
+                    this.forceUpdate();
                     break;
             }
 

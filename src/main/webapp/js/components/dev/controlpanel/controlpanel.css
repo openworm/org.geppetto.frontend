@@ -176,6 +176,23 @@
 	float: right;
 }
 
+#controlpanel .control-panel-path-column {
+	width: 60%;
+}
+
+#controlpanel .control-panel-parameter-path-column {
+	width: 50%;
+}
+
+#controlpanel .control-panel-value-column {
+	width: 25%;
+}
+
+#controlpanel .control-panel-type-column {
+	width: 100px;
+	text-align: center;
+}
+
 .thumbnail-img {
 	width: 40px;
 	display: block;

@@ -45,7 +45,7 @@ define(function (require) {
     		    STOPPED : 0,
     		    PLAYING : 1,
     		    PAUSED : 2
-    	}
+    	};
     	
         /**
          * @class GEPPETTO.ExperimentController
@@ -268,7 +268,6 @@ define(function (require) {
                 return watched;
             },
 
-
             play: function (experiment, options) {
                 // set options
                 if (options != undefined) {
@@ -406,22 +405,18 @@ define(function (require) {
 
 
                 }
-            }
-            ,
+            },
 
             terminateWorker: function () {
                 if (this.worker != undefined) {
                     this.worker.terminate();
                     this.worker = undefined;
                 }
-            }
-            ,
+            },
 
             getWorker: function () {
                 return this.worker;
-            }
-            ,
-
+            },
 
             /** Retrieves the instance path of a given pointer */
             getInstancePathFromPointer: function (pointer, types) {
@@ -442,12 +437,37 @@ define(function (require) {
                     }
                 }
                 return instancePath;
+            },
+
+            /**
+             * Check if an instance path represent a watched or external instance
+             *
+             * @param projectId
+             * @param experimentId
+             * @param path
+             * @returns {boolean}
+             */
+            isLocalWatchedInstanceOrExternal: function (projectId, experimentId, path) {
+                var watchedOrExternal = false;
+
+                if (projectId == window.Project.getId() && experimentId == window.Project.getActiveExperiment().getId()) {
+                    // local, check if experiment completed and variable watched
+                    if (window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                        var watchList = window.Project.getActiveExperiment().getWatchedVariables();
+                        for (var i = 0; i < watchList.length; i++) {
+                            if (watchList[i] == path) {
+                                watchedOrExternal = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    // if project/experiment ids don't match it's external
+                    watchedOrExternal = true;
+                }
+
+                return watchedOrExternal;
             }
-
-
         }
     }
-
-
-})
-;
+});

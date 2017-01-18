@@ -217,11 +217,13 @@ define(function (require) {
         		this.menuPosition = this.getMenuPosition();
             	var selector = $("#"+this.props.configuration.id+"-dropDown");
             	
-            	var that = this;
-            	selector.css({
-            		top: that.menuPosition.top, right: that.menuPosition.right,
-            		bottom: that.menuPosition.bottom, left: that.menuPosition.left, position: 'fixed'
-            	});
+            	if(this.menuPosition!= null && this.menuPosition!=undefined){
+            		var that = this;
+            		selector.css({
+            			top: that.menuPosition.top, right: that.menuPosition.right,
+            			bottom: that.menuPosition.bottom, left: that.menuPosition.left, position: 'fixed'
+            		});
+            	}
         	}
             this.setState({visible: true});
         },

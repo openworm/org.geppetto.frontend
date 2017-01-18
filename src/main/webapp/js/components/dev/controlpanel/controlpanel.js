@@ -832,7 +832,7 @@ define(function (require) {
                                       disabled={!this.state.paramsFilterEnabled} toggled={this.state.paramsFilterToggled}
                                       configuration={paramConfig} className="control-panel-filter-toggle" />
                     </div>
-                    <div className="clearer right-filter-panel">
+                    <div className="right-filter-panel">
                         <ToggleButton id="recordedFilterBtn" ignoreProjectEvents={true}
                                       disabled={!this.state.recordedFilterEnabled} toggled={this.state.recordedFilterToggled}
                                       configuration={recordedConfig} className="control-panel-filter-toggle" />
@@ -1044,6 +1044,7 @@ define(function (require) {
         },
     ];
     var instancesCols = ['name', 'type', 'controls'];
+    var instancesColsWithoutType = ['name', 'controls'];
     var instancesControlsConfiguration = {
         "VisualCapability": {
             "select": {
@@ -1223,9 +1224,9 @@ define(function (require) {
             "cssClassName": "control-panel-type-column"
         }
     ];
-    var stateVariablesCols = ['name', 'type', 'controls'];
-    var stateVariablesColsWithExperiment = ['name', 'type', 'controls', 'experimentName'];
-    var stateVariablesColsWithProjectAndExperiment = ['name', 'type', 'controls', 'projectName', 'experimentName'];
+    var stateVariablesCols = ['name', 'controls'];
+    var stateVariablesColsWithExperiment = ['name', 'controls', 'experimentName'];
+    var stateVariablesColsWithProjectAndExperiment = ['name', 'controls', 'projectName', 'experimentName'];
     var stateVariablesControlsConfig = {
         "Common": {
             "watch": {
@@ -1348,9 +1349,9 @@ define(function (require) {
             "visible": false
         }
     ];
-    var paramsCols = ['name', 'type', 'value'];
-    var paramsColsWithExperiment = ['name', 'type', 'value', 'experimentName'];
-    var paramsColsWithProjectAndExperiment = ['name', 'type', 'value', 'projectName', 'experimentName'];
+    var paramsCols = ['name',  'value'];
+    var paramsColsWithExperiment = ['name', 'value', 'experimentName'];
+    var paramsColsWithProjectAndExperiment = ['name', 'value', 'projectName', 'experimentName'];
     var parametersControlsConfig = {};
     var parametersControls = { "Common": [] };
 
@@ -1633,7 +1634,7 @@ define(function (require) {
                     break;
                 case 'ACTIVE_RECORDED_STATE_VARIABLES':
                     // displays actual instances
-                    this.resetControlPanel(instancesCols, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
+                    this.resetControlPanel(instancesColsWithoutType, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
 
                     var recordedStateVars = [];
                     if (window.Project.getActiveExperiment() != undefined) {

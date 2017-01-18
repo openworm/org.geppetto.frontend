@@ -79,6 +79,10 @@ define(function(require) {
     		GEPPETTO.on(Events.Project_loaded,function(){
     			self.evaluateState();
     		});
+    		
+    		GEPPETTO.on(Events.Project_made_public,function(){
+    			self.evaluateState();
+    		});
         },
 
         clickEvent : function(){

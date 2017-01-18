@@ -2,3 +2,7 @@
     color: white !important;
     background: orange !important;
 }
+
+.toggle-button-hidden {
+    display: none;
+}

@@ -104,14 +104,25 @@ define(function(require) {
         },
         
         evaluateState : function(){
-			var hideCondition = this.props.configuration.hideCondition;
 			// figure out if disabled
 			var disableBtn = this.props.disabled;
 			if(disableBtn==undefined){
-				// fall back on hideCondition from config if any
-				if(hideCondition!=''){
+				// fall back on disableCondition from config if any
+				var disableCondition = this.props.configuration.disableCondition;
+				if(disableCondition!='' && disableCondition!=undefined){
+					disableCondition = disableCondition.replace(/['"]+/g, '');
+					disableBtn = eval(disableCondition);
+				}
+			}
+
+			// figure out if hidden
+			var hideBtn = this.props.hidden;
+			if(hideBtn==undefined){
+				// fall back on disableCondition from config if any
+				var hideCondition = this.props.configuration.hideCondition;
+				if(hideCondition!='' && hideCondition!=undefined){
 					hideCondition = hideCondition.replace(/['"]+/g, '');
-					disableBtn = eval(hideCondition);
+					hideBtn = eval(hideCondition);
 				}
 			}
 
@@ -140,7 +151,7 @@ define(function(require) {
         	}
         	
         	if(this.isMounted()){
-        		this.setState({icon:this.icon, action:this.action, label: this.label, tooltip: this.tooltip, disabled: disableBtn});
+        		this.setState({icon:this.icon, action:this.action, label: this.label, tooltip: this.tooltip, disabled: disableBtn, hidden: hideBtn});
         	}
         },
         
@@ -149,11 +160,14 @@ define(function(require) {
 			if(this.props.toggled){
 				cssClass += " toggle-button-toggled";
 			}
+			if(this.props.hidden===true){
+				cssClass += " toggle-button-hidden";
+			}
 
         	return (
         			<div className="toggleButton">
         				<button id={this.props.configuration.id} className={cssClass} type="button"
-        				rel="tooltip" onClick={this.clickEvent} disabled={this.props.disabled || this.state.disabled}>
+        				rel="tooltip" onClick={this.clickEvent} disabled={this.props.disabled===true || this.state.disabled===true}>
         					<i className={this.state.icon}></i>{this.state.label}
         				</button>
         			</div>

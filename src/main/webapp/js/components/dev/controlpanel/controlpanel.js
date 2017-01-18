@@ -547,6 +547,13 @@ define(function (require) {
                 anyExperimentFilterToggled: false,
                 anyProjectFilterToggled: false,
                 recordedFilterToggled: false,
+                visualFilterVisible: true,
+                stateVarsFilterVisible: true,
+                paramsFilterVisible: true,
+                activeExperimentFilterVisible: false,
+                anyExperimentFilterVisible: false,
+                anyProjectFilterVisible: false,
+                recordedFilterVisible: false,
             };
         },
 
@@ -563,7 +570,14 @@ define(function (require) {
                                    activeExperimentFilterEnabledArg,
                                    anyExperimentFilterEnabledArg,
                                    anyProjectFilterEnabledArg,
-                                   recordedFilterEnabledArg) {
+                                   recordedFilterEnabledArg,
+                                   visualFilterVisibleArg,
+                                   stateVarsFilterVisibleArg,
+                                   paramsFilterVisibleArg,
+                                   activeExperimentFilterVisibleArg,
+                                   anyExperimentFilterVisibleArg,
+                                   anyProjectFilterVisibleArg,
+                                   recordedFilterVisibleArg) {
 
             // manually set so it's available immediately after calling this method without waiting for next render
             // NOTE: doing set state the state is not available till the next render cycle
@@ -581,6 +595,13 @@ define(function (require) {
             this.state.anyExperimentFilterEnabled = anyExperimentFilterEnabledArg;
             this.state.anyProjectFilterEnabled = anyProjectFilterEnabledArg;
             this.state.recordedFilterEnabled = recordedFilterEnabledArg;
+            this.state.visualFilterVisible = visualFilterVisibleArg;
+            this.state.stateVarsFilterVisible = stateVarsFilterVisibleArg;
+            this.state.paramsFilterVisible = paramsFilterVisibleArg;
+            this.state.activeExperimentFilterVisible = activeExperimentFilterVisibleArg;
+            this.state.anyExperimentFilterVisible = anyExperimentFilterVisibleArg;
+            this.state.anyProjectFilterVisible = anyProjectFilterVisibleArg;
+            this.state.recordedFilterVisible = recordedFilterVisibleArg;
 
             // force an update because we do want to re-render the filter component
             this.forceUpdate();
@@ -595,7 +616,9 @@ define(function (require) {
                             // visual instance being toggled on, untoggle everything else
                             true, false, false, false, false, false, false,
                             // disable itself (so cannot be untoggled), enable state vars and params, disable the rest
-                            false, true, true, false, false, false, false
+                            false, true, true, false, false, false, false,
+                            // set visibility only to visual instances, state vars and params as the rest doesnt apply
+                            true, true, true, false, false, false, false
                         );
                     }
                     break;
@@ -611,7 +634,9 @@ define(function (require) {
                             // state variables being toggled on, untoggle visual instances and params, leave the rest untouched
                             false, true, false, activeExperimentToggleStatus, this.state.anyExperimentFilterToggled, this.state.anyProjectFilterToggled, activeExperimentToggleStatus,
                             // whatever is toggled is disabled
-                            true, false, true, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, activeExperimentToggleStatus
+                            true, false, true, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, activeExperimentToggleStatus,
+                            // set visibility only to buttons that apply
+                            true, true, true, true, true, true, activeExperimentToggleStatus
                         );
                     }
                     break;
@@ -627,17 +652,25 @@ define(function (require) {
                             // parameters being toggled on, untoggle visual instances and state vars, leave the rest untouched and untoggle recording
                             false, false, true, activeExperimentToggleStatus, this.state.anyExperimentFilterToggled, this.state.anyProjectFilterToggled, false,
                             // whatever is toggled is also disabled
-                            true, true, false, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, false
+                            true, true, false, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, false,
+                            // set visibility only to buttons that apply
+                            true, true, true, true, true, true, false
                         );
                     }
                     break;
                 case 'activeExperimentFilterBtn':
                     if(!this.state.activeExperimentFilterToggled){
+                        // recorded filter is only visible for state vars in the active experiment
+                        // NOTE: this variable assignment is verbose but more readable
+                        var recordedVisibility = this.state.stateVarsFilterToggled ? true : false;
+
                         this.setTogglesState(
                             // active experiment filter being toggled on, untoggle any experiment and any project, leave the rest alone
                             false, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, true, false, false, this.state.recordedFilterToggled,
                             // whatever is toggled needs to be disabled except recorded which is independent
-                            true, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, false, true, true, this.recordedFilterEnabled
+                            true, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, false, true, true, recordedVisibility,
+                            // keep visibility as is for record filter, the rest always visible
+                            true, true, true, true, true, true, recordedVisibility
                         );
                     }
                     break;
@@ -650,7 +683,9 @@ define(function (require) {
                             // any experiment filter being toggled on, untoggle active experiment and any project, leave the rest alone
                             this.state.visualFilterToggled, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, false, true, false, recordingToggleStatus,
                             // enable everything except recording disabled is and disable itself (it can only be untoggled by clicking something else)
-                            !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, false, true, false
+                            !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, false, true, false,
+                            // recorded never applies so hide (external stuff is always recorded)
+                            true, true, true, true, true, true, false
                         );
                     }
                     break;
@@ -663,7 +698,10 @@ define(function (require) {
                             // any project filter being toggled on, untoggle active experiment and any experiment, leave the rest alone
                             this.state.visualFilterToggled, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, false, false, true, recordingToggleStatus,
                             // enable everything except recording disabled and disable itself (it can only be untoggled by clicking something else)
-                            !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, true, false, false);
+                            !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, true, false, false,
+                            // recorded never applies so hide (external stuff is always recorded)
+                            true, true, true, true, true, true, false
+                        );
                     }
                     break;
                 case 'recordedFilterBtn':
@@ -823,27 +861,27 @@ define(function (require) {
             return (
                 <div className="built-in-filter">
                     <div className="left-filter-panel">
-                        <ToggleButton id="visualInstancesFilterBtn" ignoreProjectEvents={true}
+                        <ToggleButton id="visualInstancesFilterBtn" ignoreProjectEvents={true} hidden={!this.state.visualFilterVisible}
                                       disabled={!this.state.visualFilterEnabled} toggled={this.state.visualFilterToggled}
                                       configuration={vizConfig} className="control-panel-filter-toggle" />
-                        <ToggleButton id="stateVariablesFilterBtn" ignoreProjectEvents={true}
+                        <ToggleButton id="stateVariablesFilterBtn" ignoreProjectEvents={true} hidden={!this.state.stateVarsFilterVisible}
                                       disabled={!this.state.stateVarsFilterEnabled} toggled={this.state.stateVarsFilterToggled}
                                       configuration={stateVarConfig} className="control-panel-filter-toggle" />
-                        <ToggleButton id="parametersFilterBtn" ignoreProjectEvents={true}
+                        <ToggleButton id="parametersFilterBtn" ignoreProjectEvents={true} hidden={!this.state.paramsFilterVisible}
                                       disabled={!this.state.paramsFilterEnabled} toggled={this.state.paramsFilterToggled}
                                       configuration={paramConfig} className="control-panel-filter-toggle" />
                     </div>
                     <div className="right-filter-panel">
-                        <ToggleButton id="recordedFilterBtn" ignoreProjectEvents={true}
+                        <ToggleButton id="recordedFilterBtn" ignoreProjectEvents={true} hidden={!this.state.recordedFilterVisible}
                                       disabled={!this.state.recordedFilterEnabled} toggled={this.state.recordedFilterToggled}
                                       configuration={recordedConfig} className="control-panel-filter-toggle" />
-                        <ToggleButton id="activeExperimentFilterBtn" ignoreProjectEvents={true}
+                        <ToggleButton id="activeExperimentFilterBtn" ignoreProjectEvents={true} hidden={!this.state.activeExperimentFilterVisible}
                                       disabled={!this.state.activeExperimentFilterEnabled} toggled={this.state.activeExperimentFilterToggled}
                                       configuration={activeConfig} className="control-panel-filter-toggle" />
-                        <ToggleButton id="anyExperimentFilterBtn" ignoreProjectEvents={true}
+                        <ToggleButton id="anyExperimentFilterBtn" ignoreProjectEvents={true} hidden={!this.state.anyExperimentFilterVisible}
                                       disabled={!this.state.anyExperimentFilterEnabled} toggled={this.state.anyExperimentFilterToggled}
                                       configuration={anyExpConfig} className="control-panel-filter-toggle" />
-                        <ToggleButton id="anyProjectFilterBtn" ignoreProjectEvents={true}
+                        <ToggleButton id="anyProjectFilterBtn" ignoreProjectEvents={true} hidden={!this.state.anyProjectFilterVisible}
                                       disabled={!this.state.anyProjectFilterEnabled} toggled={this.state.anyProjectFilterToggled}
                                       configuration={anyProjConfig} className="control-panel-filter-toggle" />
                     </div>

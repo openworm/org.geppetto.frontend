@@ -47,6 +47,7 @@ define(function (require) {
     var Griddle = require('griddle');
     var GEPPETTO = require('geppetto');
     var MenuButton = require('jsx!./../menubutton/MenuButton');
+    var ToggleButton = require('jsx!./../togglebutton/ToggleButton');
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
     var PlotCtrlr = require('widgets/plot/controllers/PlotsController');
 
@@ -523,6 +524,310 @@ define(function (require) {
                             </span>
                         )
                     })}
+                </div>
+            )
+        }
+    });
+
+    GEPPETTO.FilterComponent = React.createClass({
+        optionsList: {
+            VISUAL: '',
+        },
+
+        togglesMap: {
+            visualInstancesFilterBtn: {
+                toggled: this.state.visualFilterToggled,
+                enabled: this.state.visualFilterEnabled
+            },
+            stateVariablesFilterBtn: {
+                toggled: this.state.stateVarsFilterToggled,
+                enabled: this.state.stateVarsFilterEnabled
+            },
+            parametersFilterBtn: {
+                toggled: this.state.paramsFilterToggled,
+                enabled: this.state.paramsFilterEnabled
+            },
+            activeExperimentFilterBtn: {
+                toggled: this.state.activeExperimentFilterToggled,
+                enabled: this.state.activeExperimentFilterEnabled
+            },
+            anyExperimentFilterBtn: {
+                toggled: this.state.anyExperimentFilterToggled,
+                enabled: this.state.anyExperimentFilterEnabled
+            },
+            anyProjectFilterBtn: {
+                toggled: this.state.anyProjectFilterToggled,
+                enabled: this.state.anyProjectFilterEnabled
+            },
+            recordedFilterBtn: {
+                toggled: this.state.recordedFilterToggled,
+                enabled: this.state.recordedFilterEnabled
+            }
+        },
+
+        getInitialState: function () {
+            return {
+                visualFilterEnabled: true,
+                stateVarsFilterEnabled: true,
+                paramsFilterEnabled: true,
+                activeExperimentFilterEnabled: true,
+                anyExperimentFilterEnabled: true,
+                anyProjectFilterEnabled: true,
+                recordedFilterEnabled: true,
+                visualFilterToggled: false,
+                stateVarsFilterToggled: false,
+                paramsFilterToggled: false,
+                activeExperimentFilterToggled: false,
+                anyExperimentFilterToggled: false,
+                anyProjectFilterToggled: false,
+                recordedFilterToggled: false,
+            };
+        },
+
+        setButtonsEnabledState: function(visualFilterEnabledArg, stateVarsFilterEnabledArg, paramsFilterEnabledArg, activeExperimentFilterEnabledArg, anyExperimentFilterEnabledArg, anyProjectFilterEnabledArg, recordedFilterEnabledArg){
+            this.setState(
+                {
+                    visualFilterEnabled: visualFilterEnabledArg,
+                    stateVarsFilterEnabled: stateVarsFilterEnabledArg,
+                    paramsFilterEnabled: paramsFilterEnabledArg,
+                    activeExperimentFilterEnabled: activeExperimentFilterEnabledArg,
+                    anyExperimentFilterEnabled: anyExperimentFilterEnabledArg,
+                    anyProjectFilterEnabled: anyProjectFilterEnabledArg,
+                    recordedFilterEnabled: recordedFilterEnabledArg
+                }
+            );
+        },
+
+        setButtonsToggledState: function(visualFilterToggledArg, stateVarsFilterToggledArg, paramsFilterToggledArg, activeExperimentFilterToggledArg, anyExperimentFilterToggledArg, anyProjectFilterToggledArg, recordedFilterToggledArg){
+            this.setState(
+                {
+                    visualFilterToggled: visualFilterToggledArg,
+                    stateVarsFilterToggled: stateVarsFilterToggledArg,
+                    paramsFilterToggled: paramsFilterToggledArg,
+                    activeExperimentFilterToggled: activeExperimentFilterToggledArg,
+                    anyExperimentFilterToggled: anyExperimentFilterToggledArg,
+                    anyProjectFilterToggled: anyProjectFilterToggledArg,
+                    recordedFilterToggled: recordedFilterToggledArg
+                }
+            );
+        },
+
+        computeResult: function(controlId){
+            // logic for disable/enable stuff here
+            switch(controlId) {
+                case 'visualInstancesFilterBtn':
+                    if(!this.togglesMap[controlId]){
+                        // visual instance being toggled on, untoggle everything else
+                        this.setButtonsToggledState(true, false, false, false, false, false, false);
+                        // disable itself (so cannot be untoggled), enable state vars and params, disable the rest
+                        this.setButtonsEnabledState(false, true, true, false, false, false, false);
+                    }
+                    break;
+                case 'stateVariablesFilterBtn':
+                    if(!this.togglesMap[controlId]){
+                        // state variables being toggled on, untoggle visual instances and params, leave the rest untouched
+                        this.setButtonsToggledState(false, true, false, this.togglesMap['activeExperimentFilterBtn'].toggled, this.togglesMap['anyExperimentFilterBtn'].toggled, this.togglesMap['anyProjectFilterBtn'].toggled, this.togglesMap['recordedFilterBtn'].toggled);
+                        // disables itself (cannot be untoggled unless other stuff is clicked) enable everything else
+                        this.setButtonsEnabledState(true, false, true, true, true, true, true);
+                    }
+                    break;
+                case 'parametersFilterBtn':
+                    if(!this.togglesMap[controlId]){
+                        // parameters being toggled on, untoggle visual instances and state vars, leave the rest untouched and untoggle recording
+                        this.setButtonsToggledState(false, false, true, this.togglesMap['activeExperimentFilterBtn'].toggled, this.togglesMap['anyExperimentFilterBtn'].toggled, this.togglesMap['anyProjectFilterBtn'].toggled, false);
+                        // enable everything except recording and itself (it can only be untoggled by clicking something else)
+                        this.setButtonsEnabledState(true, true, false, true, true, true, false);
+                    }
+                    break;
+                case 'activeExperimentFilterBtn':
+                    if(!this.togglesMap[controlId]){
+                        // active experiment filter being toggled on, untoggle any experiment and any project, leave the rest alone
+                        this.setButtonsToggledState(this.togglesMap['visualInstancesFilterBtn'].toggled, this.togglesMap['stateVariablesFilterBtn'].toggled, this.togglesMap['parametersFilterBtn'].toggled, true, false, false, this.togglesMap['recordedFilterBtn'].toggled);
+                        // enable everything except recording keep as is and disable itself (it can only be untoggled by clicking something else)
+                        this.setButtonsEnabledState(true, true, true, false, true, true, this.togglesMap['recordedFilterBtn'].enabled);
+                    }
+                    break;
+                case 'anyExperimentFilterBtn':
+                    if(!this.togglesMap[controlId]){
+                        // auto-toggle recording if state vars filter is toggled (can only look at recorded state vars for external experiments) otherwise leave as is
+                        var recordingToggleStatus = this.togglesMap['visualInstancesFilterBtn'].toggled ? true : this.togglesMap['recordedFilterBtn'].toggled;
+                        // any experiment filter being toggled on, untoggle active experiment and any project, leave the rest alone
+                        this.setButtonsToggledState(this.togglesMap['visualInstancesFilterBtn'].toggled, this.togglesMap['stateVariablesFilterBtn'].toggled, this.togglesMap['parametersFilterBtn'].toggled, false, true, false, recordingToggleStatus);
+                        // enable everything except recording disabled is and disable itself (it can only be untoggled by clicking something else)
+                        this.setButtonsEnabledState(true, true, true, true, false, true, false);
+                    }
+                    break;
+                case 'anyProjectFilterBtn':
+                    if(!this.togglesMap[controlId]){
+                        // auto-toggle recording if state vars filter is toggled (can only look at recorded state vars for external projects/experiments) otherwise leave as is
+                        var recordingToggleStatus = this.togglesMap['visualInstancesFilterBtn'].toggled ? true : this.togglesMap['recordedFilterBtn'].toggled;
+                        // any project filter being toggled on, untoggle active experiment and any experiment, leave the rest alone
+                        this.setButtonsToggledState(this.togglesMap['visualInstancesFilterBtn'].toggled, this.togglesMap['stateVariablesFilterBtn'].toggled, this.togglesMap['parametersFilterBtn'].toggled, false, false, true, recordingToggleStatus);
+                        // enable everything except recording disabled and disable itself (it can only be untoggled by clicking something else)
+                        this.setButtonsEnabledState(true, true, true, true, true, false, false);
+                    }
+                    break;
+                case 'recordedFilterBtn':
+                    // this filter is independent, if it's enabled it can toggle/untoggle itself
+                    this.setState({ recordedFilterToggled: !this.togglesMap[controlId]});
+                    break;
+            }
+
+            // logic for routing here to the injected filter handler based on what's toggled and whatnot
+            var filterHandler = this.props.filterHandler;
+            if(this.state.visualFilterToggled){
+                filterHandler('VISUAL_INSTANCES');
+            } else if(this.state.stateVarsFilterToggled){
+                if(this.state.activeExperimentFilterToggled && this.state.recordedFilterToggled){
+                    filterHandler('ACTIVE_RECORDED_STATE_VARIABLES');
+                } else if(this.state.activeExperimentFilterToggled && !this.state.recordedFilterToggled){
+                    filterHandler('ACTIVE_STATE_VARIABLES');
+                } else if(this.state.anyExperimentFilterToggled){
+                    filterHandler('ANY_EXPERIMENT_RECORDED_STATE_VARIABLES');
+                } else if(this.state.anyProjectFilterToggled){
+                    filterHandler('ANY_PROJECT_GLOBAL_STATE_VARIABLES');
+                }
+            } else if (this.state.paramsFilterToggled){
+                if(this.state.activeExperimentFilterToggled){
+                    filterHandler('ACTIVE_PARAMETERS');
+                } else if(this.state.anyExperimentFilterToggled){
+                    filterHandler('ANY_EXPERIMENT_PARAMETERS');
+                } else if(this.state.anyProjectFilterToggled){
+                    filterHandler('ANY_PROJECT_PARAMETERS');
+                }
+            }
+        },
+
+        render: function () {
+            var that = this;
+            var vizConfig = {
+                condition: function(){return that.state.visualFilterToggled;},
+                true: {
+                    icon: '',
+                    action: '',
+                    label: 'Visual Instances',
+                    tooltip: ''
+                },
+                false: {
+                    icon: '',
+                    action: '',
+                    label: 'Visual Instances',
+                    tooltip: ''
+                },
+                clickHandler: this.computeResult
+            };
+            var stateVarConfig = {
+                condition: function(){return that.state.stateVarsFilterToggled;},
+                true: {
+                    icon: '',
+                    action: '',
+                    label: 'State Vars',
+                    tooltip: ''
+                },
+                false: {
+                    icon: '',
+                    action: '',
+                    label: 'State Vars',
+                    tooltip: ''
+                },
+                clickHandler: this.computeResult
+            };
+            var paramConfig = {
+                condition: function(){return that.state.paramsFilterToggled;},
+                true: {
+                    icon: '',
+                    action: '',
+                    label: 'Parameters',
+                    tooltip: ''
+                },
+                false: {
+                    icon: '',
+                    action: '',
+                    label: 'Parameters',
+                    tooltip: ''
+                },
+                clickHandler: this.computeResult
+            };
+            var activeConfig = {
+                condition: function(){return that.state.activeExperimentFilterToggled;},
+                true: {
+                    icon: '',
+                    action: '',
+                    label: 'Active Experiment',
+                    tooltip: 'Active Experiment toggled'
+                },
+                false: {
+                    icon: '',
+                    action: '',
+                    label: 'Active Experiment',
+                    tooltip: ''
+                },
+                clickHandler: this.computeResult
+            };
+            var anyExpConfig = {
+                condition: function(){return that.state.anyExperimentFilterToggled;},
+                true: {
+                    icon: '',
+                    action: '',
+                    label: 'Any Experiment',
+                    tooltip: ''
+                },
+                false: {
+                    icon: '',
+                    action: '',
+                    label: 'Any Experiment',
+                    tooltip: ''
+                },
+                clickHandler: this.computeResult
+            };
+            var anyProjConfig = {
+                condition: function(){return that.state.anyProjectFilterToggled;},
+                true: {
+                    icon: '',
+                    action: '',
+                    label: 'Any Project',
+                    tooltip: ''
+                },
+                false: {
+                    icon: '',
+                    action: '',
+                    label: 'Any Project',
+                    tooltip: ''
+                },
+                clickHandler: this.computeResult
+            };
+            var recordedConfig = {
+                condition: function(){return that.state.recordedFilterToggled;},
+                true: {
+                    icon: '',
+                    action: '',
+                    label: 'Recorded',
+                    tooltip: ''
+                },
+                false: {
+                    icon: '',
+                    action: '',
+                    label: 'Recorded',
+                    tooltip: ''
+                },
+                clickHandler: this.computeResult
+            };
+
+            return (
+                <div>
+                    <div>
+                        <ToggleButton id="visualInstancesFilterBtn" disabled={!this.state.visualFilterEnabled} toggled={this.state.visualFilterToggled} configuration={vizConfig} />
+                        <ToggleButton id="stateVariablesFilterBtn" disabled={!this.state.stateVarsFilterEnabled} toggled={this.state.stateVarsFilterToggled} configuration={stateVarConfig} />
+                        <ToggleButton id="parametersFilterBtn" disabled={!this.state.paramsFilterEnabled} toggled={this.state.paramsFilterToggled} configuration={paramConfig} />
+                    </div>
+                    <div>
+                        <ToggleButton id="activeExperimentFilterBtn" disabled={!this.state.activeExperimentFilterEnabled} toggled={this.state.activeExperimentFilterToggled} configuration={activeConfig} />
+                        <ToggleButton id="anyExperimentFilterBtn" disabled={!this.state.anyExperimentFilterEnabled} toggled={this.state.anyExperimentFilterToggled} configuration={anyExpConfig} />
+                        <ToggleButton id="anyProjectFilterBtn" disabled={!this.state.anyProjectFilterEnabled} toggled={this.state.anyProjectFilterToggled} configuration={anyProjConfig} />
+                    </div>
+                    <div>
+                        <ToggleButton id="recordedFilterBtn" disabled={!this.state.recordedFilterEnabled} toggled={this.state.recordedFilterToggled} configuration={recordedConfig} />
+                    </div>
                 </div>
             )
         }
@@ -1248,7 +1553,7 @@ define(function (require) {
 
         filterOptionsHandler: function (value) {
             switch (value) {
-                case 'show_visual_instances':
+                case 'VISUAL_INSTANCES':
                     // displays actual instances
                     resetControlPanel(instancesCols, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
 
@@ -1276,7 +1581,7 @@ define(function (require) {
                         this.setData(visualInstances);
                     }, 5);
                     break;
-                case 'show_local_state_variables':
+                case 'ACTIVE_STATE_VARIABLES':
                     // displays potential instances
                     resetControlPanel(stateVariablesCols, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
 
@@ -1310,7 +1615,7 @@ define(function (require) {
                         this.setData(potentialStateVarInstances);
                     }, 5);
                     break;
-                case 'show_recorded_state_variables':
+                case 'ACTIVE_RECORDED_STATE_VARIABLES':
                     // displays actual instances
                     resetControlPanel(instancesCols, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
 
@@ -1338,7 +1643,7 @@ define(function (require) {
                         this.setData(recordedStateVars);
                     }, 5);
                     break;
-                case 'show_project_recorded_state_variables':
+                case 'ANY_EXPERIMENT_RECORDED_STATE_VARIABLES':
                     // this will display potential instances with state variables col meta / controls
                     resetControlPanel(stateVariablesColsWithExperiment, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
 
@@ -1349,7 +1654,7 @@ define(function (require) {
                         this.setData(projectStateVars);
                     }, 5);
                     break;
-                case 'show_global_recorded_state_variables':
+                case 'ANY_PROJECT_GLOBAL_STATE_VARIABLES':
                     // this will display potential instances with state variables col meta / controls
                     resetControlPanel(stateVariablesColsWithProjectAndExperiment, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
 
@@ -1360,7 +1665,7 @@ define(function (require) {
                         this.setData(globalStateVars);
                     }, 5);
                     break;
-                case 'show_parameters':
+                case 'ACTIVE_PARAMETERS':
                     // displays indexed parameters / similar to potential instances
                     resetControlPanel(paramsCols, parametersColMeta, parametersControls, parametersControlsConfig);
 
@@ -1388,7 +1693,7 @@ define(function (require) {
                         this.setData(potentialParamInstances);
                     }, 5);
                     break;
-                case 'show_project_parameters':
+                case 'ANY_EXPERIMENT_PARAMETERS':
                     // this will display potential instances with parameters col meta / controls
                     resetControlPanel(paramsColsWithExperiment, parametersColMeta, parametersControls, parametersControlsConfig);
 
@@ -1431,7 +1736,7 @@ define(function (require) {
                         this.setData(projectEditedParameters);
                     }, 5);
                     break;
-                case 'show_global_parameters':
+                case 'ANY_PROJECT_PARAMETERS':
                     // this will display potential instances with parameters col meta / controls
                     resetControlPanel(paramsColsWithProjectAndExperiment, parametersColMeta, parametersControls, parametersControlsConfig);
 
@@ -1507,7 +1812,7 @@ define(function (require) {
                     id: "controlPanelMenuButton",
                     openByDefault: false,
                     closeOnClick: true,
-                    label: ' Filters',
+                    label: ' Options',
                     iconOn: 'fa fa-caret-square-o-up',
                     iconOff: 'fa fa-caret-square-o-down',
                     menuPosition: null,
@@ -1520,9 +1825,17 @@ define(function (require) {
                 );
             }
 
+            var filterMarkup = '';
+            if (this.props.useBuiltInFilters === true) {
+                filterMarkup = (
+                    <FilterComponent id="controlPanelBuiltInFilter" filterHandler={this.filterOptionsHandler} />
+                );
+            }
+
             return (
                 <div id="controlpanel-container">
                     {menuButtonMarkup}
+                    {filterMarkup}
                     <Griddle columns={this.state.columns} results={this.state.data}
                     showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={400}
                     useGriddleStyles={false} columnMetadata={this.state.columnMeta} />

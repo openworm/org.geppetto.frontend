@@ -273,8 +273,6 @@ public class AdminServlet
 			users = dataManager.getAllUsers();
 			List<? extends IGeppettoProject> projects;
 			List<? extends IExperiment> experiments;
-			String totalExperiments = "";
-			String totalSimulators = "";
 			String simulator;
 			for(IUser user : users)
 			{
@@ -306,25 +304,12 @@ public class AdminServlet
 								{
 									simulator = e.getAspectConfigurations().get(0).getSimulatorConfiguration().getSimulatorId();
 									simulation.setSimulator(simulator);
-									totalSimulators += simulator + '\n';
 								}
-
-								totalExperiments += e.getName() + '\n';
-
 							}
 
 						}
-						totalExperiments += e.getName() + '\n';
 					}
 				}
-
-				for(AdminSimulationObject object : simulationObjects)
-				{
-					object.setExperiments(totalExperiments);
-					object.setSimulators(totalSimulators);
-				}
-				totalExperiments = "";
-				totalSimulators = "";
 			}
 
 		}

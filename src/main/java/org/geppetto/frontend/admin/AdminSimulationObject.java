@@ -7,8 +7,6 @@ public class AdminSimulationObject {
 	private String experimentLastRun;
 	private String experiment;
 	private String simulator;
-	private String experiments;
-	private String simulators;
 	private String status;
 	private String project;
 
@@ -23,18 +21,6 @@ public class AdminSimulationObject {
 	}
 	public void setStatus(String status) {
 		this.status = status;
-	}
-	public String getExperiments() {
-		return experiments;
-	}
-	public void setExperiments(String experiments) {
-		this.experiments = experiments;
-	}
-	public String getSimulators() {
-		return simulators;
-	}
-	public void setSimulators(String simulators) {
-		this.simulators = simulators;
 	}
 	public String getLogin() {
 		return login;

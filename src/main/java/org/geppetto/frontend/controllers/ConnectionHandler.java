@@ -190,12 +190,17 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			geppettoManager.loadProject(requestID, geppettoProject);
 			boolean readOnly = true;
-			List<? extends IGeppettoProject> userProjects = geppettoManager.getUser().getGeppettoProjects();
-			for(IGeppettoProject p : userProjects){
-				if(p.getId() == geppettoProject.getId()){
-					readOnly = false;
+			if(geppettoProject.isVolatile()){
+				readOnly = false;
+			}else{
+				List<? extends IGeppettoProject> userProjects = geppettoManager.getUser().getGeppettoProjects();
+				for(IGeppettoProject p : userProjects){
+					if(p.getId() == geppettoProject.getId()){
+						readOnly = false;
+					}
 				}
 			}
+			
 			
 			// serialize project prior to sending it to client
 			Gson gson = new Gson();

@@ -154,13 +154,13 @@ define(function(require) {
         	}
         	
         	if(this.isMounted()){
-        		this.setState({icon:this.icon, action:this.action, label: this.label, tooltip: this.tooltip, disabled: disableBtn, hidden: hideBtn});
+        		this.setState({toggled: conditionResult, icon:this.icon, action:this.action, label: this.label, tooltip: this.tooltip, disabled: disableBtn, hidden: hideBtn});
         	}
         },
         
         render:  function () {
 			var cssClass = this.props.configuration.id + " btn pull-right";
-			if(this.props.toggled){
+			if(this.props.toggled===true || this.state.toggled){
 				cssClass += " toggle-button-toggled";
 			}
 			if(this.props.hidden===true){

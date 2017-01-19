@@ -685,7 +685,7 @@ define(function (require) {
                             // enable everything except recording disabled is and disable itself (it can only be untoggled by clicking something else)
                             !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, false, true, false,
                             // recorded never applies so hide (external stuff is always recorded)
-                            true, true, true, true, true, true, false
+                            true, true, true, true, true, true, recordingToggleStatus
                         );
                     }
                     break;
@@ -699,8 +699,8 @@ define(function (require) {
                             this.state.visualFilterToggled, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, false, false, true, recordingToggleStatus,
                             // enable everything except recording disabled and disable itself (it can only be untoggled by clicking something else)
                             !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, true, false, false,
-                            // recorded never applies so hide (external stuff is always recorded)
-                            true, true, true, true, true, true, false
+                            // recorded is visible is state vars are selected but disabled (external stuff is always recorded)
+                            true, true, true, true, true, true, recordingToggleStatus
                         );
                     }
                     break;

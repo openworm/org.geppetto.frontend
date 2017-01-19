@@ -114,6 +114,7 @@ define(function(require) {
 			}
 
         	this.props.configuration.clickHandler(this.props.id);
+        	$('div.ui-tooltip').remove();
         },
         
         showToolTip : function(){

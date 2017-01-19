@@ -15,10 +15,10 @@ define(function (require, exports, module) {
 			EventsSync.__super__.initialize.apply(this);
 			_this = this;
 
-			GEPPETTO.on(Events.Select, function (instance, groupNameIdentifier) {
+			GEPPETTO.on(Events.Select, function (instance, geometryIdentifier, point) {
 				var selection = G.getSelection();
 				if (selection.length > 0){
-					_this.send({ event: Events.Select, data: instance.id, groupNameIdentifier: groupNameIdentifier});
+					_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point:point});
 				}
 			});
 		}

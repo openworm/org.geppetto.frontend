@@ -406,7 +406,7 @@ define(function (require) {
             RUN_PRIVILEGES_NOT_SUPPORTED : "User doesn't have RUN_EXPERIMENT privileges",
             UPLOAD_PRIVILEGES_NOT_SUPPORTED : "User doesn't have UPLOAD privileges",
             PROJECT_NOT_PERSISTED : "Project not persisted, run command Project.persist() or use Save button on top right corner.",
-            USER_NOT_LOGIN : "User not logged in.",
+            USER_NOT_LOGIN : "No user logged in.",
 
 
             /**

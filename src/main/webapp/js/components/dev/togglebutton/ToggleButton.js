@@ -53,19 +53,36 @@ define(function(require) {
              $("#"+self.props.configuration.id).uitooltip({
                  position: { my: "right center", at : "left-25 center"},
                  tooltipClass: "tooltip-toggle",
-                 show: {
-                     effect: "slide",
-                     direction: "right",
-                     delay: 200
+                 show: null, // show immediately
+                 open: function(event, ui)
+                 {
+                     if (typeof(event.originalEvent) === 'undefined')
+                     {
+                         return false;
+                     }
+
+                     var $id = $(ui.tooltip).attr('id');
+
+                     // close any lingering tooltips
+                     $('div.ui-tooltip').not('#' + $id).remove();
                  },
-                 hide: {
-                     effect: "slide",
-                     direction: "right",
-                     delay: 200
+                 close: function(event, ui)
+                 {
+                     ui.tooltip.hover(function()
+                     {
+                         $(this).stop(true).fadeTo(400, 1); 
+                     },
+                     function()
+                     {
+                         $(this).fadeOut('400', function()
+                         {
+                             $(this).remove();
+                         });
+                     });
                  },
                  content: function () {
                      return self.state.tooltip;
-                 },
+                 }
              });
          },
          
@@ -80,7 +97,7 @@ define(function(require) {
         },
         
         componentDidMount: function() {
-        	//this.attachTooltip();
+        	this.attachTooltip();
     		this.evaluateState();
     		
 			// attach handlers if any

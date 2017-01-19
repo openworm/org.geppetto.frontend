@@ -318,7 +318,7 @@ define(['backbone'], function (require) {
         },
 
         persist: function () {
-        	if(this.writePermission && GEPPETTO.UserController.isLoggedIn() && !this.isReadOnly()){
+        	if(this.writePermission && GEPPETTO.UserController.isLoggedIn()){
         		var parameters = {};
         		parameters["projectId"] = this.id;
         		GEPPETTO.MessageSocket.send("persist_project", parameters);

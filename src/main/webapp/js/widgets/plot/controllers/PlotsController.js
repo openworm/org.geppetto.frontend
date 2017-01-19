@@ -76,7 +76,7 @@ define(function (require) {
             //add commands to console autocomplete and help option
             GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/widgets/plot/Plot.js"));
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(p.getId(), p);
+            GEPPETTO.Console.updateTags(p.getId(), p);            
             return p;
         },
 
@@ -170,6 +170,65 @@ define(function (require) {
             }
 
             return groups;
+        },
+
+        /**
+         * Plot a state variable given project/experiment and path + optional plot widget
+         *
+         * @param projectId
+         * @param experimentId
+         * @param path
+         * @param plotWidget - options, if not provided a new widget will be created
+         */
+        plotStateVariable: function(projectId, experimentId, path, plotWidget){
+            if(window.Project.getId() === projectId && window.Project.getActiveExperiment().getId() === experimentId){
+                // try to resolve path
+                var inst = undefined;
+                try {
+                    inst = window.Instances.getInstance(path);
+                } catch (e) {}
+
+                // check if we already have data
+                if (inst != undefined && inst.getTimeSeries() != undefined) {
+                    // plot, we have data
+                    if(plotWidget != undefined){
+                        plotWidget.plotData(inst);
+                    } else {
+                        G.addWidget(0).plotData(inst).setName(path);
+                    }
+                } else {
+                    var cb = function(){
+                        var i = window.Instances.getInstance(path);
+                        if(plotWidget != undefined){
+                            plotWidget.plotData(i);
+                        } else {
+                            G.addWidget(0).plotData(i).setName(path);
+                        }
+                    };
+                    // trigger get experiment data with projectId, experimentId and path, and callback to plot
+                    GEPPETTO.ExperimentsController.getExperimentState(projectId, experimentId, [path], cb);
+                }
+            } else {
+                // we are dealing with external instances, define re-usable callback for plotting external instances
+                var plotExternalCallback = function(){
+                    var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
+                    var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, 'time(StateVariable)');
+                    if(plotWidget != undefined){
+                        plotWidget.plotXYData(i,t);
+                    } else {
+                        G.addWidget(0).plotXYData(i,t).setName(path);
+                    }
+                };
+
+                var externalInstance = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
+                if(externalInstance != undefined){
+                    // if not undefined, plot
+                    plotExternalCallback();
+                } else {
+                    // if undefined trigger get experiment state
+                    GEPPETTO.ExperimentsController.getExperimentState(projectId, experimentId, [path], plotExternalCallback);
+                }
+            }
         }
     });
 });

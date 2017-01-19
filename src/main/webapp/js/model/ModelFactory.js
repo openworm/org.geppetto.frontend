@@ -52,6 +52,7 @@ define(function (require) {
         var ImportType = require('model/ImportType');
         var ImportValue = require('model/ImportValue');
         var Instance = require('model/Instance');
+        var ExternalInstance = require('model/ExternalInstance');
         var ArrayInstance = require('model/ArrayInstance');
         var ArrayElementInstance = require('model/ArrayElementInstance');
         var VisualGroup = require('model/VisualGroup');
@@ -76,6 +77,7 @@ define(function (require) {
             geppettoModel: null,
             instances: null,
             allPaths: [],
+            allStaticVarsPaths: {},
             allPathsIndexing: [],
             newPathsIndexing: [],
             instanceTags: {},
@@ -159,6 +161,17 @@ define(function (require) {
                     if (children != undefined) {
                         for (var i = 0; i < children.length; i++) {
                             // do not populate shortcuts for array instances - children are accessed as array elements
+                        	if(node instanceof Variable && children[i] instanceof Type){
+                        		//it's an anonymous type we don't want it to be in the path
+                        		this.populateChildrenShortcuts(children[i]);
+                        		
+                        		var grandChildren = children[i].getChildren();
+                        		for (var j = 0; j < grandChildren.length; j++) {
+                        			node[grandChildren[j].getId()] = grandChildren[j];	
+                        		}
+                        		
+                        		continue;
+                        	}
                             if (node.getMetaType() != GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                                 node[children[i].getId()] = children[i];
                             }
@@ -170,7 +183,7 @@ define(function (require) {
             },
 
             /**
-             * Populate type references
+             * Populate type references+
              */
             populateTypeReferences: function (node) {
 
@@ -1303,7 +1316,9 @@ define(function (require) {
                             topLevelInstances.push(arrayInstance);
                         }
 
-                    } else {
+                    } else if (!variable.isStatic()) {
+                        // NOTE: only create instances if variable is NOT static
+
                         // create simple instance for this variable
                         var options = {
                             id: variable.getId(),
@@ -1704,6 +1719,9 @@ define(function (require) {
                 return path.length - path.replace(/\./g, '').length;
             },
 
+            /**
+             * Utility function to print instance tree to console
+             */
             printInstanceStats: function () {
                 var stats = {};
                 for (var i = 0; i < this.allPaths.length; i++) {
@@ -1716,24 +1734,47 @@ define(function (require) {
                 console.log(stats);
             },
 
-
             /**
              * Build list of potential instance paths (excluding connection instances)
              */
             fetchAllPotentialInstancePaths: function (node, allPotentialPaths, allPotentialPathsForIndexing, parentPath) {
                 // build new path
-                var path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+                var path = '';
+                var isStaticVar = node instanceof Variable && node.isStatic();
 
+                if (isStaticVar){
+                    // NOTE: for static variables, we add the variable path to the indexing list as ...
+                    // NOTE: it's the only way to access the variable since there are no instances for static variables
+                    path = node.getPath();
+                } else {
+                    path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+                }
+
+                // build entry for path storing and indexing
                 var entry = {path: path, metaType: node.getType().getMetaType(), type: node.getType().getPath()};
-                allPotentialPaths.push(entry);
-                // only add to indexing if it's not a connection or nested in a composite type
-                if (this.includePotentialInstance(node, path)) {
-                    allPotentialPathsForIndexing.push(entry);
+
+                // if this is a static node check if we already added entry for the exact same path
+                // NOTE: can't do it always for instances as it would slow things down A LOT
+                var staticVarAlreadyAdded = false;
+                if(isStaticVar){
+                    staticVarAlreadyAdded = (this.allStaticVarsPaths[entry.path] != undefined);
+                    if(!staticVarAlreadyAdded){
+                        this.allStaticVarsPaths[entry.path] = entry;
+                    }
+                }
+
+                // always add if not a static var, otherwise check that it wasnt already added
+                if(!isStaticVar || (isStaticVar && !staticVarAlreadyAdded)){
+                    allPotentialPaths.push(entry);
+                    // only add to indexing if it's not a connection or nested in a composite type
+                    if (this.includePotentialInstance(node, path)) {
+                        allPotentialPathsForIndexing.push(entry);
+                    }
                 }
 
                 var potentialParentPaths = [];
-                // check meta type - we are only interested in variables
-                if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE) {
+                // check meta type - we are only interested in NON-static variables
+                if (node instanceof Variable && !node.isStatic()) {
                     var allTypes = node.getTypes();
 
                     var arrayType = undefined;
@@ -2066,6 +2107,16 @@ define(function (require) {
             },
 
             /** Creates an instance */
+            createExternalInstance: function (path) {
+                var options = {
+            		_metaType: GEPPETTO.Resources.INSTANCE_NODE,
+            		path:path
+        		};
+          
+                return new ExternalInstance(options);
+            },
+            
+            /** Creates an instance */
             createInstance: function (options) {
                 if (options == null || options == undefined) {
                     options = {_metaType: GEPPETTO.Resources.INSTANCE_NODE};
@@ -2310,7 +2361,7 @@ define(function (require) {
             /**
              * Get all POTENTIAL instances of a given meta type
              */
-            getAllPotentialInstancesOfMetaType: function (metaType, paths) {
+            getAllPotentialInstancesOfMetaType: function (metaType, paths, includeType) {
                 if (paths == undefined) {
                     paths = this.allPaths;
                 }
@@ -2319,7 +2370,11 @@ define(function (require) {
 
                 for (var i = 0; i < paths.length; i++) {
                     if (paths[i].metaType == metaType) {
-                        matchingPotentialInstances.push(paths[i].path);
+                        var itemToPush = paths[i].path;
+                        if(includeType === true){
+                            itemToPush = paths[i];
+                        }
+                        matchingPotentialInstances.push(itemToPush);
                     }
                 }
 
@@ -2416,7 +2471,7 @@ define(function (require) {
              *
              * @returns {Array}
              */
-            getAllVariablesOfType: function (typesToSearch, typeToMatch, recursive, variables) {
+            getAllVariablesOfType: function (typesToSearch, typeToMatch, recursive) {
                 // check if array and if not "make it so"
                 if (!(typesToSearch instanceof Array)) {
                     typesToSearch = [typesToSearch];

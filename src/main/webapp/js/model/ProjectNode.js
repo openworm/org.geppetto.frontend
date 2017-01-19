@@ -50,6 +50,8 @@ define(['backbone'], function (require) {
         writePermission :  null,
         runPermission : null,
         downloadPermission : null,
+        readOnly : false,
+        isPublicProject : false,
 
         /**
          * Initializes this project with passed attributes
@@ -305,7 +307,7 @@ define(['backbone'], function (require) {
         },
 
         saveProjectProperties: function (properties) {
-        	if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()){
+        	if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()&& !this.isReadOnly()){
         		var parameters = {};
         		parameters["projectId"] = this.getId();
         		parameters["properties"] = properties;
@@ -323,6 +325,25 @@ define(['backbone'], function (require) {
         	}else{
         		return persistedAndWriteMessage(this);
         	}
+        },
+        
+        makePublic : function(mode){
+        	if(this.writePermission && GEPPETTO.UserController.isLoggedIn()){
+        		var parameters = {};
+        		parameters["projectId"] = this.id;
+        		parameters["isPublic"] = mode;
+        		GEPPETTO.MessageSocket.send("make_project_public", parameters);
+        	}else{
+        		return persistedAndWriteMessage(this);
+        	}
+        },
+        
+        isPublic : function(){
+        	return this.isPublicProject;
+        },
+        
+        isReadOnly : function(){
+        	return this.readOnly;
         },
 
         /**

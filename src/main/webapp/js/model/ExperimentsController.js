@@ -38,11 +38,14 @@
 define(function (require) {
     return function (GEPPETTO) {
 
+        var AParameterCapability = require('model/AParameterCapability');
+        var AStateVariableCapability = require('model/AStateVariableCapability');
+        
     	ExperimentStateEnum = {
     		    STOPPED : 0,
     		    PLAYING : 1,
     		    PAUSED : 2
-    	}
+    	};
     	
         /**
          * @class GEPPETTO.ExperimentController
@@ -52,8 +55,9 @@ define(function (require) {
        	
             playExperimentReady: false,
             worker: null,
-            playOptions: {},
+            playOptions: { playAll: true },
             maxSteps: 0,
+            externalExperiments: {},
             state:ExperimentStateEnum.STOPPED,
 
             isPlayExperimentReady: function(){
@@ -73,9 +77,6 @@ define(function (require) {
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
                         //if at least one of the varialbes has a value we consider the experiment as ready to be played
                         this.playExperimentReady = true;
-                        if (recordedVariable.value.unit && recordedVariable.value.unit.unit) {
-                            instance.setUnit(recordedVariable.value.unit.unit);
-                        }
                         instance.setTimeSeries(recordedVariable.value.value);
                         if (recordedVariable.value.value.length > this.maxSteps) {
                             this.maxSteps = recordedVariable.value.value.length;
@@ -85,10 +86,22 @@ define(function (require) {
                 if (experimentState.setParameters) {
                     for (var i = 0; i < experimentState.setParameters.length; i++) {
                         var setParameter = experimentState.setParameters[i];
-                        var instancePath = this.getInstancePathFromPointer(setParameter.pointer, false);
-                        var instance = Instances.getInstance(instancePath);
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
-                            instance.setValue(setParameter.value.value, false);
+                            var path = setParameter.pointer.path;
+                            var firstToken = path.split(".")[0];
+                            var parameter = undefined;
+                            try {
+                                var firstEntity = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT + "." + firstToken);
+                                if (firstEntity.getMetaType() == GEPPETTO.Resources.LIBRARY_NODE) {
+                                    parameter = eval(GEPPETTO.Resources.MODEL_PREFIX_CLIENT + "." + path);
+                                } else {
+                                    throw "Path unrecognised: " + path;
+                                }
+                            } catch (e) {
+                                //it's not a static parameter, it's an instance
+                                parameter = Instances.getInstance(path);
+                            }
+                            parameter.setValue(setParameter.value.value, false);
                         }
                     }
                 }
@@ -97,9 +110,59 @@ define(function (require) {
                     //to update themselves
                     this.triggerPlayExperiment(experiment);
                 }
-                
 
                 GEPPETTO.trigger(Events.Experiment_updated);                
+            },
+            
+            /* 
+             * This method adds external experiment state (different from the active one) to a map.
+             * This happens whether they are from the same project or from an external one.
+             * ExternalInstance are used to hold the data
+             */
+            addExternalExperimentState: function (experimentState) {
+            	if(this.externalExperiments[experimentState.projectId] == undefined){
+            		this.externalExperiments[experimentState.projectId] = {};
+            	}
+            	if(this.externalExperiments[experimentState.projectId][experimentState.experimentId] == undefined){
+            		this.externalExperiments[experimentState.projectId][experimentState.experimentId] = {};
+            	}
+            	for (var i = 0; i < experimentState.recordedVariables.length; i++) {
+                    var recordedVariable = experimentState.recordedVariables[i];
+                    var instancePath = recordedVariable.pointer.path;
+                    var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath);
+                    instance.extendApi(AStateVariableCapability);
+                    instance.setWatched(true, false);
+                    if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
+                        if (recordedVariable.value.unit && recordedVariable.value.unit.unit) {
+                            instance.setUnit(recordedVariable.value.unit.unit);
+                        }
+                        instance.setTimeSeries(recordedVariable.value.value);
+                    }
+                    this.externalExperiments[experimentState.projectId][experimentState.experimentId][instancePath]=instance;
+                }
+                if (experimentState.setParameters) {
+                    for (var i = 0; i < experimentState.setParameters.length; i++) {
+                        var setParameter = experimentState.setParameters[i];
+                        var instancePath = setParameter.pointer.path;
+                        var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath);
+                        instance.extendApi(AParameterCapability);
+                        if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
+                            instance.setValue(setParameter.value.value, false);
+                        }
+                        this.externalExperiments[experimentState.projectId][experimentState.experimentId][instancePath]=instance;
+                    }
+                }
+            	
+            },
+            
+            getExternalInstance : function(projectId,experimentId,instancePath){
+            	if(this.externalExperiments[projectId] == undefined){
+            		return undefined;
+            	}
+            	if(this.externalExperiments[projectId][experimentId] == undefined){
+            		return undefined;
+            	}
+            	return this.externalExperiments[projectId][experimentId][instancePath];
             },
             
             setActive:function(experiment){
@@ -150,17 +213,15 @@ define(function (require) {
                 if (Project.getActiveExperiment().status == GEPPETTO.Resources.ExperimentStatus.DESIGN) {
                     var modelParameters = {};
                     for (var index in newParameters) {
-                        modelParameters[newParameters[index].getPath()] = newParameters[index].getValue();
+                    	var path=newParameters[index].getPath().replace(GEPPETTO.Resources.MODEL_PREFIX_CLIENT+".","");
+                        modelParameters[path] = newParameters[index].getValue();
+                        Project.getActiveExperiment().getSetParameters()[path]=newParameters[index].getValue();
                     }
                     Project.getActiveExperiment().parameters = [];
                     var parameters = {};
                     parameters["experimentId"] = Project.getActiveExperiment().getId();
                     parameters["projectId"] = Project.getId();
                     parameters["modelParameters"] = modelParameters;
-
-                    for (var key in newParameters) {
-                        Project.getActiveExperiment().getSetParameters()[newParameters[index].getInstancePath()]=newParameters[index].getValue();
-                    }
 
                     GEPPETTO.MessageSocket.send("set_parameters", parameters);
 
@@ -207,7 +268,6 @@ define(function (require) {
                 return watched;
             },
 
-
             play: function (experiment, options) {
                 // set options
                 if (options != undefined) {
@@ -221,12 +281,7 @@ define(function (require) {
                 if (experiment.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
 
                     if (!this.playExperimentReady) {
-                        var parameters = {};
-                        parameters["experimentId"] = experiment.id;
-                        parameters["projectId"] = experiment.getParent().getId();
-                        //sending to the server request for data
-                        GEPPETTO.MessageSocket.send("play_experiment", parameters);
-                        GEPPETTO.trigger('spin_logo');
+                    	this.getExperimentState(experiment.getParent().getId(), experiment.id, null);
                         return "Play Experiment";
                     } else {
                         this.triggerPlayExperiment();
@@ -236,16 +291,25 @@ define(function (require) {
                 } else {
                     GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + experiment.name + " with id " + experiment.id + " isn't completed, and can't be played.");
                 }
-            }
-
-            ,
+            },
+            
+            getExperimentState: function(projectId,experimentId,instances,callback){
+                var parameters = {};
+                parameters["projectId"] = projectId;
+                parameters["experimentId"] = experimentId;
+                if(instances!=null){
+                	parameters["variables"] = instances;
+                }
+                //sending to the server request for data
+                GEPPETTO.MessageSocket.send("get_experiment_state", parameters, callback);
+                GEPPETTO.trigger('spin_logo');
+            },
 
             pause: function () {
             	this.state=ExperimentStateEnum.PAUSED;
                 this.getWorker().postMessage([Events.Experiment_pause]);
                 GEPPETTO.trigger(Events.Experiment_pause);
-            }
-            ,
+            },
 
             isPaused: function () {
                 return this.state==ExperimentStateEnum.PAUSED;
@@ -267,15 +331,13 @@ define(function (require) {
                     GEPPETTO.trigger(Events.Experiment_resume);
                     return "Pause Experiment";
                 }
-            }
-            ,
+            },
 
             stop: function () {
                 this.terminateWorker();
                 this.state=ExperimentStateEnum.STOPPED;
                 GEPPETTO.trigger(Events.Experiment_stop);
-            }
-            ,
+            },
 
             closeCurrentExperiment: function () {
                 var experiment = Project.getActiveExperiment();
@@ -288,8 +350,7 @@ define(function (require) {
                 GEPPETTO.ModelFactory.cleanupInstanceTreeState();
 
                 this.playExperimentReady = false;
-            }
-            ,
+            },
 
             triggerPlayExperiment: function (experiment) {
 
@@ -344,22 +405,18 @@ define(function (require) {
 
 
                 }
-            }
-            ,
+            },
 
             terminateWorker: function () {
                 if (this.worker != undefined) {
                     this.worker.terminate();
                     this.worker = undefined;
                 }
-            }
-            ,
+            },
 
             getWorker: function () {
                 return this.worker;
-            }
-            ,
-
+            },
 
             /** Retrieves the instance path of a given pointer */
             getInstancePathFromPointer: function (pointer, types) {
@@ -380,12 +437,37 @@ define(function (require) {
                     }
                 }
                 return instancePath;
+            },
+
+            /**
+             * Check if an instance path represent a watched or external instance
+             *
+             * @param projectId
+             * @param experimentId
+             * @param path
+             * @returns {boolean}
+             */
+            isLocalWatchedInstanceOrExternal: function (projectId, experimentId, path) {
+                var watchedOrExternal = false;
+
+                if (projectId == window.Project.getId() && experimentId == window.Project.getActiveExperiment().getId()) {
+                    // local, check if experiment completed and variable watched
+                    if (window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                        var watchList = window.Project.getActiveExperiment().getWatchedVariables();
+                        for (var i = 0; i < watchList.length; i++) {
+                            if (watchList[i] == path) {
+                                watchedOrExternal = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    // if project/experiment ids don't match it's external
+                    watchedOrExternal = true;
+                }
+
+                return watchedOrExternal;
             }
-
-
         }
     }
-
-
-})
-;
+});

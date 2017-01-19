@@ -212,8 +212,8 @@ define(function (require) {
              * @param {String}
              *            instancePath - Path of aspect of mesh to select
              */
-            selectInstance: function (instancePath, groupNameIdentifier) {
-                instancePath = instancePath + ((groupNameIdentifier != "")?"."+groupNameIdentifier:"");
+            selectInstance: function (instancePath, geometryIdentifier) {
+                instancePath = instancePath + ((geometryIdentifier != "")?"."+geometryIdentifier:"");
                 var meshes = this.getRealMeshesForInstancePath(instancePath);
                 if (meshes.length > 0) {
                     for (var meshesIndex in meshes) {
@@ -1107,7 +1107,7 @@ define(function (require) {
                         groupMesh = new THREE.Mesh(geometryGroup, material);
                     }
                     groupMesh.instancePath = instancePath;
-                    groupMesh.groupNameIdentifier = g;
+                    groupMesh.geometryIdentifier = g;
                     groupMesh.geometry.dynamic = false;
                     groupMesh.position.copy(mergedMesh.position);
 

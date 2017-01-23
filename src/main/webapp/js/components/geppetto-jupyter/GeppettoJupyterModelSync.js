@@ -152,7 +152,8 @@ define(function (require, exports, module) {
 			name: '',
 			id: '',
 			stateVariables: [],
-			geometries: []
+			geometries: [],
+			point_process_sphere: null
 		}),
 
 		getGeometryPayload: function(geometry) {
@@ -306,6 +307,15 @@ define(function (require, exports, module) {
 		handle_custom_messages: function(msg) {
 			if (msg.type === 'load') {
 				this.loadModel();
+			}
+			else if (msg.type === 'draw_sphere'){
+				var content = msg.content;
+				if (this.point_process_sphere){
+					this.point_process_sphere = GEPPETTO.SceneFactory.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
+				}
+				else{
+					this.point_process_sphere = GEPPETTO.SceneFactory.add3DSphere(content.x, content.y, content.z, content.radius);
+				}
 			}
 		},
 

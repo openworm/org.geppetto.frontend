@@ -465,6 +465,67 @@ define(function (require) {
                 return threeObject;
             },
 
+            /**
+             * Modify the origin and radius of a sphere
+             * @returns {THREE.Mesh}
+             */
+            modify3DSphere:function(object,x,y,z,radius){
+            	object.position.set(x,y,z)
+            	// FIXME: Find a way to reset the radius
+                //object.geometry.radius.set(radius);
+            	object.geometry.verticesNeedUpdate = true;
+            	return object;
+            },
+
+            /**
+             * Add a 3D sphere to the scene at the given coordinates (4) points. 
+             * It could be any geometry really.
+             * @returns {THREE.Mesh}
+             */
+            add3DSphere: function (x,y,z,radius,textureURL) {
+                var material= new THREE.MeshBasicMaterial({side:THREE.DoubleSide});
+                material.nowireframe=true;
+                if(textureURL!=undefined){
+                	var loader = new THREE.TextureLoader();
+                	// load a resource
+                	loader.load(
+                		// resource URL
+                		textureURL,
+                		// Function when resource is loaded
+                		function ( texture ) {
+                			//texture.minFilter = THREE.LinearFilter;
+                			material.map=texture;
+                			texture.flipY = false;
+                			material.opacity= 0.3;
+                        	material.transparent=true;
+                			material.needsUpdate = true;
+                			
+                		},
+                		// Function called when download progresses
+                		function ( xhr ) {
+                			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+                		},
+                		// Function called when download errors
+                		function ( xhr ) {
+                			console.log( 'An error happened' );
+                		}
+                	);
+                	
+                }
+                else{
+                	material.opacity= 0.5;
+                	material.transparent=true;
+                	material.color.setHex("0xff0000");
+                }
+                
+                var sphereNode ={radius:radius,position:{x:x, y:y, z:z}}
+                var mesh = GEPPETTO.SceneFactory.create3DSphereFromNode(sphereNode, material)
+                mesh.renderOrder=1;
+                mesh.clickThrough=true;
+                GEPPETTO.getVARS().scene.add(mesh);
+                return mesh;
+            },
+
 
             /**
              * Add a 3D plane to the scene at the given coordinates (4) points. 

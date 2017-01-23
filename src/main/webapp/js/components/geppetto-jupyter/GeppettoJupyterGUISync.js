@@ -8,6 +8,7 @@ define(function (require, exports, module) {
 	var TextFieldComp = require('jsx!components/dev/BasicComponents/TextField');
 	var RaisedButtonComp = require('jsx!components/dev/BasicComponents/RaisedButton');
 	var LabelComp = require('jsx!components/dev/BasicComponents/Label');
+	var DropDownComp = require('jsx!components/dev/BasicComponents/DropDown');
 
 	require('./vendor/jupyter_widgets');
 	var GEPPETTO = require('geppetto');
@@ -29,13 +30,13 @@ define(function (require, exports, module) {
 		},
 
 		handleChange: function (model, value) {
-			model.send({ event: 'change', data: parseFloat(value) });
+			model.send({ event: 'change', data: value });
 		},
 
 		handleBlur: function (model, value) {
 			model.set('sync_value', value);
 			model.save_changes();
-			model.send({ event: 'blur', data: parseFloat(value) });
+			model.send({ event: 'blur', data: value });
 		},
 
 		getComponent: function (componentItem, parameters) {
@@ -110,6 +111,31 @@ define(function (require, exports, module) {
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 
+	var DropDownSync = ComponentSync.extend({
+		defaults: _.extend({}, ComponentSync.prototype.defaults, {
+			items: []
+		}),
+
+		initialize: function () {
+			DropDownSync.__super__.initialize.apply(this);
+			// this.on("msg:custom", this.handle_custom_messages, this);
+			this.on("change:items", function (model, value, options) {
+				model.get('parent').forceRender();
+			});
+		},
+		handleChange: function (model, value) {
+			model.set('sync_value', value);
+			model.save_changes();
+			DropDownSync.__super__.handleChange.apply(this, [model, value]);
+		},
+
+		getComponent: function () {
+			var parameters = { items: this.get('items') }
+			return DropDownSync.__super__.getComponent.apply(this, [DropDownComp, parameters]);
+		}
+
+	});
+
 	var TextFieldSync = ComponentSync.extend({
 
 		defaults: _.extend({}, ComponentSync.prototype.defaults, {
@@ -177,6 +203,7 @@ define(function (require, exports, module) {
 		TextFieldSync: TextFieldSync,
 		CheckboxSync: CheckboxSync,
 		ButtonSync: ButtonSync,
-		LabelSync: LabelSync
+		LabelSync: LabelSync,
+		DropDownSync: DropDownSync
 	};
 });

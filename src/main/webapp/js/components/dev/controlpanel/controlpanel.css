@@ -261,6 +261,5 @@
 }
 
 .menuButtonContainer{
-	width : 33px;
-	height : 25px;
+	display: inline-block;
 }

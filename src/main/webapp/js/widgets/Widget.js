@@ -441,7 +441,7 @@ define(function (require) {
             				if(event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")){
             					that.executedAction = historyItems.length-1;
             				}
-    						item = historyItems[that.executedAction].action[0];;
+    						item = historyItems[that.executedAction].action[0];
     						GEPPETTO.Console.executeImplicitCommand(item);
             				$("#"+that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
             				event.stopPropagation();

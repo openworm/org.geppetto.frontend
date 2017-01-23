@@ -539,7 +539,9 @@ define(function (require) {
                 showSpinner: false,
                 resultsColumns: null,
                 resultsColumnMeta: null,
-                resultsControlsConfig: null
+                resultsControlsConfig: null,
+                infiniteScroll: undefined,
+                resultsPerPate: undefined,
             };
         },
 
@@ -901,8 +903,9 @@ define(function (require) {
         queryOptionSelected: function(item, value, cb){
             this.clearErrorMessage();
 
+            var that = this;
             var callback = function(){
-                this.showBrentSpiner(false);
+                that.showBrentSpiner(false);
 
                 // cascading callback from parameters
                 if(typeof cb === "function"){
@@ -1249,6 +1252,11 @@ define(function (require) {
 
         render: function () {
             var markup = null;
+            // once off figure out if we are to use infinite scrolling for results and store in state
+            if(this.state.infiniteScroll===undefined) {
+                this.state.infiniteScroll = !(this.props.enablePagination != undefined && this.props.enablePagination === true);
+                this.state.resultsPerPage = this.props.resultsPerPage;
+            }
 
             // figure out if we are in results view or query builder view
             if(this.state.resultsView && this.props.model.results.length > 0){
@@ -1273,7 +1281,7 @@ define(function (require) {
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
-                            showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={425}
+                            showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={425}
                             useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
                         </Tabs.Panel>
                     );

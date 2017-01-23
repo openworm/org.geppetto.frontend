@@ -133,9 +133,6 @@ define(function (require) {
                     instance.extendApi(AStateVariableCapability);
                     instance.setWatched(true, false);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
-                        if (recordedVariable.value.unit && recordedVariable.value.unit.unit) {
-                            instance.setUnit(recordedVariable.value.unit.unit);
-                        }
                         instance.setTimeSeries(recordedVariable.value.value);
                     }
                     this.externalExperiments[experimentState.projectId][experimentState.experimentId][instancePath]=instance;

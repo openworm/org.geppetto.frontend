@@ -357,13 +357,15 @@ define(function (require) {
         
         render: function () {
             return (
+                    <div className="menuButtonContainer">
                     <button className={this.props.configuration.id + " btn "+ this.props.configuration.buttonClassName} type="button" title=''
                           id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.props.configuration.buttonDisabled} ref="menuButton">
                         <i className={this.state.icon + " menuButtonIcon"}></i>
                         {this.props.configuration.label}
-                        <div id={this.props.configuration.id+"-dropDown"} className="menuListContainer">
-                        <DropDownControlComp handleSelect={this.selectionChanged}  ref="dropDown" configuration={this.props.configuration}/></div>
                      </button>
+                     <div id={this.props.configuration.id+"-dropDown"} className="menuListContainer">
+                     <DropDownControlComp handleSelect={this.selectionChanged}  ref="dropDown" configuration={this.props.configuration}/></div>
+                     </div>
             );
         }
     });

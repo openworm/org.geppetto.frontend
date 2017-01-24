@@ -66,84 +66,6 @@ define(function (require, exports, module) {
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 
-	var GeometrySync = jupyter_widgets.WidgetModel.extend({
-		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: 'GeometrySync',
-			_model_module: "model",
-
-			id: '',
-			name: '',
-			bottomRadius: -1,
-			topRadius: -1,
-			positionX: -1,
-			positionY: -1,
-			positionZ: -1,
-			distalX: -1,
-			distalY: -1,
-			distalZ: -1,
-
-			geppettoInstance: null
-		}),
-
-		getPayload: function () {
-			var value;
-			if (this.name == 'soma') {
-				value = {
-					eClass: 'Sphere',
-					position: {
-						eClass: "Point",
-						x: 0,
-						y: 0,
-						z: 0
-					},
-					radius: this.get('topRadius')
-				}
-			}
-			else {
-				value = {
-					eClass: 'Cylinder',
-					bottomRadius: this.get('bottomRadius'),
-					topRadius: this.get('topRadius'),
-					distal: {
-						eClass: "Point",
-						x: this.get('distalX'),
-						y: this.get('distalY'),
-						z: this.get('distalZ')
-					},
-					position: {
-						eClass: "Point",
-						x: this.get('positionX'),
-						y: this.get('positionY'),
-						z: this.get('positionZ')
-					}
-				}
-			}
-
-			return {
-				eClass: 'Variable',
-				initialValues: [{
-					key: "geppettoModel#//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual'),
-					value: value
-				}],
-				id: this.get('id'),
-				name: this.get('name'),
-				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual') }],
-			}
-		},
-
-		initialize: function () {
-			GeometrySync.__super__.initialize.apply(this);
-
-			//TODO: We need to use another way of handling this event: group them. Review bqplot
-			// this.on("change:bottomRadius", function (model, value, options) {
-			// 	console.log("changing radius");
-			// });
-			// this.on("change:topRadius", function (model, value, options) {
-			// 	console.log("changing radius");
-			// });
-		}
-	});
-
 	var ModelSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'ModelSync',
@@ -163,9 +85,9 @@ define(function (require, exports, module) {
 					eClass: 'Sphere',
 					position: {
 						eClass: "Point",
-						x: 0,
-						y: 0,
-						z: 0
+						x: geometry.distalX,
+						y: geometry.distalY,
+						z: geometry.distalZ
 					},
 					radius: geometry.topRadius
 				}
@@ -397,7 +319,6 @@ define(function (require, exports, module) {
 
 	module.exports = {
 		StateVariableSync: StateVariableSync,
-		GeometrySync: GeometrySync,
 		ModelSync: ModelSync,
 		ExperimentSync: ExperimentSync,
 		ProjectSync: ProjectSync,

@@ -333,6 +333,8 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+            var that = this;
+
             // hookup color picker onChange
             if (this.colorPickerBtnId != '') {
                 var path = this.props.rowData.path;
@@ -350,7 +352,7 @@ define(function (require) {
                 coloPickerElement.colorpicker('setValue', defColor.replace(/0X/i, "#"));
 
                 // closure on local scope at this point - hook on change event
-                var that = this;
+                
                 coloPickerElement.on('changeColor', function (e) {
                     that.colorPickerActionFn(e.color.toHex().replace("#", "0x"));
                     $(this).css("color", e.color.toHex());
@@ -359,13 +361,13 @@ define(function (require) {
 
             // listen to experiment status change and trigger a re-render to update controls
             GEPPETTO.on(Events.Experiment_completed, function () {
-                this.refresh();
+                that.refresh();
             });
             GEPPETTO.on(Events.Experiment_running, function () {
-                this.refresh();
+                that.refresh();
             });
             GEPPETTO.on(Events.Experiment_failed, function () {
-                this.refresh();
+                that.refresh();
             });
         },
 

@@ -150,6 +150,10 @@
     display: none;
 }
 
+#querybuilder .menuButtonContainer{
+    float: left;
+}
+
 /*IDs*/
 
 #querybuilder {
@@ -179,7 +183,7 @@
     left: 0;
     right: 0;
     width: 88%;
-    top: 10%;
+    top: 7%;
 }
 
 #add-query-btn {
@@ -423,6 +427,7 @@
 
 #querybuilder .griddle .griddle-page {
     text-align: center;
+    color: #fd6808;
 }
 
 #querybuilder .griddle .griddle-next {

@@ -277,7 +277,7 @@ define(function (require) {
          * @command AVisualCapability.select()
          *
          */
-        select: function (nested, groupNameIdentifier) {
+        select: function (nested, geometryIdentifier, point) {
             if (nested === undefined) {
                 nested = true;
             }
@@ -295,7 +295,7 @@ define(function (require) {
 
                     // set selection flag local to the instance and add to geppetto selection list
                     this.selected = true;
-                    GEPPETTO.SceneController.selectInstance(this.getInstancePath(), groupNameIdentifier);
+                    GEPPETTO.SceneController.selectInstance(this.getInstancePath(), geometryIdentifier);
                     message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
 
                     // Behaviour: help exploration of networks by ghosting and not highlighting non connected or selected
@@ -329,7 +329,7 @@ define(function (require) {
                         }
                     }
                     //signal selection has changed in simulation pass instance
-                    GEPPETTO.trigger(Events.Select, this, groupNameIdentifier);
+                    GEPPETTO.trigger(Events.Select, this, geometryIdentifier, point);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
                 }
@@ -338,7 +338,7 @@ define(function (require) {
                     var children = this.getChildren();
                     for (var i = 0; i < children.length; i++) {
                         if (typeof children[i].select === "function") {
-                            children[i].select(nested);
+                            children[i].select(nested, geometryIdentifier, point);
                         }
                     }
                 }
@@ -347,7 +347,7 @@ define(function (require) {
                 var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
                 for (var j = 0; j < instances.length; j++) {
                     if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].select(nested);
+                        instances[j].select(nested, geometryIdentifier, point);
                     }
                 }
 

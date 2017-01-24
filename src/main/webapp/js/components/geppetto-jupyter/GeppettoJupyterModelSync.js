@@ -15,10 +15,10 @@ define(function (require, exports, module) {
 			EventsSync.__super__.initialize.apply(this);
 			_this = this;
 
-			GEPPETTO.on(Events.Select, function (instance, groupNameIdentifier) {
+			GEPPETTO.on(Events.Select, function (instance, geometryIdentifier, point) {
 				var selection = G.getSelection();
 				if (selection.length > 0){
-					_this.send({ event: Events.Select, data: instance.id, groupNameIdentifier: groupNameIdentifier});
+					_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point:point});
 				}
 			});
 		}
@@ -152,7 +152,8 @@ define(function (require, exports, module) {
 			name: '',
 			id: '',
 			stateVariables: [],
-			geometries: []
+			geometries: [],
+			point_process_sphere: null
 		}),
 
 		getGeometryPayload: function(geometry) {
@@ -307,6 +308,15 @@ define(function (require, exports, module) {
 			if (msg.type === 'load') {
 				this.loadModel();
 			}
+			else if (msg.type === 'draw_sphere'){
+				var content = msg.content;
+				if (this.point_process_sphere){
+					this.point_process_sphere = GEPPETTO.SceneFactory.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
+				}
+				else{
+					this.point_process_sphere = GEPPETTO.SceneFactory.add3DSphere(content.x, content.y, content.z, content.radius);
+				}
+			}
 		},
 
 		initialize: function () {
@@ -331,7 +341,7 @@ define(function (require, exports, module) {
 			id: '',
 			name: '',
 			lastModified: '',
-			state: ''
+			status: ''
 		}),
 
 		getPayload: function (value) {
@@ -341,11 +351,8 @@ define(function (require, exports, module) {
 		initialize: function () {
 			ExperimentSync.__super__.initialize.apply(this);
 
-			this.on("change:state", function (model, value, options) {
+			this.on("change:status", function (model, value, options) {
 				GEPPETTO.SimulationHandler.onMessage({ type: 'experiment_status', data: JSON.stringify(this.getPayload(value)) });
-				if (value == "RUNNING") {
-					GEPPETTO.trigger(Events.Experiment_running);
-				}
 			});
 		}
 	});

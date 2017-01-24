@@ -14,7 +14,7 @@
 							http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
 	<!-- This makes it possible to user fasterxml 2 with Spring 3.1.1 it won't be needed once we move to newer Spring -->
-	<mvc:annotation-driven>
+	<!-- <mvc:annotation-driven>
 		<mvc:message-converters>
 			<bean
 				class="org.geppetto.frontend.controllers.MappingJackson2HttpMessageConverter">
@@ -23,8 +23,10 @@
 				</property>
 			</bean>
 		</mvc:message-converters>
-	</mvc:annotation-driven>
+	</mvc:annotation-driven> -->
 
+	<mvc:annotation-driven />
+	
 	<!-- Map static resources to /assets/* url -->
 	<mvc:resources mapping="/geppetto/**" location="/" />
 

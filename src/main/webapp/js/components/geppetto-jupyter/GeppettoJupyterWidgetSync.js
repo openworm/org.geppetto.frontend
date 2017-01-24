@@ -29,7 +29,9 @@ define(function (require, exports, module) {
 
 			this.on("change:data", function (model, value, options) {
 				if (this.get('widget_id') == 0){
-					this.get('widget_object').plotData(eval(value[0]))
+					for (valueIndex in value){
+						this.get('widget_object').plotData(eval(value[valueIndex]))
+					}
 				}
 				else {
 					this.get('widget_object').setMessage(eval(value[0]))

@@ -104,7 +104,8 @@ define(function (require) {
 			this.setSize(100, 300);
 			this.customHandlers = [];
 			//set class pop up
-			$("#" + this.id).addClass("popup");
+			var selector = $("#" + this.id);
+			selector.addClass("popup");
 		},
 
 		/**
@@ -348,10 +349,25 @@ define(function (require) {
         	if(this.data!=null || this.data!=undefined){
         		this.renderButtonBar();
         	}
+
+			// if the user clicks outside this popup hide color pickers if visible
+			var popupSelector = $("#" + this.id);
+			$(document).click(function (e) {
+				if (!popupSelector.is(e.target) // if the target of the click isn't the container...
+					&& popupSelector.has(e.target).length === 0 // ... nor a descendant of the container
+					&& !$(e.target).parents('.colorpicker').length > 0 // ... and it's not a child of a color picker
+				) {
+					// hide color picker (it's place in the body so we can't restrict the search) if any
+					$('.colorpicker-visible').addClass('colorpicker-hidden').removeClass('colorpicker-visible');
+				}
+			});
         },
         
         destroy: function () {
-            ReactDOM.unmountComponentAtNode(document.getElementById('bar-div-'+this.id));
+        	var bar = document.getElementById('bar-div-'+this.id);
+        	if(bar!=null || bar!=undefined){
+        		ReactDOM.unmountComponentAtNode(bar);
+        	}
             Widget.View.prototype.destroy.call(this);
         }
 	});

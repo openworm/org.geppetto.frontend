@@ -184,7 +184,7 @@ function getContrast50(hexcolor) {
 
 function persistedAndWriteMessage(caller){
 	var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
-	if(!caller.login){
+	if(!GEPPETTO.UserController.isLoggedIn()){
 		message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
 	}else{
 		if(!window.Project.persisted && caller.writePermission){

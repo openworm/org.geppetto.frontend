@@ -52,12 +52,12 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
 
     casper.then(function () {
         testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
-            false, 'hhcell.hhpop[0].v', 'hhcell.explicitInput.pulseGen1.delay', true);
+            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true);
     });
 
     casper.then(function () {
         testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
-            false, 'c302_A_Pharyngeal.M1[0].v', 'c302_A_Pharyngeal.MI[0].C', false);
+            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false);
     });
 
     casper.then(function () {
@@ -95,7 +95,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         casper.then(function () {
             this.waitForSelector('tr.experimentsTableColumn:nth-child(1)', function () {
                 test.assertExists('tr.experimentsTableColumn:nth-child(1)', "At least one experiment row exists");
-            }, null, 5000);
+            }, null, 6000);
         });
 
         //do checks on the state of the project if it is not persisted

@@ -341,7 +341,7 @@ define(function (require, exports, module) {
 			id: '',
 			name: '',
 			lastModified: '',
-			state: ''
+			status: ''
 		}),
 
 		getPayload: function (value) {
@@ -351,11 +351,8 @@ define(function (require, exports, module) {
 		initialize: function () {
 			ExperimentSync.__super__.initialize.apply(this);
 
-			this.on("change:state", function (model, value, options) {
+			this.on("change:status", function (model, value, options) {
 				GEPPETTO.SimulationHandler.onMessage({ type: 'experiment_status', data: JSON.stringify(this.getPayload(value)) });
-				if (value == "RUNNING") {
-					GEPPETTO.trigger(Events.Experiment_running);
-				}
 			});
 		}
 	});

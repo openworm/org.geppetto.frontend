@@ -7,8 +7,10 @@ define(function (require, exports, module) {
 			widget_id: '',
 			name: '',
 			data: [],
-			positionX: null,
-			positionY: null,
+			position_x: null,
+			position_y: null,
+			width: null,
+			height: null,
 			widget_object: null
 		}),
 
@@ -22,9 +24,12 @@ define(function (require, exports, module) {
 				if (this.get('name') != '') {
 					widget.setName(this.get('name'))
 				}
-				if (this.get('positionX') > 0 && this.get('positionY') > 0) {
+				if (this.get('position_x') > 0 && this.get('position_y') > 0) {
+					widget.setPosition(this.get('position_x'), this.get('position_y'))
 				}
-
+				if (this.get('width') > 0 && this.get('height') > 0){
+					widget.setSize(this.get('width'), this.get('height'));
+				}
 			}
 
 			this.on("change:data", function (model, value, options) {
@@ -34,6 +39,7 @@ define(function (require, exports, module) {
 					}
 				}
 				else {
+					// FIXME: Is this right? Can we pass arrays?
 					this.get('widget_object').setMessage(eval(value[0]))
 				}
 				

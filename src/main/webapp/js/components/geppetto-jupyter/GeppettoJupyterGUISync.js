@@ -55,8 +55,10 @@ define(function (require, exports, module) {
 	var PanelSync = ComponentSync.extend({
 		defaults: _.extend({}, ComponentSync.prototype.defaults, {
 			items: [],
-			positionX: null,
-			positionY: null
+			position_x: null,
+			position_y: null,
+			width: null,
+			height: null
 		}),
 
 		initialize: function () {
@@ -92,11 +94,17 @@ define(function (require, exports, module) {
 			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
 
 			//TODO: This can be done in a much more elegant way
-			if (this.get('positionX') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('positionX') });
+			if (this.get('position_x') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('position_x') });
 			}
-			if (this.get('positionY') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ top: this.get('positionY') });
+			if (this.get('position_y') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ top: this.get('position_y') });
+			}
+			if (this.get('width') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ width: this.get('width') });
+			}
+			if (this.get('height') > 0) {
+				$("." + this.get('widget_id') + "_dialog").css({ height: this.get('height') });
 			}
 		},
 

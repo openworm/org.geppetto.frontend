@@ -59,10 +59,10 @@ define(function (require) {
                 },
 		xaxis: {
                     title: "Electric potential (V)",
-                    autotick: false,
+                    autotick: true,
                     ticks: 'outside',
-                    tick0: 0,
-                    dtick: 0.02,
+                    //tick0: 0,
+                    //dtick: 0.02,
                     ticklen: 8,
                     tickcolor: '#000'
 		},
@@ -73,30 +73,11 @@ define(function (require) {
 	    };
 	},
 
-
-        genColorscale: function(min, max, n) {
+        genColorscale: function(min, max, n, f) {
             var colorscale = [];
             var step = (max-min)/n;
             var x = min;
             var rgb = [];
-
-            // following lightUpEntity rainbow in GEPPETTO.SceneController
-            var f = function(x) {
-                x = (x+0.07)/0.1; // normalization
-                if (x < 0) { x = 0; }
-                if (x > 1) { x = 1; }
-                var r,g,b;
-                if (x < 0.25) {
-                    [r,g,b] = [0, x*4*255, 255];
-                } else if (x < 0.5) {
-                    [r,g,b] = [0, 255, (1-(x-0.25)*4)*255];
-                } else if (x < 0.75) {
-                    [r,g,b] = [(x-0.5)*4*255, 255, 0];
-                } else {
-                    [r,g,b] = [255, (1-(x-0.75)*4)*255, 0];
-                }
-                return "rgb(" + r + "," + g + "," + b + ")";
-            };
             
             for (var i=0; i<n; ++i) {
                 colorscale.push([i/n, f(x)]);
@@ -125,9 +106,12 @@ define(function (require) {
 
             this.dialog.append("<div id='" + this.id + "'></div>");			
 	    this.plotDiv = document.getElementById(this.id);
-            this.setName("Voltage colouring scale");
+            this.setName("Colour scale");
             this.setSize(125, 300);
             this.setPosition(window.innerWidth - 325, window.innerHeight - 150);
+
+            // number of sub-divisions of color scale
+            this.nbars = 100;
 
             var that = this;
 
@@ -144,58 +128,57 @@ define(function (require) {
 	    });
 
             this.layout = this.defaultLayout();
+        },
 
-
-            this.potentials = window.getRecordedMembranePotentials();
-
-            if (this.potentials.length != 0 && this.potentials[0].getTimeSeries() == undefined) {
-                if (Project.getActiveExperiment().status == "COMPLETED") {
-                    GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), Project.getActiveExperiment().variables, null);
-                } else {
-                    GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + experiment.name + " with id " + experiment.id + " isn't completed.");
+        // set instances for which we are giving the scale
+        setVariables: function(instances) {
+            if (Project.getActiveExperiment().status == "COMPLETED") {
+                for (var i=0; i<instances.length; ++i) {
+                    if (instances[i].getTimeSeries() == undefined) {
+                        GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), [instances[i]], null);
+                    }
                 }
-                return;
+            } else {
+                GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + experiment.name + " with id " + experiment.id + " isn't completed.");
             }
 
-            if (this.potentials.length == 0) {
-                this.dialog.append("<h2>no membrane potentials recorded</h2>");
-            } else {
-                this.draw();
+            this.min = Number.MAX_SAFE_INTEGER;
+            this.max = Number.MIN_SAFE_INTEGER;
+
+            for (var i=0; i<instances.length; ++i) {
+                var localMin = Math.min.apply(null, instances[i].getTimeSeries());
+                var localMax = Math.max.apply(null, instances[i].getTimeSeries());
+                if (localMin < this.min) {
+                    this.min = localMin;
+                }
+                if (localMax > this.max) {
+                    this.max = localMax;
+                }
             }
+        },
+
+        setScale: function(scalefn){
+            var scalefn_255 = function(x){
+                var r,g,b;
+                [r,g,b] = scalefn(x).map(function(y){ return y*255; });
+                return "rgb(" + r + "," + g + "," + b + ")";
+            };
+            this.colorscale = this.genColorscale(this.min, this.max, this.nbars, scalefn_255);
         },
 
         draw: function() {
             if (this.plotDiv.data == undefined) {
-                // number of sub-divisions of color scale
-                this.nbars = 100;
-
-                this.min = Number.MAX_SAFE_INTEGER;
-                this.max = Number.MIN_SAFE_INTEGER;
-
-                this.potentials = window.getRecordedMembranePotentials();
                 
-                for (var i=0; i<this.potentials.length; ++i) {
-                    var localMin = Math.min.apply(null, this.potentials[i].getTimeSeries());
-                    var localMax = Math.max.apply(null, this.potentials[i].getTimeSeries());
-                    if (localMin < this.min) {
-                        this.min = localMin;
-                    }
-                    if (localMax > this.max) {
-                        this.max = localMax;
-                    }
-                }
-
-
                 var xdata = [];
-                for (var i=0; i<100; ++i){
-                    xdata.push(this.min+(i*(this.max-this.min)/100));
+                for (var i=0; i<this.nbars; ++i){
+                    xdata.push(this.min+(i*(this.max-this.min)/this.nbars));
                 }
 
                 this.data = [
                     {
                         x: xdata,
                         z: [[...Array(this.nbars).keys()]],
-                        colorscale: this.genColorscale(this.min, this.max, this.nbars),
+                        colorscale: this.colorscale,
                         type: 'heatmap',
                         showscale: false
                     }
@@ -210,7 +193,12 @@ define(function (require) {
 
         },
 
-        resize : function(resizeHeight){
+        setTitle: function(title) {
+            this.layout["xaxis"].title = title;
+            this.resize();
+        },
+
+        resize: function(resizeHeight){
 	    //sets the width and height on the plotOptions which is given to plotly on relayout
 	    //for some reason, height is different when first plotted, 10 pixels makes the change
 	    if(resizeHeight){
@@ -223,20 +211,6 @@ define(function (require) {
 	    //resizes plot right after creation, needed for d3 to resize 
 	    //to parent's widht and height
 	    Plotly.relayout(this.plotDiv, this.layout);
-	},
-        /**
-         * Sets the content of this widget
-         * This is a sample method of the widget's API, in this case the user would use the widget by passing an instance to a setData method
-         * Customise/remove/add more depending on what widget you are creating
-         *
-         * @command setData(anyInstance)
-         * @param {Object} anyInstance - An instance of any type
-         */
-        setData: function (anyInstance) {
-            this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance]);
-
-            return this;
-        },
-
+	}
     });
 });

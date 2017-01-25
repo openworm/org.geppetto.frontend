@@ -82,6 +82,8 @@ define(function (require) {
             var that = this;
 
             GEPPETTO.Spotlight = this;
+
+            GEPPETTO.trigger(GEPPETTO.Events.Spotlight_loaded);
             
             this.initTypeahead();
 

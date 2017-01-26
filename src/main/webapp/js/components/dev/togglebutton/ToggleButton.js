@@ -119,7 +119,7 @@ define(function(require) {
         
         showToolTip : function(){
         	var self = this;
-        	$('button[rel="tooltip"]').uitooltip({content: self.state.tooltip,
+        	$("#"+self.props.configuration.id).uitooltip({content: self.state.tooltip,
        	 		position: { my: "right center", at : "left center"}});
         	$("#"+self.props.configuration.id).mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
         },

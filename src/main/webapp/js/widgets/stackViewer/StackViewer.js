@@ -222,11 +222,11 @@ define(function (require) {
 	getHelp: function(){
        	    return '### Stack Viewer Help\n\n' +
             'The stack viewer allows you to explore slices through the current stack. \n\n' +
-	        'To move around the slice either click and drag or use a 3 fingure drag gesture (only works when on the image). \n' +
-	        'Hovering shows items that can be added by clicking in combination with the shift key.' +
-	        'Clicking on any item displayed in the stack selects it. \n' +
-            'Zoom level is controlled by either 2 finger pinch, ctrl + mouse wheel or the <i class="fa fa-search-plus" aria-hidden="true"></i> / <i class="fa fa-search-minus" aria-hidden="true"></i> icons. \n' +
-		    'Stack position is controlled via 2 finger scroll, mouse wheel or the <i class="fa fa-chevron-up" aria-hidden="true"></i> / <i class="fa fa-chevron-down" aria-hidden="true"></i> icons. \n' + 
+	    'To move around the slice either click and drag or use a 3 fingure drag gesture (when over the image). \n\n' +
+	    'Hovering shows items that can be added by clicking in combination with the shift key. \n\n' +
+	    'Clicking on any item displayed in the stack selects it. \n\n' +
+            'Zoom level is controlled by either 2 finger pinch, ctrl + mouse wheel or the <i class="fa fa-search-plus" aria-hidden="true"></i> / <i class="fa fa-search-minus" aria-hidden="true"></i> icons. \n\n' +
+	    'Stack position is controlled via 2 finger scroll, mouse wheel or the <i class="fa fa-chevron-up" aria-hidden="true"></i> / <i class="fa fa-chevron-down" aria-hidden="true"></i> icons. \n\n' + 
             'The orthoginal orientation of the slice is toggled by the <i class="fa fa-refresh" aria-hidden="true"></i> icon.';
         },
 

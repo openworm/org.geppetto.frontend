@@ -30,7 +30,6 @@
 define(function(require) {
 
     var React = require('react');
-    var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
@@ -38,7 +37,7 @@ define(function(require) {
     var saveControlComp = React.createClass({
          attachTooltip: function(){
         	 var self = this;
-             $('button[rel="tooltip"]').uitooltip({
+             $('.SaveButton').uitooltip({
                  position: { my: "right center", at : "left-25 center"},
                  tooltipClass: "tooltip-persist",
                  show: {
@@ -72,7 +71,7 @@ define(function(require) {
             GEPPETTO.on(Events.Project_persisted, function(){
             	self.setState({disableSave: false});
             	// update contents of what's displayed on tooltip
-           	 	$('button[rel="tooltip"]').uitooltip({content: "The project was persisted and added to your dashboard!",
+           	 	$('.SaveButton').uitooltip({content: "The project was persisted and added to your dashboard!",
            	 		position: { my: "right center", at : "left center"}});
             	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
             	self.setState({disableSave: true});
@@ -105,7 +104,7 @@ define(function(require) {
         clickEvent : function(){
         	var self = this;
         	// update contents of what's displayed on tooltip
-       	 	$('button[rel="tooltip"]').uitooltip({content: "The project is getting persisted..."});
+       	 	$('.SaveButton').uitooltip({content: "The project is getting persisted..."});
         	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
         	self.setState({disableSave: true});
         	GEPPETTO.Console.executeCommand("Project.persist();");

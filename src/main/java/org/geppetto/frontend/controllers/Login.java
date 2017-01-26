@@ -34,6 +34,11 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -83,7 +88,10 @@ public class Login
 
 			try
 			{
-				geppettoManager.setUser((IUser) currentUser.getPrincipal());
+				IUser user = (IUser) currentUser.getPrincipal();
+				user.addLoginTimeStamp(new Date());
+				DataManagerHelper.getDataManager().saveEntity(user);
+				geppettoManager.setUser(user);
 			}
 			catch(GeppettoExecutionException e)
 			{

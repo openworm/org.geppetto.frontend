@@ -181,7 +181,7 @@ define(function(require) {
 			if(this.props.toggled===true || this.state.toggled){
 				cssClass += " toggle-button-toggled";
 			}
-			if(this.props.hidden===true){
+			if(this.props.hidden===true || this.state.hidden===true){
 				cssClass += " toggle-button-hidden";
 			}
 

@@ -22,6 +22,12 @@
             "abstract": false
         },
         {
+            "eClass": "DerivedStateVariableType",
+            "id": "DerivedStateVariable",
+            "name": "Derived State Variable",
+            "abstract": false
+        },
+        {
             "eClass": "HTMLType",
             "id": "HTML",
             "name": "HTML",

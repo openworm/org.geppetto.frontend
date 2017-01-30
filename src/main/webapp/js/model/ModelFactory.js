@@ -64,6 +64,7 @@ define(function (require) {
         var AConnectionCapability = require('model/AConnectionCapability');
         var AParameterCapability = require('model/AParameterCapability');
         var AStateVariableCapability = require('model/AStateVariableCapability');
+        var ADerivedStateVariableCapability = require('model/ADerivedStateVariableCapability');
        
         /**
          * @class GEPPETTO.ModelFactory
@@ -962,6 +963,12 @@ define(function (require) {
                             }
                         }
 
+                        if (instances[j].getType().getMetaType() == GEPPETTO.Resources.DERIVED_STATE_VARIABLE_TYPE) {
+                            if (!instances[j].hasCapability(GEPPETTO.Resources.DERIVED_STATE_VARIABLE_CAPABILITY)) {
+                                instances[j].extendApi(ADerivedStateVariableCapability);
+                            }
+                        }
+
                         if (instances[j].getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
                             if (!instances[j].hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)) {
                                 instances[j].extendApi(AParameterCapability);
@@ -1293,6 +1300,10 @@ define(function (require) {
                                 explodedInstance.extendApi(AStateVariableCapability);
                             }
 
+                            if (explodedInstance.getType().getMetaType() == GEPPETTO.Resources.DERIVED_STATE_VARIABLE_TYPE) {
+                                explodedInstance.extendApi(ADerivedStateVariableCapability);
+                            }
+
                             if (explodedInstance.getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
                                 explodedInstance.extendApi(AParameterCapability);
                             }
@@ -1364,6 +1375,10 @@ define(function (require) {
 
                         if (newlyCreatedInstance.getType().getMetaType() == GEPPETTO.Resources.STATE_VARIABLE_TYPE) {
                             newlyCreatedInstance.extendApi(AStateVariableCapability);
+                        }
+
+                        if (newlyCreatedInstance.getType().getMetaType() == GEPPETTO.Resources.DERIVED_STATE_VARIABLE_TYPE) {
+                            newlyCreatedInstance.extendApi(ADerivedStateVariableCapability);
                         }
 
                         if (newlyCreatedInstance.getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {

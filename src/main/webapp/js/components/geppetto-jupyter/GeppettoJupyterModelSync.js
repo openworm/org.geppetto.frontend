@@ -17,8 +17,8 @@ define(function (require, exports, module) {
 
 			GEPPETTO.on(Events.Select, function (instance, geometryIdentifier, point) {
 				var selection = G.getSelection();
-				if (selection.length > 0){
-					_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point:point});
+				if (selection.length > 0) {
+					_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
 				}
 			});
 		}
@@ -60,11 +60,49 @@ define(function (require, exports, module) {
 				}
 			});
 		}
-	}, {
-			serializers: _.extend({
-				timeSeries: { deserialize: jupyter_widgets.unpack_models },
-			}, jupyter_widgets.WidgetModel.serializers)
-		});
+	}
+	);
+
+	var DerivedStateVariableSync = jupyter_widgets.WidgetModel.extend({
+		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
+			_model_name: 'DerivedStateVariableSync',
+			_model_module: "model",
+
+			name: '',
+			id: '',
+			units: '',
+			inputs: [],
+			timeSeries: [],
+			normalizationFunction: '',
+
+			geppettoInstance: null
+		}),
+
+		getInputs: function () {
+			//FIXME: We should create pointers for this
+			return this.get('inputs')
+		},
+
+		getPayload: function () {
+			return {
+				eClass: 'Variable',
+				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('DerivedStateVariable') }],
+
+				initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: this.get('units') } } }],
+				id: this.get('id'),
+				name: this.get('name'),
+				inputs: this.getInputs(),
+				timeSeries: this.get('timeSeries'),
+				normalizationFunction: this.get('normalizationFunction')
+			}
+		},
+
+		initialize: function () {
+			DerivedStateVariableSync.__super__.initialize.apply(this);
+
+			console.log('Creating derived state variable')
+		}
+	});
 
 	var ModelSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
@@ -74,22 +112,23 @@ define(function (require, exports, module) {
 			name: '',
 			id: '',
 			stateVariables: [],
+			derived_state_variables: [],
 			geometries: [],
 			point_process_sphere: null
 		}),
 
-		getGeometryPayload: function(geometry) {
+		getGeometryPayload: function (geometry) {
 			var value;
-			if (geometry.name.substr(0,4) == 'soma') {
+			if (geometry.name.substr(0, 4) == 'soma') {
 				value = {
 					eClass: 'Sphere',
 					position: {
 						eClass: "Point",
-						x: geometry.distalX,
-						y: geometry.distalY,
-						z: geometry.distalZ
+						x: (geometry.distalX + geometry.positionX) / 2,
+						y: (geometry.distalY + geometry.positionY) / 2,
+						z: (geometry.distalZ + geometry.positionZ) / 2
 					},
-					radius: geometry.topRadius
+					radius: (geometry.topRadius + geometry.bottomRadius) / 2
 				}
 			}
 			else {
@@ -124,14 +163,16 @@ define(function (require, exports, module) {
 			}
 		},
 
-		loadModel: function() {
+		loadModel: function () {
 			window.Instances = []
 			GEPPETTO.ControlPanel.setData([]);
 			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
 			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-			var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
+			var instances = stateVariableInstances.concat(derivedStateVariableInstances)
 			GEPPETTO.ControlPanel.setData(instances);
 			GEPPETTO.ExperimentsController.watchVariables(instances, true);
 			GEPPETTO.ExperimentsController.playExperimentReady = true;
@@ -181,6 +222,12 @@ define(function (require, exports, module) {
 				}
 			}
 
+			// Add DerivedStateVariable
+			for (var i = 0; i < this.get('derived_state_variables').length; i++) {
+				//Create array with states variables
+				geppettoStateVariables.push(this.get('derived_state_variables')[i].getPayload())
+			}
+
 			// Add model as variable
 			var modelVariable = {
 				eClass: 'Variable',
@@ -202,7 +249,6 @@ define(function (require, exports, module) {
 			if (this.get('geometries').length > 0) {
 				var geppettoMorphologiesVariables = [];
 				for (var i = 0; i < this.get('geometries').length; i++) {
-					//geppettoMorphologiesVariables.push(this.get('geometries')[i].getPayload());
 					geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i]));
 				}
 				var compositeVisualType = {
@@ -226,16 +272,17 @@ define(function (require, exports, module) {
 			return geppettoModelPayload;
 		},
 
-		handle_custom_messages: function(msg) {
+		handle_custom_messages: function (msg) {
 			if (msg.type === 'load') {
+				console.log("syncing model")
 				this.loadModel();
 			}
-			else if (msg.type === 'draw_sphere'){
+			else if (msg.type === 'draw_sphere') {
 				var content = msg.content;
-				if (this.point_process_sphere){
+				if (this.point_process_sphere) {
 					this.point_process_sphere = GEPPETTO.SceneFactory.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
 				}
-				else{
+				else {
 					this.point_process_sphere = GEPPETTO.SceneFactory.add3DSphere(content.x, content.y, content.z, content.radius);
 				}
 			}
@@ -248,10 +295,15 @@ define(function (require, exports, module) {
 			this.on("change:geometries", function (model, value, options) {
 				this.loadModel();
 			});
+
+			this.on("change:derived_state_variables", function (model, value, options) {
+				console.log("change on derived")
+			});
 		}
 	}, {
 			serializers: _.extend({
-				stateVariables: { deserialize: jupyter_widgets.unpack_models }
+				stateVariables: { deserialize: jupyter_widgets.unpack_models },
+				derived_state_variables: { deserialize: jupyter_widgets.unpack_models }
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 
@@ -319,6 +371,7 @@ define(function (require, exports, module) {
 
 	module.exports = {
 		StateVariableSync: StateVariableSync,
+		DerivedStateVariableSync: DerivedStateVariableSync,
 		ModelSync: ModelSync,
 		ExperimentSync: ExperimentSync,
 		ProjectSync: ProjectSync,

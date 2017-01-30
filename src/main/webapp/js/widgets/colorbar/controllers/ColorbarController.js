@@ -91,12 +91,12 @@ define(function (require) {
             else if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.UPDATE) {
                 //pass
             }
-            else if (event == Events.Experiment_update) {
+           /* else if (event == Events.Experiment_update) {
                 for (var i=0; i < this.widgets.length; ++i) {
                     var plot = this.widgets[i];
                     plot.draw();
                 }
-            }
+            } */
         }
     });
 });

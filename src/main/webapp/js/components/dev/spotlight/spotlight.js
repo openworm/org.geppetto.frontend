@@ -794,6 +794,10 @@ define(function (require) {
                     processed = processed.split("$type$").join(instance[0].getType().getPath());
                     processed = processed.split("$typeid$").join(instance[0].getType().getId());
                     processed = processed.split("$variableid$").join(instance[0].getId());
+                } else if (instance == undefined || instance == null) {
+                    // pass through scenario in case we have no instance
+                    // this happens for external datasources before the instance gets created
+                    processed = action.split("$value$").join(value);;
                 }
 
                 return processed;

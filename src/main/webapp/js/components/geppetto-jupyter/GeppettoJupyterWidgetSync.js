@@ -46,6 +46,10 @@ define(function (require, exports, module) {
 			}
 
 			this.on("msg:custom", this.handle_custom_messages, this);
+
+			this.on("change:data", function (model, value, options) {
+				console.log("data changed")
+			})
 		},
 		handle_custom_messages: function (msg) {
 			if (msg.command === 'plot') {
@@ -59,7 +63,7 @@ define(function (require, exports, module) {
 		},
 
 
-		plotData: function (){
+		plotData: function () {
 			for (dataIndex in this.get('data')) {
 				var item = this.get('data')[dataIndex]
 				this.get('widget_object').plotData(eval(item))
@@ -68,7 +72,18 @@ define(function (require, exports, module) {
 
 
 		plotXYData: function () {
-			this.get('widget_object').plotXYData(eval(this.get('data')[0]), eval(this.get('data')[1]))
+			if (this.get('data').length == 2) {
+				this.get('widget_object').plotXYData(eval(this.get('data')[0]), eval(this.get('data')[1]))
+			}
+			else {
+				//FIXME: Quick and dirty hack to wait for variables to be
+				//property synced js side
+
+				console.log('retry')
+				// setTimeout(this.plotXYData(), 1000);
+				this.on("change:data", function () { this.plotXYData(); this.off('change:data') })
+			}
+
 		}
 
 	});

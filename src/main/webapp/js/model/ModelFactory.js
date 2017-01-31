@@ -635,7 +635,7 @@ define(function (require) {
                             libMatch = true;
 
                             var diffTypes = diffLibs[i].getTypes();
-                            var existingImportTypes = libs[j].importTypes;
+                            var existingTypes = libs[j].getTypes();
 
                             // first loop on types - add new ones
                             var addedTypes = [];
@@ -653,12 +653,12 @@ define(function (require) {
 
                                 var typeMatch = false;
 
-                                for (var m = 0; m < existingImportTypes.length; m++) {
+                                for (var m = 0; m < existingTypes.length; m++) {
                                     // check if the given diff type already exists
-                                    if (diffTypes[k].getPath() == existingImportTypes[m].getPath()) {
+                                    if (diffTypes[k].getPath() == existingTypes[m].getPath()) {
                                         typeMatch = true;
                                         typeMatched.push(diffTypes[k]);
-                                        importTypeMatched.push(existingImportTypes[m]);
+                                        importTypeMatched.push(existingTypes[m]);
                                         break;
                                     }
                                 }

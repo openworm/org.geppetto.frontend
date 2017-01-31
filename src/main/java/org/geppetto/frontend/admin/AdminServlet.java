@@ -290,8 +290,8 @@ public class AdminServlet
 							simulation.setExperiment(e.getName());
 							simulation.setLogin(user.getLogin());
 							simulation.setExperimentLastRun(e.getLastModified().toString());
-
 							simulation.setStatus(e.getStatus().toString());
+							simulation.setError(e.getDetails());
 							simulation.setProject(p.getName());
 
 							long days = this.daysAgo(e.getEndDate(), new Date());

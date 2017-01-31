@@ -85,7 +85,6 @@ define(function (require) {
 		resultsPerPage : 20,
 		usersViewSelected : true,
 		simulationsViewSelected : false,
-		errorsViewSelected : false,
 		lastDaySelected : false,
 		lastWeekSelected: true,
 		lastMonthSelected : false,
@@ -93,7 +92,7 @@ define(function (require) {
 		currentView : null,
 		timeFrame : "week",
 		storedData :[],
-		views : ["Users","Simulations","Errors"],
+		views : ["Users","Simulations"],
 		usersColumnMeta : [
 		              {   "columnName": "login",
 			              "order": 1,
@@ -154,36 +153,13 @@ define(function (require) {
 		              {   "columnName": "status",
 			              "order": 7,
 			              "locked": false,
-			              "displayName": "Experiment Status"}],
-		errorsColumnMeta: [{
-				      		"columnName": "login",
-				      		"order": 1,
-				      		"locked": false,
-				      		"displayName": "Username"},
-				      {
-				      		"columnName": "name",
-				      		"order": 2,
-				      		"locked": false,
-				      		"displayName": "Name"},
-		              {
-		                  "columnName": "error",
-		              		"order": 3,
-		              		"locked": false,
-		              		"displayName": "Experiment Error"},
-		              {   "columnName": "project",
-					      "order": 4,
-					      "locked": false,
-					      "displayName": "Project Name"},
-		              {
-		              		"columnName": "experiment",
-		              		"order": 5,
-		              		"locked": false,
-		              		"displayName": "Experiment Name"},
-		              {
-		              		"columnName": "simulator",
-		              		"order": 6,
-		              		"locked": false,
-		              		"displayName": "Simulator Name"}],
+			              "displayName": "Experiment Status"},
+			          {   "columnName": "error",
+				           "order": 8,
+				           "locked": false,
+				           "visible": false,
+				           "displayName": "Experiment Error"}],
+	    errorColumns : ['login', 'name', 'project','experiment','experimentLastRun','simulator','status'],
 		columnMeta : [],
 	    
 		getInitialState: function() {
@@ -220,16 +196,14 @@ define(function (require) {
 			
 			if(mode == this.views[0]){
 				urlData += "user/"+this.user + "/users/"+this.timeFrame;
-				this.setDataViewFlags(true,false,false);
+				this.setDataViewFlags(true,false);
 				this.columnMeta = this.usersColumnMeta;
+				newColumns = [];
 			}else if(mode ==this.views[1]){
 				urlData += "user/"+this.user + "/simulations/"+this.timeFrame;
-				this.setDataViewFlags(false,true,false);
+				this.setDataViewFlags(false,true);
 				this.columnMeta = this.simulationsColumnMeta;
-			}else if(mode ==this.views[2]){
-				urlData += "user/"+this.user + "/errors/"+this.timeFrame;
-				this.setDataViewFlags(false,false,true);
-				this.columnMeta = this.errorsColumnMeta;
+				newColumns = this.errorColumns;
 			}
 			
 			this.currentView = mode;
@@ -239,18 +213,17 @@ define(function (require) {
 			if(this.storedData[this.currentView+"/"+timeFrame]==null){
 				$.ajax({url: urlData, success: function(result){
 					that.storedData[that.currentView+"/"+timeFrame] = result;
-					that.setState({data: result, columnMeta : that.columnMeta, loaded : true});
+					that.setState({data: result, columnMeta : that.columnMeta, loaded : true, columns : newColumns});
 				}});
 			}else{
-				this.setState({data: this.storedData[this.currentView+"/"+timeFrame], columnMeta : this.columnMeta, loaded : true});
+				this.setState({data: this.storedData[this.currentView+"/"+timeFrame], columnMeta : this.columnMeta, loaded : true, columns : newColumns});
 			}
 		},
 		
 		//toggle flags that keep track of what's being displayed
-		setDataViewFlags : function(user, simulation, errors){
+		setDataViewFlags : function(user, simulation){
 			this.usersViewSelected = user;
 			this.simulationsViewSelected = simulation;
-			this.errorsViewSelected = errors;
 		},
 		
 		//toggle flags that keep track of what's being displayed
@@ -346,6 +319,20 @@ define(function (require) {
 					alert("Storage size for user " + login + " is: " + result);
 				}});
 			}
+			if(td.textContent=="ERROR"){
+				var login = rowData.props.data.login;
+				var project = rowData.props.data.project;
+				var experiment = rowData.props.data.experiment;
+				var data = this.state.data;
+				if(this.storedData[this.currentView+"/"+this.timeFrame]!=null){
+					for(var key in data){
+						var object = data[key];
+						if(object.login == login && object.project == project && object.experiment == experiment){
+							alert(object.error);
+						}
+					}
+				}
+			}
 	    },
 		
 		render: function () {
@@ -354,7 +341,6 @@ define(function (require) {
 				  <div id="adminButtonHeader" className="adminButtonHeadverDiv">
 					<ButtonComponent id={"Users"} selectedState={this.usersViewSelected} onClick={this.changeViewData.bind(this,"Users")}/>
 					<ButtonComponent id={"Simulations"} selectedState={this.simulationsViewSelected} onClick={this.changeViewData.bind(this,"Simulations")}/>
-					<ButtonComponent id={"Errors"} selectedState={this.errorsViewSelected} onClick={this.changeViewData.bind(this,"Errors")}/>
 				  </div>
 				 <div id="timeFrameButtonHeader" className="timeFrameButtonHeadverDiv">
 				  <label>
@@ -374,7 +360,8 @@ define(function (require) {
 					{this.state.loaded ?
 						<Griddle results={this.state.data} columnMetadata={this.state.columnMeta} bodyHeight={this.props.height}
 						enableInfinteScroll={true} useGriddleStyles={false} resultsPerPage={this.resultsPerPage} showPager={false}
-						showFilter ={true} onRowClick={this.onRowClick} initialSort={"lastLogin"} initialSortAscending={false}/>
+						showFilter ={true} onRowClick={this.onRowClick} initialSort={"lastLogin"} initialSortAscending={false}
+						columns = {this.state.columns}/>
 						:
 						<div id="loading-container">
 							<div className="gpt-gpt_logo fa-spin"></div>

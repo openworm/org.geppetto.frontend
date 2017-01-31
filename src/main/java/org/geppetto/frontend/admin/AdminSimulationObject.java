@@ -9,6 +9,14 @@ public class AdminSimulationObject {
 	private String simulator;
 	private String status;
 	private String project;
+	private String error;
+	
+	public String getError() {
+		return error;
+	}
+	public void setError(String error) {
+		this.error = error;
+	}
 
 	public String getProject() {
 		return project;

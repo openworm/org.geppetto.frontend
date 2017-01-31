@@ -163,6 +163,42 @@ define(function (require, exports, module) {
 			}
 		},
 
+		mergeModel: function () {
+			//window.Instances = []
+			GEPPETTO.ControlPanel.setData([]);
+			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
+
+			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
+			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
+			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
+			var instances = stateVariableInstances.concat(derivedStateVariableInstances)
+			GEPPETTO.ControlPanel.setData(instances);
+			GEPPETTO.ExperimentsController.watchVariables(instances, true);
+			GEPPETTO.ExperimentsController.playExperimentReady = true;
+
+			for (var i = 0; i < this.get('stateVariables').length; i++) {
+				for (var j = 0; j < instances.length; j++) {
+					//TODO Wont work for more complex nesting, we'll need the path to come from Python
+					if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
+						this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
+						break;
+					}
+				}
+			}
+
+			console.log("merging model")
+
+			// // Split every single segment
+			// if (this.get('geometries').length > 1) {
+			// 	var elements = {};
+			// 	for (var i = 0; i < this.get('geometries').length; i++) {
+			// 		elements[this.get('geometries')[i].id] = "";
+			// 	}
+			// 	GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
+			// }
+		},
+
 		loadModel: function () {
 			window.Instances = []
 			GEPPETTO.ControlPanel.setData([]);
@@ -198,17 +234,7 @@ define(function (require, exports, module) {
 			}
 		},
 
-		getPayload: function () {
-
-			var geppettoModelPayload = {
-				eClass: 'GeppettoModel',
-				//libraries: [{ synched: true }],
-				libraries: [GeppettoJupyterUtils.getGeppettoCommonLibrary()]
-			}
-
-
-			var geppettoVariables = [];
-
+		getStateVariablesPayload: function(geppettoVariables){
 			// Add StateVariable
 			var geppettoStateVariables = [];
 			for (var i = 0; i < this.get('stateVariables').length; i++) {
@@ -228,45 +254,70 @@ define(function (require, exports, module) {
 				geppettoStateVariables.push(this.get('derived_state_variables')[i].getPayload())
 			}
 
+			return geppettoStateVariables;
+		},
+
+		getCompositeVisualType: function(){
+			var geppettoMorphologiesVariables = [];
+			for (var i = 0; i < this.get('geometries').length; i++) {
+				geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i]));
+			}
+			return {
+				eClass: 'CompositeVisualType',
+				id: this.get('id') + 'VisualType',
+				name: this.get('name') + ' Visual Type',
+				variables: geppettoMorphologiesVariables
+			}
+		},
+
+		getModelVariableType: function(geppettoVariables){
+			return {
+				eClass: 'CompositeType',
+				id: this.get('id'),
+				name: this.get('name'),
+				abstract: false,
+				variables: this.getStateVariablesPayload(geppettoVariables)
+			}
+		},
+
+		getNeuronLibrary: function(){
+			return {
+				"eClass": "GeppettoLibrary",
+				"id": "neuron",
+				"name": "Geppetto Neuron Library",
+				"types": []
+			}
+		},
+		
+
+		getPayload: function () {
+
+			var geppettoModelPayload = {
+				eClass: 'GeppettoModel',
+				//libraries: [{ synched: true }],
+				libraries: [GeppettoJupyterUtils.getGeppettoCommonLibrary(), this.getNeuronLibrary()]
+			}
+
+			var geppettoVariables = [];
+			var modelVariableType = this.getModelVariableType(geppettoVariables);
+			geppettoModelPayload.libraries[1].types.push(modelVariableType);
+			// Add morphologies
+			if (this.get('geometries').length > 0) {
+				geppettoModelPayload.libraries[1].types.push(this.getCompositeVisualType())
+				modelVariableType['visualType'] = { $ref: "//@libraries.1/@types.1" }
+			}
+
+			
+
 			// Add model as variable
 			var modelVariable = {
 				eClass: 'Variable',
 				id: this.get('id'),
 				name: this.get('name'),
-				anonymousTypes: [
-					{
-						eClass: 'CompositeType',
-						id: this.get('id'),
-						name: this.get('name'),
-						abstract: false,
-						variables: geppettoStateVariables
-					}
-				]
+				types: [{ $ref: "//@libraries.1/@types.0" }],
 			}
 			geppettoVariables.push(modelVariable)
 
-			// Add morphologies
-			if (this.get('geometries').length > 0) {
-				var geppettoMorphologiesVariables = [];
-				for (var i = 0; i < this.get('geometries').length; i++) {
-					geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i]));
-				}
-				var compositeVisualType = {
-					eClass: 'CompositeVisualType',
-					id: this.get('id') + 'VisualType',
-					name: this.get('name') + ' Visual Type',
-					variables: geppettoMorphologiesVariables
-				}
-
-				var neuronLibrary = {
-					"eClass": "GeppettoLibrary",
-					"id": "neuron",
-					"name": "Geppetto Neuron Library",
-					"types": [compositeVisualType]
-				};
-				geppettoModelPayload.libraries.push(neuronLibrary)
-				modelVariable.anonymousTypes[0]['visualType'] = { $ref: "//@libraries.1/@types.0" }
-			}
 
 			geppettoModelPayload['variables'] = geppettoVariables;
 			return geppettoModelPayload;
@@ -275,7 +326,13 @@ define(function (require, exports, module) {
 		handle_custom_messages: function (msg) {
 			if (msg.type === 'load') {
 				console.log("syncing model")
-				this.loadModel();
+				if (msg.type === 'hard_reload') {
+					this.loadModel();
+				}
+				else{
+					this.mergeModel();
+				}
+				
 			}
 			else if (msg.type === 'draw_sphere') {
 				var content = msg.content;
@@ -298,6 +355,7 @@ define(function (require, exports, module) {
 
 			this.on("change:derived_state_variables", function (model, value, options) {
 				console.log("change on derived")
+				this.mergeModel();
 			});
 		}
 	}, {

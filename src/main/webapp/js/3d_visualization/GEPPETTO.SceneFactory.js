@@ -482,41 +482,12 @@ define(function (require) {
              * It could be any geometry really.
              * @returns {THREE.Mesh}
              */
-            add3DSphere: function (x,y,z,radius,textureURL) {
+            add3DSphere: function (x,y,z,radius) {
                 var material= new THREE.MeshBasicMaterial({side:THREE.DoubleSide});
                 material.nowireframe=true;
-                if(textureURL!=undefined){
-                	var loader = new THREE.TextureLoader();
-                	// load a resource
-                	loader.load(
-                		// resource URL
-                		textureURL,
-                		// Function when resource is loaded
-                		function ( texture ) {
-                			//texture.minFilter = THREE.LinearFilter;
-                			material.map=texture;
-                			texture.flipY = false;
-                			material.opacity= 0.3;
-                        	material.transparent=true;
-                			material.needsUpdate = true;
-                			
-                		},
-                		// Function called when download progresses
-                		function ( xhr ) {
-                			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-                		},
-                		// Function called when download errors
-                		function ( xhr ) {
-                			console.log( 'An error happened' );
-                		}
-                	);
-                	
-                }
-                else{
-                	material.opacity= 0.5;
-                	material.transparent=true;
-                	material.color.setHex("0xff0000");
-                }
+                material.opacity= 0.6;
+                material.transparent=true;
+                material.color.setHex("0xff0000");
                 
                 var sphereNode ={radius:radius,position:{x:x, y:y, z:z}}
                 var mesh = GEPPETTO.SceneFactory.create3DSphereFromNode(sphereNode, material)

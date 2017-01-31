@@ -504,16 +504,14 @@ define(function (require) {
 
             /**
              * Modulates the brightness of an aspect visualization, given a watched node
-             * and a normalization function. The normalization function should receive
-             * the value of the watched node and output a number between 0 and 1,
-             * corresponding to min and max brightness. If no normalization function is
-             * specified, then brightness = value
+             * and a color function. The color function should receive
+             * the value of the watched node and output [r,g,b].
              *
              * @param {Instance} instance - The instance to be lit
              * @param {Instance} modulation - Variable which modulates the brightness
-             * @param {Function} normalizationFunction
+             * @param {Function} colorfn - Converts time-series value to [r,g,b]
              */
-            addBrightnessFunction: function (instance, stateVariableInstances, normalizationFunction) {
+            addBrightnessFunction: function (instance, stateVariableInstances, colorfn) {
             	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
             	var newInstance = "";
             	var visualObjects = [];
@@ -525,21 +523,19 @@ define(function (require) {
             		visualObjects= [instance.getId()];
             	}
             	
-            	this.addBrightnessFunctionBulk(newInstance, visualObjects, [stateVariableInstances], normalizationFunction);
+            	this.addBrightnessFunctionBulk(newInstance, visualObjects, [stateVariableInstances], colorfn);
             },
             
             /**
              * Modulates the brightness of an aspect visualization, given a watched node
-             * and a normalization function. The normalization function should receive
-             * the value of the watched node and output a number between 0 and 1,
-             * corresponding to min and max brightness. If no normalization function is
-             * specified, then brightness = value
+             * and a color function. The color function should receive
+             * the value of the watched node and output [r,g,b].
              *
              * @param {Instance} instance - The instance to be lit
              * @param {Instance} modulation - Variable which modulates the brightness
-             * @param {Function} normalizationFunction
+             * @param {Function} colorfn - Converts time-series value to [r,g,b]
              */
-            addBrightnessFunctionBulkSimplified: function (instances, normalizationFunction) {
+            addBrightnessFunctionBulkSimplified: function (instances, colorfn) {
             	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
             	var compositeToLit={};
             	var visualObjectsToLit={};
@@ -577,7 +573,7 @@ define(function (require) {
 
             	for(var i in Object.keys(compositeToLit)){
             		var path=Object.keys(compositeToLit)[i];
-            		this.addBrightnessFunctionBulk(compositeToLit[path], visualObjectsToLit[path], variables[path], normalizationFunction);
+            		this.addBrightnessFunctionBulk(compositeToLit[path], visualObjectsToLit[path], variables[path], colorfn);
             	}
             	
             },
@@ -598,16 +594,14 @@ define(function (require) {
 
             /**
              * Modulates the brightness of an aspect visualization, given a watched node
-             * and a normalization function. The normalization function should receive
-             * the value of the watched node and output a number between 0 and 1,
-             * corresponding to min and max brightness. If no normalization function is
-             * specified, then brightness = value
+             * and a color function. The color function should receive
+             * the value of the watched node and output [r,g,b].
              *
              * @param {Instance} instance - The instance to be lit
              * @param {Instance} modulation - Variable which modulates the brightness
-             * @param {Function} normalizationFunction
+             * @param {Function} colorfn - Converts time-series value to [r,g,b]
              */
-            addBrightnessFunctionBulk: function (instance, visualObjects, stateVariableInstances, normalizationFunction) {
+            addBrightnessFunctionBulk: function (instance, visualObjects, stateVariableInstances, colorfn) {
             	var modulations = [];
             	if (visualObjects != null){
             		if (visualObjects.length > 0 ){
@@ -636,18 +630,17 @@ define(function (require) {
             	
             	//add brightness listener for map of variables
             	for (var index in matchedMap){
-	                this.addBrightnessListener(index, matchedMap[index], normalizationFunction);
+	                this.addBrightnessListener(index, matchedMap[index], colorfn);
             	}
 
                 // update flag
                 this.brightnessFunctionSet = true;
             },
             
-            addBrightnessListener: function(instance, modulation, normalizationFunction){
+            addBrightnessListener: function(instance, modulation, colorfn){
             	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
             		if(step<stateVariableInstance.getTimeSeries().length){
-            			GEPPETTO.SceneController.lightUpEntity(instance,
-            					normalizationFunction ? normalizationFunction(stateVariableInstance.getTimeSeries()[step]) : stateVariableInstance.getTimeSeries()[step]);
+            		    GEPPETTO.SceneController.lightUpEntity(instance, colorfn, stateVariableInstance.getTimeSeries()[step]);
             		}
                 });
             },

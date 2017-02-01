@@ -1303,13 +1303,13 @@ define(function (require) {
                 "actions" :["GEPPETTO.ControlPanel.refresh();"],
                 "showCondition": "GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal($projectId$, $experimentId$, '$instance$');",
                 "id": "plot2",
-                "icon": "fa-line-chart",
+                "icon": "gpt-addplot",
                 "label": "Plot2",
                 "tooltip": "Plot state variable in a an existing widget"
             }
         }
     };
-    var stateVariablesControls = { "Common": ['watch', 'plot','plot2'] };
+    var stateVariablesControls = { "Common": ['watch', 'plot', 'plot2'] };
 
     // parameters config (treated as potential instances)
     var parametersColMeta = [

@@ -34,34 +34,42 @@ define(function (require, exports, module) {
 
 	var React = require('react');
 
-	var TextField = React.createClass({
-		getInitialState: function () {
-			return { value: this.props.sync_value };
+	var DropDown = React.createClass({
+
+		getInitialState: function() {
+			return {
+            	items: this.props.items,
+				value: this.props.sync_value
+            };
 		},
+		componentWillReceiveProps: function(nextProps) {
+  		  this.setState({
+  			  items: nextProps.items,
+			  value: nextProps.sync_value
+  		  });
+  		},
+
 		handleChange: function (event) {
 			this.setState({ value: event.target.value });
 			this.props.handleChange(event.target.value);
 		},
 		handleBlur: function (event) {
-			//this.setState({value: event.target.value});
 			this.props.handleBlur(event.target.value);
-		},
-		componentWillReceiveProps: function (nextProps) {
-			this.setState({
-				value: nextProps.sync_value
-			});
 		},
 
 		render: function () {
-			var opts = {};
-			if (this.props.readOnly) {
-				opts['readOnly'] = 'readOnly';
-			}
+			var itemComponents = this.state.items.map(function (item) {
+				return (<option id={item.id} value={item.id}>{item.value}</option>);
+			});
+
 			return (
-				<input {...opts} type="text" id={this.props.id} value={this.state.value} onChange={this.handleChange} onBlur={this.handleBlur} />
+				<select value={this.state.value} id={this.props.id} onChange={this.handleChange}>
+					{itemComponents}
+				</select>
+
 			);
 		}
 	});
 
-	return TextField;
+	return DropDown;
 });

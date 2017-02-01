@@ -4,7 +4,7 @@ public class AdminSimulationObject {
 	
 	private String login;
 	private String name;
-	private String experimentLastRun;
+	private long experimentLastRun;
 	private String experiment;
 	private String simulator;
 	private String status;
@@ -42,10 +42,10 @@ public class AdminSimulationObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getExperimentLastRun() {
+	public long getExperimentLastRun() {
 		return experimentLastRun;
 	}
-	public void setExperimentLastRun(String experimentLastRun) {
+	public void setExperimentLastRun(long experimentLastRun) {
 		this.experimentLastRun = experimentLastRun;
 	}
 	public String getExperiment() {

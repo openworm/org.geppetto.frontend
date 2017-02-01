@@ -130,10 +130,9 @@ define(function (require) {
             var selector = $("#"+this.props.configuration.id+"-dropDown");
             
             window.addEventListener('resize', function(event){
-            	self.menuPosition = self.getMenuPosition();
-            	
-            	if(selector!=null && selector != undefined){
+            	if(selector!=null && selector!=undefined){
             		if(self.state.visible){
+                        self.menuPosition = self.getMenuPosition();
             			selector.css({
             				top: self.menuPosition.top, right: self.menuPosition.right,
             				bottom: self.menuPosition.bottom, left: self.menuPosition.left, position: 'fixed',

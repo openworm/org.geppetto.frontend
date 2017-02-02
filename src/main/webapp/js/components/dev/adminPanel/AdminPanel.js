@@ -54,7 +54,7 @@ define(function (require) {
             };
 
             var linkDisabled = "";
-            if (displayText != "Show Size") {
+            if (displayText != "Show Size" && displayText != "ERROR") {
                 linkDisabled = "linkDisabled";
             }
 
@@ -188,6 +188,7 @@ define(function (require) {
             },
             {
                 "columnName": "status",
+                "customComponent": LinkComponent,
                 "order": 7,
                 "locked": false,
                 "displayName": "Experiment Status"
@@ -380,6 +381,7 @@ define(function (require) {
                         var object = data[key];
                         if (object.login == login && object.project == project && object.experiment == experiment) {
                             alert(object.error);
+                            break;
                         }
                     }
                 }

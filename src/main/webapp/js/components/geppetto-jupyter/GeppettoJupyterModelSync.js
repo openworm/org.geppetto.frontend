@@ -193,22 +193,26 @@ define(function (require, exports, module) {
 			}
 		},
 
-		mergeModel: function () {
-			//window.Instances = []
-			GEPPETTO.ControlPanel.clearData();
-			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
-
+		createInstanceForStateVariables: function () {
 			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
 			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
 			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
 			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
-			var instances = stateVariableInstances.concat(derivedStateVariableInstances)
-			GEPPETTO.ControlPanel.setData(instances);
+			var instances =  stateVariableInstances.concat(derivedStateVariableInstances)
+
 			GEPPETTO.ExperimentsController.watchVariables(instances, true);
-			// GEPPETTO.ExperimentsController.playExperimentReady = true;
 
 			this.setGeppettoInstance(instances);
 
+			return instances;
+		},
+
+		mergeModel: function () {
+			GEPPETTO.ControlPanel.clearData();
+			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
+
+			var instances = this.createInstanceForStateVariables();
+			GEPPETTO.ControlPanel.setData(instances);
 		},
 
 		loadModel: function () {
@@ -216,16 +220,9 @@ define(function (require, exports, module) {
 			GEPPETTO.ControlPanel.clearData();
 			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
-			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
-			var instances = stateVariableInstances.concat(derivedStateVariableInstances)
+			var instances = this.createInstanceForStateVariables();
 			GEPPETTO.ControlPanel.setData(instances);
-			GEPPETTO.ExperimentsController.watchVariables(instances, true);
 			GEPPETTO.ExperimentsController.playExperimentReady = true;
-
-			this.setGeppettoInstance(instances);
 
 			this.splitAllGeometries();
 		},

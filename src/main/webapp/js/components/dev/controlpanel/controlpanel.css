@@ -13,8 +13,8 @@
 	margin-right: auto;
 	left: 0;
 	right: 0;
-	width: 75%;
-	top: 10%;
+	width: 95%;
+	top: 5%;
 }
 
 #controlpanel #controlPanelMenuButton {
@@ -163,7 +163,7 @@
 }
 
 #controlpanel .controlpanel-controls-column {
-	text-align: center !important;
+	text-align: right !important;
 }
 
 #controlpanel .control-panel-parameter-input {
@@ -173,6 +173,7 @@
 	margin-right: 5px;
 	float: left;
 	width: 65%;
+	font-family: "Consolas", "Andale Mono", "Courier New", "Courier", monospace !important;
 }
 
 #controlpanel .control-panel-parameter-edited {
@@ -183,12 +184,24 @@
 	float: right;
 }
 
+#controlpanel td.control-panel-path-column {
+	font-family: "Consolas", "Andale Mono", "Courier New", "Courier", monospace !important;
+}
+
 #controlpanel .control-panel-path-column {
-	width: 60%;
+	width: 50%;
+}
+
+#controlpanel td.control-panel-parameter-path-column {
+	font-family: "Consolas", "Andale Mono", "Courier New", "Courier", monospace !important;
 }
 
 #controlpanel .control-panel-parameter-path-column {
 	width: 50%;
+}
+
+#controlpanel td.control-panel-value-column {
+	font-family: "Consolas", "Andale Mono", "Courier New", "Courier", monospace !important;
 }
 
 #controlpanel .control-panel-value-column {

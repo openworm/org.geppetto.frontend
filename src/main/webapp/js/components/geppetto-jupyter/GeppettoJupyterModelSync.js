@@ -292,22 +292,24 @@ define(function (require, exports, module) {
 
 		getPayload: function () {
 
+			// Create Geppetto Model Payload
 			var geppettoModelPayload = {
 				eClass: 'GeppettoModel',
-				//libraries: [{ synched: true }],
 				libraries: [GeppettoJupyterUtils.getGeppettoCommonLibrary(), this.getNeuronLibrary()]
 			}
 
 			var geppettoVariables = [];
+
+			// Get Main Model Variable Type
 			var modelVariableType = this.getModelVariableType(geppettoVariables);
 			geppettoModelPayload.libraries[1].types.push(modelVariableType);
-			// Add morphologies
+			
+			
+			// Get Main Composite Visual Type
 			if (this.get('geometries').length > 0) {
 				geppettoModelPayload.libraries[1].types.push(this.getCompositeVisualType())
 				modelVariableType['visualType'] = { $ref: "//@libraries.1/@types.1" }
 			}
-
-			
 
 			// Add model as variable
 			var modelVariable = {
@@ -325,7 +327,6 @@ define(function (require, exports, module) {
 
 		handle_custom_messages: function (msg) {
 			if (msg.type === 'load') {
-				console.log("syncing model")
 				if (msg.type === 'hard_reload') {
 					this.loadModel();
 				}
@@ -354,7 +355,6 @@ define(function (require, exports, module) {
 			});
 
 			this.on("change:derived_state_variables", function (model, value, options) {
-				console.log("change on derived")
 				this.mergeModel();
 			});
 		}

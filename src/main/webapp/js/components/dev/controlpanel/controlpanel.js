@@ -182,16 +182,25 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+        	
+        	var that = this;
+        	
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
             GEPPETTO.on(Events.Experiment_completed, function () {
-                this.refresh();
+                that.refresh();
             });
             GEPPETTO.on(Events.Experiment_running, function () {
-                this.refresh();
+                that.refresh();
             });
             GEPPETTO.on(Events.Experiment_failed, function () {
-                this.refresh();
+                that.refresh();
             });
+        },
+        
+        componentWillUnmount: function() {
+            GEPPETTO.off(Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.off(Events.Experiment_running, this.refresh, this);
+            GEPPETTO.off(Events.Experiment_completed, this.refresh, this);
         },
 
         render: function () {
@@ -285,7 +294,7 @@ define(function (require) {
         refresh: function() {
             this.forceUpdate();
         },
-
+        
         replaceTokensWithPath: function(inputStr, path){
             return inputStr.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
         },
@@ -370,6 +379,13 @@ define(function (require) {
                 that.refresh();
             });
         },
+        
+        componentWillUnmount: function() {
+            GEPPETTO.off(Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.off(Events.Experiment_running, this.refresh, this);
+            GEPPETTO.off(Events.Experiment_completed, this.refresh, this);
+        },
+        
 
         // Utility method to iterate over a config property and populate a list of control buttons to be created
         addControlButtons: function(controlsConfig, showControlsConfig, configPropertyName, buttonsList, targetPath, projectId, experimentId){

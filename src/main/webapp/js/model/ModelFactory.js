@@ -1062,6 +1062,8 @@ define(function (require) {
                             type: partialPathsForNewType[j].type
                         };
 
+                        // If variable if already in allPaths remove it
+                        // before adding the new variable
                         for (var k = 0; k < this.allPaths.length; k++) {
                             if (this.allPaths[k].path == entry.path) {
                                 this.allPaths.splice(k,1)
@@ -1089,6 +1091,8 @@ define(function (require) {
                             type: partialPathsForNewType[j].type
                         };
 
+                        // If variable if already in allPathsIndexing and newPathsIndexing remove it
+                        // before adding the new variable
                         for (var k = 0; k < this.allPathsIndexing.length; k++) {
                             if (this.allPathsIndexing[k].path == entry.path) {
                                 this.allPathsIndexing.splice(k,1)

@@ -442,7 +442,8 @@
 	text-align: center;
 	cursor: pointer;
 	margin-bottom: 5px;
-	margin: left:5px; margin : right : 5px;
+	margin-left: 5px; 
+	margin-right: 5px;
 	border: 0;
 	margin: right:5px;
 }

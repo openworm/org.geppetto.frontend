@@ -14,7 +14,7 @@
 	left: 0;
 	right: 0;
 	width: 75%;
-	top: 20%;
+	top: 10%;
 }
 
 #controlpanel #controlPanelMenuButton {
@@ -110,7 +110,7 @@
 }
 
 #controlpanel .griddle .griddle-previous, .griddle .griddle-page, .griddle .griddle-next
-	{
+{
 	float: left;
 	width: 33%;
 	min-height: 1px;
@@ -119,10 +119,16 @@
 
 #controlpanel .griddle .griddle-page {
 	text-align: center;
+	color: #fd6808;
 }
 
 #controlpanel .griddle .griddle-next {
 	text-align: right;
+}
+
+#controlpanel .griddle button:hover {
+	backround: transparent;
+	color: #fc4b19;
 }
 
 #controlpanel .griddle button {

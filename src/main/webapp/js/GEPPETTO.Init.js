@@ -264,6 +264,9 @@ define(function (require) {
                                         }
                                         
                                         var selectedIntersectCoordinates = [selectedIntersect.point.x, selectedIntersect.point.y, selectedIntersect.point.z]
+                                        if(geometryIdentifier==undefined){
+                                        	geometryIdentifier="";
+                                        }
                                         GEPPETTO.Console.executeCommand(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
                                     }
                                 }

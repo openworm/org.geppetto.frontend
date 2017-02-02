@@ -1061,6 +1061,13 @@ define(function (require) {
                             metaType: partialPathsForNewType[j].metaType,
                             type: partialPathsForNewType[j].type
                         };
+
+                        for (var k = 0; k < this.allPaths.length; k++) {
+                            if (this.allPaths[k].path == entry.path) {
+                                this.allPaths.splice(k,1)
+                                break;
+                            }
+                        }
                         this.allPaths.push(entry);
                     }
                 }
@@ -1081,7 +1088,21 @@ define(function (require) {
                             metaType: partialPathsForNewType[j].metaType,
                             type: partialPathsForNewType[j].type
                         };
+
+                        for (var k = 0; k < this.allPathsIndexing.length; k++) {
+                            if (this.allPathsIndexing[k].path == entry.path) {
+                                this.allPathsIndexing.splice(k,1)
+                                break;
+                            }
+                        }
                         this.allPathsIndexing.push(entry);
+
+                        for (var k = 0; k < this.newPathsIndexing.length; k++) {
+                            if (this.newPathsIndexing[k].path == entry.path) {
+                                this.newPathsIndexing.splice(k,1)
+                                break;
+                            }
+                        }
                         this.newPathsIndexing.push(entry);
                     }
                 }

@@ -66,7 +66,7 @@ define(function (require) {
         xaxisAutoRange : false,
         imageTypes : [],
         plotElement : null,
-        XVariable : null,
+        xVariable : null,
         firstStep : 0,
         
 		/**
@@ -373,6 +373,7 @@ define(function (require) {
 				this.resize(false);
 			}
 			
+			this.xVariable = window.time;
 			return this;
 		},
 
@@ -501,9 +502,9 @@ define(function (require) {
 		/**
 		 * Retrieve the x and y arrays for the time series
 		 */
-		getTimeSeriesData: function (instanceY, instanceX) {
-			var timeSeriesX = instanceX.getTimeSeries();
-			var timeSeriesY = instanceY.getTimeSeries();
+		getTimeSeriesData: function (instanceY, instanceX, step) {
+			var timeSeriesX = instanceX.getTimeSeries(step);
+			var timeSeriesY = instanceY.getTimeSeries(step);
 			var timeSeriesData = {};
 			var xData = [];
 			var yData = [];
@@ -571,7 +572,6 @@ define(function (require) {
 		 * Updates the plot widget with new data
 		 */
 		updateDataSet: function (step, playAll) {
-
 			if(!this.functionNode){
 				/*Clears the data of the plot widget if the initialized flag 
 				 *has not be set to true, which means arrays are populated but not yet plot*/
@@ -588,7 +588,7 @@ define(function (require) {
 					set = this.datasets[key];
 					if (this.plotOptions.playAll) {
 						//we simply set the whole time series
-						timeSeries = this.getTimeSeriesData(this.variables[this.getLegendInstancePath(set.name)],window.time);
+						timeSeries = this.getTimeSeriesData(this.variables[this.getLegendInstancePath(set.name)],this.xVariable, step);
 						this.datasets[key].x = timeSeries["x"];
 						this.datasets[key].y = timeSeries["y"];
 						this.datasets[key].hoverinfo = 'all';
@@ -599,40 +599,52 @@ define(function (require) {
 						this.xaxisAutoRange = true;
 					}
 					else {
-						newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
-
-						oldDataX = this.datasets[key].x;
-						oldDataY = this.datasets[key].y;
-
-						reIndex = false;
-
-						if (oldDataX.length >= this.limit) {
-							//this happens when we reach the end of the width of the plot
-							//i.e. when we have already put all the points that it can contain
-							oldDataX.splice(0, 1);
-							oldDataY.splice(0,1);
-							reIndex = true;
+						if(this.xVariable.id != "time"){
+							//we simply set the whole time series
+							timeSeries = this.getTimeSeriesData(this.variables[this.getLegendInstancePath(set.name)],this.xVariable, step);
+							this.datasets[key].x = timeSeries["x"];
+							this.datasets[key].y = timeSeries["y"];
+							// x axis range depends only on Xvariable. It does not depend on limit or time.
+							this.plotOptions.xaxis.range = [0, this.xVariable.length -1];
+							this.plotOptions.xaxis.autorange = false;
+							this.xaxisAutoRange = false;
 						}
+						else{
+							newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
 
-						oldDataX.push(oldDataX.length);
-						oldDataY.push(newValue);
+							oldDataX = this.datasets[key].x;
+							oldDataY = this.datasets[key].y;
 
-						if (reIndex) {
-							// re-index data
-							var indexedDataX = [];
-							var indexedDataY = [];
-							for (var index = 0, len = oldDataX.length; index < len; index++) {
-								var valueY = oldDataY[index];
-								indexedDataX.push(index);
-								indexedDataY.push(valueY);
+							reIndex = false;
+
+							if (oldDataX.length >= this.limit) {
+								//this happens when we reach the end of the width of the plot
+								//i.e. when we have already put all the points that it can contain
+								oldDataX.splice(0, 1);
+								oldDataY.splice(0,1);
+								reIndex = true;
 							}
 
-							this.datasets[key].x = indexedDataX;
-							this.datasets[key].y = indexedDataY;
-						}
-						else {
-							this.datasets[key].x = oldDataX;
-							this.datasets[key].y = oldDataY;
+							oldDataX.push(oldDataX.length);
+							oldDataY.push(newValue);
+
+							if (reIndex) {
+								// re-index data
+								var indexedDataX = [];
+								var indexedDataY = [];
+								for (var index = 0, len = oldDataX.length; index < len; index++) {
+									var valueY = oldDataY[index];
+									indexedDataX.push(index);
+									indexedDataY.push(valueY);
+								}
+
+								this.datasets[key].x = indexedDataX;
+								this.datasets[key].y = indexedDataY;
+							}
+							else {
+								this.datasets[key].x = oldDataX;
+								this.datasets[key].y = oldDataY;
+							}
 						}
 					}
 
@@ -649,7 +661,10 @@ define(function (require) {
 					}
 					
 					//animate graph if it requires an update that is not play all
-					if(!this.plotOptions.playAll){
+					if(this.plotOptions.playAll){
+						//redraws graph for play all mode
+						Plotly.relayout(this.plotDiv, this.plotOptions);
+					}else{
 						this.plotOptions.xaxis.showticklabels = false;
 						if(this.plotOptions.yaxis.range==null || undefined){
 							this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
@@ -657,11 +672,7 @@ define(function (require) {
 						}
 						Plotly.animate(this.plotDiv, {
 							data: this.datasets
-							},this.plotOptions);
-						
-					}else{
-						//redraws graph for play all mode
-						Plotly.relayout(this.plotDiv, this.plotOptions);
+						},this.plotOptions);	
 					}
 				}
 				
@@ -689,7 +700,7 @@ define(function (require) {
 				var unit = this.variables[this.getLegendInstancePath(key)].getUnit();
 				if (unit != null) {
 					var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
-					var labelX = this.getUnitLabel(window.Instances.time.getUnit());
+					var labelX = this.getUnitLabel(this.xVariable.getUnit());
 					this.labelsUpdated = true;
 					this.plotOptions.yaxis.title = labelY;
 					this.plotOptions.xaxis.title = labelX;

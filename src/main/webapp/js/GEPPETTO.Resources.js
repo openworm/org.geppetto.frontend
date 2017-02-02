@@ -466,6 +466,7 @@ define(function (require) {
             ARRAY_TYPE_NODE: "ArrayType",
             PARAMETER_TYPE: "ParameterType",
             STATE_VARIABLE_TYPE: "StateVariableType",
+            DERIVED_STATE_VARIABLE_TYPE: "DerivedStateVariableType",
             CONNECTION_TYPE: "ConnectionType",
             POINTER_TYPE: "PointerType",
             DYNAMICS_TYPE: "DynamicsType",
@@ -503,6 +504,7 @@ define(function (require) {
             // CAPABILITIES
             VISUAL_CAPABILITY: 'VisualCapability',
             STATE_VARIABLE_CAPABILITY: 'StateVariableCapability',
+            DERIVED_STATE_VARIABLE_CAPABILITY: 'DerivedStateVariableCapability',
             PARAMETER_CAPABILITY: 'ParameterCapability',
             CONNECTION_CAPABILITY: 'ConnectionCapability',
             VISUAL_GROUP_CAPABILITY: 'VisualGroupCapability',

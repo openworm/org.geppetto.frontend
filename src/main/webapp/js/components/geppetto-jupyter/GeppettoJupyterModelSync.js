@@ -17,8 +17,8 @@ define(function (require, exports, module) {
 
 			GEPPETTO.on(Events.Select, function (instance, geometryIdentifier, point) {
 				var selection = G.getSelection();
-				if (selection.length > 0){
-					_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point:point});
+				if (selection.length > 0) {
+					_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
 				}
 			});
 		}
@@ -60,11 +60,47 @@ define(function (require, exports, module) {
 				}
 			});
 		}
-	}, {
-			serializers: _.extend({
-				timeSeries: { deserialize: jupyter_widgets.unpack_models },
-			}, jupyter_widgets.WidgetModel.serializers)
-		});
+	}
+	);
+
+	var DerivedStateVariableSync = jupyter_widgets.WidgetModel.extend({
+		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
+			_model_name: 'DerivedStateVariableSync',
+			_model_module: "model",
+
+			name: '',
+			id: '',
+			units: '',
+			inputs: [],
+			timeSeries: [],
+			normalizationFunction: '',
+
+			geppettoInstance: null
+		}),
+
+		getInputs: function () {
+			//FIXME: We should create pointers for this
+			return this.get('inputs')
+		},
+
+		getPayload: function () {
+			return {
+				eClass: 'Variable',
+				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('DerivedStateVariable') }],
+
+				initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: this.get('units') } } }],
+				id: this.get('id'),
+				name: this.get('name'),
+				inputs: this.getInputs(),
+				timeSeries: this.get('timeSeries'),
+				normalizationFunction: this.get('normalizationFunction')
+			}
+		},
+
+		initialize: function () {
+			DerivedStateVariableSync.__super__.initialize.apply(this);
+		}
+	});
 
 	var ModelSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
@@ -74,22 +110,23 @@ define(function (require, exports, module) {
 			name: '',
 			id: '',
 			stateVariables: [],
+			derived_state_variables: [],
 			geometries: [],
 			point_process_sphere: null
 		}),
 
-		getGeometryPayload: function(geometry) {
+		getGeometryPayload: function (geometry) {
 			var value;
-			if (geometry.name.substr(0,4) == 'soma') {
+			if (geometry.name.substr(0, 4) == 'soma') {
 				value = {
 					eClass: 'Sphere',
 					position: {
 						eClass: "Point",
-						x: geometry.distalX,
-						y: geometry.distalY,
-						z: geometry.distalZ
+						x: (geometry.distalX + geometry.positionX) / 2,
+						y: (geometry.distalY + geometry.positionY) / 2,
+						z: (geometry.distalZ + geometry.positionZ) / 2
 					},
-					radius: geometry.topRadius
+					radius: (geometry.topRadius + geometry.bottomRadius) / 2
 				}
 			}
 			else {
@@ -124,30 +161,29 @@ define(function (require, exports, module) {
 			}
 		},
 
-		loadModel: function() {
-			window.Instances = []
-			GEPPETTO.ControlPanel.setData([]);
-			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
-
-			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-			var instances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-			GEPPETTO.ControlPanel.setData(instances);
-			GEPPETTO.ExperimentsController.watchVariables(instances, true);
-			GEPPETTO.ExperimentsController.playExperimentReady = true;
-
+		setGeppettoInstance: function (instances) {
 			for (var i = 0; i < this.get('stateVariables').length; i++) {
 				for (var j = 0; j < instances.length; j++) {
 					//TODO Wont work for more complex nesting, we'll need the path to come from Python
 					if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
 						this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
-
 						break;
 					}
 				}
 			}
 
-			// Split every single segment
+			for (var i = 0; i < this.get('derived_state_variables').length; i++) {
+				for (var j = 0; j < instances.length; j++) {
+					//TODO Wont work for more complex nesting, we'll need the path to come from Python
+					if (instances[j].getInstancePath().includes(this.get('derived_state_variables')[i].get('id'))) {
+						this.get('derived_state_variables')[i].set('geppettoInstance', instances[j]);
+						break;
+					}
+				}
+			}
+		},
+
+		splitAllGeometries: function () {
 			if (this.get('geometries').length > 1) {
 				var elements = {};
 				for (var i = 0; i < this.get('geometries').length; i++) {
@@ -157,17 +193,41 @@ define(function (require, exports, module) {
 			}
 		},
 
-		getPayload: function () {
+		createInstanceForStateVariables: function () {
+			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
+			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
+			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
+			var instances =  stateVariableInstances.concat(derivedStateVariableInstances)
 
-			var geppettoModelPayload = {
-				eClass: 'GeppettoModel',
-				//libraries: [{ synched: true }],
-				libraries: [GeppettoJupyterUtils.getGeppettoCommonLibrary()]
-			}
+			GEPPETTO.ExperimentsController.watchVariables(instances, true);
 
+			this.setGeppettoInstance(instances);
 
-			var geppettoVariables = [];
+			return instances;
+		},
 
+		mergeModel: function () {
+			GEPPETTO.ControlPanel.clearData();
+			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
+
+			var instances = this.createInstanceForStateVariables();
+			GEPPETTO.ControlPanel.setData(instances);
+		},
+
+		loadModel: function () {
+			window.Instances = []
+			GEPPETTO.ControlPanel.clearData();
+			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
+
+			var instances = this.createInstanceForStateVariables();
+			GEPPETTO.ControlPanel.setData(instances);
+			GEPPETTO.ExperimentsController.playExperimentReady = true;
+
+			this.splitAllGeometries();
+		},
+
+		getStateVariablesPayload: function(geppettoVariables){
 			// Add StateVariable
 			var geppettoStateVariables = [];
 			for (var i = 0; i < this.get('stateVariables').length; i++) {
@@ -181,61 +241,99 @@ define(function (require, exports, module) {
 				}
 			}
 
+			// Add DerivedStateVariable
+			for (var i = 0; i < this.get('derived_state_variables').length; i++) {
+				//Create array with states variables
+				geppettoStateVariables.push(this.get('derived_state_variables')[i].getPayload())
+			}
+
+			return geppettoStateVariables;
+		},
+
+		getCompositeVisualType: function(){
+			var geppettoMorphologiesVariables = [];
+			for (var i = 0; i < this.get('geometries').length; i++) {
+				geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i]));
+			}
+			return {
+				eClass: 'CompositeVisualType',
+				id: this.get('id') + 'VisualType',
+				name: this.get('name') + ' Visual Type',
+				variables: geppettoMorphologiesVariables
+			}
+		},
+
+		getModelVariableType: function(geppettoVariables){
+			return {
+				eClass: 'CompositeType',
+				id: this.get('id'),
+				name: this.get('name'),
+				abstract: false,
+				variables: this.getStateVariablesPayload(geppettoVariables)
+			}
+		},
+
+		getNeuronLibrary: function(){
+			return {
+				"eClass": "GeppettoLibrary",
+				"id": "neuron",
+				"name": "Geppetto Neuron Library",
+				"types": []
+			}
+		},
+		
+
+		getPayload: function () {
+
+			// Create Geppetto Model Payload
+			var geppettoModelPayload = {
+				eClass: 'GeppettoModel',
+				libraries: [GeppettoJupyterUtils.getGeppettoCommonLibrary(), this.getNeuronLibrary()]
+			}
+
+			var geppettoVariables = [];
+
+			// Get Main Model Variable Type
+			var modelVariableType = this.getModelVariableType(geppettoVariables);
+			geppettoModelPayload.libraries[1].types.push(modelVariableType);
+			
+			
+			// Get Main Composite Visual Type
+			if (this.get('geometries').length > 0) {
+				geppettoModelPayload.libraries[1].types.push(this.getCompositeVisualType())
+				modelVariableType['visualType'] = { $ref: "//@libraries.1/@types.1" }
+			}
+
 			// Add model as variable
 			var modelVariable = {
 				eClass: 'Variable',
 				id: this.get('id'),
 				name: this.get('name'),
-				anonymousTypes: [
-					{
-						eClass: 'CompositeType',
-						id: this.get('id'),
-						name: this.get('name'),
-						abstract: false,
-						variables: geppettoStateVariables
-					}
-				]
+				types: [{ $ref: "//@libraries.1/@types.0" }],
 			}
 			geppettoVariables.push(modelVariable)
 
-			// Add morphologies
-			if (this.get('geometries').length > 0) {
-				var geppettoMorphologiesVariables = [];
-				for (var i = 0; i < this.get('geometries').length; i++) {
-					//geppettoMorphologiesVariables.push(this.get('geometries')[i].getPayload());
-					geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i]));
-				}
-				var compositeVisualType = {
-					eClass: 'CompositeVisualType',
-					id: this.get('id') + 'VisualType',
-					name: this.get('name') + ' Visual Type',
-					variables: geppettoMorphologiesVariables
-				}
-
-				var neuronLibrary = {
-					"eClass": "GeppettoLibrary",
-					"id": "neuron",
-					"name": "Geppetto Neuron Library",
-					"types": [compositeVisualType]
-				};
-				geppettoModelPayload.libraries.push(neuronLibrary)
-				modelVariable.anonymousTypes[0]['visualType'] = { $ref: "//@libraries.1/@types.0" }
-			}
 
 			geppettoModelPayload['variables'] = geppettoVariables;
 			return geppettoModelPayload;
 		},
 
-		handle_custom_messages: function(msg) {
+		handle_custom_messages: function (msg) {
 			if (msg.type === 'load') {
-				this.loadModel();
-			}
-			else if (msg.type === 'draw_sphere'){
-				var content = msg.content;
-				if (this.point_process_sphere){
-					this.point_process_sphere = GEPPETTO.SceneFactory.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
+				if (msg.type === 'hard_reload') {
+					this.loadModel();
 				}
 				else{
+					this.mergeModel();
+				}
+				
+			}
+			else if (msg.type === 'draw_sphere') {
+				var content = msg.content;
+				if (this.point_process_sphere) {
+					this.point_process_sphere = GEPPETTO.SceneFactory.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
+				}
+				else {
 					this.point_process_sphere = GEPPETTO.SceneFactory.add3DSphere(content.x, content.y, content.z, content.radius);
 				}
 			}
@@ -248,10 +346,15 @@ define(function (require, exports, module) {
 			this.on("change:geometries", function (model, value, options) {
 				this.loadModel();
 			});
+
+			this.on("change:derived_state_variables", function (model, value, options) {
+				this.mergeModel();
+			});
 		}
 	}, {
 			serializers: _.extend({
-				stateVariables: { deserialize: jupyter_widgets.unpack_models }
+				stateVariables: { deserialize: jupyter_widgets.unpack_models },
+				derived_state_variables: { deserialize: jupyter_widgets.unpack_models }
 			}, jupyter_widgets.WidgetModel.serializers)
 		});
 
@@ -319,6 +422,7 @@ define(function (require, exports, module) {
 
 	module.exports = {
 		StateVariableSync: StateVariableSync,
+		DerivedStateVariableSync: DerivedStateVariableSync,
 		ModelSync: ModelSync,
 		ExperimentSync: ExperimentSync,
 		ProjectSync: ProjectSync,

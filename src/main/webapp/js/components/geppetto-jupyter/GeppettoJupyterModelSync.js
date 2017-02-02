@@ -99,8 +99,6 @@ define(function (require, exports, module) {
 
 		initialize: function () {
 			DerivedStateVariableSync.__super__.initialize.apply(this);
-
-			console.log('Creating derived state variable')
 		}
 	});
 
@@ -163,20 +161,7 @@ define(function (require, exports, module) {
 			}
 		},
 
-		mergeModel: function () {
-			//window.Instances = []
-			GEPPETTO.ControlPanel.setData([]);
-			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
-
-			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
-			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
-			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
-			var instances = stateVariableInstances.concat(derivedStateVariableInstances)
-			GEPPETTO.ControlPanel.setData(instances);
-			GEPPETTO.ExperimentsController.watchVariables(instances, true);
-			GEPPETTO.ExperimentsController.playExperimentReady = true;
-
+		setGeppettoInstance: function (instances) {
 			for (var i = 0; i < this.get('stateVariables').length; i++) {
 				for (var j = 0; j < instances.length; j++) {
 					//TODO Wont work for more complex nesting, we'll need the path to come from Python
@@ -187,21 +172,48 @@ define(function (require, exports, module) {
 				}
 			}
 
-			console.log("merging model")
+			for (var i = 0; i < this.get('derived_state_variables').length; i++) {
+				for (var j = 0; j < instances.length; j++) {
+					//TODO Wont work for more complex nesting, we'll need the path to come from Python
+					if (instances[j].getInstancePath().includes(this.get('derived_state_variables')[i].get('id'))) {
+						this.get('derived_state_variables')[i].set('geppettoInstance', instances[j]);
+						break;
+					}
+				}
+			}
+		},
 
-			// // Split every single segment
-			// if (this.get('geometries').length > 1) {
-			// 	var elements = {};
-			// 	for (var i = 0; i < this.get('geometries').length; i++) {
-			// 		elements[this.get('geometries')[i].id] = "";
-			// 	}
-			// 	GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
-			// }
+		splitAllGeometries: function () {
+			if (this.get('geometries').length > 1) {
+				var elements = {};
+				for (var i = 0; i < this.get('geometries').length; i++) {
+					elements[this.get('geometries')[i].id] = "";
+				}
+				GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
+			}
+		},
+
+		mergeModel: function () {
+			//window.Instances = []
+			GEPPETTO.ControlPanel.clearData();
+			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
+
+			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
+			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
+			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
+			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
+			var instances = stateVariableInstances.concat(derivedStateVariableInstances)
+			GEPPETTO.ControlPanel.setData(instances);
+			GEPPETTO.ExperimentsController.watchVariables(instances, true);
+			// GEPPETTO.ExperimentsController.playExperimentReady = true;
+
+			this.setGeppettoInstance(instances);
+
 		},
 
 		loadModel: function () {
 			window.Instances = []
-			GEPPETTO.ControlPanel.setData([]);
+			GEPPETTO.ControlPanel.clearData();
 			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
@@ -213,25 +225,9 @@ define(function (require, exports, module) {
 			GEPPETTO.ExperimentsController.watchVariables(instances, true);
 			GEPPETTO.ExperimentsController.playExperimentReady = true;
 
-			for (var i = 0; i < this.get('stateVariables').length; i++) {
-				for (var j = 0; j < instances.length; j++) {
-					//TODO Wont work for more complex nesting, we'll need the path to come from Python
-					if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
-						this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
+			this.setGeppettoInstance(instances);
 
-						break;
-					}
-				}
-			}
-
-			// Split every single segment
-			if (this.get('geometries').length > 1) {
-				var elements = {};
-				for (var i = 0; i < this.get('geometries').length; i++) {
-					elements[this.get('geometries')[i].id] = "";
-				}
-				GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
-			}
+			this.splitAllGeometries();
 		},
 
 		getStateVariablesPayload: function(geppettoVariables){

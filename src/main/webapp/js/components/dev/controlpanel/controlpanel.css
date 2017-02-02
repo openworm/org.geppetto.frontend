@@ -33,7 +33,7 @@
 
 #controlpanel .griddle .griddle-filter {
 	float: left;
-	width: 99%;
+	width: 100%;
 	text-align: left;
 	color: #FFFFFF;
 	min-height: 1px;
@@ -127,19 +127,20 @@
 }
 
 #controlpanel .griddle button:hover {
-	backround: transparent;
-	color: #fc4b19;
+	background-color: #fc6320;
+    color:white;
 }
 
 #controlpanel .griddle button {
-	backround: transparent;
-	color: #FD6808;
+	text-decoration: none;
+    color: #fc6320;
+    background-color: rgb(86, 74, 74);;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 5px;
+    border:0;
 }
 
-#controlpanel .griddle button:hover {
-	backround: transparent;
-	color: #fc4b19;
-}
 
 #controlpanel .ctrlpanel-button {
 	height: 25px;
@@ -200,7 +201,7 @@
 }
 
 #controlpanel .built-in-filter {
-    width: 99%;
+    width: 100%;
     margin-bottom: 60px;
     position: relative;
 }

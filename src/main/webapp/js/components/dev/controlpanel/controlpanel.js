@@ -625,6 +625,20 @@ define(function (require) {
             this.forceUpdate();
         },
 
+        componentDidMount: function(){
+            var that = this;
+            GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function(){
+                // when control panel is open and we are using the filter component
+                // if no other main component is toggled show visual instances
+                if(!that.state.visualFilterToggled && !that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled){
+                    that.state.visualFilterToggled = true;
+                    that.forceUpdate();
+                    var filterHandler = that.props.filterHandler;
+                    filterHandler('VISUAL_INSTANCES');
+                }
+            });
+        },
+
         computeResult: function(controlId){
             // logic for disable/enable stuff here
             switch(controlId) {
@@ -1599,6 +1613,8 @@ define(function (require) {
             $("#controlpanel").show();
             // refresh to reflect latest state (might have changed)
             this.refresh();
+
+            GEPPETTO.trigger(GEPPETTO.Events.Control_panel_open);
         },
         
         close: function () {
@@ -1606,6 +1622,8 @@ define(function (require) {
             $(".colorpicker-visible").addClass('colorpicker-hidden').removeClass('colorpicker-visible');
             // hide control panel
             $("#controlpanel").hide();
+
+            GEPPETTO.trigger(GEPPETTO.Events.Control_panel_close);
         },
 
         setFilter: function(filterText){

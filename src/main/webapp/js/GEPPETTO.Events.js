@@ -73,7 +73,9 @@ var Events = {
     Hide_spinner: "spinner:hide",
     Color_set: "color:set",
     Canvas_initialised: "canvas:initialised",
-    Project_made_public : "project_made_public"
+    Project_made_public : "project_made_public",
+    Control_panel_open: "control_panel:open",
+    Control_panel_close: "control_panel:close"
 };
 
 define(function (require) {

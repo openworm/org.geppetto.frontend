@@ -630,7 +630,7 @@ define(function (require) {
             GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function(){
                 // when control panel is open and we are using the filter component
                 // if no other main component is toggled show visual instances
-                if(!that.state.visualFilterToggled && !that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled){
+                if(!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled){
                     that.state.visualFilterToggled = true;
                     that.forceUpdate();
                     var filterHandler = that.props.filterHandler;

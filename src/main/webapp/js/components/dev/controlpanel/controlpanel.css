@@ -112,7 +112,7 @@
 #controlpanel .griddle .griddle-previous, .griddle .griddle-page,
 	.griddle .griddle-next {
 	float: left;
-	width: 33%;
+	width: 33.3%;
 	min-height: 1px;
 	margin-top: 5px;
 }
@@ -138,8 +138,8 @@
 	text-align: center;
 	cursor: pointer;
 	margin-bottom: 5px;
-	margin: left:5px;
-	margin: right:5px;
+	margin-left: 5px;
+	margin-right: 5px;
 	border: 0;
 }
 
@@ -214,7 +214,7 @@
 }
 
 #controlpanel .control-panel-type-column {
-	width: 100px;
+	width: 125px;
 	text-align: center;
 }
 

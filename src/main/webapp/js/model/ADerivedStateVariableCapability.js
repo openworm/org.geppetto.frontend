@@ -52,7 +52,6 @@ define(['jquery'], function (require) {
          * @returns {String} Value of quantity
          */
         getTimeSeries: function (step) {
-            // console.log(this)
             if (this.getVariable().getWrappedObj().normalizationFunction == 'SPACEPLOT'){
                 return this.getTimeSeriesFromInput(step);
             }
@@ -73,22 +72,19 @@ define(['jquery'], function (require) {
                 
             }
             
-            
-
             for (var inputIndex in this.inputs){
-                if (this.inputs[inputIndex].getTimeSeries() != undefined){
+                var inputTimeSeries = this.inputs[inputIndex].getTimeSeries();
+                if (inputTimeSeries != undefined){
                     var sampleIndex = step
                     if (step == undefined){
-                        sampleIndex = this.inputs[inputIndex].getTimeSeries().length-1
+                        sampleIndex = inputTimeSeries.length-1
                     }
-                    timeSeries.push(this.inputs[inputIndex].getTimeSeries()[sampleIndex]);
-                    // timeSeries.push(this.inputs[inputIndex].getVariable().getWrappedObj().initialValues[this.inputs[inputIndex].getVariable().getWrappedObj().initialValues.length-1])
+                    timeSeries.push(inputTimeSeries[sampleIndex]);
                 }
                 else{
                     timeSeries.push([])
                 }
             }
-            //console.log(timeSeries)
             return timeSeries;
         },
 

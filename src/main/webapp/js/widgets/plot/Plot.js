@@ -572,7 +572,6 @@ define(function (require) {
 		 * Updates the plot widget with new data
 		 */
 		updateDataSet: function (step, playAll) {
-
 			if(!this.functionNode){
 				/*Clears the data of the plot widget if the initialized flag 
 				 *has not be set to true, which means arrays are populated but not yet plot*/
@@ -605,12 +604,10 @@ define(function (require) {
 							timeSeries = this.getTimeSeriesData(this.variables[this.getLegendInstancePath(set.name)],this.xVariable, step);
 							this.datasets[key].x = timeSeries["x"];
 							this.datasets[key].y = timeSeries["y"];
-							this.datasets[key].hoverinfo = 'all';
-							this.plotOptions.xaxis.showticklabels = true;
-							this.plotOptions.xaxis.range = [];
-							this.reIndexUpdate = 0;
-							this.plotOptions.xaxis.autorange = true;
-							this.xaxisAutoRange = true;
+							// x axis range depends only on Xvariable. It does not depend on limit or time.
+							this.plotOptions.xaxis.range = [0, this.xVariable.length -1];
+							this.plotOptions.xaxis.autorange = false;
+							this.xaxisAutoRange = false;
 						}
 						else{
 							newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
@@ -668,20 +665,14 @@ define(function (require) {
 						//redraws graph for play all mode
 						Plotly.relayout(this.plotDiv, this.plotOptions);
 					}else{
-						if(this.xVariable.id != "time"){
-							//redraws graph for play all mode
-							Plotly.relayout(this.plotDiv, this.plotOptions);
-						}
-						else{
-							this.plotOptions.xaxis.showticklabels = false;
-							if(this.plotOptions.yaxis.range==null || undefined){
-								this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+						this.plotOptions.xaxis.showticklabels = false;
+						if(this.plotOptions.yaxis.range==null || undefined){
+							this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
 
-							}
-							Plotly.animate(this.plotDiv, {
-								data: this.datasets
-								},this.plotOptions);	
 						}
+						Plotly.animate(this.plotDiv, {
+							data: this.datasets
+						},this.plotOptions);	
 					}
 				}
 				

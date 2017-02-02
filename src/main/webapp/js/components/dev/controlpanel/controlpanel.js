@@ -1902,13 +1902,19 @@ define(function (require) {
                 );
             }
 
+            // figure out if we are to use infinite scrolling for results and store in state
+            var infiniteScroll = true;
+            if(this.props.enablePagination != undefined) {
+                infiniteScroll = !this.props.enablePagination;
+            }
+
             return (
                 <div id="controlpanel-container">
                     {menuButtonMarkup}
                     {filterMarkup}
                     <Griddle columns={this.state.columns} results={this.state.data}
-                    showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={400}
-                    useGriddleStyles={false} columnMetadata={this.state.columnMeta} />
+                    showFilter={true} showSettings={false} enableInfiniteScroll={infiniteScroll} resultsPerPage={this.props.resultsPerPage}
+                    bodyHeight={400} useGriddleStyles={false} columnMetadata={this.state.columnMeta} />
                 </div>
             );
         }

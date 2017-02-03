@@ -178,7 +178,6 @@ define(function (require) {
 			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
 			this.plotOptions.xaxis.range =[0,this.limit];
-			this.xVariable = time;
 			
 			var that = this;
 

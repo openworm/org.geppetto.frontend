@@ -112,6 +112,9 @@ define(function (require, exports, module) {
 			if (msg.type === 'display') {
 				this.display();
 			}
+			else if (msg.type === 'shake') {
+				$('#' + this.get('widget_id') + "_dialog").parent().effect('shake', {distance:5, times: 3}, 500);
+			}
 		}
 	}, {
 			serializers: _.extend({

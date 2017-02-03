@@ -533,6 +533,27 @@ define(function (require) {
             },
 
             /**
+             * Perform a jquery ui effect to the widget
+             */
+            perfomEffect: function (effect, options, speed){
+                this.$el.parent().effect(effect, options, speed)
+            },
+
+            /**
+             * Perform a shake effect to the widget
+             */
+            shake: function (options, speed){
+                if (!options){
+                    options = {distance:5, times: 3}
+                }
+                if (!speed){
+                    speed = 500
+                }
+                
+                this.$el.parent().effect('shake', options, speed)
+            },
+
+            /**
              * Renders the widget dialog window
              */
             render: function () {

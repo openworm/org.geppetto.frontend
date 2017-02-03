@@ -37,14 +37,14 @@ define(function (require, exports, module) {
 				that.send({ event: 'close' });
 			});
 
-			this.on("msg:custom", this.handle_custom_messages, this);
+			this.on("msg:custom", this.handle_custom_widget_messages, this);
 			this.on("comm:close", this.close_widget, this);
 		},
 		close_widget: function (msg) {
 			this.get('widget_object').destroy();
 		},
 
-		handle_custom_messages: function (msg) {
+		handle_custom_widget_messages: function (msg) {
 			if (msg.command === 'shake') {
 				this.get('widget_object').shake()
 			}
@@ -75,7 +75,6 @@ define(function (require, exports, module) {
 					this.plotXYData()
 				}
 			}
-			PlotWidgetSync.__super__.handle_custom_messages.apply(this, [msg]);
 		},
 		plotData: function () {
 			for (dataIndex in this.get('data')) {

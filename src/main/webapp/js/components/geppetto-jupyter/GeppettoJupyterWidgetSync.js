@@ -31,6 +31,13 @@ define(function (require, exports, module) {
 					widget.setSize(this.get('width'), this.get('height'));
 				}
 			}
+
+			this.on("msg:custom", this.handle_custom_messages, this);
+		},
+		handle_custom_messages: function (msg) {
+			if (msg.command === 'shake') {
+				this.get('widget_object').shake()
+			}
 		}
 	});
 
@@ -56,6 +63,7 @@ define(function (require, exports, module) {
 					this.plotXYData()
 				}
 			}
+			PlotWidgetSync.__super__.handle_custom_messages.apply(this, [msg]);
 		},
 		plotData: function () {
 			for (dataIndex in this.get('data')) {

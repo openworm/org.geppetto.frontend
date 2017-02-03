@@ -543,10 +543,10 @@ define(function (require) {
              * Perform a shake effect to the widget
              */
             shake: function (options, speed){
-                if (!options){
+                if (options === undefined){
                     options = {distance:5, times: 3}
                 }
-                if (!speed){
+                if (speed === undefined){
                     speed = 500
                 }
                 

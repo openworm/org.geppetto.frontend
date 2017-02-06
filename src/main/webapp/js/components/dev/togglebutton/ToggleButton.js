@@ -46,12 +46,17 @@ define(function(require) {
     var ToggleButton = React.createClass({
     	 icon : null,
     	 tooltip : null,
+    	 tooltipPosition : null,
     	 label : null,
     	 action : null,
          attachTooltip: function(){
         	 var self = this;
+        	 self.tooltipPosition = this.props.configuration.tooltipPosition;
+        	 if(self.tooltipPosition==null){
+        		 self.tooltipPosition={ my: "center bottom",at: "center top-10"};
+        	 }
              $("#"+self.props.configuration.id).uitooltip({
-                 position: { my: "right center", at : "left-25 center"},
+                 position: self.tooltipPosition,
                  tooltipClass: "tooltip-toggle",
                  show: null, // show immediately
                  open: function(event, ui)

@@ -38,7 +38,7 @@ public class AdminServlet
 	public String admin() throws GeppettoInitializationException
 	{
 		Subject currentUser = SecurityUtils.getSubject();
-		if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
+        if(geppettoManager.getUser() != null && currentUser.isAuthenticated())
 		{
 			IUser user = geppettoManager.getUser();
 			List<UserPrivileges> privileges = user.getUserGroup().getPrivileges();
@@ -289,9 +289,10 @@ public class AdminServlet
 							simulation.setName(user.getName());
 							simulation.setExperiment(e.getName());
 							simulation.setLogin(user.getLogin());
-							simulation.setExperimentLastRun(e.getLastModified().toString());
-
+							long numericalDate = e.getLastModified().getTime();
+							simulation.setExperimentLastRun(numericalDate);
 							simulation.setStatus(e.getStatus().toString());
+							simulation.setError(e.getDetails());
 							simulation.setProject(p.getName());
 
 							long days = this.daysAgo(e.getEndDate(), new Date());

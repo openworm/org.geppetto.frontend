@@ -307,10 +307,6 @@ define(function (require) {
             this.children.push(child);
         },
 
-        getCapabilities: function () {
-            return this.capabilities;
-        },
-
         /**
          * Extends with methods from another object
          *
@@ -339,6 +335,15 @@ define(function (require) {
             }
 
             return hasCapability;
+        },
+
+        /**
+         * Get instance capabilities
+         *
+         * @returns {Array}
+         */
+        getCapabilities: function () {
+            return this.capabilities;
         },
 
         /**

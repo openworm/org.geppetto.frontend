@@ -235,8 +235,18 @@ define(function (require) {
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
-                    x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
-                    y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    if (this.state.orth == 2) {
+                        x = (this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    }
+                    else {
+                        x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    }
+                    if (this.state.orth == 1) {
+                        y = (this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    }
+                    else {
+                        y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    }
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
                     x = x + (this.renderer.width / this.disp.scale.x);
@@ -262,14 +272,14 @@ define(function (require) {
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[11] = coordinates[3];
                     } else if (this.state.orth == 2) { // sagital
-                        this.state.plane[2] = coordinates[1];
-                        this.state.plane[1] = coordinates[0];
-                        this.state.plane[5] = coordinates[1];
-                        this.state.plane[4] = coordinates[2];
-                        this.state.plane[8] = coordinates[3];
-                        this.state.plane[7] = coordinates[0];
-                        this.state.plane[11] = coordinates[3];
-                        this.state.plane[10] = coordinates[2];
+                        this.state.plane[1] = coordinates[1];
+                        this.state.plane[2] = coordinates[0];
+                        this.state.plane[4] = coordinates[1];
+                        this.state.plane[5] = coordinates[2];
+                        this.state.plane[7] = coordinates[3];
+                        this.state.plane[8] = coordinates[0];
+                        this.state.plane[10] = coordinates[3];
+                        this.state.plane[11] = coordinates[2];
                     }
                 }
                 // Pass Z coordinates
@@ -432,7 +442,7 @@ define(function (require) {
                                         if (objects !== '') {
                                             that.setStatusText(objects);
                                         }
-                                    }else if (i == 0) {
+                                    } else if (i == 0) {
                                         that.state.loadingLabels = false;
                                         that.onHoverEvent();
                                     }
@@ -924,7 +934,7 @@ define(function (require) {
                     this.state.hoverTime = Date.now();
                     this.state.oldX = currentPosition.x;
                     this.state.oldY = currentPosition.y;
-                }else{
+                } else {
                     this.state.posX = currentPosition.x;
                     this.state.posY = currentPosition.y;
                     if (repeat) {
@@ -933,7 +943,7 @@ define(function (require) {
                         }, 1000, this.onHoverEvent, event);
                     }
                 }
-            }else if (this.state.loadingLabels){
+            } else if (this.state.loadingLabels) {
                 if (repeat) {
                     setTimeout(function (func, event) {
                         func(event, false);
@@ -945,8 +955,8 @@ define(function (require) {
         onDragMove: function (event) {
             if (this.state.dragging) {
                 var newPosition = this.state.data.global;
-                var xmove = (newPosition.x - this.state.dragOffset.x)/this.disp.scale.x;
-                var ymove = (newPosition.y - this.state.dragOffset.y)/this.disp.scale.y;
+                var xmove = (newPosition.x - this.state.dragOffset.x) / this.disp.scale.x;
+                var ymove = (newPosition.y - this.state.dragOffset.y) / this.disp.scale.y;
                 this.state.dragOffset.x = newPosition.x;
                 this.state.dragOffset.y = newPosition.y;
                 this.stack.position.x += xmove;
@@ -1177,11 +1187,11 @@ define(function (require) {
             } else if (orth == 1) {
                 pit = 90;
                 yaw = 90;
-                rol = 90;
+                rol = 270;
             } else if (orth == 2) {
                 pit = 90;
                 yaw = 0;
-                rol = 90;
+                rol = 0;
             }
             this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0, stackX: -10000, stackY: -10000});
         },
@@ -1243,7 +1253,7 @@ define(function (require) {
 
         onExtentChange: function (data) {
             this.setState(data);
-            if (!this.state.initalised && JSON.stringify(data).indexOf('imageX')>-1){
+            if (!this.state.initalised && JSON.stringify(data).indexOf('imageX') > -1) {
                 this.state.initalised = true;
                 this.onHome();
             }
@@ -1260,37 +1270,37 @@ define(function (require) {
 
         _addWheelListener: function (elem, eventName, callback, useCapture) {
             elem[this._addEventListener](prefix + eventName, support == "wheel" ? callback : function (originalEvent) {
-                !originalEvent && ( originalEvent = window.event );
+                    !originalEvent && ( originalEvent = window.event );
 
-                // create a normalized event object
-                var event = {
-                    // keep a ref to the original event object
-                    originalEvent: originalEvent,
-                    target: originalEvent.target || originalEvent.srcElement,
-                    type: "wheel",
-                    deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
-                    deltaX: 0,
-                    delatZ: 0,
-                    preventDefault: function () {
-                        originalEvent.preventDefault ?
-                            originalEvent.preventDefault() :
-                            originalEvent.returnValue = false;
+                    // create a normalized event object
+                    var event = {
+                        // keep a ref to the original event object
+                        originalEvent: originalEvent,
+                        target: originalEvent.target || originalEvent.srcElement,
+                        type: "wheel",
+                        deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
+                        deltaX: 0,
+                        delatZ: 0,
+                        preventDefault: function () {
+                            originalEvent.preventDefault ?
+                                originalEvent.preventDefault() :
+                                originalEvent.returnValue = false;
+                        }
+                    };
+
+                    // calculate deltaY (and deltaX) according to the event
+                    if (support == "mousewheel") {
+                        event.deltaY = -1 / 40 * originalEvent.wheelDelta;
+                        // Webkit also support wheelDeltaX
+                        originalEvent.wheelDeltaX && ( event.deltaX = -1 / 40 * originalEvent.wheelDeltaX );
+                    } else {
+                        event.deltaY = originalEvent.detail;
                     }
-                };
 
-                // calculate deltaY (and deltaX) according to the event
-                if (support == "mousewheel") {
-                    event.deltaY = -1 / 40 * originalEvent.wheelDelta;
-                    // Webkit also support wheelDeltaX
-                    originalEvent.wheelDeltaX && ( event.deltaX = -1 / 40 * originalEvent.wheelDeltaX );
-                } else {
-                    event.deltaY = originalEvent.detail;
-                }
+                    // it's time to fire the callback
+                    return callback(event);
 
-                // it's time to fire the callback
-                return callback(event);
-
-            }, useCapture || false);
+                }, useCapture || false);
         },
 
         render: function () {

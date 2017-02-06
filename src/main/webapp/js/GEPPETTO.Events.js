@@ -64,7 +64,6 @@ var Events = {
     Experiment_created:"experiment:created",
     Project_persisted: "project:persisted",
     Spotlight_closed: "spotlight:closed",
-    Spotlight_loaded: "spotlight:loaded",
     Instance_deleted: "instance:deleted",
     Instances_created: "instances:created",
     Show_Tutorial : "show_tutorial",
@@ -72,10 +71,7 @@ var Events = {
     Show_spinner: "spinner:show",
     Hide_spinner: "spinner:hide",
     Color_set: "color:set",
-    Canvas_initialised: "canvas:initialised",
-    Project_made_public : "project_made_public",
-    Control_panel_open: "control_panel:open",
-    Control_panel_close: "control_panel:close"
+    Canvas_initialised: "canvas:initialised"
 };
 
 define(function (require) {

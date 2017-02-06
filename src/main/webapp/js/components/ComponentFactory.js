@@ -45,7 +45,6 @@ define(function (require) {
 			'LOGO':'jsx!components/dev/logo/Logo',
 			'LOADINGSPINNER':'jsx!./loadingspinner/LoadingSpinner',
 			'SAVECONTROL':'jsx!components/dev/save/SaveControl',
-			'PUBLICPROJECT' : 'jsx!components/dev/togglebutton/ToggleButton',
 			'CONTROLPANEL':'jsx!components/dev/controlpanel/controlpanel',
 			'SPOTLIGHT':'jsx!components/dev/spotlight/spotlight',
 			'CONTROLSMENUBUTTON':'jsx!components/dev/menubutton/MenuButton',

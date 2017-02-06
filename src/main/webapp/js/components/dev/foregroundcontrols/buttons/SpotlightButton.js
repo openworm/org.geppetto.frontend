@@ -19,7 +19,7 @@ define(function (require) {
                 onClick: function () {
                     if(GEPPETTO.Spotlight!=undefined){
                     	GEPPETTO.trigger('spin_logo');
-                		GEPPETTO.Spotlight.open(GEPPETTO.Resources.SEARCH_FLOW);
+                		GEPPETTO.Spotlight.open();
                         GEPPETTO.trigger('stop_spin_logo');
                 	}
                 }

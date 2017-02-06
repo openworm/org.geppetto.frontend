@@ -235,9 +235,23 @@ define(function (require) {
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
-                    x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
-                    y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
-                    coordinates[0] = x.toFixed(0);
+                    if (this.state.orth == 2)
+                    {
+                        x = (this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    }
+                    else
+                    {
+                        x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    }
+                    if (this.state.orth == 1)
+                    {
+                        y = (this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    }
+                    else
+                    {
+                        y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    }
+                        coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
                     x = x + (this.renderer.width / this.disp.scale.x);
                     y = y + (this.renderer.height / this.disp.scale.y);
@@ -262,14 +276,14 @@ define(function (require) {
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[11] = coordinates[3];
                     } else if (this.state.orth == 2) { // sagital
-                        this.state.plane[2] = coordinates[1];
-                        this.state.plane[1] = coordinates[0];
-                        this.state.plane[5] = coordinates[1];
-                        this.state.plane[4] = coordinates[2];
-                        this.state.plane[8] = coordinates[3];
-                        this.state.plane[7] = coordinates[0];
-                        this.state.plane[11] = coordinates[3];
-                        this.state.plane[10] = coordinates[2];
+                        this.state.plane[1] = coordinates[1];
+                        this.state.plane[2] = coordinates[0];
+                        this.state.plane[4] = coordinates[1];
+                        this.state.plane[5] = coordinates[2];
+                        this.state.plane[7] = coordinates[3];
+                        this.state.plane[8] = coordinates[0];
+                        this.state.plane[10] = coordinates[3];
+                        this.state.plane[11] = coordinates[2];
                     }
                 }
                 // Pass Z coordinates
@@ -1181,7 +1195,7 @@ define(function (require) {
             } else if (orth == 2) {
                 pit = 90;
                 yaw = 0;
-                rol = 90;
+                rol = 0;
             }
             this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0, stackX: -10000, stackY: -10000});
         },

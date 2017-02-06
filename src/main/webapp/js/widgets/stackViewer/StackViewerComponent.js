@@ -1177,7 +1177,7 @@ define(function (require) {
             } else if (orth == 1) {
                 pit = 90;
                 yaw = 90;
-                rol = 90;
+                rol = 270;
             } else if (orth == 2) {
                 pit = 90;
                 yaw = 0;

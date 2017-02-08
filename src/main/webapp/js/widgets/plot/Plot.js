@@ -271,6 +271,13 @@ define(function (require) {
 			if(validVariable == null || undefined){
 				return "Can't plot undefined variable";
 			}
+
+			//Check if variable has been already added
+			for (var datasetIndex in this.datasets) {
+				if (this.datasets[datasetIndex].name == validVariable.getInstancePath()) {
+					return "Variable already in Plot";
+				}
+			}
 			
 			var that = this;
 			if (!$.isArray(data)) {

@@ -64,6 +64,7 @@ define(function (require) {
 		updateRedraw : 3,
         functionNode: false,
         xaxisAutoRange : false,
+        yaxisAutoRange : false,
         imageTypes : [],
         plotElement : null,
         xVariable : null,
@@ -494,7 +495,10 @@ define(function (require) {
 			    this.plotOptions.xaxis.range =[0,this.limit];
 			}
 			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
-			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+			this.plotOptions.yaxis.autorange = this.yaxisAutoRange;
+			if(!this.plotOptions.yaxis.autorange){
+				this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+			}
 			Plotly.relayout(this.plotDiv, this.plotOptions);
 		},
 		
@@ -903,7 +907,11 @@ define(function (require) {
 				}
 				else {
 					data.data["x"].push(data_x[data_xIndex][0]);
-					data.data["y"].push(data_y[0]);
+					if(data_y instanceof Array){
+						data.data["y"].push(data_y[0]);
+					}else{
+						data.data["y"].push(data_y);
+					}
 				}
 			}
 
@@ -913,6 +921,7 @@ define(function (require) {
 			this.plotOptions.xaxis.autorange = true;
 			this.plotOptions.yaxis.autorange = true;
 			this.xaxisAutoRange = true;
+			this.yaxisAutoRange = true;
 			this.labelsMap[options.legendText] = data.data.name;
 			var newLine = {
 					x : data.data["x"],

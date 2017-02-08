@@ -124,9 +124,9 @@ define(function(require) {
         
         showToolTip : function(){
         	var self = this;
-        	$("#"+self.props.configuration.id).uitooltip({content: self.state.tooltip,
-       	 		position: { my: "right center", at : "left center"}});
-        	$("#"+self.props.configuration.id).mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+			var selfSelector = $("#"+self.props.configuration.id);
+			selfSelector.uitooltip({content: self.state.tooltip, position: { my: "right center", at : "left center"}});
+			selfSelector.mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
         },
         
         evaluateState : function(){
@@ -182,10 +182,25 @@ define(function(require) {
         },
         
         render:  function () {
+			// build css for button
 			var cssClass = this.props.configuration.id + " btn pull-right";
-			if(this.props.toggled===true || this.state.toggled){
+
+			// figure out if toggled to reflect visually with css class
+			var toggled = false;
+			if(this.props.toggled!=undefined && typeof(this.props.toggled) === "boolean"){
+				// if prop is passed ignore state, prop overrides precedence
+				// NOTE: this lets the component be controlled from a parent with props
+				toggled = this.props.toggled;
+			} else {
+				// fallback on internally kept state
+				toggled = this.state.toggled;
+			}
+
+			if(toggled){
 				cssClass += " toggle-button-toggled";
 			}
+
+			// check if the button is being hidden from he parent via prop
 			if(this.props.hidden===true){
 				cssClass += " toggle-button-hidden";
 			}

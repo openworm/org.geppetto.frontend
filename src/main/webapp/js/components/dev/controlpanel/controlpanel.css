@@ -25,6 +25,10 @@
 	
 }
 
+#controlpanel .griddle .standard-row {
+	height: 45px;
+}
+
 #controlpanel .griddle .top-section {
 	clear: both;
 	display: table;

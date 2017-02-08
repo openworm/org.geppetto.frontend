@@ -74,24 +74,11 @@ define(function (require, exports, module) {
 			}
 		},
 		plotData: function () {
-			//FIXME Probably to resetPlot or clean datasets is a better approach but at the moment is not working as expected
-			//this.get('widget_object').resetPlot();
+			this.get('widget_object').clean();
 
 			for (var dataIndex in this.get('data')) {
 				var item = this.get('data')[dataIndex]
-
-				//Check if variable is already included in the widget
-				var addVariableToPlot = true;
-				for (var datasetIndex in this.get('widget_object').datasets) {
-					if (this.get('widget_object').datasets[datasetIndex].name == item) {
-						addVariableToPlot = false;
-						break;
-					}
-				}
-
-				if (addVariableToPlot) {
-					this.get('widget_object').plotData(eval(item))
-				}
+				this.get('widget_object').plotData(eval(item))
 			}
 		},
 		plotXYData: function () {

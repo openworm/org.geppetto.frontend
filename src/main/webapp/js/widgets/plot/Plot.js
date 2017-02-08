@@ -748,12 +748,12 @@ define(function (require) {
 		 * @command resetPlot()
 		 */
 		resetPlot: function () {
+			this.datasets = [];
+			this.plotOptions = this.defaultOptions();
+			this.firstStep=0;
 			if (this.plotly != null) {
-				this.datasets = [];
-				this.plotOptions = this.defaultOptions();
 				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
 				this.resize();
-				this.firstStep=0;
 			}
 			return this;
 		},

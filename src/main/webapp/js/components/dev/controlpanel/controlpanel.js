@@ -519,6 +519,7 @@ define(function (require) {
                         			containerClassName : "menuButtonContainer",
                         			buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
                         			menuPosition: null,
+                                    horizontalOffset: 107,
                         			menuSize: {width : 150, height : 'auto'},
                         			menuCSS : 'menuButtonStyle',
                         			menuItems: menuButtonItems,

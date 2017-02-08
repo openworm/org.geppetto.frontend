@@ -93,6 +93,13 @@ define(function (require, exports, module) {
 		display: function () {
 			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
 
+			var that = this;
+			$("#" + this.get('widget_id') + "_dialog").on("remove", function () {
+				that.send({ event: 'close'});
+			});
+
+			$("." + this.get('widget_id') + "_dialog").resizable('destroy');
+
 			//TODO: This can be done in a much more elegant way
 			if (this.get('position_x') > 0) {
 				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('position_x') });

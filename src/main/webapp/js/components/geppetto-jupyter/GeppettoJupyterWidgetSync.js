@@ -13,7 +13,6 @@ define(function (require, exports, module) {
 			height: null,
 			widget_object: null
 		}),
-
 		initialize: function () {
 			WidgetSync.__super__.initialize.apply(this);
 
@@ -32,9 +31,19 @@ define(function (require, exports, module) {
 				}
 			}
 
-			this.on("msg:custom", this.handle_custom_messages, this);
+			var that = this;
+			$("#" + this.get('widget_object').id).on("remove", function () {
+				that.send({ event: 'close' });
+			});
+
+			this.on("msg:custom", this.handle_custom_widget_messages, this);
+			this.on("comm:close", this.close_widget, this);
 		},
-		handle_custom_messages: function (msg) {
+		close_widget: function (msg) {
+			this.get('widget_object').destroy();
+		},
+
+		handle_custom_widget_messages: function (msg) {
 			if (msg.command === 'shake') {
 				this.get('widget_object').shake()
 			}
@@ -63,15 +72,30 @@ define(function (require, exports, module) {
 					this.plotXYData()
 				}
 			}
-			PlotWidgetSync.__super__.handle_custom_messages.apply(this, [msg]);
 		},
 		plotData: function () {
-			for (dataIndex in this.get('data')) {
+			//FIXME Probably to resetPlot or clean datasets is a better approach but at the moment is not working as expected
+			//this.get('widget_object').resetPlot();
+
+			for (var dataIndex in this.get('data')) {
 				var item = this.get('data')[dataIndex]
-				this.get('widget_object').plotData(eval(item))
+
+				//Check if variable is already included in the widget
+				var addVariableToPlot = true;
+				for (var datasetIndex in this.get('widget_object').datasets) {
+					if (this.get('widget_object').datasets[datasetIndex].name == item) {
+						addVariableToPlot = false;
+						break;
+					}
+				}
+
+				if (addVariableToPlot) {
+					this.get('widget_object').plotData(eval(item))
+				}
 			}
 		},
 		plotXYData: function () {
+			this.get('widget_object').resetPlot();
 			this.get('widget_object').plotXYData(eval(this.get('data')[0]), eval(this.get('data')[1]))
 		}
 

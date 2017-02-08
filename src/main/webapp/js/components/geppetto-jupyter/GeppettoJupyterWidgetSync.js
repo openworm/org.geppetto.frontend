@@ -13,7 +13,6 @@ define(function (require, exports, module) {
 			height: null,
 			widget_object: null
 		}),
-
 		initialize: function () {
 			WidgetSync.__super__.initialize.apply(this);
 
@@ -63,8 +62,6 @@ define(function (require, exports, module) {
 			}
 
 			this.on("msg:custom", this.handle_custom_messages, this);
-
-
 		},
 		handle_custom_messages: function (msg) {
 			if (msg.command === 'plot') {
@@ -77,13 +74,28 @@ define(function (require, exports, module) {
 			}
 		},
 		plotData: function () {
-			for (dataIndex in this.get('data')) {
-				var item = this.get('data')[dataIndex]
-				this.get('widget_object').plotData(eval(item))
-			}
+			//FIXME Probably to resetPlot or clean datasets is a better approach but at the moment is not working as expected
+			//this.get('widget_object').resetPlot();
 
+			for (var dataIndex in this.get('data')) {
+				var item = this.get('data')[dataIndex]
+
+				//Check if variable is already included in the widget
+				var addVariableToPlot = true;
+				for (var datasetIndex in this.get('widget_object').datasets) {
+					if (this.get('widget_object').datasets[datasetIndex].name == item) {
+						addVariableToPlot = false;
+						break;
+					}
+				}
+
+				if (addVariableToPlot) {
+					this.get('widget_object').plotData(eval(item))
+				}
+			}
 		},
 		plotXYData: function () {
+			this.get('widget_object').resetPlot();
 			this.get('widget_object').plotXYData(eval(this.get('data')[0]), eval(this.get('data')[1]))
 		}
 

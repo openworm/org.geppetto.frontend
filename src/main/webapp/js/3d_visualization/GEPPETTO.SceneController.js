@@ -1163,6 +1163,25 @@ define(function (require) {
                 }
             },
 
+            showVisualGroupsRaw: function (visualGroups, instance, meshesContainer) {
+                var instancePath = instance.getInstancePath();   
+                for (g in visualGroups) {
+                    // retrieve visual group object
+                    var visualGroup = visualGroups[g];
+
+                    // get full group name to access group mesh
+                    var groupName = g;
+                    if (groupName.indexOf(instancePath) <= -1) {
+                        groupName = instancePath + "." + g;
+                    }
+
+                    // get group mesh
+                    var groupMesh = meshesContainer[groupName];
+                    groupMesh.visible = true;
+                    GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
+                }
+            },    
+
             /**
              * Shows a visual group
              */
@@ -1177,37 +1196,10 @@ define(function (require) {
             			//no mergedMeshesPaths means object hasn't been merged, single object
             			if(map!=undefined||null){
             				GEPPETTO.SceneController.splitGroups(instance, visualGroups);
-            				for (g in visualGroups) {
-            					// retrieve visual group object
-            					var visualGroup = visualGroups[g];
-
-            					// get full group name to access group mesh
-            					var groupName = g;
-            					if (groupName.indexOf(instancePath) <= -1) {
-            						groupName = instancePath + "." + g;
-            					}
-
-            					// get group mesh
-            					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
-            					groupMesh.visible = true;
-            					GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
-            				}
+                            GEPPETTO.SceneController.showVisualGroupsRaw(visualGroups, instance, GEPPETTO.getVARS().splitMeshes);
+            				
             			}else{
-            				for (g in visualGroups) {
-            					// retrieve visual group object
-            					var visualGroup = visualGroups[g];
-
-            					// get full group name to access group mesh
-            					var groupName = g;
-            					if (groupName.indexOf(instancePath) <= -1) {
-            						groupName = instancePath + "." + g;
-            					}
-
-            					// get original mesh and apply group color
-            					var mesh = GEPPETTO.getVARS().meshes[instancePath];
-            					mesh.visible = true;
-            					GEPPETTO.SceneController.setThreeColor(mesh.material.color, visualGroup.color);
-            				}        
+                            GEPPETTO.SceneController.showVisualGroupsRaw(visualGroups, instance, GEPPETTO.getVARS().meshes);
             			}
 
             		}

@@ -553,7 +553,7 @@ define(function (require) {
                     composite = instances[i].getParent();
                     
                     while (composite.getMetaType() != GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE){
-                        if (composite == null) {
+                        if (composite.getParent() == null) {
                             throw "Unsupported model to use this function";
                         } else {
                             composite = composite.getParent();

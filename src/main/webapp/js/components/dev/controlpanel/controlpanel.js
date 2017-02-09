@@ -632,10 +632,8 @@ define(function (require) {
                 // when control panel is open and we are using the filter component
                 // if no other main component is toggled show visual instances
                 if(!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled){
-                    that.state.visualFilterToggled = true;
-                    that.forceUpdate();
-                    var filterHandler = that.props.filterHandler;
-                    filterHandler('VISUAL_INSTANCES');
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('visualInstancesFilterBtn');
                 }
             });
         },

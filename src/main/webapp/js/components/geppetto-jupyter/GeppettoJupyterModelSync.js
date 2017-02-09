@@ -115,7 +115,27 @@ define(function (require, exports, module) {
 			point_process_sphere: null
 		}),
 
-		getGeometryPayload: function (geometry) {
+		getGeometryPayload: function (geometry, visualGroups) {
+			
+			var indexVisualGroupElement = -1;
+			var createVisualGroupElement = true;
+			for (var visualGroupElementIndex in visualGroups[0].visualGroupElements){
+				indexVisualGroupElement++;
+				if (visualGroups[0].visualGroupElements[visualGroupElementIndex].id == geometry.sectionName){
+					createVisualGroupElement = false;
+					break;
+				}
+			}
+			if(createVisualGroupElement){
+				indexVisualGroupElement++;
+				visualGroups[0].visualGroupElements.push({
+							defaultColor: 0Xffcc00,
+							eClass: 'VisualGroupElement',
+							id: geometry.sectionName,
+							name: geometry.sectionName
+				});
+			}
+			
 			var value;
 			if (geometry.name.substr(0, 4) == 'soma') {
 				value = {
@@ -126,7 +146,8 @@ define(function (require, exports, module) {
 						y: (geometry.distalY + geometry.positionY) / 2,
 						z: (geometry.distalZ + geometry.positionZ) / 2
 					},
-					radius: (geometry.topRadius + geometry.bottomRadius) / 2
+					radius: (geometry.topRadius + geometry.bottomRadius) / 2,
+					groupElements: [{$ref: "//@libraries.1/@types.1/@visualGroups.0/@visualGroupElements." + indexVisualGroupElement}]
 				}
 			}
 			else {
@@ -145,7 +166,8 @@ define(function (require, exports, module) {
 						x: geometry.positionX,
 						y: geometry.positionY,
 						z: geometry.positionZ
-					}
+					},
+					groupElements: [{$ref: "//@libraries.1/@types.1/@visualGroups.0/@visualGroupElements." + indexVisualGroupElement}]
 				}
 			}
 
@@ -251,15 +273,22 @@ define(function (require, exports, module) {
 		},
 
 		getCompositeVisualType: function(){
+			var visualGroups = [{
+				eClass: 'VisualGroups',
+				id: 'Cell_Regions',
+				name: 'Cell Regions',
+				visualGroupElements: []
+			}]
 			var geppettoMorphologiesVariables = [];
 			for (var i = 0; i < this.get('geometries').length; i++) {
-				geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i]));
+				geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i], visualGroups));
 			}
 			return {
 				eClass: 'CompositeVisualType',
 				id: this.get('id') + 'VisualType',
 				name: this.get('name') + ' Visual Type',
-				variables: geppettoMorphologiesVariables
+				variables: geppettoMorphologiesVariables,
+				visualGroups: visualGroups
 			}
 		},
 
@@ -336,6 +365,10 @@ define(function (require, exports, module) {
 				else {
 					this.point_process_sphere = GEPPETTO.SceneFactory.add3DSphere(content.x, content.y, content.z, content.radius);
 				}
+			}
+			else if (msg.type === 'highlight_visual_group_element') {
+				var visualType = eval(this.get('id')).getVisualType()
+				visualType["Cell_Regions"][msg.visual_group_element].show(true);
 			}
 		},
 

@@ -50,7 +50,7 @@ define(['backbone'], function (require) {
         writePermission :  null,
         runPermission : null,
         downloadPermission : null,
-        readOnly : false,
+        readOnly : true,
         isPublicProject : false,
 
         /**

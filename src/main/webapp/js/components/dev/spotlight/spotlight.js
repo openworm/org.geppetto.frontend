@@ -88,6 +88,8 @@ define(function (require) {
             var that = this;
 
             GEPPETTO.Spotlight = this;
+
+            GEPPETTO.trigger(GEPPETTO.Events.Spotlight_loaded);
             
             this.initTypeahead();
 
@@ -159,6 +161,7 @@ define(function (require) {
             		that.instances.initialize(true);
                     that.addData(GEPPETTO.ModelFactory.allPathsIndexing);
             	}
+            }
             });
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions
@@ -254,32 +257,6 @@ define(function (require) {
 				}
             }
 			return visible;
-        },
-
-        recordSample: {
-            "label": "Record all membrane potentials",
-            "actions": [
-                "var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'));",
-                "GEPPETTO.ExperimentsController.watchVariables(instances,true);"
-            ],
-            "icon": "fa-dot-circle-o"
-        },
-
-        plotSample: {
-            "label": "Plot all recorded variables",
-            "actions": [
-                "var p=G.addWidget(0).setName('Recorded Variables');",
-                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),value.getPath(), p);});"
-            ],
-            "icon": "fa-area-chart"
-        },
-
-        lightUpSample: {
-            "label": "Link morphology colour to recorded membrane potentials",
-            "actions": [
-                "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
-            ],
-            "icon": "fa-lightbulb-o"
         },
 
         focusButtonBar : function(){
@@ -794,6 +771,10 @@ define(function (require) {
                     processed = processed.split("$type$").join(instance[0].getType().getPath());
                     processed = processed.split("$typeid$").join(instance[0].getType().getId());
                     processed = processed.split("$variableid$").join(instance[0].getId());
+                } else if (instance == undefined || instance == null) {
+                    // pass through scenario in case we have no instance
+                    // this happens for external datasources before the instance gets created
+                    processed = action.split("$value$").join(value);;
                 }
 
                 return processed;

@@ -64,6 +64,7 @@ var Events = {
     Experiment_created:"experiment:created",
     Project_persisted: "project:persisted",
     Spotlight_closed: "spotlight:closed",
+    Spotlight_loaded: "spotlight:loaded",
     Instance_deleted: "instance:deleted",
     Instances_created: "instances:created",
     Show_Tutorial : "show_tutorial",

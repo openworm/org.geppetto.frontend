@@ -842,6 +842,7 @@ define(function (require) {
             var anyExpConfig = {
                 id: 'anyExperimentFilterBtn',
                 condition: function(){return that.state.anyExperimentFilterToggled;},
+                tooltipPosition: { my: "center bottom",at: "center-50 top-10"},
                 true: {
                 	icon: 'fa fa-flask',
                     action: '',
@@ -859,6 +860,7 @@ define(function (require) {
             var anyProjConfig = {
                 id: 'anyProjectFilterBtn',
                 condition: function(){return that.state.anyProjectFilterToggled;},
+                tooltipPosition: { my: "center bottom",at: "center-50 top-10"},
                 true: {
                     icon: 'fa fa-globe',
                     action: '',

@@ -156,14 +156,13 @@ define(function (require) {
 
         // set instances for which we are giving the scale
         setInstances: function(instances, callback) {
-            this.instances = instances;
             
             if (Project.getActiveExperiment().status == "COMPLETED") {
                 // only fetch instances for which state not already locally defined
-                var instances = instances.filter(function(x){ return x.getTimeSeries() == undefined });
-                var paths = instances.map(function(x){ return x.getPath(); });
+                var unfetched_instances = instances.filter(function(x){ return x.getTimeSeries() == undefined });
+                var unfetched_paths = unfetched_instances.map(function(x){ return x.getPath(); });
                 if (paths.length > 0) {
-                    GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), paths, $.proxy(callback, this));
+                    GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), unfetched_paths, $.proxy(callback, this));
                 } else {
                     $.proxy(callback, this)();
                 }

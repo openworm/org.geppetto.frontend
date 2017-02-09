@@ -256,6 +256,29 @@ define(function (require) {
             return this;
         },
 
+        plotGeneric: function(dataset) {
+            if (dataset != undefined)
+                this.datasets.push(dataset);
+
+            if(this.plotly==null){
+		this.plotOptions.xaxis.autorange = true;
+		this.xaxisAutoRange = true;
+		//Creates new plot using datasets and default options
+		this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
+                var that = this;
+		this.plotDiv.on('plotly_doubleclick', function() {
+		    that.resize();
+		});
+		this.plotDiv.on('plotly_click', function() {
+		    that.resize();
+		});
+	    }else{
+		Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
+	    }
+	    //this.updateAxis(instance.getInstancePath());
+	    this.resize(false);
+        },
+
 	/**
 	 * Takes data series and plots them. To plot array(s) , use it as
 	 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
@@ -355,22 +378,7 @@ define(function (require) {
             }
 
 	    if(plotable){
-		if(this.plotly==null){
-		    this.plotOptions.xaxis.autorange = true;
-		    this.xaxisAutoRange = true;
-		    //Creates new plot using datasets and default options
-		    this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-		    this.plotDiv.on('plotly_doubleclick', function() {
-			that.resize();
-		    });
-		    this.plotDiv.on('plotly_click', function() {
-			that.resize();
-		    });
-		}else{
-		    Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
-		}
-		this.updateAxis(instance.getInstancePath());
-		this.resize(false);
+	        plotGeneric();
 	    }
 
 	    return this;
@@ -518,24 +526,41 @@ define(function (require) {
 	    timeSeriesData["x"] = xData;
 	    timeSeriesData["y"] = yData;
 
-	    this.updateYAxisRange(timeSeriesX,timeSeriesY);
+            this.updateXAxisRange(timeSeriesX);
+	    this.updateYAxisRange(timeSeriesY);
 	    return timeSeriesData;
 	},
 
-	updateYAxisRange : function(timeSeriesX, timeSeriesY){
-	    var localxmin = Math.min.apply(null, timeSeriesX);
+        updateXAxisRange : function(timeSeriesX) {
+            var localxmin = Math.min.apply(null, timeSeriesX);
+	    var localxmax = Math.max.apply(null, timeSeriesX);
+
+            if (this.plotOptions.xaxis.min == undefined ||
+                isNaN(this.plotOptions.xaxis.min)) {
+                this.plotOptions.xaxis.min = Number.MAX_SAFE_INTEGER;
+            }
+            if (this.plotOptions.xaxis.max == undefined ||
+                this.plotOptions.xaxis.max == window.Instances.time.getTimeSeries().slice(-1)[0] ||
+                isNaN(this.plotOptions.xaxis.max))
+                
+                this.plotOptions.xaxis.max = Number.MIN_SAFE_INTEGER;
+            
+	    this.plotOptions.xaxis.min = Math.min(this.plotOptions.xaxis.min, localxmin);
+	    this.plotOptions.xaxis.max = Math.max(this.plotOptions.xaxis.max, localxmax);
+
+	    this.plotOptions.xaxis.range = [this.plotOptions.xaxis.min, this.plotOptions.xaxis.max];
+        },
+
+	updateYAxisRange : function(timeSeriesY){
 	    var localymin = Math.min.apply(null, timeSeriesY);
 	    localymin = localymin - Math.abs(localymin * 0.1);
-	    var localxmax = Math.max.apply(null, timeSeriesX);
 	    var localymax = Math.max.apply(null, timeSeriesY);
 	    localymax = localymax + Math.abs(localymax * 0.1);
 
-	    this.plotOptions.xaxis.min = Math.min(this.plotOptions.xaxis.min, localxmin);
 	    this.plotOptions.yaxis.min = Math.min(this.plotOptions.yaxis.min, localymin);
-	    this.plotOptions.xaxis.max = Math.max(this.limit, localxmax);
 	    this.plotOptions.yaxis.max = Math.max(this.plotOptions.yaxis.max, localymax);
 
-	    this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+	    this.plotOptions.yaxis.range = [this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
 	},
 
 	/**
@@ -667,7 +692,8 @@ define(function (require) {
 
 		if(this.firstStep==0){
 		    for(var key =0; key<this.datasets.length;key++){
-			this.updateYAxisRange(window.time,this.variables[this.getLegendInstancePath(this.datasets[key].name)].getTimeSeries());
+                        this.updateXAxisRange(window.time.getTimeSeries());
+			this.updateYAxisRange(this.variables[this.getLegendInstancePath(this.datasets[key].name)].getTimeSeries());
 			this.updateAxis(this.datasets[key].name);
 		    }
 		    //redraws graph for play all mode

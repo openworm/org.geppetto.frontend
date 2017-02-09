@@ -161,7 +161,6 @@ define(function (require) {
             		that.instances.initialize(true);
                     that.addData(GEPPETTO.ModelFactory.allPathsIndexing);
             	}
-            }
             });
 
             //Initializing Bloodhound sources, we have one for instances and one for the suggestions

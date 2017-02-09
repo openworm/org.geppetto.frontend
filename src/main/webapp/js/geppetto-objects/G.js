@@ -57,7 +57,7 @@ define(function (require) {
                 draw_connection_lines: true,
                 unselected_transparent: true
             },
-            highlightedConnections: [],
+            litUpInstances: [],
             
             //TODO Design something better to hold abritrary status
             timeWidget : {},
@@ -589,7 +589,9 @@ define(function (require) {
             	}
 
                 // update flag
-                this.brightnessFunctionSet = false;
+                if (this.litUpInstances.length == 0) {
+                    this.brightnessFunctionSet = false;
+                }
             },
 
             /**
@@ -638,6 +640,7 @@ define(function (require) {
             },
             
             addBrightnessListener: function(instance, modulation, colorfn){
+                this.litUpInstances.push(Instances.getInstance(instance))
             	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
             		if(step<stateVariableInstance.getTimeSeries().length){
             		    GEPPETTO.SceneController.lightUpEntity(instance, colorfn, stateVariableInstance.getTimeSeries()[step]);
@@ -646,9 +649,13 @@ define(function (require) {
             },
             
             clearBrightnessFunctions: function (varnode) {
+                var i = this.litUpInstances.indexOf(varnode);
+                this.litUpInstances.splice(i, 1);
+                if (this.litUpInstances.length == 0) {
+                    this.brightnessFunctionSet = false;
+                }
                 this.clearOnNodeUpdateCallback(varnode);
             },
-
 
             /**
              * Sets options that happened during selection of an entity. For instance,

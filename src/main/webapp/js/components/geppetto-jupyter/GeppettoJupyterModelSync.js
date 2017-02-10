@@ -245,7 +245,7 @@ define(function (require, exports, module) {
 			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
 
 			var instances = this.createInstanceForStateVariables();
-			GEPPETTO.ControlPanel.setData(instances);
+			GEPPETTO.trigger(Events.Instances_created, instances);
 		},
 
 		loadModel: function () {
@@ -254,7 +254,9 @@ define(function (require, exports, module) {
 			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 			var instances = this.createInstanceForStateVariables();
-			GEPPETTO.ControlPanel.setData(instances);
+
+			GEPPETTO.trigger(Events.Instances_created, instances);
+
 			GEPPETTO.ExperimentsController.playExperimentReady = true;
 
 			this.splitAllGeometries();

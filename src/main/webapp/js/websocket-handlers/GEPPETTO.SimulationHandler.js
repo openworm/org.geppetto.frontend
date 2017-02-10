@@ -186,10 +186,15 @@ define(function (require) {
                                         experiments[e].setStatus(status);
                                         GEPPETTO.trigger(Events.Experiment_completed, experimentID);
                                     }
-                                    if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                                    else if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
                                         experiments[e].setStatus(status);
                                         GEPPETTO.trigger(Events.Experiment_failed, experimentID);
-                                     }
+                                    }
+                                    else if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN &&
+                                        status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
+                                        experiments[e].setStatus(status);
+                                        GEPPETTO.trigger(Events.Experiment_running, experimentID);
+                                    }
                                 }
                             }
                         }

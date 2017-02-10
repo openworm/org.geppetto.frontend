@@ -1040,8 +1040,17 @@ define(function (require) {
                 // Generate new paths and add
                 for (var i = 0; i < potentialInstancesForNewtype.length; i++) {
                     for (var j = 0; j < partialPathsForNewType.length; j++) {
+
+                        // figure out is we are dealing with statics
+                        var path = undefined;
+                        if(partialPathsForNewType[j].static === true) {
+                            path = partialPathsForNewType[j].path;
+                        } else {
+                            path = potentialInstancesForNewtype[i] + '.' + partialPathsForNewType[j].path;
+                        }
+
                         var entry = {
-                            path: potentialInstancesForNewtype[i] + '.' + partialPathsForNewType[j].path,
+                            path: path,
                             metaType: partialPathsForNewType[j].metaType,
                             type: partialPathsForNewType[j].type
                         };
@@ -1051,8 +1060,17 @@ define(function (require) {
                 // same as above for indexing paths
                 for (var i = 0; i < potentialInstancesForNewtypeIndexing.length; i++) {
                     for (var j = 0; j < partialPathsForNewTypeIndexing.length; j++) {
+
+                        // figure out is we are dealing with statics
+                        var path = undefined;
+                        if(partialPathsForNewTypeIndexing[j].static === true) {
+                            path = partialPathsForNewTypeIndexing[j].path;
+                        } else {
+                            path = potentialInstancesForNewtypeIndexing[i] + '.' + partialPathsForNewTypeIndexing[j].path;
+                        }
+
                         var entry = {
-                            path: potentialInstancesForNewtypeIndexing[i] + '.' + partialPathsForNewTypeIndexing[j].path,
+                            path: path,
                             metaType: partialPathsForNewType[j].metaType,
                             type: partialPathsForNewType[j].type
                         };
@@ -1739,19 +1757,20 @@ define(function (require) {
              */
             fetchAllPotentialInstancePaths: function (node, allPotentialPaths, allPotentialPathsForIndexing, parentPath) {
                 // build new path
-                var path = '';
-                var isStaticVar = node instanceof Variable && node.isStatic();
+                var xpath = '';
+                var nodeRef = node;
+                var isStaticVar = (nodeRef instanceof Variable) && node.isStatic();
 
                 if (isStaticVar){
                     // NOTE: for static variables, we add the variable path to the indexing list as ...
                     // NOTE: it's the only way to access the variable since there are no instances for static variables
-                    path = node.getPath();
+                    xpath = node.getPath();
                 } else {
-                    path = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
+                    xpath = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
                 }
 
                 // build entry for path storing and indexing
-                var entry = {path: path, metaType: node.getType().getMetaType(), type: node.getType().getPath()};
+                var entry = {path: xpath, metaType: node.getType().getMetaType(), type: node.getType().getPath(), static: isStaticVar};
 
                 // if this is a static node check if we already added entry for the exact same path
                 // NOTE: can't do it always for instances as it would slow things down A LOT
@@ -1767,14 +1786,14 @@ define(function (require) {
                 if(!isStaticVar || (isStaticVar && !staticVarAlreadyAdded)){
                     allPotentialPaths.push(entry);
                     // only add to indexing if it's not a connection or nested in a composite type
-                    if (this.includePotentialInstance(node, path)) {
+                    if (this.includePotentialInstance(node, xpath)) {
                         allPotentialPathsForIndexing.push(entry);
                     }
                 }
 
                 var potentialParentPaths = [];
                 // check meta type - we are only interested in NON-static variables
-                if (node instanceof Variable && !node.isStatic()) {
+                if ((nodeRef instanceof Variable) && !node.isStatic()) {
                     var allTypes = node.getTypes();
 
                     var arrayType = undefined;
@@ -1790,7 +1809,7 @@ define(function (require) {
                         var arrayMetaType = arrayType.getType().getMetaType();
                         // add the [*] entry
                         if (arrayType.getSize() > 1) {
-                            var starPath = path + '[' + '*' + ']';
+                            var starPath = xpath + '[' + '*' + ']';
                             potentialParentPaths.push(starPath);
 
                             var starEntry = {
@@ -1804,7 +1823,7 @@ define(function (require) {
 
                         // add each array element path
                         for (var n = 0; n < arrayType.getSize(); n++) {
-                            var arrayElementPath = path + '[' + n + ']';
+                            var arrayElementPath = xpath + '[' + n + ']';
                             potentialParentPaths.push(arrayElementPath);
 
                             var arrayElementEntry = {
@@ -1818,7 +1837,7 @@ define(function (require) {
                             }
                         }
                     } else {
-                        potentialParentPaths.push(path);
+                        potentialParentPaths.push(xpath);
                     }
 
                     // STEP 2: RECURSE on ALL potential parent paths

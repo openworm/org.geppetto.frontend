@@ -232,6 +232,7 @@ define(function (require, exports, module) {
 			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
 			var instances =  stateVariableInstances.concat(derivedStateVariableInstances)
 
+
 			GEPPETTO.ExperimentsController.watchVariables(instances, true);
 
 			this.setGeppettoInstance(instances);

@@ -74,8 +74,8 @@ define(function (require, exports, module) {
 			}
 		},
 		plotData: function () {
-			this.get('widget_object').clean();
-
+			//this.get('widget_object').clean();
+			this.get('widget_object').resetPlot();
 			for (var dataIndex in this.get('data')) {
 				var item = this.get('data')[dataIndex]
 				this.get('widget_object').plotData(eval(item))

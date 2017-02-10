@@ -44,7 +44,7 @@ define(['jquery', 'underscore', 'backbone'], function () {
     function ObjectWrapper(options) {
 
         this.wrappedObj = options.wrappedObj;
-        this.parent = null;
+        this.parent = options.parent;
     }
 
     ObjectWrapper.prototype = {

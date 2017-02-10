@@ -1062,11 +1062,10 @@ define(function (require) {
                             type: partialPathsForNewType[j].type
                         };
 
-                        // If variable if already in allPaths remove it
-                        // before adding the new variable
+                        // If variable is already in allPaths remove it before adding the new variable
                         for (var k = 0; k < this.allPaths.length; k++) {
                             if (this.allPaths[k].path == entry.path) {
-                                this.allPaths.splice(k,1)
+                                this.allPaths.splice(k,1);
                                 break;
                             }
                         }
@@ -1091,11 +1090,10 @@ define(function (require) {
                             type: partialPathsForNewType[j].type
                         };
 
-                        // If variable if already in allPathsIndexing and newPathsIndexing remove it
-                        // before adding the new variable
+                        // If variable already in allPathsIndexing and newPathsIndexing remove it before adding the new variable
                         for (var k = 0; k < this.allPathsIndexing.length; k++) {
                             if (this.allPathsIndexing[k].path == entry.path) {
-                                this.allPathsIndexing.splice(k,1)
+                                this.allPathsIndexing.splice(k,1);
                                 break;
                             }
                         }
@@ -1103,7 +1101,7 @@ define(function (require) {
 
                         for (var k = 0; k < this.newPathsIndexing.length; k++) {
                             if (this.newPathsIndexing[k].path == entry.path) {
-                                this.newPathsIndexing.splice(k,1)
+                                this.newPathsIndexing.splice(k,1);
                                 break;
                             }
                         }
@@ -1822,7 +1820,7 @@ define(function (require) {
                     }
                 }
 
-                // always add if not a static var, otherwise check that it wasnt already added
+                // always add if not a static var, otherwise check that it wasn't already added
                 if(!isStaticVar || (isStaticVar && !staticVarAlreadyAdded)){
                     allPotentialPaths.push(entry);
                     // only add to indexing if it's not a connection or nested in a composite type

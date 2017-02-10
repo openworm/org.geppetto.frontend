@@ -25,6 +25,10 @@
 	
 }
 
+#controlpanel .griddle .standard-row {
+	height: 45px;
+}
+
 #controlpanel .griddle .top-section {
 	clear: both;
 	display: table;
@@ -214,7 +218,7 @@
 }
 
 #controlpanel .control-panel-type-column {
-	width: 125px;
+	width: 250px;
 	text-align: center;
 }
 

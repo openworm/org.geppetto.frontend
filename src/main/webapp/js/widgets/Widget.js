@@ -424,22 +424,16 @@ define(function (require) {
             showHistoryNavigationBar : function(show){
             	var leftNav = $("#"+this.id + "-left-nav");
             	var rightNav = $("#"+this.id + "-right-nav");
-    			var that = this;
+            	
             	if (show) {
             		if((leftNav.length ==0) && (rightNav.length == 0)){
-
+            			
             			var disabled = "";
-            			if(event.target.id == (that.id + "-left-nav")){
-            				that.executedAction = historyItems.length - (historyItems.length -1);
+            			if(this.getItems(this.controller.history, "controller.history").length<=1){
+            				disabled = "arrow-disabled ";
             			}
-            			if(event.target.id == (that.id + "-right-nav")){
-            				if(that.executedAction >= (historyItems.length -1)){
-            					that.executedAction = historyItems.length -1;
-            				}else{
-            					that.executedAction = that.executedAction+1;
-            				}
-            			}
-
+            			
+            			var that = this;
             			var button = $("<div id='" + this.id + "-left-nav' class='"+ disabled +"fa fa-arrow-left'></div>"+
             			"<div id='"+ this.id + "-right-nav' class='"+disabled+"fa fa-arrow-right'></div>").click(function (event) {
             				var historyItems = that.getItems(that.controller.history, "controller.history");

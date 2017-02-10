@@ -17,7 +17,6 @@ define(function (require) {
     document.getElementsByTagName("head")[0].appendChild(link);
     
     var React = require('react');
-	var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
     var ListItem = React.createClass({
@@ -103,7 +102,7 @@ define(function (require) {
         	var iconState = this.getIconState();
         	this.state.icon = iconState;
         	
-            return <tr onClick={this.select}>
+            return <tr className="menuBtnListItem" onClick={this.select}>
                 <td className="selectedStatus">
                     <i className={"iconSelectionStatus " + this.state.icon} /></td>
                 <td className="dropDownLabel"><label>
@@ -171,9 +170,10 @@ define(function (require) {
 
         getMenuPosition : function(){
             var selector = $("#"+this.props.configuration.id);
+            var horizontalOffset = (this.props.configuration.horizontalOffset != undefined) ? this.props.configuration.horizontalOffset : 0;
         	return { 
         		top : selector.offset().top + selector.outerHeight(),
-        		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()))
+        		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()) - horizontalOffset)
         	};
         },
         

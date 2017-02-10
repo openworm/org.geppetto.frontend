@@ -49,6 +49,10 @@
 	padding-left: 15px;
 }
 
+.menuBtnListItem {
+    text-align: left;
+}
+
 .dropDownLabel {
 	padding: 5px 20px 5px 0;	
 }

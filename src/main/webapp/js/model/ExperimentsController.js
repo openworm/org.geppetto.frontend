@@ -245,9 +245,9 @@ define(function (require) {
                 for (var v = 0; v < variables.length; v++) {
                 	if(Project.getActiveExperiment()!=null){
                 		var index = Project.getActiveExperiment().variables.indexOf(variables[v].getInstancePath());
-                		if (index == -1) {
+                		if (index == -1 && watch==true) {
                 			Project.getActiveExperiment().variables.push(variables[v].getInstancePath());
-                		}else{
+                		}else if(index !=-1 && watch==false){
                 			Project.getActiveExperiment().variables.splice(index,1);
                 		}
                 	}

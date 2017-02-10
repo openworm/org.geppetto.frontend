@@ -56,9 +56,9 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            traverseInstances: function (instances) {
+            traverseInstances: function (instances, lines, thickness) {
                 for (var j = 0; j < instances.length; j++) {
-                    GEPPETTO.SceneController.checkVisualInstance(instances[j]);
+                    GEPPETTO.SceneController.checkVisualInstance(instances[j], lines, thickness);
                 }
             },
 
@@ -68,17 +68,17 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            checkVisualInstance: function (instance) {
+            checkVisualInstance: function (instance, lines, thickness) {
                 if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                     //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
                     if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
-                        GEPPETTO.SceneFactory.buildVisualInstance(instance);
+                        GEPPETTO.SceneFactory.buildVisualInstance(instance, lines, thickness);
                     }
                     // this block keeps traversing the instances
                     if (instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
-                        GEPPETTO.SceneController.traverseInstances(instance.getChildren());
+                        GEPPETTO.SceneController.traverseInstances(instance.getChildren(), lines, thickness);
                     } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                        GEPPETTO.SceneController.traverseInstances(instance);
+                        GEPPETTO.SceneController.traverseInstances(instance, lines, thickness);
                     }
                 }
             },
@@ -527,7 +527,8 @@ define(function (require) {
                 } else {
                     return false;
                 }
-                GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance);
+
+                this.traverseInstances([instance], lines, thickness);
 
                 return true;
             },

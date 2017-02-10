@@ -361,6 +361,7 @@ define(function (require) {
                 }
             }
 			
+			this.xVariable = window.time;
 			if(plotable){
 				if(this.plotly==null){
 					this.plotOptions.xaxis.autorange = true;
@@ -380,7 +381,7 @@ define(function (require) {
 				this.resize(false);
 			}
 			
-			this.xVariable = window.time;
+			
 			return this;
 		},
 

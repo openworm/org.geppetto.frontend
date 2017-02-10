@@ -33,6 +33,7 @@ define(function (require, exports, module) {
 			id: '',
 			units: '',
 			timeSeries: [],
+			geometries: [],
 
 			geppettoInstance: null
 		}),
@@ -45,7 +46,8 @@ define(function (require, exports, module) {
 				initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: this.get('units') } } }],
 				id: this.get('id'),
 				name: this.get('name'),
-				timeSeries: this.get('timeSeries')
+				timeSeries: this.get('timeSeries'),
+				geometries: this.get('geometries')
 			}
 		},
 

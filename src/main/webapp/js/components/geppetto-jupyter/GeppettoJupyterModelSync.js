@@ -21,7 +21,15 @@ define(function (require, exports, module) {
 					_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
 				}
 			});
+
+			this.on("msg:custom", this.handle_customMessage, this);
+		},
+
+		handle_customMessage: function (msg) {
+			//The only custom message we have at the moment is an event
+			GEPPETTO.trigger(msg.event,msg.options);
 		}
+
 	});
 
 	var StateVariableSync = jupyter_widgets.WidgetModel.extend({

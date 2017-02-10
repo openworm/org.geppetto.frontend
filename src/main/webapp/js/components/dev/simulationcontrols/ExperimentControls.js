@@ -53,6 +53,16 @@ define(function (require) {
             }
         },
 
+        getDefaultProps: function() {
+            return {
+                hideHelp: false,
+                hideRun: false,
+                hidePlay: false,
+                hidePause: false,
+                hideStop: false
+            };
+        },
+
         permissions : function(){
         	var experiment = window.Project.getActiveExperiment();
             var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
@@ -172,11 +182,11 @@ define(function (require) {
 
         render: function () {
             return React.DOM.div({className: 'simulation-controls'},
-                React.createFactory(HelpButton)({disabled: false}),
-                React.createFactory(StopButton)({disabled: this.state.disableStop}),
-                React.createFactory(PauseButton)({disabled: this.state.disablePause}),
-                React.createFactory(PlayButton)({disabled: this.state.disablePlay}),
-                React.createFactory(RunButton)({disabled: this.state.disableRun})
+                React.createFactory(HelpButton)({disabled: false, hidden: this.props.hideHelp}),
+                React.createFactory(StopButton)({disabled: this.state.disableStop, hidden: this.props.hideStop}),
+                React.createFactory(PauseButton)({disabled: this.state.disablePause, hidden: this.props.hidePause}),
+                React.createFactory(PlayButton)({disabled: this.state.disablePlay, hidden: this.props.hidePlay}),
+                React.createFactory(RunButton)({disabled: this.state.disableRun, hidden: this.props.hideRun})
             );
         }
 

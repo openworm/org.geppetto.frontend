@@ -14,7 +14,7 @@ define(function (require) {
                 React.DOM.button({
                     type: 'button',
                     id: this.props.id,
-                    className: 'btn ' + this.props.className,
+                    className: 'btn ' + this.props.className + ((this.props.hidden === true) ? ' hiddenElement' : ''),
                     'data-toggle': this.props['data-toggle'],
                     onClick: this.props.onClick,
                     disabled: this.props.disabled

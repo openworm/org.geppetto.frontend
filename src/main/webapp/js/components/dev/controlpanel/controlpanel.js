@@ -519,6 +519,7 @@ define(function (require) {
                         			containerClassName : "menuButtonContainer",
                         			buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
                         			menuPosition: null,
+                                    horizontalOffset: 107,
                         			menuSize: {width : 150, height : 'auto'},
                         			menuCSS : 'menuButtonStyle',
                         			menuItems: menuButtonItems,
@@ -631,10 +632,8 @@ define(function (require) {
                 // when control panel is open and we are using the filter component
                 // if no other main component is toggled show visual instances
                 if(!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled){
-                    that.state.visualFilterToggled = true;
-                    that.forceUpdate();
-                    var filterHandler = that.props.filterHandler;
-                    filterHandler('VISUAL_INSTANCES');
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('visualInstancesFilterBtn');
                 }
             });
         },
@@ -841,6 +840,7 @@ define(function (require) {
             var anyExpConfig = {
                 id: 'anyExperimentFilterBtn',
                 condition: function(){return that.state.anyExperimentFilterToggled;},
+                tooltipPosition: { my: "center bottom",at: "center-50 top-10"},
                 true: {
                 	icon: 'fa fa-flask',
                     action: '',
@@ -858,6 +858,7 @@ define(function (require) {
             var anyProjConfig = {
                 id: 'anyProjectFilterBtn',
                 condition: function(){return that.state.anyProjectFilterToggled;},
+                tooltipPosition: { my: "center bottom",at: "center-50 top-10"},
                 true: {
                     icon: 'fa fa-globe',
                     action: '',

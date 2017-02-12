@@ -58,7 +58,8 @@ define(function (require, exports, module) {
 			position_x: null,
 			position_y: null,
 			width: null,
-			height: null
+			height: null,
+			properties: {}
 		}),
 
 		initialize: function () {
@@ -93,14 +94,23 @@ define(function (require, exports, module) {
 		display: function () {
 			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
 
+			// On close send a message to python to remove objects
 			var that = this;
 			$("#" + this.get('widget_id') + "_dialog").on("remove", function () {
 				that.send({ event: 'close'});
 			});
 
+			// Do not allow resizable for parent panel
 			$("." + this.get('widget_id') + "_dialog").resizable('destroy');
 
-			//TODO: This can be done in a much more elegant way
+			// Do not allow close depending on property
+			for (var propertyName in this.get("properties")){
+				if (propertyName == "closable" && this.get("properties")["closable"] == false){
+					$("." + this.get('widget_id') + "_dialog").find(".ui-dialog-titlebar-close").hide();
+				}
+			}
+
+			// Resize widget dim and pos
 			if (this.get('position_x') > 0) {
 				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('position_x') });
 			}

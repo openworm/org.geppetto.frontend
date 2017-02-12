@@ -374,14 +374,23 @@ define(function (require, exports, module) {
 				var content = msg.content;
 				if (this.point_process_sphere) {
 					this.point_process_sphere = GEPPETTO.SceneFactory.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
+					this.point_process_sphere.visible = true;
 				}
 				else {
 					this.point_process_sphere = GEPPETTO.SceneFactory.add3DSphere(content.x, content.y, content.z, content.radius);
 				}
 			}
+			else if (msg.type === 'remove_sphere') {
+				if (this.point_process_sphere) {
+					this.point_process_sphere.visible = false;
+				}
+			}
 			else if (msg.type === 'highlight_visual_group_element') {
 				var visualType = eval(this.get('id')).getVisualType()
 				visualType["Cell_Regions"][msg.visual_group_element].show(true);
+			}
+			else if (msg.type === 'reload') {
+				window.loadModelInJupyter(msg.module,msg.model);
 			}
 		},
 

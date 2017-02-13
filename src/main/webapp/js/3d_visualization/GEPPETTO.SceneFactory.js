@@ -483,6 +483,10 @@ define(function (require) {
              * @returns {THREE.Mesh}
              */
             add3DSphere: function (x,y,z,radius) {
+                if (GEPPETTO.SceneController.aboveLinesThreshold) {
+                    radius = 1;
+                }
+
                 var material= new THREE.MeshBasicMaterial({side:THREE.DoubleSide});
                 material.nowireframe=true;
                 material.opacity= 0.6;

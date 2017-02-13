@@ -62,6 +62,16 @@ define(function (require) {
         modifiable : true,
         plotController: new PlotController(),
         
+        //A sample suggestion, domain specific suggestions should go inside extension
+        plotSample: {
+            "label": "Plot all recorded variables",
+            "actions": [
+                "var p=G.addWidget(0).setName('Recorded Variables');",
+                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
+            ],
+            "icon": "fa-area-chart"
+        },
+        
         close : function () {
             $("#spotlight").hide();
             GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
@@ -88,6 +98,8 @@ define(function (require) {
             var that = this;
 
             GEPPETTO.Spotlight = this;
+
+            GEPPETTO.trigger(GEPPETTO.Events.Spotlight_loaded);
             
             this.initTypeahead();
 
@@ -254,32 +266,6 @@ define(function (require) {
 				}
             }
 			return visible;
-        },
-
-        recordSample: {
-            "label": "Record all membrane potentials",
-            "actions": [
-                "var instances=Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'));",
-                "GEPPETTO.ExperimentsController.watchVariables(instances,true);"
-            ],
-            "icon": "fa-dot-circle-o"
-        },
-
-        plotSample: {
-            "label": "Plot all recorded variables",
-            "actions": [
-                "var p=G.addWidget(0).setName('Recorded Variables');",
-                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),value.getPath(), p);});"
-            ],
-            "icon": "fa-area-chart"
-        },
-
-        lightUpSample: {
-            "label": "Link morphology colour to recorded membrane potentials",
-            "actions": [
-                "G.addBrightnessFunctionBulkSimplified(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), function(x){return (x+0.07)/0.1;});"
-            ],
-            "icon": "fa-lightbulb-o"
         },
 
         focusButtonBar : function(){
@@ -1088,7 +1074,7 @@ define(function (require) {
                     },
                     "plot": {
                         "actions": [
-                            "GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),$instances$.getPath())",
+                            "GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),$instance0$.getPath())",
                         ],
                         "icon": "fa-area-chart",
                         "label": "Plot",

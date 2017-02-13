@@ -182,16 +182,25 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+        	
+        	var that = this;
+        	
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
             GEPPETTO.on(Events.Experiment_completed, function () {
-                this.refresh();
+                that.refresh();
             });
             GEPPETTO.on(Events.Experiment_running, function () {
-                this.refresh();
+                that.refresh();
             });
             GEPPETTO.on(Events.Experiment_failed, function () {
-                this.refresh();
+                that.refresh();
             });
+        },
+        
+        componentWillUnmount: function() {
+            GEPPETTO.off(Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.off(Events.Experiment_running, this.refresh, this);
+            GEPPETTO.off(Events.Experiment_completed, this.refresh, this);
         },
 
         render: function () {
@@ -285,7 +294,7 @@ define(function (require) {
         refresh: function() {
             this.forceUpdate();
         },
-
+        
         replaceTokensWithPath: function(inputStr, path){
             return inputStr.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
         },
@@ -370,6 +379,13 @@ define(function (require) {
                 that.refresh();
             });
         },
+        
+        componentWillUnmount: function() {
+            GEPPETTO.off(Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.off(Events.Experiment_running, this.refresh, this);
+            GEPPETTO.off(Events.Experiment_completed, this.refresh, this);
+        },
+        
 
         // Utility method to iterate over a config property and populate a list of control buttons to be created
         addControlButtons: function(controlsConfig, showControlsConfig, configPropertyName, buttonsList, targetPath, projectId, experimentId){
@@ -503,6 +519,7 @@ define(function (require) {
                         			containerClassName : "menuButtonContainer",
                         			buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
                         			menuPosition: null,
+                                    horizontalOffset: 107,
                         			menuSize: {width : 150, height : 'auto'},
                         			menuCSS : 'menuButtonStyle',
                         			menuItems: menuButtonItems,
@@ -607,6 +624,18 @@ define(function (require) {
 
             // force an update because we do want to re-render the filter component
             this.forceUpdate();
+        },
+
+        componentDidMount: function(){
+            var that = this;
+            GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function(){
+                // when control panel is open and we are using the filter component
+                // if no other main component is toggled show visual instances
+                if(!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled){
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('visualInstancesFilterBtn');
+                }
+            });
         },
 
         computeResult: function(controlId){
@@ -811,6 +840,7 @@ define(function (require) {
             var anyExpConfig = {
                 id: 'anyExperimentFilterBtn',
                 condition: function(){return that.state.anyExperimentFilterToggled;},
+                tooltipPosition: { my: "center bottom",at: "center-50 top-10"},
                 true: {
                 	icon: 'fa fa-flask',
                     action: '',
@@ -828,6 +858,7 @@ define(function (require) {
             var anyProjConfig = {
                 id: 'anyProjectFilterBtn',
                 condition: function(){return that.state.anyProjectFilterToggled;},
+                tooltipPosition: { my: "center bottom",at: "center-50 top-10"},
                 true: {
                     icon: 'fa fa-globe',
                     action: '',
@@ -1303,13 +1334,13 @@ define(function (require) {
                 "actions" :["GEPPETTO.ControlPanel.refresh();"],
                 "showCondition": "GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal($projectId$, $experimentId$, '$instance$');",
                 "id": "plot2",
-                "icon": "fa-line-chart",
+                "icon": "gpt-addplot",
                 "label": "Plot2",
                 "tooltip": "Plot state variable in a an existing widget"
             }
         }
     };
-    var stateVariablesControls = { "Common": ['watch', 'plot','plot2'] };
+    var stateVariablesControls = { "Common": ['watch', 'plot', 'plot2'] };
 
     // parameters config (treated as potential instances)
     var parametersColMeta = [
@@ -1583,6 +1614,8 @@ define(function (require) {
             $("#controlpanel").show();
             // refresh to reflect latest state (might have changed)
             this.refresh();
+
+            GEPPETTO.trigger(GEPPETTO.Events.Control_panel_open);
         },
         
         close: function () {
@@ -1590,6 +1623,8 @@ define(function (require) {
             $(".colorpicker-visible").addClass('colorpicker-hidden').removeClass('colorpicker-visible');
             // hide control panel
             $("#controlpanel").hide();
+
+            GEPPETTO.trigger(GEPPETTO.Events.Control_panel_close);
         },
 
         setFilter: function(filterText){
@@ -1884,13 +1919,19 @@ define(function (require) {
                 );
             }
 
+            // figure out if we are to use infinite scrolling for results and store in state
+            var infiniteScroll = true;
+            if(this.props.enablePagination != undefined) {
+                infiniteScroll = !this.props.enablePagination;
+            }
+
             return (
                 <div id="controlpanel-container">
                     {menuButtonMarkup}
                     {filterMarkup}
                     <Griddle columns={this.state.columns} results={this.state.data}
-                    showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={400}
-                    useGriddleStyles={false} columnMetadata={this.state.columnMeta} />
+                    showFilter={true} showSettings={false} enableInfiniteScroll={infiniteScroll} resultsPerPage={this.props.resultsPerPage}
+                    bodyHeight={400} useGriddleStyles={false} columnMetadata={this.state.columnMeta} />
                 </div>
             );
         }

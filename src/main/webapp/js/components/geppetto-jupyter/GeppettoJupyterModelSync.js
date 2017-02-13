@@ -390,7 +390,10 @@ define(function (require, exports, module) {
 				visualType["Cell_Regions"][msg.visual_group_element].show(true);
 			}
 			else if (msg.type === 'reload') {
-				window.loadModelInJupyter(msg.module,msg.model);
+				// If a Geppetto extension is defining a custom behavior to load the kernel we call it
+				if(window.customJupyterModelLoad!=undefined){
+					window.customJupyterModelLoad(msg.module,msg.model);
+				}
 			}
 		},
 

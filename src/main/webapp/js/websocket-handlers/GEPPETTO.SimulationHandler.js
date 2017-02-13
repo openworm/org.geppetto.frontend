@@ -309,6 +309,7 @@ define(function (require) {
 
             loadProject: function (payload) {
                 // we remove anything from any previous loaded project if there was one
+                GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
                 if (Project) {
                     Project.initialize();
                 }

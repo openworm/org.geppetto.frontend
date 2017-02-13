@@ -16,10 +16,7 @@ define(function (require, exports, module) {
 			_this = this;
 
 			GEPPETTO.on(Events.Select, function (instance, geometryIdentifier, point) {
-				var selection = G.getSelection();
-				if (selection.length > 0) {
-					_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
-				}
+				_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
 			});
 
 			this.on("msg:custom", this.handle_customMessage, this);
@@ -362,13 +359,12 @@ define(function (require, exports, module) {
 
 		handle_custom_messages: function (msg) {
 			if (msg.type === 'load') {
-				if (msg.type === 'hard_reload') {
+				if (msg.hard_reload) {
 					this.loadModel();
 				}
 				else{
 					this.mergeModel();
 				}
-				
 			}
 			else if (msg.type === 'draw_sphere') {
 				var content = msg.content;
@@ -406,7 +402,9 @@ define(function (require, exports, module) {
 			});
 
 			this.on("change:derived_state_variables", function (model, value, options) {
-				this.mergeModel();
+				if (this.get('derived_state_variables').length > 0){
+					this.mergeModel();
+				}
 			});
 		}
 	}, {

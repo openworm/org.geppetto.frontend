@@ -249,7 +249,7 @@ define(function (require, exports, module) {
 		},
 
 		loadModel: function () {
-			window.Instances = []
+			window.Instances = [];
 			GEPPETTO.ControlPanel.clearData();
 			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
@@ -291,7 +291,7 @@ define(function (require, exports, module) {
 				id: 'Cell_Regions',
 				name: 'Cell Regions',
 				visualGroupElements: []
-			}]
+			}];
 			var geppettoMorphologiesVariables = [];
 			for (var i = 0; i < this.get('geometries').length; i++) {
 				geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i], visualGroups));
@@ -331,7 +331,7 @@ define(function (require, exports, module) {
 			var geppettoModelPayload = {
 				eClass: 'GeppettoModel',
 				libraries: [GeppettoJupyterUtils.getGeppettoCommonLibrary(), this.getNeuronLibrary()]
-			}
+			};
 
 			var geppettoVariables = [];
 
@@ -352,7 +352,7 @@ define(function (require, exports, module) {
 				id: this.get('id'),
 				name: this.get('name'),
 				types: [{ $ref: "//@libraries.1/@types.0" }],
-			}
+			};
 			geppettoVariables.push(modelVariable)
 
 

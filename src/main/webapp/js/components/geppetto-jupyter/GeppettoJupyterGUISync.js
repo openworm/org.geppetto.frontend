@@ -40,13 +40,13 @@ define(function (require, exports, module) {
 		},
 
 		getComponent: function (componentItem, parameters) {
-			parameters['id'] = this.get('widget_id')
-			parameters['name'] = this.get('widget_name')
-			parameters['sync_value'] = this.get('sync_value')
-			parameters['handleChange'] = this.handleChange.bind(null, this)
-			parameters['handleBlur'] = this.handleBlur.bind(null, this)
+			parameters['id'] = this.get('widget_id');
+			parameters['name'] = this.get('widget_name');
+			parameters['sync_value'] = this.get('sync_value');
+			parameters['handleChange'] = this.handleChange.bind(null, this);
+			parameters['handleBlur'] = this.handleBlur.bind(null, this);
 
-			var component = React.createFactory(componentItem)(parameters)
+			var component = React.createFactory(componentItem)(parameters);
 			this.set('component', component);
 			return component;
 		}
@@ -68,7 +68,7 @@ define(function (require, exports, module) {
 		},
 
 		getComponent: function () {
-			var parameters = { items: this.getChildren(), parentStyle: this.get('parentStyle') }
+			var parameters = { items: this.getChildren(), parentStyle: this.get('parentStyle') };
 			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters]);
 		},
 
@@ -158,7 +158,7 @@ define(function (require, exports, module) {
 		},
 
 		getComponent: function () {
-			var parameters = { items: this.get('items') }
+			var parameters = { items: this.get('items') };
 			return DropDownSync.__super__.getComponent.apply(this, [DropDownComp, parameters]);
 		}
 
@@ -173,7 +173,7 @@ define(function (require, exports, module) {
 			TextFieldSync.__super__.initialize.apply(this, arguments);
 		},
 		getComponent: function () {
-			var parameters = { readOnly: this.get('read_only') }
+			var parameters = { readOnly: this.get('read_only') };
 			return TextFieldSync.__super__.getComponent.apply(this, [TextFieldComp, parameters]);
 		}
 	});
@@ -205,7 +205,7 @@ define(function (require, exports, module) {
 			ButtonSync.__super__.initialize.apply(this, arguments);
 		},
 		getComponent: function () {
-			var parameters = { handleClick: this.handleClick.bind(null, this) }
+			var parameters = { handleClick: this.handleClick.bind(null, this) };
 			return ButtonSync.__super__.getComponent.apply(this, [RaisedButtonComp, parameters]);
 		},
 

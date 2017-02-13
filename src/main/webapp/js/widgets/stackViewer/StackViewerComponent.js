@@ -904,7 +904,7 @@ define(function (require) {
         },
 
         onDragEnd: function () {
-            if (this.state.data !== null) {
+            if (this.state.data !== null && typeof this.state.data.getLocalPosition === "function") {
                 this.stack.alpha = 1;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = Number(startPosition.x.toFixed(0));

@@ -259,9 +259,7 @@ define(function (require) {
                 if (instancePath in GEPPETTO.getVARS().splitMeshes) {
                     for (var keySplitMeshes in GEPPETTO.getVARS().splitMeshes) {
                         if (keySplitMeshes.startsWith(instancePath)) {
-                            if (GEPPETTO.getVARS().splitMeshes[instancePath] && GEPPETTO.getVARS().splitMeshes[instancePath].visible) {
-                                meshes.push(GEPPETTO.getVARS().splitMeshes[keySplitMeshes]);
-                            }
+                            meshes.push(GEPPETTO.getVARS().splitMeshes[keySplitMeshes]);
                         }
 
                     }
@@ -380,17 +378,15 @@ define(function (require) {
              *            instancePath - Path of the aspect to make invisible
              */
             hideInstance: function (instancePath) {
-                for (var v in GEPPETTO.getVARS().meshes) {
-                    if (v == instancePath) {
-                        if (GEPPETTO.getVARS().meshes[v].visible == false) {
-                            return false;
-                        } else {
-                            GEPPETTO.getVARS().meshes[v].visible = false;
-                            return true;
-                        }
+                var meshes = this.getRealMeshesForInstancePath(instancePath);
+                for (var i=0;i<meshes.length;i++) {
+                    var mesh=meshes[i];
+                    if (mesh) {
+                        mesh.traverse(function (object) {
+                            object.visible = false;
+                        });
                     }
                 }
-                return false;
             },
 
             /**
@@ -412,10 +408,8 @@ define(function (require) {
                                 }
                             });
                         }
-                        return true;
                     }
                 }
-                return false;
             },
 
             /**
@@ -432,18 +426,23 @@ define(function (require) {
                     return color;
                 };
 
-                if(instance.hasCapability('VisualCapability')) {
-                    var children = instance.getChildren();
-
-                    if (children.length == 0 || instance.getMetaType() == GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
-                        var randomColor = getRandomColor();
-                        instance.setColor(randomColor);
-                    } else {
-                        for (var i = 0; i < children.length; i++) {
-                            this.assignRandomColor(children[i]);
+                var meshes = this.getRealMeshesForInstancePath(instance.getInstancePath());
+                if (meshes.length > 0) {
+                    for (var i = 0; i < meshes.length; i++) {
+                        var mesh = meshes[i];
+                        if (mesh) {
+                            var randomColor=getRandomColor();
+                            mesh.traverse(function (object) {
+                                if (object.hasOwnProperty("material")) {
+                                    GEPPETTO.SceneController.setThreeColor(object.material.color, randomColor);
+                                    object.material.defaultColor = randomColor;
+                                }
+                            });
                         }
                     }
                 }
+
+
             },
 
             /**

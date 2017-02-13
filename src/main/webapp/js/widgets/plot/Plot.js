@@ -759,14 +759,18 @@ define(function (require) {
 		 *
 		 * @command resetPlot()
 		 */
-		resetPlot: function () {
+		resetPlot: function (softReset) {
+
 			this.datasets = [];
-			this.plotOptions = this.defaultOptions();
 			this.firstStep=0;
+			if (softReset === undefined && false){
+				this.plotOptions = this.defaultOptions();
+			}
 			if (this.plotly != null) {
 				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
 				this.resize();
 			}
+			
 			return this;
 		},
 

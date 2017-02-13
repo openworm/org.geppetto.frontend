@@ -75,7 +75,7 @@ define(function (require, exports, module) {
 		},
 		plotData: function () {
 			if (this.get('widget_object').datasets.length > 0){
-				this.get('widget_object').resetPlot();
+				this.get('widget_object').resetPlot(true);
 			}
 			for (var dataIndex in this.get('data')) {
 				var item = this.get('data')[dataIndex]

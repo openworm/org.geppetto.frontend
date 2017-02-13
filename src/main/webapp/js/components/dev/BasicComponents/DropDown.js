@@ -59,7 +59,7 @@ define(function (require, exports, module) {
 
 		render: function () {
 			var itemComponents = this.state.items.map(function (item) {
-				return (<option id={item.id} value={item.id}>{item.value}</option>);
+				return (<option key={item.id} value={item.id}>{item.value}</option>);
 			});
 
 			return (

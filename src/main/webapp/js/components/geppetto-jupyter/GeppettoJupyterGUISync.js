@@ -101,27 +101,28 @@ define(function (require, exports, module) {
 			});
 
 			// Do not allow resizable for parent panel
-			$("." + this.get('widget_id') + "_dialog").resizable('destroy');
+            var selector = $("." + this.get('widget_id') + "_dialog");
+			selector.resizable('destroy');
 
 			// Do not allow close depending on property
 			for (var propertyName in this.get("properties")){
 				if (propertyName == "closable" && this.get("properties")["closable"] == false){
-					$("." + this.get('widget_id') + "_dialog").find(".ui-dialog-titlebar-close").hide();
+                    selector.find(".ui-dialog-titlebar-close").hide();
 				}
 			}
 
 			// Resize widget dim and pos
 			if (this.get('position_x') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ left: this.get('position_x') });
+                selector.css({ left: this.get('position_x') });
 			}
 			if (this.get('position_y') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ top: this.get('position_y') });
+                selector.css({ top: this.get('position_y') });
 			}
 			if (this.get('width') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ width: this.get('width') });
+                selector.css({ width: this.get('width') });
 			}
 			if (this.get('height') > 0) {
-				$("." + this.get('widget_id') + "_dialog").css({ height: this.get('height') });
+                selector.css({ height: this.get('height') });
 			}
 		},
 

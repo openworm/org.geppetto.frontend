@@ -18,6 +18,13 @@ define(function (require, exports, module) {
 			GEPPETTO.on(Events.Select, function (instance, geometryIdentifier, point) {
 				_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
 			});
+			GEPPETTO.on(Events.Instances_created, function (instances) {
+				var instancesIds = []
+				for (var instanceIndex in instances){
+					instancesIds.push(instances[instanceIndex].id)
+				}
+				_this.send({ event: Events.Instances_created, data: instancesIds});
+			});
 
 			this.on("msg:custom", this.handle_customMessage, this);
 		},

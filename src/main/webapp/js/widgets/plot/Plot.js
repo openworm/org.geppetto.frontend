@@ -963,6 +963,13 @@ define(function (require) {
 		},
 
 		plotXYData: function (dataY, dataX, options) {
+			//Check if variable has been already added
+			for (var datasetIndex in this.datasets) {
+				if (this.datasets[datasetIndex].name == dataY.getInstancePath()) {
+					return "Variable already in Plot";
+				}
+			}
+
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
 
 			var timeSeriesData = this.getTimeSeriesData(dataY, dataX);

@@ -11,7 +11,8 @@ define(function (require, exports, module) {
 			position_y: null,
 			width: null,
 			height: null,
-			widget_object: null
+			widget_object: null,
+			triggerClose: true
 		}),
 		initialize: function () {
 			WidgetSync.__super__.initialize.apply(this);
@@ -33,13 +34,17 @@ define(function (require, exports, module) {
 
 			var that = this;
 			$("#" + this.get('widget_object').id).on("remove", function () {
-				that.send({ event: 'close' });
+				if (that.get('triggerClose')){
+					that.send({ event: 'close' });
+				}
 			});
 
 			this.on("msg:custom", this.handle_custom_widget_messages, this);
 			this.on("comm:close", this.close_widget, this);
 		},
+
 		close_widget: function (msg) {
+			this.set('triggerClose', false);
 			this.get('widget_object').destroy();
 		},
 

@@ -27,6 +27,7 @@ define(function (require, exports, module) {
 			this.on("change:sync_value", function (model, value, options) {
 				model.get('parent').forceRender();
 			});
+			
 		},
 
 		handleChange: function (model, value) {
@@ -59,12 +60,21 @@ define(function (require, exports, module) {
 			position_y: null,
 			width: null,
 			height: null,
-			properties: {}
+			properties: {},
+			triggerClose: true
 		}),
 
 		initialize: function () {
 			PanelSync.__super__.initialize.apply(this);
 			this.on("msg:custom", this.handle_custom_messages, this);
+			this.on("comm:close", this.close_panel, this);
+			this.on("change:widget_name", function (model, value, options) {
+				$("#" + this.get('widget_id') + "_dialog").dialog('option', 'title', this.get("widget_name"));
+			});
+		},
+		close_panel: function (msg) {
+			this.set('triggerClose', false);
+			$("." + this.get('widget_id') + "_dialog").find(".ui-dialog-titlebar-close").click();
 		},
 
 		getComponent: function () {
@@ -97,7 +107,9 @@ define(function (require, exports, module) {
 			// On close send a message to python to remove objects
 			var that = this;
 			$("#" + this.get('widget_id') + "_dialog").on("remove", function () {
-				that.send({ event: 'close'});
+				if (that.get('triggerClose')){
+					that.send({ event: 'close'});
+				}
 			});
 
 			// Do not allow resizable for parent panel

@@ -760,10 +760,9 @@ define(function (require) {
 		 * @command resetPlot()
 		 */
 		resetPlot: function (softReset) {
-
 			this.datasets = [];
 			this.firstStep=0;
-			if (softReset === undefined && false){
+			if (softReset === undefined || false){
 				this.plotOptions = this.defaultOptions();
 			}
 			if (this.plotly != null) {

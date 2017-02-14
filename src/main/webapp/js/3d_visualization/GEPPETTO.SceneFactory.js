@@ -470,11 +470,10 @@ define(function (require) {
              * @returns {THREE.Mesh}
              */
             modify3DSphere:function(object,x,y,z,radius){
-            	object.position.set(x,y,z)
-            	// FIXME: Find a way to reset the radius
-                //object.geometry.radius.set(radius);
-            	object.geometry.verticesNeedUpdate = true;
-            	return object;
+                // Impossible to change the radius of a Sphere.
+                // Removing old object and creating a new one
+                GEPPETTO.getVARS().scene.remove(object);
+                return this.add3DSphere(x,y,z,radius);
             },
 
             /**

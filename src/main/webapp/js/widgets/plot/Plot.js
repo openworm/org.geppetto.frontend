@@ -762,7 +762,7 @@ define(function (require) {
 		resetPlot: function (softReset) {
 			this.datasets = [];
 			this.firstStep=0;
-			if (softReset === undefined || false){
+			if (softReset === undefined || softReset == false){
 				this.plotOptions = this.defaultOptions();
 			}
 			if (this.plotly != null) {

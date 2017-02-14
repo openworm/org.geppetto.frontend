@@ -30791,7 +30791,10 @@ var WidgetModel = Backbone.Model.extend({
         if (this.comm !== undefined) {
             var data = {method: 'custom', content: content};
             this.comm.send(data, callbacks, {}, buffers);
-            this.pending_msgs++;
+			// FIXME: AQP: This is a quick and dirty hack in order to avoid blocking the socket.
+			// Pending message counter is never decreased as callback method is never called. Couldn't understand why.
+			// For now, I am commenting out this line: we are not increasing the counter for custom message so that socket doesn't get blocked
+            //this.pending_msgs++;
         }
     },
 

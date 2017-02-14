@@ -64,6 +64,7 @@ define(function (require) {
 		updateRedraw : 3,
         functionNode: false,
         xaxisAutoRange : false,
+        yaxisAutoRange : false,
         imageTypes : [],
         plotElement : null,
         XVariable : null,
@@ -297,6 +298,11 @@ define(function (require) {
 							continue;
 						}
 					}
+					
+					//We stored the variable objects in its own array, using the instance path
+					//as index. Can't be put on this.datasets since plotly will reject it
+					this.variables[instance.getInstancePath()] = instance;
+					
 					if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
 						timeSeriesData = this.getTimeSeriesData(instance,window.time);
 					}else{
@@ -328,10 +334,6 @@ define(function (require) {
 					};
 
 					this.datasets.push(newLine);
-
-					//We stored the variable objects in its own array, using the instance path
-					//as index. Can't be put on this.datasets since plotly will reject it
-					this.variables[instance.getInstancePath()] = instance;
 				}else{
 					plotable = false;
 				}
@@ -366,7 +368,7 @@ define(function (require) {
 						that.resize();
 					});
 				}else{
-					Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions);
+					Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
 				}				
 				this.updateAxis(instance.getInstancePath());
 				this.resize(false);
@@ -493,7 +495,10 @@ define(function (require) {
 			    this.plotOptions.xaxis.range =[0,this.limit];
 			}
 			this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
-			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+			this.plotOptions.yaxis.autorange = this.yaxisAutoRange;
+			if(!this.plotOptions.yaxis.autorange){
+				this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+			}
 			Plotly.relayout(this.plotDiv, this.plotOptions);
 		},
 		
@@ -508,12 +513,20 @@ define(function (require) {
 			var yData = [];
 
 			if (timeSeriesY && timeSeriesY.length > 1 && timeSeriesX && timeSeriesX.length > 1) {
-				for (var step = 0; step < timeSeriesY.length; step++) {
+				for (var step = 0; step < timeSeriesX.length; step++) {
 					xData.push(timeSeriesX[step]);
 					yData.push(timeSeriesY[step]);
 				}
 			}
 			
+			timeSeriesData["x"] = xData;
+			timeSeriesData["y"] = yData;
+			
+			this.updateYAxisRange(timeSeriesX,timeSeriesY);
+			return timeSeriesData;
+		},
+		
+		updateYAxisRange : function(timeSeriesX, timeSeriesY){
 			var localxmin = Math.min.apply(null, timeSeriesX);
 			var localymin = Math.min.apply(null, timeSeriesY);
 			localymin = localymin - Math.abs(localymin * 0.1);
@@ -526,12 +539,7 @@ define(function (require) {
 			this.plotOptions.xaxis.max = Math.max(this.limit, localxmax);
 			this.plotOptions.yaxis.max = Math.max(this.plotOptions.yaxis.max, localymax);
 
-			timeSeriesData["x"] = xData;
-			timeSeriesData["y"] = yData;
-
 			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
-
-			return timeSeriesData;
 		},
 
 		/**
@@ -654,17 +662,21 @@ define(function (require) {
 						Plotly.animate(this.plotDiv, {
 							data: this.datasets
 							},this.plotOptions);
-						if(this.firstStep==0){
-							//redraws graph for play all mode
-							this.resize();
-						}
+						
 					}else{
 						//redraws graph for play all mode
 						Plotly.relayout(this.plotDiv, this.plotOptions);
 					}
 				}
 				
-				
+				if(this.firstStep==0){
+					for(var key =0; key<this.datasets.length;key++){
+						this.updateYAxisRange(window.time,this.variables[this.getLegendInstancePath(this.datasets[key].name)].getTimeSeries());
+						this.updateAxis(this.datasets[key].name);
+					}
+					//redraws graph for play all mode
+					this.resize();
+				}
 				
 				this.firstStep++;
 				this.reIndexUpdate = this.reIndexUpdate + 1;
@@ -733,7 +745,7 @@ define(function (require) {
 			if (this.plotly != null) {
 				this.datasets = [];
 				this.plotOptions = this.defaultOptions();
-				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false});
+				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
 				this.resize();
 				this.firstStep=0;
 			}
@@ -765,7 +777,7 @@ define(function (require) {
 				else {
 					this.plotOptions.xaxis.max = window.Instances.time.getTimeSeries()[window.Instances.time.getTimeSeries().length - 1];
 				}
-				this.plotly = Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false});
+				this.plotly = Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
 				this.resize();
 				this.initialized=true;
 				this.firstStep = 0;
@@ -885,7 +897,11 @@ define(function (require) {
 				}
 				else {
 					data.data["x"].push(data_x[data_xIndex][0]);
-					data.data["y"].push(data_y[0]);
+					if(data_y instanceof Array){
+						data.data["y"].push(data_y[0]);
+					}else{
+						data.data["y"].push(data_y);
+					}
 				}
 			}
 
@@ -895,6 +911,7 @@ define(function (require) {
 			this.plotOptions.xaxis.autorange = true;
 			this.plotOptions.yaxis.autorange = true;
 			this.xaxisAutoRange = true;
+			this.yaxisAutoRange = true;
 			this.labelsMap[options.legendText] = data.data.name;
 			var newLine = {
 					x : data.data["x"],

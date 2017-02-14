@@ -80,6 +80,24 @@ define(function(require)
             	}
             	
             	return false;
+            },
+
+            canUserEditExperiment: function(){
+                var hasPermission = false;
+
+                if(
+                    this.isLoggedIn() &&
+                    this.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) &&
+                    window.Project != undefined &&
+                    window.Project.persisted &&
+                    window.Project.getActiveExperiment() != null &&
+                    window.Project.getActiveExperiment() != undefined &&
+                    window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN
+                ){
+                    hasPermission = true;
+                }
+
+                return hasPermission;
             }
         };
 

@@ -17,7 +17,6 @@ define(function (require) {
     document.getElementsByTagName("head")[0].appendChild(link);
     
     var React = require('react');
-	var ReactDOM = require('react-dom');
     var GEPPETTO = require('geppetto');
 
     var ListItem = React.createClass({
@@ -36,6 +35,8 @@ define(function (require) {
         },
 
         select: function () {
+            this.props.handleSelect(this.props.item.value, this.props.item.radio);
+            
             var iconState = this.icons.default;
             var action = null;
 
@@ -53,6 +54,7 @@ define(function (require) {
                     action = condition ? this.props.item.true.action : this.props.item.false.action;
                     // assign icon status
                     iconState = condition ? this.icons.unchecked : this.icons.checked;
+                    this.setState({icon: iconState});
                 } else {
                     throw( "The condition [" + this.props.item.condition + "] doesn't resolve to a boolean" );
                 }
@@ -66,9 +68,6 @@ define(function (require) {
                 GEPPETTO.Console.executeImplicitCommand(action);
             }
 
-            this.setState({icon: iconState});
-            
-            this.props.handleSelect(this.props.item.value);
         },
 
         componentDidMount: function () {
@@ -103,7 +102,7 @@ define(function (require) {
         	var iconState = this.getIconState();
         	this.state.icon = iconState;
         	
-            return <tr onClick={this.select}>
+            return <tr className="menuBtnListItem" onClick={this.select}>
                 <td className="selectedStatus">
                     <i className={"iconSelectionStatus " + this.state.icon} /></td>
                 <td className="dropDownLabel"><label>
@@ -130,10 +129,9 @@ define(function (require) {
             var selector = $("#"+this.props.configuration.id+"-dropDown");
             
             window.addEventListener('resize', function(event){
-            	self.menuPosition = self.getMenuPosition();
-            	
-            	if(selector!=null && selector != undefined){
+            	if(selector!=null && selector!=undefined){
             		if(self.state.visible){
+                        self.menuPosition = self.getMenuPosition();
             			selector.css({
             				top: self.menuPosition.top, right: self.menuPosition.right,
             				bottom: self.menuPosition.bottom, left: self.menuPosition.left, position: 'fixed',
@@ -147,16 +145,30 @@ define(function (require) {
             var items = [];
             if(this.props.configuration.menuItems != undefined || null){
             	for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
-            		var item = this.props.configuration.menuItems[i];
-            		items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
+            	    var item = this.props.configuration.menuItems[i];
+                    if (item.radio) {
+            		items.push(<ListItem key={i} item={item} ref={item.value} handleSelect={this.handleSelect}/>);
+                    } else {
+                        items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
+                    }
             	}
             }
             return items;
         },
 
-        handleSelect: function (value) {
-        	 this.props.handleSelect(value);
-        	 
+        handleSelect: function (value, radio) {
+            if (radio) {
+                for (var key in this.refs) {
+                    var ref = this.refs[key];
+                    if ((ref.props.item.value != value) &&
+                        (ref.getIconState() == ref.icons.checked) &&
+                        ref.props.item.radio) {
+                        ref.select()
+                    }
+                }
+            }
+            this.props.handleSelect(value);
+
         	 if(this.props.configuration.autoFormatMenu){
         		 for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
         			 var item = this.props.configuration.menuItems[i];
@@ -172,9 +184,10 @@ define(function (require) {
 
         getMenuPosition : function(){
             var selector = $("#"+this.props.configuration.id);
+            var horizontalOffset = (this.props.configuration.horizontalOffset != undefined) ? this.props.configuration.horizontalOffset : 0;
         	return { 
         		top : selector.offset().top + selector.outerHeight(),
-        		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()))
+        		left: (selector.offset().left - (selector.outerHeight()-selector.innerHeight()) - horizontalOffset)
         	};
         },
         

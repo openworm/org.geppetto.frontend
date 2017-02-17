@@ -38,8 +38,21 @@ define(function (require) {
 		//Logo initialization
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
 
-		//Control panel initialization
-		GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {}, document.getElementById("controlpanel"));
+        //Control panel initialization
+        GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {
+                useBuiltInFilters: true,
+                enablePagination:true,
+                resultsPerPage: 10
+        }, document.getElementById("controlpanel"),
+            function () {
+            // whatever gets passed we keep
+            var passThroughDataFilter = function (entities) {
+                return entities;
+            };
+
+            // set data filter
+            GEPPETTO.ControlPanel.setDataFilter(passThroughDataFilter);
+        });
 
 
 		//Spotlight initialization

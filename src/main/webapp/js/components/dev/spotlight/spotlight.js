@@ -1074,7 +1074,7 @@ define(function (require) {
                     },
                     "plot": {
                         "actions": [
-                            "GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),$instances$.getPath())",
+                            "GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),$instance0$.getPath())",
                         ],
                         "icon": "fa-area-chart",
                         "label": "Plot",

@@ -189,11 +189,24 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			geppettoManager.loadProject(requestID, geppettoProject);
+			boolean readOnly = true;
+			if(geppettoProject.isVolatile()){
+				readOnly = false;
+			}else{
+				List<? extends IGeppettoProject> userProjects = geppettoManager.getUser().getGeppettoProjects();
+				for(IGeppettoProject p : userProjects){
+					if(p.getId() == geppettoProject.getId()){
+						readOnly = false;
+					}
+				}
+			}
+			
+			
 			// serialize project prior to sending it to client
 			Gson gson = new Gson();
 			String projectJSON = gson.toJson(geppettoProject);
 			boolean persisted = geppettoProject.isVolatile();
-			String update = "{\"persisted\":" + !persisted + ",\"project\":" + projectJSON + "}";
+			String update = "{\"persisted\":" + !persisted + ",\"project\":" + projectJSON + ",\"isReadOnly\":" + readOnly +"}";
 
 			setConnectionProject(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, update);
@@ -547,8 +560,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param experimentId
 	 * @param projectId
+	 * @param variables 
 	 */
-	public void playExperiment(String requestID, long experimentId, long projectId)
+	public void getExperimentState(String requestID, long experimentId, long projectId, List<String> variables)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentId, geppettoProject);
@@ -557,8 +571,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			try
 			{
-				ExperimentState experimentState = geppettoManager.playExperiment(requestID, experiment, null);
-				websocketConnection.sendMessage(requestID, OutboundMessages.PLAY_EXPERIMENT, GeppettoSerializer.serializeToJSON(experimentState));
+				ExperimentState experimentState = geppettoManager.getExperimentState(requestID, experiment, variables);
+				websocketConnection.sendMessage(requestID, OutboundMessages.GET_EXPERIMENT_STATE, GeppettoSerializer.serializeToJSON(experimentState));
 			}
 			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
@@ -927,7 +941,37 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 
 	}
+	
+	/**
+	 * @param requestID
+	 * @param projectId
+	 */
+	public void makeProjectPublic(String requestID, long projectId,boolean isPublic)
+	{
 
+		try
+		{
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+
+			if(geppettoProject != null)
+			{
+
+				geppettoManager.makeProjectPublic(requestID, geppettoProject, isPublic);
+				String update = "{\"id\":" + '"' + geppettoProject.getId() + '"' + ",\"isPublic\":" + geppettoProject.isPublic() + "}";
+				websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_MADE_PUBLIC, update);
+			}
+			else
+			{
+				error(null, "Error making project  public " + projectId + ".");
+			}
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error making project public");
+		}
+
+	}
+	
 	/**
 	 * @param requestID
 	 * @param projectId

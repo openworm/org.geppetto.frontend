@@ -64,15 +64,20 @@ define(function (require) {
         renderer: null,
         clock: new THREE.Clock(),
         stats: null,
+        gui: null,
+        projector: null,
         keyboard: new THREEx.KeyboardState(),
         needsUpdate: false,
+        metadata: {},
         customUpdate: null,
         mouseClickListener: null,
+        rotationMode: false,
         mouse: {
             x: 0,
             y: 0
         },
         visualModelMap: null,
+        idCounter: 0,
         sceneCenter: new THREE.Vector3(),
         cameraPosition: new THREE.Vector3(),
         canvasCreated: false,
@@ -326,7 +331,7 @@ define(function (require) {
         /**
          * Adds debug axis to the scene
          */
-        showAxisHelper: function () {
+        setupAxis: function () {
             // To use enter the axis length
             GEPPETTO.getVARS().scene.add(new THREE.AxisHelper(200));
         },
@@ -346,9 +351,7 @@ define(function (require) {
          *          coordinates
          */
         getIntersectedObjects: function () {
-            // create a Ray with origin at the mouse position and direction into
-            // the
-            // scene (camera direction)
+            // create a Ray with origin at the mouse position and direction into th scene (camera direction)
             var vector = new THREE.Vector3(GEPPETTO.getVARS().mouse.x, GEPPETTO
                 .getVARS().mouse.y, 1);
             vector.unproject(GEPPETTO.getVARS().camera);
@@ -460,7 +463,7 @@ define(function (require) {
 
     _.extend(GEPPETTO, Backbone.Events);
 
-    require('./SandboxConsole')(GEPPETTO);
+  /*  require('./SandboxConsole')(GEPPETTO);
     require('./GEPPETTO.Resources')(GEPPETTO);
     require('./GEPPETTO.Events')(GEPPETTO);
     require('./GEPPETTO.Init')(GEPPETTO);
@@ -484,7 +487,7 @@ define(function (require) {
     require('./model/ModelFactory')(GEPPETTO);
     require('./model/ExperimentsController')(GEPPETTO);
     require('./controllers/QueriesController')(GEPPETTO);
-    require('./components/ComponentsController')(GEPPETTO);
+    require('./components/ComponentsController')(GEPPETTO);*/
 
     return GEPPETTO;
 

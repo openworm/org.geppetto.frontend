@@ -231,6 +231,15 @@ define(function (require) {
         return hasCapability;
     };
 
+    /**
+     * Get variable capabilities
+     *
+     * @returns {Array}
+     */
+    Variable.prototype.getCapabilities = function () {
+        return this.capabilities;
+    };
+
     // Overriding set
     Variable.prototype.setTypes = function (types) {
         this.types = types;

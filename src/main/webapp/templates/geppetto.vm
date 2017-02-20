@@ -60,6 +60,7 @@
 <div id="controls class="noSelection"">
 
 	<div id="SaveButton" class="row"></div>
+	<div id="PublicProject" class="row"></div>
 	<div id="HomeButton" class="row"></div>
 	<div id="ControlsMenuButton" class="row"></div>
     <div id="sim-toolbar" class="row"></div>
@@ -115,7 +116,7 @@
 </script>
 <script type="text/template" id="tplContextMenuItems">
     <li id="<%= this.cid %>">
-    	<% if (icon != null || undefined) { %>
+        <% if (icon != null && icon != undefined) { %>
     		<i class="<%= icon %>" id="<%= this.cid %>"></i>
 		<% } %>
         <%= label %>

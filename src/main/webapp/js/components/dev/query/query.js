@@ -163,7 +163,7 @@ define(function (require) {
         },
 
         deleteResults: function(results) {
-            GEPPETTO.Console.debugLog("delete results");
+        	GEPPETTO.Console.debugLog("delete results");
             for (var i = 0; i < this.results.length; i++) {
                 if (results.id == this.results[i].id) {
                     this.results.splice(i, 1);
@@ -231,7 +231,7 @@ define(function (require) {
 
             return action;
         },
-
+        
         getInitialState: function () {
             return {
                 carouselFullyLoaded : false,
@@ -244,26 +244,26 @@ define(function (require) {
                 var slickDivElement = $('#' + this.imageContainerId + '.slickdiv');
                 slickDivElement.slick();
                 var that = this;
-
+                
                 //reload slick carousel if it's first time clicking on arrow in any direction
                 slickDivElement.find(".slick-arrow").on("click", function(){
-                    if(!that.fullyLoaded){
-                        that.setState({carouselFullyLoaded : true});
-                        that.fullyLoaded = true;
-                    }
+                	if(!that.fullyLoaded){
+                		that.setState({carouselFullyLoaded : true});
+                		that.fullyLoaded = true;
+                	}
                 });
             }
         },
-
+        
         componentDidUpdate : function() {
-            //on component refresh, update slick carousel
+        	//on component refresh, update slick carousel
             $('#' + this.imageContainerId + '.slickdiv').slick('unslick').slick();
         },
-
+        
         buildCarousel : function(){
             var jsonImageVariable = JSON.parse(this.props.data);
             var imgElement = "";
-
+            
             if (jsonImageVariable.initialValues[0] != undefined) {
                 var imageContainerId = this.props.rowData.id + '-image-container';
                 this.imageContainerId = imageContainerId;
@@ -273,28 +273,28 @@ define(function (require) {
                     this.isCarousel = true;
                     var imagesToLoad = 2;
                     if(this.state.carouselFullyLoaded){
-                        imagesToLoad = value.elements.length;
+                    	imagesToLoad = value.elements.length;
                     }
-
+                     
                     //set flag to fully loaded if total length of images to render is less or equal to 2
                     if(value.elements.length<=2){
-                        this.fullyLoaded = true;
+                    	this.fullyLoaded = true;
                     }
 
                     var that = this;
                     //if it's an array, create a carousel (relies on slick)
                     var elements = value.elements.map(function (item, key) {
-                        if(key<imagesToLoad){
-                            var image = item.initialValue;
+                    	if(key<imagesToLoad){
+                    		var image = item.initialValue;
                             var action = that.getImageClickAction(image.reference);
-                            return <div key={key} className="query-results-slick-image"> {image.name}
+                    		return <div key={key} className="query-results-slick-image"> {image.name}
                                 <a href='' onClick={action}>
                                     <img className="popup-image invert" src={image.data}/>
                                 </a>
-                            </div>
-                        }
+                    		</div>
+                    	}
                     });
-
+                    
                     elements = elements.slice(0,imagesToLoad);
 
                     imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
@@ -313,15 +313,15 @@ define(function (require) {
                     </div>
                 }
             }
-
+            
             return imgElement;
         },
-
+        
 
         render: function () {
             var imgElement = "";
             if(this.props.data != "" && this.props.data != undefined) {
-                imgElement = this.buildCarousel();
+            	imgElement = this.buildCarousel();
             }
 
             return (
@@ -540,7 +540,9 @@ define(function (require) {
                 showSpinner: false,
                 resultsColumns: null,
                 resultsColumnMeta: null,
-                resultsControlsConfig: null
+                resultsControlsConfig: null,
+                infiniteScroll: undefined,
+                resultsPerPate: undefined,
             };
         },
 
@@ -589,15 +591,15 @@ define(function (require) {
         },
 
         initTypeahead: function () {
-            if(!this.initTypeAheadCreated){
-                var that = this;
+        	if(!this.initTypeAheadCreated){
+        		var that = this;
 
-                $("#query-typeahead").unbind('keydown');
-                $("#query-typeahead").keydown(this, function (e) {
-                    if (e.which == 9 || e.keyCode == 9) {
-                        e.preventDefault();
-                    }
-                });
+        		$("#query-typeahead").unbind('keydown');
+        		$("#query-typeahead").keydown(this, function (e) {
+        			if (e.which == 9 || e.keyCode == 9) {
+        				e.preventDefault();
+        			}
+        		});
 
                 var queryTypeAheadElem = $("#query-typeahead");
 
@@ -643,7 +645,7 @@ define(function (require) {
         		});
 
                 queryTypeAheadElem.typeahead({
-        			hint: true, 
+        			hint: true,
         			highlight: true,
         			minLength: 1
         		},
@@ -902,8 +904,9 @@ define(function (require) {
         queryOptionSelected: function(item, value, cb){
             this.clearErrorMessage();
 
+            var that = this;
             var callback = function(){
-                this.showBrentSpiner(false);
+                that.showBrentSpiner(false);
 
                 // cascading callback from parameters
                 if(typeof cb === "function"){
@@ -1250,6 +1253,11 @@ define(function (require) {
 
         render: function () {
             var markup = null;
+            // once off figure out if we are to use infinite scrolling for results and store in state
+            if(this.state.infiniteScroll===undefined) {
+                this.state.infiniteScroll = !(this.props.enablePagination != undefined && this.props.enablePagination === true);
+                this.state.resultsPerPage = this.props.resultsPerPage;
+            }
 
             // figure out if we are in results view or query builder view
             if(this.state.resultsView && this.props.model.results.length > 0){
@@ -1266,7 +1274,7 @@ define(function (require) {
                 // for each tab put a Griddle configured with appropriate column meta
                 var tabs = this.props.model.results.map(function (resultsItem) {
                     var getVerboseLabelMarkup = function() {
-                        return {__html: resultsItem.verboseLabel};
+                          return {__html: resultsItem.verboseLabel};
                     };
 
                     return (
@@ -1274,44 +1282,44 @@ define(function (require) {
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
-                                     showFilter={true} showSettings={false} enableInfiniteScroll={true} bodyHeight={425}
-                                     useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
+                            showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={425}
+                            useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
                         </Tabs.Panel>
                     );
                 }, this);
 
-                var loadHandler = function(self){
-                    GEPPETTO.on("query_closed", function(){
-                        if(self.state.open){
-                            self.toggleMenu();
-                        }
-                    });
-                };
+        		var loadHandler = function(self){
+        			GEPPETTO.on("query_closed", function(){
+        				if(self.state.open){
+        					self.toggleMenu();
+        				}
+        			});
+        		};
 
-                var configuration = {
-                    id : "queryResultsButton",
-                    openByDefault : false,
-                    closeOnClick : true,
-                    label: "",
-                    iconOn : 'fa fa-history fa-2x' ,
-                    iconOff : 'fa fa-history fa-2x',
-                    menuPosition : null,
-                    menuSize : {height : "auto", width : 750},
-                    menuCSS : "queryButtonMenu",
-                    autoFormatMenu : true,
-                    onClickHandler : this.resultSetSelectionChange,
-                    onLoadHandler : loadHandler,
-                    menuItems : []
-                };
-
-                var menuItems = this.props.model.results.map(function (resultItem) {
-                    return {label : resultItem.verboseLabelPLain, value : resultItem.id, icon: "fa-cogs"};
+        		var configuration = {
+        				id : "queryResultsButton",
+        				openByDefault : false,
+        				closeOnClick : true,
+        				label: "", 
+        				iconOn : 'fa fa-history fa-2x' ,
+        				iconOff : 'fa fa-history fa-2x',
+        				menuPosition : null,
+        				menuSize : {height : "auto", width : 750},
+        				menuCSS : "queryButtonMenu",
+        				autoFormatMenu : true,
+                        onClickHandler : this.resultSetSelectionChange,
+                        onLoadHandler : loadHandler,
+        				menuItems : []
+        		};
+        		
+        		var menuItems = this.props.model.results.map(function (resultItem) {
+        			return {label : resultItem.verboseLabelPLain, value : resultItem.id, icon: "fa-cogs"};
                 });
-
-                configuration["menuItems"] = menuItems;
-
-                this.initTypeAheadCreated = false;
-
+                
+        		configuration["menuItems"] = menuItems;
+        		
+        		this.initTypeAheadCreated = false;
+        		
                 markup = (
                     <div id="query-results-container" className="center-content">
                         <MenuButton configuration={configuration}/>
@@ -1320,11 +1328,11 @@ define(function (require) {
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
                                 title="Back to query" onClick={this.switchView.bind(null, false, false)}>
-                            <div className="querybuilder-button-label">Refine query</div>
+                                <div className="querybuilder-button-label">Refine query</div>
                         </button>
                         <button id="switch-view-clear-btn" className="fa fa-cog querybuilder-button"
                                 title="Start new query" onClick={this.switchView.bind(null, false, true)}>
-                            <div className="querybuilder-button-label">New query</div>
+                                <div className="querybuilder-button-label">New query</div>
                         </button>
                         <button id="delete-result-btn" className="fa fa-trash-o querybuilder-button"
                                 title="Delete results"

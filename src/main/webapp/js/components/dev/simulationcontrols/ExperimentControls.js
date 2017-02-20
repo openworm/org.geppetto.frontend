@@ -59,8 +59,9 @@ define(function (require) {
             var runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
             var projectPersisted = experiment.getParent().persisted;
             var login = GEPPETTO.UserController.isLoggedIn() && GEPPETTO.UserController.hasPersistence();
+            var readOnlyProject = window.Project.isReadOnly();
             
-            if(writePermission && runPermission && projectPersisted && login){
+            if(writePermission && runPermission && projectPersisted && login && !readOnlyProject){
             	return true;
             }
             
@@ -75,6 +76,10 @@ define(function (require) {
             });
             
             GEPPETTO.on(GEPPETTO.Events.Project_persisted, function () {
+            	self.updateStatus();
+            });
+            
+            GEPPETTO.on(Events.Project_loaded, function () {
             	self.updateStatus();
             });
 

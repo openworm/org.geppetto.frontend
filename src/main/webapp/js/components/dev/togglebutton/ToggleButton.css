@@ -1,0 +1,19 @@
+.toggle-button-toggled {
+    color: white !important;
+    background: orange !important;
+}
+
+.toggle-button-hidden {
+    display: none;
+}
+
+.tooltip-toggle {
+	height: 25px;
+	max-width: 800px;
+	border-radius: 5px;
+	border: 1px solid black;
+	padding: 2px 4px 2px 4px;
+	background: white;
+	opacity: 1;
+	left : 200px;
+}

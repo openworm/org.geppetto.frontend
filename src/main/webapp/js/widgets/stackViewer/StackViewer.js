@@ -107,8 +107,8 @@ define(function (require) {
         },
         
         resize : function(){
-        	this.data.height = this.stackElement.height();
-        	this.data.width = this.stackElement.parent().width();
+        	this.data.height = this.stackElement.parent().outerHeight();
+        	this.data.width = this.stackElement.parent().outerWidth();
             this.updateScene();
             this.stackElement.find(".fa-home").click();
         },
@@ -136,17 +136,22 @@ define(function (require) {
         setData: function (data) {
             // console.log('set Data');
             var sel = GEPPETTO.G.getSelection();
+            var setSize = false;
             if (data != undefined && data != null) {
                 if (data !== this.data || sel !== this.data.selected) {
                     this.removeBorders();
                     if (data.height == undefined) {
                         // console.log('setting default height');
                         data.height = this.data.height;
+                    }else{
+                        setSize = true;
                     }
 
                     if (data.width == undefined) {
                         // console.log('setting default width');
                         data.width = this.data.width;
+                    }else{
+                        setSize = true;
                     }
 
                     if (data.id == undefined) {
@@ -157,7 +162,9 @@ define(function (require) {
 
                     this.data.selected = sel;
 
-                    Widget.View.prototype.setSize.call(this, data.height, data.width);
+                    if (setSize) {
+                        Widget.View.prototype.setSize.call(this, data.height, data.width);
+                    }
 
                     this.addBorders();
                     this.updateScene();

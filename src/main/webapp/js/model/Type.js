@@ -40,6 +40,7 @@
  */
 define(function (require) {
     var ObjectWrapper = require('./ObjectWrapper');
+    var Variable = require('./Variable');
 
     function Type(options) {
         ObjectWrapper.prototype.constructor.call(this, options);
@@ -152,6 +153,16 @@ define(function (require) {
     Type.prototype.getVariableReferences = function () {
         return this.variableReferences;
     };
+    
+    Type.prototype.getPath = function () {
+       if (this.parent!=undefined & this.parent instanceof Variable) {
+    	   //if this is an anonymous type it doesn't have an id, hence we skip it
+    	   return this.parent.getPath();
+       }
+       else{
+    	   return ObjectWrapper.prototype.getPath.call(this);
+       }
+   };
 
     Type.prototype.typeOf = function (type){
         var match = false;

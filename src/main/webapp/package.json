@@ -44,6 +44,7 @@
     "pako": "^1.0.3",
     "pixi.js": "^4.2.3",
     "plotly.js": "^1.20.5",
+    "qunitjs": "^2.1.1",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-simpletabs": "^0.7.0",

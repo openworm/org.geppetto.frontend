@@ -47,7 +47,7 @@ define(function (require) {
 			}
 
 			if(this.props.buttonBarConfig.Events !=null || this.props.buttonBarConfig.Events!=undefined){
-				this.props.geppetto.on(Events.Visibility_changed, function (instance) {
+				this.props.geppetto.on(GEPPETTO.Events.Visibility_changed, function (instance) {
 					if(!$.isEmptyObject(that.props) || that.props != undefined){
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
@@ -61,7 +61,7 @@ define(function (require) {
 						}
 					}
 				});
-				this.props.geppetto.on(Events.Select, function (instance) {
+				this.props.geppetto.on(GEPPETTO.Events.Select, function (instance) {
 					if(!$.isEmptyObject(that.props) || that.props != undefined){
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
@@ -75,7 +75,7 @@ define(function (require) {
 						}
 					}
 				});  
-				this.props.geppetto.on(Events.Color_set, function (instance) {
+				this.props.geppetto.on(GEPPETTO.Events.Color_set, function (instance) {
 					if(that.props!=null || that.props!=undefined){
 						if(instance.instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();

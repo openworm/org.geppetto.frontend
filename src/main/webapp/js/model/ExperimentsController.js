@@ -38,8 +38,8 @@
 define(function (require) {
     return function (GEPPETTO) {
 
-        var AParameterCapability = require('model/AParameterCapability');
-        var AStateVariableCapability = require('model/AStateVariableCapability');
+        var AParameterCapability = require('./AParameterCapability');
+        var AStateVariableCapability = require('./AStateVariableCapability');
         
     	ExperimentStateEnum = {
     		    STOPPED : 0,
@@ -305,7 +305,7 @@ define(function (require) {
             pause: function () {
             	this.state=ExperimentStateEnum.PAUSED;
                 this.getWorker().postMessage([Events.Experiment_pause]);
-                GEPPETTO.trigger(Events.Experiment_pause);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_pause);
             },
 
             isPaused: function () {
@@ -333,7 +333,7 @@ define(function (require) {
             stop: function () {
                 this.terminateWorker();
                 this.state=ExperimentStateEnum.STOPPED;
-                GEPPETTO.trigger(Events.Experiment_stop);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_stop);
             },
 
             closeCurrentExperiment: function () {
@@ -360,11 +360,11 @@ define(function (require) {
             	}
             	
             	this.state=ExperimentStateEnum.PLAYING;            	
-                GEPPETTO.trigger(Events.Experiment_play, this.playOptions);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_play, this.playOptions);
                 
                 if (this.playOptions.playAll) {
                     GEPPETTO.ExperimentsController.terminateWorker();
-                    GEPPETTO.trigger(Events.Experiment_update, {
+                    GEPPETTO.trigger(GEPPETTO.Events.Experiment_update, {
                         step: this.maxSteps - 1,
                         playAll: true
                     });
@@ -392,7 +392,7 @@ define(function (require) {
                             Project.getActiveExperiment().stop();
                             Project.getActiveExperiment().playAll();
                         } else {
-                            GEPPETTO.trigger(Events.Experiment_update, {
+                            GEPPETTO.trigger(GEPPETTO.Events.Experiment_update, {
                                 step: currentStep,
                                 playAll: false
                             });

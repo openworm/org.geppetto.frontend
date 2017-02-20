@@ -463,7 +463,7 @@ define(function (require) {
 
     _.extend(GEPPETTO, Backbone.Events);
 
-  /*  require('./SandboxConsole')(GEPPETTO);
+    require('./SandboxConsole')(GEPPETTO);
     require('./GEPPETTO.Resources')(GEPPETTO);
     require('./GEPPETTO.Events')(GEPPETTO);
     require('./GEPPETTO.Init')(GEPPETTO);
@@ -487,7 +487,8 @@ define(function (require) {
     require('./model/ModelFactory')(GEPPETTO);
     require('./model/ExperimentsController')(GEPPETTO);
     require('./controllers/QueriesController')(GEPPETTO);
-    require('./components/ComponentsController')(GEPPETTO);*/
+    require('./controllers/ProjectsController')(GEPPETTO);
+    require('./components/ComponentsController')(GEPPETTO);
 
     return GEPPETTO;
 

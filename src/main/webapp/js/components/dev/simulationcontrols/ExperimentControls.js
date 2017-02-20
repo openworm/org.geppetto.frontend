@@ -79,7 +79,7 @@ define(function (require) {
             	self.updateStatus();
             });
             
-            GEPPETTO.on(Events.Project_loaded, function () {
+            GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
             	self.updateStatus();
             });
 

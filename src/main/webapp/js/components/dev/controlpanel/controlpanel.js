@@ -186,21 +186,21 @@ define(function (require) {
         	var that = this;
         	
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
-            GEPPETTO.on(Events.Experiment_completed, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
                 that.refresh();
             });
-            GEPPETTO.on(Events.Experiment_running, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
                 that.refresh();
             });
-            GEPPETTO.on(Events.Experiment_failed, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
                 that.refresh();
             });
         },
         
         componentWillUnmount: function() {
-            GEPPETTO.off(Events.Experiment_failed, this.refresh, this);
-            GEPPETTO.off(Events.Experiment_running, this.refresh, this);
-            GEPPETTO.off(Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_completed, this.refresh, this);
         },
 
         render: function () {
@@ -369,21 +369,21 @@ define(function (require) {
             }
 
             // listen to experiment status change and trigger a re-render to update controls
-            GEPPETTO.on(Events.Experiment_completed, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
                 that.refresh();
             });
-            GEPPETTO.on(Events.Experiment_running, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
                 that.refresh();
             });
-            GEPPETTO.on(Events.Experiment_failed, function () {
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
                 that.refresh();
             });
         },
         
         componentWillUnmount: function() {
-            GEPPETTO.off(Events.Experiment_failed, this.refresh, this);
-            GEPPETTO.off(Events.Experiment_running, this.refresh, this);
-            GEPPETTO.off(Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_completed, this.refresh, this);
         },
         
 
@@ -1872,11 +1872,11 @@ define(function (require) {
             });
 
             if(this.props.listenToInstanceCreationEvents){
-                GEPPETTO.on(Events.Instance_deleted, function (parameters) {
+                GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (parameters) {
                     that.deleteData([parameters]);
                 });
 
-                GEPPETTO.on(Events.Instances_created, function(instances){
+                GEPPETTO.on(GEPPETTO.Events.Instances_created, function(instances){
                     if(instances!=undefined){
                         that.addData(instances);
                     }

@@ -41,7 +41,7 @@
  */
 
 define(function (require) {
-	var Instance = require('model/Instance');
+	var Instance = require('./Instance');
 
 
 	function ExternalInstance(options) {

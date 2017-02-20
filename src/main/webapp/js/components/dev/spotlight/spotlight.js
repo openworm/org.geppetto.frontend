@@ -53,10 +53,10 @@ define(function (require) {
         Handlebars = require('handlebars'),
         GEPPETTO = require('geppetto');
 
-		var PlotController = require('widgets/plot/controllers/PlotsController');
+		var PlotController = require('./../../../widgets/plot/controllers/PlotsController');
 
-		var Instance = require('model/Instance');
-		var Variable = require('model/Variable');
+		var Instance = require('./../../../model/Instance');
+		var Variable = require('./../../../model/Variable');
 
     var Spotlight = React.createClass({
 

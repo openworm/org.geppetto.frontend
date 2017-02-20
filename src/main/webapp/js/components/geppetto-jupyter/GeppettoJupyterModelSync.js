@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
 
-	require('./vendor/jupyter_widgets');
+	var jupyter_widgets = require('jupyter-js-widgets');
 
 	var GEPPETTO = require('geppetto');
 	var GeppettoJupyterUtils = require('./GeppettoJupyterUtils');

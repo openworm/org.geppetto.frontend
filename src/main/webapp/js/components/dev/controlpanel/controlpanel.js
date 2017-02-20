@@ -49,7 +49,7 @@ define(function (require) {
     var MenuButton = require('./../menubutton/MenuButton');
     var ToggleButton = require('./../togglebutton/ToggleButton');
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
-    var PlotCtrlr = require('widgets/plot/controllers/PlotsController');
+    var PlotCtrlr = require('./../../../widgets/plot/controllers/PlotsController');
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
 

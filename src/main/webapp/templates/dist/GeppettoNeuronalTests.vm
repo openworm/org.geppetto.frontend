@@ -41,7 +41,7 @@
     <% } %></script>
 
     <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-    <script data-main="geppetto/js/GeppettoNeuronalTests.js" src="geppetto/js/vendor/require.js"></script>
+    <script src="geppetto/js/neuronalTests.bundle.js"></script>
 
 </head>
 <body>

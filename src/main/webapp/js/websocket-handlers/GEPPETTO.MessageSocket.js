@@ -38,6 +38,7 @@
 
 
 define(function (require) {
+
     return function (GEPPETTO) {
 
         var messageHandlers = [];

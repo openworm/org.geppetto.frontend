@@ -34,7 +34,6 @@
  * Loads and runGeppetto core QUnit tests
  *
  * @author Jesus Martinez (jesus@metacell.us)
- * @author Matt Olson (matt@metacell.us)
  * @author Giovanni (giovanni@metacell.us)
  */
 

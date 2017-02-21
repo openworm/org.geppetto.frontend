@@ -304,7 +304,7 @@ define(function (require) {
 
             pause: function () {
             	this.state=ExperimentStateEnum.PAUSED;
-                this.getWorker().postMessage([Events.Experiment_pause]);
+                this.getWorker().postMessage([GEPPETTO.Events.Experiment_pause]);
                 GEPPETTO.trigger(GEPPETTO.Events.Experiment_pause);
             },
 
@@ -324,7 +324,7 @@ define(function (require) {
                 //we'll use a worker
                 if (this.isPaused()) {
                 	this.state=ExperimentStateEnum.PLAYING;
-                	GEPPETTO.ExperimentsController.getWorker().postMessage([Events.Experiment_resume]);
+                	GEPPETTO.ExperimentsController.getWorker().postMessage([GEPPETTO.Events.Experiment_resume]);
                     GEPPETTO.trigger(GEPPETTO.Events.Experiment_resume);
                     return "Pause Experiment";
                 }
@@ -379,7 +379,7 @@ define(function (require) {
                     this.worker = new Worker("geppetto/js/ExperimentWorker.js");
 
                     // tells worker to update each half a second
-                    this.worker.postMessage([Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
+                    this.worker.postMessage([GEPPETTO.Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
 
                     var that = this;
                     // receives message from web worker

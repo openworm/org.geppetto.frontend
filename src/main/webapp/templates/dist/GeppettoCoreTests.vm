@@ -42,7 +42,7 @@
     <% } %></script>
 
     <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-    <script data-main="geppetto/js/GeppettoCoreTests.js" src="geppetto/js/vendor/require.js"></script>
+    <script src="geppetto/js/coreTests.bundle.js"></script>
 
 </head>
 <body>

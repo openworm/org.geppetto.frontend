@@ -45,7 +45,6 @@ define(function (require) {
     //Otherwise, sometimes (randomly)  these libraries are not loaded on time and some js commands failed and the web is not loaded properly.
     require('jquery-ui');
     require('bootstrap');
-    
 
     var isWebglEnabled = require('detector-webgl');
     var THREEx = require('./vendor/THREEx.KeyboardState');

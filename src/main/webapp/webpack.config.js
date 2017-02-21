@@ -11,6 +11,7 @@ module.exports = {
 
   entry: {
     main: "./js/main.js",
+    coreTests: "./js/GeppettoCoreTests.js"
     // dashboard: "./dashboard/js/main.js",
   },
   output: {

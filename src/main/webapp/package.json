@@ -39,7 +39,6 @@
     "jquery": "^1.9.1",
     "jquery-ui-bundle": "^1.11.4",
     "jquery.cookie": "^1.4.1",
-    "jsdom": "3.1.2",
     "json-loader": "^0.5.4",
     "jsx": "^0.9.89",
     "jszip": "^3.1.3",

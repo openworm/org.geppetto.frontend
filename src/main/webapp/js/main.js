@@ -42,11 +42,9 @@ require('./components/app');
 var utils = require('./utils');
 
 jQuery(function () {
-	//Alias G, Simulation, and help() to global vars for easy access
     window.GEPPETTO = require('geppetto');
 
-    //start project node which will be used as a Singleton
-    //to store current project info
+    //start project node which will be used as a Singleton to store current project info
     var project = GEPPETTO.ProjectFactory.createProjectNode({name: "Project", id: -1}, false);
     window.Project = project;
     window.G = GEPPETTO.G;
@@ -79,5 +77,4 @@ jQuery(function () {
 				}
 			});
 	}
-    
 });

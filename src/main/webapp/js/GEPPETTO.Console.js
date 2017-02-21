@@ -74,7 +74,7 @@ define(function (require) {
                 "url()", "parse(t,e)", "clone()", "isNew()", "isValid(t)", "_validate(t,e)", "keys()", "values()", "pairs()", "invert()", "pick()", "omit()",
                 "selectChildren(entity,apply)", "showChildren(entity,mode)", "getZoomPaths(entity)", "getAspectsPaths(entity)", "toggleUnSelected(entities,mode)",
                 "addOnNodeUpdatedCallback(varnode,callback)", "traverseSelection(entities)", "clearOnNodeUpdateCallback(varnode)", "updateDataSet()",
-                "showAllVisualGroupElements(visualizationTree,elements,mode)", "rgbToHex(r,g,b)", "componentToHex(c)", "_all(predicate,matches)"];
+                "showAllVisualGroupElements(visualizationTree,elements,mode)", "_all(predicate,matches)"];
 
             //JS Console Button clicked
             $('#consoleButton').click(function () {

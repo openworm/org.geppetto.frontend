@@ -101,7 +101,7 @@ define(['backbone'], function (require) {
                 this.saveProjectProperties({"name": newname});
                 this.name = newname;
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
 
@@ -201,7 +201,7 @@ define(['backbone'], function (require) {
                 parameters["projectId"] = this.id;
                 GEPPETTO.MessageSocket.send("new_experiment", parameters);
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
 
@@ -313,7 +313,7 @@ define(['backbone'], function (require) {
         		parameters["properties"] = properties;
         		GEPPETTO.MessageSocket.send("save_project_properties", parameters);
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
 
@@ -323,7 +323,7 @@ define(['backbone'], function (require) {
         		parameters["projectId"] = this.id;
         		GEPPETTO.MessageSocket.send("persist_project", parameters);
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
         
@@ -334,7 +334,7 @@ define(['backbone'], function (require) {
         		parameters["isPublic"] = mode;
         		GEPPETTO.MessageSocket.send("make_project_public", parameters);
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
         

@@ -47,7 +47,9 @@ define(function (require) {
 	$ = require('jquery'),
 	Button = require('../../../mixins/bootstrap/button'),
 	GEPPETTO = require('geppetto');
-
+	
+	$.cookie=require('js-cookie');
+	
 	var Tutorial = React.createClass({
 		stepIndex : 0,
 		totalSteps : 0,

@@ -543,29 +543,32 @@ define(function (require) {
             	var currentCompositePath=undefined;
             		
             	for(var i=0;i<instances.length;i++){
-            		//FIXME this is arbitrary and only true if the stateVariable is 2 nested down, it could be anywhere
-            		var composite =  undefined;
-            		var multicompartment=false;
-                	if (instances[i].getParent().getMetaType()==GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE){
-                		composite = instances[i].getParent(); 
-                	}
-                	else if(instances[i].getParent().getParent().getMetaType()==GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE){
-                		composite = instances[i].getParent().getParent();
-                		multicompartment=true;
-                	}
-                	else{
-                		throw "Unsupported model to use this function";
-                	}
-            		var currentCompositePath = composite.getInstancePath();
+            	    var composite =  undefined;
+            	    var multicompartment=false;
+
+                    composite = instances[i].getParent();
+                    
+                    while (composite.getMetaType() != GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE){
+                        if (composite == null) {
+                            throw "Unsupported model to use this function";
+                        } else {
+                            composite = composite.getParent();
+                            multicompartment=true;
+                        }
+                    }
+
+            	    var currentCompositePath = composite.getInstancePath();
             		if (!compositeToLit.hasOwnProperty(currentCompositePath)){
             			compositeToLit[currentCompositePath]=composite;
             			visualObjectsToLit[currentCompositePath]=[];
             			variables[currentCompositePath]=[];
             			
             		}
-            		//FIXME Arbitrary
+
             		if(multicompartment){
-            			visualObjectsToLit[currentCompositePath].push(instances[i].getParent().getId());
+                            for (var j=0; j<composite.getChildren().length; ++j){
+                                visualObjectsToLit[currentCompositePath].push(composite.getChildren()[j].getId());
+                            }
             		}
             		variables[currentCompositePath].push(instances[i]);
                 	

@@ -121,24 +121,26 @@ define(function (require) {
                                 experiments[j].aspectConfigurations[0].modelParameter;
                         }
 
-                        data = data.concat(dataSource.map(
-                            function (item) {
-                                return {
-                                    path: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
-                                    name: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
-                                    fetched_value: (dataType == GEPPETTO.Resources.PARAMETER) ? item.value : undefined,
-                                    unit: (dataType == GEPPETTO.Resources.PARAMETER) ? item.unit : undefined,
-                                    type: ['Model.common.' + dataType],
-                                    projectId: project.id,
-                                    projectName: project.name,
-                                    experimentId: experiments[j].id,
-                                    experimentName: experiments[j].name,
-                                    getPath: function () {
-                                        return this.path;
+                        if(dataSource!= undefined && dataSource!= null) {
+                            data = data.concat(dataSource.map(
+                                function (item) {
+                                    return {
+                                        path: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
+                                        name: (dataType == GEPPETTO.Resources.STATE_VARIABLE) ? item : item.variable,
+                                        fetched_value: (dataType == GEPPETTO.Resources.PARAMETER) ? item.value : undefined,
+                                        unit: (dataType == GEPPETTO.Resources.PARAMETER) ? item.unit : undefined,
+                                        type: ['Model.common.' + dataType],
+                                        projectId: project.id,
+                                        projectName: project.name,
+                                        experimentId: experiments[j].id,
+                                        experimentName: experiments[j].name,
+                                        getPath: function () {
+                                            return this.path;
+                                        }
                                     }
-                                }
-                            })
-                        );
+                                })
+                            );
+                        }
                     }
                 }
 

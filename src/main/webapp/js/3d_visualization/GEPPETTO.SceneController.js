@@ -208,7 +208,10 @@ define(function (require) {
              * @param {String}
              *            instancePath - Path of aspect of mesh to select
              */
-            selectInstance: function (instancePath) {
+            selectInstance: function (instancePath, geometryIdentifier) {
+            	if(geometryIdentifier!=undefined && geometryIdentifier!=""){
+            		instancePath = instancePath + "." + geometryIdentifier;	
+            	}
                 var meshes = this.getRealMeshesForInstancePath(instancePath);
                 if (meshes.length > 0) {
                     for (var meshesIndex in meshes) {
@@ -294,7 +297,7 @@ define(function (require) {
                                 mesh.selected = false;
                             }
                         } else {
-                            mesh.material.color.set(mesh.material.defaultColor);
+                        	GEPPETTO.SceneController.setThreeColor(mesh.material.color, mesh.material.defaultColor);
                             mesh.material.opacity = mesh.material.defaultOpacity;
                             mesh.selected = false;
                         }
@@ -1102,6 +1105,7 @@ define(function (require) {
                         groupMesh = new THREE.Mesh(geometryGroup, material);
                     }
                     groupMesh.instancePath = instancePath;
+                    groupMesh.geometryIdentifier = g;
                     groupMesh.geometry.dynamic = false;
                     groupMesh.position.copy(mergedMesh.position);
 

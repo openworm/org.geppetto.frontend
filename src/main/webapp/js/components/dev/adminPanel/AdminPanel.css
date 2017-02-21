@@ -6,7 +6,7 @@
 
 #adminButtonHeader {
 	height: 70px;
-	width: 500px;
+	width: 350px;
 	margin: 0 auto;
 	text-align: center;
 }
@@ -105,4 +105,5 @@ table {
 .linkDisabled {
 	 pointer-events: none;
 	 text-decoration : none;
+	 color : black;
 }

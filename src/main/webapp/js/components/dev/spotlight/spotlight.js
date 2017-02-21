@@ -62,6 +62,16 @@ define(function (require) {
         modifiable : true,
         plotController: new PlotController(),
         
+        //A sample suggestion, domain specific suggestions should go inside extension
+        plotSample: {
+            "label": "Plot all recorded variables",
+            "actions": [
+                "var p=G.addWidget(0).setName('Recorded Variables');",
+                "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
+            ],
+            "icon": "fa-area-chart"
+        },
+        
         close : function () {
             $("#spotlight").hide();
             GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
@@ -1064,7 +1074,7 @@ define(function (require) {
                     },
                     "plot": {
                         "actions": [
-                            "GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),$instances$.getPath())",
+                            "GEPPETTO.Spotlight.plotController.plotStateVariable(window.Project.getId(),window.Project.getActiveExperiment().getId(),$instance0$.getPath())",
                         ],
                         "icon": "fa-area-chart",
                         "label": "Plot",

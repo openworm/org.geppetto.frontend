@@ -4,11 +4,19 @@ public class AdminSimulationObject {
 	
 	private String login;
 	private String name;
-	private String experimentLastRun;
+	private long experimentLastRun;
 	private String experiment;
 	private String simulator;
 	private String status;
 	private String project;
+	private String error;
+	
+	public String getError() {
+		return error;
+	}
+	public void setError(String error) {
+		this.error = error;
+	}
 
 	public String getProject() {
 		return project;
@@ -34,10 +42,10 @@ public class AdminSimulationObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getExperimentLastRun() {
+	public long getExperimentLastRun() {
 		return experimentLastRun;
 	}
-	public void setExperimentLastRun(String experimentLastRun) {
+	public void setExperimentLastRun(long experimentLastRun) {
 		this.experimentLastRun = experimentLastRun;
 	}
 	public String getExperiment() {

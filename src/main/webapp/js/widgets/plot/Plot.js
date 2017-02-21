@@ -64,6 +64,7 @@ define(function (require) {
 	updateRedraw : 3,
         functionNode: false,
         xaxisAutoRange : false,
+        yaxisAutoRange : false,
         imageTypes : [],
         plotElement : null,
         XVariable : null,
@@ -955,9 +956,9 @@ define(function (require) {
 	    for(var key in this.labelsMap){
     		if(this.labelsMap[key] == legend){
     		    originalInstancePath = key;
-    		}
-    	    }
-
+                }
+            }
+            
 	    return originalInstancePath;
 	},
 

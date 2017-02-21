@@ -2,7 +2,7 @@
 * @author Tim Knip / http://www.floorplanner.com/ / tim at floorplanner.com
 * @author Tony Parisi / http://www.tonyparisi.com/
 */
-
+var THREE = window.THREE || require('three');
 THREE.ColladaLoader = function () {
 
 	var COLLADA = null;

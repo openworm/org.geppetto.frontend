@@ -7,10 +7,7 @@
 define(function (require) {
     return function (GEPPETTO) {
         var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone');
-        var THREE = require('three-js')(['OBJLoader'])
-        //require('vendor/ColladaLoader');
-        require('three-loaders-collada')(THREE);
-        //require('vendor/OBJLoader');
+        var THREE = require('three');
         require('../GEPPETTO.Resources')(GEPPETTO);
 
         GEPPETTO.SceneFactory =

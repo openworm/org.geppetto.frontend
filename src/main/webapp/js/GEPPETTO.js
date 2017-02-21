@@ -48,7 +48,21 @@ define(function (require) {
 
     var isWebglEnabled = require('detector-webgl');
     var THREEx = require('./vendor/THREEx.KeyboardState');
-    var THREE = require('three-js')(['ConvolutionShader','CopyShader','FilmShader','FocusShader','EffectComposer','MaskPass','RenderPass','BloomPass','ShaderPass','FilmPass'])
+    var THREE = require('three');
+    require('./vendor/TrackballControls');
+    require('./vendor/ColladaLoader');
+    require('./vendor/OBJLoader');
+    THREE.ConvolutionShader = require('imports?THREE=three!exports?THREE.ConvolutionShader!../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
+    THREE.CopyShader = require('imports?THREE=three!exports?THREE.CopyShader!../node_modules\/three\/examples\/js\/shaders\/CopyShader');
+    THREE.FilmShader = require('imports?THREE=three!exports?THREE.FilmShader!../node_modules\/three\/examples\/js\/shaders\/FilmShader');
+    THREE.FocusShader = require('imports?THREE=three!exports?THREE.FocusShader!../node_modules\/three\/examples\/js\/shaders\/FocusShader');
+    THREE.EffectComposer = require('imports?THREE=three!exports?THREE.EffectComposer!../node_modules\/three\/examples\/js\/postprocessing\/EffectComposer');
+    THREE.MaskPass = require('imports?THREE=three!exports?THREE.MaskPass!../node_modules\/three\/examples\/js\/postprocessing\/MaskPass');
+    THREE.RenderPass = require('imports?THREE=three!exports?THREE.RenderPass!../node_modules\/three\/examples\/js\/postprocessing\/RenderPass');
+    THREE.BloomPass = require('imports?THREE=three!exports?THREE.BloomPass!../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
+    THREE.ShaderPass = require('imports?THREE=three!exports?THREE.ShaderPass!../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
+    THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
+    THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
 
     var step = 0;
 

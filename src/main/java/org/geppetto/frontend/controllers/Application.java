@@ -112,18 +112,6 @@ public class Application
 		return "dist/GeppettoNeuronalTests";
 	}
 	
-	@RequestMapping(value = "/GeppettoNeuronalCustomTests.html", method = RequestMethod.GET)
-	public String testNeuronalCustom()
-	{
-		return "dist/GeppettoNeuronalCustomTests";
-	}
-	
-	@RequestMapping(value = "/GeppettoComponentsTests.html", method = RequestMethod.GET)
-	public String testComponents()
-	{
-		return "dist/GeppettoComponentsTests";
-	}
-	
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
 	public String testCore()
 	{
@@ -140,24 +128,6 @@ public class Application
 	public String testPersistence()
 	{
 		return "dist/GeppettoPersistenceTests";
-	}
-	
-	@RequestMapping(value = "/GeppettoPersistenceTests-alt.html", method = RequestMethod.GET)
-	public String testAltPersistence()
-	{
-		return "dist/GeppettoPersistenceTests-alt";
-	}
-	
-	@RequestMapping(value = "/GeppettoFluidDynamicsTests.html", method = RequestMethod.GET)
-	public String testFluidDynamics()
-	{
-		return "dist/GeppettoFluidDynamicsTests";
-	}
-
-	@RequestMapping(value = "/GeppettoAllTests.html", method = RequestMethod.GET)
-	public String runTests()
-	{
-		return "dist/GeppettoAllTests";
 	}
 	
 	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)

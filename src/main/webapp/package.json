@@ -2,8 +2,8 @@
   "name": "org.geppetto.frontend",
   "version": "0.3.4",
   "description": "Geppetto web frontend. Geppetto is an open source platform to visualize and simulate biological models.",
-  "repository" : "http://git.geppetto.org",
-  "license" : "MIT",
+  "repository": "http://git.geppetto.org",
+  "license": "MIT",
   "scripts": {
     "build": "webpack -p",
     "start": "webpack-dev-server --config webpack.config.dev.js",
@@ -52,6 +52,7 @@
     "react-dom": "15.4.1",
     "react-simpletabs": "^0.7.0",
     "slick-carousel": "^1.6.0",
+    "stats.js": "^0.17.0",
     "text": "^0.1.0",
     "three": "0.83.0",
     "three-loaders-collada": "^1.0.1",

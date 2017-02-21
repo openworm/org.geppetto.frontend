@@ -45,6 +45,7 @@ define(function (require) {
     //Otherwise, sometimes (randomly)  these libraries are not loaded on time and some js commands failed and the web is not loaded properly.
     require('jquery-ui');
     require('bootstrap');
+    
 
     var isWebglEnabled = require('detector-webgl');
     var THREEx = require('./vendor/THREEx.KeyboardState');
@@ -63,6 +64,7 @@ define(function (require) {
     THREE.ShaderPass = require('imports?THREE=three!exports?THREE.ShaderPass!../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
     THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
     THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
+    var Stats = require('stats.js');
 
     var step = 0;
 

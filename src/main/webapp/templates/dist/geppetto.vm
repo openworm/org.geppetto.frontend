@@ -128,7 +128,7 @@
 <% } %></script>
 
 <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
-<script src="geppetto/js/main.bundle.js"></script>
+<script charset="utf-8" src="geppetto/js/main.bundle.js"></script>
 <script>
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-45841517-1']);

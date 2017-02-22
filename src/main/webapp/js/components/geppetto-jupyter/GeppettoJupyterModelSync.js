@@ -5,6 +5,8 @@ define(function (require, exports, module) {
 	var GEPPETTO = require('geppetto');
 	var GeppettoJupyterUtils = require('./GeppettoJupyterUtils');
 
+	var _ = require('underscore');
+
 	var EventsSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'EventsSync',

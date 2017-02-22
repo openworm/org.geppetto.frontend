@@ -14,6 +14,7 @@ define(function (require, exports, module) {
 	var GEPPETTO = require('geppetto');
 
 	var $ = require('jquery');
+	var _ = require('underscore');
 
 	var ComponentSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
@@ -71,6 +72,7 @@ define(function (require, exports, module) {
 			this.on("change:widget_name", function (model, value, options) {
 				$("#" + this.get('widget_id') + "_dialog").dialog('option', 'title', this.get("widget_name"));
 			});
+			//this.on("display", this.taka, this);
 		},
 		close_panel: function (msg) {
 			this.set('triggerClose', false);
@@ -100,6 +102,10 @@ define(function (require, exports, module) {
 			}
 			return children;
 		},
+
+		// taka: function () {
+		// 	console.log('taka')
+		// },
 
 		display: function () {
 			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));

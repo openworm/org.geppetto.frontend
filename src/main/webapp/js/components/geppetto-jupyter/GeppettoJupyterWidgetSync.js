@@ -2,6 +2,8 @@ define(function (require, exports, module) {
 
 	var jupyter_widgets = require('jupyter-js-widgets');
 
+	var _ = require('underscore');
+
 	var WidgetSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			widget_id: '',

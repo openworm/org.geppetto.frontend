@@ -50,8 +50,9 @@ define(function (require) {
     var THREEx = require('./vendor/THREEx.KeyboardState');
     var THREE = require('three');
     require('./vendor/TrackballControls');
-    require('./vendor/ColladaLoader');
     require('./vendor/OBJLoader');
+    
+    THREE.ColladaLoader = require('imports?THREE=three!exports?THREE.ColladaLoader!../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
     THREE.ConvolutionShader = require('imports?THREE=three!exports?THREE.ConvolutionShader!../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
     THREE.CopyShader = require('imports?THREE=three!exports?THREE.CopyShader!../node_modules\/three\/examples\/js\/shaders\/CopyShader');
     THREE.FilmShader = require('imports?THREE=three!exports?THREE.FilmShader!../node_modules\/three\/examples\/js\/shaders\/FilmShader');
@@ -61,7 +62,6 @@ define(function (require) {
     THREE.RenderPass = require('imports?THREE=three!exports?THREE.RenderPass!../node_modules\/three\/examples\/js\/postprocessing\/RenderPass');
     THREE.BloomPass = require('imports?THREE=three!exports?THREE.BloomPass!../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
     THREE.ShaderPass = require('imports?THREE=three!exports?THREE.ShaderPass!../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
-    THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
     THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
     var Stats = require('stats.js');
 

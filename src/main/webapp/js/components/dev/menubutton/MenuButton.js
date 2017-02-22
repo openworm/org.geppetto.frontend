@@ -147,6 +147,7 @@ define(function (require) {
             	for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
             	    var item = this.props.configuration.menuItems[i];
                     if (item.radio) {
+                        // include a ref for every radio item so we can call their select method from other items
             		items.push(<ListItem key={i} item={item} ref={item.value} handleSelect={this.handleSelect}/>);
                     } else {
                         items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
@@ -157,6 +158,7 @@ define(function (require) {
         },
 
         handleSelect: function (value, radio) {
+            // call select on any other 'checked' radio items to deselect them
             if (radio) {
                 for (var key in this.refs) {
                     var ref = this.refs[key];

@@ -39,7 +39,7 @@
 define(function (require) {
 
     var React = require('react');
-    var Remarkable = require('../../vendor/remarkable.min');
+    var Remarkable = require('remarkable');
 
     return React.createClass({
         mixins: [

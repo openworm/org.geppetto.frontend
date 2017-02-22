@@ -45,7 +45,6 @@ define(function (require) {
     VariableVisualizerController = require('widgets/variablevisualiser/controllers/VariableVisualiserController');
     ButtonBarController = require('widgets/buttonBar/controllers/ButtonBarController');
     StackViewerController = require('widgets/stackViewer/controllers/StackViewerController');
-    ColorbarController = require('widgets/colorbar/controllers/ColorbarController');
     //Use as template for new widgets
     //WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
 
@@ -69,7 +68,6 @@ define(function (require) {
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
             STACKVIEWER: 8,
-            COLORBAR: 9
             //WIDGETNAME: N
         };
 
@@ -87,7 +85,6 @@ define(function (require) {
             treeVisDatController: null,
             treeVis3DController: null,
             stackViewer3DController: null,
-            colorbarController: null,
             //WIDGETNAMEController: null
 
             /**
@@ -135,9 +132,6 @@ define(function (require) {
                     case GEPPETTO.Widgets.STACKVIEWER:
                         widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget();
                         break;
-                    case GEPPETTO.Widgets.COLORBAR:
-                        widget = this.getController(GEPPETTO.Widgets.COLORBAR).addColorbarWidget();
-                        break;
                     //Use as template for new widgets
                     //create WIDGETNAME
                     //case GEPPETTO.Widgets.WIDGETNAME:
@@ -178,8 +172,6 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
                     case GEPPETTO.Widgets.STACKVIEWER:
                         return GEPPETTO.Resources.REMOVE_STACKVIEWER_WIDGETS;
-                    case GEPPETTO.Widgets.COLORBAR:
-                         return GEPPETTO.Resources.REMOVE_COLORBAR_WIDGETS;
                     //Use as template for new widgets
                     //case GEPPETTO.Widgets.WIDGETNAME:
                     //    return GEPPETTO.Resources.REMOVE_WIDGETNAME_WIDGETS;
@@ -242,12 +234,6 @@ define(function (require) {
                         this.stackViewerController = new StackViewerController();
                     }
                     return this.stackViewerController;
-                }
-                else if (type == GEPPETTO.Widgets.COLORBAR) {
-                    if (this.colorbarController == null || undefined) {
-                        this.colorbarController = new ColorbarController();
-                    }
-                    return this.colorbarController;
                 }
                 //Use as template for new widgets
                 //else if (type == GEPPETTO.Widgets.WIDGETNAME) {

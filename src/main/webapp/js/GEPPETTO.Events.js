@@ -142,8 +142,9 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_update, parameters);
                 });
                 GEPPETTO.on(this.Experiment_stop, function (parameters) {
+                });
 
-                GEPPETTO.on(this.Do_experiment_play, function () {
+				GEPPETTO.on(this.Do_experiment_play, function () {
                     Project.getActiveExperiment().playAll();
                 });
             }

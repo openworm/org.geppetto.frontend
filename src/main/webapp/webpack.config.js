@@ -47,7 +47,7 @@ module.exports = {
       { test: /\.json$/, loader: "json-loader" },
 
       //TODO: This should not be needed, probably we need to use it because a wrong dynamic require
-      { test: /\.(py|png|css|md)$/, loader: 'ignore-loader' },
+      { test: /\.(py|png|css|md|woff2|woff|ttf|eot)$/, loader: 'ignore-loader' },
 
       //{ test: /\.css$/, loader: "style!css" }
       // {

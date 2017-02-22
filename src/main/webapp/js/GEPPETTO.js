@@ -43,21 +43,27 @@ define(function (require) {
 
     //These two libraries are required here so that Geppetto can work properly in an iframe (as embedded website).
     //Otherwise, sometimes (randomly)  these libraries are not loaded on time and some js commands failed and the web is not loaded properly.
-    require('vendor/jquery-ui.min');
-    require('vendor/bootstrap.min');
+    require('jquery-ui');
+    require('bootstrap');
 
-    require('vendor/Detector');
-    require('vendor/THREEx.KeyboardState');
-    require('vendor/shaders/ConvolutionShader');
-    require('vendor/shaders/CopyShader');
-    require('vendor/shaders/FilmShader');
-    require('vendor/shaders/FocusShader');
-    require('vendor/postprocessing/EffectComposer');
-    require('vendor/postprocessing/MaskPass');
-    require('vendor/postprocessing/RenderPass');
-    require('vendor/postprocessing/BloomPass');
-    require('vendor/postprocessing/ShaderPass');
-    require('vendor/postprocessing/FilmPass');
+    var isWebglEnabled = require('detector-webgl');
+    var THREEx = require('./vendor/THREEx.KeyboardState');
+    var THREE = require('three');
+    require('./vendor/TrackballControls');
+    require('./vendor/OBJLoader');
+    
+    THREE.ColladaLoader = require('imports?THREE=three!exports?THREE.ColladaLoader!../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
+    THREE.ConvolutionShader = require('imports?THREE=three!exports?THREE.ConvolutionShader!../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
+    THREE.CopyShader = require('imports?THREE=three!exports?THREE.CopyShader!../node_modules\/three\/examples\/js\/shaders\/CopyShader');
+    THREE.FilmShader = require('imports?THREE=three!exports?THREE.FilmShader!../node_modules\/three\/examples\/js\/shaders\/FilmShader');
+    THREE.FocusShader = require('imports?THREE=three!exports?THREE.FocusShader!../node_modules\/three\/examples\/js\/shaders\/FocusShader');
+    THREE.EffectComposer = require('imports?THREE=three!exports?THREE.EffectComposer!../node_modules\/three\/examples\/js\/postprocessing\/EffectComposer');
+    THREE.MaskPass = require('imports?THREE=three!exports?THREE.MaskPass!../node_modules\/three\/examples\/js\/postprocessing\/MaskPass');
+    THREE.RenderPass = require('imports?THREE=three!exports?THREE.RenderPass!../node_modules\/three\/examples\/js\/postprocessing\/RenderPass');
+    THREE.BloomPass = require('imports?THREE=three!exports?THREE.BloomPass!../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
+    THREE.ShaderPass = require('imports?THREE=three!exports?THREE.ShaderPass!../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
+    THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
+    var Stats = require('stats.js');
 
     var step = 0;
 
@@ -113,8 +119,9 @@ define(function (require) {
          *            containerp - HTML element to draw the 3D Scene
          * @returns {Boolean}
          */
+        //AQP: Almost same code!!!!!!!!!!!
         init: function (containerp) {
-            if (!Detector.webgl) {
+            if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
                 return false;
             } else {
@@ -128,12 +135,19 @@ define(function (require) {
          * @returns {Boolean} True or false, whether webgl is detected or not
          */
         webGLAvailable: function () {
-            if (!Detector.webgl) {
-                Detector.addGetWebGLMessage();
-                return false;
-            } else {
+            if (isWebglEnabled){
                 return true;
             }
+            else{
+                Detector.addGetWebGLMessage();
+                return false;
+            }
+            // if (!Detector.webgl) {
+            //     Detector.addGetWebGLMessage();
+            //     return false;
+            // } else {
+            //     return true;
+            // }
         },
 
         /**
@@ -328,49 +342,6 @@ define(function (require) {
             }
         },
 
-        /**
-         * Create a GUI element based on the available metadata
-         */
-        setupGUI: function () {
-            var data = !(_.isEmpty(GEPPETTO.getVARS().metadata));
-
-            // GUI
-            if (!GEPPETTO.getVARS().gui && data) {
-                GEPPETTO.getVARS().gui = new dat.GUI({
-                    width: 400
-                });
-                GEPPETTO.addGUIControls(GEPPETTO.getVARS().gui, GEPPETTO
-                    .getVARS().metadata);
-            }
-            for (f in GEPPETTO.getVARS().gui.__folders) {
-                // opens only the root folders
-                GEPPETTO.getVARS().gui.__folders[f].open();
-            }
-
-        },
-
-        /**
-         * Adds GUI controls to GEPPETTO
-         *
-         * @param gui
-         * @param metadata
-         */
-        addGUIControls: function (parent, current_metadata) {
-            if (current_metadata.hasOwnProperty("ID")) {
-                parent.add(current_metadata, "ID").listen();
-            }
-            for (var m in current_metadata) {
-                if (m != "ID") {
-                    if (typeof current_metadata[m] == "object") {
-                        var folder = parent.addFolder(m);
-                        // recursive call to populate the GUI with sub-metadata
-                        GEPPETTO.addGUIControls(folder, current_metadata[m]);
-                    } else {
-                        parent.add(current_metadata, m).listen();
-                    }
-                }
-            }
-        },
 
         /**
          * Adds debug axis to the scene
@@ -425,51 +396,6 @@ define(function (require) {
          */
         isKeyPressed: function (key) {
             return GEPPETTO.getVARS().keyboard.pressed(key);
-        },
-
-        /**
-         * Generate new id
-         *
-         * @returns {Number} A new id
-         */
-        getNewId: function () {
-            return GEPPETTO.getVARS().idCounter++;
-        },
-
-        /**
-         * Show metadata
-         *
-         * @param {String} entityIndex - the id of the entity for which we want to display metadata
-         */
-        showMetadataForEntity: function (entityIndex) {
-            if (GEPPETTO.getVARS().gui) {
-                GEPPETTO.getVARS().gui.domElement.parentNode
-                    .removeChild(GEPPETTO.getVARS().gui.domElement);
-                GEPPETTO.getVARS().gui = null;
-            }
-
-            GEPPETTO.getVARS().metadata = GEPPETTO.getVARS().runtimetree[entityIndex].metadata;
-            GEPPETTO.getVARS().metadata.ID = GEPPETTO.getVARS().runtimetree[entityIndex].id;
-
-            GEPPETTO.setupGUI();
-
-        },
-
-        /**
-         * @param {Entity} aroundObject - The object around which the rotation will happen
-         */
-        enterRotationMode: function (aroundObject) {
-            GEPPETTO.getVARS().rotationMode = true;
-            if (aroundObject) {
-                GEPPETTO.getVARS().camera.lookAt(aroundObject);
-            }
-        },
-
-        /**
-         * Exit rotation mode
-         */
-        exitRotationMode: function () {
-            GEPPETTO.getVARS().rotationMode = false;
         },
 
         /**
@@ -552,35 +478,33 @@ define(function (require) {
 
     _.extend(GEPPETTO, Backbone.Events);
 
-    require('SandboxConsole')(GEPPETTO);
-    require('GEPPETTO.Resources')(GEPPETTO);
-    require('GEPPETTO.Events')(GEPPETTO);
-    require('GEPPETTO.Init')(GEPPETTO);
-    require('3d_visualization/GEPPETTO.SceneFactory')(GEPPETTO);
-    require('3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
-    require('GEPPETTO.Vanilla')(GEPPETTO);
-    require('GEPPETTO.FE')(GEPPETTO);
-    require('GEPPETTO.UserController')(GEPPETTO);
-    require('GEPPETTO.Flows')(GEPPETTO);
-    require('GEPPETTO.ScriptRunner')(GEPPETTO);
-    // require('GEPPETTO.SimulationContentEditor')(GEPPETTO);
-    require('GEPPETTO.JSEditor')(GEPPETTO);
-    require('GEPPETTO.Console')(GEPPETTO);
-    require('GEPPETTO.Utility')(GEPPETTO);
-    require('GEPPETTO.MenuManager')(GEPPETTO);
-    require('websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
-    require('websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
-    require('websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
-    require('geppetto-objects/G')(GEPPETTO);
-    require('GEPPETTO.Main')(GEPPETTO);
-    // require('GEPPETTO.Tutorial')(GEPPETTO);
-    require("widgets/includeWidget")(GEPPETTO);
-    require('model/ProjectFactory')(GEPPETTO);
-    require('model/ModelFactory')(GEPPETTO);
-    require('model/ExperimentsController')(GEPPETTO);
-    require('controllers/QueriesController')(GEPPETTO);
-    require('controllers/ProjectsController')(GEPPETTO);
-    require('components/ComponentsController')(GEPPETTO);
+    require('./SandboxConsole')(GEPPETTO);
+    require('./GEPPETTO.Resources')(GEPPETTO);
+    require('./GEPPETTO.Events')(GEPPETTO);
+    require('./GEPPETTO.Init')(GEPPETTO);
+    require('./3d_visualization/GEPPETTO.SceneFactory')(GEPPETTO);
+    require('./3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
+    require('./GEPPETTO.FE')(GEPPETTO);
+    require('./GEPPETTO.UserController')(GEPPETTO);
+    require('./GEPPETTO.Flows')(GEPPETTO);
+    require('./GEPPETTO.ScriptRunner')(GEPPETTO);
+    require('./GEPPETTO.JSEditor')(GEPPETTO);
+    require('./GEPPETTO.Console')(GEPPETTO);
+    require('./GEPPETTO.Utility')(GEPPETTO);
+    require('./GEPPETTO.MenuManager')(GEPPETTO);
+    require('./websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
+    require('./websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
+    require('./websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
+    require('./geppetto-objects/G')(GEPPETTO);
+    require('./GEPPETTO.Main')(GEPPETTO);
+    require("./widgets/includeWidget")(GEPPETTO);
+    require('./model/ProjectFactory')(GEPPETTO);
+    require('./model/ModelFactory')(GEPPETTO);
+    require('./model/ExperimentsController')(GEPPETTO);
+    require('./controllers/QueriesController')(GEPPETTO);
+    require('./controllers/ProjectsController')(GEPPETTO);
+    require('./components/ComponentsController')(GEPPETTO);
 
     return GEPPETTO;
+
 });

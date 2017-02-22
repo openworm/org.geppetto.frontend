@@ -39,8 +39,8 @@
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
  */
 define(function (require) {
-    var AWidgetController = require('widgets/AWidgetController');
-    var TreeVisualiserDAT = require('widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT');
+    var AWidgetController = require('../../../AWidgetController');
+    var TreeVisualiserDAT = require('../TreeVisualiserDAT');
 
     /**
      * @exports Widgets/Connectivity/TreeVisualiserControllerDATController
@@ -95,7 +95,7 @@ define(function (require) {
             if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
                 this.removeWidgets();
             }
-            else if (event == Events.Select) {
+            else if (event == GEPPETTO.Events.Select) {
                 //loop through all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {
                     var treeVisualiserDAT = this.widgets[i];
@@ -111,7 +111,7 @@ define(function (require) {
                 }
             }
             // update treevisualiser widgets
-            else if (event == Events.Experiment_update) {
+            else if (event == GEPPETTO.Events.Experiment_update) {
                 // loop through all existing widgets
                 for (var i = 0; i < treeVisualisersDAT.length; i++) {
                     var treeVisualiserDAT = treeVisualisersDAT[i];
@@ -121,7 +121,7 @@ define(function (require) {
                 }
             }
             // update treevisualiser widgets
-            else if (event == Events.ModelTree_populated || event == Events.SimulationTree_populated) {
+            else if (event == GEPPETTO.Events.ModelTree_populated || event == GEPPETTO.Events.SimulationTree_populated) {
                 // loop through all existing widgets
                 for (var i = 0; i < treeVisualisersDAT.length; i++) {
                     var treeVisualiserDAT = treeVisualisersDAT[i];

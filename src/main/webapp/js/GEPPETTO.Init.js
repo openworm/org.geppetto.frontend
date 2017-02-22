@@ -36,6 +36,8 @@
 define(function (require) {
     return function (GEPPETTO) {
         var $ = require('jquery');
+        var THREE = require('three');
+        
 
         var createChannel = function () {
             // Change link from blank to self for embedded environments
@@ -298,8 +300,6 @@ define(function (require) {
                         GEPPETTO.getVARS().composer.setSize(width, height);
                     }, false);
 
-                document.addEventListener("keydown",
-                    GEPPETTO.Vanilla.checkKeyboard, false);
                 GEPPETTO.getVARS().listenersCreated = true;
             }
         };
@@ -337,7 +337,7 @@ define(function (require) {
                 setupControls();
                 setupListeners();
                 this.initialised = true;
-                GEPPETTO.trigger(Events.Canvas_initialised);
+                GEPPETTO.trigger(GEPPETTO.Events.Canvas_initialised);
                 return GEPPETTO.getVARS();
             },
 

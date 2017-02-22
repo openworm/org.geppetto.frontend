@@ -101,7 +101,7 @@ define(['backbone'], function (require) {
                 this.saveProjectProperties({"name": newname});
                 this.name = newname;
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
 
@@ -153,7 +153,7 @@ define(['backbone'], function (require) {
         setActiveExperiment: function (experiment) {
             if(GEPPETTO.UserController.isLoggedIn()){
                 this.activeExperiment = experiment;
-                GEPPETTO.trigger(Events.Experiment_active);
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_active);
             }else{
     			return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
             }
@@ -201,7 +201,7 @@ define(['backbone'], function (require) {
                 parameters["projectId"] = this.id;
                 GEPPETTO.MessageSocket.send("new_experiment", parameters);
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
 
@@ -215,9 +215,9 @@ define(['backbone'], function (require) {
         loadFromID: function (projectID, experimentID) {
 
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-            GEPPETTO.trigger(Events.Project_loading);
+            GEPPETTO.trigger(GEPPETTO.Events.Project_loading);
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
-            GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
 
             var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
@@ -250,8 +250,8 @@ define(['backbone'], function (require) {
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
-            GEPPETTO.trigger(Events.Project_loading);
-            GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger(GEPPETTO.Events.Project_loading);
+            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
 
             var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
@@ -262,7 +262,7 @@ define(['backbone'], function (require) {
                 GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
                 GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
                 //trigger simulation restart event
-                GEPPETTO.trigger(Events.Simulation_restarted);
+                GEPPETTO.trigger(GEPPETTO.Events.Simulation_restarted);
             }
 
             else {
@@ -281,11 +281,11 @@ define(['backbone'], function (require) {
          */
         loadFromContent: function (content) {
 
-        	GEPPETTO.trigger(Events.Project_loading);
+        	GEPPETTO.trigger(GEPPETTO.Events.Project_loading);
             GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 
             console.time(GEPPETTO.Resources.LOADING_PROJECT);
-            GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
+            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
 
             var loadStatus = GEPPETTO.Resources.LOADING_PROJECT;
 
@@ -313,7 +313,7 @@ define(['backbone'], function (require) {
         		parameters["properties"] = properties;
         		GEPPETTO.MessageSocket.send("save_project_properties", parameters);
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
 
@@ -323,7 +323,7 @@ define(['backbone'], function (require) {
         		parameters["projectId"] = this.id;
         		GEPPETTO.MessageSocket.send("persist_project", parameters);
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
         
@@ -334,7 +334,7 @@ define(['backbone'], function (require) {
         		parameters["isPublic"] = mode;
         		GEPPETTO.MessageSocket.send("make_project_public", parameters);
         	}else{
-        		return persistedAndWriteMessage(this);
+        		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
         },
         

@@ -38,6 +38,7 @@
 
 
 define(function (require) {
+
     return function (GEPPETTO) {
 
         var messageHandlers = [];
@@ -268,7 +269,7 @@ define(function (require) {
                 var fileNameLength = messageBytes[1];
                 var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2, 2 + fileNameLength));
                 var blob = new Blob([message]);
-                saveData(blob.slice(2 + fileNameLength), fileName);
+                GEPPETTO.Utility.saveData(blob.slice(2 + fileNameLength), fileName);
             }
         }
     }

@@ -39,7 +39,7 @@
  * @author Matteo Cantarelli
  */
 define(function (require) {
-    var Type = require('model/Type');
+    var Type = require('./Type');
 
     function ArrayType(options) {
         Type.prototype.constructor.call(this, options);

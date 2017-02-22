@@ -41,8 +41,8 @@
 
 define(function (require) {
 
-    var Instance = require('model/Instance');
-    var Variable = require('model/Variable');
+    var Instance = require('./Instance');
+    var Variable = require('./Variable');
 
     return {
         capabilityId: 'ParameterCapability',

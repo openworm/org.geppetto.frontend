@@ -39,32 +39,31 @@
  */
 define(function (require) {
     return function (GEPPETTO) {
-        var GeppettoModel = require('model/GeppettoModel');
-        var Library = require('model/Library');
-        var Type = require('model/Type');
-        var Variable = require('model/Variable');
-        var Value = require('model/Value');
-        var Datasource = require('model/Datasource');
-        var Query = require('model/Query');
-        var CompositeType = require('model/CompositeType');
-        var CompositeVisualType = require('model/CompositeVisualType');
-        var ArrayType = require('model/ArrayType');
-        var ImportType = require('model/ImportType');
-        var ImportValue = require('model/ImportValue');
-        var Instance = require('model/Instance');
-        var ExternalInstance = require('model/ExternalInstance');
-        var ArrayInstance = require('model/ArrayInstance');
-        var ArrayElementInstance = require('model/ArrayElementInstance');
-        var VisualGroup = require('model/VisualGroup');
-        var VisualGroupElement = require('model/VisualGroupElement');
-        var Pointer = require('model/Pointer');
-        var PointerElement = require('model/PointerElement');
-        var AVisualCapability = require('model/AVisualCapability');
-        var AVisualGroupCapability = require('model/AVisualGroupCapability');
-        var AConnectionCapability = require('model/AConnectionCapability');
-        var AParameterCapability = require('model/AParameterCapability');
-        var AStateVariableCapability = require('model/AStateVariableCapability');
-        var ADerivedStateVariableCapability = require('model/ADerivedStateVariableCapability');
+        var GeppettoModel = require('./GeppettoModel');
+        var Library = require('./Library');
+        var Type = require('./Type');
+        var Variable = require('./Variable');
+        var Value = require('./Value');
+        var Datasource = require('./Datasource');
+        var Query = require('./Query');
+        var CompositeType = require('./CompositeType');
+        var CompositeVisualType = require('./CompositeVisualType');
+        var ArrayType = require('./ArrayType');
+        var ImportType = require('./ImportType');
+        var ImportValue = require('./ImportValue');
+        var Instance = require('./Instance');
+        var ExternalInstance = require('./ExternalInstance');
+        var ArrayInstance = require('./ArrayInstance');
+        var ArrayElementInstance = require('./ArrayElementInstance');
+        var VisualGroup = require('./VisualGroup');
+        var VisualGroupElement = require('./VisualGroupElement');
+        var Pointer = require('./Pointer');
+        var PointerElement = require('./PointerElement');
+        var AVisualCapability = require('./AVisualCapability');
+        var AVisualGroupCapability = require('./AVisualGroupCapability');
+        var AConnectionCapability = require('./AConnectionCapability');
+        var AParameterCapability = require('./AParameterCapability');
+        var AStateVariableCapability = require('./AStateVariableCapability');
        
         /**
          * @class GEPPETTO.ModelFactory
@@ -184,7 +183,7 @@ define(function (require) {
             },
 
             /**
-             * Populate type references+
+             * Populate type references
              */
             populateTypeReferences: function (node) {
 
@@ -1820,7 +1819,7 @@ define(function (require) {
                     }
                 }
 
-                // always add if not a static var, otherwise check that it wasn't already added
+                // always add if not a static var, otherwise check that it wasnt already added
                 if(!isStaticVar || (isStaticVar && !staticVarAlreadyAdded)){
                     allPotentialPaths.push(entry);
                     // only add to indexing if it's not a connection or nested in a composite type
@@ -2740,7 +2739,7 @@ define(function (require) {
                 // re-run model shortcuts
                 this.populateChildrenShortcuts(this.geppettoModel);
 
-                GEPPETTO.trigger(Events.Instance_deleted, instancePath);
+                GEPPETTO.trigger(GEPPETTO.Events.Instance_deleted, instancePath);
             },
 
             /**

@@ -3,14 +3,14 @@ define(function (require, exports, module) {
 	var React = require('react');
 	var ReactDOM = require('react-dom');
 
-	var PanelComp = require('jsx!components/dev/panel/Panel');
-	var CheckboxComp = require('jsx!components/dev/BasicComponents/Checkbox');
-	var TextFieldComp = require('jsx!components/dev/BasicComponents/TextField');
-	var RaisedButtonComp = require('jsx!components/dev/BasicComponents/RaisedButton');
-	var LabelComp = require('jsx!components/dev/BasicComponents/Label');
-	var DropDownComp = require('jsx!components/dev/BasicComponents/DropDown');
+	var PanelComp = require('../dev/panel/Panel');
+	var CheckboxComp = require('../dev/BasicComponents/Checkbox');
+	var TextFieldComp = require('../dev/BasicComponents/TextField');
+	var RaisedButtonComp = require('../dev/BasicComponents/RaisedButton');
+	var LabelComp = require('../dev/BasicComponents/Label');
+	var DropDownComp = require('../dev/BasicComponents/DropDown');
 
-	require('./vendor/jupyter_widgets');
+	var jupyter_widgets = require('jupyter-js-widgets');
 	var GEPPETTO = require('geppetto');
 
 	var $ = require('jquery');

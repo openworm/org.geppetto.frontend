@@ -38,7 +38,7 @@
  * @author Giovanni Idili
  */
 define(function (require) {
-    var CompositeType = require('model/CompositeType');
+    var CompositeType = require('./CompositeType');
 
     function CompositeVisualType(options) {
         CompositeType.prototype.constructor.call(this, options);

@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
 
-    var geppettoCommonLibrary = require('json!./GeppettoCommonLibrary.json');
+    var geppettoCommonLibrary = require('./GeppettoCommonLibrary.json');
 
     function getTypeById(typeId){
         for (var typeIndex in geppettoCommonLibrary.types){

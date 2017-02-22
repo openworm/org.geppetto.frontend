@@ -31,6 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 define(function (require) {
+    var QUnit = require("qunitjs");
 
     /**
      * Calls "start()" from QUnit to start qunit tests, closes socket and clears

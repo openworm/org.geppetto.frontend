@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
 
-	require('./vendor/jupyter_widgets');
+	var jupyter_widgets = require('jupyter-js-widgets');
 
 	var GEPPETTO = require('geppetto');
 	var GeppettoJupyterUtils = require('./GeppettoJupyterUtils');
@@ -15,15 +15,15 @@ define(function (require, exports, module) {
 			EventsSync.__super__.initialize.apply(this);
 			_this = this;
 
-			GEPPETTO.on(Events.Select, function (instance, geometryIdentifier, point) {
-				_this.send({ event: Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
+			GEPPETTO.on(GEPPETTO.Events.Select, function (instance, geometryIdentifier, point) {
+				_this.send({ event: GEPPETTO.Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
 			});
-			GEPPETTO.on(Events.Instances_created, function (instances) {
+			GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
 				var instancesIds = []
 				for (var instanceIndex in instances){
 					instancesIds.push(instances[instanceIndex].id)
 				}
-				_this.send({ event: Events.Instances_created, data: instancesIds});
+				_this.send({ event: GEPPETTO.Events.Instances_created, data: instancesIds});
 			});
 
 			this.on("msg:custom", this.handle_customMessage, this);
@@ -249,7 +249,7 @@ define(function (require, exports, module) {
 			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
 
 			var instances = this.createInstanceForStateVariables();
-			GEPPETTO.trigger(Events.Instances_created, instances);
+			GEPPETTO.trigger(GEPPETTO.Events.Instances_created, instances);
 		},
 
 		loadModel: function () {

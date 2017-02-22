@@ -44,7 +44,7 @@ define(function (require) {
         var debugMode = false;
         var $ = require('jquery'),
             React = require('react'),
-            ClipboardModal = require('jsx!components/popups/ClipboardModal');
+            ClipboardModal = require('../components/popups/ClipboardModal');
 
         /**
          * @exports geppetto-objects/G
@@ -299,11 +299,11 @@ define(function (require) {
             	 var modalVisible = $('#tutorial').is(':visible');
             	 
                  if (modalVisible) {
-                	 GEPPETTO.trigger(Events.Hide_Tutorial);
+                	 GEPPETTO.trigger(GEPPETTO.Events.Hide_Tutorial);
                      returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
                  }
                  else {
-                	 GEPPETTO.trigger(Events.Show_Tutorial);
+                	 GEPPETTO.trigger(GEPPETTO.Events.Show_Tutorial);
                      returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
                  }
                  return returnMessage;

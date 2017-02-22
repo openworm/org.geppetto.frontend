@@ -37,8 +37,8 @@
  */
 define(function (require) {
 
-    var AWidgetController = require('widgets/AWidgetController');
-    var VarVis = require('widgets/variablevisualiser/VariableVisualiser');
+    var AWidgetController = require('../../AWidgetController');
+    var VarVis = require('../VariableVisualiser');
 
     /**
      * @exports Widgets/VariableVisualiser/VariableVisualiserController
@@ -82,7 +82,7 @@ define(function (require) {
                 this.removeWidgets();
             }
             //update widgets
-            else if (event == Events.Experiment_update) {
+            else if (event == GEPPETTO.Events.Experiment_update) {
                 var step = parameters.step;
                 for (var i = 0; i < this.widgets.length; i++) {
                     this.widgets[i].updateVariable(step);

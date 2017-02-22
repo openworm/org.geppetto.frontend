@@ -45,9 +45,11 @@ define(function (require) {
 	var React = require('react'),
 	ReactDOM = require('react-dom'),
 	$ = require('jquery'),
-	Button = require('mixins/bootstrap/button'),
+	Button = require('../../../mixins/bootstrap/button'),
 	GEPPETTO = require('geppetto');
-
+	
+	$.cookie=require('js-cookie');
+	
 	var Tutorial = React.createClass({
 		stepIndex : 0,
 		totalSteps : 0,
@@ -211,13 +213,13 @@ define(function (require) {
 			var self = this;
 
 			//launches specific tutorial is experiment is loaded
-			GEPPETTO.on(Events.Model_loaded,function(){
+			GEPPETTO.on(GEPPETTO.Events.Model_loaded,function(){
 				if(!self.dontShowTutorial){
 					//default tutorial when user doesn't specify one for this event
 					if(self.props.tutorialURL){
 						var tutorialURL = self.props.tutorialURL;
-						if(self.tutorialMap[Events.Model_loaded]!=null || undefined){
-							tutorialURL = self.tutorialMap[Events.Model_loaded];
+						if(self.tutorialMap[GEPPETTO.Events.Model_loaded]!=null || undefined){
+							tutorialURL = self.tutorialMap[GEPPETTO.Events.Model_loaded];
 						}
 						
 						self.tutorialData(tutorialURL);
@@ -230,7 +232,7 @@ define(function (require) {
 			});
 
 			//Launches tutorial from button 
-			GEPPETTO.on(Events.Show_Tutorial,function(){
+			GEPPETTO.on(GEPPETTO.Events.Show_Tutorial,function(){
 				if(self.started){
 					self.open(false);
 				}else{
@@ -240,8 +242,8 @@ define(function (require) {
 					}else{
 						//default tutorial when user doesn't specify one for this event
 						var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/dev/tutorial/configuration/experiment_loaded_tutorial.json";
-						if(self.tutorialMap[Events.Show_Tutorial]!=null || undefined){
-							tutorialURL = self.tutorialMap[Events.Show_Tutorial];
+						if(self.tutorialMap[GEPPETTO.Events.Show_Tutorial]!=null || undefined){
+							tutorialURL = self.tutorialMap[GEPPETTO.Events.Show_Tutorial];
 						}
 
 						self.tutorialData(tutorialURL);
@@ -250,7 +252,7 @@ define(function (require) {
 			});
 			
 			//Hides tutorial
-			GEPPETTO.on(Events.Hide_Tutorial,function(){
+			GEPPETTO.on(GEPPETTO.Events.Hide_Tutorial,function(){
 				self.close();
 			});
 			

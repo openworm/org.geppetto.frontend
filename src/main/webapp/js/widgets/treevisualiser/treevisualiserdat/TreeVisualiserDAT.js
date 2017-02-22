@@ -39,7 +39,10 @@
 
 define(function (require) {
 
-    var TreeVisualiser = require('widgets/treevisualiser/TreeVisualiser');
+    var TreeVisualiser = require('../TreeVisualiser');
+    var widgetUtility = require("../../WidgetUtility");
+    widgetUtility.loadCss("geppetto/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
+    var dat = require("./vendor/dat.gui.min");
     var $ = require('jquery');
     
     // Icons to display on hover

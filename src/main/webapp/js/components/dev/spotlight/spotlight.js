@@ -40,15 +40,23 @@ define(function (require) {
 
     var React = require('react'),
         $ = require('jquery'),
-        typeahead = require('typeahead'),
-        bh = require('bloodhound'),
-        handlebars = require('handlebars'),
+        // typeahead = require('jquery-typeahead'),
+        // Bloodhound = require('bloodhound-js'),
+
+        // Bloodhound = require('bloodhound-js'),
+        // typeahead = require('typeahead.js'),
+
+        typeahead = require("typeahead.js/dist/typeahead.jquery.min.js"),
+        Bloodhound = require("typeahead.js/dist/bloodhound.min.js"),
+        
+
+        Handlebars = require('handlebars'),
         GEPPETTO = require('geppetto');
 
-    var PlotController = require('widgets/plot/controllers/PlotsController');
+		var PlotController = require('./../../../widgets/plot/controllers/PlotsController');
 
-    var Instance = require('model/Instance');
-    var Variable = require('model/Variable');
+		var Instance = require('./../../../model/Instance');
+		var Variable = require('./../../../model/Variable');
 
     var Spotlight = React.createClass({
 
@@ -164,8 +172,8 @@ define(function (require) {
            
             //fire key event on paste
             typeAhead.on("paste", function(){$(this).trigger("keypress",{ keyCode: 13 });});
-
-            GEPPETTO.on(Events.Model_loaded, function () {
+            
+            GEPPETTO.on(GEPPETTO.Events.Model_loaded, function () {
             	if(that.initialised){
             		that.initialised=false;
             		that.instances.initialize(true);
@@ -212,41 +220,41 @@ define(function (require) {
                 GEPPETTO.ForegroundControls.refresh();
             }
             
-			GEPPETTO.on(Events.Project_loaded, function () {
+			GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});
 
-			GEPPETTO.on(Events.Project_persisted, function () {
+			GEPPETTO.on(GEPPETTO.Events.Project_persisted, function () {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});						
-			GEPPETTO.on(Events.Experiment_completed, function (experimentId) {
+			GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function (experimentId) {
 				that.updateToolBarVisibilityState(that.checkHasWritePermission(experimentId));
 			});
 			
-			GEPPETTO.on(Events.Experiment_running, function () {
+			GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});
 			
-			GEPPETTO.on(Events.Experiment_failed, function () {
+			GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});
-
-			GEPPETTO.on(Events.Experiment_active, function () {
+			
+			GEPPETTO.on(GEPPETTO.Events.Experiment_active, function () {
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
-            });
-
-            GEPPETTO.on(Events.Instances_created, function(instances){
+			});
+            
+            GEPPETTO.on(GEPPETTO.Events.Instances_created, function(instances){
         		that.addData(GEPPETTO.ModelFactory.newPathsIndexing);
             });
-
+            
 			this.updateToolBarVisibilityState(this.checkHasWritePermission());
             this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
         },
-
+        
 		/**
 		 * Returns true if user has permission to write and project is persisted
 		 */

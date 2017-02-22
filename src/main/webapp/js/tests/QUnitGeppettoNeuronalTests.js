@@ -31,6 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 define(function (require) {
+    var QUnit = require("qunitjs");
 
     /**
      * Closes socket and clears handlers. Method is called from each test.
@@ -68,7 +69,7 @@ define(function (require) {
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
                             assert.ok(window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
-                                      window.Model.getVariables()[0].getId() == 'hhcell' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
+                                window.Model.getVariables()[0].getId() == 'hhcell' && window.Model.getVariables()[1].getId() == 'time',  "2 Variables as expected");
                             assert.ok(window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2, "2 Libraries as expected");
                             // test that instance tree high level is as expected
                             assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'hhcell', "1 top level instance as expected");
@@ -127,7 +128,7 @@ define(function (require) {
                         //Simulation has been loaded and model need to be loaded
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
                             GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
-                            equal(window.Project.getId(), 1, "Project ID checked");
+                            assert.equal(window.Project.getId(), 1, "Project ID checked");
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
                             GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
@@ -335,12 +336,12 @@ define(function (require) {
                             assert.ok(acnet2.baskets_12[3] != undefined && acnet2.pyramidals_48[12] != undefined, "Instances exploded as expected");
                             assert.equal(acnet2.baskets_12[9].getConnections().length, 0, "Connections checked on bask");
                             assert.equal(acnet2.pyramidals_48[23].getConnections().length, 0, "Connections checked on pyramidal");
-                            
+
                             Model.neuroml.resolveAllImportTypes(function(){
                                 assert.equal(acnet2.baskets_12[9].getConnections().length, 60, "Connections checked on bask");
                                 assert.equal(acnet2.pyramidals_48[23].getConnections().length, 22, "Connections checked on pyramidal");
                             });
-                            		
+
                             assert.equal(acnet2.baskets_12[9].getVisualGroups().length, 3, "Test number of Visual Groups on bask");
                             assert.equal(acnet2.pyramidals_48[23].getVisualGroups().length, 5, "Test number of Visual Groups on pyramidal");
 
@@ -428,15 +429,15 @@ define(function (require) {
                             assert.equal(passTimeTest, true, "Simulation loaded within time limit: " + time);
                             assert.notEqual(c302, null, "Top level instance is not null");
                             assert.equal(c302.getChildren().length, 299, "C302 Children count checked");
-                            
+
                             assert.equal(c302.ADAL[0].getConnections().length, 0, "ADAL connections check");
                             assert.equal(c302.AVAL[0].getConnections().length, 0, "AVAL connections check");
                             assert.equal(c302.PVDR[0].getConnections().length, 0, "AVAL connections check");
-                            
-                            Model.neuroml.resolveAllImportTypes(function(){                            
-	                            assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL connections check");
-	                            assert.equal(c302.AVAL[0].getConnections().length, 170, "AVAL connections check");
-	                            assert.equal(c302.PVDR[0].getConnections().length, 7, "AVAL connections check");
+
+                            Model.neuroml.resolveAllImportTypes(function(){
+                                assert.equal(c302.ADAL[0].getConnections().length, 31, "ADAL connections check");
+                                assert.equal(c302.AVAL[0].getConnections().length, 170, "AVAL connections check");
+                                assert.equal(c302.PVDR[0].getConnections().length, 7, "AVAL connections check");
                             });
 
                             done();

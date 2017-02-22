@@ -25,6 +25,8 @@
 // # Code
 //
 
+define(function () {
+
 /** @namespace */
 var THREEx	= THREEx 		|| {};
 window.THREEx=THREEx;
@@ -116,3 +118,7 @@ THREEx.KeyboardState.prototype.pressed	= function(keyDesc)
 	};
 	return true;
 };
+
+return THREEx;
+
+});

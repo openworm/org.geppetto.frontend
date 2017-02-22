@@ -39,8 +39,8 @@
  * @author Matteo Cantarelli
  */
 define(function (require) {
-    var ObjectWrapper = require('model/ObjectWrapper');
-    var Variable = require('model/Variable');
+    var ObjectWrapper = require('./ObjectWrapper');
+    var Variable = require('./Variable');
 
     function Type(options) {
         ObjectWrapper.prototype.constructor.call(this, options);

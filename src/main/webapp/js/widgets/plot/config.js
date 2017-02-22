@@ -41,18 +41,6 @@
  */
 
 
-define("math.global", ["mathjs"], function (_) {
-    math = _;
-});
-
-/*
- * Load libraries, and CSS after libraries are loaded
- */
-require([], function (flot, math) {
-//	console.log(math.parser());
-    window.math = math;
-    loadCss("geppetto/js/widgets/plot/Plot.css");
-});	
 
 //Load PlotsController and other classes using GEPPETTO
 define(function(require) {

@@ -4,7 +4,7 @@ define(function (require) {
 
     return React.createClass({
 
-        mixins: [require('mixins/TutorialMixin')],
+        mixins: [require('../TutorialMixin')],
 
         displayName: 'Button',
 

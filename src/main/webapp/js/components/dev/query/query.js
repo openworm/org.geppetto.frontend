@@ -45,14 +45,15 @@ define(function (require) {
 
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
-    var Griddle = require('griddle');
-    var Tabs = require('geppetto/js/components/dev/query/vendor/js/react-simpletabs.js');
-    var typeahead = require('typeahead');
-    var bh = require('bloodhound');
-    var handlebars = require('handlebars');
+    var Griddle = require('griddle-react');
+    //var Tabs = require('./vendor/js/react-simpletabs.js');
+    var Tabs = require('react-simpletabs');
+    var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
+    var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
+    var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
 
-	var MenuButton = require('jsx!./../menubutton/MenuButton');
+	var MenuButton = require('../menubutton/MenuButton')
 
     // query model object to represent component state and trigger view updates
     var queryBuilderModel = {
@@ -520,7 +521,7 @@ define(function (require) {
         initTypeAheadCreated : false,
         configuration: { DataSources: {} },
         mixins: [
-            require('jsx!mixins/bootstrap/modal')
+            require('../../../mixins/bootstrap/modal.js')
         ],
 
         defaultDataSources: function (q, sync) {

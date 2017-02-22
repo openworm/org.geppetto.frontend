@@ -37,8 +37,8 @@
  */
 define(function (require) {
 
-    var Widget = require('widgets/Widget');
-    var TreeVisualiserController = require('widgets/treevisualiser/TreeVisualiserController');
+    var Widget = require('../Widget');
+    var TreeVisualiserController = require('./TreeVisualiserController');
 
     return {
         TreeVisualiser: Widget.View.extend({

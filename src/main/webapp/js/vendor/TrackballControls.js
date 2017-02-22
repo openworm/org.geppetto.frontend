@@ -4,7 +4,7 @@
  * @author Simone Manini / http://daron1337.github.io
  * @author Luca Antiga 	/ http://lantiga.github.io
  */
-
+var THREE = window.THREE || require('three');
 THREE.TrackballControls = function ( object, domElement ) {
 
 	var _this = this;

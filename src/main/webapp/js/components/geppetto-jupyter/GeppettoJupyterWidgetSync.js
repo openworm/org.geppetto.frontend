@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
 
-	require('./vendor/jupyter_widgets');
+	var jupyter_widgets = require('jupyter-js-widgets');
 
 	var WidgetSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {

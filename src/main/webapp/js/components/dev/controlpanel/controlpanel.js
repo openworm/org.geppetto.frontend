@@ -44,12 +44,12 @@ define(function (require) {
     loadCss("geppetto/js/components/dev/controlpanel/vendor/css/bootstrap-colorpicker.min.css");
 
     var React = require('react'), $ = require('jquery');
-    var Griddle = require('griddle');
+    var Griddle = require('griddle-react');
     var GEPPETTO = require('geppetto');
-    var MenuButton = require('jsx!./../menubutton/MenuButton');
-    var ToggleButton = require('jsx!./../togglebutton/ToggleButton');
+    var MenuButton = require('./../menubutton/MenuButton');
+    var ToggleButton = require('./../togglebutton/ToggleButton');
     var colorpicker = require('./vendor/js/bootstrap-colorpicker.min');
-    var PlotCtrlr = require('widgets/plot/controllers/PlotsController');
+    var PlotCtrlr = require('./../../../widgets/plot/controllers/PlotsController');
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
@@ -182,16 +182,25 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+        	
+        	var that = this;
+        	
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
-            GEPPETTO.on(Events.Experiment_completed, this.refresh, this);
-            GEPPETTO.on(Events.Experiment_running, this.refresh, this);
-            GEPPETTO.on(Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
+                that.refresh();
+            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
+                that.refresh();
+            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
+                that.refresh();
+            });
         },
         
         componentWillUnmount: function() {
-            GEPPETTO.off(Events.Experiment_failed, this.refresh, this);
-            GEPPETTO.off(Events.Experiment_running, this.refresh, this);
-            GEPPETTO.off(Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_completed, this.refresh, this);
         },
 
         render: function () {
@@ -360,15 +369,21 @@ define(function (require) {
             }
 
             // listen to experiment status change and trigger a re-render to update controls
-            GEPPETTO.on(Events.Experiment_completed, this.refresh, this);
-            GEPPETTO.on(Events.Experiment_running, this.refresh, this);
-            GEPPETTO.on(Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
+                that.refresh();
+            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
+                that.refresh();
+            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
+                that.refresh();
+            });
         },
         
         componentWillUnmount: function() {
-            GEPPETTO.off(Events.Experiment_failed, this.refresh, this);
-            GEPPETTO.off(Events.Experiment_running, this.refresh, this);
-            GEPPETTO.off(Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_failed, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.off(GEPPETTO.Events.Experiment_completed, this.refresh, this);
         },
         
 
@@ -1852,16 +1867,16 @@ define(function (require) {
             });
 
             // listen to events we need to react to
-            GEPPETTO.on(Events.Project_loaded, function () {
+            GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
                 that.clearData();
             });
 
             if(this.props.listenToInstanceCreationEvents){
-                GEPPETTO.on(Events.Instance_deleted, function (parameters) {
+                GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (parameters) {
                     that.deleteData([parameters]);
                 });
 
-                GEPPETTO.on(Events.Instances_created, function(instances){
+                GEPPETTO.on(GEPPETTO.Events.Instances_created, function(instances){
                     if(instances!=undefined){
                         that.addData(instances);
                     }

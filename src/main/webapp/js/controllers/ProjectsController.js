@@ -148,7 +148,7 @@ define(function (require) {
             }
         };
 
-        GEPPETTO.on(Events.Experiment_loaded, function() {
+        GEPPETTO.on(GEPPETTO.Events.Experiment_loaded, function() {
             // fetch at least every time and experiment is loaded
             GEPPETTO.ProjectsController.refreshUserProjects();
         });

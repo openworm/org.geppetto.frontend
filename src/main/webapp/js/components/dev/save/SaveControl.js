@@ -68,7 +68,7 @@ define(function(require) {
 
             var self = this;
 
-            GEPPETTO.on(Events.Project_persisted, function(){
+            GEPPETTO.on(GEPPETTO.Events.Project_persisted, function(){
             	self.setState({disableSave: false});
             	// update contents of what's displayed on tooltip
            	 	$('.SaveButton').uitooltip({content: "The project was persisted and added to your dashboard!",
@@ -88,7 +88,7 @@ define(function(require) {
     		
         	self.attachTooltip();
         	
-			GEPPETTO.on(Events.Project_loaded, function(){
+			GEPPETTO.on(GEPPETTO.Events.Project_loaded, function(){
 				self.setState(self.evaluateState());
 			});
 			

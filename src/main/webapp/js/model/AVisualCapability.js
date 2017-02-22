@@ -40,10 +40,10 @@
 
 define(function (require) {
 
-    var Instance = require('model/Instance');
-    var ArrayInstance = require('model/ArrayInstance');
-    var Type = require('model/Type');
-    var Variable = require('model/Variable');
+    var Instance = require('./Instance');
+    var ArrayInstance = require('./ArrayInstance');
+    var Type = require('./Type');
+    var Variable = require('./Variable');
 
     return {
         capabilityId: 'VisualCapability',
@@ -86,7 +86,7 @@ define(function (require) {
 
                 var message = GEPPETTO.Resources.HIDE_ASPECT + this.getPath();
             }
-            GEPPETTO.trigger(Events.Visibility_changed, this);
+            GEPPETTO.trigger(GEPPETTO.Events.Visibility_changed, this);
 
             return message;
         },
@@ -129,7 +129,7 @@ define(function (require) {
                 var message = GEPPETTO.Resources.HIDE_ASPECT + this.getPath();
             }
             
-            GEPPETTO.trigger(Events.Visibility_changed, this);
+            GEPPETTO.trigger(GEPPETTO.Events.Visibility_changed, this);
             return message;
         },
 
@@ -266,7 +266,7 @@ define(function (require) {
                 }
             }
 
-            GEPPETTO.trigger(Events.Color_set, {instance: this, color: color});
+            GEPPETTO.trigger(GEPPETTO.Events.Color_set, {instance: this, color: color});
 
             return this;
         },
@@ -329,7 +329,7 @@ define(function (require) {
                         }
                     }
                     //signal selection has changed in simulation pass instance
-                    GEPPETTO.trigger(Events.Select, this, geometryIdentifier, point);
+                    GEPPETTO.trigger(GEPPETTO.Events.Select, this, geometryIdentifier, point);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_ALREADY_SELECTED;
                 }
@@ -408,7 +408,7 @@ define(function (require) {
                     }
 
                     //trigger event that selection has been changed
-                    GEPPETTO.trigger(Events.Select, this);
+                    GEPPETTO.trigger(GEPPETTO.Events.Select, this);
                 } else {
                     message = GEPPETTO.Resources.ASPECT_NOT_SELECTED;
                 }

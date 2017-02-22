@@ -38,7 +38,7 @@
  * @author Giovanni Idili
  */
 define(function (require) {
-    var Type = require('model/Type');
+    var Type = require('./Type');
 
     function CompositeType(options) {
         Type.prototype.constructor.call(this, options);

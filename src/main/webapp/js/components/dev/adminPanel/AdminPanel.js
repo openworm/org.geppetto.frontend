@@ -41,7 +41,7 @@ define(function (require) {
     document.getElementsByTagName("head")[0].appendChild(link);
 
     var React = require('react');
-    var Griddle = require('griddle');
+    var Griddle = require('griddle-react');
 
     var LinkComponent = React.createClass({
         render: function () {

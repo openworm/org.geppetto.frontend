@@ -39,11 +39,11 @@
 define(function (require) {
 
     var React = require('react');
-    var Remarkable = require('vendor/remarkable.min');
+    var Remarkable = require('remarkable');
 
     return React.createClass({
         mixins: [
-            require('jsx!mixins/bootstrap/modal')
+            require('../../mixins/bootstrap/modal.js')
         ],
 
         getDefaultProps: function() {

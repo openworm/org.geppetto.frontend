@@ -147,7 +147,6 @@ define(function (require) {
                 return methods;
             },
 
-
             formatSelection: function (tree, formattedOutput, indentation) {
                 for (var e in tree) {
                     var entity = tree[e];
@@ -162,70 +161,72 @@ define(function (require) {
                 }
 
                 return formattedOutput.replace(/"/g, "");
-            }
+            },
 
+            componentToHex: function(c) {
+                var hex = c.toString(16);
+                return hex.length == 1 ? "0" + hex : hex;
+            },
+
+            rgbToHex: function(r, g, b) {
+                return "0X" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+            },
+
+            getContrast50: function(hexcolor) {
+                return (parseInt(hexcolor, 16) > 0xffffff / 2) ? 'black' : 'white';
+            },
+
+            persistedAndWriteMessage: function(caller){
+                var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
+                if(!GEPPETTO.UserController.isLoggedIn()){
+                    message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
+                }else{
+                    if(!window.Project.persisted && caller.writePermission){
+                        message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED
+                            + GEPPETTO.Resources.PROJECT_NOT_PERSISTED;
+                    }else if(window.Project.persisted && !caller.writePermission){
+                        message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED
+                            + GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
+                    }else if(!window.Project.persisted && !caller.writePermission){
+                        message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED +
+                            GEPPETTO.Resources.PROJECT_NOT_PERSISTED + " and "
+                            + GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
+                    }
+                }
+
+                return message;
+            },
+
+            saveData: undefined
         };
+
+        // inject saveData into utility, need to do it this way because it's adding things to the DOM
+        // and returning the function with clousre on the DOM elements
+        GEPPETTO.Utility.saveData = (function () {
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            return function (blob, fileName) {
+                var url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = fileName;
+                a.click();
+
+                // add timeout to give firefox time to trigger donwload before removing resource
+                setTimeout(function(){
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+            };
+        }());
+
+        /**
+         * Adding method to javascript string class to test
+         * if beginning of string matches another string being passed.
+         */
+        if (typeof String.prototype.startsWith != 'function') {
+            String.prototype.startsWith = function (str) {
+                return this.substring(0, str.length) === str;
+            }
+        }
     };
 });
-
-
-function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-}
-
-function rgbToHex(r, g, b) {
-    return "0X" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-function getContrast50(hexcolor) {
-    return (parseInt(hexcolor, 16) > 0xffffff / 2) ? 'black' : 'white';
-}
-
-function persistedAndWriteMessage(caller){
-	var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
-	if(!GEPPETTO.UserController.isLoggedIn()){
-		message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN;
-	}else{
-		if(!window.Project.persisted && caller.writePermission){
-			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
-						+ GEPPETTO.Resources.PROJECT_NOT_PERSISTED;
-		}else if(window.Project.persisted && !caller.writePermission){
-			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED 
-						+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
-		}else if(!window.Project.persisted && !caller.writePermission){
-			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + 
-						GEPPETTO.Resources.PROJECT_NOT_PERSISTED + " and " 
-						+ GEPPETTO.Resources.WRITE_PRIVILEGES_NOT_SUPPORTED;
-		}
-	}
-	    		
-	return message;
-} 
-
-var saveData = (function () {
-    var a = document.createElement("a");
-    document.body.appendChild(a);
-    a.style = "display: none";
-    return function (blob, fileName) {
-        var url = window.URL.createObjectURL(blob);
-        a.href = url;
-        a.download = fileName;
-        a.click();
-        
-        // add timeout to give firefox time to trigger donwload before removing resource
-        setTimeout(function(){
-            window.URL.revokeObjectURL(url);
-        }, 100);
-    };
-}());
-
-/**
- * Adding method to javascript string class to test
- * if beginning of string matches another string being passed.
- */
-if (typeof String.prototype.startsWith != 'function') {
-    String.prototype.startsWith = function (str) {
-        return this.substring(0, str.length) === str;
-    }
-}

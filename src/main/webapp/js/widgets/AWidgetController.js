@@ -67,7 +67,7 @@ define(function (require) {
                 return this.widgets;
             },
 
-            addToHistory: function (label, method, arguments,id) {
+            addToHistory: function (label, method, args, id) {
                 var elementPresentInHistory = false;
                 for (var i = 0; i < this.history.length; i++) {
                     if (this.history[i].label == label && this.history[i].method == method) {
@@ -81,7 +81,7 @@ define(function (require) {
                     this.history.unshift({
                         "label": label,
                         "method": method,
-                        "arguments": arguments,
+                        "arguments": args,
                     });
                 }
                 

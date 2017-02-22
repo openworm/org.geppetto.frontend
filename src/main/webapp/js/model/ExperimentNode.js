@@ -120,7 +120,7 @@ define(['backbone'], function (require) {
                     });
                 this.description = newdescription;
             } else {
-                return persistedAndWriteMessage(this);
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 
@@ -171,7 +171,7 @@ define(['backbone'], function (require) {
                     });
                 this.script = script;
             } else {
-                return persistedAndWriteMessage(this);
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 
@@ -189,7 +189,7 @@ define(['backbone'], function (require) {
                     });
                 this.name = newname;
             } else {
-                return persistedAndWriteMessage(this);
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 
@@ -238,7 +238,7 @@ define(['backbone'], function (require) {
                     && activeExperimentId == this.id) {
 
                 	this.setStatus(GEPPETTO.Resources.ExperimentStatus.RUNNING);
-                    GEPPETTO.trigger(Events.Experiment_running);
+                    GEPPETTO.trigger(GEPPETTO.Events.Experiment_running);
                     var parameters =
                     {};
                     parameters["experimentId"] = this.id;
@@ -246,7 +246,7 @@ define(['backbone'], function (require) {
                     GEPPETTO.MessageSocket.send("run_experiment", parameters);
                 }
             } else {
-                var message = persistedAndWriteMessage(this);
+                var message = GEPPETTO.Utility.persistedAndWriteMessage(this);
                 if (!this.runPermission) {
                     message = message + " and " + GEPPETTO.Resources.RUN_PRIVILEGES_NOT_SUPPORTED;
                 }
@@ -342,7 +342,7 @@ define(['backbone'], function (require) {
                 parameters["properties"] = properties;
                 GEPPETTO.MessageSocket.send("save_experiment_properties", parameters);
             } else {
-                return persistedAndWriteMessage(this);
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 
@@ -441,7 +441,7 @@ define(['backbone'], function (require) {
                 parameters["experimentId"] = this.id;
                 GEPPETTO.MessageSocket.send("clone_experiment", parameters);
             } else {
-                return persistedAndWriteMessage(this);
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 
@@ -455,7 +455,7 @@ define(['backbone'], function (require) {
 
                 return this;
             } else {
-                return persistedAndWriteMessage(this);
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 
@@ -479,7 +479,7 @@ define(['backbone'], function (require) {
                     return "Experiment isn't active, make it active before continuing upload";
                 }
             } else {
-                return persistedAndWriteMessage(this);
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 
@@ -503,7 +503,7 @@ define(['backbone'], function (require) {
                     return GEPPETTO.Resources.UNACTIVE_EXPERIMENT_UPLOAD;
                 }
             } else {
-                return persistedAndWriteMessage(this);
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 

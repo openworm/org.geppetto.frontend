@@ -40,8 +40,8 @@
  * @author Boris Marin
  */
 define(function (require) {
-    var AWidgetController = require('widgets/AWidgetController');
-    var Connectivity = require('widgets/connectivity/Connectivity');
+    var AWidgetController = require('../../AWidgetController');
+    var Connectivity = require('../Connectivity');
 
     /**
      * @exports Widgets/Connectivity/ConnectivityController
@@ -109,7 +109,5 @@ define(function (require) {
                 }
             }
         }
-
-
     });
 });

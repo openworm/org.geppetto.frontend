@@ -31,134 +31,31 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 /**
- * Loads all scripts needed for Geppetto
+ * Loads and runGeppetto core QUnit tests
  *
  * @author Jesus Martinez (jesus@metacell.us)
- * @author Matt Olson (matt@metacell.us)
+ * @author Giovanni (giovanni@metacell.us)
  */
 
 /*
  * Configure RequireJS. Values inside brackets mean those libraries are required prior
  * to loading the one one.
  */
-require.config({
+global.jQuery = require("jquery");
+var QUnit = require("qunitjs");
+var ProjectNode = require('./model/ProjectNode');
 
-    /*
-     * Values in here are for dependencies that more than one module/script requires and/or needs.
-     * E.G. If depenedency it's used more than once, it goes in here.
-     */
-    paths: {
-        'jquery': "vendor/jquery-1.9.1.min",
-        three: 'vendor/threeWrapper',
-        'd3': 'vendor/d3.min',
-        'codemirror': "vendor/codemirror.min",
-        'underscore': 'vendor/underscore.min',
-        'backbone': 'vendor/backbone.min',
-        'backbone-store': 'vendor/backbone-localStorage.min',
-        'geppetto': "GEPPETTO",
-        'QUnit': 'vendor/qunit',
-        react: 'vendor/react',
-        'react-dom': 'vendor/react-dom',
-        griddle: 'vendor/griddle',
-        jsx: 'vendor/jsx',
-        JSXTransformer: 'vendor/JSXTransformer',
-        text: 'vendor/text',
-        pako: 'vendor/pako.min',
-        mathjs: 'vendor/math.min'
-    },
-    /*
-     * Notes what dependencies are needed prior to loading each library, values on the right
-     * of colon are dependencies. If dependency was declared in path above, then add it's dependencies
-     * to that object in here.
-     */
-    shim: {
-        'vendor/jquery-ui.min': ["jquery"],
-        'vendor/postprocessing/EffectComposer': ['three'],
-        'vendor/TrackballControls': ["three"],
-        'vendor/THREEx.KeyboardState': ['three'],
-        'vendor/shaders/ConvolutionShader': ['three'],
-        'vendor/shaders/CopyShader': ['three'],
-        'vendor/shaders/FilmShader': ['three'],
-        'vendor/shaders/FocusShader': ['three'],
-        'vendor/postprocessing/MaskPass': ['three', 'vendor/postprocessing/EffectComposer'],
-        'vendor/postprocessing/RenderPass': ['three', 'vendor/postprocessing/EffectComposer'],
-        'vendor/postprocessing/BloomPass': ['three', 'vendor/postprocessing/EffectComposer'],
-        'vendor/postprocessing/ShaderPass': ['three', 'vendor/postprocessing/EffectComposer'],
-        'vendor/postprocessing/FilmPass': ['three', 'vendor/postprocessing/EffectComposer'],
-        'vendor/ColladaLoader': ['three'],
-        'vendor/OBJLoader': ['three'],
-        'vendor/ColorConverter': ["three"],
-        'vendor/bootstrap.min': ["jquery"],
-        'vendor/codemirror-formats.min': ["codemirror"],
-        'vendor/backbone-localStorage.min': ["backbone"],
-        'vendor/dat.gui.min': ["jquery"],
-        'vendor/stats.min': ["jquery"],
-        'vendor/Detector': ["jquery"],
-        'vendor/jquery.cookie': ["jquery"],
-        'vendor/rAF': ["jquery"],
-        'widgets/plot/vendor/jquery.flot.min': ['jquery'],
-        'widgets/plot/vendor/jquery.flot.resize.min': ['widgets/plot/vendor/jquery.flot.min'],
-        'widgets/plot/vendor/jquery.flot.axislabels.min': ['widgets/plot/vendor/jquery.flot.min'],
-        'QUnit': {
-            exports: 'QUnit',
-            deps: ['geppetto'],
-            init: function () {
-                QUnit.config.autoload = false;
-                QUnit.config.autostart = false;
-            }
-        }
+jQuery(function () {
+    window.GEPPETTO = require('geppetto');
+    window.Project = new ProjectNode({name: "Project", id: -1});
+    window.G = GEPPETTO.G;
+    window.Widgets = GEPPETTO.Widgets;
+    window.help = GEPPETTO.Utility.help;
 
-    }
-});
+    var QUnitGeppettoCoreTests = require('./tests/QUnitGeppettoCoreTests');
+    QUnitGeppettoCoreTests.run();
 
-/*
- * Adds all libs to an array
- */
-var jqueryLib = [];
-jqueryLib.push("jquery");
-jqueryLib.push("geppetto");
-jqueryLib.push("three");
-jqueryLib.push("d3");
-jqueryLib.push("vendor/THREEx.KeyboardState");
-jqueryLib.push("vendor/ColladaLoader");
-jqueryLib.push("vendor/OBJLoader");
-jqueryLib.push("vendor/jquery-ui.min");
-jqueryLib.push("vendor/TrackballControls");
-jqueryLib.push("vendor/ColorConverter");
-jqueryLib.push("vendor/bootstrap.min");
-jqueryLib.push("codemirror");
-jqueryLib.push("vendor/codemirror-formats.min");
-jqueryLib.push("vendor/dat.gui.min");
-jqueryLib.push("vendor/stats.min");
-jqueryLib.push("vendor/Detector");
-jqueryLib.push("vendor/jquery.cookie");
-jqueryLib.push("vendor/rAF");
-jqueryLib.push("pako");
-jqueryLib.push("mathjs");
-
-require(jqueryLib, function ($) {
-
-    var ProjectNode = require('model/ProjectNode');
-    $(function () {
-        window.GEPPETTO = require('geppetto');
-        var project = new ProjectNode({name: "Project", id: -1});
-        window.Project = project;
-        //Alias G, Simulation, and help() to global vars for easy access
-        window.G = GEPPETTO.G;
-        window.Widgets = GEPPETTO.Widgets;
-        window.help = GEPPETTO.Utility.help;
-
-        require(
-            ['QUnit', 'tests/QUnitGeppettoCoreTests'],
-            function (QUnit, geppettoCoreTests) {
-                // run the tests.
-                geppettoCoreTests.run();
-
-                // start QUnit.
-                QUnit.load();
-                QUnit.start();
-            }
-        );
-    });
-
+    // sacrifice a goat and start QUnit
+    QUnit.load();
+    QUnit.start();
 });

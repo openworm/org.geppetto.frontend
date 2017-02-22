@@ -42,8 +42,8 @@
  */
 define(function (require) {
 
-    var ObjectWrapper = require('model/ObjectWrapper');
-    var VisualGroupElement = require('model/VisualGroupElement');
+    var ObjectWrapper = require('./ObjectWrapper');
+    var VisualGroupElement = require('./VisualGroupElement');
 
 
     function VisualGroup(options) {
@@ -152,7 +152,7 @@ define(function (require) {
                     intensity = (elements[j].getValue() - this.minDensity) / (this.maxDensity - this.minDensity);
                 }
 
-                color = rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
+                color = GEPPETTO.Utility.rgbToHex(255, Math.floor(255 - (255 * intensity)), 0);
             }
             groups[elements[j].getId()].color = color;
         }

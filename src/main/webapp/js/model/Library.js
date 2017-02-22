@@ -38,8 +38,8 @@
  * @author Giovanni Idili
  */
 define(function (require) {
-    var ObjectWrapper = require('model/ObjectWrapper');
-    var ImportType = require('model/ImportType');
+    var ObjectWrapper = require('./ObjectWrapper');
+    var ImportType = require('./ImportType');
 
 
     function Library(options) {
@@ -86,7 +86,7 @@ define(function (require) {
     
     Library.prototype.resolveAllImportTypes = function (callback) {
     	if(this.importTypes.length>0){
-        	GEPPETTO.trigger(Events.Show_spinner, GEPPETTO.Resources.RESOLVING_TYPES);
+        	GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.RESOLVING_TYPES);
         	var b=[];
         	const BATCH = 50;
         	for(var i=0;i<this.importTypes.length;i++){
@@ -99,7 +99,7 @@ define(function (require) {
         		if(callback!=undefined){
         			callback();
         		} 
-        		GEPPETTO.trigger(Events.Hide_spinner);
+        		GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         	});
     	}
 

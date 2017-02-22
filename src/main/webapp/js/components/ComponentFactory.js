@@ -36,34 +36,34 @@ define(function (require) {
 
 		var React = require('react');
 		var ReactDOM = require('react-dom');
-		var spinner=require('jsx!./loadingspinner/LoadingSpinner');		
+		var spinner=require('./loadingspinner/LoadingSpinner.js');		
 
 		//All the components potentially instantiable go here
 		var components = {
-			'FORM':'jsx!components/dev/form/Form',
-			'PANEL':'jsx!components/dev/panel/Panel',
-			'LOGO':'jsx!components/dev/logo/Logo',
-			'LOADINGSPINNER':'jsx!./loadingspinner/LoadingSpinner',
-			'SAVECONTROL':'jsx!components/dev/save/SaveControl',
-			'PUBLICPROJECT' : 'jsx!components/dev/togglebutton/ToggleButton',
-			'CONTROLPANEL':'jsx!components/dev/controlpanel/controlpanel',
-			'SPOTLIGHT':'jsx!components/dev/spotlight/spotlight',
-			'CONTROLSMENUBUTTON':'jsx!components/dev/menubutton/MenuButton',
-			'FOREGROUND':'jsx!components/dev/foregroundcontrols/ForegroundControls',
-			'EXPERIMENTSTABLE':'jsx!components/dev/ExperimentsTable/ExperimentsTable',
-			'HOME':'jsx!components/dev/home/HomeControl',
-			'SIMULATIONCONTROLS':'jsx!components/dev/simulationcontrols/ExperimentControls',
-			'CAMERACONTROLS': 'jsx!./dev/cameracontrols/CameraControls',
-			'SHARE':'jsx!./dev/share/share',
-			'INFOMODAL':'jsx!components/popups/InfoModal',
-			'MDMODAL':'jsx!components/popups/MarkDownModal',
-			'QUERY':'jsx!./dev/query/query',
-			'TUTORIAL':'jsx!./dev/tutorial/TutorialModule',
-			'PYTHONCONSOLE': 'jsx!components/dev/PythonConsole/PythonConsole',
-			'CHECKBOX': 'jsx!components/dev/BasicComponents/Checkbox',
-			'TEXTFIELD': 'jsx!components/dev/BasicComponents/TextField',
-			'RAISEDBUTTON': 'jsx!components/dev/BasicComponents/RaisedButton'
-		};
+			'FORM':'dev/form/Form',
+			'PANEL':'dev/panel/Panel',
+			'LOGO':'dev/logo/Logo',
+			'LOADINGSPINNER':'loadingspinner/LoadingSpinner',
+			'SAVECONTROL':'dev/save/SaveControl',
+			'TOGGLEBUTTON' : 'dev/togglebutton/ToggleButton',
+			'CONTROLPANEL':'dev/controlpanel/controlpanel',
+			'SPOTLIGHT':'dev/spotlight/spotlight',
+			'MENUBUTTON':'dev/menubutton/MenuButton',
+			'FOREGROUND':'dev/foregroundcontrols/ForegroundControls',
+			'EXPERIMENTSTABLE':'dev/ExperimentsTable/ExperimentsTable',
+			'HOME':'dev/home/HomeControl',
+			'SIMULATIONCONTROLS':'dev/simulationcontrols/ExperimentControls',
+			'CAMERACONTROLS': 'dev/cameracontrols/CameraControls',
+			'SHARE':'dev/share/share',
+			'INFOMODAL':'popups/InfoModal',
+			'MDMODAL':'popups/MarkDownModal',
+			'QUERY':'dev/query/query',
+			'TUTORIAL':'dev/tutorial/TutorialModule',
+			'PYTHONCONSOLE': 'dev/PythonConsole/PythonConsole',
+			'CHECKBOX': 'dev/BasicComponents/Checkbox',
+			'TEXTFIELD': 'dev/BasicComponents/TextField',
+			'RAISEDBUTTON': 'dev/BasicComponents/RaisedButton'
+		}
 		
 	
 		GEPPETTO.ComponentFactory = {
@@ -75,7 +75,7 @@ define(function (require) {
 			
 			addComponent: function(componentID, properties, container, callback){
 				var that=this;
-				require([components[componentID]], function(loadedModule){
+				require(["./" + components[componentID]], function(loadedModule){
 					var component = React.createFactory(loadedModule)(properties)
 					var renderedComponent = that.renderComponent(component, container);
 					if(callback!=undefined){

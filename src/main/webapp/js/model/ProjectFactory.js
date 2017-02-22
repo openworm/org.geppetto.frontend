@@ -38,9 +38,9 @@
  */
 define(function (require) {
     return function (GEPPETTO) {
-        var ProjectNode = require('model/ProjectNode');
-        var ExperimentNode = require('model/ExperimentNode');
-        var SimulatorConfiguration = require('model/SimulatorConfiguration');
+        var ProjectNode = require('./ProjectNode');
+        var ExperimentNode = require('./ExperimentNode');
+        var SimulatorConfiguration = require('./SimulatorConfiguration');
 
         /**
          * @class GEPPETTO.RuntimeTreeFactory

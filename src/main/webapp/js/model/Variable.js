@@ -39,7 +39,7 @@
  */
 define(function (require) {
 
-    var ObjectWrapper = require('model/ObjectWrapper');
+    var ObjectWrapper = require('./ObjectWrapper');
 
     function Variable(options) {
         ObjectWrapper.prototype.constructor.call(this, options);

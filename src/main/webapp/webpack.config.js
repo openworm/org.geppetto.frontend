@@ -11,9 +11,11 @@ module.exports = {
 
   entry: {
     main: "./js/main.js",
-    coreTests: "./js/GeppettoCoreTests.js",
-    neuronalTests: "./js/GeppettoNeuronalTests.js",
-    persistenceTests: "./js/GeppettoPersistenceTests.js"
+    
+    // coreTests: "./js/GeppettoCoreTests.js",
+    // neuronalTests: "./js/GeppettoNeuronalTests.js",
+    // persistenceTests: "./js/GeppettoPersistenceTests.js"
+    
     // dashboard: "./dashboard/js/main.js",
   },
   output: {
@@ -24,7 +26,7 @@ module.exports = {
     publicPath: "/org.geppetto.frontend/geppetto/js/",
   },
 
-  devtool: 'source-map',
+
 
   resolve: {
     extensions: ['', '.js', '.json']

@@ -12,6 +12,7 @@ webpackBaseConfig.devServer = {
     colors: true,
     port: 8081,
     inline: true,
+    
     proxy: [
 //        { path: '/api/*', target: dhisConfig.baseUrl, bypass: log },
 //        { path: '/dhis-web-commons/*', target: dhisConfig.baseUrl, bypass: log },
@@ -25,5 +26,7 @@ webpackBaseConfig.devServer = {
 		{ path: '/org.geppetto.frontend', target: 'ws://localhost:8080', ws: true},
     ],
 };
+
+webpackBaseConfig.devtool = 'source-map';
 
 module.exports = webpackBaseConfig;

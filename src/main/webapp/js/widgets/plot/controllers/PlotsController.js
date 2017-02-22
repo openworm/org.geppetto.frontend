@@ -130,6 +130,15 @@ define(function (require) {
                     if (!this.isColorbar(plot) && plot.datasets.length > 0)
                         plot.updateDataSet(parameters.step, parameters.playAll);
                 }
+
+            }
+            else if (event == Events.Lit_entities_changed) {
+                for (var i = 0; i < this.widgets.length; i++) {
+                    var plot = this.widgets[i];
+                    if (GEPPETTO.G.litUpInstances.length == 0 && this.isColorbar(plot)) {
+                        plot.destroy();
+                    }
+                }
             }
         },
 

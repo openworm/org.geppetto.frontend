@@ -503,7 +503,10 @@ define(function (require) {
 		this.plotOptions.xaxis.range =[0,this.limit];
 	    }
 	    this.plotOptions.xaxis.autorange = this.xaxisAutoRange;
-	    this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+	    this.plotOptions.yaxis.autorange = this.yaxisAutoRange;
+	    if(!this.plotOptions.yaxis.autorange){
+		this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+	    }
 	    Plotly.relayout(this.plotDiv, this.plotOptions);
 	},
 
@@ -527,8 +530,7 @@ define(function (require) {
 	    timeSeriesData["x"] = xData;
 	    timeSeriesData["y"] = yData;
 
-            this.updateXAxisRange(timeSeriesX);
-	    this.updateYAxisRange(timeSeriesY);
+	    this.updateYAxisRange(timeSeriesX,timeSeriesY);
 	    return timeSeriesData;
 	},
 
@@ -543,25 +545,30 @@ define(function (require) {
             if (this.plotOptions.xaxis.max == undefined ||
                 this.plotOptions.xaxis.max == window.Instances.time.getTimeSeries().slice(-1)[0] ||
                 isNaN(this.plotOptions.xaxis.max))
-                
+
                 this.plotOptions.xaxis.max = Number.MIN_SAFE_INTEGER;
-            
+
 	    this.plotOptions.xaxis.min = Math.min(this.plotOptions.xaxis.min, localxmin);
 	    this.plotOptions.xaxis.max = Math.max(this.plotOptions.xaxis.max, localxmax);
 
 	    this.plotOptions.xaxis.range = [this.plotOptions.xaxis.min, this.plotOptions.xaxis.max];
         },
 
-	updateYAxisRange : function(timeSeriesY){
+
+	updateYAxisRange : function(timeSeriesX, timeSeriesY){
+	    var localxmin = Math.min.apply(null, timeSeriesX);
 	    var localymin = Math.min.apply(null, timeSeriesY);
 	    localymin = localymin - Math.abs(localymin * 0.1);
+	    var localxmax = Math.max.apply(null, timeSeriesX);
 	    var localymax = Math.max.apply(null, timeSeriesY);
 	    localymax = localymax + Math.abs(localymax * 0.1);
 
+	    this.plotOptions.xaxis.min = Math.min(this.plotOptions.xaxis.min, localxmin);
 	    this.plotOptions.yaxis.min = Math.min(this.plotOptions.yaxis.min, localymin);
+	    this.plotOptions.xaxis.max = Math.max(this.limit, localxmax);
 	    this.plotOptions.yaxis.max = Math.max(this.plotOptions.yaxis.max, localymax);
 
-	    this.plotOptions.yaxis.range = [this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+	    this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
 	},
 
 	/**
@@ -639,7 +646,6 @@ define(function (require) {
 			    oldDataY.splice(0,1);
 			    reIndex = true;
 			}
-
 			oldDataX.push(oldDataX.length);
 			oldDataY.push(newValue);
 
@@ -693,8 +699,7 @@ define(function (require) {
 
 		if(this.firstStep==0){
 		    for(var key =0; key<this.datasets.length;key++){
-                        this.updateXAxisRange(window.time.getTimeSeries());
-			this.updateYAxisRange(this.variables[this.getLegendInstancePath(this.datasets[key].name)].getTimeSeries());
+			this.updateYAxisRange(window.time,this.variables[this.getLegendInstancePath(this.datasets[key].name)].getTimeSeries());
 			this.updateAxis(this.datasets[key].name);
 		    }
 		    //redraws graph for play all mode
@@ -958,7 +963,7 @@ define(function (require) {
     		    originalInstancePath = key;
                 }
             }
-            
+
 	    return originalInstancePath;
 	},
 

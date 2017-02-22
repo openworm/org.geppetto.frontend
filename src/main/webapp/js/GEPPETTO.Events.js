@@ -72,6 +72,7 @@ var Events = {
     Show_spinner: "spinner:show",
     Hide_spinner: "spinner:hide",
     Color_set: "color:set",
+    Lit_entities_changed: "lit_entities_changed",
     Canvas_initialised: "canvas:initialised",
     Project_made_public : "project_made_public",
     Control_panel_open: "control_panel:open",
@@ -143,6 +144,9 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(Events.Experiment_update, parameters);
                 });
                 GEPPETTO.on(Events.Experiment_stop, function (parameters) {
+                });
+                GEPPETTO.on(Events.Lit_entities_changed, function (parameters) {
+                    GEPPETTO.WidgetsListener.update(Events.Lit_entities_changed, parameters);
                 });
             }
         };

@@ -537,6 +537,9 @@ define(function (require) {
              */
             addBrightnessFunctionBulkSimplified: function (instances, colorfn) {
             	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
+                for (var i=0; i<instances.length; ++i){
+                    this.litUpInstances.push(instances[i]);
+                }
             	var compositeToLit={};
             	var visualObjectsToLit={};
             	var variables={};
@@ -587,8 +590,8 @@ define(function (require) {
              * @param {Instance} instance - The instance to be lit
              */
             removeBrightnessFunctionBulkSimplified: function (instances) {
-                for (var index in instances){
-            		this.clearBrightnessFunctions(instances[index]);
+                while (instances.length > 0){
+            	    this.clearBrightnessFunctions(instances[0]);
             	}
 
                 // update flag
@@ -643,7 +646,7 @@ define(function (require) {
             },
             
             addBrightnessListener: function(instance, modulation, colorfn){
-                this.litUpInstances.push(Instances.getInstance(instance))
+                GEPPETTO.trigger(Events.Lit_entities_changed);
             	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
             		if(step<stateVariableInstance.getTimeSeries().length){
             		    GEPPETTO.SceneController.lightUpEntity(instance, colorfn, stateVariableInstance.getTimeSeries()[step]);
@@ -654,6 +657,7 @@ define(function (require) {
             clearBrightnessFunctions: function (varnode) {
                 var i = this.litUpInstances.indexOf(varnode);
                 this.litUpInstances.splice(i, 1);
+                GEPPETTO.trigger(Events.Lit_entities_changed);
                 if (this.litUpInstances.length == 0) {
                     this.brightnessFunctionSet = false;
                 }

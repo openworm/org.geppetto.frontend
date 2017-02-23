@@ -47,7 +47,7 @@
     "jupyter-js-widgets": "^1.2.0",
     "mathjs": "^3.5.3",
     "pako": "^1.0.3",
-    "pixi.js": "^4.2.3",
+    "pixi.js": "4.2.3",
     "plotly.js": "^1.20.5",
     "qunitjs": "^2.1.1",
     "react": "15.4.1",

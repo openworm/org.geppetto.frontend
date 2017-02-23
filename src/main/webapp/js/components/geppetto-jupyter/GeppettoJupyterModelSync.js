@@ -261,7 +261,7 @@ define(function (require, exports, module) {
 
 			var instances = this.createInstanceForStateVariables();
 
-			GEPPETTO.trigger(Events.Instances_created, instances);
+			GEPPETTO.trigger(GEPPETTO.Events.Instances_created, instances);
 
 			GEPPETTO.ExperimentsController.playExperimentReady = true;
 

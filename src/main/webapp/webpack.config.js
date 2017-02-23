@@ -1,6 +1,28 @@
 var packageJSON = require('./package.json');
 var path = require('path');
 var webpack = require('webpack');
+var nodeEnv = process.env.NODE_ENV || 'development';
+var publicPath = ((nodeEnv == 'development')?"/org.geppetto.frontend/":"/") + "geppetto/js/";
+
+
+// console.log(process)
+console.log(process.argv);
+console.log(publicPath);
+
+var generateTestsBundle = process.argv.indexOf('--noTest') == -1;
+console.log(generateTestsBundle);
+var entries = {
+    main: "./js/main.js"
+    // dashboard: "./dashboard/js/main.js",
+}
+if (generateTestsBundle){
+    entries['coreTests']= "./js/GeppettoCoreTests.js";
+    entries['neuronalTests']=  "./js/GeppettoNeuronalTests.js";
+    entries['persistenceTests']=  "./js/GeppettoPersistenceTests.js";
+}
+console.log(entries);
+
+
 
 //const PATHS = {
 //build: path.join(__dirname, 'target', 'classes', 'META-INF', 'resources', 'webjars', packageJSON.name, packageJSON.version)
@@ -9,21 +31,13 @@ var webpack = require('webpack');
 
 module.exports = {
 
-  entry: {
-    main: "./js/main.js",
-    
-    coreTests: "./js/GeppettoCoreTests.js",
-    neuronalTests: "./js/GeppettoNeuronalTests.js",
-    persistenceTests: "./js/GeppettoPersistenceTests.js"
-    
-    // dashboard: "./dashboard/js/main.js",
-  },
+  entry: entries,
   output: {
     //path: PATHS.build,
     path: './js/',
     //path: __dirname,
     filename: '[name].bundle.js',
-    publicPath: "/org.geppetto.frontend/geppetto/js/",
+    publicPath: publicPath,
   },
 
 

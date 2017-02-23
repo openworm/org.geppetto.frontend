@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack -p",
-    "build-dev": "webpack --devtool source-map",
+    "build-dev": "webpack --devtool eval",
     "start": "webpack-dev-server --config webpack.config.dev.js",
     "postinstall": "node -e \"var srcpath='../js/GEPPETTO.js'; var dstpath='node_modules/geppetto';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
   },

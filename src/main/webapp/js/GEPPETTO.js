@@ -495,7 +495,7 @@ define(function (require) {
     require('./websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
     require('./websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
     require('./websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
-    require('./geppetto-objects/G')(GEPPETTO);
+    require('./G')(GEPPETTO);
     require('./GEPPETTO.Main')(GEPPETTO);
     require("./widgets/includeWidget")(GEPPETTO);
     require('./model/ProjectFactory')(GEPPETTO);

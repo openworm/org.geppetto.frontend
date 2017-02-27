@@ -515,7 +515,7 @@ define(function (require) {
                     GEPPETTO.ModelFactory.addInstances(instancePaths, window.Instances, window.Model);
                 };
 
-                instances.getInstance = function (instancePath, create) {
+                instances.getInstance = function (instancePath, create, override) {
                     if (create == undefined) {
                         create = true;
                     }
@@ -548,13 +548,20 @@ define(function (require) {
 
 
                     for (var i = 0; i < instancePath.length; i++) {
+
                         try {
                             instances[i] = eval(InstanceVarName + instancePath[i]);
+                            
                             if (instances[i] == undefined) {
                                 if (create) {
                                     Instances.addInstances(instancePath[i]);
                                     instances[i] = eval(InstanceVarName + instancePath[i]);
                                 }
+                            }
+                            else if (override){
+                                GEPPETTO.ModelFactory.deleteInstance(instances[i]);
+                                Instances.addInstances(instancePath[i]);
+                                instances[i] = eval(InstanceVarName + instancePath[i]);
                             }
                         } catch (e) {
                             if (create) {
@@ -562,6 +569,7 @@ define(function (require) {
                                 instances[i] = eval(InstanceVarName + instancePath[i]);
                             }
                         }
+                        
                         if (instances[i] == undefined && create) {
                             throw( "The instance " + instancePath[i] + " does not exist in the current model" );
                         }

@@ -233,7 +233,7 @@ define(function (require, exports, module) {
 			//TODO: We wouldnt have to do this if it was Python backend sending an experimentStatus once javascript were to ask the server
 			//TODO: that in turn would create the instances for us, call ExperimentsController.updateExperiment, etc
 			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"));
+			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"), true, true);
 			var instances =  stateVariableInstances.concat(derivedStateVariableInstances)
 
 

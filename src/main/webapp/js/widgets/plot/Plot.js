@@ -311,8 +311,11 @@ define(function (require) {
 					
 					if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
 						timeSeriesData = this.getTimeSeriesData(instance,window.time);
-					}else{
-						plotable = false;
+					}
+					else{
+						//plotable = false;
+						timeSeriesData["x"] = [0];
+						timeSeriesData["y"] = [0];
 					}
 					
 					var label = instance.getInstancePath();
@@ -548,6 +551,8 @@ define(function (require) {
 			this.plotOptions.yaxis.max = Math.max(this.plotOptions.yaxis.max, localymax);
 
 			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+
+			console.log(this.plotOptions.yaxis)
 		},
 
 		/**

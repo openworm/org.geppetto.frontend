@@ -40,16 +40,8 @@ define(function (require) {
 
     var React = require('react'),
         $ = require('jquery'),
-        // typeahead = require('jquery-typeahead'),
-        // Bloodhound = require('bloodhound-js'),
-
-        // Bloodhound = require('bloodhound-js'),
-        // typeahead = require('typeahead.js'),
-
         typeahead = require("typeahead.js/dist/typeahead.jquery.min.js"),
         Bloodhound = require("typeahead.js/dist/bloodhound.min.js"),
-        
-
         Handlebars = require('handlebars'),
         GEPPETTO = require('geppetto');
 

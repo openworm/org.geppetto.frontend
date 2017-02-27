@@ -5,10 +5,10 @@ define(function (require, exports, module) {
 
 	var jupyter_widgets = require('jupyter-js-widgets');
 	
-	var PanelComp = require('../dev/panel/Panel');
-	var CheckboxComp = require('../dev/BasicComponents/Checkbox');
-	var TextFieldComp = require('../dev/BasicComponents/TextField');
-	var RaisedButtonComp = require('../dev/BasicComponents/RaisedButton');
+	var PanelComp = require('../panel/Panel');
+	var CheckboxComp = require('../basicComponents/Checkbox');
+	var TextFieldComp = require('../basicComponents/TextField');
+	var RaisedButtonComp = require('../basicComponents/RaisedButton');
 
 	var GEPPETTO = require('geppetto');
 

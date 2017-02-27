@@ -330,15 +330,11 @@ define(function (require) {
             loadColladaModelFromNode: function (node) {
                 var loader = new THREE.ColladaLoader();
                 loader.options.convertUpAxis = true;
-                var xmlParser = new DOMParser();
-                var responseXML = xmlParser.parseFromString(node.collada, "application/xml");
                 var scene = null;
-                loader.parse(responseXML, function (collada) {
+                loader.parse(node.collada, function (collada) {
                     scene = collada.scene;
                     scene.traverse(function (child) {
                         if (child instanceof THREE.Mesh) {
-                            child.material = GEPPETTO.SceneFactory.getMeshPhongMaterial();
-                            child.name = node.instancePath.split(".VisualizationTree")[0];
                             child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                             child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                             child.material.wireframe = GEPPETTO.SceneController.wireframe;

@@ -14,11 +14,12 @@ console.log(generateTestsBundle);
 var entries = {
     main: "./js/main.js"
     // dashboard: "./dashboard/js/main.js",
-}
+};
 if (generateTestsBundle){
     entries['coreTests']= "./js/GeppettoCoreTests.js";
     entries['neuronalTests']=  "./js/GeppettoNeuronalTests.js";
     entries['persistenceTests']=  "./js/GeppettoPersistenceTests.js";
+    entries['externalTests']=  "./js/GeppettoExternalSimulatorTests.js";
 }
 console.log(entries);
 

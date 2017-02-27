@@ -21,6 +21,7 @@ import org.geppetto.core.utilities.URLReader;
 import org.geppetto.frontend.tests.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -107,27 +108,31 @@ public class Application
 	}
 	
 	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
-	public String testNeuronal()
+	public String testNeuronal(Model model)
 	{
-		return "dist/GeppettoNeuronalTests";
+		model.addAttribute("testfile", new String("geppetto/js/neuronalTests.bundle.js"));
+		return "dist/GeppettoTests";
 	}
 	
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
-	public String testCore()
+	public String testCore(Model model)
 	{
-		return "dist/GeppettoCoreTests";
+		model.addAttribute("testfile", new String("geppetto/js/coreTests.bundle.js"));
+		return "dist/GeppettoTests";
 	}
 	
 	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
-	public String testExternalSimulator()
+	public String testExternalSimulator(Model model)
 	{
-		return "dist/GeppettoExternalSimulatorTests";
+		model.addAttribute("testfile", new String("geppetto/js/externalTests.bundle.js"));
+		return "dist/GeppettoTests";
 	}
 	
 	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
-	public String testPersistence()
+	public String testPersistence(Model model)
 	{
-		return "dist/GeppettoPersistenceTests";
+		model.addAttribute("testfile", new String("geppetto/js/persistenceTests.bundle.js"));
+		return "dist/GeppettoTests";
 	}
 	
 	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)

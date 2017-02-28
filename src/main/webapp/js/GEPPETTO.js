@@ -456,7 +456,7 @@ define(function (require) {
     require('./GEPPETTO.UserController')(GEPPETTO);
     require('./GEPPETTO.Flows')(GEPPETTO);
     require('./GEPPETTO.ScriptRunner')(GEPPETTO);
-    require('./GEPPETTO.JSEditor')(GEPPETTO);
+    require('./components/jsEditor/GEPPETTO.JSEditor')(GEPPETTO);
     require('./components/jsConsole/GEPPETTO.Console')(GEPPETTO);
     require('./GEPPETTO.Utility')(GEPPETTO);
     require('./widgets/MenuManager')(GEPPETTO);

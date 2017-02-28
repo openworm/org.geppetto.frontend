@@ -6,9 +6,7 @@ define(function (require) {
     return function (GEPPETTO) {
 
         var messageTypes = {
-            /*
-             * Messages handle by SimulatorHandler
-             */
+
             EXPERIMENT_UPDATE: "experiment_update",
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",

@@ -42,7 +42,7 @@
  */
 global.jQuery = require("jquery");
 var QUnit = require("qunitjs");
-var ProjectNode = require('./model/ProjectNode');
+var ProjectNode = require('./geppettoProject/model/ProjectNode');
 var qUnitFile = window.TestConfig.qUnitFile;
 
 jQuery(function () {

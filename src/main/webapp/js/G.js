@@ -44,7 +44,7 @@ define(function (require) {
         var debugMode = false;
         var $ = require('jquery'),
             React = require('react'),
-            ClipboardModal = require('../components/modals/ClipboardModal');
+            ClipboardModal = require('./components/modals/ClipboardModal');
 
         /**
          * @exports geppetto-objects/G
@@ -204,7 +204,7 @@ define(function (require) {
              * @returns {String} All commands and descriptions for G.
              */
             help: function () {
-                return GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/geppetto-objects/G.js", GEPPETTO.G, "G");
+                return GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/G.js", GEPPETTO.G, "G");
             },
 
             setIdleTimeOut: function (timeOut) {

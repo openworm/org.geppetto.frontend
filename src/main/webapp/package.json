@@ -4,11 +4,12 @@
   "description": "Geppetto web frontend. Geppetto is an open source platform to visualize and simulate biological models.",
   "repository": "http://git.geppetto.org",
   "license": "MIT",
-  "scripts": {
+"scripts": {
+ 
     "build": "NODE_ENV=production webpack -p --progress",
     "build-dev": "webpack --devtool eval",
-    "build-dev-noTest": "webpack --devtool eval --noTest",
-    "start": "webpack-dev-server --config webpack.config.dev.js",
+    "build-dev-noTest": "webpack --devtool eval --noTest",    
+    "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --config webpack.config.dev.js",
     "postinstall": "node -e \"var srcpath='../js/GEPPETTO.js'; var dstpath='node_modules/geppetto';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
   },
   "devDependencies": {

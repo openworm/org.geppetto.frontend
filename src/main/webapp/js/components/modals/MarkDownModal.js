@@ -43,7 +43,7 @@ define(function (require) {
 
     return React.createClass({
         mixins: [
-            require('../../mixins/bootstrap/modal.js')
+            require('../mixins/bootstrap/modal.js')
         ],
 
         getDefaultProps: function() {

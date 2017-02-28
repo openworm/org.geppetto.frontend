@@ -37,14 +37,6 @@ define(function(require) {
 
     var CameraControls = React.createClass({
 
-        mixins:[require('../../mixins/TutorialMixin')],
-
-        popoverTitle: 'Camera Controls',
-
-        popoverText: 'Use these controls to pan, rotate, and zoom the camera.',
-
-        popoverTemplate: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div><button class="btn btn-info tutorial-next"><i class="icon-check"></i></button></div>',
-
         panLeft: function() {
             GEPPETTO.Console.executeImplicitCommand('G.incrementCameraPan(-0.01, 0)');
         },
@@ -94,18 +86,7 @@ define(function(require) {
         },
 
         componentDidMount: function() {
-            GEPPETTO.on('start:tutorial', (function() {               
-                GEPPETTO.once('tutorial:cameracontrols', (function(){
-                    if(GEPPETTO.tutorialEnabled) {
-                        this.showPopover;
-                    }
-                }).bind(this)); 
 
-                $('.tutorial-next').click(function(){
-                    this.destroyPopover;
-                    GEPPETTO.trigger('tutorial:console');
-                }.bind(this));
-            }).bind(this));
         },
 
         render: function () {

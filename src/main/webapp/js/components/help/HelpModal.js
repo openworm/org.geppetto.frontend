@@ -33,12 +33,12 @@
 define(function (require) {
 
     var React = require('react'),
-        Button = require('../../mixins/bootstrap/button'),
+        Button = require('../mixins/bootstrap/button'),
         GEPPETTO = require('geppetto');
 
     return React.createClass({
         mixins: [
-            require('../../mixins/bootstrap/modal.js')
+            require('../mixins/bootstrap/modal.js')
         ],
 
         startTutorial: function() {

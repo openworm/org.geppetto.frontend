@@ -520,7 +520,7 @@ define(function (require) {
         initTypeAheadCreated : false,
         configuration: { DataSources: {} },
         mixins: [
-            require('../../mixins/bootstrap/modal.js')
+            require('../mixins/bootstrap/modal.js')
         ],
 
         defaultDataSources: function (q, sync) {

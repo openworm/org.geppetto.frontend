@@ -86,7 +86,7 @@ var jqueryLib = [
 ];
 
 require(jqueryLib, function () {
-    require(['components/admin'], function () {
+    require(['admin'], function () {
     });
 });
 

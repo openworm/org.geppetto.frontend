@@ -36,11 +36,7 @@ define(function (require) {
         GEPPETTO = require('geppetto');
 
     return React.createClass({
-        mixins: [require('../../../mixins/TutorialMixin'), require('../../../mixins/Button')],
-
-        popoverTitle: 'Play Experiment',
-
-        popoverContent: "Once you have loaded a simulation, it's time to see it in action by pressing Start. Click it now to see the simulation in action",
+        mixins: [require('../../mixins/Button')],
 
         componentDidMount: function () {
 

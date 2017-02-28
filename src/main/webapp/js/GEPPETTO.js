@@ -1,35 +1,3 @@
-/*******************************************************************************
- *
- * Copyright (c) 2011, 2013 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
 /**
  * GEPPETTO Visualisation engine built on top of THREE.js. Displays a scene as
  * defined on org.geppetto.core
@@ -47,11 +15,11 @@ define(function (require) {
     require('bootstrap');
 
     var isWebglEnabled = require('detector-webgl');
-    var THREEx = require('./vendor/THREEx.KeyboardState');
+
     var THREE = require('three');
-    require('./vendor/TrackballControls');
-    require('./vendor/OBJLoader');
-    
+    require('./components/3dCanvas/TrackballControls');
+    require('./components/3dCanvas/OBJLoader');
+    var THREEx = require('./components/3dCanvas/THREEx.KeyboardState');
     THREE.ColladaLoader = require('imports?THREE=three!exports?THREE.ColladaLoader!../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
     THREE.ConvolutionShader = require('imports?THREE=three!exports?THREE.ConvolutionShader!../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
     THREE.CopyShader = require('imports?THREE=three!exports?THREE.CopyShader!../node_modules\/three\/examples\/js\/shaders\/CopyShader');
@@ -135,10 +103,10 @@ define(function (require) {
          * @returns {Boolean} True or false, whether webgl is detected or not
          */
         webGLAvailable: function () {
-            if (isWebglEnabled){
+            if (isWebglEnabled) {
                 return true;
             }
-            else{
+            else {
                 Detector.addGetWebGLMessage();
                 return false;
             }
@@ -377,7 +345,7 @@ define(function (require) {
 
             var visibleChildren = [];
             GEPPETTO.getVARS().scene.traverse(function (child) {
-                if (child.visible && !(child.clickThrough==true)) {
+                if (child.visible && !(child.clickThrough == true)) {
                     if (child.geometry != null || undefined) {
                         child.geometry.computeBoundingBox();
                     }
@@ -478,31 +446,31 @@ define(function (require) {
 
     _.extend(GEPPETTO, Backbone.Events);
 
-    require('./SandboxConsole')(GEPPETTO);
+    require('./components/jsConsole/SandboxConsole')(GEPPETTO);
     require('./GEPPETTO.Resources')(GEPPETTO);
     require('./GEPPETTO.Events')(GEPPETTO);
     require('./GEPPETTO.Init')(GEPPETTO);
-    require('./3d_visualization/GEPPETTO.SceneFactory')(GEPPETTO);
-    require('./3d_visualization/GEPPETTO.SceneController')(GEPPETTO);
+    require('./components/3dCanvas/GEPPETTO.SceneFactory')(GEPPETTO);
+    require('./components/3dCanvas/GEPPETTO.SceneController')(GEPPETTO);
     require('./GEPPETTO.FE')(GEPPETTO);
     require('./GEPPETTO.UserController')(GEPPETTO);
     require('./GEPPETTO.Flows')(GEPPETTO);
     require('./GEPPETTO.ScriptRunner')(GEPPETTO);
     require('./GEPPETTO.JSEditor')(GEPPETTO);
-    require('./GEPPETTO.Console')(GEPPETTO);
+    require('./components/jsConsole/GEPPETTO.Console')(GEPPETTO);
     require('./GEPPETTO.Utility')(GEPPETTO);
-    require('./GEPPETTO.MenuManager')(GEPPETTO);
-    require('./websocket-handlers/GEPPETTO.MessageSocket')(GEPPETTO);
-    require('./websocket-handlers/GEPPETTO.GlobalHandler')(GEPPETTO);
-    require('./websocket-handlers/GEPPETTO.SimulationHandler')(GEPPETTO);
+    require('./widgets/MenuManager')(GEPPETTO);
+    require('./communication/MessageSocket')(GEPPETTO);
+    require('./communication/GEPPETTO.GlobalHandler')(GEPPETTO);
+    require('./communication/MessagesHandler')(GEPPETTO);
     require('./G')(GEPPETTO);
     require('./GEPPETTO.Main')(GEPPETTO);
     require("./widgets/includeWidget")(GEPPETTO);
-    require('./model/ProjectFactory')(GEPPETTO);
-    require('./model/ModelFactory')(GEPPETTO);
-    require('./model/ExperimentsController')(GEPPETTO);
-    require('./controllers/QueriesController')(GEPPETTO);
-    require('./controllers/ProjectsController')(GEPPETTO);
+    require('./geppettoProject/ProjectFactory')(GEPPETTO);
+    require('./geppettoModel/ModelFactory')(GEPPETTO);
+    require('./geppettoProject/ExperimentsController')(GEPPETTO);
+    require('./geppettoModel/QueriesController')(GEPPETTO);
+    require('./geppettoProject/ProjectsController')(GEPPETTO);
     require('./components/ComponentsController')(GEPPETTO);
 
     return GEPPETTO;

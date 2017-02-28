@@ -39,7 +39,7 @@ define(function (require) {
         HelpModal = require('../../help/HelpModal');
 
     return React.createClass({
-        mixins: [require('../../../mixins/Button')],
+        mixins: [require('../../mixins/Button')],
         
         componentDidMount: function() {
         	

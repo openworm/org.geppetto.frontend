@@ -36,9 +36,7 @@ define(function (require) {
         GEPPETTO = require('geppetto');
 
     return React.createClass({
-        mixins: [require('../../../mixins/TutorialMixin'), require('../../../mixins/Button')],
-
-        popoverTitle: 'Run Experiment',
+        mixins: [require('../../mixins/Button')],
 
         componentDidMount: function() {
         },

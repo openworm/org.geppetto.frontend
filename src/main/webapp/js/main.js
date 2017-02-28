@@ -37,9 +37,20 @@
  * @author Matt Olson (matt@metacell.us)
  * @author Adrian Quintana (adrian@metacell.us)
  */
-global.jQuery = require("jquery")
-require('./components/app');
+global.jQuery = require("jquery");
+
 var utils = require('./utils');
+
+var GEPPETTO = require('geppetto');
+
+require('./components/ComponentFactory')(GEPPETTO);
+require('./components/ComponentsController')(GEPPETTO);
+
+GEPPETTO.ComponentFactory.loadSpinner();
+
+//load extensions
+require('../extensions/extensions');
+
 
 jQuery(function () {
     window.GEPPETTO = require('geppetto');
@@ -52,29 +63,27 @@ jQuery(function () {
     window.help = GEPPETTO.Utility.help;
 
     // Load Project if needed
-	var command = "Project.loadFromURL";
-	var simParam = utils.getQueryStringParameter('load_project_from_url');
-	var expParam = utils.getQueryStringParameter('experimentId');
-	if (simParam == "") {
-		simParam = utils.getQueryStringParameter('load_project_from_id');
-		command = "Project.loadFromID";
-	}
+    var command = "Project.loadFromURL";
+    var simParam = utils.getQueryStringParameter('load_project_from_url');
+    var expParam = utils.getQueryStringParameter('experimentId');
+    if (simParam == "") {
+        simParam = utils.getQueryStringParameter('load_project_from_id');
+        command = "Project.loadFromID";
+    }
 
-	if (simParam == "") {
-		simParam = utils.getQueryStringParameter('load_project_from_content');
-		command = "Project.loadFromContent";
-	}
+    if (simParam == "") {
+        simParam = utils.getQueryStringParameter('load_project_from_content');
+        command = "Project.loadFromContent";
+    }
 
-	if (simParam) {
-		$(document).ready(
-			function() {
-				if (expParam) {
-					GEPPETTO.Console.executeCommand(command + '("'
-							+ simParam + '", "'+expParam+'")');
-				} else {
-					GEPPETTO.Console.executeCommand(command + '("'
-							+ simParam + '")');
-				}
-			});
-	}
+    if (simParam) {
+        $(document).ready(
+            function () {
+                if (expParam) {
+                    GEPPETTO.Console.executeCommand(command + '("' + simParam + '", "' + expParam + '")');
+                } else {
+                    GEPPETTO.Console.executeCommand(command + '("' + simParam + '")');
+                }
+            });
+    }
 });

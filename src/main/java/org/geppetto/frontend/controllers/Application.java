@@ -111,7 +111,7 @@ public class Application
 	public String testNeuronal(Model model)
 	{
 		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
-		model.addAttribute("qunitfile", new String("./tests/QUnitGeppettoNeuronalTests"));
+		model.addAttribute("qunitfile", new String("tests/QUnitGeppettoNeuronalTests"));
 		return "dist/GeppettoTests";
 	}
 	
@@ -119,7 +119,7 @@ public class Application
 	public String testCore(Model model)
 	{
 		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
-		model.addAttribute("qunitfile", new String("./tests/QUnitGeppettoCoreTests"));
+		model.addAttribute("qunitfile", new String("tests/QUnitGeppettoCoreTests"));
 		return "dist/GeppettoTests";
 	}
 	
@@ -127,7 +127,7 @@ public class Application
 	public String testExternalSimulator(Model model)
 	{
 		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
-		model.addAttribute("qunitfile", new String("./tests/QUnitExternalSimulatorTests"));
+		model.addAttribute("qunitfile", new String("tests/QUnitExternalSimulatorTests"));
 		return "dist/GeppettoTests";
 	}
 	
@@ -135,7 +135,7 @@ public class Application
 	public String testPersistence(Model model)
 	{
 		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
-		model.addAttribute("qunitfile", new String("./tests/QUnitPersistenceTests"));
+		model.addAttribute("qunitfile", new String("tests/QUnitPersistenceTests"));
 		return "dist/GeppettoTests";
 	}
 	

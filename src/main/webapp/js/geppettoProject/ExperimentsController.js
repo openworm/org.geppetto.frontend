@@ -1,4 +1,3 @@
-
 /**
  * Controller responsible to manage the experiments
  * TODO: Move to controllers folder
@@ -345,7 +344,7 @@ define(function (require) {
                     }
 
                     // create web worker
-                    this.worker = new Worker("geppetto/js/ExperimentWorker.js");
+                    this.worker = new Worker("geppetto/js/geppettoProject/ExperimentWorker.js");
 
                     // tells worker to update each half a second
                     this.worker.postMessage([GEPPETTO.Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);

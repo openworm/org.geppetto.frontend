@@ -40,20 +40,6 @@ module.exports = function(grunt) {
 					'src/main/webapp/templates/dist/GeppettoPersistenceTests-alt.vm': ['src/main/webapp/templates/GeppettoPersistenceTests-alt.vm'],
                     'src/main/webapp/templates/dist/GeppettoExternalSimulatorTests.vm': ['src/main/webapp/templates/GeppettoExternalSimulatorTests.vm']
                 }
-            },
-            dev: {
-                files: {
-                    'src/main/webapp/templates/dist/geppetto.vm': ['src/main/webapp/templates/geppetto.vm'],
-                    'src/main/webapp/templates/dist/dashboard.vm': ['src/main/webapp/templates/dashboard.vm'],
-                    'src/main/webapp/templates/dist/admin.vm': ['src/main/webapp/templates/admin.vm'],
-                    'src/main/webapp/templates/dist/GeppettoCoreTests.vm': ['src/main/webapp/templates/GeppettoCoreTests.vm'],
-                    'src/main/webapp/templates/dist/GeppettoFluidDynamicsTests.vm': ['src/main/webapp/templates/GeppettoFluidDynamicsTests.vm'],
-                    'src/main/webapp/templates/dist/GeppettoNeuronalCustomTests.vm': ['src/main/webapp/templates/GeppettoNeuronalCustomTests.vm'],
-                    'src/main/webapp/templates/dist/GeppettoNeuronalTests.vm': ['src/main/webapp/templates/GeppettoNeuronalTests.vm'],
-                    'src/main/webapp/templates/dist/GeppettoPersistenceTests.vm': ['src/main/webapp/templates/GeppettoPersistenceTests.vm'],
-					'src/main/webapp/templates/dist/GeppettoPersistenceTests.vm': ['src/main/webapp/templates/GeppettoPersistenceTests.vm'],
-                    'src/main/webapp/templates/dist/GeppettoExternalSimulatorTests.vm': ['src/main/webapp/templates/GeppettoExternalSimulatorTests.vm']
-                }
             }
         }
     });
@@ -61,9 +47,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-processhtml');
 
-    // Default task(s).
-    // FIXME: We are not using default/dev
-    grunt.registerTask('default', ['less', 'processhtml:dev']);
     grunt.registerTask('dist', ['less', 'processhtml:dist']);
 
 };

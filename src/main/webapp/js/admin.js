@@ -1,9 +1,7 @@
 /**
- * @class components/admin
+ * @class The Geppetto admin console
  */
 define(function(require) {
-
-	var $ = require('jquery');
 
 	var React = require('react');
 	var ReactDOM = require('react-dom');		

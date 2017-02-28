@@ -462,7 +462,7 @@ define(function (require) {
     require('./widgets/MenuManager')(GEPPETTO);
     require('./communication/MessageSocket')(GEPPETTO);
     require('./communication/GEPPETTO.GlobalHandler')(GEPPETTO);
-    require('./communication/MessagesHandler')(GEPPETTO);
+    require('./communication/MessageHandler')(GEPPETTO);
     require('./G')(GEPPETTO);
     require('./GEPPETTO.Main')(GEPPETTO);
     require("./widgets/includeWidget")(GEPPETTO);

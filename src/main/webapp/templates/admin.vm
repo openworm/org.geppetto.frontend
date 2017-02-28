@@ -19,7 +19,7 @@
     </script>
     /build -->
 
-    <script data-main="geppetto/js/main-admin.js" src="geppetto/js/vendor/require.js"></script>
+    <script charset="utf-8" src="geppetto/js/admin.bundle.js"></script>
 </head>
 <body>
 <div id="adminPanel"  class="hiddenStart" ></div>

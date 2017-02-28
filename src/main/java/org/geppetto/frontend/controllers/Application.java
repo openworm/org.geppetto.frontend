@@ -110,7 +110,8 @@ public class Application
 	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
 	public String testNeuronal(Model model)
 	{
-		model.addAttribute("testfile", new String("geppetto/js/neuronalTests.bundle.js"));
+		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
+		model.addAttribute("qunitfile", new String("./tests/QUnitGeppettoNeuronalTests"));
 		return "dist/GeppettoTests";
 	}
 	
@@ -125,14 +126,16 @@ public class Application
 	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
 	public String testExternalSimulator(Model model)
 	{
-		model.addAttribute("testfile", new String("geppetto/js/externalTests.bundle.js"));
+		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
+		model.addAttribute("qunitfile", new String("./tests/QUnitExternalSimulatorTests"));
 		return "dist/GeppettoTests";
 	}
 	
 	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
 	public String testPersistence(Model model)
 	{
-		model.addAttribute("testfile", new String("geppetto/js/persistenceTests.bundle.js"));
+		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
+		model.addAttribute("qunitfile", new String("./tests/QUnitPersistenceTests"));
 		return "dist/GeppettoTests";
 	}
 	

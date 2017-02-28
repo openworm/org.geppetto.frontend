@@ -16,10 +16,7 @@ var entries = {
     // dashboard: "./dashboard/js/main.js",
 };
 if (generateTestsBundle){
-    entries['coreTests']= "./js/GeppettoCoreTests.js";
-    entries['neuronalTests']=  "./js/GeppettoNeuronalTests.js";
-    entries['persistenceTests']=  "./js/GeppettoPersistenceTests.js";
-    entries['externalTests']=  "./js/GeppettoExternalSimulatorTests.js";
+    entries['tests']= "./js/GeppettoTests.js";
 }
 console.log(entries);
 
@@ -50,11 +47,7 @@ module.exports = {
 
   module: {
     loaders: [
-      
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: ['babel-loader'],
+      { test: /\.js$/, exclude: /node_modules/, loader: ['babel-loader'],
         query: {
           presets: ['react', 'es2015']
         }

@@ -109,17 +109,9 @@ define(function (require) {
                 else {
                     threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
-                var baseColor = threeObject.material.defaultColor;
-                var [r,g,b] = colorfn(intensity);
-                var tgtColor = new THREE.Color(r,g,b);
-             
-                if (threeObject instanceof THREE.Line) {
-                    threeObject.material.color = tgtColor;
-                } else {
-                    threeObject.material.emissive = tgtColor;
-                    threeObject.material.color = tgtColor;
-                }
 
+                var [r,g,b] = colorfn(intensity);
+                threeObject.material.color.setRGB(r,g,b);
             },
 
             /**

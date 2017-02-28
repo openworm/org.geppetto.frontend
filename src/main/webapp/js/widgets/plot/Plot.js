@@ -553,8 +553,6 @@ define(function (require) {
 			this.plotOptions.yaxis.max = Math.max(this.plotOptions.yaxis.max, localymax);
 
 			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
-
-			console.log(this.plotOptions.yaxis)
 		},
 
 		/**

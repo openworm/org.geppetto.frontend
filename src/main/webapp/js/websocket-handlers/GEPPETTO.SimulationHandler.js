@@ -548,10 +548,8 @@ define(function (require) {
 
 
                     for (var i = 0; i < instancePath.length; i++) {
-
                         try {
                             instances[i] = eval(InstanceVarName + instancePath[i]);
-                            
                             if (instances[i] == undefined) {
                                 if (create) {
                                     Instances.addInstances(instancePath[i]);
@@ -569,7 +567,6 @@ define(function (require) {
                                 instances[i] = eval(InstanceVarName + instancePath[i]);
                             }
                         }
-                        
                         if (instances[i] == undefined && create) {
                             throw( "The instance " + instancePath[i] + " does not exist in the current model" );
                         }

@@ -88,7 +88,6 @@ define(function (require, exports, module) {
 			}
 		},
 		plotXYData: function () {
-			//this.get('widget_object').resetPlot();
 			if (this.get('widget_object').datasets.length > 0){
 				this.get('widget_object').resetPlot(true);
 			}

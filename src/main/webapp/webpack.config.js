@@ -17,7 +17,7 @@ var entries = {
     // dashboard: "./dashboard/js/main.js",
 };
 if (generateTestsBundle) {
-    entries['tests'] = "./js/tests/qunit/GeppettoTests.js";
+    entries['tests'] = "./js/tests/qunit/QUnitTests.js";
 }
 console.log(entries);
 

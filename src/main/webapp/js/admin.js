@@ -3,6 +3,7 @@
  */
 define(function(require) {
 
+	window.$ = require('jquery');
 	var React = require('react');
 	var ReactDOM = require('react-dom');		
 	var adminPanel = React.createFactory(require('./components/adminPanel/AdminPanel'));

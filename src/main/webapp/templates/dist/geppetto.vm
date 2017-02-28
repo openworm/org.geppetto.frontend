@@ -45,7 +45,6 @@
 
     <!-- build:template:dist
         <link rel="stylesheet" type="text/css" href="geppetto/css/main.css" />
-        <script data-main="geppetto/js/main-built.js" src="geppetto/js/vendor/require.js"></script>
     /build -->
 
     <link rel="icon" type="image/png" href="geppetto/images/favicon.png"/>

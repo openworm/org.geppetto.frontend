@@ -1,6 +1,10 @@
 ##Run with
 
-`casperjs test geppetto-live.js --engine=slimerjs`
+`casperjs test LiveTests.js --engine=slimerjs`
+
+to test that Casper is properly installed.
+
+Run `casperjs test UITests.js --engine=slimerjs` to run Geppetto UI Tests.
 
 ##Prereqs
 

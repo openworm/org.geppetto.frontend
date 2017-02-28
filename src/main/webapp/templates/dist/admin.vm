@@ -17,9 +17,11 @@
     window.EMBEDDEDURL = "/";
     </script>
 
-    <script charset="utf-8" src="geppetto/js/admin.bundle.js"></script>
+
 </head>
 <body>
 	<div id="adminPanel"  class="hiddenStart" ></div>
+    <script charset="utf-8" src="geppetto/js/admin.bundle.js"></script>
 </body>
+
 </html>

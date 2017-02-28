@@ -314,8 +314,13 @@ define(function (require) {
 					
 					if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
 						timeSeriesData = this.getTimeSeriesData(instance,window.time);
-					}else{
-						plotable = false;
+					}
+					else{
+						timeSeriesData["x"] = [];
+						timeSeriesData["y"] = [0];
+						for (var i = 0; i< this.limit; i++){
+							timeSeriesData["x"].push([i]);
+						}
 					}
 					
 					var label = instance.getInstancePath();
@@ -523,7 +528,7 @@ define(function (require) {
 			var xData = [];
 			var yData = [];
 
-			if (timeSeriesY && timeSeriesY.length > 1 && timeSeriesX && timeSeriesX.length > 1) {
+			if (timeSeriesY && timeSeriesY.length > 0 && timeSeriesX && timeSeriesX.length > 0) {
 				for (var step = 0; step < timeSeriesX.length; step++) {
 					xData.push(timeSeriesX[step]);
 					yData.push(timeSeriesY[step]);

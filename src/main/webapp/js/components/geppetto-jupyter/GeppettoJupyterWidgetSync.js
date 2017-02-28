@@ -85,12 +85,14 @@ define(function (require, exports, module) {
 				this.get('widget_object').resetPlot(true);
 			}
 			for (var dataIndex in this.get('data')) {
-				var item = this.get('data')[dataIndex]
-				this.get('widget_object').plotData(eval(item))
+				var item = this.get('data')[dataIndex];
+				this.get('widget_object').plotData(eval(item));
 			}
 		},
 		plotXYData: function () {
-			//this.get('widget_object').resetPlot();
+			if (this.get('widget_object').datasets.length > 0){
+				this.get('widget_object').resetPlot(true);
+			}
 			this.get('widget_object').plotXYData(eval(this.get('data')[0]), eval(this.get('data')[1]))
 		}
 

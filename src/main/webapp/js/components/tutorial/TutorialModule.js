@@ -126,7 +126,7 @@ define(function (require) {
 			//execute action associated with message
 			if(action!=null || undefined){
 				if(action!=""){
-					GEPPETTO.ComponentsController.executeAction(action);
+					eval(action);
 				}
 			}
 		},

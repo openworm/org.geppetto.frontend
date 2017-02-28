@@ -44,7 +44,6 @@ var utils = require('./utils');
 var GEPPETTO = require('geppetto');
 
 require('./components/ComponentFactory')(GEPPETTO);
-require('./components/ComponentsController')(GEPPETTO);
 
 GEPPETTO.ComponentFactory.loadSpinner();
 

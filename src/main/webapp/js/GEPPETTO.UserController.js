@@ -51,6 +51,22 @@ define(function(require)
             	return false;
             },
 
+
+            hasWritePermissions : function(){
+                var hasPermission = false;
+
+                if(
+                    this.isLoggedIn() &&
+                    this.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) &&
+                    window.Project != undefined &&
+                    window.Project.persisted
+                ){
+                    hasPermission = true;
+                }
+
+                return hasPermission;
+            },
+
             canUserEditExperiment: function(){
                 var hasPermission = false;
 

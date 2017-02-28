@@ -471,7 +471,6 @@ define(function (require) {
     require('./geppettoProject/ExperimentsController')(GEPPETTO);
     require('./geppettoModel/QueriesController')(GEPPETTO);
     require('./geppettoProject/ProjectsController')(GEPPETTO);
-    require('./components/ComponentsController')(GEPPETTO);
 
     return GEPPETTO;
 

@@ -764,7 +764,7 @@ define(function (require) {
             var rownumber = 1;
             this.state.experiments.forEach(function (experiment) {
                 if (experiment != null) {
-                    var editablePermissions = GEPPETTO.ComponentsController.permissions();
+                    var editablePermissions = GEPPETTO.UserController.hasWritePermissions();
                     var editable = false;
                     
                     if(!editablePermissions){

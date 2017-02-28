@@ -117,7 +117,8 @@ public class Application
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
 	public String testCore(Model model)
 	{
-		model.addAttribute("testfile", new String("geppetto/js/coreTests.bundle.js"));
+		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
+		model.addAttribute("qunitfile", new String("./tests/QUnitGeppettoCoreTests"));
 		return "dist/GeppettoTests";
 	}
 	

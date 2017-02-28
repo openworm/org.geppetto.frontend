@@ -142,7 +142,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
                 //Good pattern for checking the absence of an attribute
                 test.assertEvalEquals(function () {
-                    return require('utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
+                    return require('../../utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
                 }, null, "The persist button is correctly active.");
 
                 //Click persist button. Check things again

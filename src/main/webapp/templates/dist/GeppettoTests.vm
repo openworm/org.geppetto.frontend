@@ -44,7 +44,7 @@
     <script type="text/template" id="tplDebug"><span class="<%= _class %>"><%= result %></span></script>
     <script charset="utf-8">
         window.TestConfig = {
-            qUnitFile = "$qunitfile"
+            qUnitFile: "$qunitfile"
         }
     </script>
     <script charset="utf-8" src="$testfile"></script>

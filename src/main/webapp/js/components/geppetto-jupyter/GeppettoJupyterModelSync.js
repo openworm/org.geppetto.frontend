@@ -239,7 +239,7 @@ define(function (require, exports, module) {
 			// Hack to set time series at the instance level
 			for (var instanceIndex in instances){
 				var timeSeries = instances[instanceIndex].getVariable().getWrappedObj().timeSeries
-				instances[instanceIndex].timeSeries = (timeSeries.length == 0)?null:timeSeries;
+				instances[instanceIndex].setTimeSeries((timeSeries.length == 0)?null:timeSeries);
 			}
 
 			GEPPETTO.ExperimentsController.watchVariables(instances, true);

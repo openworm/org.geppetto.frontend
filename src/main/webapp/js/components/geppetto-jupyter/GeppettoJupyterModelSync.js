@@ -234,7 +234,13 @@ define(function (require, exports, module) {
 			// Force Derived State Variables to be override
 			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
 			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"), true, true);
-			var instances =  stateVariableInstances.concat(derivedStateVariableInstances)
+			var instances =  stateVariableInstances.concat(derivedStateVariableInstances);
+
+			// Hack to set time series at the instance level
+			for (var instanceIndex in instances){
+				var timeSeries = instances[instanceIndex].getVariable().getWrappedObj().timeSeries
+				instances[instanceIndex].setTimeSeries((timeSeries.length == 0)?null:timeSeries);
+			}
 
 			GEPPETTO.ExperimentsController.watchVariables(instances, true);
 			this.setGeppettoInstance(instances);

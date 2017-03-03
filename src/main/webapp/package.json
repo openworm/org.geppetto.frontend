@@ -5,11 +5,11 @@
   "repository": "http://git.geppetto.org",
   "license": "MIT",
   "scripts": {
-    "build": "NODE_ENV=production webpack -p --progress",
+    "build": "webpack -p --progress eval",
     "build-dev": "webpack --devtool eval",
     "build-dev-noTest": "webpack --devtool eval --noTest",
-    "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --config webpack.config.dev.js",
-    "postinstall": "node -e \"var srcpath='../js/GEPPETTO.js'; var dstpath='node_modules/geppetto';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
+    "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --config webpack.config.dev.js --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/",
+    "postinstall": "node -e \"var srcpath='../js/pages/geppetto/GEPPETTO.js'; var dstpath='node_modules/geppetto';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
   },
   "devDependencies": {
     "anchorme": "^0.7.1",
@@ -70,5 +70,8 @@
     "velocity.java": "^1.3.1",
     "webpack": "1.13.2",
     "webpack-dev-server": "^1.16.2"
+  },
+  "dependencies": {
+    "handlebars-loader": "^1.4.0"
   }
 }

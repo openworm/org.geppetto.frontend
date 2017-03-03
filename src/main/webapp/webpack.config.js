@@ -1,4 +1,3 @@
-var packageJSON = require('./package.json');
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -33,12 +32,12 @@ console.log("\nThe public path (used by the main bundle when including split bun
 
 
 var entries = {
-    main: "./js/main.js",
-    admin: "./js/admin.js",
+    main: "./js/pages/geppetto/main.js",
+    admin: "./js/pages/admin/admin.js",
 
 };
 if (generateTestsBundle) {
-    entries['tests'] = "./js/tests/qunit/QUnitTests.js";
+    entries['tests'] = "./js/pages/tests/qunit/QUnitTests.js";
 }
 
 console.log("The Webpack entries are:\n");
@@ -56,7 +55,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             filename: 'geppetto.vm',
-            template: 'templates/geppetto.ejs',
+            template: './js/pages/geppetto/geppetto.ejs',
             contextPath: contextPath,
             embedded: embedded,
             useSsl: useSsl,
@@ -66,7 +65,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: 'admin.vm',
-            template: 'templates/admin.ejs',
+            template: './js/pages/admin/admin.ejs',
             contextPath: contextPath,
             embedded: embedded,
             useSsl: useSsl,
@@ -76,7 +75,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: 'dashboard.vm',
-            template: 'templates/dashboard.ejs',
+            template: './js/pages/dashboard/dashboard.ejs',
             contextPath: contextPath,
             embedded: embedded,
             useSsl: useSsl,
@@ -85,7 +84,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: 'tests.vm',
-            template: 'templates/tests.ejs',
+            template: './js/pages/tests/tests.ejs',
             contextPath: contextPath,
             embedded: embedded,
             useSsl: useSsl,
@@ -93,8 +92,8 @@ module.exports = {
             chunks: []
         }),
         new HtmlWebpackPlugin({
-            filename: 'geppettoTests.vm',
-            template: 'templates/geppettoTests.ejs',
+            filename: 'qunitTest.vm',
+            template: './js/pages/tests/qunitTest.ejs',
             contextPath: contextPath,
             embedded: embedded,
             useSsl: useSsl,
@@ -104,7 +103,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: '../WEB-INF/web.xml',
-            template: 'templates/web.ejs',
+            template: './WEB-INF/web.ejs',
             contextPath: contextPath,
             embedded: embedded,
             useSsl: useSsl,
@@ -120,7 +119,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.(js)$/, exclude: [/node_modules/, /\.bundle/], loader: ['babel-loader'],
+                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, "/js/components/views/dashboard/".replace(/[^\/]*$/, "")], loader: ['babel-loader'],
                 query: {
                     presets: ['react', 'es2015']
                 }
@@ -130,7 +129,7 @@ module.exports = {
                 loader: "json-loader"
             },
             {
-                test: /\.(py|png|svg|gif|css|jpg|md|map)$/,
+                test: /\.(py|png|svg|gif|css|jpg|md|hbs)$/,
                 loader: 'ignore-loader'
             },
             {   test: /\.css$/,

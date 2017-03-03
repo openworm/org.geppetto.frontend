@@ -111,28 +111,28 @@ public class Application
 	public String testNeuronal(Model model)
 	{
 		model.addAttribute("qunitfile", new String("NeuronalTests"));
-		return "geppettoTests";
+		return "qunitTest";
 	}
 	
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
 	public String testCore(Model model)
 	{
 		model.addAttribute("qunitfile", new String("CoreTests"));
-		return "geppettoTests";
+		return "qunitTest";
 	}
 	
 	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
 	public String testExternalSimulator(Model model)
 	{
 		model.addAttribute("qunitfile", new String("ExternalSimulatorTests"));
-		return "geppettoTests";
+		return "qunitTest";
 	}
 	
 	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
 	public String testPersistence(Model model)
 	{
 		model.addAttribute("qunitfile", new String("PersistenceTests"));
-		return "geppettoTests";
+		return "qunitTest";
 	}
 	
 	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)

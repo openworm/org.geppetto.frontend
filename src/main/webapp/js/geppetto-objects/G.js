@@ -648,7 +648,8 @@ define(function (require) {
             addBrightnessListener: function(instance, modulation, colorfn){
                 GEPPETTO.trigger(Events.Lit_entities_changed);
             	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
-            		if(step<stateVariableInstance.getTimeSeries().length){
+            	    if((stateVariableInstance.getTimeSeries() != undefined) &&
+                       (step<stateVariableInstance.getTimeSeries().length)){
             		    GEPPETTO.SceneController.lightUpEntity(instance, colorfn, stateVariableInstance.getTimeSeries()[step]);
             		}
                 });

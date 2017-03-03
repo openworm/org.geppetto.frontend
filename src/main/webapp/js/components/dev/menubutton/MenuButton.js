@@ -54,7 +54,6 @@ define(function (require) {
                     action = condition ? this.props.item.true.action : this.props.item.false.action;
                     // assign icon status
                     iconState = condition ? this.icons.unchecked : this.icons.checked;
-                    this.setState({icon: iconState});
                 } else {
                     throw( "The condition [" + this.props.item.condition + "] doesn't resolve to a boolean" );
                 }
@@ -68,6 +67,7 @@ define(function (require) {
                 GEPPETTO.Console.executeImplicitCommand(action);
             }
 
+            this.setState({icon: iconState});
         },
 
         componentDidMount: function () {
@@ -163,9 +163,9 @@ define(function (require) {
                 for (var key in this.refs) {
                     var ref = this.refs[key];
                     if ((ref.props.item.value != value) &&
-                        (ref.getIconState() == ref.icons.checked) &&
+                        (ref.state.icon == ref.icons.checked) &&
                         ref.props.item.radio) {
-                        ref.select()
+                        ref.select();
                     }
                 }
             }

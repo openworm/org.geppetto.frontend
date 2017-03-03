@@ -379,7 +379,7 @@ define(function (require) {
             }
 
 	    if(plotable){
-	        plotGeneric();
+	        this.plotGeneric();
 	    }
 
 	    return this;

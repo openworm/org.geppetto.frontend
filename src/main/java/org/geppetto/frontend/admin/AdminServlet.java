@@ -44,7 +44,7 @@ public class AdminServlet
 			List<UserPrivileges> privileges = user.getUserGroup().getPrivileges();
 			if(privileges.contains(UserPrivileges.ADMIN))
 			{
-				return "dist/admin";
+				return "admin";
 			}
 		}
 

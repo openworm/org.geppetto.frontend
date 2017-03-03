@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>geppetto</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="geppetto/style/css/custom-theme/jquery-ui-1.10.0.custom.css"/>
+    <link rel="stylesheet" href="geppetto/style/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="geppetto/style/css/codemirror.css"/>
+    <link rel="stylesheet" href="geppetto/style/css/lesser-dark.css"/>
+    <link rel="stylesheet" href="geppetto/style/css/jsConsole.css"/>
+    <link rel="stylesheet" href="geppetto/style/css/gpt-icons.css"/>
+
+
+    <script>
+        window.BUNDLE_CONTEXT_PATH = "<%=htmlWebpackPlugin.options.contextPath%>";
+        window.USE_SSL = <%=htmlWebpackPlugin.options.useSsl%>;
+        window.EMBEDDED = <%=htmlWebpackPlugin.options.embedded%>;
+        window.EMBEDDEDURL = "<%=htmlWebpackPlugin.options.embedderURL%>".split(",");
+    </script>
+
+    <link rel="icon" type="image/png" href="geppetto/images/favicon.png"/>
+</head>
+<body>
+
+<div id="modal-region"></div>
+<div id="load-spinner"></div>
+
+<div id="controls" class="noSelection">
+
+    <div id="SaveButton" class="row"></div>
+    <div id="PublicProject" class="row"></div>
+    <div id="HomeButton" class="row"></div>
+    <div id="ControlsMenuButton" class="row"></div>
+    <div id="sim-toolbar" class="row"></div>
+    <div id="tutorial"></div>
+    <div id="camera-controls"></div>
+    <div id="foreground-toolbar" class="row"></div>
+    <div id="github">
+        <a href="https://github.com/openworm/org.geppetto" target="_blank">
+            <icon class="fa fa-github" id="git"></icon>
+        </a>
+    </div>
+</div>
+
+<div id="mainContainer">
+    <div id="geppettologo" class="noSelection"></div>
+    <div id="spotlight" class="hiddenStart"></div>
+    <div id="controlpanel" class="hiddenStart"></div>
+    <div id="querybuilder" class="hiddenStart"></div>
+    <div id="sim" class="noSelection"></div>
+
+    <div id="footer">
+        <div id="footerHeader">
+            <div id="consoleButtonContainer">
+                <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
+                    <li role="presentation" class="active" id="consoleButton"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i> Console</a></li>
+                    <li role="presentation" id="experimentsButton" style="display:none"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>Experiments</a></li>
+                    <li role="presentation" id="pythonConsoleButton" style="display:none"><a href="#pythonConsole" aria-controls="pythonConsole" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i> Python</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="console">Console Loading...</div>
+                    <div role="tabpanel" id="experiments" class="tab-pane panel panel-default"></div>
+                    <div role="tabpanel" id="pythonConsole" class="tab-pane  panel panel-default"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="share-button"></div>
+
+<script>
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-45841517-1']);
+    _gaq.push(['_trackPageview']);
+    (function () {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-45841517-1', 'geppetto.org');
+    ga('send', 'pageview');
+</script>
+
+<script charset="utf-8" type="text/javascript" src="geppetto/build/main.bundle.js"></script>
+</body>
+</html>

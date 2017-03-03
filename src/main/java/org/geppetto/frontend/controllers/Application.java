@@ -85,7 +85,7 @@ public class Application
 			}
 			if(auth)
 			{
-				return "dist/geppetto";
+				return "geppetto";
 			}
 			else
 			{
@@ -110,45 +110,41 @@ public class Application
 	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
 	public String testNeuronal(Model model)
 	{
-		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
 		model.addAttribute("qunitfile", new String("NeuronalTests"));
-		return "dist/GeppettoTests";
+		return "geppettoTests";
 	}
 	
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
 	public String testCore(Model model)
 	{
-		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
 		model.addAttribute("qunitfile", new String("CoreTests"));
-		return "dist/GeppettoTests";
+		return "geppettoTests";
 	}
 	
 	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
 	public String testExternalSimulator(Model model)
 	{
-		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
 		model.addAttribute("qunitfile", new String("ExternalSimulatorTests"));
-		return "dist/GeppettoTests";
+		return "geppettoTests";
 	}
 	
 	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
 	public String testPersistence(Model model)
 	{
-		model.addAttribute("testfile", new String("geppetto/js/tests.bundle.js"));
 		model.addAttribute("qunitfile", new String("PersistenceTests"));
-		return "dist/GeppettoTests";
+		return "geppettoTests";
 	}
 	
 	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)
 	public String tests()
 	{
-		return "dist/tests";
+		return "tests";
 	}
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String dashboard()
 	{
-		return "dist/dashboard";
+		return "dashboard";
 	}
 
 }

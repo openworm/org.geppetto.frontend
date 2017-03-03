@@ -12,17 +12,16 @@
     <link rel="stylesheet" href="./geppetto/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="./geppetto/css/gpt-icons.css"/>
 
-    <!-- build:template
-    <script>
-    	window.EMBEDDED = <%= embedded %>;
-    	window.EMBEDDEDURL = "<%= embedderURL %>".split(",");
-    </script>
-    /build -->
 
+    <script>
+        window.EMBEDDED = <%=htmlWebpackPlugin.options.embedded%>;
+        window.EMBEDDEDURL = "<%=htmlWebpackPlugin.options.embedderURL%>".split(",");
+    </script>
 
 </head>
 <body>
 <div id="adminPanel" class="hiddenStart"></div>
-<script charset="utf-8" src="geppetto/js/admin.bundle.js"></script>
+
+<script charset="utf-8" type="text/javascript" src="geppetto/build/admin.bundle.js"></script>
 </body>
 </html>

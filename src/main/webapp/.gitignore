@@ -1,2 +1,3 @@
 /jsdocs/
-/js/*.bundle.js*
+/build/*
+/WEB-INF/web.xml 

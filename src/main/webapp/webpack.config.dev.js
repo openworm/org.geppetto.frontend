@@ -12,7 +12,7 @@ webpackBaseConfig.devServer = {
     colors: true,
     port: 8081,
     inline: true,
-    
+
     proxy: [
 //		{ path: '/geppetto', target: 'http://localhost:8081', pathRewrite: {'^/geppetto' : ''}},
 		//{ path: '/geppetto', target: 'http://localhost:8080/org.geppetto.frontend', bypass: log },

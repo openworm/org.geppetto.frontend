@@ -39,6 +39,9 @@
  */
 global.jQuery = require("jquery");
 
+//Styling
+require('../style/less/main.less');
+
 var utils = require('./utils');
 
 var GEPPETTO = require('geppetto');

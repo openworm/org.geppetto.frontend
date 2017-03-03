@@ -4,7 +4,8 @@ define(function (require) {
         var registeredItems = {};
 
         var _ = require('underscore');
-
+        var templates = require('./contextMenuTemplate.js');
+        
         /*
          * MODELS AND COLLECTIONS
          */
@@ -60,7 +61,7 @@ define(function (require) {
          * VIEWS
          */
         var ContextMenuViewItems = Backbone.View.extend({
-            template: _.template($('#tplContextMenuItems').html()),
+            template: _.template(templates.tplContextMenuItems),
 
             events: {
                 'click': 'testing'
@@ -76,8 +77,6 @@ define(function (require) {
             render: function () {
 
                 this.$el.append(this.template(this.items.toJSON()));
-
-//				this.$el.html(this.template());	   
 
                 registeredItems[this.$el.find("li").attr("id")] = {
                     action: this.items.get("action"),
@@ -123,7 +122,7 @@ define(function (require) {
          */
         GEPPETTO.ContextMenuView = Backbone.View.extend({
             className: 'contextMenuView',
-            template: _.template($('#tplContextMenu').html()),
+            template: _.template(templates.tplContextMenu),
             closeOnClick : true,
             parentSelector: 'body',
 

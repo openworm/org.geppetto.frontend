@@ -12,6 +12,7 @@ define(function (require) {
         var lastKeypressTime = 0;
         var doubleTab = false;
         var Backbone = require('backbone');
+        var templates = require('./templates.js');
         var $ = require('jquery');
         var _ = require('underscore');
 
@@ -149,9 +150,9 @@ define(function (require) {
                 },
 
                 // The templating functions for the View and each history item
-                template: _.template($('#tplSandbox').html()),
-                format: _.template($('#tplCommand').html()),
-                formatDebug: _.template($('#tplDebug').html()),
+                template: _.template(templates.tplSandbox),
+                format: _.template(templates.tplCommand),
+                formatDebug: _.template(templates.tplDebug),
 
                 // Renders the Sandbox View initially and stores references to the elements
                 render: function () {

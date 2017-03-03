@@ -14,6 +14,7 @@ define(function (require) {
     require('jquery-ui');
     require('bootstrap');
 
+
     var isWebglEnabled = require('detector-webgl');
 
     var THREE = require('three');

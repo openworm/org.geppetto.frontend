@@ -53,18 +53,6 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>grunt build</id>
-								<goals>
-									<goal>grunt</goal>
-								</goals>
-								<configuration>
-									<arguments>dist --contextPath ${contextPath} --useSsl ${useSsl}
-										--embedded ${embedded} --embedderURL ${embedderURL}</arguments>
-									<workingDirectory></workingDirectory>
-								</configuration>
-								<phase>generate-resources</phase>
-							</execution>
-							<execution>
 								<id>install node and npm webapp</id>
 								<goals>
 									<goal>install-node-and-npm</goal>
@@ -91,7 +79,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build</arguments>
+									<arguments>run build-dev  -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
 									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
@@ -147,7 +135,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build-dev</arguments>
+									<arguments>run build-dev  -- --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/</arguments>
 								</configuration>
 							</execution>
 						</executions>

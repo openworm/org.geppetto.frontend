@@ -1,5 +1,4 @@
 var express = require('express');
-//var Engine = require("velocity").Engine;
 var velocity = require("velocity.java");
 var app = express();
 var expressWs = require('express-ws')(app)
@@ -9,7 +8,7 @@ app.use('/geppetto', express.static(__dirname + '/'));
 
 // Web handler
 app.get('/', function (req, res) {
-	velocity.renderOnce("geppetto.vm", {}, "templates/dist/", function(err, data) {
+	velocity.renderOnce("geppetto.vm", {}, "build/", function(err, data) {
 	    if (err) {
 	        console.error(err);
 	        return;
@@ -26,7 +25,7 @@ app.ws('/org.geppetto.frontend/GeppettoServlet', function(ws, req) {
 		if (msgParsed['type'] == 'geppetto_version'){
 			//Where do we get the geppetto version from?
 			console.log("Geppetto Version...")
-			ws.send(JSON.stringify({"requestID":msgParsed['requestID'],"type":"geppetto_version","data":"{\"geppetto_version\":\"0.3.1\"}"}));
+			ws.send(JSON.stringify({"requestID":msgParsed['requestID'],"type":"geppetto_version","data":"{\"geppetto_version\":\"0.3.4\"}"}));
 		}
 	
 	});

@@ -14,10 +14,7 @@ webpackBaseConfig.devServer = {
     inline: true,
 
     proxy: [
-//		{ path: '/geppetto', target: 'http://localhost:8081', pathRewrite: {'^/geppetto' : ''}},
-		//{ path: '/geppetto', target: 'http://localhost:8080/org.geppetto.frontend', bypass: log },
 		{ path: '/geppetto', target: 'http://localhost:8080/org.geppetto.frontend'},
-//		{ path: '/GeppettoServlet', target: 'ws://localhost:8080', ws: true},
 		{ path: '/org.geppetto.frontend', target: 'ws://localhost:8080', ws: true},
     ],
 };

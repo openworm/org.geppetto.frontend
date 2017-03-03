@@ -119,7 +119,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, "/js/components/views/dashboard/".replace(/[^\/]*$/, "")], loader: ['babel-loader'],
+                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, ], loader: ['babel-loader'],
                 query: {
                     presets: ['react', 'es2015']
                 }

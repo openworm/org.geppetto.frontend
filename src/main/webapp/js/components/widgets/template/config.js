@@ -39,5 +39,5 @@
 /*
  * Configure what dependencies are needed for each library
  */
-loadCss("geppetto/js/widgets/template/WIDGETNAME.css");
+loadCss("geppetto/js/components/widgets/template/WIDGETNAME.css");
 

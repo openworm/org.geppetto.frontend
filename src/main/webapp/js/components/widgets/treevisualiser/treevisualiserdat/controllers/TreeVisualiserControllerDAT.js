@@ -46,7 +46,7 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             // updates helpc command output
-            GEPPETTO.Console.updateHelpCommand(tvdat, id, this.getFileComments("geppetto/js/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js"));
+            GEPPETTO.Console.updateHelpCommand(tvdat, id, this.getFileComments("geppetto/js/components/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js"));
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
 

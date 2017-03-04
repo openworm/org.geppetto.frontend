@@ -361,7 +361,7 @@ define(function (require) {
         createLayoutSelector: function() {
 
             function imgPath(path){
-                return 'geppetto/js/widgets/connectivity/images/' + path;
+                return 'geppetto/js/components/widgets/connectivity/images/' + path;
             };
 
             var layoutOptions = [

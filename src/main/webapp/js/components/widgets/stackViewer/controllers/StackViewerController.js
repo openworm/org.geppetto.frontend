@@ -66,7 +66,7 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //updates help command options
-            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/widgets/stackViewer/StackViewer.js"));
+            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/stackViewer/StackViewer.js"));
 
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(vv.getId(), vv);

@@ -66,7 +66,7 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //updates help command options
-            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/widgets/template/WIDGETNAME.js"));
+            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/template/WIDGETNAME.js"));
 
             //update tags for autocompletion
             GEPPETTO.Console.updateTags(vv.getId(), vv);

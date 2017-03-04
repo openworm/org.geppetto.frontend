@@ -40,8 +40,8 @@ define(function (require) {
         document.getElementsByTagName("head")[0].appendChild(link);
     }
 
-    loadCss("geppetto/js/components/interface/controlpanel/controlpanel.css");
-    loadCss("geppetto/js/components/interface/controlpanel/vendor/css/bootstrap-colorpicker.min.css");
+    loadCss("geppetto/js/components/interface/controlPanel/controlpanel.css");
+    loadCss("geppetto/js/components/interface/controlPanel/vendor/css/bootstrap-colorpicker.min.css");
 
     var React = require('react'), $ = require('jquery');
     var Griddle = require('griddle-react');

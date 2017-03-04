@@ -129,7 +129,7 @@ module.exports = {
                 loader: "json-loader"
             },
             {
-                test: /\.(py|png|svg|gif|css|jpg|md|hbs|eot|ttf|svg|woff)$/,
+                test: /\.(py|png|svg|gif|css|jpg|md|hbs)$/,
                 loader: 'ignore-loader'
             },
             {   test: /\.css$/,
@@ -143,26 +143,8 @@ module.exports = {
                 test: /\.(eot|svg|ttf|woff|woff2)$/,
                 loader: 'file?name=/fonts/[name].[ext]'
             }
-            // {
-            //   test: /\.(jpe?g|png|gif|svg)$/i,
-            //   loaders: [
-            //     'file?hash=sha512&digest=hex&name=[hash].[ext]',
-            //     'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
-            //   ]
-            // }
-
         ]
     },
-
-    //  resolve : {
-    //	    alias: {
-    //	      // bind version of jquery-ui
-    //	      "jquery-ui": "jquery-ui/jquery-ui.js",
-    //	      // bind to modules;
-    //	      modules: path.join(__dirname, "node_modules"),
-    //	    }
-    //	},
-
     node: {
         fs: 'empty',
         child_process: 'empty',

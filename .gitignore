@@ -6,7 +6,6 @@ node/
 src/main/webapp/dashboard/api/session.json
 
 # Build js, css
-src/main/webapp/js/main-built.js
 src/main/webapp/css/main.css
 src/main/webapp/js/extensions/*
 src/main/webapp/WEB-INF/web.xml

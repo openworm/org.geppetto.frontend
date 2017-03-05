@@ -241,7 +241,7 @@ define(function (require) {
 						self.open(false);
 					}else{
 						//default tutorial when user doesn't specify one for this event
-						var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/tutorial/configuration/experiment_loaded_tutorial.json";
+						var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/interface/tutorial/configuration/experiment_loaded_tutorial.json";
 						if(self.tutorialMap[GEPPETTO.Events.Show_Tutorial]!=null || undefined){
 							tutorialURL = self.tutorialMap[GEPPETTO.Events.Show_Tutorial];
 						}

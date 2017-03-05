@@ -3,7 +3,7 @@ define(function (require) {
     var link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";
-    link.href = "geppetto/js/components/panel/Panel.css";
+    link.href = "geppetto/js/components/controls/panel/Panel.css";
     document.getElementsByTagName("head")[0].appendChild(link);
 	
 	var React = require('react');

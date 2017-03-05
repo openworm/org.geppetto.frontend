@@ -33,6 +33,7 @@ define(function (require) {
         var AConnectionCapability = require('./capabilities/AConnectionCapability');
         var AParameterCapability = require('./capabilities/AParameterCapability');
         var AStateVariableCapability = require('./capabilities/AStateVariableCapability');
+        var ADerivedStateVariableCapability = require('./capabilities/ADerivedStateVariableCapability');
        
         /**
          * @class GEPPETTO.ModelFactory

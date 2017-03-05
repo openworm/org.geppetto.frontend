@@ -33,6 +33,7 @@ define(function (require) {
         var AConnectionCapability = require('./capabilities/AConnectionCapability');
         var AParameterCapability = require('./capabilities/AParameterCapability');
         var AStateVariableCapability = require('./capabilities/AStateVariableCapability');
+        var ADerivedStateVariableCapability = require('./capabilities/ADerivedStateVariableCapability');
        
         /**
          * @class GEPPETTO.ModelFactory
@@ -603,7 +604,7 @@ define(function (require) {
                             libMatch = true;
 
                             var diffTypes = diffLibs[i].getTypes();
-                            var existingImportTypes = libs[j].importTypes;
+                            var existingTypes = libs[j].getTypes();
 
                             // first loop on types - add new ones
                             var addedTypes = [];
@@ -621,12 +622,12 @@ define(function (require) {
 
                                 var typeMatch = false;
 
-                                for (var m = 0; m < existingImportTypes.length; m++) {
+                                for (var m = 0; m < existingTypes.length; m++) {
                                     // check if the given diff type already exists
-                                    if (diffTypes[k].getPath() == existingImportTypes[m].getPath()) {
+                                    if (diffTypes[k].getPath() == existingTypes[m].getPath()) {
                                         typeMatch = true;
                                         typeMatched.push(diffTypes[k]);
-                                        importTypeMatched.push(existingImportTypes[m]);
+                                        importTypeMatched.push(existingTypes[m]);
                                         break;
                                     }
                                 }
@@ -931,6 +932,12 @@ define(function (require) {
                             }
                         }
 
+                        if (instances[j].getType().getMetaType() == GEPPETTO.Resources.DERIVED_STATE_VARIABLE_TYPE) {
+                            if (!instances[j].hasCapability(GEPPETTO.Resources.DERIVED_STATE_VARIABLE_CAPABILITY)) {
+                                instances[j].extendApi(ADerivedStateVariableCapability);
+                            }
+                        }
+
                         if (instances[j].getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
                             if (!instances[j].hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)) {
                                 instances[j].extendApi(AParameterCapability);
@@ -1023,6 +1030,14 @@ define(function (require) {
                             metaType: partialPathsForNewType[j].metaType,
                             type: partialPathsForNewType[j].type
                         };
+
+                        // If variable is already in allPaths remove it before adding the new variable
+                        for (var k = 0; k < this.allPaths.length; k++) {
+                            if (this.allPaths[k].path == entry.path) {
+                                this.allPaths.splice(k,1);
+                                break;
+                            }
+                        }
                         this.allPaths.push(entry);
                     }
                 }
@@ -1043,7 +1058,22 @@ define(function (require) {
                             metaType: partialPathsForNewType[j].metaType,
                             type: partialPathsForNewType[j].type
                         };
+
+                        // If variable already in allPathsIndexing and newPathsIndexing remove it before adding the new variable
+                        for (var k = 0; k < this.allPathsIndexing.length; k++) {
+                            if (this.allPathsIndexing[k].path == entry.path) {
+                                this.allPathsIndexing.splice(k,1);
+                                break;
+                            }
+                        }
                         this.allPathsIndexing.push(entry);
+
+                        for (var k = 0; k < this.newPathsIndexing.length; k++) {
+                            if (this.newPathsIndexing[k].path == entry.path) {
+                                this.newPathsIndexing.splice(k,1);
+                                break;
+                            }
+                        }
                         this.newPathsIndexing.push(entry);
                     }
                 }
@@ -1280,6 +1310,10 @@ define(function (require) {
                                 explodedInstance.extendApi(AStateVariableCapability);
                             }
 
+                            if (explodedInstance.getType().getMetaType() == GEPPETTO.Resources.DERIVED_STATE_VARIABLE_TYPE) {
+                                explodedInstance.extendApi(ADerivedStateVariableCapability);
+                            }
+
                             if (explodedInstance.getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
                                 explodedInstance.extendApi(AParameterCapability);
                             }
@@ -1351,6 +1385,10 @@ define(function (require) {
 
                         if (newlyCreatedInstance.getType().getMetaType() == GEPPETTO.Resources.STATE_VARIABLE_TYPE) {
                             newlyCreatedInstance.extendApi(AStateVariableCapability);
+                        }
+
+                        if (newlyCreatedInstance.getType().getMetaType() == GEPPETTO.Resources.DERIVED_STATE_VARIABLE_TYPE) {
+                            newlyCreatedInstance.extendApi(ADerivedStateVariableCapability);
                         }
 
                         if (newlyCreatedInstance.getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {

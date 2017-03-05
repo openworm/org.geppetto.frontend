@@ -150,7 +150,7 @@ define(function (require) {
          * @param plotWidget - options, if not provided a new widget will be created
          */
         plotStateVariable: function(projectId, experimentId, path, plotWidget){
-            if(window.Project.getId() === projectId && window.Project.getActiveExperiment().getId() === experimentId){
+            if(window.Project.getId() == projectId && window.Project.getActiveExperiment().getId() == experimentId){
                 // try to resolve path
                 var inst = undefined;
                 try {

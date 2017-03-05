@@ -68,6 +68,43 @@ define(function (require) {
     VisualGroupElement.prototype.print = function () {
         return "Name : " + this.getName() + "\n" + "    Id: " + this.getId() + "\n";
     };
-    return VisualGroupElement;
 
+    VisualGroupElement.prototype.show = function (mode, instances) {
+
+        if (instances == undefined) {
+            instances = GEPPETTO.ModelFactory.getAllInstancesOf(this.getParent().getParent());
+        }
+        
+        for (var i = 0; i < instances.length; i++) {
+            var instance = instances[i];
+            var instancePath = instance.getInstancePath();            				
+            
+            // retrieve the merged mesh
+            var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
+
+            // get map of all meshes that merged mesh was merging
+            var map = mergedMesh.mergedMeshesPaths;
+
+            var elements = {}
+            for (var v in map) {
+                if (v != undefined) {
+                    var m = GEPPETTO.getVARS().visualModelMap[map[v]];
+                    eval(map[v].substring(0, map[v].lastIndexOf(".")));
+                    var object = instance.getVisualType()[map[v].replace(instancePath + ".", "")];
+                    // get group elements list for object
+                    var groupElementsReference = object.getInitialValue().value.groupElements;
+                    for (var i = 0; i < groupElementsReference.length; i++) {
+                        var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
+                        if (objectGroup == this.getId()) {
+                            elements[object.getId()] = {'color':this.getColor()}
+                        }
+                    }
+                }
+            } 
+            
+            GEPPETTO.SceneController.showVisualGroupsRaw(elements, instance, GEPPETTO.getVARS().splitMeshes);
+        }
+    };
+
+    return VisualGroupElement;
 });

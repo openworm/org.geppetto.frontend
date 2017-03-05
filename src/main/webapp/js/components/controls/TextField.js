@@ -53,12 +53,9 @@ define(function (require, exports, module) {
 		},
 
 		render: function () {
-			var opts = {};
-			if (this.props.readOnly) {
-				opts['readOnly'] = 'readOnly';
-			}
+			var readOnly = this.props.readOnly === true;
 			return (
-				<input {...opts} type="text" id={this.props.id} value={this.state.value} onChange={this.handleChange} onBlur={this.handleBlur} />
+				<input readOnly={readOnly} type="text" id={this.props.id} value={this.state.value} onChange={this.handleChange} onBlur={this.handleBlur} />
 			);
 		}
 	});

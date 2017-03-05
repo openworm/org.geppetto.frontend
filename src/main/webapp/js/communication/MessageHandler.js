@@ -276,6 +276,7 @@ define(function (require) {
 
             loadProject: function (payload) {
                 // we remove anything from any previous loaded project if there was one
+                GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
                 if (Project) {
                     Project.initialize();
                 }
@@ -481,7 +482,7 @@ define(function (require) {
                     GEPPETTO.ModelFactory.addInstances(instancePaths, window.Instances, window.Model);
                 };
 
-                instances.getInstance = function (instancePath, create) {
+                instances.getInstance = function (instancePath, create, override) {
                     if (create == undefined) {
                         create = true;
                     }
@@ -521,6 +522,11 @@ define(function (require) {
                                     Instances.addInstances(instancePath[i]);
                                     instances[i] = eval(InstanceVarName + instancePath[i]);
                                 }
+                            }
+                            else if (override){
+                                GEPPETTO.ModelFactory.deleteInstance(instances[i]);
+                                Instances.addInstances(instancePath[i]);
+                                instances[i] = eval(InstanceVarName + instancePath[i]);
                             }
                         } catch (e) {
                             if (create) {

@@ -256,9 +256,7 @@ define(function (require) {
                 if (instancePath in GEPPETTO.getVARS().splitMeshes) {
                     for (var keySplitMeshes in GEPPETTO.getVARS().splitMeshes) {
                         if (keySplitMeshes.startsWith(instancePath)) {
-                            if (GEPPETTO.getVARS().splitMeshes[instancePath] && GEPPETTO.getVARS().splitMeshes[instancePath].visible) {
-                                meshes.push(GEPPETTO.getVARS().splitMeshes[keySplitMeshes]);
-                            }
+                            meshes.push(GEPPETTO.getVARS().splitMeshes[keySplitMeshes]);
                         }
 
                     }
@@ -377,17 +375,15 @@ define(function (require) {
              *            instancePath - Path of the aspect to make invisible
              */
             hideInstance: function (instancePath) {
-                for (var v in GEPPETTO.getVARS().meshes) {
-                    if (v == instancePath) {
-                        if (GEPPETTO.getVARS().meshes[v].visible == false) {
-                            return false;
-                        } else {
-                            GEPPETTO.getVARS().meshes[v].visible = false;
-                            return true;
-                        }
+                var meshes = this.getRealMeshesForInstancePath(instancePath);
+                for (var i=0;i<meshes.length;i++) {
+                    var mesh=meshes[i];
+                    if (mesh) {
+                        mesh.traverse(function (object) {
+                            object.visible = false;
+                        });
                     }
                 }
-                return false;
             },
 
             /**
@@ -409,10 +405,8 @@ define(function (require) {
                                 }
                             });
                         }
-                        return true;
                     }
                 }
-                return false;
             },
 
             /**
@@ -429,18 +423,23 @@ define(function (require) {
                     return color;
                 };
 
-                if(instance.hasCapability('VisualCapability')) {
-                    var children = instance.getChildren();
-
-                    if (children.length == 0 || instance.getMetaType() == GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
-                        var randomColor = getRandomColor();
-                        instance.setColor(randomColor);
-                    } else {
-                        for (var i = 0; i < children.length; i++) {
-                            this.assignRandomColor(children[i]);
+                var meshes = this.getRealMeshesForInstancePath(instance.getInstancePath());
+                if (meshes.length > 0) {
+                    for (var i = 0; i < meshes.length; i++) {
+                        var mesh = meshes[i];
+                        if (mesh) {
+                            var randomColor=getRandomColor();
+                            mesh.traverse(function (object) {
+                                if (object.hasOwnProperty("material")) {
+                                    GEPPETTO.SceneController.setThreeColor(object.material.color, randomColor);
+                                    object.material.defaultColor = randomColor;
+                                }
+                            });
                         }
                     }
                 }
+
+
             },
 
             /**
@@ -1160,6 +1159,25 @@ define(function (require) {
                 }
             },
 
+            showVisualGroupsRaw: function (visualGroups, instance, meshesContainer) {
+                var instancePath = instance.getInstancePath();   
+                for (g in visualGroups) {
+                    // retrieve visual group object
+                    var visualGroup = visualGroups[g];
+
+                    // get full group name to access group mesh
+                    var groupName = g;
+                    if (groupName.indexOf(instancePath) <= -1) {
+                        groupName = instancePath + "." + g;
+                    }
+
+                    // get group mesh
+                    var groupMesh = meshesContainer[groupName];
+                    groupMesh.visible = true;
+                    GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
+                }
+            },    
+
             /**
              * Shows a visual group
              */
@@ -1174,37 +1192,10 @@ define(function (require) {
             			//no mergedMeshesPaths means object hasn't been merged, single object
             			if(map!=undefined||null){
             				GEPPETTO.SceneController.splitGroups(instance, visualGroups);
-            				for (g in visualGroups) {
-            					// retrieve visual group object
-            					var visualGroup = visualGroups[g];
-
-            					// get full group name to access group mesh
-            					var groupName = g;
-            					if (groupName.indexOf(instancePath) <= -1) {
-            						groupName = instancePath + "." + g;
-            					}
-
-            					// get group mesh
-            					var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
-            					groupMesh.visible = true;
-            					GEPPETTO.SceneController.setThreeColor(groupMesh.material.color, visualGroup.color);
-            				}
+                            GEPPETTO.SceneController.showVisualGroupsRaw(visualGroups, instance, GEPPETTO.getVARS().splitMeshes);
+            				
             			}else{
-            				for (g in visualGroups) {
-            					// retrieve visual group object
-            					var visualGroup = visualGroups[g];
-
-            					// get full group name to access group mesh
-            					var groupName = g;
-            					if (groupName.indexOf(instancePath) <= -1) {
-            						groupName = instancePath + "." + g;
-            					}
-
-            					// get original mesh and apply group color
-            					var mesh = GEPPETTO.getVARS().meshes[instancePath];
-            					mesh.visible = true;
-            					GEPPETTO.SceneController.setThreeColor(mesh.material.color, visualGroup.color);
-            				}        
+                            GEPPETTO.SceneController.showVisualGroupsRaw(visualGroups, instance, GEPPETTO.getVARS().meshes);
             			}
 
             		}

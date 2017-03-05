@@ -32,12 +32,18 @@
 .dropDownTable label {
     float: left;
     display: inline-block;
+    margin-top: 0;
     margin-bottom: 0;
     font-weight: normal;
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
     font-size : 14px;
+}
+
+
+.dropDownTable label:hover {
+    color: white;
 }
 
 .dropDownItem {
@@ -57,10 +63,19 @@
 	padding: 5px 20px 5px 0;	
 }
 
+.dropDownTable tr:not(:hover) label {
+    color: #fd6808;
+}
+
 .dropDownTable tr{
 	cursor:pointer;
 }
+
 .dropDownTable tr:hover {
 	background-color:#fd6808;
 	color:white;
+}
+
+.dropDownTable tr:hover label {
+    color:white;
 }

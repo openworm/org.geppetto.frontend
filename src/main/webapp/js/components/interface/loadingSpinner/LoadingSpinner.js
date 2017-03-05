@@ -102,7 +102,7 @@ define(function(require) {
 			});
 			
 			GEPPETTO.on(GEPPETTO.Events.Hide_spinner, function(label) {
-				setTimeout(that.hideSpinner, 1);
+				setTimeout(that.hideSpinner, 500);
 			});
 		},
 		

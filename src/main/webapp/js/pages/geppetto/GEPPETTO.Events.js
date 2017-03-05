@@ -24,6 +24,7 @@ define(function (require) {
 			Experiment_loaded: "experiment:loaded",
 			ModelTree_populated: "experiment:modeltreepopulated",
 			SimulationTree_populated: "experiment:simulationtreepopulated",
+		    Do_experiment_play: "experiment:doPlay",
 			Experiment_play: "experiment:play",
 			Experiment_status_check: "experiment:status_check",
 			Experiment_pause: "experiment:pause",
@@ -110,6 +111,10 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_update, parameters);
                 });
                 GEPPETTO.on(this.Experiment_stop, function (parameters) {
+                });
+
+				GEPPETTO.on(this.Do_experiment_play, function () {
+                    Project.getActiveExperiment().playAll();
                 });
             }
         };

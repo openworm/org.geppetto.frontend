@@ -33,38 +33,6 @@
 						</configuration>
 						<executions>
 							<execution>
-								<id>install node and npm</id>
-								<goals>
-									<goal>install-node-and-npm</goal>
-								</goals>
-								<phase>generate-resources</phase>
-								<configuration>
-									<workingDirectory></workingDirectory>
-								</configuration>
-							</execution>
-							<execution>
-								<id>npm install</id>
-								<goals>
-									<goal>npm</goal>
-								</goals>
-								<configuration>
-									<arguments>install</arguments>
-									<workingDirectory></workingDirectory>
-								</configuration>
-							</execution>
-							<execution>
-								<id>grunt build</id>
-								<goals>
-									<goal>grunt</goal>
-								</goals>
-								<configuration>
-									<arguments>dist --contextPath ${contextPath} --useSsl ${useSsl}
-										--embedded ${embedded} --embedderURL ${embedderURL}</arguments>
-									<workingDirectory></workingDirectory>
-								</configuration>
-								<phase>generate-resources</phase>
-							</execution>
-							<execution>
 								<id>install node and npm webapp</id>
 								<goals>
 									<goal>install-node-and-npm</goal>
@@ -91,7 +59,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build</arguments>
+									<arguments>run build -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
 									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
@@ -102,6 +70,12 @@
 		</profile>
 		<profile>
 			<id>development</id>
+			<properties>
+				<contextPath>org.geppetto.frontend</contextPath>
+				<useSsl>false</useSsl>
+				<embedded>false</embedded>
+				<embedderURL>none</embedderURL>
+			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -141,7 +115,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build-dev</arguments>
+									<arguments>run build-dev  -- --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/</arguments>
 								</configuration>
 							</execution>
 						</executions>
@@ -378,7 +352,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
-					<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+					<packagingExcludes>WEB-INF/classes/lib/*.jar, WEB-INF/lib/*.jar, node_modules/**, node/**</packagingExcludes>
 					<warName>org.geppetto.frontend</warName>
 					<archive>
 						<manifestFile>src/main/webapp/META-INF/MANIFEST.MF</manifestFile>
@@ -419,7 +393,7 @@
 					<recursive>true</recursive>
 					<directoryRoots>
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/widgets</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/model</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/3d_visualization</directoryRoot>
 					</directoryRoots>

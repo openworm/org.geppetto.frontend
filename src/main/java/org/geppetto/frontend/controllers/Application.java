@@ -21,6 +21,7 @@ import org.geppetto.core.utilities.URLReader;
 import org.geppetto.frontend.tests.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -84,7 +85,7 @@ public class Application
 			}
 			if(auth)
 			{
-				return "dist/geppetto";
+				return "geppetto";
 			}
 			else
 			{
@@ -107,39 +108,43 @@ public class Application
 	}
 	
 	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
-	public String testNeuronal()
+	public String testNeuronal(Model model)
 	{
-		return "dist/GeppettoNeuronalTests";
+		model.addAttribute("qunitfile", new String("NeuronalTests"));
+		return "qunitTest";
 	}
 	
 	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
-	public String testCore()
+	public String testCore(Model model)
 	{
-		return "dist/GeppettoCoreTests";
+		model.addAttribute("qunitfile", new String("CoreTests"));
+		return "qunitTest";
 	}
 	
 	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
-	public String testExternalSimulator()
+	public String testExternalSimulator(Model model)
 	{
-		return "dist/GeppettoExternalSimulatorTests";
+		model.addAttribute("qunitfile", new String("ExternalSimulatorTests"));
+		return "qunitTest";
 	}
 	
 	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
-	public String testPersistence()
+	public String testPersistence(Model model)
 	{
-		return "dist/GeppettoPersistenceTests";
+		model.addAttribute("qunitfile", new String("PersistenceTests"));
+		return "qunitTest";
 	}
 	
 	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)
 	public String tests()
 	{
-		return "dist/tests";
+		return "tests";
 	}
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String dashboard()
 	{
-		return "dist/dashboard";
+		return "dashboard";
 	}
 
 }

@@ -36,33 +36,33 @@ define(function (require) {
 
 		var React = require('react');
 		var ReactDOM = require('react-dom');
-		var spinner=require('./loadingspinner/LoadingSpinner.js');		
+		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
 		//All the components potentially instantiable go here
 		var components = {
-			'FORM':'dev/form/Form',
-			'PANEL':'dev/panel/Panel',
-			'LOGO':'dev/logo/Logo',
-			'LOADINGSPINNER':'loadingspinner/LoadingSpinner',
-			'SAVECONTROL':'dev/save/SaveControl',
-			'TOGGLEBUTTON' : 'dev/togglebutton/ToggleButton',
-			'CONTROLPANEL':'dev/controlpanel/controlpanel',
-			'SPOTLIGHT':'dev/spotlight/spotlight',
-			'MENUBUTTON':'dev/menubutton/MenuButton',
-			'FOREGROUND':'dev/foregroundcontrols/ForegroundControls',
-			'EXPERIMENTSTABLE':'dev/ExperimentsTable/ExperimentsTable',
-			'HOME':'dev/home/HomeControl',
-			'SIMULATIONCONTROLS':'dev/simulationcontrols/ExperimentControls',
-			'CAMERACONTROLS': 'dev/cameracontrols/CameraControls',
-			'SHARE':'dev/share/share',
-			'INFOMODAL':'popups/InfoModal',
-			'MDMODAL':'popups/MarkDownModal',
-			'QUERY':'dev/query/query',
-			'TUTORIAL':'dev/tutorial/TutorialModule',
-			'PYTHONCONSOLE': 'dev/PythonConsole/PythonConsole',
-			'CHECKBOX': 'dev/BasicComponents/Checkbox',
-			'TEXTFIELD': 'dev/BasicComponents/TextField',
-			'RAISEDBUTTON': 'dev/BasicComponents/RaisedButton'
+			'FORM':'interface/form/Form',
+			'PANEL':'controls/panel/Panel',
+			'LOGO':'interface/logo/Logo',
+			'LOADINGSPINNER':'interface/loadingSpinner/LoadingSpinner',
+			'SAVECONTROL':'interface/save/SaveControl',
+			'TOGGLEBUTTON' : 'controls/toggleButton/ToggleButton',
+			'CONTROLPANEL':'interface/controlPanel/controlpanel',
+			'SPOTLIGHT':'interface/spotlight/spotlight',
+			'MENUBUTTON':'controls/menuButton/MenuButton',
+			'FOREGROUND':'interface/foregroundControls/ForegroundControls',
+			'EXPERIMENTSTABLE':'interface/experimentsTable/ExperimentsTable',
+			'HOME':'interface/home/HomeControl',
+			'SIMULATIONCONTROLS':'interface/simulationControls/ExperimentControls',
+			'CAMERACONTROLS': 'interface/cameraControls/CameraControls',
+			'SHARE':'interface/share/share',
+			'INFOMODAL':'controls/modals/InfoModal',
+			'MDMODAL':'controls/modals/MarkDownModal',
+			'QUERY':'interface/query/query',
+			'TUTORIAL':'interface/tutorial/TutorialModule',
+			'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
+			'CHECKBOX': 'controls/Checkbox',
+			'TEXTFIELD': 'controls/TextField',
+			'RAISEDBUTTON': 'controls/RaisedButton'
 		}
 		
 	

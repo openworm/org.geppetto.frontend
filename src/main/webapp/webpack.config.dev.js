@@ -1,12 +1,6 @@
 var webpack = require('webpack');
 var webpackBaseConfig = require('./webpack.config.js');
 
-function log(req, res, opt) {
-    console.log(req);
-    console.log(res);
-    console.log(opt);
-}
-
 webpackBaseConfig.devServer = {
     progress: true,
     colors: true,

@@ -2,9 +2,12 @@ package org.geppetto.frontend.controllers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Scanner;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.google.gson.Gson;
 
@@ -38,9 +42,8 @@ public class Application
 
 	private static Log logger = LogFactory.getLog(Application.class);
 
-	@RequestMapping(value = "/geppetto", method = RequestMethod.GET)
-	public String geppetto(HttpServletRequest req)
-	{
+
+	private String getGeppetto(HttpServletRequest req){
 		try
 		{
 			IAuthService authService = AuthServiceCreator.getService();
@@ -99,6 +102,20 @@ public class Application
 		return "redirect:http://geppetto.org";
 	}
 
+	@RequestMapping(value = "/geppetto", method = RequestMethod.GET)
+	public String geppetto(HttpServletRequest req)
+	{
+		return getGeppetto(req);
+	}
+
+	@RequestMapping(value = "/geppetto/{page}", method = RequestMethod.GET)
+	public String geppettoWithContent(HttpServletRequest req, Model model, @PathVariable("page") String page)
+	{
+		InputStream content = Application.class.getResourceAsStream("/build/static/" + page + ".html");
+		model.addAttribute("content", new String(new Scanner(content, "UTF-8").useDelimiter("\\A").next()));
+		return getGeppetto(req);
+	}
+	
 	@RequestMapping(value = "/geppettotestingprojects", method = RequestMethod.GET)
 	public @ResponseBody Test getTestingProjects(@RequestParam String url) throws IOException
 	{

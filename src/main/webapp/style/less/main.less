@@ -1,0 +1,120 @@
+@import "bootstrap/bootstrap";
+@import "components/colors";
+@import "components/controls";
+@import "components/console";
+@import "components/modal";
+@import "components/tutorial";
+@import "components/share-slider";
+@import "components/footer";
+@import "components/icons/geppetto-logo";
+@import "components/icons/github-logo";
+@import "components/ExperimentsTable";
+@import "components/PythonConsole";
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+.hiddenStart{
+  display:none;
+}
+
+.hiddenElement{
+  display:none;
+}
+
+.noSelection {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body {
+  
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#141a1e+0,5c6268+50,60666d+73,515359+100 */
+  background: #141a1e; /* Old browsers */
+  background: -moz-linear-gradient(top,  #141a1e 0%, #5c6268 50%, #60666d 73%, #515359 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  #141a1e 0%,#5c6268 50%,#60666d 73%,#515359 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  #141a1e 0%,#5c6268 50%,#60666d 73%,#515359 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#141a1e', endColorstr='#515359',GradientType=0 ); /* IE6-9 */
+
+  margin: 0px;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+
+}
+
+#sim {
+  width: 100%;
+  float: left;
+  height: 100%;
+}
+
+#mainContainer {
+  height: 100%
+}
+
+.btn {
+  padding: 4px 12px;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.icon-4x {
+  font-size: 4em;
+}
+
+.btn, .btn-warning {
+  border-radius: 0 !important;
+}
+
+.btn:disabled:not(.SaveButton) {
+  background: #8E8383;
+}
+
+.btn:not(ul):not(.btn-warning):not([disabled]) {
+  background: rgba(66, 59, 59, 0.8);
+  color: @orange;
+}
+
+.btn:hover:not(ul):not(.btn-warning):not([disabled]) {
+  background: @orange;
+  color: white;
+}
+
+.btn-warning:hover:not(ul):not(.btn-warning):not([disabled]) {
+  background: @orange;
+  color: white;
+}
+
+.nav-tabs > li > a {
+  border-radius: 0 !important;
+}
+
+#habla_topbar_div {
+  background: rgba(66, 59, 59, 0.8);
+  border-radius: 0 !important;
+}
+
+.hbl_pal_title_bg {
+  background-color: rgba(66, 59, 59, 0.8) !important;
+}
+
+.btn-info {
+  background-color: #0e6c6f;
+  border-color: #0e6c6f;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+}

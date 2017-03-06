@@ -33,6 +33,7 @@
 .legend-text {
     font-size: 12px;
     font-weight: 100;
+    fill: white;
 }
 
 .legend-title {

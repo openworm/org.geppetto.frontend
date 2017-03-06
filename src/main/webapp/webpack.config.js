@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 console.log("\nThe arguments passed to webpack are:\n");
 console.log(process.argv);
@@ -43,16 +44,34 @@ if (generateTestsBundle) {
 console.log("The Webpack entries are:\n");
 console.log(entries);
 
-module.exports = {
 
+var extensionConfiguration = require('./extensions/extensionsConfiguration.json');
+var availableExtensions = [];
+for (var extension in extensionConfiguration){
+	if (extensionConfiguration[extension]){
+		availableExtensions.push({from: 'extensions/' + extension.split("/")[0] + "/static/*", to: 'static', flatten: true});
+	}
+}
+console.log("Static pages coming from extensions are:\n");
+console.log(availableExtensions);
+
+
+module.exports = {
+//	context: __dirname,
     entry: entries,
     output: {
         path: './build/',
+    	//path: path.resolve(__dirname, 'build/'),
         filename: '[name].bundle.js',
         publicPath: publicPath
     },
 
     plugins: [
+        new CopyWebpackPlugin(availableExtensions
+//        		[ { from: 'extensions/geppetto-tibs/static/biography.html',
+//            to: 'biography.html' } ]
+        		
+        ),
         new HtmlWebpackPlugin({
             filename: 'geppetto.vm',
             template: './js/pages/geppetto/geppetto.ejs',
@@ -142,7 +161,11 @@ module.exports = {
             {
                 test: /\.(eot|svg|ttf|woff|woff2)$/,
                 loader: 'file?name=/fonts/[name].[ext]'
-            }
+            },
+            {
+                test: /\.html$/,
+                loader: 'raw-loader'
+             }
         ]
     },
     node: {

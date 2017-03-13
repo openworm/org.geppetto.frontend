@@ -12,8 +12,6 @@ define(function (require) {
     require("./jquery.dialogextend.min");
     var React = require('react');
 
-    var newWidget = require("../controls/newWidget/newWidget")
-
     return function addWidget(WrappedComponent) {
 
         /**

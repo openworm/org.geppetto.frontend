@@ -229,17 +229,29 @@ define(function (require) {
                                         child.material.opacity = Math.max(0.5, child.material.defaultOpacity);
                                     }
                                 });
-                                mesh.selected = true;
-                                mesh.ghosted = false;
                             } else {
                                 GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                                 mesh.material.opacity = Math.max(0.5, mesh.material.defaultOpacity);
-                                mesh.selected = true;
-                                mesh.ghosted = false;
                             }
+                            mesh.selected = true;
+                            mesh.ghosted = false;
 
+                            
+                            mesh.geometry.computeBoundingBox();
+                            
+                            //let's set the center of rotation to the selected mesh
+                            GEPPETTO.getVARS().controls.target.copy(mesh.position);
+                            GEPPETTO.getVARS().controls.target.add(mesh.geometry.boundingBox.getCenter());
+                            
+                            GEPPETTO.getVARS().camera.updateProjectionMatrix();
+                            
                         }
+                        if(GEPPETTO.isKeyPressed('z')){
+                        	this.zoomTo([eval(instancePath)]);	
+                        }
+                        
                     }
+                    
                     return true;
                 }
                 return false;
@@ -437,6 +449,9 @@ define(function (require) {
                             });
                         }
                     }
+                }
+                for (var i = 0; i < instance.getChildren().length; i++) {
+                	this.assignRandomColor(instance.getChildren()[i]);
                 }
 
 

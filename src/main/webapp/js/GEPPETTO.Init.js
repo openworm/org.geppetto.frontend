@@ -193,7 +193,6 @@ define(function (require) {
 
                             if (intersects.length > 0) {
                                 var selected = "";
-                                var geometryIdentifier = "";
 
                                 // sort intersects
                                 var compare = function (a, b) {
@@ -206,19 +205,16 @@ define(function (require) {
 
                                 intersects.sort(compare);
 
-                                var selectedIntersect;
                                 // Iterate and get the first visible item (they are now ordered by proximity)
                                 for (var i = 0; i < intersects.length; i++) {
                                     // figure out if the entity is visible
                                     var instancePath = "";
                                     if (intersects[i].object.hasOwnProperty("instancePath")) {
                                         instancePath = intersects[i].object.instancePath;
-                                        geometryIdentifier = intersects[i].object.geometryIdentifier;
                                     }
                                     else {
                                         //weak assumption: if the object doesn't have an instancePath its parent will
                                     	instancePath = intersects[i].object.parent.instancePath;
-                                        geometryIdentifier = intersects[i].object.parent.geometryIdentifier;
                                     }
                                     if(instancePath!=null||undefined){
                                     	var visible = eval(instancePath + '.visible');
@@ -226,7 +222,6 @@ define(function (require) {
                                     		//if there's only one element intersected we select it regardless of its opacity
                                     		if (visible) {
                                     			selected = instancePath;
-                                                selectedIntersect = intersects[i];
                                     			break;
                                     		}
                                     	}
@@ -236,7 +231,6 @@ define(function (require) {
                                     		var opacity = GEPPETTO.getVARS().meshes[instancePath].defaultOpacity;
                                     		if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
                                     			selected = instancePath;
-                                                selectedIntersect = intersects[i];
                                     			break;
                                     		}
                                     		else if (visible && opacity < 1 && opacity > 0) {
@@ -244,7 +238,6 @@ define(function (require) {
                                     			//one is already selected in order to enable "burrow through" sample.
                                     			if (selected == "" && !eval(instancePath + '.selected')) {
                                     				selected = instancePath;
-                                                    selectedIntersect = intersects[i];
                                     			}
                                     			else {
                                     				if (eval(instancePath + '.selected') && i != intersects.length - 1) {
@@ -262,12 +255,7 @@ define(function (require) {
                                         if (!GEPPETTO.isKeyPressed("shift")) {
                                             GEPPETTO.G.unSelectAll();
                                         }
-                                        
-                                        var selectedIntersectCoordinates = [selectedIntersect.point.x, selectedIntersect.point.y, selectedIntersect.point.z]
-                                        if(geometryIdentifier==undefined){
-                                        	geometryIdentifier="";
-                                        }
-                                        GEPPETTO.Console.executeCommand(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
+                                        GEPPETTO.Console.executeCommand(selected + '.select()');
                                     }
                                 }
                             }

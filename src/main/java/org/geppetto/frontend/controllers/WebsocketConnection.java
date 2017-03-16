@@ -251,16 +251,6 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.persistProject(requestID, projectId);
 				break;
 			}
-			case MAKE_PROJECT_PUBLIC:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-						{
-						}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				boolean isPublic = Boolean.parseBoolean(parameters.get("isPublic"));
-				connectionHandler.makeProjectPublic(requestID, projectId,isPublic);
-				break;
-			}
 			case SAVE_PROJECT_PROPERTIES:
 			{
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
@@ -322,22 +312,34 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				}
 				break;
 			}
-			case GET_EXPERIMENT_STATE:
+			case PLAY_EXPERIMENT:
 			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.getExperimentState(requestID, receivedObject.experimentId, receivedObject.projectId, receivedObject.variables);
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.playExperiment(requestID, experimentId, projectId);
 				break;
 			}
 			case DELETE_EXPERIMENT:
 			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.deleteExperiment(requestID, receivedObject.experimentId, receivedObject.projectId);
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.deleteExperiment(requestID, experimentId, projectId);
 				break;
 			}
 			case RUN_EXPERIMENT:
 			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.runExperiment(requestID, receivedObject.experimentId, receivedObject.projectId);
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				experimentId = Long.parseLong(parameters.get("experimentId"));
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.runExperiment(requestID, experimentId, projectId);
 				break;
 			}
 			case SET_WATCHED_VARIABLES:

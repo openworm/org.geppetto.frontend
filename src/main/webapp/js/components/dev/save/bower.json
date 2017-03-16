@@ -1,13 +1,13 @@
 {
-  "name": "toggle",
+  "name": "save",
   "version": "0.0.1",
-  "description": "Toggle Button",
+  "description": "Save control",
   "moduleType": [
     "amd"
   ],
-  "main": "toggle",
+  "main": "save",
   "keywords": [
-    "toggle"
+    "save"
   ],
   "license": "MIT",
   "private": false,

@@ -263,10 +263,8 @@ define(function (require) {
             
             var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
             var projectPersisted = this.props.experiment.getParent().persisted;
-            var readOnly = window.Project.isReadOnly();
             
-            if(!writePermission || !projectPersisted || readOnly ||
-            		!(GEPPETTO.UserController.isLoggedIn() && GEPPETTO.UserController.hasPersistence())){
+            if(!writePermission || !projectPersisted || !(GEPPETTO.UserController.isLoggedIn() && GEPPETTO.UserController.hasPersistence())){
             	editable = false;
             }else{
             	if (this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN || 
@@ -573,8 +571,7 @@ define(function (require) {
 
         updateStatus: function(){
 			var visible = true;
-			if(!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) || !window.Project.persisted 
-					|| !GEPPETTO.UserController.isLoggedIn() || window.Project.isReadOnly()){
+			if(!GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) || !window.Project.persisted || !GEPPETTO.UserController.isLoggedIn()){
 				visible = false;
 			}
 			

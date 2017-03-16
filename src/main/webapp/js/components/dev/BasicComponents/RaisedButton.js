@@ -37,7 +37,7 @@ define(function(require, exports, module) {
     var RaisedButton = React.createClass({
     	render: function(){
             return (
-            		<input type="button" className={"waves-effect waves-light bttn"} onClick={this.props.handleClick} value={this.props.name} />
+            		<input type="button" className={"waves-effect waves-light bttn"} onClick={this.props.handleClick} value={this.props.label} />
             );
         }
     });

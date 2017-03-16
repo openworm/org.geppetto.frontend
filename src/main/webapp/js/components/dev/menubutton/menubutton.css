@@ -16,6 +16,9 @@
     z-index: 99;
     height: auto;
     width: auto;    
+    border-radius: 0px;
+    border-style: solid;
+    border-width: 1px;
     background-color: rgba(66, 59, 59, 0.90);
 }
 

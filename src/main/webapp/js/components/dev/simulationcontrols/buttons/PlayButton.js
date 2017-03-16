@@ -43,7 +43,13 @@ define(function (require) {
         popoverContent: "Once you have loaded a simulation, it's time to see it in action by pressing Start. Click it now to see the simulation in action",
 
         componentDidMount: function () {
-
+            GEPPETTO.on('start:tutorial', (function () {
+                GEPPETTO.once('experiment:loaded', (function () {
+                    if (GEPPETTO.tutorialEnabled) {
+                        this.showPopover;
+                    }
+                }).bind(this));
+            }).bind(this));
         },
 
         getDefaultProps: function () {

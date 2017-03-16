@@ -719,6 +719,35 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 		}
 	}
+	
+	/**
+	 * @param requestID
+	 * @param view
+	 * @param projectId
+	 * @param experimentID
+	 */
+	public void setExperimentView(String requestID, String view, long projectId, long experimentID)
+	{
+
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+		if(!geppettoProject.isVolatile())
+		{
+			try
+			{
+				geppettoManager.setExperimentView(view, experiment, geppettoProject);
+			}
+			catch(GeppettoExecutionException | GeppettoAccessException e)
+			{
+				error(e, "There was an error setting parameters");
+			}
+		}
+		else
+		{
+			String msg = "Set Experiment View: Cannot set view on volatile experiment (not persisted)";
+			error(new GeppettoExecutionException(msg), msg);
+		}
+	}
 
 	/**
 	 * @param experimentID

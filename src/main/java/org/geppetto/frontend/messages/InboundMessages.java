@@ -33,6 +33,7 @@ public enum InboundMessages {
 	GET_WATCH("get_watch"),
 	CLEAR_WATCHED_VARIABLES("clear_watch"),
 	SET_PARAMETERS("set_parameters"),
+	SET_EXPERIMENT_VIEW("set_experiment_view"),
 	
 	LINK_DROPBOX("link_dropbox"),
 	UNLINK_DROPBOX("unlink_drobpox"),

@@ -193,6 +193,25 @@ define(function (require) {
                 }
             },
 
+            /**
+             * Sets view for this experiment.
+             *
+             * @command ExperimentNode.setView(view)
+             */
+            setView: function (view) {
+                // go to server to persist only if experiment is persisted
+                if(Project.persisted){
+                    var parameters = {};
+                    parameters["experimentId"] = Project.getActiveExperiment().getId();
+                    parameters["projectId"] = Project.getId();
+                    parameters["view"] = view;
+
+                    GEPPETTO.MessageSocket.send("set_experiment_view", parameters);
+                } else {
+                    // TODO: store view in local storage for this project/experiment/user
+                }
+            },
+
             watchVariables: function (variables, watch) {
                 var watchedVariables = [];
                 for (var i = 0; i < variables.length; i++) {

@@ -355,6 +355,12 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.setParameters(requestID, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
 				break;
 			}
+			case SET_EXPERIMENT_VIEW:
+			{
+				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+				connectionHandler.setExperimentView(requestID, receivedObject.view, receivedObject.projectId, receivedObject.experimentId);
+				break;
+			}
 			case LINK_DROPBOX:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
@@ -504,6 +510,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		boolean watch;
 		Map<String, String> modelParameters;
 		Map<String, String> properties;
+		String view;
 	}
 
 	class GeppettoModelAPIParameters

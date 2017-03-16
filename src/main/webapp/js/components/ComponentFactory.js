@@ -36,34 +36,34 @@ define(function (require) {
 
 		var React = require('react');
 		var ReactDOM = require('react-dom');
-		var spinner=require('jsx!./loadingspinner/LoadingSpinner');		
+		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
 		//All the components potentially instantiable go here
 		var components = {
-			'FORM':'jsx!components/dev/form/Form',
-			'PANEL':'jsx!components/dev/panel/Panel',
-			'LOGO':'jsx!components/dev/logo/Logo',
-			'LOADINGSPINNER':'jsx!./loadingspinner/LoadingSpinner',
-			'SAVECONTROL':'jsx!components/dev/save/SaveControl',
-			'PUBLICPROJECT' : 'jsx!components/dev/togglebutton/ToggleButton',
-			'CONTROLPANEL':'jsx!components/dev/controlpanel/controlpanel',
-			'SPOTLIGHT':'jsx!components/dev/spotlight/spotlight',
-			'CONTROLSMENUBUTTON':'jsx!components/dev/menubutton/MenuButton',
-			'FOREGROUND':'jsx!components/dev/foregroundcontrols/ForegroundControls',
-			'EXPERIMENTSTABLE':'jsx!components/dev/ExperimentsTable/ExperimentsTable',
-			'HOME':'jsx!components/dev/home/HomeControl',
-			'SIMULATIONCONTROLS':'jsx!components/dev/simulationcontrols/ExperimentControls',
-			'CAMERACONTROLS': 'jsx!./dev/cameracontrols/CameraControls',
-			'SHARE':'jsx!./dev/share/share',
-			'INFOMODAL':'jsx!components/popups/InfoModal',
-			'MDMODAL':'jsx!components/popups/MarkDownModal',
-			'QUERY':'jsx!./dev/query/query',
-			'TUTORIAL':'jsx!./dev/tutorial/TutorialModule',
-			'PYTHONCONSOLE': 'jsx!components/dev/PythonConsole/PythonConsole',
-			'CHECKBOX': 'jsx!components/dev/BasicComponents/Checkbox',
-			'TEXTFIELD': 'jsx!components/dev/BasicComponents/TextField',
-			'RAISEDBUTTON': 'jsx!components/dev/BasicComponents/RaisedButton'
-		};
+			'FORM':'interface/form/Form',
+			'PANEL':'controls/panel/Panel',
+			'LOGO':'interface/logo/Logo',
+			'LOADINGSPINNER':'interface/loadingSpinner/LoadingSpinner',
+			'SAVECONTROL':'interface/save/SaveControl',
+			'TOGGLEBUTTON' : 'controls/toggleButton/ToggleButton',
+			'CONTROLPANEL':'interface/controlPanel/controlpanel',
+			'SPOTLIGHT':'interface/spotlight/spotlight',
+			'MENUBUTTON':'controls/menuButton/MenuButton',
+			'FOREGROUND':'interface/foregroundControls/ForegroundControls',
+			'EXPERIMENTSTABLE':'interface/experimentsTable/ExperimentsTable',
+			'HOME':'interface/home/HomeControl',
+			'SIMULATIONCONTROLS':'interface/simulationControls/ExperimentControls',
+			'CAMERACONTROLS': 'interface/cameraControls/CameraControls',
+			'SHARE':'interface/share/share',
+			'INFOMODAL':'controls/modals/InfoModal',
+			'MDMODAL':'controls/modals/MarkDownModal',
+			'QUERY':'interface/query/query',
+			'TUTORIAL':'interface/tutorial/TutorialModule',
+			'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
+			'CHECKBOX': 'controls/Checkbox',
+			'TEXTFIELD': 'controls/TextField',
+			'RAISEDBUTTON': 'controls/RaisedButton'
+		}
 		
 	
 		GEPPETTO.ComponentFactory = {
@@ -75,7 +75,7 @@ define(function (require) {
 			
 			addComponent: function(componentID, properties, container, callback){
 				var that=this;
-				require([components[componentID]], function(loadedModule){
+				require(["./" + components[componentID]], function(loadedModule){
 					var component = React.createFactory(loadedModule)(properties)
 					var renderedComponent = that.renderComponent(component, container);
 					if(callback!=undefined){
@@ -118,7 +118,6 @@ define(function (require) {
 
 	                //Take focus away from close button
 	                dialogParent.find("button.ui-dialog-titlebar-close").blur();
-	                dialogParent.css("z-index","100");
 
 	                container = dialog.get(0);
 				}

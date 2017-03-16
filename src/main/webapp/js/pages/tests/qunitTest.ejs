@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>GEPPETTO "$qunitfile" Tests</title>
+
+    <link rel="stylesheet" href="geppetto/style/css/qunit.css">
+    <link rel="stylesheet" href="geppetto/style/css/custom-theme/jquery-ui-1.10.0.custom.css"/>
+
+    <script>
+        window.BUNDLE_CONTEXT_PATH = "<%=htmlWebpackPlugin.options.contextPath%>";
+        window.USE_SSL = <%=htmlWebpackPlugin.options.useSsl%>;
+        window.EMBEDDED = <%=htmlWebpackPlugin.options.embedded%>;
+        window.EMBEDDEDURL = "<%=htmlWebpackPlugin.options.embedderURL%>".split(",");
+    </script>
+
+    <script charset="utf-8">
+        window.TestConfig = {
+            qUnitFile: "$qunitfile"
+        }
+    </script>
+
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture">
+    <div id="modal-region"></div>
+    <div id="sim"></div>
+    <div id="console">Console Loading...</div>
+</div>
+
+<script charset="utf-8" type="text/javascript" src="geppetto/build/tests.bundle.js"></script>
+</body>
+</html>

@@ -24,7 +24,7 @@ define(function (require) {
              *            skeleton with instances and visual entities
              */
             buildScene: function (instances) {
-                GEPPETTO.SceneController.traverseInstances(instances);
+                GEPPETTO.SceneController.traverseInstances(instances, GEPPETTO.Resources.GeometryTypes.CYLINDER);
                 GEPPETTO.getVARS().scene.updateMatrixWorld(true);
             },
 
@@ -53,9 +53,9 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            traverseInstances: function (instances) {
+            traverseInstances: function (instances, geometry, thickness) {
                 for (var j = 0; j < instances.length; j++) {
-                    GEPPETTO.SceneController.checkVisualInstance(instances[j]);
+                    GEPPETTO.SceneController.checkVisualInstance(instances[j], geometry, thickness);
                 }
             },
 
@@ -65,17 +65,17 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            checkVisualInstance: function (instance) {
+            checkVisualInstance: function (instance, geometry, thickness) {
                 if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                     //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
                     if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
-                        GEPPETTO.SceneFactory.buildVisualInstance(instance);
+                        GEPPETTO.SceneFactory.buildVisualInstance(instance, geometry, thickness);
                     }
                     // this block keeps traversing the instances
                     if (instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
-                        GEPPETTO.SceneController.traverseInstances(instance.getChildren());
+                        GEPPETTO.SceneController.traverseInstances(instance.getChildren(), geometry, thickness);
                     } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                        GEPPETTO.SceneController.traverseInstances(instance);
+                        GEPPETTO.SceneController.traverseInstances(instance, geometry, thickness);
                     }
                 }
             },
@@ -501,7 +501,7 @@ define(function (require) {
              *            thickness - Optional: the thickness to be used if the geometry is "lines"
              */
             setGeometryType: function (instance, type, thickness) {
-                var lines = false;
+                /*var lines = false;
                 if (type === GEPPETTO.Resources.GeometryTypes.LINES) {
                     lines = true;
                 } else if (type === GEPPETTO.Resources.GeometryTypes.TUBES) {
@@ -510,8 +510,9 @@ define(function (require) {
                     lines = false
                 } else {
                     return false;
-                }
-                GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance);
+                }*/
+		// GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance);
+		this.traverseInstances([instance], type, thickness);
 
                 return true;
             },

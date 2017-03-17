@@ -21,8 +21,9 @@ define(function (require) {
         	},
 
 
-            buildVisualInstance: function (instance) {
-                var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance);
+            buildVisualInstance: function (instance, geometry, thickness) {
+                if (geometry == undefined) { geometry = GEPPETTO.Resources.GeometryTypes.CYLINDER; }
+                var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance, geometry, thickness);
                 GEPPETTO.SceneFactory.init3DObject(meshes, instance);
             },
 
@@ -82,7 +83,7 @@ define(function (require) {
              * @param thickness
              * @returns {Array}
              */
-            generate3DObjects: function (instance, lines, thickness) {
+            generate3DObjects: function (instance, geometry, thickness) {
                 var previous3DObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 var color = undefined;
                 if (previous3DObject) {
@@ -106,15 +107,15 @@ define(function (require) {
                     "line": GEPPETTO.SceneFactory.getLineMaterial(thickness,color)
                 };
                 var instanceObjects = [];
-                var threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, materials, lines);
+                var threeDeeObjList = GEPPETTO.SceneFactory.walkVisTreeGen3DObjs(instance, materials, geometry);
 
                 // only merge if there are more than one object
                 if (threeDeeObjList.length > 1) {
                     var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
                     // investigate need to obj.dispose for obj in threeDeeObjList
                     if (mergedObjs != null) {
-                        mergedObjs.instancePath = instance.getInstancePath();
-                        instanceObjects.push(mergedObjs);
+                        mergedObjs.map(function(x) { x.instancePath = instance.getInstancePath();
+                                                     instanceObjects.push(x); });
                     } else {
                         for (var obj in threeDeeObjList) {
                             threeDeeObjList[obj].instancePath = instance.getInstancePath();
@@ -136,10 +137,10 @@ define(function (require) {
              *
              * @param instance
              * @param materials
-             * @param lines
+             * @param geometry
              * @returns {Array}
              */
-            walkVisTreeGen3DObjs: function (instance, materials, lines) {
+            walkVisTreeGen3DObjs: function (instance, materials, geometry) {
                 var threeDeeObj = null;
                 var threeDeeObjList = [];
                 var visualType = instance.getVisualType();
@@ -155,7 +156,7 @@ define(function (require) {
                 if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
                     for (var v in visualType.getVariables()) {
                         var visualValue = visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
-                        threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
+                        threeDeeObj = GEPPETTO.SceneFactory.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, geometry);
                         if (threeDeeObj) {
                             threeDeeObjList.push(threeDeeObj);
                         }
@@ -197,7 +198,7 @@ define(function (require) {
                             throw Error("Merging of multiple OBJs or Colladas not supported");
                         }
                         else {
-                            ret = obj;
+                            ret = [obj];
                         }
                     }
                     else {
@@ -216,13 +217,14 @@ define(function (require) {
                 if (mergedLines === undefined) {
                     // There are no line geometries, we just create a mesh for the merge of the solid geometries
                     // and apply the mesh material
-                    ret = new THREE.Mesh(mergedMeshes, materials["mesh"]);
+                    ret = [new THREE.Mesh(mergedMeshes, materials["mesh"])];
                 } else {
-                    ret = new THREE.LineSegments(mergedLines, materials["line"]);
+                    ret = [new THREE.LineSegments(mergedLines, materials["line"])];
                     if (mergedMeshes != undefined) {
                         // we merge into a single mesh both types of geometries (from lines and 3D objects)
-                        var tempmesh = new THREE.Mesh(mergedMeshes, materials["mesh"]);
-                        ret.geometry.merge(tempmesh.geometry, tempmesh.matrix);
+                        // var tempmesh = new THREE.Mesh(mergedMeshes, materials["mesh"]);
+                        /// ret.geometry.merge(tempmesh.geometry, tempmesh.matrix);
+                        ret = [new THREE.Mesh(mergedMeshes, materials["mesh"]), new THREE.LineSegments(mergedLines, materials["line"])];
                     }
                 }
 
@@ -244,10 +246,10 @@ define(function (require) {
              * @param lines
              * @returns {*}
              */
-            visualizationTreeNodeTo3DObj: function (instance, node, id, materials, lines) {
+            visualizationTreeNodeTo3DObj: function (instance, node, id, materials, geometry) {
                 var threeObject = null;
                 
-                if (lines === undefined) {
+                if (geometry === undefined) {
                     // Unless it's being forced we use a threshold to decide whether to use lines or cylinders
                     if (!GEPPETTO.SceneController.aboveLinesThreshold) {
                         //Unless we are already above the threshold...
@@ -273,41 +275,52 @@ define(function (require) {
                 	}
                     
                     if(GEPPETTO.SceneController.aboveLinesThreshold && GEPPETTO.SceneFactory.linesUserInput){
-                    	lines = GEPPETTO.SceneFactory.linesUserPreference;
+                    	geometry = GEPPETTO.SceneFactory.linesUserPreference;
                     }
                     else{
-                    	lines = GEPPETTO.SceneController.aboveLinesThreshold;
+                    	geometry = GEPPETTO.SceneController.aboveLinesThreshold;
                     }
                 }
 
-                var material = lines ? materials["line"] : materials["mesh"];
+                var material = (geometry == GEPPETTO.Resources.GeometryTypes.LINES) ? materials["line"] : materials["mesh"];
 
                 switch (node.eClass) {
-                    case GEPPETTO.Resources.PARTICLE:
-                        threeObject = GEPPETTO.SceneFactory.createParticle(node);
-                        break;
+                case GEPPETTO.Resources.PARTICLE:
+                    threeObject = GEPPETTO.SceneFactory.createParticle(node);
+                    break;
 
-                    case GEPPETTO.Resources.CYLINDER:
-                        if (lines) {
-                            threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, material);
-                        } else {
+                case GEPPETTO.Resources.CYLINDER:
+                    switch(geometry) {
+                    case GEPPETTO.Resources.GeometryTypes.MIXED:
+                        // arbitrary tolerance = 7
+                        if (node.topRadius > 7 || node.bottomRadius > 7)
                             threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, material);
-                        }
-                        break;
-
-                    case GEPPETTO.Resources.SPHERE:
-                        if (lines) {
+                        else {
+                            material = materials["line"];
                             threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, material);
-                        } else {
-                            threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, material);
                         }
                         break;
-                    case GEPPETTO.Resources.COLLADA:
-                        threeObject = GEPPETTO.SceneFactory.loadColladaModelFromNode(node);
-                        break;
-                    case GEPPETTO.Resources.OBJ:
-                        threeObject = GEPPETTO.SceneFactory.loadThreeOBJModelFromNode(node);
-                        break;
+                    case GEPPETTO.Resources.GeometryTypes.LINES:
+                        threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, material);
+                        break
+                    default:
+                        threeObject = GEPPETTO.SceneFactory.create3DCylinderFromNode(node, material);
+                    }
+                    break;
+
+                case GEPPETTO.Resources.SPHERE:
+                    if (geometry == GEPPETTO.Resources.GeometryTypes.LINES) {
+                        threeObject = GEPPETTO.SceneFactory.create3DLineFromNode(node, material);
+                    } else {
+                        threeObject = GEPPETTO.SceneFactory.create3DSphereFromNode(node, material);
+                    }
+                    break;
+                case GEPPETTO.Resources.COLLADA:
+                    threeObject = GEPPETTO.SceneFactory.loadColladaModelFromNode(node);
+                    break;
+                case GEPPETTO.Resources.OBJ:
+                    threeObject = GEPPETTO.SceneFactory.loadThreeOBJModelFromNode(node);
+                    break;
                 }
                 if (threeObject) {
                     threeObject.visible = true;

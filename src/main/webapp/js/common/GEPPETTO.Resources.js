@@ -122,7 +122,8 @@ define(function (require) {
             GeometryTypes: {
                 LINES: "lines",
                 TUBES: "tubes",
-                CYLINDERS: "cylinders"
+                CYLINDERS: "cylinders",
+                MIXED: "mixed"
             },
 
 

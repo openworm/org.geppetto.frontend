@@ -517,6 +517,24 @@ define(function (require) {
                 return true;
             },
 
+            setMaterial: function(instancePath, threeMaterial) {
+                var meshes = this.getRealMeshesForInstancePath(instancePath);
+                for (var i=0; i<meshes.length; ++i) {
+                    var mesh = meshes[i];
+                    var defaultColor = mesh.material.defaultColor;
+                    var color = mesh.material.color.getHex();
+                    var defaultOpacity = mesh.material.defaultOpacity;
+                    var selected = mesh.selected;
+                    var ghosted = mesh.ghosted;
+                    mesh.material = new threeMaterial({ color: color });
+                    mesh.material.defaultColor = defaultColor;
+                    mesh.material.defaultOpacity = defaultOpacity;
+                    mesh.material.selected = selected;
+                    mesh.material.ghosted = ghosted;
+                    mesh.geometry.uvsNeedsUpdate = true;
+                }
+            },
+
             /**
              * Set the type of geometry used to visualize all the instances in the scene
              * @param type - The geometry type either "lines", "tubes" or "cylinders"

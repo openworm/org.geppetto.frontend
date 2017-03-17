@@ -86,7 +86,6 @@ define(function (require) {
          *            containerp - HTML element to draw the 3D Scene
          * @returns {Boolean}
          */
-        //AQP: Almost same code!!!!!!!!!!!
         init: function (containerp) {
             if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
@@ -109,12 +108,6 @@ define(function (require) {
                 Detector.addGetWebGLMessage();
                 return false;
             }
-            // if (!Detector.webgl) {
-            //     Detector.addGetWebGLMessage();
-            //     return false;
-            // } else {
-            //     return true;
-            // }
         },
 
         /**
@@ -447,6 +440,7 @@ define(function (require) {
 
     require('../../components/interface/jsConsole/SandboxConsole')(GEPPETTO);
     require('../../common/GEPPETTO.Resources')(GEPPETTO);
+    require('../../common/GEPPETTO.ViewController')(GEPPETTO);
     require('./GEPPETTO.Events')(GEPPETTO);
     require('./GEPPETTO.Init')(GEPPETTO);
     require('../../components/interface/3dCanvas/GEPPETTO.SceneFactory')(GEPPETTO);

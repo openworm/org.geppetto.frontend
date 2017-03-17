@@ -10,11 +10,14 @@ define(function(require)
              * Applies initial view state for project / experiment and sets up monitor
              */
             applyView: function(projectView, experimentView){
+                // TODO: stop monitor timer loop if there is alredy one active
+
                 // TODO: apply project view
                 // TODO: apply experirment view
                 // TODO: foreach view item
                     // TODO: create widget if it doesn't exist
                     // TODO: apply properties using setView API
+
                 // TODO: setup monitor loop to track changes every 1000ms
             },
 

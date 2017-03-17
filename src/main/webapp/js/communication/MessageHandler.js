@@ -91,6 +91,9 @@ define(function (require) {
             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
             GEPPETTO.trigger(GEPPETTO.Events.Experiment_loaded);
+
+            // TODO: get project and experiment views
+            // TODO: GEPPETTO.ViewController.applyView(projectView, experimentView);
             
             if(window.Project.getActiveExperiment()!=null || undefined){
             	if (window.Project.getActiveExperiment().getScript() != undefined) {

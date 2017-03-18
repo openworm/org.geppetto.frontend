@@ -260,11 +260,11 @@ define(function (require) {
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
                                       'getAllInstanceOf returning instances as expected for Variable and Variable path.');
                             // check AllPotentialInstances
-                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 10938 &&
+                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 8010 &&
                                       GEPPETTO.ModelFactory.allPathsIndexing[0].path == 'acnet2' &&
                                       GEPPETTO.ModelFactory.allPathsIndexing[0].metaType == 'CompositeType' &&
-                                      GEPPETTO.ModelFactory.allPathsIndexing[10938 - 1].path == 'time' &&
-                                      GEPPETTO.ModelFactory.allPathsIndexing[10938 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                                      GEPPETTO.ModelFactory.allPathsIndexing[8010 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[8010 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
                             // check getAllPotentialInstancesEndingWith
                             assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
                                       GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&
@@ -352,8 +352,7 @@ define(function (require) {
                             // test if visual capability is injected in types
                             assert.ok(window.acnet2.baskets_12[0].getType().hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY), "Visual capability injected to types with visual types");
                             // test if parameter capability is injected in instances
-                            assert.ok(window.Instances.getInstance('acnet2.temperature').hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY), "Parameter capability injected to parameter instances");
-                            assert.ok(window.Instances.getInstance('acnet2.temperature').getVariable().hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY), "Parameter capability injected to parameter variables");
+                            assert.ok(window.Model.neuroml.network_ACnet2.temperature.hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY), "Parameter capability injected to parameter instances");
                             // test if visual group capability is injected in visual groups
                             assert.ok(window.acnet2.pyramidals_48[0].hasCapability(GEPPETTO.Resources.VISUAL_GROUP_CAPABILITY), "Visual group capability injected to instances of visual types with visual groups");
                             // test if connection capability is injected in connection variables

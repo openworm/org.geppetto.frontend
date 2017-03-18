@@ -114,6 +114,7 @@ define(function (require) {
 
     var DropDownControlComp = React.createClass({
     	onClickHandler : null,
+    	menuPosition : null,
     	
         getInitialState: function () {
             return {
@@ -123,39 +124,30 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-        	var menuPosition=null;
-            var menuSize = null;
             var self = this;
-            //if position wasn't specify for location of menu list
-            if(self.props.configuration.menuPosition == null || undefined){
-            	//compute best spot for menu to show up by getting the button's top
-            	//and left values, and considering padding values as well
-            	menuPosition = self.getMenuPosition();
-            }else{
-            	//assign position of menu to what it is in configuration passed
-            	menuPosition = self.props.configuration.menuPosition;
-            }
-            
-            //if position wasn't specify for location of menu list
-            if(self.props.configuration.menuSize != null || undefined){
-            	menuSize = { 
-            			width : self.props.configuration.menuSize.width,
-            			height: self.props.configuration.menuSize.height
-            	}
-            }
             
             var selector = $("#"+this.props.configuration.id+"-dropDown");
-            selector.css({
-                top: menuPosition.top, right: menuPosition.right,
-                bottom: menuPosition.bottom, left: menuPosition.left, position: 'fixed'
+            
+            window.addEventListener('resize', function(event){
+            	if(selector!=null && selector!=undefined){
+            		if(self.state.visible){
+                        self.menuPosition = self.getMenuPosition();
+            			selector.css({
+            				top: self.menuPosition.top, right: self.menuPosition.right,
+            				bottom: self.menuPosition.bottom, left: self.menuPosition.left, position: 'fixed',
+            			});
+            		}
+            	}
             });
         },
 
         renderListItems: function () {
             var items = [];
-            for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
-                var item = this.props.configuration.menuItems[i];
-                items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
+            if(this.props.configuration.menuItems != undefined || null){
+            	for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
+            		var item = this.props.configuration.menuItems[i];
+            		items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
+            	}
             }
             return items;
         },
@@ -189,13 +181,65 @@ define(function (require) {
         	this.setState({visible: false});
         },
 
-        open: function () {            
+        calculateSizeandPosition : function(){
+            var menuSize = null;
+        	var self = this;
+            //if position wasn't specify for location of menu list
+            if(self.props.configuration.menuPosition == null || self.props.configuration.menuPosition == undefined){
+            	//compute best spot for menu to show up by getting the button's top
+            	//and left values, and considering padding values as well
+            	this.menuPosition = self.getMenuPosition();
+            }else{
+            	//assign position of menu to what it is in configuration passed
+            	this.menuPosition = self.props.configuration.menuPosition;
+            }
+            
+            if(self.props.configuration.menuSize != null && self.props.configuration.menuSize != undefined){
+            	menuSize = { 
+            			width : self.props.configuration.menuSize.width,
+            			height: self.props.configuration.menuSize.height
+            	}
+            }
+            
+            var selector = $("#"+this.props.configuration.id+"-dropDown");
+            selector.css({
+                top: self.menuPosition.top, right: self.menuPosition.right,
+                bottom: self.menuPosition.bottom, left: self.menuPosition.left, position: 'fixed',
+            });
+            
+            var table = $("#"+this.props.configuration.id+"-dropDownTable");
+            if(menuSize!=null){
+            	if(menuSize.width != undefined && menuSize.height!=undefined){
+            		table.css({
+            			width: menuSize.width,
+            			height: menuSize.height,
+            		});
+            	}
+            }
+        },
+        
+        open: function () {
+        	this.calculateSizeandPosition();
+            
+        	//makes sure that menu position is not offscreen or at 0,0
+        	if(this.menuPosition.top <=0 && this.menuPosition.left<=0){
+        		this.menuPosition = this.getMenuPosition();
+            	var selector = $("#"+this.props.configuration.id+"-dropDown");
+            	
+            	if(this.menuPosition!= null && this.menuPosition!=undefined){
+            		var that = this;
+            		selector.css({
+            			top: that.menuPosition.top, right: that.menuPosition.right,
+            			bottom: that.menuPosition.bottom, left: that.menuPosition.left, position: 'fixed'
+            		});
+            	}
+        	}
             this.setState({visible: true});
         },
         
         render: function () {
             return (
-                <div id={this.props.configuration.id+"-dropDown"} className={(this.state.visible ? 'show' : 'hide') + " dropDownButtonContainer"}>
+                <div id={this.props.configuration.id+"-dropDownTable"} className={(this.state.visible ? 'show' : 'hide') + " dropDownButtonContainer"}>
                     <table className={this.props.configuration.menuCSS + " dropDownTable"} id="dropDownTable">
                         <tbody>
                             {this.renderListItems()}
@@ -216,29 +260,50 @@ define(function (require) {
             return {
                 icon: this.props.configuration.iconOff,
                 open: false,
-                menuItems : null,        
+                menuItems : this.props.configuration.menuItems,        
             };
         },
                 
+        refresh : function(){
+        	this.forceUpdate();
+        },
+        
+        updateMenuItems : function(items){
+        	this.setState({menuItems : items});
+        },
+        
+        addMenuItem : function(item){
+        	if(this.props.configuration.menuItems== null || this.props.configuration.menuItems== undefined){
+        		this.props.configuration.menuItems = new Array();
+        	}
+        	this.props.configuration.menuItems.push(item);
+    		this.refresh();
+        },
+        
         //Makes the drop down menu visible
         showMenu: function () {
             var self = this;
-            if (self.state.menuItems.length > 0) {
+            if (self.props.configuration.menuItems.length > 0) {
                 self.refs.dropDown.open();    
             }
+            
+            var showIcon = this.props.configuration.iconOn;
+            this.setState({open: true, icon: showIcon});
             return false;
         },
         
         hideMenu : function(){
         	this.refs.dropDown.close();
+        	var showIcon = this.props.configuration.iconOff;
+            this.setState({open: false, icon: showIcon});
         },
         
         //Adds external handler for click events, notifies it when a drop down item is clicked
         selectionChanged : function(value){
         	if(this.props.configuration.closeOnClick){
 				this.toggleMenu();
+				this.onClickHandler(value);
 			}
-			this.onClickHandler(value);
         },
         
         //Adds external load handler, gets notified when component is mounted and ready
@@ -262,7 +327,20 @@ define(function (require) {
             self.onClickHandler = self.props.configuration.onClickHandler;
             
             //attach external handler for clicking events
-            self.addExternalLoadHandler();                    
+            self.addExternalLoadHandler();
+            if(this.props.configuration.closeOnClick){
+            	$('body').click(function(e) {
+            	    if (!$(e.target).closest(".btn").length){
+            	    	if(self.props.configuration.closeOnClick){
+             				if(self.state.open){
+             					if(self.isMounted()){
+             						self.hideMenu();
+             					}
+             				}
+             			}
+            	    }
+            	});
+            }
         },
 
         //toggles visibility of drop down menu
@@ -271,29 +349,22 @@ define(function (require) {
         	
             if (this.state.open) {
                 this.hideMenu();
-            	showIcon = this.props.configuration.iconOff;
-                this.setState({open: false, icon: showIcon});
             } else {
             	this.showMenu();
-                showIcon = this.props.configuration.iconOn;
-                this.setState({open: true, icon: showIcon});
             }
         },
         
         render: function () {
-        	//initializes drop down items from configuration
-        	this.state.menuItems = this.props.configuration.menuItems;
-
             return (
-                <div className="menuButtonContainer">
-                    <button className={this.props.configuration.id + " btn"} type="button" title=''
+                    <div className="menuButtonContainer">
+                    <button className={this.props.configuration.id + " btn "+ this.props.configuration.buttonClassName} type="button" title=''
                           id={this.props.configuration.id}  onClick={this.toggleMenu} disabled={this.props.configuration.buttonDisabled} ref="menuButton">
                         <i className={this.state.icon + " menuButtonIcon"}></i>
                         {this.props.configuration.label}
-                    </button>
-                    <div id={this.props.configuration.id+"-dropDown"} className="menuListContainer">
-                    <DropDownControlComp handleSelect={this.selectionChanged}  ref="dropDown" configuration={this.props.configuration}/></div>
-                </div>
+                     </button>
+                     <div id={this.props.configuration.id+"-dropDown"} className="menuListContainer">
+                     <DropDownControlComp handleSelect={this.selectionChanged}  ref="dropDown" configuration={this.props.configuration}/></div>
+                     </div>
             );
         }
     });

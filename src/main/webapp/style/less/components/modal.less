@@ -1,0 +1,37 @@
+.modal {
+
+	z-index : 9999999;
+
+    input {
+        font-weight: 200;
+    }
+
+	.modal-content {
+		background:rgba(66, 59, 59, 0.8);
+		border-radius:0px!important;
+		color:@orange;
+	}
+	
+	.modal-header{
+		border:0;
+		padding : 10px;
+	}
+
+    .modal-body{
+    	border:0;
+        max-height: 50%;  
+    }
+    .modal-footer{
+    	border:0;
+    	padding : 10px;
+    }
+
+}
+
+
+
+@import "modal/help-modal";
+@import "modal/loading-modal";
+@import "modal/loading-spinner";
+@import "modal/info-modal";
+@import "modal/error-modal";

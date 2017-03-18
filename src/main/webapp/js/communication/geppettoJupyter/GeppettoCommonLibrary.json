@@ -1,0 +1,79 @@
+{
+    "eClass": "GeppettoLibrary",
+    "id": "common",
+    "name": "Geppetto Common Library",
+    "types": [
+        {
+            "eClass": "ParameterType",
+            "id": "Parameter",
+            "name": "Parameter",
+            "abstract": false
+        },
+        {
+            "eClass": "DynamicsType",
+            "id": "Dynamics",
+            "name": "Dynamics",
+            "abstract": false
+        },
+        {
+            "eClass": "StateVariableType",
+            "id": "StateVariable",
+            "name": "State Variable",
+            "abstract": false
+        },
+        {
+            "eClass": "DerivedStateVariableType",
+            "id": "DerivedStateVariable",
+            "name": "Derived State Variable",
+            "abstract": false
+        },
+        {
+            "eClass": "HTMLType",
+            "id": "HTML",
+            "name": "HTML",
+            "abstract": false
+        },
+        {
+            "eClass": "URLType",
+            "id": "URL",
+            "name": "URL",
+            "abstract": false
+        },
+        {
+            "eClass": "TextType",
+            "id": "Text",
+            "name": "Text",
+            "abstract": false
+        },
+        {
+            "eClass": "PointType",
+            "id": "Point",
+            "name": "Point",
+            "abstract": false
+        },
+        {
+            "eClass": "ExpressionType",
+            "id": "Expression",
+            "name": "Expression",
+            "abstract": false
+        },
+        {
+            "eClass": "VisualType",
+            "id": "Visual",
+            "name": "Visual",
+            "abstract": false
+        },
+        {
+            "eClass": "PointerType",
+            "id": "Pointer",
+            "name": "Pointer",
+            "abstract": false
+        },
+        {
+            "eClass": "ImageType",
+            "id": "Image",
+            "name": "Image",
+            "abstract": false
+        }
+    ]
+}

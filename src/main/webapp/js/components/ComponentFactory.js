@@ -63,29 +63,39 @@ define(function (require) {
 			'CHECKBOX': 'controls/Checkbox',
 			'TEXTFIELD': 'controls/TextField',
 			'RAISEDBUTTON': 'controls/RaisedButton'
-		}
-		
-	
+		};
+
 		GEPPETTO.ComponentFactory = {
+
+			componentsMap: {},
 				
 			loadSpinner:function(){
 				//We require this synchronously to properly show spinner when loading projects
 				this.renderComponent(React.createFactory(spinner)(),document.getElementById("load-spinner"));
 			},
-			
+
+			getComponents: function(){
+				return this.componentsMap;
+			},
+
 			addComponent: function(componentID, properties, container, callback){
 				var that=this;
+
 				require(["./" + components[componentID]], function(loadedModule){
-					var component = React.createFactory(loadedModule)(properties)
+					var component = React.createFactory(loadedModule)(properties);
 					var renderedComponent = that.renderComponent(component, container);
 					if(callback!=undefined){
 						callback(renderedComponent);
 					}
+
+					// keep track of components in dictionary
+					// NOTE: after widgets/components refactoring we need to keep track of all components created
+					that.componentsMap[componentID] = renderedComponent;
+
 					return renderedComponent;
 				});
 				
 			},
-
 
 			renderComponent: function(component, container){
 				//Let's create a dialog

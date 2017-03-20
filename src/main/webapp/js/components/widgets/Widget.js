@@ -83,8 +83,8 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             destroy: function () {
-               this.$el.remove();
-                this.destroyed=true;
+                this.$el.remove();
+                this.destroyed = true;
                 return this.name + " destroyed";
             },
 
@@ -96,7 +96,7 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             hide: function () {
-               this.$el.dialog('close').dialogExtend();
+                this.$el.dialog('close').dialogExtend();
 
                 this.visible = false;
 
@@ -110,7 +110,7 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             show: function () {
-               this.$el.dialog('open').dialogExtend();
+                this.$el.dialog('open').dialogExtend();
                 this.visible = true;
 
                 //Unfocused close button
@@ -654,8 +654,6 @@ define(function (require) {
             	}
             }
         })
-    }
-        ;
+    };
 
-})
-;
+});

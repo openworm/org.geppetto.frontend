@@ -54,8 +54,10 @@ define(function (require) {
                     GEPPETTO.Console.debugLog('added new observer');
                 }
 
+                var widgetSelector = $("#" + widgetID);
+
                 //registers remove handler for widget
-                $("#" + widgetID).on("remove", function () {
+                widgetSelector.on("remove", function () {
                     //remove tags and delete object upon destroying widget
                     GEPPETTO.Console.removeCommands(widgetID);
 
@@ -67,10 +69,20 @@ define(function (require) {
                             break;
                         }
                     }
+
+                    // remove from component factory dictionary
+                    // NOTE: this will go away after widgets/components refactoring
+                    var comps = GEPPETTO.ComponentFactory.getComponents();
+                    for(var c in comps){
+                        if(c == widgetID){
+                            delete comps[c];
+                            break;
+                        }
+                    }
                 });
 
                 //register resize handler for widget
-                $("#" + widgetID).on("dialogresizestop", function (event, ui) {
+                widgetSelector.on("dialogresizestop", function (event, ui) {
 
                     var height = ui.size.height;
                     var width = ui.size.width;
@@ -84,7 +96,7 @@ define(function (require) {
                 });
 
                 //register drag handler for widget
-                $("#" + widgetID).on("dialogdragstop", function (event, ui) {
+                widgetSelector.on("dialogdragstop", function (event, ui) {
 
                     var left = ui.position.left;
                     var top = ui.position.top;

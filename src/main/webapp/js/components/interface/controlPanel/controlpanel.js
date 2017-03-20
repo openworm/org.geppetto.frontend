@@ -1000,6 +1000,27 @@ define(function (require) {
                     "tooltip": "Hide"
                 }
             },
+            "material" : {
+                "condition": "'MeshBasicMaterial' in GEPPETTO.SceneController.getMaterial($instance$)",
+                "false" : {
+                    "id": "material",
+                    "actions" : [
+                        "GEPPETTO.SceneController.setMaterial($instance$);"
+                    ],
+                    "icon": "fa-paint-brush",
+                    "label": "Material",
+                    "tooltip": "Material"
+                },
+                "true": {
+                    "id": "material",
+                    "actions" : [
+                        "GEPPETTO.SceneController.setMaterial($instance$);"
+                    ],
+                    "icon": "fa-paint-brush",
+                    "label": "Material",
+                    "tooltip": "Material"
+                }
+            },
             "color": {
                 "id": "color",
                 "actions": [
@@ -1156,6 +1177,27 @@ define(function (require) {
                     "tooltip": "Hide"
                 }
             },
+            "material" : {
+                "condition": "'MeshBasicMaterial' in GEPPETTO.SceneController.getMaterial($instance$)",
+                "false" : {
+                    "id": "material",
+                    "actions" : [
+                        "GEPPETTO.SceneController.toggleMaterial($instance$);"
+                    ],
+                    "icon": "fa-paint-brush",
+                    "label": "Material",
+                    "tooltip": "Material"
+                },
+                "true": {
+                    "id": "material",
+                    "actions" : [
+                        "GEPPETTO.SceneController.toggleMaterial($instance$);"
+                    ],
+                    "icon": "fa-paint-brush",
+                    "label": "Material",
+                    "tooltip": "Material"
+                }
+            },
             "color": {
                 "id": "color",
                 "actions": [
@@ -1227,7 +1269,7 @@ define(function (require) {
     };
     var instancesControls = {
         "Common": [],
-        "VisualCapability": ['color', 'randomcolor', 'visibility', 'zoom'],
+        "VisualCapability": ['color', 'randomcolor', 'visibility', 'zoom', 'material'],
         "StateVariableCapability": ['watch', 'plot','plot2']
     };
 
@@ -1440,7 +1482,7 @@ define(function (require) {
             return {
                 columns: ['name', 'type', 'controls'],
                 data: [],
-                controls: {"Common": [], "VisualCapability": ['color', 'randomcolor', 'visibility', 'zoom']},
+                controls: {"Common": [], "VisualCapability": ['color', 'randomcolor', 'visibility', 'zoom', 'material']},
                 controlsConfig: defaultControlsConfiguration,
                 dataFilter: defaultDataFilter,
                 columnMeta: defaultControlPanelColumnMeta

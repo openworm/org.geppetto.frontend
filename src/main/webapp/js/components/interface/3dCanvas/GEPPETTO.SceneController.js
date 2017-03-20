@@ -517,8 +517,17 @@ define(function (require) {
                 return true;
             },
 
-            setMaterial: function(instancePath, threeMaterial) {
-                var meshes = this.getRealMeshesForInstancePath(instancePath);
+            toggleMaterial: function(instance, threeMaterial) {
+                var meshes = this.getRealMeshesForInstancePath(instance.getPath());
+                if (meshes.length == 0) {
+                    var children = instance.getChildren();
+                    for (var i=0; i<children.length; ++i)
+                        GEPPETTO.SceneController.toggleMaterial(children[i], threeMaterial);
+                }
+                if (threeMaterial === undefined) {
+                    var threeMaterial = this.getMaterial(instance) == "MeshPhongMaterial" ?
+                        THREE.MeshBasicMaterial : THREE.MeshPhongMaterial;
+                }
                 for (var i=0; i<meshes.length; ++i) {
                     var mesh = meshes[i];
                     var defaultColor = mesh.material.defaultColor;
@@ -533,6 +542,11 @@ define(function (require) {
                     mesh.material.ghosted = ghosted;
                     mesh.geometry.uvsNeedsUpdate = true;
                 }
+            },
+
+            getMaterial: function(instance) {
+                var meshes = this.getRealMeshesForInstancePath(instance.getPath());
+                return meshes.map(function(x) { return x.material.type });
             },
 
             /**

@@ -89,7 +89,6 @@ define(function (require) {
             },
 
             /**
-             *ff
              * Hides the widget
              *
              * @command hide()
@@ -641,7 +640,7 @@ define(function (require) {
             	this.controller = controller;
             },
             
-            showHistoryIcon : function(show){
+            showHistoryIcon: function(show){
             	var that=this;
             	if(show && this.$el.parent().find(".history-icon").length==0){
                     this.addButtonToTitleBar($("<div class='fa fa-history history-icon' title='Show Navigation History'></div>").click(function (event) {
@@ -652,6 +651,41 @@ define(function (require) {
             	else{
             		this.$el.parent().find(".history-icon").remove();
             	}
+            },
+
+            /**
+             * Get view with attributes common to all widgets
+             *
+             * @returns {{size: {height: *, width: *}, position: {left: *, top: *}}}
+             */
+            getView: function(){
+                // get default stuff such as id, position and size
+                return {
+                    size: {
+                        height: this.size.height,
+                        width: this.size.width
+                    },
+                    position: {
+                        left: this.position.left,
+                        top: this.position.top
+                    }
+                }
+            },
+
+            /**
+             * Set attributes common to all widgets - override for widget specific behaviour
+             *
+             * @param view
+             */
+            setView: function(view){
+                // set default stuff such as position and size
+                if(view.size != undefined){
+                    this.setSize(view.size.height, view.size.width);
+                }
+
+                if(view.position != undefined){
+                    this.setPosition(view.position.left, view.position.top);
+                }
             }
         })
     };

@@ -89,7 +89,6 @@ define(function (require) {
 					}
 
 					// keep track of components in dictionary
-					// NOTE: after widgets/components refactoring we need to keep track of all components created
 					that.componentsMap[componentID] = renderedComponent;
 
 					return renderedComponent;

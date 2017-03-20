@@ -23,6 +23,7 @@ define(function (require) {
                         name: project.name,
                         type: project.type,
                         id: project.id,
+                        view: project.view,
                         _metaType: GEPPETTO.Resources.PROJECT_NODE,
                     });
 
@@ -56,6 +57,7 @@ define(function (require) {
                         lastModified: node.lastModified,
                         status: node.status,
                         script: node.script,
+                        view: node.view,
                         _metaType: GEPPETTO.Resources.EXPERIMENT_NODE,
                     });
                 

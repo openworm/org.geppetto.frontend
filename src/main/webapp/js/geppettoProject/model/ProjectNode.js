@@ -21,6 +21,7 @@ define(['backbone'], function (require) {
         downloadPermission : null,
         readOnly : true,
         isPublicProject : false,
+        view: {},
 
         /**
          * Initializes this project with passed attributes

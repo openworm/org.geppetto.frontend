@@ -18,6 +18,7 @@ define(['backbone'], function (require) {
         variables: null,
         parameters: null,
         script: "",
+        view: {},
         writePermission: null,
         login: null,
         runPermission: null,

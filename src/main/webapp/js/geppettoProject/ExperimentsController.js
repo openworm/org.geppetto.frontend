@@ -204,7 +204,7 @@ define(function (require) {
                     var parameters = {};
                     parameters["experimentId"] = Project.getActiveExperiment().getId();
                     parameters["projectId"] = Project.getId();
-                    parameters["view"] = view;
+                    parameters["view"] = JSON.stringify(view);
 
                     GEPPETTO.MessageSocket.send("set_experiment_view", parameters);
                 } else {

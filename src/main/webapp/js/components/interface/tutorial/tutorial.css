@@ -10,13 +10,22 @@
     display: block;
     z-index:500;
 }
-
+.invert{
+    filter: invert(100%);
+}
+.center{
+	margin: 0 auto;
+    display: block;
+    margin-bottom:20px;
+    margin-top:20px;
+}
 .tutorial-message{
 	display: inline-block;
 	width: auto;
 	minHeight: 0px;
 	maxHeight: none;
-	height: 180px;
+	height: 80%;
+	width:100%;
 	color: #fc6320;
 }
 

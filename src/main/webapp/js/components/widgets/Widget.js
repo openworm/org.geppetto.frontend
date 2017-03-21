@@ -36,6 +36,7 @@ define(function (require) {
             previousMaxSize : {},
             maximize : false,
             collapsed : false,
+            widgetType: null,
 
             defaultSize : function(){return {height: 300, width: 350}},
             defaultPosition : function(){return {left: "50%", top: "50%"}},
@@ -54,6 +55,7 @@ define(function (require) {
                 this.position = this.defaultPosition();
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
+                this.widgetType = options.widgetType;
                 this.registeredEvents = [];
                 
                 var self = this;
@@ -106,7 +108,7 @@ define(function (require) {
              *  Opens widget dialog
              *
              * @command show()
-             * @returns {String} - Action Message
+             * @returns {Object} - Action Message
              */
             show: function () {
                 this.$el.dialog('open').dialogExtend();
@@ -116,6 +118,15 @@ define(function (require) {
                 $(".ui-dialog-titlebar-close").blur();
 
                 return this;
+            },
+
+            /**
+             * Returns widget type as defined in GEPPETTO.Widgets
+             *
+             * @returns {int}
+             */
+            getWidgetType: function(){
+                return this.widgetType;
             },
 
             /**
@@ -179,7 +190,7 @@ define(function (require) {
              * @param {Integer} h - Minimum Height of the widget
              */
             setMinHeight: function (h) {
-               this.$el.dialog('option', 'minHeight', h).dialogExtend();
+                this.$el.dialog('option', 'minHeight', h).dialogExtend();
                 return this;
             },
 
@@ -188,7 +199,7 @@ define(function (require) {
              * @param {Integer} w - Minimum Width of the widget
              */
             setMinWidth: function (w) {
-               this.$el.dialog('option', 'minWidth', w).dialogExtend();
+                this.$el.dialog('option', 'minWidth', w).dialogExtend();
                 return this;
             },
 
@@ -661,6 +672,7 @@ define(function (require) {
             getView: function(){
                 // get default stuff such as id, position and size
                 return {
+                    widgetType: this.widgetType,
                     size: {
                         height: this.size.height,
                         width: this.size.width

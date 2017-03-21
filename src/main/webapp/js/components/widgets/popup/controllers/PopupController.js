@@ -30,7 +30,7 @@ define(function (require) {
             var name = id;
 
             //create popup widget
-            var p = window[name] = new Popup({id: id, name: name, visible: true, controller: this});
+            var p = window[name] = new Popup({id: id, name: name, visible: true, controller: this, widgetType: GEPPETTO.Widgets.POPUP});
             p.setController(this);
             p.setSize(394,490);
             //create help command for plot

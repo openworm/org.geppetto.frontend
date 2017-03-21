@@ -34,7 +34,8 @@ define(function (require) {
                 name: name,
                 visible: true,
                 width: 260,
-                height: 350
+                height: 350,
+                widgetType: GEPPETTO.Widgets.TREEVISUALISERDAT
             });
             // create help command for plot
             tvdat.help = function () {

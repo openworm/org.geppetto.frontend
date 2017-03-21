@@ -56,7 +56,7 @@ define(function (require) {
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("ButtonBar", this.widgets);
             var name = id;
-            var vv = window[name] = new BuBar({id: id, name: name, visible: true});
+            var vv = window[name] = new BuBar({id: id, name: name, visible: true, widgetType: GEPPETTO.Widgets.BUTTONBAR});
             vv.help = function () {
                 return GEPPETTO.Console.getObjectCommands(id);
             };

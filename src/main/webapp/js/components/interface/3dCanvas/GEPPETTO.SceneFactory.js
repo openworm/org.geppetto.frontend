@@ -114,8 +114,14 @@ define(function (require) {
                     var mergedObjs = GEPPETTO.SceneFactory.merge3DObjects(threeDeeObjList, materials);
                     // investigate need to obj.dispose for obj in threeDeeObjList
                     if (mergedObjs != null) {
-                        mergedObjs.map(function(x) { x.instancePath = instance.getInstancePath();
-                                                     instanceObjects.push(x); });
+                        // TODO unify these two cases (see also this.merge3DObjects)
+                        if (mergedObjs.length > 0) {
+                            mergedObjs.map(function(x) { x.instancePath = instance.getInstancePath();
+                                                         instanceObjects.push(x); });
+                        } else {
+                            mergedObjs.instancePath = instance.getInstancePath();
+                            instanceObjects.push(mergedObjs);
+                        }
                     } else {
                         for (var obj in threeDeeObjList) {
                             threeDeeObjList[obj].instancePath = instance.getInstancePath();
@@ -198,7 +204,7 @@ define(function (require) {
                             throw Error("Merging of multiple OBJs or Colladas not supported");
                         }
                         else {
-                            ret = [obj];
+                            ret = obj;
                         }
                     }
                     else {
@@ -217,19 +223,18 @@ define(function (require) {
                 if (mergedLines === undefined) {
                     // There are no line geometries, we just create a mesh for the merge of the solid geometries
                     // and apply the mesh material
-                    ret = [new THREE.Mesh(mergedMeshes, materials["mesh"])];
+                    ret = new THREE.Mesh(mergedMeshes, materials["mesh"]);
                 } else {
-                    ret = [new THREE.LineSegments(mergedLines, materials["line"])];
+                    ret = new THREE.LineSegments(mergedLines, materials["line"]);
                     if (mergedMeshes != undefined) {
-                        // we merge into a single mesh both types of geometries (from lines and 3D objects)
-                        // var tempmesh = new THREE.Mesh(mergedMeshes, materials["mesh"]);
-                        /// ret.geometry.merge(tempmesh.geometry, tempmesh.matrix);
                         ret = [new THREE.Mesh(mergedMeshes, materials["mesh"]), new THREE.LineSegments(mergedLines, materials["line"])];
                     }
                 }
 
                 if (ret != null && !Array.isArray(ret)) {
                     ret.mergedMeshesPaths = mergedMeshesPaths;
+                } else {
+                    ret.map(function(x) { return x.mergedMeshesPaths = mergedMeshesPaths; });
                 }
 
                 return ret;

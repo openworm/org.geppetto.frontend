@@ -446,7 +446,7 @@ THREE.OBJLoader.prototype = {
             });
         material.defaultColor = color;
         material.defaultOpacity = 1;
-        mesh = new THREE.Points(geometry, material);
+        var mesh = new THREE.Points(geometry, material);
 
 
         return mesh;

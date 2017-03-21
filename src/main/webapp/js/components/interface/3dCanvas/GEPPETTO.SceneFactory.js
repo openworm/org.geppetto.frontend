@@ -51,13 +51,16 @@ define(function (require) {
                         // mesh.geometry.translate(position.x, position.y,position.z);
                     }
                     GEPPETTO.getVARS().scene.add(mesh);
-                    GEPPETTO.getVARS().meshes[instancePath] = mesh;
-                    GEPPETTO.getVARS().meshes[instancePath].visible = true;
-                    GEPPETTO.getVARS().meshes[instancePath].ghosted = false;
-                    GEPPETTO.getVARS().meshes[instancePath].defaultOpacity = 1;
-                    GEPPETTO.getVARS().meshes[instancePath].selected = false;
-                    GEPPETTO.getVARS().meshes[instancePath].input = false;
-                    GEPPETTO.getVARS().meshes[instancePath].output = false;
+                    mesh.visible = true;
+                    mesh.ghosted = false;
+                    mesh.defaultOpacity = 1;
+                    mesh.selected = false;
+                    mesh.input = false;
+                    mesh.output = false;
+                    if (GEPPETTO.getVARS().meshes[instancePath] === undefined)
+                        GEPPETTO.getVARS().meshes[instancePath] = [mesh];
+                    else
+                        GEPPETTO.getVARS().meshes[instancePath].push(mesh);
 
                     //Split anything that was splitted before
                     if (instancePath in GEPPETTO.getVARS().splitMeshes) {
@@ -87,10 +90,19 @@ define(function (require) {
                 var previous3DObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 var color = undefined;
                 if (previous3DObject) {
-                    color=previous3DObject.material.defaultColor;
+                    if (previous3DObject.length > 0)
+                        // TODO: meshes for instance may have different colors
+                        color = previous3DObject[0].material.defaultColor;
+                    else
+                        color = previous3DObject.material.defaultColor;
                     // if an object already exists for this aspect we remove it. This could happen in case we are changing how an aspect
                     // is visualized, e.g. lines over tubes representation
-                    GEPPETTO.getVARS().scene.remove(previous3DObject);
+                    if (previous3DObject.length > 0) {
+                        for (var i=0; i<previous3DObject.length; ++i)
+                            GEPPETTO.getVARS().scene.remove(previous3DObject[i]);
+                    } else {
+                        GEPPETTO.getVARS().scene.remove(previous3DObject);
+                    }
                     var splitMeshes = GEPPETTO.getVARS().splitMeshes;
                     for (var m in splitMeshes) {
                         if (m.indexOf(instance.getInstancePath()) != -1) {

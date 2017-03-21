@@ -251,7 +251,11 @@ define(function (require) {
                 }
                 else {
                     if (instancePath in GEPPETTO.getVARS().meshes) {
-                        meshes.push(GEPPETTO.getVARS().meshes[instancePath]);
+                        var instanceMeshes = GEPPETTO.getVARS().meshes[instancePath];
+                        if (instanceMeshes.length > 0)
+                            meshes = meshes.concat(instanceMeshes);
+                        else
+                            meshes.push(instanceMeshes);
                     }
                 }
                 return meshes;

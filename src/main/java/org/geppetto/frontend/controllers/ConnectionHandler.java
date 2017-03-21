@@ -739,7 +739,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			catch(GeppettoExecutionException | GeppettoAccessException e)
 			{
-				error(e, "There was an error setting parameters");
+				error(e, "There was an error setting experiment view");
 			}
 		}
 		else

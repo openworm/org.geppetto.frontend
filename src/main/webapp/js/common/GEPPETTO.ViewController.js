@@ -30,7 +30,7 @@ define(function(require)
                     for(var cv in componentViews){
                         // TODO: check if exists and create widget/component if not
                         var component = GEPPETTO.ComponentFactory.getComponents()[cv];
-                        if(component != undefined && typeof components[c].setView == 'function'){
+                        if(component != undefined && typeof component.setView == 'function'){
                             component.setView(componentViews[cv]);
                         }
                     }

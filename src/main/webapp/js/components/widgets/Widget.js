@@ -673,6 +673,7 @@ define(function (require) {
                 // get default stuff such as id, position and size
                 return {
                     widgetType: this.widgetType,
+                    name: this.name,
                     size: {
                         height: this.size.height,
                         width: this.size.width
@@ -697,6 +698,10 @@ define(function (require) {
 
                 if(view.position != undefined){
                     this.setPosition(view.position.left, view.position.top);
+                }
+
+                if(view.name != undefined){
+                    this.setName(view.name);
                 }
             }
         })

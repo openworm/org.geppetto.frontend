@@ -28,9 +28,20 @@ define(function(require)
             applyViewToComponentOrCreate: function(componentViews){
                 if(componentViews != undefined){
                     for(var cv in componentViews){
-                        // TODO: check if exists and create widget/component if not
+                        // retrieve widget / component from factory
                         var component = GEPPETTO.ComponentFactory.getComponents()[cv];
-                        if(component != undefined && typeof component.setView == 'function'){
+                        // widget / component not found, need to create it
+                        if(component == undefined) {
+                            // NOTE: this bit needs to be refactored once widgets/components are consolidated
+                            if(componentViews[cv].widgetType != undefined){
+                                component = GEPPETTO.WidgetFactory.addWidget(componentViews[cv].widgetType);
+                            } else if(componentViews[cv].componentType != undefined) {
+                                // TODO: create component with component factory
+                            }
+                        }
+
+                        if(typeof component.setView == 'function'){
+                            // if the interface is exposed, set view
                             component.setView(componentViews[cv]);
                         }
                     }

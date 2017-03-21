@@ -58,7 +58,13 @@ define(function (require) {
 		dontShowAtStartup: function(val){
 			$.cookie('ignore_tutorial', true);
 		},
-
+		
+		getDefaultProps: function() {
+		   return {
+			   id: "tutorial"
+		   };
+		 },
+		
 		getInitialState: function() {
 			return {
 				tutorialData: {},
@@ -127,14 +133,13 @@ define(function (require) {
 		},
 
 		close : function(){
-			$('#tutorial').hide();
+			$(this.__container).parent().hide();
 		},
 
 		open : function(started){
-			$('#tutorial').show();
-			if(!started){
-				$('#tutorialMain').removeClass("hideTutorial");
-			}
+			var p=$(this.__container).parent();
+			p.show();
+			p.effect("shake", {distance:5, times: 3}, 500);
 		},
 
 		setTutorial : function(tutorialURL){
@@ -166,6 +171,7 @@ define(function (require) {
 		loadTutorial : function(tutorialData){
 			this.state.tutorialData[tutorialData.name] = tutorialData; 
 			this.state.activeTutorial=tutorialData.name;
+			this.state.currentStep=0;
 			this.forceUpdate();
 			if(!this.getCookie()){
 				this.start();
@@ -182,7 +188,7 @@ define(function (require) {
                     data.push({
                         "label": allTutorials[i],
                         "action": ["GEPPETTO.Tutorial.goToChapter('"+allTutorials[i]+"')"],
-                        "icon": null,
+                        "icon": "fa fa-bookmark",
                         "position": i
                     })
                 }
@@ -212,7 +218,10 @@ define(function (require) {
 	                event.stopPropagation();
 				});
 	
-	        	var dialog = $("#tutorialMain");
+	        	var dialog = $(this.__container).parent();
+	        	var closeButton=dialog.find("button.ui-dialog-titlebar-close");
+	        	closeButton.off("click");
+	        	closeButton.click(this.close);
 	        	dialog.find("div.ui-dialog-titlebar").prepend(button);
 	        	$(button).addClass("widget-title-bar-button");
         	}
@@ -294,43 +303,27 @@ define(function (require) {
 			
 				var step = activeTutorial.steps[this.state.currentStep];
 										
+				var dialog = $(this.__container).parent();
+				dialog.find(".ui-dialog-title").html(step.title);
 				var iconClass = "";
 				if(step.icon!=null && step.icon!=undefined && step.icon!=""){
 					iconClass = step.icon+" fa-3x"; 
 				}
 				
-				var prevDisabled = true;
-				var lastStep = false;
-				var lastStepLabel = "";
-				
-				if(this.state.currentStep == activeTutorial.steps.length-1){
-					lastStep = true;
-					lastStepLabel = "Restart";
-					prevDisabled = false;
-				}else if(this.state.currentStep >= 1){
-					prevDisabled = false;
-				}else if(this.state.currentStep <= 0){
-					prevDisabled = true;
-				}
-			
+				var prevDisabled = this.state.currentStep == 0;
+				var lastStep = this.state.currentStep == activeTutorial.steps.length-1;
+				var lastStepLabel = (this.state.currentStep == activeTutorial.steps.length-1)?"Restart":"";
 				var cookieClass=this.state.currentStep==0?"checkbox-inline cookieTutorial":"hide";
 				
-				
-				var style={};
-				if(activeTutorial.height!=undefined || activeTutorial.width!=undefined){
-					style = {
-		    	      width: activeTutorial.width+"px",
-		    	      height: activeTutorial.height+"px"
-		    	    };	
+				if(activeTutorial.height!=undefined){
+					dialog.height(activeTutorial.height+"px");
+				}
+				if(activeTutorial.width!=undefined){
+					dialog.width(activeTutorial.width+"px");
 				}
 			    
-				return  <div id="tutorialMain" className={(ignoreTutorial? "hideTutorial" : "showTutorial") + " tutorial ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-draggable-disabled ui-state-disabled noStyleDisableDrag"}
-				style={style}>
-				<div className="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-					<span id="ui-id-5" className="tutorialTitle">{step.title}</span>
-						<button className="ui-dialog-titlebar-close" onClick={this.close}><i className="fa fa-close" /></button>
-				</div>
-				<div className="tutorial-message dialog ui-dialog-content ui-widget-content popup">
+				return  <div>
+				<div className="tutorial-message">
 				 <div id="tutorialIcon" className={iconClass}></div>
 				 <div id="message" dangerouslySetInnerHTML={this.getHTML(step.message)}></div>
 				</div>

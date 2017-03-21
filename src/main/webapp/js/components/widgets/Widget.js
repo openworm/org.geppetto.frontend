@@ -499,7 +499,7 @@ define(function (require) {
              * Perform a jquery ui effect to the widget
              */
             perfomEffect: function (effect, options, speed){
-                this.$el.parent().effect(effect, options, speed)
+                this.$el.parent().effect(effect, options, speed);
             },
 
             /**

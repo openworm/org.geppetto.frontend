@@ -265,7 +265,7 @@ define(function (require) {
             
             toggleTutorial : function() {
             	 var returnMessage;
-            	 var modalVisible = $('#tutorial').is(':visible');
+            	 var modalVisible = $('#tutorial_dialog').is(':visible');
             	 
                  if (modalVisible) {
                 	 GEPPETTO.trigger(GEPPETTO.Events.Hide_Tutorial);

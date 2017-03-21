@@ -1,15 +1,3 @@
-.tutorial{
-    position: absolute;
-    height: 300px;
-    width: 400px;
-    top:140px;
-  	left: 0; 
-  	right: 0; 
-  	margin-left: auto; 
-  	margin-right: auto; 
-    display: block;
-    z-index:500;
-}
 .invert{
     filter: invert(100%);
 }
@@ -27,6 +15,11 @@
 	height: 80%;
 	width:100%;
 	color: #fc6320;
+	overflow: scroll!important;
+}
+
+.tutorial-message a{
+	cursor:pointer;
 }
 
 #ignoreTutorial {

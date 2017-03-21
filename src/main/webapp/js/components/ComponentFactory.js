@@ -106,7 +106,7 @@ define(function (require) {
 	                                $("#" + this.id).remove();
 	                            }
 	                        }
-	                    });
+	                    }); 
 
 	                var dialogParent = dialog.parent();
 	                var that = this;
@@ -122,7 +122,11 @@ define(function (require) {
 	                container = dialog.get(0);
 				}
 
-				return ReactDOM.render(component, container);
+				
+				var renderedComponent = ReactDOM.render(component, container);
+				renderedComponent.__container = container;
+				return renderedComponent;
+				
 			}
 	    };
 	};

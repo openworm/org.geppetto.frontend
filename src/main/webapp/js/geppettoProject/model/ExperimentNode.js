@@ -478,6 +478,22 @@ define(['backbone'], function (require) {
         },
 
         /**
+         * Gets experiment view
+         *
+         * @returns {exports.view|{}}
+         */
+        getView: function(){
+            var viewsString = this.get('view');
+            var views = undefined;
+
+            if(viewsString != undefined){
+                views = JSON.parse(viewsString);
+            }
+
+            return views;
+        },
+
+        /**
          * Print out formatted node
          */
         print: function () {

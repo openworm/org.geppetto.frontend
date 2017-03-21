@@ -18,8 +18,13 @@ define(function(require)
                 }
 
                 // apply project and experiment view
-                this.applyViewToComponentOrCreate(projectView.views);
-                this.applyViewToComponentOrCreate(experimentView.views);
+                if(projectView != undefined && projectView.views != undefined){
+                    this.applyViewToComponentOrCreate(projectView.views);
+                }
+
+                if(experimentView != undefined && experimentView.views != undefined) {
+                    this.applyViewToComponentOrCreate(experimentView.views);
+                }
 
                 // setup monitor loop to track changes every 1000ms
                 this.monitorInterval = setInterval(this.monitorView, 1000);

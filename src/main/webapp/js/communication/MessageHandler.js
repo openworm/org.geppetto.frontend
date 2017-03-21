@@ -93,10 +93,10 @@ define(function (require) {
             GEPPETTO.trigger(GEPPETTO.Events.Experiment_loaded);
 
             // get project and experiment views
-            var projectView = window.Project.view;
+            var projectView = window.Project.getView();
             var experimentView = null;
             if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined){
-                experimentView = window.Project.getActiveExperiment().view;
+                experimentView = window.Project.getActiveExperiment().getView();
             }
             GEPPETTO.ViewController.applyView(projectView, experimentView);
             

@@ -23,8 +23,8 @@ define(function (require) {
                         name: project.name,
                         type: project.type,
                         id: project.id,
-                        view: project.view,
-                        _metaType: GEPPETTO.Resources.PROJECT_NODE,
+                        view: (project.view != undefined) ? project.view.viewString : undefined,
+                        _metaType: GEPPETTO.Resources.PROJECT_NODE
                     });
 
                 p.persisted = persisted;
@@ -57,7 +57,7 @@ define(function (require) {
                         lastModified: node.lastModified,
                         status: node.status,
                         script: node.script,
-                        view: node.view,
+                        view: (node.view != undefined) ? node.view.viewString : undefined,
                         _metaType: GEPPETTO.Resources.EXPERIMENT_NODE,
                     });
                 

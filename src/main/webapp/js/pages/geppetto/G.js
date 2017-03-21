@@ -615,7 +615,7 @@ define(function (require) {
             },
             
             addBrightnessListener: function(instance, modulation, colorfn){
-                GEPPETTO.trigger(Events.Lit_entities_changed);
+                GEPPETTO.trigger(GEPPETTO.Events.Lit_entities_changed);
             	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
             	    if((stateVariableInstance.getTimeSeries() != undefined) &&
                        (step<stateVariableInstance.getTimeSeries().length)){
@@ -627,7 +627,7 @@ define(function (require) {
             clearBrightnessFunctions: function (varnode) {
                 var i = this.litUpInstances.indexOf(varnode);
                 this.litUpInstances.splice(i, 1);
-                GEPPETTO.trigger(Events.Lit_entities_changed);
+                GEPPETTO.trigger(GEPPETTO.Events.Lit_entities_changed);
                 if (this.litUpInstances.length == 0) {
                     this.brightnessFunctionSet = false;
                 }

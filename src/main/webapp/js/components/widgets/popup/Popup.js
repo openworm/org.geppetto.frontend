@@ -92,6 +92,8 @@ define(function (require) {
 		 * @param {String} msg - The message that is displayed inside the widget
 		 */
 		setMessage: function (msg) {
+			this.data = msg;
+
 			$("#" + this.id).html(msg);
 			GEPPETTO.Console.debugLog("Set new Message for " + this.id);
 
@@ -346,6 +348,45 @@ define(function (require) {
         		ReactDOM.unmountComponentAtNode(bar);
         	}
             Widget.View.prototype.destroy.call(this);
-        }
+        },
+
+		getView: function(){
+			var baseView = Widget.View.prototype.getView.call(this);
+
+			// add data-type and data field + any other custom fields in the component-specific attribute
+			baseView.dataType = (typeof this.data == "string") ? "string" : "object";
+			baseView.data = this.data;
+			baseView.componentSpecific = {
+				customHandlers: this.customHandlers
+			};
+
+			return baseView;
+		},
+
+		setView: function(view){
+			// set base properties
+			Widget.View.prototype.setView.call(this, view);
+
+			// set data
+			if(view.data != undefined){
+				if(view.dataType == 'string'){
+					this.setMessage(view.data);
+				} else {
+					// it's an object
+					this.setData(view.data);
+				}
+			}
+
+			// set component specific stuff, only custom handlers for popup widget
+			if(view.componentSpecific != undefined && view.componentSpecific.customHandlers != undefined){
+				for(var i=0; i<view.componentSpecific.customHandlers.length; i++){
+					this.addCustomNodeHandler(
+						view.componentSpecific.customHandlers[i].funct,
+						view.componentSpecific.customHandlers[i].event,
+						view.componentSpecific.customHandlers[i].metaType
+					);
+				}
+			}
+		}
 	});
 });

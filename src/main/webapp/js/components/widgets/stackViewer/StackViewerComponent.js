@@ -313,7 +313,7 @@ define(function (require) {
                     this.state.stackViewerPlane.visible = true;
                 }
             }
-            if (this.disp.width > 0) {
+            if (this.disp.width > 0 && this.props.slice) {
                 this.state.stackViewerPlane.visible = true;
             } else {
                 this.state.stackViewerPlane.visible = false;
@@ -1010,7 +1010,8 @@ define(function (require) {
                 label: [],
                 id: [],
                 plane: null,
-                initalised: false
+                initalised: false,
+                slice: true
             };
         },
 
@@ -1196,6 +1197,14 @@ define(function (require) {
             this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0, stackX: -10000, stackY: -10000});
         },
 
+        toggleSlice: function () {
+            if (this.state.slice) {
+                this.setState({slice: false});
+            }else{
+                this.setState({slice: true});
+            }
+        },
+
         /**
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
@@ -1311,6 +1320,12 @@ define(function (require) {
             var stepOutClass = 'btn fa fa-chevron-up';
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
+            var toggleSliceClass = 'btn fa fa-toggle-';
+            if (this.state.slice) {
+                toggleSliceClass += 'on';
+            }else{
+                toggleSliceClass += 'off';
+            }
             var startOffset = 2.5;
             var displayArea = this.props.data.id + 'displayArea';
 
@@ -1366,6 +1381,14 @@ define(function (require) {
                             border: 0,
                             background: 'transparent'
                         }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset + 102,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={toggleSliceClass} onClick={this.toggleSlice} title={'Toggle the 3D slice display'}/>
                         <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
                                 serverUrl={this.props.config.serverUrl}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
@@ -1377,7 +1400,8 @@ define(function (require) {
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
                                 templateId={this.props.config.templateId}
                                 templateDomainIds={this.props.config.templateDomainIds}
-                                templateDomainNames={this.props.config.templateDomainNames}/>
+                                templateDomainNames={this.props.config.templateDomainNames}
+                                slice={this.state.slice}/>
                     </div>
                 );
             } else {

@@ -151,6 +151,7 @@ define(function (require) {
          */
         plotStateVariable: function(projectId, experimentId, path, plotWidget){
             if(window.Project.getId() == projectId && window.Project.getActiveExperiment().getId() == experimentId){
+                var self = this;
                 // try to resolve path
                 var inst = undefined;
                 try {
@@ -173,7 +174,7 @@ define(function (require) {
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
                     		plotWidget.plotData(i);
-                    		this.updateLegend(plotWidget,i,projectId,experimentId);
+                    		self.updateLegend(plotWidget,i,projectId,experimentId);
                     	} else {
                     		G.addWidget(0).plotData(i).setName(path);
                     	}
@@ -182,7 +183,6 @@ define(function (require) {
                     GEPPETTO.ExperimentsController.getExperimentState(projectId, experimentId, [path], cb);
                 }
             } else {
-            	var self = this;
                 // we are dealing with external instances, define re-usable callback for plotting external instances
                 var plotExternalCallback = function(){
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
@@ -214,12 +214,12 @@ define(function (require) {
             if(window.Project.getId() == projectId){
             	if(window.Project.getActiveExperiment()!= null || undefined){
             		//variable belongs to same project,but different experiment
-            		if(window.Project.getActiveExperiment.getId()!= experimentId){
+            		if(window.Project.getActiveExperiment().getId()!= experimentId){
             			legend = this.getLegendName(projectId,experimentId,instance,true);
             		}
             	}
             }else{
-            	//variablel belongs to different project and different experiment
+            	//variable belongs to different project and different experiment
             	var experimentPath = projectName + " - " + experimentName;
     			legend = this.getLegendName(projectId,experimentId,instance,false);
             }

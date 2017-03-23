@@ -15,7 +15,7 @@ define(function (require) {
 	var FileSaver = require('file-saver');
 	var pako = require('pako');
 	var JSZip = require("jszip");
-	
+
 	var widgetUtility = require("../WidgetUtility");
     widgetUtility.loadCss("geppetto/js/components/widgets/plot/Plot.css");
 
@@ -998,7 +998,14 @@ define(function (require) {
 		getView: function(){
 			var baseView = Widget.View.prototype.getView.call(this);
 
-			// TODO: add data-type and data field + any other custom fields in the component-specific attribute
+			// add options, data-type and data field
+			// baseView.options = this.options;
+			// TODO: handle case of function node, data function and x,y data
+			baseView.dataType = 'object';
+			baseView.data = this.datasets.map(function(item){
+				// build array of paths
+				return item.name;
+			});
 
 			return baseView;
 		},
@@ -1007,9 +1014,21 @@ define(function (require) {
 			// set base properties
 			Widget.View.prototype.setView.call(this, view);
 
-			// TODO: set data
+			if(view.options != undefined){
+				this.setOptions(view.options);
+			}
 
-			// TODO: set component specific stuff
+			// set data + options based on data-type field
+			for (var index in view.data) {
+				var path = view.data[index];
+				// TODO: project and experiment id could be any project and any experiment
+				this.controller.plotStateVariable(
+					Project.getId(),
+					Project.getActiveExperiment().getId(),
+					path,
+					this
+				)
+			}
 		}
 
 	});

@@ -993,6 +993,23 @@ define(function (require) {
             this.updateAxis(dataY.getInstancePath());
             this.resize();
 			return this;
+		},
+
+		getView: function(){
+			var baseView = Widget.View.prototype.getView.call(this);
+
+			// TODO: add data-type and data field + any other custom fields in the component-specific attribute
+
+			return baseView;
+		},
+
+		setView: function(view){
+			// set base properties
+			Widget.View.prototype.setView.call(this, view);
+
+			// TODO: set data
+
+			// TODO: set component specific stuff
 		}
 
 	});

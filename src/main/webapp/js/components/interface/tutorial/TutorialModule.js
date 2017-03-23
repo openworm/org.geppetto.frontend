@@ -224,6 +224,8 @@ define(function (require) {
 	        	closeButton.click(this.close);
 	        	dialog.find("div.ui-dialog-titlebar").prepend(button);
 	        	$(button).addClass("widget-title-bar-button");
+	        	$(this.__container).css("overflow","scroll");
+	        	$(this.__container).css("height","93%");
         	}
         },
 		

@@ -1,7 +1,7 @@
-.invert{
+.tutorial-message .invert{
     filter: invert(100%);
 }
-.center{
+.tutorial-message .center{
 	margin: 0 auto;
     display: block;
     margin-bottom:20px;
@@ -19,9 +19,15 @@
 }
 
 .tutorial-message a{
+	color: #fc6320;
 	cursor:pointer;
+	text-decoration:none;
 }
 
+.tutorial-message a:hover{
+	color: #fc401a;
+}
+	
 #ignoreTutorial {
 	width: auto;
 	margin-top:15px;

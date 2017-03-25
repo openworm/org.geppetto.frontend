@@ -39,7 +39,7 @@ define(function (require) {
 		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
 		var addWidget = require('./widgets/NewWidget.js');
-		
+				
 		//All the components potentially instantiable go here
 		var components = {
 			'FORM':'interface/form/Form',
@@ -64,7 +64,8 @@ define(function (require) {
 			'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
 			'CHECKBOX': 'controls/Checkbox',
 			'TEXTFIELD': 'controls/TextField',
-			'RAISEDBUTTON': 'controls/RaisedButton'
+			'RAISEDBUTTON': 'controls/RaisedButton',
+			'DICOMVIEWER': 'interface/dicomViewer/DicomViewer'
 			//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 		}
 		

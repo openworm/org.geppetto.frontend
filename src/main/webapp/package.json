@@ -12,6 +12,7 @@
     "postinstall": "node -e \"var srcpath='../js/pages/geppetto/GEPPETTO.js'; var dstpath='node_modules/geppetto';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
   },
   "devDependencies": {
+    "ami.js": "0.0.15",
     "anchorme": "^0.7.1",
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",

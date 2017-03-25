@@ -144,11 +144,17 @@ module.exports = {
                 }
             },
             {
+                test: /\.(js)$/, include: [/node_modules\/ami.js/], loader: ['babel-loader'],
+                query: {
+                    presets: ['react', 'es2015']
+                }
+            },
+            {
                 test: /\.json$/,
                 loader: "json-loader"
             },
             {
-                test: /\.(py|png|svg|gif|css|jpg|md|hbs)$/,
+                test: /\.(py|png|svg|gif|css|jpg|md|hbs|dcm)$/,
                 loader: 'ignore-loader'
             },
             {   test: /\.css$/,

@@ -17,13 +17,13 @@ define(function(require)
                     clearInterval(this.monitorInterval);
                 }
 
-                // apply project and experiment view
-                if(projectView != undefined && projectView.views != undefined){
-                    this.applyViewToComponentOrCreate(projectView.views);
-                }
-
-                if(experimentView != undefined && experimentView.views != undefined) {
+                // if we have an experiment view for the active experiment with something, apply that and ignore the project view
+                if(experimentView != undefined && experimentView.views != undefined && Object.keys(experimentView.views).length > 0) {
                     this.applyViewToComponentOrCreate(experimentView.views);
+                } else if(projectView != undefined && projectView.views != undefined){
+                    // if the experiment view is not there or is empty, apply project view (default)
+                    // NOTE: this will effectively propagate the view from project to experiment in the next monitor cycle
+                    this.applyViewToComponentOrCreate(projectView.views);
                 }
 
                 // setup monitor loop to track changes every 1000ms

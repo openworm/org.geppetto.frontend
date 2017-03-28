@@ -203,7 +203,7 @@ define(function (require) {
                 // go to server to persist only if experiment is persisted
                 if(Project.persisted){
                     var parameters = {};
-                    var experimentId = activeExperiment ? Project.getActiveExperiment().getId() : null;
+                    var experimentId = activeExperiment ? Project.getActiveExperiment().getId() : -1;
                     parameters["experimentId"] = experimentId;
                     parameters["projectId"] = Project.getId();
                     parameters["view"] = JSON.stringify(view);

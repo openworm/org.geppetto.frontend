@@ -30,6 +30,7 @@ define(function(require) {
             disconnected: false,
             status: 0,
             statusWorker : null,
+            localStorageEnabled : false,
 
             getVisitorStatus: function() {
                 return this.status;

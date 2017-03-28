@@ -194,9 +194,9 @@ define(function (require) {
             },
 
             /**
-             * Sets view for this experiment.
+             * Sets view for this experiment / project.
              *
-             * @command ExperimentNode.setView(view)
+             * @command ExperimentsController.setView(view)
              */
             setView: function (view) {
                 // go to server to persist only if experiment is persisted
@@ -207,8 +207,15 @@ define(function (require) {
                     parameters["view"] = JSON.stringify(view);
 
                     GEPPETTO.MessageSocket.send("set_experiment_view", parameters);
-                } else {
-                    // TODO: store view in local storage for this project/experiment/user
+                } else if(GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
+                    // store view in local storage for this project/experiment/user
+                    if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined){
+                        // no experiment active - save at project level
+                        localStorage.setItem("{0}_view".format(Project.getId()), JSON.stringify(view));
+                    } else {
+                        // experiment active - save at experiment level
+                        localStorage.setItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId()), JSON.stringify(view));
+                    }
                 }
             },
 

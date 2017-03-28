@@ -104,22 +104,24 @@ define(function (require) {
 
             GEPPETTO.trigger(GEPPETTO.Events.Experiment_loaded);
 
-            // apply persisted views if any for experiment
+            // apply persisted views if any for both project and experiment
+            var projectView = window.Project.getView();
             var experimentView = null;
             if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined){
                 experimentView = window.Project.getActiveExperiment().getView();
             }
-            GEPPETTO.ViewController.applyView(undefined, experimentView);
+            GEPPETTO.ViewController.applyView(projectView, experimentView);
 
             // local storage views
             if(!Project.persisted && GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
-                // get experiment view from local storage if project is not persisted
+                // get project and experiment view from local storage if project is not persisted
+                var localProjectView = localStorage.getItem("{0}_view".format(Project.getId()));
                 var localExperimentView = null;
                 if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
                     localExperimentView = localStorage.getItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId()));
                 }
                 // apply local experiment view
-                GEPPETTO.ViewController.applyView(undefined, localExperimentView);
+                GEPPETTO.ViewController.applyView(localProjectView, localExperimentView);
             }
 
             // after applying views, run script if any

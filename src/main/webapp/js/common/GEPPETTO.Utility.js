@@ -193,13 +193,27 @@ define(function (require) {
         }());
 
         /**
-         * Adding method to javascript string class to test
-         * if beginning of string matches another string being passed.
+         * Adding method to javascript string class to test if beginning of string matches another string being passed.
          */
         if (typeof String.prototype.startsWith != 'function') {
             String.prototype.startsWith = function (str) {
                 return this.substring(0, str.length) === str;
             }
+        }
+
+        /**
+         * Extend string prototype to enable posh string formatting
+         */
+        if (!String.prototype.format) {
+            String.prototype.format = function() {
+                var args = arguments;
+                return this.replace(/{(\d+)}/g, function(match, number) {
+                    return typeof args[number] != 'undefined'
+                        ? args[number]
+                        : match
+                        ;
+                });
+            };
         }
     };
 

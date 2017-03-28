@@ -199,17 +199,19 @@ define(function (require) {
              * @command ExperimentsController.setView(view)
              */
             setView: function (view) {
+                var activeExperiment = (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined);
                 // go to server to persist only if experiment is persisted
                 if(Project.persisted){
                     var parameters = {};
-                    parameters["experimentId"] = Project.getActiveExperiment().getId();
+                    var experimentId = activeExperiment ? Project.getActiveExperiment().getId() : null;
+                    parameters["experimentId"] = experimentId;
                     parameters["projectId"] = Project.getId();
                     parameters["view"] = JSON.stringify(view);
 
                     GEPPETTO.MessageSocket.send("set_experiment_view", parameters);
                 } else if(GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
                     // store view in local storage for this project/experiment/user
-                    if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined){
+                    if(!activeExperiment){
                         // no experiment active - save at project level
                         localStorage.setItem("{0}_view".format(Project.getId()), JSON.stringify(view));
                     } else {

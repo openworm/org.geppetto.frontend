@@ -348,6 +348,16 @@ define(['backbone'], function (require) {
         },
 
         /**
+         * Set project view
+         *
+         * @param view
+         */
+        setView: function(view){
+            this.set('view', JSON.stringify(view));
+            GEPPETTO.ExperimentsController.setView(view);
+        },
+
+        /**
          * Gets project view
          *
          * @returns {exports.view|{}}

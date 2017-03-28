@@ -69,8 +69,12 @@ define(function(require)
                     }
                 }
 
-                // persist view
-                GEPPETTO.ExperimentsController.setView(viewState);
+                // set view on experiment or project
+                if(window.Project.getActiveExperiment()!=null && window.Project.getActiveExperiment()!=undefined){
+                    window.Project.getActiveExperiment().setView(viewState);
+                } else {
+                    window.Project.setView(viewState);
+                }
             }
         };
     };

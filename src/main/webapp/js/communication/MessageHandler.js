@@ -117,7 +117,7 @@ define(function (require) {
             }
 
             // after applying views, run script if any
-            if(window.Project.getActiveExperiment()!=null || undefined){
+            if(window.Project.getActiveExperiment()!=null && window.Project.getActiveExperiment()!=undefined){
             	if (window.Project.getActiveExperiment().getScript() != undefined) {
             		G.runScript(window.Project.getActiveExperiment().getScript());
             	}

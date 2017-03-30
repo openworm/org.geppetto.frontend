@@ -8,8 +8,7 @@
     "build": "webpack -p --progress eval",
     "build-dev": "webpack --devtool eval",
     "build-dev-noTest": "webpack --devtool eval --noTest",
-    "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/",
-    "postinstall": "node -e \"var srcpath='../js/pages/geppetto/GEPPETTO.js'; var dstpath='node_modules/geppetto';var fs=require('fs'); fs.exists(dstpath,function(exists){if(!exists){fs.symlinkSync(srcpath, dstpath,'dir');}});\""
+    "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/"
   },
   "devDependencies": {
     "ami.js": "0.0.15",

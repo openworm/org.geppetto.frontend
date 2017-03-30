@@ -137,35 +137,9 @@ define(function (require) {
                 parameters["experimentId"] = experiment.id;
                 parameters["projectId"] = experiment.getParent().getId();
                 
-                /* ATTEMPT TO NOT REMOVE THE WIDGETS OPTIONALLY WHEN SWTICHING EXPERIMENT
-                 * To work we need to mark the old widget as inactive so that we don't try to update them 
-                if($("div.ui-widget").length>0){
-                	GEPPETTO.FE.inputDialog(
-                			"Do you want to remove the existing widgets?", 
-                			"You are loading a different experiment, do you want to retain the existing widgets? Note that the underlining data will cease existing as you are switching to a different experiment.", 
-                			"Remove widgets", 
-                			function(){
-                	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
-                				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-                				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                			}, 
-                			"Keep widgets", 
-                			function(){
-                	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
-                				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                			}
-        			);
-                }
-                else{
-    	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
-    				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-    				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                }*/
-                
 	            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-
             },
 
             /**
@@ -201,7 +175,7 @@ define(function (require) {
             setView: function (view) {
                 var activeExperiment = (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined);
                 // go to server to persist only if experiment is persisted
-                if(Project.persisted){
+                if(Project.persisted && GEPPETTO.UserController.persistence){
                     var parameters = {};
                     var experimentId = activeExperiment ? Project.getActiveExperiment().getId() : -1;
                     parameters["experimentId"] = experimentId;

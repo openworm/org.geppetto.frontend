@@ -18,11 +18,15 @@ define(function(require)
                 this.applyView(projectView, experimentView);
 
                 // local storage views
-                if(!Project.persisted && GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
+                var useLocalStorage = GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined");
+                if (
+                    (!Project.persisted && GEPPETTO.UserController.persistence && useLocalStorage) ||
+                    (!GEPPETTO.UserController.persistence && useLocalStorage)
+                ) {
                     // get project and experiment view from local storage if project is not persisted
                     var localProjectView = JSON.parse(localStorage.getItem("{0}_view".format(Project.getId())));
                     var localExperimentView = null;
-                    if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
+                    if (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
                         localExperimentView = JSON.parse(localStorage.getItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId())));
                     }
                     // apply local experiment view

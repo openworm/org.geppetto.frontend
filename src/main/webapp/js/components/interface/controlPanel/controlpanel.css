@@ -46,7 +46,7 @@
 }
 
 #controlpanel .griddle .griddle-filter .form-control {
-	color: #808080;;
+	color: #808080;
 	background-color: rgb(255, 255, 255);
 	font-size: 22px !important;
 	line-height: 30px !important;
@@ -90,7 +90,6 @@
 	border: 0px;
 	color: #FD6808;
 	padding: 5px;
-	text-align: center;
 }
 
 #controlpanel .griddle td {
@@ -168,7 +167,7 @@
 }
 
 #controlpanel .controlpanel-controls-column {
-	text-align: right !important;
+	text-align: center !important;
 }
 
 #controlpanel .control-panel-parameter-input {
@@ -196,7 +195,8 @@
 }
 
 #controlpanel .control-panel-path-column {
-	width: 50%;
+    width: 50%;
+    text-align: left;
 }
 
 #controlpanel td.control-panel-parameter-path-column {

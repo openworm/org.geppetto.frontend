@@ -1607,6 +1607,14 @@ define(function (require) {
             this.setState({dataFilter: dataFilter});
         },
 
+        addControls: function(customControls) {
+            this.setState({customControls: customControls});
+        },
+
+        addControlsConfig: function(customControlsConfig) {
+            this.setState({customControlsConfig: customControlsConfig});
+        },
+
         componentWillMount: function () {
             GEPPETTO.ControlPanel = this;
         },
@@ -1651,9 +1659,19 @@ define(function (require) {
         filterOptionsHandler: function (value) {
             switch (value) {
                 case 'VISUAL_INSTANCES':
-                    // displays actual instances
-                    this.resetControlPanel(instancesCols, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
+                // displays actual instances
 
+                // shallow merge custom controls into defaults
+                for (var key in this.state.customControlsConfig)
+                    for (var item in this.state.customControlsConfig[key])
+                        instancesControlsConfiguration[key][item] = this.state.customControlsConfig[key][item]
+
+                for (var key in this.state.customControls)
+                    for (var item in this.state.customControls[key])
+                        instancesControls[key] = instancesControls[key].concat(this.state.customControls[key])
+                
+                this.resetControlPanel(instancesCols, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
+  
                     // do filtering (always the same)
                     var visualInstances = [];
                     if (window.Project.getActiveExperiment() != undefined) {

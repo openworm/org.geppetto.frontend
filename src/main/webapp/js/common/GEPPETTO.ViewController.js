@@ -8,6 +8,28 @@ define(function(require)
         GEPPETTO.ViewController = {
             monitorInterval: undefined,
 
+            resolveViews: function(){
+                // apply persisted views if any for both project and experiment
+                var projectView = window.Project.getView();
+                var experimentView = null;
+                if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined){
+                    experimentView = window.Project.getActiveExperiment().getView();
+                }
+                this.applyView(projectView, experimentView);
+
+                // local storage views
+                if(!Project.persisted && GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
+                    // get project and experiment view from local storage if project is not persisted
+                    var localProjectView = JSON.parse(localStorage.getItem("{0}_view".format(Project.getId())));
+                    var localExperimentView = null;
+                    if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
+                        localExperimentView = JSON.parse(localStorage.getItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId())));
+                    }
+                    // apply local experiment view
+                    this.applyView(localProjectView, localExperimentView);
+                }
+            },
+
             /**
              * Applies initial view state for project / experiment and sets up monitor
              */

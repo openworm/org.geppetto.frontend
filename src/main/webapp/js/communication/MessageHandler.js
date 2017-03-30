@@ -48,18 +48,7 @@ define(function (require) {
 
         messageHandler[messageTypes.PROJECT_LOADED] = function (payload) {
             GEPPETTO.SimulationHandler.loadProject(payload);
-
-            // apply persisted project view if any
-            var projectView = window.Project.getView();
-            GEPPETTO.ViewController.applyView(projectView, undefined);
-
-            // local storage views
-            if(!Project.persisted && GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
-                // get project and experiment views from local storage if project is not persisted
-                var localProjectView = localStorage.getItem("{0}_view".format(Project.getId()));
-                // apply local project views
-                GEPPETTO.ViewController.applyView(localProjectView, undefined);
-            }
+            GEPPETTO.ViewController.resolveViews();
         };
 
         messageHandler[messageTypes.MODEL_LOADED] = function (payload) {
@@ -101,28 +90,9 @@ define(function (require) {
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function (payload) {
             GEPPETTO.SimulationHandler.loadExperiment(payload);
-
             GEPPETTO.trigger(GEPPETTO.Events.Experiment_loaded);
 
-            // apply persisted views if any for both project and experiment
-            var projectView = window.Project.getView();
-            var experimentView = null;
-            if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined){
-                experimentView = window.Project.getActiveExperiment().getView();
-            }
-            GEPPETTO.ViewController.applyView(projectView, experimentView);
-
-            // local storage views
-            if(!Project.persisted && GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
-                // get project and experiment view from local storage if project is not persisted
-                var localProjectView = localStorage.getItem("{0}_view".format(Project.getId()));
-                var localExperimentView = null;
-                if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
-                    localExperimentView = localStorage.getItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId()));
-                }
-                // apply local experiment view
-                GEPPETTO.ViewController.applyView(localProjectView, localExperimentView);
-            }
+            GEPPETTO.ViewController.resolveViews();
 
             // after applying views, run script if any
             if(window.Project.getActiveExperiment()!=null && window.Project.getActiveExperiment()!=undefined){
@@ -233,7 +203,6 @@ define(function (require) {
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function (payload) {
             GEPPETTO.trigger(GEPPETTO.Events.Experiment_updated);
             GEPPETTO.Console.log("The model parameters were successfully updated.");
-
         };
 
         //received supported outputs from server

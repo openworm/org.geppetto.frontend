@@ -1,5 +1,7 @@
 define(function (require) {
 	return function (GEPPETTO) {
+		// Enable local storage
+		G.enableLocalStorage(true);
 		
 		//Logo initialization
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));

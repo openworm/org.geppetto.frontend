@@ -41,6 +41,7 @@ public enum OutboundMessages {
 	DELETE_EXPERIMENT("experiment_deleted"), 
 	GET_EXPERIMENT_STATE("get_experiment_state"), 
 	PROJECT_PERSISTED("project_persisted"),
+	DOWNLOAD_PROJECT("download_project"),
 	PROJECT_PROPS_SAVED("project_props_saved"),
 	PROJECT_MADE_PUBLIC("project_made_public"),
 	EXPERIMENT_PROPS_SAVED("experiment_props_saved"),

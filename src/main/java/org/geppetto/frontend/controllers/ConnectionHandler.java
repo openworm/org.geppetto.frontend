@@ -1394,4 +1394,27 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				
 		websocketConnection.sendMessage(null, OutboundMessages.ERROR_RUNNING_EXPERIMENT, jsonError);
 	}
+
+	public void downloadProject(String requestID, long projectId) {
+		try
+		{
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+
+			if(geppettoProject != null)
+			{
+
+				geppettoManager.downloadProject(geppettoProject);
+				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_PROJECT,null);
+			}
+			else
+			{
+				error(null, "Error persisting project  " + projectId + ".");
+			}
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error persisting project");
+		}
+		
+	}
 }

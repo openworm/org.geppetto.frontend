@@ -305,6 +305,8 @@ define(function (require) {
             RETRIEVING_VISUALIZATION_TREE: 'Visualization tree: ',
 
             DOWNLOADING_MODEL: 'Downloading model as ',
+            
+            DOWNLOADING_PROJECT: 'Downloading Project',
 
             ERROR_DOWNLOADING_MODEL: "Error downloading model",
 

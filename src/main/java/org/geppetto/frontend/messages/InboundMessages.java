@@ -18,6 +18,7 @@ public enum InboundMessages {
 	SAVE_PROJECT_PROPERTIES("save_project_properties"),
 	PERSIST_PROJECT("persist_project"),
 	MAKE_PROJECT_PUBLIC("make_project_public"),
+	DOWNLOAD_PROJECT("download_project"),
 	
 	//EXPERIMENT MESSAGES
 	NEW_EXPERIMENT("new_experiment"),

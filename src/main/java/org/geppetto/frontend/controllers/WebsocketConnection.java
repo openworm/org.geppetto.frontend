@@ -229,6 +229,15 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.makeProjectPublic(requestID, projectId,isPublic);
 				break;
 			}
+			case DOWNLOAD_PROJECT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.downloadProject(requestID, projectId);
+				break;
+			}
 			case SAVE_PROJECT_PROPERTIES:
 			{
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);

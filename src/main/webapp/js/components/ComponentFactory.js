@@ -62,7 +62,8 @@ define(function (require) {
 			'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
 			'CHECKBOX': 'controls/Checkbox',
 			'TEXTFIELD': 'controls/TextField',
-			'RAISEDBUTTON': 'controls/RaisedButton'
+			'RAISEDBUTTON': 'controls/RaisedButton',
+			'DownloadProjectButton':'interface/downloadProject/DownloadProjectButton'
 		}
 		
 	

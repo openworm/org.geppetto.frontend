@@ -37,6 +37,9 @@ define(function (require) {
 
 		//Save initialization
 		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));
+		
+		//Download Project Button initialization
+		GEPPETTO.ComponentFactory.addComponent('DownloadProjectButton', {}, document.getElementById("DownloadProjectButton"));
 
 		//Simulation controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SIMULATIONCONTROLS', {}, document.getElementById("sim-toolbar"));

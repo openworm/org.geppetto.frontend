@@ -243,6 +243,7 @@ define(function (require) {
         };
         
         messageHandler[messageTypes.DOWNLOAD_PROJECT] = function (payload) {
+        	GEPPETTO.trigger(GEPPETTO.Events.Project_downloaded);
             GEPPETTO.Console.log("Project downloaded succesfully");
         };
 

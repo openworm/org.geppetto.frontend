@@ -20,6 +20,7 @@ define(function (require) {
 			Experiment_over: "experiment:over",
 			Project_loading: "project:loading",
 			Project_loaded: "project:loaded",
+			Project_downloaded : "project:downloaded",
 			Model_loaded: "model:loaded",
 			Experiment_loaded: "experiment:loaded",
 			ModelTree_populated: "experiment:modeltreepopulated",

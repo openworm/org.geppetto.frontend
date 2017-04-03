@@ -77,26 +77,18 @@ define(function(require) {
             	self.setState({disableButton: true});
             });
             
-            GEPPETTO.on('spin_persist', function() {
+            GEPPETTO.on('spin_download', function() {
     			self.setState({icon:"fa  fa-download fa-spin"});
     		}.bind($(".downloadProjectButton")));
 
-    		GEPPETTO.on('stop_spin_persist', function() {
+    		GEPPETTO.on('stop_spin_download', function() {
     			self.setState({icon:"fa fa-download"});
     		}.bind($(".downloadProjectButton")));
     		
     		
         	self.attachTooltip();
-			
-			if(window.Project!=undefined){
-				this.setState(this.evaluateState());
-			}
         },
 
-        evaluateState:function(){
-        	return {disableButton:window.Project.persisted || !GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)};
-        },
-        
         clickEvent : function(){
         	var self = this;
         	// update contents of what's displayed on tooltip
@@ -104,14 +96,14 @@ define(function(require) {
         	$(".DownloadProjectButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
         	self.setState({disableButton: true});
         	GEPPETTO.Console.executeCommand("Project.download();");
-        	GEPPETTO.trigger("spin_persist");
+        	GEPPETTO.trigger("spin_download");
         },
         
         render:  function () {
         	return (
         			<div className="downloadProjectButton">
         				<button className="btn DownloadProjectButton pull-right" type="button" title=''
-        				rel="tooltip" onClick={this.clickEvent} disabled={this.state.disableButton}>
+        				rel="tooltip" onClick={this.clickEvent}>
         					<i className={this.state.icon}></i>
         				</button>
         			</div>

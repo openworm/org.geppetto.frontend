@@ -2,6 +2,7 @@ package org.geppetto.frontend.controllers;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -1400,20 +1401,31 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 
-			if(geppettoProject != null)
-			{
+			// Convert model
+			URL url = geppettoManager.downloadProject(geppettoProject);
 
-				geppettoManager.downloadProject(geppettoProject);
+			if(url != null)
+			{
+				// Zip folder
+				Zipper zipper = new Zipper(PathConfiguration.getProjectPath(Scope.CONNECTION, projectId));
+				Path path = zipper.getZipFromFile(url);
+
+				// Send zip file to the client
+				websocketConnection.sendBinaryMessage(requestID, path);
 				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_PROJECT,null);
 			}
 			else
 			{
-				error(null, "Error persisting project  " + projectId + ".");
+				error(new GeppettoExecutionException("Results of type  not found in the current experiment"), "Error downloading project");
 			}
 		}
 		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
-			error(e, "Error persisting project");
+			error(e, "Error downloading project");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 	}

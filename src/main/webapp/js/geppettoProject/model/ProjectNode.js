@@ -352,7 +352,7 @@ define(['backbone'], function (require) {
          * @command ProjectNode.downloadModel(format)
          * * @param {String} name - File format to download
          */
-        downloadProject : function(path, format) {
+        download : function(path, format) {
         	var parameters = {};
         	parameters["projectId"] = this.getId();
         	GEPPETTO.MessageSocket.send("download_project", parameters);

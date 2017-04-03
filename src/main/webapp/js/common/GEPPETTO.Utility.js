@@ -174,7 +174,7 @@ define(function (require) {
         };
 
         // inject saveData into utility, need to do it this way because it's adding things to the DOM
-        // and returning the function with clousre on the DOM elements
+        // and returning the function with closure on the DOM elements
         GEPPETTO.Utility.saveData = (function () {
             var a = document.createElement("a");
             document.body.appendChild(a);

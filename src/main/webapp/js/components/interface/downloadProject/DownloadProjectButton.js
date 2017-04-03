@@ -74,7 +74,14 @@ define(function(require) {
            	 	$('.DownloadProjectButton').uitooltip({content: "The project was downloaded!",
            	 		position: { my: "right center", at : "left center"}});
             	$(".DownloadProjectButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
-            	self.setState({disableButton: true});
+            });
+            
+            GEPPETTO.on("geppetto:error", function(){
+            	// update contents of what's displayed on tooltip
+           	 	$('.DownloadProjectButton').uitooltip({content: "The project had errors during download!",
+           	 		position: { my: "right center", at : "left center"}});
+            	$(".DownloadProjectButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+            	self.setState({icon:"fa fa-download"});
             });
             
             GEPPETTO.on('spin_download', function() {

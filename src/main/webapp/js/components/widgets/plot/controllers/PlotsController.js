@@ -22,14 +22,21 @@ define(function (require) {
         /**
          * Creates plotting widget
          */
-        addPlotWidget: function () {
+        addPlotWidget: function (isStateless) {
+            if(isStateless == undefined){
+                isStateless = false;
+            }
 
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("Plot", this.widgets);
             var name = id;
 
             //create plotting widget
-            var p = window[name] = new Plot({id: id, name: name, visible: true, widgetType: GEPPETTO.Widgets.PLOT});
+            var p = window[name] = new Plot({
+                id: id, name: name, visible: true,
+                widgetType: GEPPETTO.Widgets.PLOT,
+                stateless: isStateless
+            });
             p.setController(this);
 
             //create help command for plot

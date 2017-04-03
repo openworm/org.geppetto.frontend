@@ -37,6 +37,7 @@ define(function (require) {
             maximize : false,
             collapsed : false,
             widgetType: null,
+            stateless: false,
 
             defaultSize : function(){return {height: 300, width: 350}},
             defaultPosition : function(){return {left: "50%", top: "50%"}},
@@ -56,6 +57,7 @@ define(function (require) {
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
                 this.widgetType = options.widgetType;
+                this.stateless = (options.stateless != undefined) ? options.stateless : false;
                 this.registeredEvents = [];
                 
                 var self = this;
@@ -619,7 +621,6 @@ define(function (require) {
 
                 //add help button
                 this.addHelpButton();
-
             },
 
             /**

@@ -52,11 +52,18 @@ define(function (require) {
         /**
          * Creates new button bar widget
          */
-        addButtonBarWidget: function () {
+        addButtonBarWidget: function (isStateless) {
+            if(isStateless == undefined){
+                isStateless = false;
+            }
+
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("ButtonBar", this.widgets);
             var name = id;
-            var vv = window[name] = new BuBar({id: id, name: name, visible: true, widgetType: GEPPETTO.Widgets.BUTTONBAR});
+            var vv = window[name] = new BuBar({
+                id: id, name: name, visible: true,
+                widgetType: GEPPETTO.Widgets.BUTTONBAR, stateless: isStateless
+            });
             vv.help = function () {
                 return GEPPETTO.Console.getObjectCommands(id);
             };

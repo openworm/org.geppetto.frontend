@@ -88,8 +88,12 @@ define(function(require)
                 var viewState = { views: {} };
 
                 for(var c in components){
-                    // call getView API if the method is exposed
-                    if(typeof components[c].getView == 'function'){
+                    // call getView API if the method is exposed and the component is not stateless
+                    if(
+                        typeof components[c].getView == 'function' &&
+                        components[c].stateless != undefined &&
+                        !components[c].stateless
+                    ) {
                         // build object literal with view state for all the widgets/components
                         viewState.views[c] = components[c].getView();
                     }

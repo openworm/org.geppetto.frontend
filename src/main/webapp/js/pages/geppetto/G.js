@@ -48,9 +48,16 @@ define(function (require) {
             isBrightnessFunctionSet: function() {
                 return this.brightnessFunctionSet;
             },
-            
-            addWidget: function (type) {
-                var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
+
+            /**
+             * Adds widgets to Geppetto
+             *
+             * @param type
+             * @param isStateless
+             * @returns {*}
+             */
+            addWidget: function (type, isStateless) {
+                var newWidget = GEPPETTO.WidgetFactory.addWidget(type, isStateless);
                 return newWidget;
             },
 

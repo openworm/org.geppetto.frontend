@@ -1,16 +1,15 @@
-
 /**
  * Client class for Experiment node.
  *
  * @module model/ExperimentNode
  * @author Jesus R. Martinez (jesus@metacell.us)
  */
-define(['backbone'], function (require) {
+define(['backbone'], function(require) {
 
     return Backbone.Model.extend({
         name: "",
         description: "",
-        details : "",
+        details: "",
         id: "",
         lastModified: "",
         status: null,
@@ -22,7 +21,7 @@ define(['backbone'], function (require) {
         login: null,
         runPermission: null,
         downloadPermission: null,
-        state : null,
+        state: null,
 
         /**
          * Initializes this experiment with passed attributes
@@ -30,7 +29,7 @@ define(['backbone'], function (require) {
          * @param {Object}
          *            options - Object with options attributes to initialize node
          */
-        initialize: function (options) {
+        initialize: function(options) {
             this.name = options.name;
             this.id = options.id;
             this.status = options.status;
@@ -42,7 +41,7 @@ define(['backbone'], function (require) {
             this.simulatorConfigurations = {};
             this.parameters = [];
             this.script = options.script;
-            this.state=null;
+            this.state = null;
             this.writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
             this.login = GEPPETTO.UserController.isLoggedIn();
             this.runPermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.RUN_EXPERIMENT);
@@ -56,10 +55,10 @@ define(['backbone'], function (require) {
          * @returns {String} Name of the node
          *
          */
-        getName: function () {
+        getName: function() {
             return this.name;
         },
-        
+
         /**
          * Gets error details with this experiment
          *
@@ -67,11 +66,11 @@ define(['backbone'], function (require) {
          * @returns {String} Error while running experiment
          *
          */
-        getDetails: function () {
+        getDetails: function() {
             return this.details;
         },
-        
-        setDetails: function (details) {
+
+        setDetails: function(details) {
             this.details = details;
         },
 
@@ -81,12 +80,11 @@ define(['backbone'], function (require) {
          * @command ExperimentNode.setName()
          *
          */
-        setDescription: function (newdescription) {
+        setDescription: function(newdescription) {
             if (this.writePermission && this.getParent().persisted && this.login) {
-                this.saveExperimentProperties(
-                    {
-                        "description": newdescription
-                    });
+                this.saveExperimentProperties({
+                    "description": newdescription
+                });
                 this.description = newdescription;
             } else {
                 return GEPPETTO.Utility.persistedAndWriteMessage(this);
@@ -100,7 +98,7 @@ define(['backbone'], function (require) {
          * @returns {String} Name of the node
          *
          */
-        getDescription: function () {
+        getDescription: function() {
             return this.description;
         },
 
@@ -111,7 +109,7 @@ define(['backbone'], function (require) {
          * @returns {String} The time and date of when the experiment was modified last
          *
          */
-        getLastModified: function () {
+        getLastModified: function() {
             return this.lastModified;
         },
 
@@ -122,7 +120,7 @@ define(['backbone'], function (require) {
          * @returns {String} The script associated with this experiment
          *
          */
-        getScript: function () {
+        getScript: function() {
             return this.script;
         },
 
@@ -132,12 +130,11 @@ define(['backbone'], function (require) {
          * @command ExperimentNode.setScript()
          *
          */
-        setScript: function (script) {
+        setScript: function(script) {
             if (this.writePermission && this.getParent().persisted && this.login) {
-                this.saveExperimentProperties(
-                    {
-                        "script": script
-                    });
+                this.saveExperimentProperties({
+                    "script": script
+                });
                 this.script = script;
             } else {
                 return GEPPETTO.Utility.persistedAndWriteMessage(this);
@@ -150,13 +147,13 @@ define(['backbone'], function (require) {
          * @command ExperimentNode.setName()
          *
          */
-        setName: function (newname) {
+        setName: function(newname) {
             if (this.writePermission && this.getParent().persisted && this.login) {
-                this.saveExperimentProperties(
-                    {
-                        "name": newname
-                    });
+                this.saveExperimentProperties({
+                    "name": newname
+                });
                 this.name = newname;
+                GEPPETTO.trigger(GEPPETTO.Events.Experiment_renamed);
             } else {
                 return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
@@ -168,15 +165,15 @@ define(['backbone'], function (require) {
          * @command ExperimentNode.getId()
          * @returns {String} ID of node
          */
-        getId: function () {
+        getId: function() {
             return this.id;
         },
 
-        setParent: function (parent) {
+        setParent: function(parent) {
             this.parent = parent;
         },
 
-        getParent: function () {
+        getParent: function() {
             return this.parent;
         },
 
@@ -186,11 +183,11 @@ define(['backbone'], function (require) {
          * @command ExperimentNode.getStatus()
          * @returns {String} Status of experiment
          */
-        getStatus: function () {
+        getStatus: function() {
             return this.status;
         },
 
-        setStatus: function (status) {
+        setStatus: function(status) {
             this.status = status;
         },
 
@@ -199,20 +196,19 @@ define(['backbone'], function (require) {
          *
          * @command ExperimentNode.run()
          */
-        run: function () {
+        run: function(callback) {
             var activeExperimentId = window.Project.getActiveExperiment().getId();
             if (this.writePermission && this.getParent().persisted && this.login && this.runPermission && !this.getParent().isReadOnly()) {
                 if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
-                    this.status == GEPPETTO.Resources.ExperimentStatus.ERROR)
-                    && activeExperimentId == this.id) {
+                        this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) &&
+                    activeExperimentId == this.id) {
 
-                	this.setStatus(GEPPETTO.Resources.ExperimentStatus.RUNNING);
+                    this.setStatus(GEPPETTO.Resources.ExperimentStatus.RUNNING);
                     GEPPETTO.trigger(GEPPETTO.Events.Experiment_running);
-                    var parameters =
-                    {};
+                    var parameters = {};
                     parameters["experimentId"] = this.id;
                     parameters["projectId"] = this.getParent().getId();
-                    GEPPETTO.MessageSocket.send("run_experiment", parameters);
+                    GEPPETTO.MessageSocket.send("run_experiment", parameters, callback);
                 }
             } else {
                 var message = GEPPETTO.Utility.persistedAndWriteMessage(this);
@@ -228,7 +224,7 @@ define(['backbone'], function (require) {
          *
          * @command ExperimentNode.run()
          */
-        setActive: function () {
+        setActive: function() {
             GEPPETTO.ExperimentsController.setActive(this);
         },
 
@@ -239,7 +235,7 @@ define(['backbone'], function (require) {
          *
          * @command ExperimentNode.play()
          */
-        play: function (options) {
+        play: function(options) {
             var activeExperiment = window.Project.getActiveExperiment();
             if (activeExperiment != null || undefined) {
                 if (activeExperiment.getId() == this.getId()) {
@@ -251,21 +247,20 @@ define(['backbone'], function (require) {
 
         },
 
-        playAll: function () {
+        playAll: function() {
             var activeExperiment = window.Project.getActiveExperiment();
             if (activeExperiment != null || undefined) {
                 if (activeExperiment.getId() == this.getId()) {
-                    this.play(
-                        {
-                            playAll: true
-                        });
+                    this.play({
+                        playAll: true
+                    });
                 } else {
                     return GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + "Can't play experiment that isn't active";
                 }
             }
         },
 
-        pause: function () {
+        pause: function() {
             var activeExperiment = window.Project.getActiveExperiment();
             if (activeExperiment != null || undefined) {
                 if (activeExperiment.getId() == this.getId()) {
@@ -277,7 +272,7 @@ define(['backbone'], function (require) {
             }
         },
 
-        stop: function () {
+        stop: function() {
             var activeExperiment = window.Project.getActiveExperiment();
             if (activeExperiment != null || undefined) {
                 if (activeExperiment.getId() == this.getId()) {
@@ -289,7 +284,7 @@ define(['backbone'], function (require) {
             }
         },
 
-        resume: function () {
+        resume: function() {
             var activeExperiment = window.Project.getActiveExperiment();
             if (activeExperiment != null || undefined) {
                 if (activeExperiment.getId() == this.getId()) {
@@ -302,10 +297,9 @@ define(['backbone'], function (require) {
         },
 
 
-        saveExperimentProperties: function (properties) {
+        saveExperimentProperties: function(properties) {
             if (this.writePermission && this.getParent().persisted && this.login && !this.getParent().isReadOnly()) {
-                var parameters =
-                {};
+                var parameters = {};
                 parameters["experimentId"] = this.id;
                 parameters["projectId"] = this.getParent().getId();
                 parameters["properties"] = properties;
@@ -322,7 +316,7 @@ define(['backbone'], function (require) {
          * @command ExperimentNode.getWatchedVariables(asObjs)
          * @returns {List<String>} - List of watched variables for given name
          */
-        getWatchedVariables: function (asObjs, time) {
+        getWatchedVariables: function(asObjs, time) {
             if (asObjs === undefined) {
                 asObjs = false;
             }
@@ -356,9 +350,9 @@ define(['backbone'], function (require) {
 
             return watchedVariables;
         },
-        
-        getSetParameters : function(){
-        	return this.setParameters;
+
+        getSetParameters: function() {
+            return this.setParameters;
         },
 
         /**
@@ -366,12 +360,11 @@ define(['backbone'], function (require) {
          *
          * @command ExperimentNode.downloadResults(recording)
          */
-        downloadResults: function (aspectPath, format) {
+        downloadResults: function(aspectPath, format) {
             if (this.downloadPermission && this.login) {
                 if (this == window.Project.getActiveExperiment()) {
                     if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
+                        var parameters = {};
                         parameters["format"] = format;
                         parameters["aspectPath"] = aspectPath;
                         parameters["experimentId"] = this.id;
@@ -403,21 +396,20 @@ define(['backbone'], function (require) {
          * @command ExperimentNode.clone()
          * @returns {ExperimentNode} Creates a new ExperimentNode
          */
-        clone: function () {
+        clone: function(callback) {
             if (this.writePermission && this.getParent().persisted && this.login && !this.getParent().isReadOnly()) {
                 var parameters = {};
                 parameters["projectId"] = this.getParent().getId();
                 parameters["experimentId"] = this.id;
-                GEPPETTO.MessageSocket.send("clone_experiment", parameters);
+                GEPPETTO.MessageSocket.send("clone_experiment", parameters, callback);
             } else {
                 return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }
         },
 
-        deleteExperiment: function () {
+        deleteExperiment: function() {
             if (this.writePermission && this.getParent().persisted && this.login) {
-                var parameters =
-                {};
+                var parameters = {};
                 parameters["experimentId"] = this.id;
                 parameters["projectId"] = this.getParent().getId();
                 GEPPETTO.MessageSocket.send("delete_experiment", parameters);
@@ -428,12 +420,11 @@ define(['backbone'], function (require) {
             }
         },
 
-        uploadModel: function (aspectPath, format) {
+        uploadModel: function(aspectPath, format) {
             if (this.writePermission && this.getParent().persisted && this.login) {
                 if (this == window.Project.getActiveExperiment()) {
                     if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
+                        var parameters = {};
                         parameters["format"] = format;
                         parameters["aspectPath"] = aspectPath;
                         parameters["experimentId"] = this.id;
@@ -452,12 +443,11 @@ define(['backbone'], function (require) {
             }
         },
 
-        uploadResults: function (aspectPath, format) {
+        uploadResults: function(aspectPath, format) {
             if (this.writePermission && this.getParent().persisted && this.login) {
                 if (this == window.Project.getActiveExperiment()) {
                     if (this.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                        var parameters =
-                        {};
+                        var parameters = {};
                         parameters["format"] = format;
                         parameters["aspectPath"] = aspectPath;
                         parameters["experimentId"] = this.id;
@@ -479,11 +469,11 @@ define(['backbone'], function (require) {
         /**
          * Print out formatted node
          */
-        print: function () {
+        print: function() {
             return "Name : " + this.name + "\n" + "    Id: " + this.id + "\n";
         },
 
-        addSimulatorConfiguration: function (aspect, simulatorConfiguration) {
+        addSimulatorConfiguration: function(aspect, simulatorConfiguration) {
             this.simulatorConfigurations[aspect] = simulatorConfiguration;
         }
 

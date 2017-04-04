@@ -35,6 +35,7 @@ define(function (require) {
 			Experiment_failed: "experiment:failed",
 			Experiment_update: "experiment:update",
 			Experiment_updated: "experiment:updated",
+			Experiment_renamed: "experiment:renamed",
 			Experiment_deleted: "experiment_deleted",
 			Experiment_active: "experiment_active",
 			Experiment_created:"experiment:created",

@@ -34,7 +34,8 @@ define(function (require) {
 		plotOptions : null,
 		reIndexUpdate : 0,
 		updateRedraw : 3,
-        functionNode: false,
+        isFunctionNode: false,
+		isXYData: false,
         xaxisAutoRange : false,
         yaxisAutoRange : false,
         imageTypes : [],
@@ -239,6 +240,10 @@ define(function (require) {
 		 * @param {Object} options - options for the plotting widget, if null uses default
 		 */
 		plotData: function (data, options) {
+			// set flags for function node and xy both to false
+			this.isFunctionNode = false;
+			this.isXYData = false;
+
 			var validVariable = eval(data);
 			if(validVariable == null || undefined){
 				return "Can't plot undefined variable";
@@ -373,8 +378,7 @@ define(function (require) {
 					this.plotOptions.height = this.plotElement.height();
 					this.plotOptions.width = this.plotElement.width();
 				}
-				//resizes plot right after creation, needed for d3 to resize 
-				//to parent's widht and height
+				//resizes plot right after creation, needed for d3 to resize to parent's width and height
 				Plotly.relayout(this.plotDiv,this.plotOptions);
 			}
 		},
@@ -413,7 +417,7 @@ define(function (require) {
 		 * Downloads a zip with the plotting data
 		 */
 		downloadPlotData : function(){
-			if(!this.functionNode){
+			if(!this.isFunctionNode){
 				var data = new Array();
 				var xCopied = false;
 				
@@ -560,7 +564,7 @@ define(function (require) {
 		 * Updates the plot widget with new data
 		 */
 		updateDataSet: function (step, playAll) {
-			if(!this.functionNode){
+			if(!this.isFunctionNode){
 				/*Clears the data of the plot widget if the initialized flag 
 				 *has not be set to true, which means arrays are populated but not yet plot*/
 				if(!this.initialized){
@@ -764,7 +768,7 @@ define(function (require) {
 		},
 
 		clean: function (playAll) {
-			if(!this.functionNode){
+			if(!this.isFunctionNode){
 				this.plotOptions.playAll = playAll;
 				this.plotOptions.margin.r = 10;
 				this.cleanDataSets();
@@ -810,8 +814,9 @@ define(function (require) {
 		 * @param {Node} functionNode - Function Node to be displayed
 		 */
 		plotFunctionNode: function (functionNode) {
-
-            this.functionNode = true;
+			// set flags
+            this.isFunctionNode = true;
+			this.isXYData = false;
 
 			//Check there is metada information to plot
 			if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
@@ -837,7 +842,7 @@ define(function (require) {
 				var YAxisLabel = plotMetadata["yAxisLabel"];
 				
 				//Generate options from metadata information
-				options = {
+				var options = {
 						xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
 						yaxis: {axisLabel: YAxisLabel},
 						legendText: plotTitle
@@ -950,6 +955,10 @@ define(function (require) {
 				}
 			}
 
+			// set flags
+			this.isXYData = true;
+			this.isFunctionNode = false;
+
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
 
 			var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
@@ -998,14 +1007,24 @@ define(function (require) {
 		getView: function(){
 			var baseView = Widget.View.prototype.getView.call(this);
 
-			// add options, data-type and data field
-			// baseView.options = this.options;
-			// TODO: handle case of function node, data function and x,y data
-			baseView.dataType = 'object';
-			baseView.data = this.datasets.map(function(item){
-				// build array of paths
-				return item.name;
-			});
+			// add options, whatever they are
+			baseView.options = this.options;
+
+			// handle case of function node, data function and x,y data
+			if(this.isFunctionNode){
+				baseView.dataType = 'function';
+				// TODO: store data
+			} else if (this.isXYData){
+				baseView.dataType = 'xyData';
+				// TODO: store data
+			} else {
+				// default case, simple plot with variables plots based on instance paths
+				baseView.dataType = 'object';
+				baseView.data = this.datasets.map(function(item){
+					// build array of paths
+					return item.name;
+				});
+			}
 
 			return baseView;
 		},
@@ -1018,16 +1037,21 @@ define(function (require) {
 				this.setOptions(view.options);
 			}
 
-			// set data + options based on data-type field
-			for (var index in view.data) {
-				var path = view.data[index];
-				// TODO: project and experiment id could be any project and any experiment
-				this.controller.plotStateVariable(
-					Project.getId(),
-					Project.getActiveExperiment().getId(),
-					path,
-					this
-				)
+			if(view.dataType == 'function'){
+				// TODO pull function out of data attribute
+			} else if(view.dataType == 'xyData'){
+				// TODO pull xy data out of data attribute
+			} else if(view.dataType == 'object'){
+				for (var index in view.data) {
+					var path = view.data[index];
+					// TODO: project and experiment id could be any project and any experiment
+					this.controller.plotStateVariable(
+						Project.getId(),
+						Project.getActiveExperiment().getId(),
+						path,
+						this
+					)
+				}
 			}
 		}
 

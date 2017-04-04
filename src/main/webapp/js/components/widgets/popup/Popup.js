@@ -357,7 +357,9 @@ define(function (require) {
 			baseView.dataType = (typeof this.data == "string") ? "string" : "object";
 			baseView.data = this.data;
 			baseView.componentSpecific = {
-				customHandlers: this.customHandlers
+				customHandlers: this.customHandlers,
+				buttonBarControls: this.buttonBarControls,
+				buttonBarConfig: this.buttonBarConfig
 			};
 
 			return baseView;
@@ -378,13 +380,20 @@ define(function (require) {
 			}
 
 			// set component specific stuff, only custom handlers for popup widget
-			if(view.componentSpecific != undefined && view.componentSpecific.customHandlers != undefined){
-				for(var i=0; i<view.componentSpecific.customHandlers.length; i++){
-					this.addCustomNodeHandler(
-						view.componentSpecific.customHandlers[i].funct,
-						view.componentSpecific.customHandlers[i].event,
-						view.componentSpecific.customHandlers[i].metaType
-					);
+			if(view.componentSpecific != undefined){
+				if(view.componentSpecific.customHandlers != undefined){
+					for(var i=0; i<view.componentSpecific.customHandlers.length; i++){
+						this.addCustomNodeHandler(
+							view.componentSpecific.customHandlers[i].funct,
+							view.componentSpecific.customHandlers[i].event,
+							view.componentSpecific.customHandlers[i].metaType
+						);
+					}
+				}
+
+				if(view.componentSpecific.buttonBarControls != undefined && view.componentSpecific.buttonBarConfig != undefined){
+					this.setButtonBarControls(view.componentSpecific.buttonBarControls);
+					this.setButtonBarConfiguration(view.componentSpecific.buttonBarConfig);
 				}
 			}
 		}

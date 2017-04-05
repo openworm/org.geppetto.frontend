@@ -38,6 +38,8 @@ define(function (require) {
             collapsed : false,
             widgetType: null,
             stateless: false,
+            showTitleBar: true,
+            transparentBackground: false,
 
             defaultSize : function(){return {height: 300, width: 350}},
             defaultPosition : function(){return {left: "50%", top: "50%"}},
@@ -379,6 +381,8 @@ define(function (require) {
              * hides / shows the title bar
              */
             showTitleBar: function (show) {
+                this.showTitleBar = show;
+
                 if (show) {
                    this.$el.parent().find(".ui-dialog-titlebar").show();
                 } else {
@@ -491,6 +495,8 @@ define(function (require) {
              * @param isTransparent
              */
             setTrasparentBackground: function(isTransparent) {
+                this.transparentBackground = isTransparent;
+
                 if(isTransparent){
                    this.$el.parent().addClass('transparent-back');
                    this.previousMaxTransparency = true;
@@ -674,6 +680,8 @@ define(function (require) {
                 // get default stuff such as id, position and size
                 return {
                     widgetType: this.widgetType,
+                    showTitleBar: this.showTitleBar,
+                    transparentBackground: this.transparentBackground,
                     name: this.name,
                     size: {
                         height: this.size.height,
@@ -703,6 +711,14 @@ define(function (require) {
 
                 if(view.name != undefined){
                     this.setName(view.name);
+                }
+
+                if(view.showTitleBar != undefined){
+                    this.showTitleBar(view.showTitleBar);
+                }
+
+                if(view.transparentBackground != undefined){
+                    this.setTrasparentBackground(view.transparentBackground);
                 }
             }
         })

@@ -46,6 +46,8 @@ define(function (require) {
 
     return Widget.View.extend({
         variable: null,
+        barName: "",
+        barBody: {},
 
         /**
          * Initialises button bar
@@ -163,6 +165,9 @@ define(function (require) {
         },
 
         renderBar: function (name, barObject) {
+            this.barName = name;
+            this.barBody = barObject;
+
             this.setName(name);
             this.setBody(this.BootstrapMenuMaker.generateToolbar(barObject));
             $(function () {
@@ -232,6 +237,34 @@ define(function (require) {
          */
         setBody: function (content) {
             this.innerButtonBarContainer.html(content);
+        },
+
+        getView: function(){
+            var baseView = Widget.View.prototype.getView.call(this);
+
+            // add options, whatever they are
+            baseView.options = this.options;
+
+            baseView.componentSpecific = {};
+
+            // component specific stuff
+            baseView.componentSpecific.barName = this.barName;
+            baseView.componentSpecific.barBody = this.barBody;
+
+            return baseView;
+        },
+
+        setView: function(view){
+            // set base properties
+            Widget.View.prototype.setView.call(this, view);
+
+            if(view.options != undefined){
+                this.setOptions(view.options);
+            }
+
+            if(view.componentSpecific != undefined){
+                this.renderBar(view.componentSpecific.barName, view.componentSpecific.barBody);
+            }
         }
 
     });

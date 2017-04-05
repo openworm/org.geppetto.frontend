@@ -35,6 +35,7 @@ define(function (require) {
 		reIndexUpdate : 0,
 		updateRedraw : 3,
         isFunctionNode: false,
+		functionNodeData: null,
 		isXYData: false,
         xaxisAutoRange : false,
         yaxisAutoRange : false,
@@ -814,9 +815,10 @@ define(function (require) {
 		 * @param {Node} functionNode - Function Node to be displayed
 		 */
 		plotFunctionNode: function (functionNode) {
-			// set flags
+			// set flags and keep track of state
             this.isFunctionNode = true;
 			this.isXYData = false;
+			this.functionNodeData = functionNode;
 
 			//Check there is metada information to plot
 			if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
@@ -1013,7 +1015,7 @@ define(function (require) {
 			// handle case of function node, data function and x,y data
 			if(this.isFunctionNode){
 				baseView.dataType = 'function';
-				// TODO: store data
+				baseView.data = this.functionNodeData;
 			} else if (this.isXYData){
 				baseView.dataType = 'xyData';
 				// TODO: store data
@@ -1038,7 +1040,7 @@ define(function (require) {
 			}
 
 			if(view.dataType == 'function'){
-				// TODO pull function out of data attribute
+				this.plotFunctionNode(view.data);
 			} else if(view.dataType == 'xyData'){
 				// TODO pull xy data out of data attribute
 			} else if(view.dataType == 'object'){

@@ -701,8 +701,12 @@ define(function (require) {
              */
             setView: function(view){
                 // set default stuff such as position and size
-                if(view.size != undefined){
+                if(view.size != undefined && view.size.height != 0 && view.size.width != 0){
                     this.setSize(view.size.height, view.size.width);
+                } else {
+                    // trigger auto size if we have no size info
+                    this.setAutoWidth();
+                    this.setAutoHeight();
                 }
 
                 if(view.position != undefined){

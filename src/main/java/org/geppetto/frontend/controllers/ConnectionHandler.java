@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -1400,32 +1401,29 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
-
+			
 			// Convert model
-			URL url = geppettoManager.downloadProject(geppettoProject);
 
-			if(url != null)
+			URL url = URLReader.getURL("/projects/C302");
+			
+			File file = new File(url.getFile());
+			
+			if(file != null)
 			{
 				// Zip folder
-				Zipper zipper = new Zipper(PathConfiguration.getProjectPath(Scope.CONNECTION, projectId));
-				Path path = zipper.getZipFromFile(url);
+				Zipper zipper = new Zipper(file.getAbsolutePath());
+				Path path = zipper.getZipFromDirectory(file);
 
 				// Send zip file to the client
 				websocketConnection.sendBinaryMessage(requestID, path);
 				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_PROJECT,null);
 			}
-			else
-			{
-				error(new GeppettoExecutionException("Results of type  not found in the current experiment"), "Error downloading project");
-			}
+			
 		}
-		catch(GeppettoExecutionException | GeppettoAccessException e)
-		{
+		catch (FileNotFoundException e) {
 			error(e, "Error downloading project");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			error(e, "Error downloading project");
 		}
 		
 	}

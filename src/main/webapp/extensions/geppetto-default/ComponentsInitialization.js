@@ -35,8 +35,25 @@ define(function (require) {
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
 
+		var toggleClickHandler = function(){
+			$('.DownloadProjectButton').uitooltip({content: "The project is getting downloaded..."});
+        	$(".DownloadProjectButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+			GEPPETTO.Console.executeCommand("Project.download();");
+        	GEPPETTO.trigger("spin_download");
+        };
+        
+		var configuration = {
+        		id: "DownloadProjectButton",
+        		onClick : toggleClickHandler,
+        		tooltipPosition : { my: "right center", at : "left-10 center"},
+        		icon : "fa fa-download",
+        		className : "btn DownloadProjectButton pull-right",
+        		disabled : false,
+        		hidden : false
+        };
+
 		//Save initialization
-		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));
+		GEPPETTO.ComponentFactory.addComponent('BUTTON', {}, document.getElementById("SaveButton"));
 		
 		//Download Project Button initialization
 		GEPPETTO.ComponentFactory.addComponent('DownloadProjectButton', {}, document.getElementById("DownloadProjectButton"));

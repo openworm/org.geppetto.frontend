@@ -149,7 +149,7 @@ module.exports = {
                 loader: "json-loader"
             },
             {
-                test: /\.(py|png|svg|gif|css|jpg|md|hbs)$/,
+                test: /\.(py|png|svg|gif|css|jpg|md|hbs|dcm)$/,
                 loader: 'ignore-loader'
             },
             {   test: /\.css$/,

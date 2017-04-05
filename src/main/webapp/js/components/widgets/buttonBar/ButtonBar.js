@@ -46,7 +46,6 @@ define(function (require) {
 
     return Widget.View.extend({
         variable: null,
-        options: null,
 
         /**
          * Initialises button bar
@@ -55,9 +54,7 @@ define(function (require) {
          *            options - Object with options for the widget
          */
         initialize: function (options) {
-            this.id = options.id;
-            this.name = options.name;
-            this.options = options;
+            Widget.View.prototype.initialize.call(this, options);
 
             this.render();
 

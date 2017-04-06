@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.beans.PathConfiguration;
@@ -1401,19 +1403,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			
-			File file = this.geppettoManager.downloadProject(geppettoProject);
+			Path zipPath = this.geppettoManager.downloadProject(geppettoProject);
 			
-			if(file != null)
+			if(zipPath != null)
 			{
-				// Zip folder
-				Zipper zipper = new Zipper(file.getAbsolutePath());
-				Path path = zipper.getZipFromDirectory(file);
-
 				// Send zip file to the client
-				websocketConnection.sendBinaryMessage(requestID, path);
+				websocketConnection.sendBinaryMessage(requestID, zipPath);
 				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_PROJECT,null);
-			}
 			
+				//clean temporary directory where files where written
+				FileUtils.cleanDirectory(zipPath.toFile().getParentFile()); 
+			}else{
+				error(null, "Error downloading project");
+			}
 		}
 		catch (Exception e) {
 			error(e, "Error downloading project");

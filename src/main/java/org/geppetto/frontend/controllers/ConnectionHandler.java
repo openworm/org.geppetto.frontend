@@ -1400,13 +1400,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void downloadProject(String requestID, long projectId) {
 		try
 		{
-			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 			
-			// Convert model
-
-			URL url = URLReader.getURL("/projects/C302");
-			
-			File file = new File(url.getFile());
+			File file = this.geppettoManager.downloadProject(geppettoProject);
 			
 			if(file != null)
 			{
@@ -1420,11 +1415,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			
 		}
-		catch (FileNotFoundException e) {
-			error(e, "Error downloading project");
-		} catch (IOException e) {
+		catch (Exception e) {
 			error(e, "Error downloading project");
 		}
-		
 	}
 }

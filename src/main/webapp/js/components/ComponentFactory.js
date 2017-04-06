@@ -63,7 +63,7 @@ define(function (require) {
 			'CHECKBOX': 'controls/Checkbox',
 			'TEXTFIELD': 'controls/TextField',
 			'RAISEDBUTTON': 'controls/RaisedButton',
-			'BUTTON':'controls/mixins/Button'
+			'BUTTON':'controls/button/Button'
 		}
 		
 	

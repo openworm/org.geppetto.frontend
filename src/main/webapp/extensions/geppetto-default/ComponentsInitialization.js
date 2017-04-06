@@ -35,29 +35,46 @@ define(function (require) {
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
 
-		var toggleClickHandler = function(){
-			$('.DownloadProjectButton').uitooltip({content: "The project is getting downloaded..."});
-        	$(".DownloadProjectButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+		var eventHandler = function(component){
+			GEPPETTO.on(GEPPETTO.Events.Project_downloaded, function(){
+				component.showToolTip("The project was downloaded!");
+			});
+
+			GEPPETTO.on("geppetto:error", function(){
+				component.showToolTip("The project has failed download!");
+				component.setState({icon:"fa fa-download"});
+			});
+
+			GEPPETTO.on('spin_download', function() {
+				component.showToolTip("The project is getting downloaded...");
+				component.setState({icon:"fa  fa-download fa-spin"});
+			}.bind($("#DownloadProjectButton")));
+
+			GEPPETTO.on('stop_spin_download', function() {
+				component.setState({icon:"fa fa-download"});
+			}.bind($("#DownloadProjectButton")));
+		};
+
+		var clickHandler = function(){
 			GEPPETTO.Console.executeCommand("Project.download();");
-        	GEPPETTO.trigger("spin_download");
-        };
-        
+			GEPPETTO.trigger("spin_download");
+		};
+
 		var configuration = {
-        		id: "DownloadProjectButton",
-        		onClick : toggleClickHandler,
-        		tooltipPosition : { my: "right center", at : "left-10 center"},
-        		icon : "fa fa-download",
-        		className : "btn DownloadProjectButton pull-right",
-        		disabled : false,
-        		hidden : false
-        };
+				id: "DownloadProjectButton",
+				onClick : clickHandler,
+				eventHandler : eventHandler,
+				tooltipPosition : { my: "right center", at : "left-25 center"},
+				tooltipLabel : "Click to download project!",
+				icon : "fa fa-download",
+				className : "btn DownloadProjectButton pull-right",
+				disabled : false,
+				hidden : false
+		};
 
-		//Save initialization
-		GEPPETTO.ComponentFactory.addComponent('BUTTON', {}, document.getElementById("SaveButton"));
-		
 		//Download Project Button initialization
-		GEPPETTO.ComponentFactory.addComponent('DownloadProjectButton', {}, document.getElementById("DownloadProjectButton"));
-
+		GEPPETTO.ComponentFactory.addComponent('BUTTON', {configuration: configuration}, document.getElementById("DownloadProjectButton"));
+		
 		//Simulation controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SIMULATIONCONTROLS', {}, document.getElementById("sim-toolbar"));
 

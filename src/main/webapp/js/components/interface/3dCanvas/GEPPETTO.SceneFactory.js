@@ -21,8 +21,8 @@ define(function (require) {
         	},
 
 
-            buildVisualInstance: function (instance) {
-                var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance);
+            buildVisualInstance: function (instance, lines, thickness) {
+                var meshes = GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness);
                 GEPPETTO.SceneFactory.init3DObject(meshes, instance);
             },
 

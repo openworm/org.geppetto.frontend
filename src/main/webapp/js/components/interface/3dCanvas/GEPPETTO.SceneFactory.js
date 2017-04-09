@@ -448,7 +448,7 @@ define(function (require) {
                 var midPoint = new THREE.Vector3();
                 midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
 
-                var c = new THREE.CylinderGeometry(cylNode.topRadius, cylNode.bottomRadius, axis.length(), 6, 1, false);
+                var c = new THREE.CylinderGeometry(cylNode.topRadius, cylNode.bottomRadius, axis.length(), 20, 1, false);
                 c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
                 var threeObject = new THREE.Mesh(c, material);
 

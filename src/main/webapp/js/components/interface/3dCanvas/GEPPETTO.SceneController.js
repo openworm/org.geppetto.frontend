@@ -98,13 +98,7 @@ define(function (require) {
              * @param {Float}
              *            intensity - the lighting intensity from 0 (no illumination) to 1 (full illumination)
              */
-            lightUpEntity: function (instance, intensity) {
-                if (intensity <= 0) {
-                    intensity = 1e-6;
-                }
-                if (intensity > 1) {
-                    intensity = 1;
-                }
+            lightUpEntity: function (instance, colorfn, intensity) {
                 var threeObject;
                 if (instance in GEPPETTO.getVARS().meshes) {
                     threeObject = GEPPETTO.getVARS().meshes[instance];
@@ -112,15 +106,9 @@ define(function (require) {
                 else {
                     threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
-                var baseColor = threeObject.material.defaultColor;
-                var tgtColor = intensity < 0.25 ? new THREE.Color(0,intensity*4,1) : (intensity < 0.5 ? new THREE.Color(0,1,1-(intensity-0.25)*4) : intensity < 0.75 ? new THREE.Color((intensity-0.55)*4,1,0) : new THREE.Color(1,1-(intensity-0.75)*4,0))
-                if (threeObject instanceof THREE.Line) {
-                    threeObject.material.color = tgtColor;
-                } else {
-                    threeObject.material.emissive = tgtColor;
-                    threeObject.material.color = tgtColor;
-                }
 
+                var [r,g,b] = colorfn(intensity);
+                threeObject.material.color.setRGB(r,g,b);
             },
 
             /**
@@ -227,32 +215,19 @@ define(function (require) {
                                     if (child.hasOwnProperty("material")) {
                                         GEPPETTO.SceneController.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                                         child.material.opacity = Math.max(0.5, child.material.defaultOpacity);
-                                        child.geometry.computeBoundingBox();
-                                        GEPPETTO.getVARS().controls.target.copy(child.position);
-                                        GEPPETTO.getVARS().controls.target.add(child.geometry.boundingBox.getCenter());
                                     }
                                 });
+                                mesh.selected = true;
+                                mesh.ghosted = false;
                             } else {
                                 GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                                 mesh.material.opacity = Math.max(0.5, mesh.material.defaultOpacity);
-                                mesh.geometry.computeBoundingBox();
-                                //let's set the center of rotation to the selected mesh
-                                GEPPETTO.getVARS().controls.target.copy(mesh.position);
-                                GEPPETTO.getVARS().controls.target.add(mesh.geometry.boundingBox.getCenter());
+                                mesh.selected = true;
+                                mesh.ghosted = false;
                             }
-                            mesh.selected = true;
-                            mesh.ghosted = false;
 
-                            
-                            GEPPETTO.getVARS().camera.updateProjectionMatrix();
-                            
                         }
-                        if(GEPPETTO.isKeyPressed('z')){
-                        	this.zoomTo([eval(instancePath)]);	
-                        }
-                        
                     }
-                    
                     return true;
                 }
                 return false;
@@ -450,9 +425,6 @@ define(function (require) {
                             });
                         }
                     }
-                }
-                for (var i = 0; i < instance.getChildren().length; i++) {
-                	this.assignRandomColor(instance.getChildren()[i]);
                 }
 
 

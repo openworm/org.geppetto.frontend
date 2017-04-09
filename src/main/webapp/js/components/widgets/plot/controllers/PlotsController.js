@@ -48,6 +48,10 @@ define(function(require) {
             return p;
         },
 
+        isColorbar: function(plot) {
+            return (plot.datasets[0] != undefined && plot.datasets[0].type == "heatmap");
+        },
+
         /**
          * Receives updates from widget listener class to update plotting widget(s)
          *
@@ -72,13 +76,15 @@ define(function(require) {
             else if (event == GEPPETTO.Events.Experiment_play) {
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
+                    if (!this.isColorbar(plot) && plot.datasets.length > 0)
                     plot.clean(parameters.playAll);
                 }
 
             }
 
             //update plotting widgets
-            else if (event == GEPPETTO.Events.Experiment_over) {}
+            else if (event == GEPPETTO.Events.Experiment_over) {
+            }
 
             //update plotting widgets
             else if (event == GEPPETTO.Events.Experiment_update) {
@@ -89,7 +95,17 @@ define(function(require) {
                     //we need the playAll parameter here because the plot might be coming up after the play
                     //event was triggered and in that case we need to catch up knowing what kind of play
                     //it's happening
+                    if (!this.isColorbar(plot) && plot.datasets.length > 0)
                     plot.updateDataSet(parameters.step, parameters.playAll);
+                }
+
+            }
+            else if (event == GEPPETTO.Events.Lit_entities_changed) {
+                for (var i = 0; i < this.widgets.length; i++) {
+                    var plot = this.widgets[i];
+                    if (GEPPETTO.G.litUpInstances.length == 0 && this.isColorbar(plot)) {
+                        plot.destroy();
+                    }
                 }
             }
         },

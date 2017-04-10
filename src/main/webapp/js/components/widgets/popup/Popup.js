@@ -357,7 +357,13 @@ define(function (require) {
 			baseView.dataType = (typeof this.data == "string") ? "string" : "object";
 			baseView.data = this.data;
 			baseView.componentSpecific = {
-				customHandlers: this.customHandlers,
+				customHandlers: this.customHandlers.map(function(item){
+					return {
+						funct: item.funct.toString(),
+						event: item.event,
+						metType: item.metType
+					}
+				}),
 				buttonBarControls: this.buttonBarControls,
 				buttonBarConfig: this.buttonBarConfig
 			};
@@ -384,7 +390,7 @@ define(function (require) {
 				if(view.componentSpecific.customHandlers != undefined){
 					for(var i=0; i<view.componentSpecific.customHandlers.length; i++){
 						this.addCustomNodeHandler(
-							view.componentSpecific.customHandlers[i].funct,
+							eval("(" + view.componentSpecific.customHandlers[i].funct + ")"),
 							view.componentSpecific.customHandlers[i].event,
 							view.componentSpecific.customHandlers[i].metaType
 						);

@@ -37,6 +37,7 @@ define(function (require) {
         isFunctionNode: false,
 		functionNodeData: null,
 		isXYData: false,
+		xyData: null,
         xaxisAutoRange : false,
         yaxisAutoRange : false,
         imageTypes : [],
@@ -960,6 +961,7 @@ define(function (require) {
 			// set flags
 			this.isXYData = true;
 			this.isFunctionNode = false;
+			this.xyData = { dataY : dataY.getPath(), dataX: dataX.getPath() };
 
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
 
@@ -1015,7 +1017,7 @@ define(function (require) {
 				baseView.data = this.functionNodeData;
 			} else if (this.isXYData){
 				baseView.dataType = 'xyData';
-				// TODO: store data
+				baseView.data = this.xyData;
 			} else {
 				// default case, simple plot with variables plots based on instance paths
 				baseView.dataType = 'object';
@@ -1041,7 +1043,9 @@ define(function (require) {
 				var functionNode = eval(view.data);
 				this.plotFunctionNode(functionNode);
 			} else if(view.dataType == 'xyData'){
-				// TODO pull xy data out of data attribute
+				var yData = eval(view.data.dataY);
+				var xData = eval(view.data.dataX);
+				this.plotXYData(yData, xData);
 			} else if(view.dataType == 'object'){
 				for (var index in view.data) {
 					var path = view.data[index];

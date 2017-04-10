@@ -818,7 +818,7 @@ define(function (require) {
 			// set flags and keep track of state
             this.isFunctionNode = true;
 			this.isXYData = false;
-			this.functionNodeData = functionNode;
+			this.functionNodeData = functionNode.getPath();
 
 			//Check there is metada information to plot
 			if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
@@ -1009,9 +1009,6 @@ define(function (require) {
 		getView: function(){
 			var baseView = Widget.View.prototype.getView.call(this);
 
-			// add options, whatever they are
-			baseView.options = this.options;
-
 			// handle case of function node, data function and x,y data
 			if(this.isFunctionNode){
 				baseView.dataType = 'function';
@@ -1028,6 +1025,11 @@ define(function (require) {
 				});
 			}
 
+			baseView.componentSpecific = {};
+
+			// add component specific options
+			baseView.componentSpecific.plotOptions = this.plotOptions;
+
 			return baseView;
 		},
 
@@ -1035,12 +1037,9 @@ define(function (require) {
 			// set base properties
 			Widget.View.prototype.setView.call(this, view);
 
-			if(view.options != undefined){
-				this.setOptions(view.options);
-			}
-
 			if(view.dataType == 'function'){
-				this.plotFunctionNode(view.data);
+				var functionNode = eval(view.data);
+				this.plotFunctionNode(functionNode);
 			} else if(view.dataType == 'xyData'){
 				// TODO pull xy data out of data attribute
 			} else if(view.dataType == 'object'){
@@ -1054,6 +1053,10 @@ define(function (require) {
 						this
 					)
 				}
+			}
+
+			if(view.componentSpecific != undefined && view.componentSpecific.plotOptions != undefined){
+				this.setOptions(view.plotOptions);
 			}
 		}
 

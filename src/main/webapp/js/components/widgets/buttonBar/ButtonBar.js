@@ -242,9 +242,6 @@ define(function (require) {
         getView: function(){
             var baseView = Widget.View.prototype.getView.call(this);
 
-            // add options, whatever they are
-            baseView.options = this.options;
-
             baseView.componentSpecific = {};
 
             // component specific stuff
@@ -257,10 +254,6 @@ define(function (require) {
         setView: function(view){
             // set base properties
             Widget.View.prototype.setView.call(this, view);
-
-            if(view.options != undefined){
-                this.setOptions(view.options);
-            }
 
             if(view.componentSpecific != undefined){
                 this.renderBar(view.componentSpecific.barName, view.componentSpecific.barBody);

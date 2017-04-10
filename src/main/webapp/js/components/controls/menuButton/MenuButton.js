@@ -35,6 +35,8 @@ define(function (require) {
         },
 
         select: function () {
+            this.props.handleSelect(this.props.item.value, this.props.item.radio);
+
             var iconState = this.icons.default;
             var action = null;
 
@@ -66,8 +68,6 @@ define(function (require) {
             }
 
             this.setState({icon: iconState});
-            
-            this.props.handleSelect(this.props.item.value);
         },
 
         componentDidMount: function () {
@@ -145,16 +145,32 @@ define(function (require) {
             var items = [];
             if(this.props.configuration.menuItems != undefined || null){
             	for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
-            		var item = this.props.configuration.menuItems[i];
-            		items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
+            	    var item = this.props.configuration.menuItems[i];
+                    if (item.radio) {
+                        // include a ref for every radio item so we can call their select method from other items
+            		items.push(<ListItem key={i} item={item} ref={item.value} handleSelect={this.handleSelect}/>);
+                    } else {
+                        items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect}/>);
+                    }
             	}
             }
             return items;
         },
 
-        handleSelect: function (value) {
-        	 this.props.handleSelect(value);
-        	 
+        handleSelect: function (value, radio) {
+            // call select on any other 'checked' radio items to deselect them
+            if (radio) {
+                for (var key in this.refs) {
+                    var ref = this.refs[key];
+                    if ((ref.props.item.value != value) &&
+                        (ref.state.icon == ref.icons.checked) &&
+                        ref.props.item.radio) {
+                        ref.select();
+                    }
+                }
+            }
+            this.props.handleSelect(value);
+
         	 if(this.props.configuration.autoFormatMenu){
         		 for (var i = 0; i < this.props.configuration.menuItems.length; i++) {
         			 var item = this.props.configuration.menuItems[i];

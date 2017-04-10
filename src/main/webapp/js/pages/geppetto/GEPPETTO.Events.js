@@ -49,10 +49,11 @@ define(function (require) {
 			Show_spinner: "spinner:show",
 			Hide_spinner: "spinner:hide",
 			Color_set: "color:set",
-			Canvas_initialised: "canvas:initialised",
+ 			Canvas_initialised: "canvas:initialised",
 			Project_made_public : "project_made_public",
 			Control_panel_open: "control_panel:open",
 			Control_panel_close: "control_panel:close",
+			Lit_entities_changed: "lit_entities_changed",
 
             listening: false,
 
@@ -113,8 +114,10 @@ define(function (require) {
                 });
                 GEPPETTO.on(this.Experiment_stop, function (parameters) {
                 });
-
-				GEPPETTO.on(this.Do_experiment_play, function () {
+                GEPPETTO.on(this.Lit_entities_changed, function (parameters) {
+                    GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Lit_entities_changed, parameters);
+                });
+		GEPPETTO.on(this.Do_experiment_play, function () {
                     Project.getActiveExperiment().playAll();
                 });
             }

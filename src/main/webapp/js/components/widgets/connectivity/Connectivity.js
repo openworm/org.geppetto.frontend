@@ -409,12 +409,24 @@ define(function (require) {
         getView: function(){
             var baseView = Widget.View.prototype.getView.call(this);
 
-            // add connectivity specific options
-            baseView.options = this.connectivityOptions;
+            // add connectivity specific options - contains logic, iterate and serialize
+            var serializedOptions = {};
+            for(var item in this.connectivityOptions){
+                var serializedItem = {};
+                if (typeof this.connectivityOptions[item] === "function") {
+                    serializedItem.value = this.connectivityOptions[item].toString();
+                    serializedItem.type = 'function';
+                } else {
+                    serializedItem.value = this.connectivityOptions[item];
+                    serializedItem.type = 'primitive';
+                }
+                serializedOptions[item] = serializedItem;
+            }
+            baseView.options = serializedOptions;
 
             // add data
             baseView.dataType = 'object';
-            baseView.data = this.dataset["root"];
+            baseView.data = this.dataset["root"].getPath();
 
             return baseView;
         },
@@ -425,7 +437,16 @@ define(function (require) {
 
             if(view.dataType == 'object' && view.data != undefined && view.data != ''){
                 var obj = eval(view.data);
-                this.setData(obj, view.options);
+                var deserializedOptions = {};
+                for(var item in view.options){
+                    if(view.options[item].type == "function"){
+                        deserializedOptions[item] = eval('(' + view.options[item].value + ')');
+                    } else {
+                        deserializedOptions[item] = view.options[item].value;
+                    }
+                }
+
+                this.setData(obj, deserializedOptions);
             }
         }
     });

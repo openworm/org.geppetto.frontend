@@ -1027,11 +1027,6 @@ define(function (require) {
 				});
 			}
 
-			baseView.componentSpecific = {};
-
-			// add component specific options
-			baseView.componentSpecific.plotOptions = this.plotOptions;
-
 			return baseView;
 		},
 
@@ -1057,10 +1052,6 @@ define(function (require) {
 						this
 					)
 				}
-			}
-
-			if(view.componentSpecific != undefined && view.componentSpecific.plotOptions != undefined){
-				this.setOptions(view.plotOptions);
 			}
 		}
 

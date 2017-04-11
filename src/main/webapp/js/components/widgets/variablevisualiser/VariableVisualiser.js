@@ -51,7 +51,7 @@ define(function (require) {
         default_height: 120,
 
         /**
-         * Initialises viriables visualiser with a set of options
+         * Initialises variables visualiser with a set of options
          *
          * @param {Object} options - Object with options for the widget
          */

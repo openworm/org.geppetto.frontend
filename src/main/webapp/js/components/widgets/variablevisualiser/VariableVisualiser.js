@@ -56,9 +56,7 @@ define(function (require) {
          * @param {Object} options - Object with options for the widget
          */
         initialize: function (options) {
-            this.id = options.id;
-            this.name = options.name;
-            this.options = options;
+            Widget.View.prototype.initialize.call(this, options);
 
             if (!('width' in options)) {
                 options.width = this.default_width;
@@ -156,6 +154,26 @@ define(function (require) {
          */
         getSelector: function (name) {
             return $(this.root.selector + " ." + name);
+        },
+
+        getView: function(){
+            var baseView = Widget.View.prototype.getView.call(this);
+
+            // add data
+            baseView.dataType = 'object';
+            baseView.data = this.variable.name;
+
+            return baseView;
+        },
+
+        setView: function(view){
+            // set base properties
+            Widget.View.prototype.setView.call(this, view);
+
+            if(view.dataType == 'object' && view.data != undefined && view.data != ''){
+                var variable = eval(view.data);
+                this.setVariable(variable);
+            }
         }
     });
 });

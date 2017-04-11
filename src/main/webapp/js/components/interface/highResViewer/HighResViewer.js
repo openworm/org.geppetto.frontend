@@ -25,16 +25,22 @@ define(function (require) {
 
 			GoogleMapsLoader.load(function(google) {
 
+				// var current_slice_path = 'https://s3-us-west-1.amazonaws.com/test-patient-hm/GoogleBrain/Subjects/HM/Slice_' + addZeros(id, 4) + '/Result';
+				var current_slice_path = 'https://s3-us-west-1.amazonaws.com/test-patient-hm/GoogleBrain/Subjects/HM/Slice_1207/Result';
+				
 				var map = new google.maps.Map(document.getElementById('highResViewer'), {
 					center: {lat: 0, lng: 0},
 					zoom: 1,
 					streetViewControl: false,
 					mapTypeControlOptions: {
-					mapTypeIds: ['moon']
+					mapTypeIds: ['hm']
 					}
 				});
 
-				var moonMapType = new google.maps.ImageMapType({
+				var centreLat = 66.70383915858723;
+    			var centreLon = -48.1640625;
+
+				var hmMapType = new google.maps.ImageMapType({
 					// Normalizes the coords that tiles repeat across the x axis (horizontally)
 					// like the standard Google map tiles.
 					getNormalizedCoord: function(coord, zoom) {
@@ -58,25 +64,59 @@ define(function (require) {
 						return {x: x, y: y};
 					},
 
-					getTileUrl: function(coord, zoom) {
-						var normalizedCoord = this.getNormalizedCoord(coord, zoom);
-						if (!normalizedCoord) {
-						return null;
+					// getTileUrl: function(coord, zoom) {
+					// 	var normalizedCoord = this.getNormalizedCoord(coord, zoom);
+					// 	if (!normalizedCoord) {
+					// 	return null;
+					// 	}
+					// 	var bound = Math.pow(2, zoom);
+					// 	return '//mw1.google.com/mw-planetary/lunar/lunarmaps_v1/clem_bw' +
+					// 		'/' + zoom + '/' + normalizedCoord.x + '/' +
+					// 		(bound - normalizedCoord.y - 1) + '.jpg';
+					// },
+					getTileUrl: function(a, b) {
+						// pervent wrap around
+						if (a.y < 0 || a.y >= (1 << b)) {
+							return null;
 						}
-						var bound = Math.pow(2, zoom);
-						return '//mw1.google.com/mw-planetary/lunar/lunarmaps_v1/clem_bw' +
-							'/' + zoom + '/' + normalizedCoord.x + '/' +
-							(bound - normalizedCoord.y - 1) + '.jpg';
+						if (a.x < 0 || a.x >= (1 << b)) {
+							return null;
+						}
+						var c = Math.pow(2, b);
+						var d = a.x;
+						var e = a.y;
+						var f = "t";
+						for (var g = 0; g < b; g++) {
+							c = c / 2;
+							if (e < c) {
+								if (d < c) { f += "q" }
+								else { f += "r"; d -= c }
+							} else {
+								if (d < c) { f += "t"; e -= c }
+								else { f += "s"; d -= c; e -= c }
+							}
+						}
+						subdirs = 3;
+						tmp = "";
+						if (f.length >= subdirs) { // subdivide into sub-directories
+							for (i = 0; i < subdirs; i++) {
+								tmp += f.charAt(i) + "/";
+							}
+						}
+						tmp += f;
+						return current_slice_path + "/" + tmp + ".jpg";
 					},
+					center: new google.maps.LatLng(50, 50),
 					tileSize: new google.maps.Size(256, 256),
-					maxZoom: 9,
+					isPng: false,
+					maxZoom: 11,
 					minZoom: 0,
-					radius: 1738000,
-					name: 'Moon'
+					radius: 1738000
+					// name: 'HM'
 				});
 
-				map.mapTypes.set('moon', moonMapType);
-				map.setMapTypeId('moon');
+				map.mapTypes.set('hm', hmMapType);
+				map.setMapTypeId('hm');
 
 			});
 

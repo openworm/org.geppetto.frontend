@@ -41,6 +41,7 @@ define(function (require) {
         plotElement : null,
         xVariable : null,
         firstStep : 0,
+        updateLegendsState : false,
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -209,48 +210,68 @@ define(function (require) {
          * @param {Object} instance - variable to change display label in legends
          * @param {String} legend - new legend name
          */
-        setLegend: function (instance, legend) {
-            //Check if it is a string or a geppetto object
-            var instancePath = instance;
-            if ((typeof instance) != "string") {
-                instancePath = instance.getInstancePath();
-            }
+		setLegend: function (instance, legend) {
+			//Check if it is a string or a geppetto object
+			var instancePath = instance;
+			if ((typeof instance) != "string") {
+				instancePath = instance.getInstancePath();
+			}
 
-            for(var i =0; i< this.datasets.length; i++){
-            	if(this.datasets[i].name == instancePath){
-            		this.datasets[i].name = legend;
-            	}
-            }
-            
-            Plotly.relayout(this.plotDiv, this.plotOptions);
-            this.labelsMap[instancePath] = legend;
-            
-            return this;
-        },
-        
-            plotGeneric: function(dataset) {
-                if (dataset != undefined)
-                    this.datasets.push(dataset);
+			for(var i =0; i< this.datasets.length; i++){
+				if(this.datasets[i].name == instancePath){
+					this.datasets[i].name = legend;
+				}
+			}
 
-                if(this.plotly==null){
-		    this.plotOptions.xaxis.autorange = true;
-		    this.xaxisAutoRange = true;
-		    //Creates new plot using datasets and default options
-		    this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-                    var that = this;
-		    this.plotDiv.on('plotly_doubleclick', function() {
-		        that.resize();
-		    });
-		    this.plotDiv.on('plotly_click', function() {
-		        that.resize();
-		    });
-	        }else{
-		    Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
-	        }
-	        this.resize(false);
-            },
+			Plotly.relayout(this.plotDiv, this.plotOptions);
+			this.labelsMap[instancePath] = legend;
 
-        
+			return this;
+		},
+		
+		updateLegends : function(legendExtension){
+			if(!this.updateLegendsState){
+				for(var i =0; i< this.datasets.length; i++){
+					var oldLegendName = this.datasets[i].name;
+					var variable = this.variables[this.getLegendInstancePath(oldLegendName)];
+					var newLegend = oldLegendName+ legendExtension;
+					this.variables[newLegend] = variable; 
+					this.datasets[i].name  = newLegend;
+					this.labelsMap[variable.getInstancePath()] = oldLegendName;
+				}
+
+				Plotly.relayout(this.plotDiv, this.plotOptions);
+				this.updateLegendsState = true;
+			}
+		},
+		
+		getVariables : function(){
+			return this.variables;
+		},
+
+		plotGeneric: function(dataset) {
+			if (dataset != undefined)
+				this.datasets.push(dataset);
+
+			if(this.plotly==null){
+				this.plotOptions.xaxis.autorange = true;
+				this.xaxisAutoRange = true;
+				//Creates new plot using datasets and default options
+				this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
+				var that = this;
+				this.plotDiv.on('plotly_doubleclick', function() {
+					that.resize();
+				});
+				this.plotDiv.on('plotly_click', function() {
+					that.resize();
+				});
+			}else{
+				Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
+			}
+			this.resize(false);
+		},
+
+
 		/**
 		 * Takes data series and plots them. To plot array(s) , use it as
 		 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
@@ -1016,8 +1037,8 @@ define(function (require) {
                 }
             }
 			
-			this.plotOptions.xaxis.autorange = true;
-			this.xaxisAutoRange = true;
+//			this.plotOptions.xaxis.autorange = true;
+//			this.xaxisAutoRange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
             this.updateAxis(dataY.getInstancePath());
             this.resize();

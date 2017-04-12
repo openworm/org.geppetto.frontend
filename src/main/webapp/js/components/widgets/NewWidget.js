@@ -22,7 +22,6 @@ define(function (require) {
             getInitialState: function () {
 
                 return {
-                    id: null,
                     dialog: null,
                     visible: true,
                     destroyed: false,

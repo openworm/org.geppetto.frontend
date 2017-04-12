@@ -430,12 +430,36 @@ define(function (require) {
 		 * Downloads a screenshot of the graphing plots
 		 */
 		downloadImage: function (imageType) {
+			var self = this;
+			
+			//play around with settings to make background temporarily white
+			//and marging wider
+			this.plotOptions.paper_bgcolor = "rgb(255,255,255)";
+			this.plotOptions.xaxis.linecolor = "rgb(0,0,0)";
+			this.plotOptions.yaxis.linecolor = "rgb(0,0,0)";
+			this.plotOptions.xaxis.tickfont.color = "rgb(0,0,0)";
+			this.plotOptions.yaxis.tickfont.color = "rgb(0,0,0)";
+			this.plotOptions.margin.r= 40;
+			Plotly.relayout(this.plotDiv,this.plotOptions);
+			
 			Plotly.downloadImage(
-				this.plotDiv, {
-					format: imageType,
-					height: window.screen.availHeight,
-					width: window.screen.availWidth,
-				});
+					this.plotDiv, {
+						format: imageType,
+						height: window.screen.availHeight,
+						width: window.screen.availWidth
+					});
+			
+			var reset = function(){
+				//reset background and margin
+				self.plotOptions.paper_bgcolor = "rgb(69,59,59)";
+				self.plotOptions.xaxis.linecolor = "rgb(255,255,255)";
+				self.plotOptions.yaxis.linecolor = "rgb(255,255,255)";
+				self.plotOptions.xaxis.tickfont.color = "rgb(255,255,255)";
+				self.plotOptions.yaxis.tickfont.color = "rgb(255,255,255)";
+				self.plotOptions.margin.r= 0;
+				Plotly.relayout(self.plotDiv,self.plotOptions);
+			};
+			setTimeout(reset, 100);
 		},
 		
 		/**

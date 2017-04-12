@@ -758,8 +758,11 @@ define(function (require) {
 		 * @param unitSymbol - string representing unit symbol
 		 */
 		getUnitLabel: function (unitSymbol) {
-
-			unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+			if(unitSymbol!= null || unitSymbol != undefined){
+				unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+			}else{
+				unitSymbol = "";
+			}
 
 			var unitLabel = unitSymbol;
 
@@ -1037,8 +1040,8 @@ define(function (require) {
                 }
             }
 			
-//			this.plotOptions.xaxis.autorange = true;
-//			this.xaxisAutoRange = true;
+			this.plotOptions.xaxis.autorange = true;
+			this.xaxisAutoRange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
             this.updateAxis(dataY.getInstancePath());
             this.resize();

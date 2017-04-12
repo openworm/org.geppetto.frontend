@@ -9,6 +9,7 @@ define(function (require) {
 	var React = require('react');
 	window.THREE = require('three');
 	var AMI = require('ami.js');
+	var dat = require('dat-gui');
 
 	var dicomViewerComponent = React.createClass({
 
@@ -25,7 +26,7 @@ define(function (require) {
 			var HelpersStack = AMI.default.Helpers.Stack;
 
 			// Setup renderer
-			var container = document.getElementById('dicomViewer');
+			var container = document.getElementById(this.props.id).getElementsByClassName('dicomViewer')[0];
 			container.style.height = "300px";
 			container.style.width = "350px";
 			var renderer = new THREE.WebGLRenderer({
@@ -59,21 +60,21 @@ define(function (require) {
 					width: container.offsetWidth,
 					height: container.offsetHeight,
 				};
-				camera.fitBox(2,2);
+				camera.fitBox(2, 2);
 
 				renderer.setSize(container.offsetWidth, container.offsetHeight);
 			}
 			window.addEventListener('resize', onWindowResize, false);
 
-			 $("#" + this.props.containerid ).on("dialogresizestop", function (event, ui) {
+			$("#" + this.props.containerid).on("dialogresizestop", function (event, ui) {
 				camera.canvas = {
-					width:  ui.size.width-30,
-					height: ui.size.height-30,
+					width: ui.size.width - 260 - 30,
+					height: ui.size.height - 30,
 				};
-				camera.fitBox(2,2);
+				camera.fitBox(2, 2);
 
-				renderer.setSize( ui.size.width-30, ui.size.height-30);
-				
+				renderer.setSize(ui.size.width - 260 - 30, ui.size.height - 30);
+
 			});
 
 			/**
@@ -90,41 +91,74 @@ define(function (require) {
 			}
 			animate();
 
+			function gui(stackHelper, containerId) {
+				var gui = new dat.GUI({
+					autoPlace: false,
+				});
+
+				var customContainer = document.getElementById(containerId).getElementsByClassName('controlsContainer')[0];
+				customContainer.appendChild(gui.domElement);
+				// only reason to use this object is to satusfy data.GUI
+				var camUtils = {
+					invertRows: false,
+					invertColumns: false,
+					rotate45: false,
+					rotate: 0,
+					orientation: 'default',
+					convention: 'radio',
+				};
+
+				// camera
+				var cameraFolder = gui.addFolder('Camera');
+				var invertRows = cameraFolder.add(camUtils, 'invertRows');
+				invertRows.onChange(function () {
+					camera.invertRows();
+				});
+
+				var invertColumns = cameraFolder.add(camUtils, 'invertColumns');
+				invertColumns.onChange(function () {
+					camera.invertColumns();
+				});
+
+				var rotate45 = cameraFolder.add(camUtils, 'rotate45');
+				rotate45.onChange(function () {
+					camera.rotate();
+				});
+
+				cameraFolder.add(camera, 'angle', 0, 360).step(1).listen();
+
+				let orientationUpdate = cameraFolder.add(
+					camUtils, 'orientation', ['default', 'axial', 'coronal', 'sagittal']);
+				orientationUpdate.onChange(function (value) {
+					camera.orientation = value;
+					camera.update();
+					camera.fitBox(2);
+					stackHelper.orientation = camera.stackOrientation;
+				});
+
+				let conventionUpdate = cameraFolder.add(
+					camUtils, 'convention', ['radio', 'neuro']);
+				conventionUpdate.onChange(function (value) {
+					camera.convention = value;
+					camera.update();
+					camera.fitBox(2);
+				});
+
+				cameraFolder.open();
+
+				// of course we can do everything from lesson 01!
+				var stackFolder = gui.addFolder('Stack');
+				stackFolder.add(
+					stackHelper, 'index', 0, stackHelper.stack.dimensionsIJK.z - 1)
+					.step(1).listen();
+				stackFolder.add(stackHelper.slice, 'interpolation', 0, 1).step(1).listen();
+				stackFolder.open();
+			}
+
 			// Setup loader
-			// var loader = new LoadersVolume(container);
-			// var file =
-			// 	'https://cdn.rawgit.com/FNNDSC/data/master/nifti/adi_brain/adi_brain.nii.gz';
-
-			// instantiate the loader
-			// it loads and parses the dicom image
+			var _this = this;
 			var loader = new LoadersVolume(container);
-
-			var t2 = [
-				'00010001.dcm', '00010019.dcm', '00010037.dcm', '00010055.dcm', '00010073.dcm', '00010091.dcm', '00010109.dcm', '00010127.dcm',
-				'00010002.dcm', '00010020.dcm', '00010038.dcm', '00010056.dcm', '00010074.dcm', '00010092.dcm', '00010110.dcm', '00010128.dcm',
-				'00010003.dcm', '00010021.dcm', '00010039.dcm', '00010057.dcm', '00010075.dcm', '00010093.dcm', '00010111.dcm', '00010129.dcm',
-				'00010004.dcm', '00010022.dcm', '00010040.dcm', '00010058.dcm', '00010076.dcm', '00010094.dcm', '00010112.dcm', '00010130.dcm',
-				'00010005.dcm', '00010023.dcm', '00010041.dcm', '00010059.dcm', '00010077.dcm', '00010095.dcm', '00010113.dcm', '00010131.dcm',
-				'00010006.dcm', '00010024.dcm', '00010042.dcm', '00010060.dcm', '00010078.dcm', '00010096.dcm', '00010114.dcm', '00010132.dcm',
-				'00010007.dcm', '00010025.dcm', '00010043.dcm', '00010061.dcm', '00010079.dcm', '00010097.dcm', '00010115.dcm', '00010133.dcm',
-				'00010008.dcm', '00010026.dcm', '00010044.dcm', '00010062.dcm', '00010080.dcm', '00010098.dcm', '00010116.dcm', '00010134.dcm',
-				'00010009.dcm', '00010027.dcm', '00010045.dcm', '00010063.dcm', '00010081.dcm', '00010099.dcm', '00010117.dcm', '00010135.dcm',
-				'00010010.dcm', '00010028.dcm', '00010046.dcm', '00010064.dcm', '00010082.dcm', '00010100.dcm', '00010118.dcm', '00010136.dcm',
-				'00010011.dcm', '00010029.dcm', '00010047.dcm', '00010065.dcm', '00010083.dcm', '00010101.dcm', '00010119.dcm', '00010137.dcm',
-				'00010012.dcm', '00010030.dcm', '00010048.dcm', '00010066.dcm', '00010084.dcm', '00010102.dcm', '00010120.dcm', '00010138.dcm',
-				'00010013.dcm', '00010031.dcm', '00010049.dcm', '00010067.dcm', '00010085.dcm', '00010103.dcm', '00010121.dcm',
-				'00010014.dcm', '00010032.dcm', '00010050.dcm', '00010068.dcm', '00010086.dcm', '00010104.dcm', '00010122.dcm',
-				'00010015.dcm', '00010033.dcm', '00010051.dcm', '00010069.dcm', '00010087.dcm', '00010105.dcm', '00010123.dcm',
-				'00010016.dcm', '00010034.dcm', '00010052.dcm', '00010070.dcm', '00010088.dcm', '00010106.dcm', '00010124.dcm',
-				'00010017.dcm', '00010035.dcm', '00010053.dcm', '00010071.dcm', '00010089.dcm', '00010107.dcm', '00010125.dcm',
-				'00010018.dcm', '00010036.dcm', '00010054.dcm', '00010072.dcm', '00010090.dcm', '00010108.dcm', '00010126.dcm',
-			];
-
-			var files = t2.map(function(v) {
-				return 'geppetto/extensions/geppetto-hm/samples/lowResPACStypical/' + v;
-			});
-
-			loader.load(files)
+			loader.load(this.props.files)
 				.then(function () {
 					// merge files into clean series/stack/frame structure
 					var series = loader.data[0].mergeSeries(loader.data);
@@ -145,6 +179,8 @@ define(function (require) {
 
 					scene.add(stackHelper);
 
+					// build the gui
+    				gui(stackHelper, _this.props.id);
 
 					// hook up callbacks
 					controls.addEventListener('OnScroll', function (e) {
@@ -192,22 +228,20 @@ define(function (require) {
 					camera.update();
 
 					// Not working properly. See issue: https://github.com/FNNDSC/ami/issues/120
-					camera.fitBox(2,2);
+					camera.fitBox(2, 2);
 				})
 				.catch(function (error) {
 					window.console.log('oops... something went wrong...');
 					window.console.log(error);
 				});
-
-
-
-
 		},
 
 		render: function () {
 			return (
 				<div>
-					<div id="dicomViewer">
+					<div className="dicomViewer" style={{float:'left'}}>
+					</div>
+					<div className="controlsContainer" style={{float:'right'}}>
 					</div>
 				</div>
 			)

@@ -175,7 +175,7 @@ define(function(require) {
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data
                     if (plotWidget != undefined) {
-                    	plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
+                    	//plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
                         plotWidget.plotData(inst);
                         this.updateLegend(plotWidget, inst, projectId, experimentId);
                     } else {
@@ -187,7 +187,7 @@ define(function(require) {
                     var cb = function() {
                         var i = window.Instances.getInstance(path);
                         if (plotWidget != undefined) {
-                        	plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
+                        	//plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
                             plotWidget.plotData(i);
                             this.updateLegend(plotWidget, i, projectId, experimentId);
                         } else {

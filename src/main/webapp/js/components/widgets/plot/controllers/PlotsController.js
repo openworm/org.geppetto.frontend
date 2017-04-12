@@ -1,10 +1,9 @@
-
 /**
  * Controller class for plotting widget. Use to make calls to widget from inside Geppetto.
  *
  * @author Jesus R Martinez (jesus@metacell.us)
  */
-define(function (require) {
+define(function(require) {
 
     var AWidgetController = require('../../AWidgetController');
     var Plot = require('../Plot');
@@ -14,7 +13,7 @@ define(function (require) {
      */
     return AWidgetController.View.extend({
 
-        initialize: function () {
+        initialize: function() {
             this.widgets = [];
             var widgets = this.widgets;
         },
@@ -40,7 +39,7 @@ define(function (require) {
             p.setController(this);
 
             //create help command for plot
-            p.help = function () {
+            p.help = function() {
                 return GEPPETTO.Console.getObjectCommands(id);
             };
 
@@ -52,8 +51,12 @@ define(function (require) {
             //add commands to console autocomplete and help option
             GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/components/widgets/plot/Plot.js"));
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(p.getId(), p);            
+            GEPPETTO.Console.updateTags(p.getId(), p);
             return p;
+        },
+
+        isColorbar: function(plot) {
+            return (plot.datasets[0] != undefined && plot.datasets[0].type == "heatmap");
         },
 
         /**
@@ -61,7 +64,7 @@ define(function (require) {
          *
          * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
          */
-        update: function (event, parameters) {
+        update: function(event, parameters) {
             //delete plot widget(s)
             if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE) {
                 this.removeWidgets();
@@ -80,6 +83,7 @@ define(function (require) {
             else if (event == GEPPETTO.Events.Experiment_play) {
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
+                    if (!this.isColorbar(plot) && plot.datasets.length > 0)
                     plot.clean(parameters.playAll);
                 }
 
@@ -98,7 +102,17 @@ define(function (require) {
                     //we need the playAll parameter here because the plot might be coming up after the play
                     //event was triggered and in that case we need to catch up knowing what kind of play
                     //it's happening
+                    if (!this.isColorbar(plot) && plot.datasets.length > 0)
                     plot.updateDataSet(parameters.step, parameters.playAll);
+                }
+
+            }
+            else if (event == GEPPETTO.Events.Lit_entities_changed) {
+                for (var i = 0; i < this.widgets.length; i++) {
+                    var plot = this.widgets[i];
+                    if (GEPPETTO.G.litUpInstances.length == 0 && this.isColorbar(plot)) {
+                        plot.destroy();
+                    }
                 }
             }
         },
@@ -109,7 +123,7 @@ define(function (require) {
          * @param {Node} node - Geppetto Node used for extracting commands
          * @returns {Array} Set of commands associated with this node
          */
-        getCommands: function (node) {
+        getCommands: function(node) {
             var groups = [];
 
             if (node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.DYNAMICS_TYPE) {
@@ -168,13 +182,13 @@ define(function (require) {
                 // check if we already have data
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data
-                	if(plotWidget != undefined){
-                		plotWidget.plotData(inst);
-                		this.updateLegend(plotWidget,inst,projectId,experimentId);
-                	} else {
-                		var widget = G.addWidget(0);
-                		widget.plotData(inst).setName(path);
-                		this.updateLegend(widget,inst,projectId,experimentId);
+                    if (plotWidget != undefined) {
+                        plotWidget.plotData(inst);
+                        this.updateLegend(plotWidget, inst, projectId, experimentId);
+                    } else {
+                        var widget = G.addWidget(0);
+                        widget.plotData(inst).setName(path);
+                        this.updateLegend(widget, inst, projectId, experimentId);
                     }
                 } else {
                     var cb = function(){
@@ -191,20 +205,20 @@ define(function (require) {
                 }
             } else {
                 // we are dealing with external instances, define re-usable callback for plotting external instances
-                var plotExternalCallback = function(){
+                var plotExternalCallback = function() {
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
                     var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, 'time(StateVariable)');
-                    
-                    if(plotWidget != undefined){
-                    	plotWidget.plotXYData(i,t);
-                    	self.updateLegend(plotWidget,i,projectId,experimentId);
+
+                    if (plotWidget != undefined) {
+                        plotWidget.plotXYData(i, t);
+                        self.updateLegend(plotWidget, i, projectId, experimentId);
                     } else {
-                    	G.addWidget(0).plotXYData(i,t).setName(path);
+                        G.addWidget(0).plotXYData(i, t).setName(path);
                     }
                 };
 
                 var externalInstance = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
-                if(externalInstance != undefined){
+                if (externalInstance != undefined) {
                     // if not undefined, plot
                     plotExternalCallback();
                 } else {
@@ -213,10 +227,10 @@ define(function (require) {
                 }
             }
         },
-        
+
         //Updates the legend for a given instance, and updates it in widget
-        updateLegend : function(widget,instance,projectId, experimentId){
-            var legend=null;
+        updateLegend: function(widget, instance, projectId, experimentId) {
+            var legend = null;
             var experimentName, projectName;
             if(window.Project.getId() == projectId){
             	if(window.Project.getActiveExperiment()!= null || undefined){
@@ -230,45 +244,45 @@ define(function (require) {
             	var experimentPath = projectName + " - " + experimentName;
     			legend = this.getLegendName(projectId,experimentId,instance,false);
             }
-            
+
             //set legend if it needs to be updated, only null if variable belong to active experiment
-            if(legend!=null){
-            	widget.setLegend(instance,legend);
+            if (legend != null) {
+                widget.setLegend(instance, legend);
             }
         },
-        
-        //Returns legend with appropriate project and experiment name in brackets
-        getLegendName : function(projectId, experimentId, instance,sameProject){
-        	var legend=null;
-        	//the variable's experiment belong to same project but it's not the active one
-        	if(sameProject){
-        		for(var key in window.Project.getExperiments()){
-        			if( window.Project.getExperiments()[key].id == experimentId){
-        				//create legend with experiment name
-        				legend = instance.getInstancePath()+" ["+window.Project.getExperiments()[key].name+"]";
-        			}
-        		}
-        	}
-        	//The variable's experiment and projects aren't the one that is active
-        	else{
-        		//get user projects
-        		var projects = GEPPETTO.ProjectsController.getUserProjects();
 
-        		for (var i = 0; i < projects.length; i++) {
-        			//match variable project id
-        			if ((projects[i].id == projectId)) {
-        				//match variable experiment id
-        				for(var key in projects[i].experiments){
-                			if(projects[i].experiments[key].id == experimentId){
-                				//create legend with project name and experiment
-                				legend = instance.getInstancePath()+" ["+projects[i].name + " - " + projects[i].experiments[key].name+"]";
-                			}
-                		}
-        			}
-        		}
-        	}
-        	
-        	return legend;
+        //Returns legend with appropriate project and experiment name in brackets
+        getLegendName: function(projectId, experimentId, instance, sameProject) {
+            var legend = null;
+            //the variable's experiment belong to same project but it's not the active one
+            if (sameProject) {
+                for (var key in window.Project.getExperiments()) {
+                    if (window.Project.getExperiments()[key].id == experimentId) {
+                        //create legend with experiment name
+                        legend = instance.getInstancePath() + " [" + window.Project.getExperiments()[key].name + "]";
+                    }
+                }
+            }
+            //The variable's experiment and projects aren't the one that is active
+            else {
+                //get user projects
+                var projects = GEPPETTO.ProjectsController.getUserProjects();
+
+                for (var i = 0; i < projects.length; i++) {
+                    //match variable project id
+                    if ((projects[i].id == projectId)) {
+                        //match variable experiment id
+                        for (var key in projects[i].experiments) {
+                            if (projects[i].experiments[key].id == experimentId) {
+                                //create legend with project name and experiment
+                                legend = instance.getInstancePath() + " [" + projects[i].name + " - " + projects[i].experiments[key].name + "]";
+                            }
+                        }
+                    }
+                }
+            }
+
+            return legend;
         }
     });
 });

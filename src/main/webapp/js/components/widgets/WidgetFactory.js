@@ -32,7 +32,7 @@ define(function (require) {
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
             BUTTONBAR: 7,
-            STACKVIEWER: 8
+            STACKVIEWER: 8 
             //WIDGETNAME: N
         };
 

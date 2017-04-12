@@ -113,6 +113,7 @@ module.exports = {
     ],
 
     resolve: {
+        alias: {geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js')},
         extensions: ['', '.js', '.json'],
     },
 

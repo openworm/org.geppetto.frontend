@@ -25,7 +25,8 @@ define(function (require) {
          */
         addTreeVisualiserDATWidget: function (isStateless) {
             if(isStateless == undefined){
-                isStateless = false;
+                // stateless by default
+                isStateless = true;
             }
 
             //look for a name and id for the new widget

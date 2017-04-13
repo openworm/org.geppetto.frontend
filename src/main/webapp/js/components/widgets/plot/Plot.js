@@ -1033,12 +1033,15 @@ define(function (require) {
 				}
 
 				if (this.hasStandardPlotData) {
-					// default case, simple plot with variables plots based on instance paths
+					// simple plot with non external instances
 					baseView.dataType = 'object';
-					baseView.data = this.datasets.map(function(item){
-						// build array of paths
-						return item.name;
-					});
+					baseView.data = [];
+					for(var item in this.variables){
+						// only add non external instances
+						if(!(this.variables[item] instanceof ExternalInstance)){
+							baseView.data.push(item)
+						}
+					}
 				}
 			}
 

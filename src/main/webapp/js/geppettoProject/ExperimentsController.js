@@ -97,7 +97,7 @@ define(function (require) {
             	for (var i = 0; i < experimentState.recordedVariables.length; i++) {
                     var recordedVariable = experimentState.recordedVariables[i];
                     var instancePath = recordedVariable.pointer.path;
-                    var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath);
+                    var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath, experimentState.projectId, experimentState.experimentId);
                     instance.extendApi(AStateVariableCapability);
                     instance.setWatched(true, false);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
@@ -109,7 +109,7 @@ define(function (require) {
                     for (var i = 0; i < experimentState.setParameters.length; i++) {
                         var setParameter = experimentState.setParameters[i];
                         var instancePath = setParameter.pointer.path;
-                        var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath);
+                        var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath, experimentState.projectId, experimentState.experimentId);
                         instance.extendApi(AParameterCapability);
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
                             instance.setValue(setParameter.value.value, false);

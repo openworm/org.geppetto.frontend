@@ -19,6 +19,8 @@ define(function (require) {
 	var widgetUtility = require("../WidgetUtility");
     widgetUtility.loadCss("geppetto/js/components/widgets/plot/Plot.css");
 
+	var ExternalInstance = require('../../../geppettoModel/model/ExternalInstance');
+
 	return Widget.View.extend({
 		plotly: null,
 		plotDiv : null,
@@ -962,6 +964,10 @@ define(function (require) {
 			this.isXYData = true;
 			this.isFunctionNode = false;
 			this.xyData = { dataY : dataY.getPath(), dataX: dataX.getPath() };
+			if(dataY instanceof ExternalInstance){
+				this.xyData.projectId = dataY.projectId;
+				this.xyData.experimentId = dataY.experimentId;
+			}
 
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
 
@@ -1038,19 +1044,27 @@ define(function (require) {
 				var functionNode = eval(view.data);
 				this.plotFunctionNode(functionNode);
 			} else if(view.dataType == 'xyData'){
-				var yData = eval(view.data.dataY);
-				var xData = eval(view.data.dataX);
-				this.plotXYData(yData, xData);
+				var yPath = view.data.dataY;
+				var xPath = view.data.dataX;
+				// project and experiment id could be any project and any experiment
+				var projectId = view.data.projectId != undefined ? view.data.projectId : Project.getId();
+				var experimentId = view.data.projectId != undefined ? view.data.experimentId : Project.getActiveExperiment().getId();
+				this.controller.plotStateVariable(
+					projectId,
+					experimentId,
+					yPath,
+					this,
+					xPath
+				);
 			} else if(view.dataType == 'object'){
 				for (var index in view.data) {
 					var path = view.data[index];
-					// TODO: project and experiment id could be any project and any experiment
 					this.controller.plotStateVariable(
 						Project.getId(),
 						Project.getActiveExperiment().getId(),
 						path,
 						this
-					)
+					);
 				}
 			}
 		}

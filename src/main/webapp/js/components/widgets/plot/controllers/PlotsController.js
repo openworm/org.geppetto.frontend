@@ -154,11 +154,12 @@ define(function (require) {
          * @param projectId
          * @param experimentId
          * @param path
-         * @param plotWidget - options, if not provided a new widget will be created
+         * @param plotWidget - optional, if not provided a new widget will be created
+         * @param xPath - optional, if plotting xy data a path for the x axis
          */
-        plotStateVariable: function(projectId, experimentId, path, plotWidget){
+        plotStateVariable: function(projectId, experimentId, path, plotWidget, xPath){
+            var self = this;
             if(window.Project.getId() == projectId && window.Project.getActiveExperiment().getId() == experimentId){
-                var self = this;
                 // try to resolve path
                 var inst = undefined;
                 try {
@@ -193,7 +194,9 @@ define(function (require) {
                 // we are dealing with external instances, define re-usable callback for plotting external instances
                 var plotExternalCallback = function(){
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
-                    var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, 'time(StateVariable)');
+                    // if xPath is not specified, assume time
+                    if(xPath == undefined){ xPath = 'time(StateVariable)'; }
+                    var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, xPath);
                     
                     if(plotWidget != undefined){
                     	plotWidget.plotXYData(i,t);

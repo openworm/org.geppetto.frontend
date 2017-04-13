@@ -99,16 +99,16 @@ define(function (require) {
              *            intensity - the lighting intensity from 0 (no illumination) to 1 (full illumination)
              */
             lightUpEntity: function (instance, colorfn, intensity) {
-//                var threeObject;
-//                if (instance in GEPPETTO.getVARS().meshes) {
-//                    threeObject = GEPPETTO.getVARS().meshes[instance];
-//                }
-//                else {
-//                    threeObject = GEPPETTO.getVARS().splitMeshes[instance];
-//                }
-//
-//                var [r,g,b] = colorfn(intensity);
-//                threeObject.material.color.setRGB(r,g,b);
+                var threeObject;
+                if (instance in GEPPETTO.getVARS().meshes) {
+                    threeObject = GEPPETTO.getVARS().meshes[instance];
+                }
+                else {
+                    threeObject = GEPPETTO.getVARS().splitMeshes[instance];
+                }
+
+                var [r,g,b] = colorfn(intensity);
+                threeObject.material.color.setRGB(r,g,b);
             },
 
             /**

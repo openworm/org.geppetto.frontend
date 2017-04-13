@@ -439,14 +439,36 @@ define(function (require) {
 			this.plotOptions.yaxis.linecolor = "rgb(0,0,0)";
 			this.plotOptions.xaxis.tickfont.color = "rgb(0,0,0)";
 			this.plotOptions.yaxis.tickfont.color = "rgb(0,0,0)";
+			this.plotOptions.yaxis.titlefont.color = "rgb(0,0,0)";
+			this.plotOptions.xaxis.titlefont.color = "rgb(0,0,0)";
+			this.plotOptions.xaxis.tickfont.size = 18;
+			this.plotOptions.yaxis.tickfont.size = 18;
+			this.plotOptions.xaxis.titlefont.size = 18;
+			this.plotOptions.yaxis.titlefont.size = 18;
+			this.plotOptions.legend.font.size = 18;
+			this.plotOptions.legend.font.family = 'Helvetica Neue';
+			this.plotOptions.legend.font.color = "rgb(0,0,0)";
+			this.plotOptions.legend.bgcolor = "rgb(255,255,255)";
 			this.plotOptions.margin.r= 40;
+			
+			var oldMarginLeft = this.plotOptions.margin.l;
+			this.plotOptions.margin.l= 70;
 			Plotly.relayout(this.plotDiv,this.plotOptions);
+			
+			var height =  this.getSize().height;
+			var width = this.getSize().width;
+			
+			//double the size if the width and height is very small
+			if(height <500 || width <500){
+				height =  height*2;
+				width = width *2;
+			}
 			
 			Plotly.downloadImage(
 					this.plotDiv, {
 						format: imageType,
-						height: window.screen.availHeight,
-						width: window.screen.availWidth
+						height: height,
+						width: width
 					});
 			
 			var reset = function(){
@@ -456,7 +478,17 @@ define(function (require) {
 				self.plotOptions.yaxis.linecolor = "rgb(255,255,255)";
 				self.plotOptions.xaxis.tickfont.color = "rgb(255,255,255)";
 				self.plotOptions.yaxis.tickfont.color = "rgb(255,255,255)";
+				self.plotOptions.yaxis.titlefont.color = "rgb(255,255,255)";
+				self.plotOptions.xaxis.titlefont.color = "rgb(255,255,255)";
+				self.plotOptions.xaxis.tickfont.size = 11;
+				self.plotOptions.yaxis.tickfont.size = 11;
+				self.plotOptions.xaxis.titlefont.size = 12;
+				self.plotOptions.yaxis.titlefont.size = 12;
+				self.plotOptions.legend.font.size = 12;
+				self.plotOptions.legend.font.color = "rgb(255,255,255)";
+				self.plotOptions.legend.bgcolor = "rgba(66, 59, 59)";
 				self.plotOptions.margin.r= 0;
+				self.plotOptions.margin.l= oldMarginLeft;
 				Plotly.relayout(self.plotDiv,self.plotOptions);
 			};
 			setTimeout(reset, 100);

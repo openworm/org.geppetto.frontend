@@ -38,8 +38,9 @@ define(function (require) {
 		updateRedraw : 3,
         isFunctionNode: false,
 		functionNodeData: null,
-		isXYData: false,
-		xyData: null,
+		hasXYData: false,
+		xyData: [],
+		hasStandardPlotData: false,
         xaxisAutoRange : false,
         yaxisAutoRange : false,
         imageTypes : [],
@@ -148,6 +149,7 @@ define(function (require) {
 			this.visible = options.visible;
 			this.datasets = [];
 			this.variables = [];
+			this.xyData = [];
 			this.plotOptions = this.defaultOptions();
 			//Merge passed options into existing defaultOptions object
 			$.extend( this.plotOptions, options);
@@ -246,7 +248,7 @@ define(function (require) {
 		plotData: function (data, options) {
 			// set flags for function node and xy both to false
 			this.isFunctionNode = false;
-			this.isXYData = false;
+			this.hasStandardPlotData = true;
 
 			var validVariable = eval(data);
 			if(validVariable == null || undefined){
@@ -820,7 +822,8 @@ define(function (require) {
 		plotFunctionNode: function (functionNode) {
 			// set flags and keep track of state
             this.isFunctionNode = true;
-			this.isXYData = false;
+			this.hasStandardPlotData = false;
+			this.hasXYData = false;
 			this.functionNodeData = functionNode.getPath();
 
 			//Check there is metada information to plot
@@ -961,13 +964,14 @@ define(function (require) {
 			}
 
 			// set flags
-			this.isXYData = true;
+			this.hasXYData = true;
 			this.isFunctionNode = false;
-			this.xyData = { dataY : dataY.getPath(), dataX: dataX.getPath() };
+			var xyDataEntry = { dataY : dataY.getPath(), dataX: dataX.getPath() };
 			if(dataY instanceof ExternalInstance){
-				this.xyData.projectId = dataY.projectId;
-				this.xyData.experimentId = dataY.experimentId;
+				xyDataEntry.projectId = dataY.projectId;
+				xyDataEntry.experimentId = dataY.experimentId;
 			}
+			this.xyData.push(xyDataEntry);
 
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
 
@@ -1021,16 +1025,21 @@ define(function (require) {
 			if(this.isFunctionNode){
 				baseView.dataType = 'function';
 				baseView.data = this.functionNodeData;
-			} else if (this.isXYData){
-				baseView.dataType = 'xyData';
-				baseView.data = this.xyData;
 			} else {
-				// default case, simple plot with variables plots based on instance paths
-				baseView.dataType = 'object';
-				baseView.data = this.datasets.map(function(item){
-					// build array of paths
-					return item.name;
-				});
+
+				if (this.hasXYData){
+					baseView.dataType = 'object';
+					baseView.xyData = this.xyData.slice(0);
+				}
+
+				if (this.hasStandardPlotData) {
+					// default case, simple plot with variables plots based on instance paths
+					baseView.dataType = 'object';
+					baseView.data = this.datasets.map(function(item){
+						// build array of paths
+						return item.name;
+					});
+				}
 			}
 
 			return baseView;
@@ -1043,28 +1052,36 @@ define(function (require) {
 			if(view.dataType == 'function'){
 				var functionNode = eval(view.data);
 				this.plotFunctionNode(functionNode);
-			} else if(view.dataType == 'xyData'){
-				var yPath = view.data.dataY;
-				var xPath = view.data.dataX;
-				// project and experiment id could be any project and any experiment
-				var projectId = view.data.projectId != undefined ? view.data.projectId : Project.getId();
-				var experimentId = view.data.projectId != undefined ? view.data.experimentId : Project.getActiveExperiment().getId();
-				this.controller.plotStateVariable(
-					projectId,
-					experimentId,
-					yPath,
-					this,
-					xPath
-				);
-			} else if(view.dataType == 'object'){
-				for (var index in view.data) {
-					var path = view.data[index];
-					this.controller.plotStateVariable(
-						Project.getId(),
-						Project.getActiveExperiment().getId(),
-						path,
-						this
-					);
+			} else if (view.dataType == 'object') {
+				// if any xy data loop through it
+				if(view.xyData != undefined){
+					for(var i=0; i<view.xyData.length; i++) {
+						var yPath = view.xyData[i].dataY;
+						var xPath = view.xyData[i].dataX;
+						// project and experiment id could be any project and any experiment
+						var projectId = view.xyData[i].projectId != undefined ? view.xyData[i].projectId : Project.getId();
+						var experimentId = view.xyData[i].projectId != undefined ? view.xyData[i].experimentId : Project.getActiveExperiment().getId();
+						this.controller.plotStateVariable(
+							projectId,
+							experimentId,
+							yPath,
+							this,
+							xPath
+						);
+					}
+				}
+
+				// if any data, loop through it
+				if(view.data != undefined){
+					for (var index in view.data) {
+						var path = view.data[index];
+						this.controller.plotStateVariable(
+							Project.getId(),
+							Project.getActiveExperiment().getId(),
+							path,
+							this
+						);
+					}
 				}
 			}
 		}

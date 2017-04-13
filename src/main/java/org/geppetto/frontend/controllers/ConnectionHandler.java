@@ -84,6 +84,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	// the geppetto project active for this connection
 	private IGeppettoProject geppettoProject;
 
+	private String urlBase = "";
 	/**
 	 * @param websocketConnection
 	 * @param geppettoManager
@@ -113,7 +114,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			else
 			{
-				loadGeppettoProject(requestID, geppettoProject, experimentId,"");
+				loadGeppettoProject(requestID, geppettoProject, experimentId,this.urlBase);
 			}
 		}
 		catch(NumberFormatException e)
@@ -129,7 +130,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void loadProjectFromContent(String requestID, String projectContent)
 	{
 		IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), projectContent);
-		loadGeppettoProject(requestID, geppettoProject, -1l,"");
+		loadGeppettoProject(requestID, geppettoProject, -1l,this.urlBase);
 	}
 
 	/**
@@ -143,10 +144,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			url = URLReader.getURL(urlString);
 			int index = url.toString().lastIndexOf('/');
-			String urlBase = url.toString().substring(0, index + 1);
+			String urlBase = url.toString().substring(0, index);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
-			loadGeppettoProject(requestID, geppettoProject, -1l, urlBase);
+			this.urlBase = urlBase;
+			loadGeppettoProject(requestID, geppettoProject, -1l, this.urlBase);
 		}
 		catch(IOException e)
 		{
@@ -635,15 +637,18 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	/**
 	 * @param requestID
-	 * @param url
+	 * @param urlString
 	 * @param visitor
 	 */
-	public void sendScriptData(String requestID, URL url, WebsocketConnection visitor)
+	public void sendScriptData(String requestID, String urlString, WebsocketConnection visitor)
 	{
 		try
 		{
 			String line = null;
 			StringBuilder sb = new StringBuilder();
+
+			String urlPath = urlBase + urlString;
+			URL url = URLReader.getURL(urlPath);
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -657,7 +662,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(IOException e)
 		{
-			error(e, "Error while reading the script at " + url);
+			error(e, "Error while reading the script at " + urlString);
 		}
 	}
 

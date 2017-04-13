@@ -263,19 +263,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case GET_SCRIPT:
 			{
 				String urlString = gmsg.data;
-				URL url = null;
-				try
-				{
-
-					url = URLReader.getURL(urlString);
-
-					connectionHandler.sendScriptData(requestID, url, this);
-
-				}
-				catch(MalformedURLException e)
-				{
-					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
-				}
+				connectionHandler.sendScriptData(requestID, urlString, this);
 				break;
 			}
 			case GET_DATA_SOURCE_RESULTS:

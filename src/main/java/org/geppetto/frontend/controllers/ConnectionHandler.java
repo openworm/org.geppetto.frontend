@@ -113,7 +113,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			else
 			{
-				loadGeppettoProject(requestID, geppettoProject, experimentId);
+				loadGeppettoProject(requestID, geppettoProject, experimentId,"");
 			}
 		}
 		catch(NumberFormatException e)
@@ -129,7 +129,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void loadProjectFromContent(String requestID, String projectContent)
 	{
 		IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), projectContent);
-		loadGeppettoProject(requestID, geppettoProject, -1l);
+		loadGeppettoProject(requestID, geppettoProject, -1l,"");
 	}
 
 	/**
@@ -142,9 +142,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			url = URLReader.getURL(urlString);
+			int index = url.toString().lastIndexOf('/');
+			String urlBase = url.toString().substring(0, index + 1);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
-			loadGeppettoProject(requestID, geppettoProject, -1l);
+			loadGeppettoProject(requestID, geppettoProject, -1l, urlBase);
 		}
 		catch(IOException e)
 		{
@@ -156,11 +158,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param geppettoProject
 	 */
-	public void loadGeppettoProject(String requestID, IGeppettoProject geppettoProject, long experimentId)
+	public void loadGeppettoProject(String requestID, IGeppettoProject geppettoProject, long experimentId, String urlBase)
 	{
 		try
 		{
-			geppettoManager.loadProject(requestID, geppettoProject);
+			geppettoManager.loadProject(requestID, geppettoProject,urlBase);
 			boolean readOnly = true;
 			if(geppettoProject.isVolatile()){
 				readOnly = false;

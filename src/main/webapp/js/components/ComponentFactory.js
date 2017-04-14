@@ -39,7 +39,7 @@ define(function (require) {
 		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
 		var addWidget = require('./widgets/NewWidget.js');
-				
+		
 		//All the components potentially instantiable go here
 		var components = {
 			'FORM':'interface/form/Form',
@@ -92,8 +92,6 @@ define(function (require) {
 				require(["./" + components[componentID]], function(loadedModule){
 					var component = React.createFactory(addWidget(loadedModule))(properties);
 					var renderedComponent = that.renderComponent(component, document.getElementById('widgetContainer'), callback);
-					
-					//GEPPETTO.widgetContainer.addChildren(component)
 					return renderedComponent;
 				});
 			},

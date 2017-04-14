@@ -1,9 +1,8 @@
-
 /**
  *
- * Base Widget Class, all widgets extend this class.
+ * High Level widget component
  * @module Widgets/Widget
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian@metacell.us)
  */
 define(function (require) {
 

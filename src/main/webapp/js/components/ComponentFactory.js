@@ -38,6 +38,8 @@ define(function (require) {
 		var ReactDOM = require('react-dom');
 		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
+		var addWidget = require('./widgets/NewWidget.js');
+		
 		//All the components potentially instantiable go here
 		var components = {
 			'FORM':'interface/form/Form',
@@ -77,17 +79,23 @@ define(function (require) {
 				var that=this;
 				require(["./" + components[componentID]], function(loadedModule){
 					var component = React.createFactory(loadedModule)(properties)
-					var renderedComponent = that.renderComponent(component, container);
-					if(callback!=undefined){
-						callback(renderedComponent);
-					}
+					var renderedComponent = that.renderComponent(component, container, callback);
 					return renderedComponent;
 				});
 				
 			},
 
+			addWidget: function(componentID, properties, callback){
+				var that=this;
+				require(["./" + components[componentID]], function(loadedModule){
+					var component = React.createFactory(addWidget(loadedModule))(properties);
+					var renderedComponent = that.renderComponent(component, document.getElementById('widgetContainer'), callback);
+					return renderedComponent;
+				});
+			},
 
-			renderComponent: function(component, container){
+
+			renderComponent: function(component, container, callback){
 				//Let's create a dialog
 				if (container == undefined){
 
@@ -122,7 +130,7 @@ define(function (require) {
 	                container = dialog.get(0);
 				}
 
-				return ReactDOM.render(component, container);
+				return ReactDOM.render(component, container, callback);
 			}
 	    };
 	};

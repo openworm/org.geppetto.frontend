@@ -48,9 +48,6 @@ require('../../components/ComponentFactory')(GEPPETTO);
 
 GEPPETTO.ComponentFactory.loadSpinner();
 
-
-
-
 jQuery(function () {
     window.GEPPETTO = require('geppetto');
 

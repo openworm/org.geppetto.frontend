@@ -64,7 +64,9 @@ define(function (require) {
 			'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
 			'CHECKBOX': 'controls/Checkbox',
 			'TEXTFIELD': 'controls/TextField',
-			'RAISEDBUTTON': 'controls/RaisedButton'
+			'RAISEDBUTTON': 'controls/RaisedButton',
+			'DICOMVIEWER': 'interface/dicomViewer/DicomViewer'
+			//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 		}
 		
 	

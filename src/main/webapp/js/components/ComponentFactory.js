@@ -65,6 +65,7 @@ define(function (require) {
 			'CHECKBOX': 'controls/Checkbox',
 			'TEXTFIELD': 'controls/TextField',
 			'RAISEDBUTTON': 'controls/RaisedButton',
+			'DICOMVIEWER': 'interface/dicomViewer/DicomViewer',
 			'HIGHRESVIEWER': 'interface/highResViewer/HighResViewer'
 			//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 		}
@@ -92,8 +93,6 @@ define(function (require) {
 				require(["./" + components[componentID]], function(loadedModule){
 					var component = React.createFactory(addWidget(loadedModule))(properties);
 					var renderedComponent = that.renderComponent(component, document.getElementById('widgetContainer'), callback);
-					
-					//GEPPETTO.widgetContainer.addChildren(component)
 					return renderedComponent;
 				});
 			},

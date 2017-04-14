@@ -1,9 +1,8 @@
-
 /**
  *
- * Base Widget Class, all widgets extend this class.
+ * High Level widget component
  * @module Widgets/Widget
- * @author  Jesus R. Martinez (jesus@metacell.us)
+ * @author Adrian Quintana (adrian@metacell.us)
  */
 define(function (require) {
 
@@ -22,7 +21,6 @@ define(function (require) {
             getInitialState: function () {
 
                 return {
-                    id: null,
                     dialog: null,
                     visible: true,
                     destroyed: false,

@@ -46,8 +46,6 @@ var GEPPETTO = require('geppetto');
 
 require('../../components/ComponentFactory')(GEPPETTO);
 
-//GEPPETTO.ComponentFactory.addComponent('WIDGETCONTAINER',{}, document.getElementById('widgetContainer'), function(){GEPPETTO.widgetContainer=this;})
-
 GEPPETTO.ComponentFactory.loadSpinner();
 
 jQuery(function () {

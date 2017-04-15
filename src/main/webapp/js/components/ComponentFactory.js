@@ -66,7 +66,8 @@ define(function (require) {
 			'TEXTFIELD': 'controls/TextField',
 			'RAISEDBUTTON': 'controls/RaisedButton',
 			'DICOMVIEWER': 'interface/dicomViewer/DicomViewer',
-			'HIGHRESVIEWER': 'interface/highResViewer/HighResViewer'
+			'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
+			'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer'
 			//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 		}
 		

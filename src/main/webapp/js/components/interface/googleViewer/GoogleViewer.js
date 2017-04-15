@@ -3,32 +3,32 @@ define(function (require) {
 	var link = document.createElement("link");
 	link.type = "text/css";
 	link.rel = "stylesheet";
-	link.href = "geppetto/js/components/interface/highResViewer/HighResViewer.css";
+	link.href = "geppetto/js/components/interface/googleViewer/GoogleViewer.css";
 	document.getElementsByTagName("head")[0].appendChild(link);
 
 	var React = require('react');
-	
-    // var GoogleMapLib = require('react-google-maps');
-    // var GoogleMap = GoogleMapLib.GoogleMap;
 
-	var GoogleMapsLoader = require('google-maps'); // only for common js environments 
- 
-	
+	var GoogleMapsLoader = require('google-maps');
+	var googleViewerComponent = React.createClass({
 
-	var highResViewerComponent = React.createClass({
+		// getInitialState: function () {
+        //     return {}
+		// },
 
-		
-
+		shouldComponentUpdate() {
+			return false;
+		},
 
 		componentDidMount: function () {
-			GoogleMapsLoader.KEY = 'AIzaSyAtAf8S4uU54ZogtLqbzc8pvQI6phGDL1Q';			
+			GoogleMapsLoader.KEY = 'AIzaSyAtAf8S4uU54ZogtLqbzc8pvQI6phGDL1Q';
+
+			var _this = this;			
 
 			GoogleMapsLoader.load(function(google) {
 
-				// var current_slice_path = 'https://s3-us-west-1.amazonaws.com/test-patient-hm/GoogleBrain/Subjects/HM/Slice_' + addZeros(id, 4) + '/Result';
-				var current_slice_path = 'https://s3-us-west-1.amazonaws.com/test-patient-hm/GoogleBrain/Subjects/HM/Slice_1207/Result';
-				
-				var map = new google.maps.Map(document.getElementById('highResViewer'), {
+				var container = document.getElementById(_this.props.id + "_component");
+
+				var map = new google.maps.Map(container, {
 					center: {lat: 0, lng: 0},
 					zoom: 1,
 					streetViewControl: false,
@@ -40,7 +40,7 @@ define(function (require) {
 				var centreLat = 66.70383915858723;
     			var centreLon = -48.1640625;
 
-				var hmMapType = new google.maps.ImageMapType({
+				var imageMapType = new google.maps.ImageMapType({
 					// Normalizes the coords that tiles repeat across the x axis (horizontally)
 					// like the standard Google map tiles.
 					getNormalizedCoord: function(coord, zoom) {
@@ -104,7 +104,7 @@ define(function (require) {
 							}
 						}
 						tmp += f;
-						return current_slice_path + "/" + tmp + ".jpg";
+						return _this.props.path + "/" + tmp + ".jpg";
 					},
 					center: new google.maps.LatLng(50, 50),
 					tileSize: new google.maps.Size(256, 256),
@@ -115,22 +115,22 @@ define(function (require) {
 					// name: 'HM'
 				});
 
-				map.mapTypes.set('hm', hmMapType);
-				map.setMapTypeId('hm');
+				map.mapTypes.set('imageMapType', imageMapType);
+				map.setMapTypeId('imageMapType');
 
 			});
 
 			GoogleMapsLoader.onLoad(function(google) {
-				console.log('I just loaded google maps api');
+				//console.log('I just loaded google maps api');
 			});
 		},
 
 		render: function () {
 			return (
-				<div id="highResViewer">
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="googleViewer">
 				</div>
 			)
 		}
 	});
-	return highResViewerComponent;
+	return googleViewerComponent;
 });

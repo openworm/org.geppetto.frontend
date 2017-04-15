@@ -54,6 +54,7 @@
     "less": "^2.7.2",
     "less-loader": "^2.2.3",
     "mathjs": "^3.5.3",
+    "openseadragon": "^2.2.1",
     "pako": "^1.0.3",
     "pixi.js": "4.2.3",
     "plotly.js": "^1.20.5",

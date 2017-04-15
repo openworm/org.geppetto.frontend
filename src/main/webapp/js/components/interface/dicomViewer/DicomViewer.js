@@ -66,7 +66,7 @@ define(function (require) {
 			}
 			window.addEventListener('resize', onWindowResize, false);
 
-			$("#" + this.props.containerid).on("dialogresizestop", function (event, ui) {
+			$("#" + this.props.id).on("dialogresizestop", function (event, ui) {
 				camera.canvas = {
 					width: ui.size.width - 260 - 30,
 					height: ui.size.height - 30,
@@ -238,7 +238,7 @@ define(function (require) {
 
 		render: function () {
 			return (
-				<div>
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"}>
 					<div className="dicomViewer" style={{float:'left'}}>
 					</div>
 					<div className="controlsContainer" style={{float:'right'}}>

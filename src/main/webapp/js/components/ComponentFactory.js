@@ -65,7 +65,9 @@ define(function (require) {
 			'CHECKBOX': 'controls/Checkbox',
 			'TEXTFIELD': 'controls/TextField',
 			'RAISEDBUTTON': 'controls/RaisedButton',
-			'DICOMVIEWER': 'interface/dicomViewer/DicomViewer'
+			'DICOMVIEWER': 'interface/dicomViewer/DicomViewer',
+			'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
+			'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer'
 			//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 		}
 		

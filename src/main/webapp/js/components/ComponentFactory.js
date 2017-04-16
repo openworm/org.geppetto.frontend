@@ -67,7 +67,8 @@ define(function (require) {
 			'RAISEDBUTTON': 'controls/RaisedButton',
 			'DICOMVIEWER': 'interface/dicomViewer/DicomViewer',
 			'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
-			'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer'
+			'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
+			'CAROUSEL': 'interface/carousel/Carousel'
 			//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 		}
 		

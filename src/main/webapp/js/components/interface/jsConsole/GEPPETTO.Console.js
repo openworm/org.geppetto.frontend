@@ -430,7 +430,10 @@ define(function (require) {
              * Executes commands to console. Implicit commands only
              * shown in debug mode, or if showImplicitCommands true.
              */
-            executeCommand: function (command, isImplicit = false) {
+            executeCommand: function (command, isImplicit) {
+                if (isImplicit === undefined){
+                    isImplicit = false
+                }
                 GEPPETTO.Console.getConsole().executeCommand(command, isImplicit);
                 var justCommand = command.substring(0, command.indexOf("("));
                 var commandParams = command.substring(command.indexOf("(") + 1, command.lastIndexOf(")"));

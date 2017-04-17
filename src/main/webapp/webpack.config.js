@@ -43,6 +43,9 @@ if (generateTestsBundle) {
 console.log("The Webpack entries are:\n");
 console.log(entries);
 
+var isProduction = process.argv.indexOf('-p') >= 0;
+console.log("\n Building for a " + ((isProduction)?"production":"development") + " environment")
+
 module.exports = {
 
     entry: entries,
@@ -109,6 +112,11 @@ module.exports = {
             useSsl: useSsl,
             embedderURL: embedderURL,
             chunks: []
+        }),
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+            },
         }),
         function() {
             this.plugin("done", function(stats) {

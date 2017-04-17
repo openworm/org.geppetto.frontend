@@ -1,0 +1,175 @@
+/*******************************************************************************
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011, 2013 OpenWorm.
+ * http://openworm.org
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the MIT License
+ * which accompanies this distribution, and is available at
+ * http://opensource.org/licenses/MIT
+ *
+ * Contributors:
+ *     	OpenWorm - http://openworm.org/people.html
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
+.legend-text {
+    font-size: 12px;
+    font-weight: 100;
+    fill: white;
+}
+
+.legend-title {
+    font-size: 14px;
+}
+
+.connectivity-ordering {
+    position: absolute;
+}
+
+.connectivity-ordering-label {
+    margin-left: 2px;
+    font-size: 12px;
+    font-weight: 100;
+    color: #FFFFFF;
+}
+
+.connectivity-ordering-label select {
+    color: #000000;
+}
+
+.connectionlabel {
+    font-size: 16px;
+    font-weight: 100;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    fill: white;
+    stroke: none;
+    text-rendering: optimizeLegibility;
+}
+
+#connectivity-config-modal{
+	background-color:rgba(66, 59, 59, 0.5);
+}
+.axis {
+    stroke: #000;
+    stroke-width: 1.5px;
+}
+
+.node circle {
+    stroke: #000;
+}
+
+.link {
+    fill: none;
+    stroke: #999;
+    stroke-width: 1.5px;
+    stroke-opacity: .3;
+}
+
+.link.active {
+    stroke: red;
+    stroke-width: 2px;
+    stroke-opacity: 1;
+}
+
+.node circle.active {
+    stroke: red;
+    stroke-width: 3px;
+}
+
+.chord path {
+    fill-opacity: .67;
+    stroke: #000;
+    stroke-width: .5px;
+}
+
+.chord-tick {
+    stroke: white;
+    stroke-width: .5px;
+}
+
+.chord-tick-scale {
+    font-size: 12px;
+    font-weight: 100;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    fill: white;
+    stroke: none;
+    text-rendering: optimizeLegibility;
+}
+
+.connectivity-layout-editor {
+   width: 100%;
+}
+
+.connectivity-layout {
+
+}
+.card-deck{
+    margin-top: 20px;
+    margin-left: 100px;
+    margin-right: 100px;
+}
+.card-title{
+	color:#fc6320;
+	text-align:center;
+}
+.card{
+	border-radius: 0;
+	border:0;
+	cursor:pointer;
+	padding:15px;
+	background: rgba(66, 59, 59, 0.8);
+}
+.configIcon{
+	position:absolute;
+	bottom:20px;
+	right:20px;
+	color:#fc6320;
+	cursor:pointer;
+	font-size:16px;
+	width:24px;
+	height:24px;
+	background: rgba(66, 59, 59, 0.8);
+	text-align:center;
+	vertical-align: middle;
+}
+
+.configIcon:hover{
+	background-color:#fc6320;
+	color:white;
+}
+
+.card-wrapper-title{
+	font-size: 40px;
+    font-weight: 300;
+    margin-top: 100px;
+    color: #fc401a;
+    text-align: center;
+}
+
+
+.card:hover{
+	border:1px solid;
+	border-color:#fc6320;
+}
+.card-text{
+	color:white;
+	text-align:center;
+}

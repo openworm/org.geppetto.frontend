@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.3.4</version>
+	<version>0.3.5</version>
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
@@ -22,83 +22,47 @@
 			</properties>
 			<build>
 				<plugins>
-
-					<plugin>
-						<groupId>com.github.bringking</groupId>
-						<artifactId>requirejs-maven-plugin</artifactId>
-						<version>2.0.4</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>optimize</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<!-- path to optimizer json config file -->
-							<configFile>
-								${project.basedir}/src/main/webapp/build.js
-							</configFile>
-							<!-- optional path to optimizer executable -->
-							<optimizerFile>
-								${project.basedir}/src/main/webapp/r.js
-							</optimizerFile>
-							<!-- optional parameters to optimizer executable -->
-							<optimizerParameters>
-								<!-- Disable JS uglification -->
-								<parameter>optimize=none</parameter>
-								<paramater>baseUrl=${project.basedir}/src/main/webapp/js</paramater>
-								<paramater>out=${project.basedir}/src/main/webapp/js/main-built.js</paramater>
-							</optimizerParameters>
-							<!-- Whether or not to process configFile with maven filters. If you 
-								use this option, some options in your configFile must resolve to absolute 
-								paths (see below) -->
-							<filterConfig>
-								true
-							</filterConfig>
-							<!-- Skip requirejs optimization if true -->
-							<skip>
-								false
-							</skip>
-						</configuration>
-					</plugin>
 					<plugin>
 						<groupId>com.github.eirslett</groupId>
 						<artifactId>frontend-maven-plugin</artifactId>
-						<version>0.0.23</version>
+						<version>1.3</version>
+						<configuration>
+							<nodeVersion>v5.12.0</nodeVersion>
+							<npmVersion>3.9.6</npmVersion>
+							<nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+						</configuration>
 						<executions>
 							<execution>
-								<id>install node and npm</id>
+								<id>install node and npm webapp</id>
 								<goals>
 									<goal>install-node-and-npm</goal>
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<nodeVersion>v0.10.18</nodeVersion>
-									<npmVersion>1.3.8</npmVersion>
+									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
 							<execution>
-								<id>npm install</id>
+								<id>npm install webapp</id>
 								<goals>
 									<goal>npm</goal>
 								</goals>
 								<configuration>
 									<arguments>install</arguments>
+									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
 							<execution>
-								<id>grunt build</id>
+								<id>npm run build webapp</id>
 								<goals>
-									<goal>grunt</goal>
+									<goal>npm</goal>
 								</goals>
-								<configuration>
-									<arguments>dist --contextPath ${contextPath} --useSsl ${useSsl}
-										--embedded ${embedded} --embedderURL ${embedderURL}</arguments>
-								</configuration>
 								<phase>generate-resources</phase>
+								<configuration>
+									<arguments>run build -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
+									<workingDirectory>src/main/webapp</workingDirectory>
+								</configuration>
 							</execution>
-
 						</executions>
 					</plugin>
 				</plugins>
@@ -110,28 +74,33 @@
 				<contextPath>org.geppetto.frontend</contextPath>
 				<useSsl>false</useSsl>
 				<embedded>false</embedded>
-				<embedderURL>/</embedderURL>
+				<embedderURL>none</embedderURL>
 			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>com.github.eirslett</groupId>
 						<artifactId>frontend-maven-plugin</artifactId>
-						<version>0.0.23</version>
+						<version>1.3</version>
+						<configuration>
+							<nodeVersion>v5.12.0</nodeVersion>
+							<npmVersion>3.9.6</npmVersion>
+							<nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+							<workingDirectory>src/main/webapp</workingDirectory>
+						</configuration>
 						<executions>
 							<execution>
-								<id>install node and npm</id>
+								<id>install node and npm webapp</id>
 								<goals>
 									<goal>install-node-and-npm</goal>
 								</goals>
 								<phase>generate-resources</phase>
-								<configuration>
-									<nodeVersion>v0.10.18</nodeVersion>
-									<npmVersion>1.3.8</npmVersion>
-								</configuration>
 							</execution>
 							<execution>
-								<id>npm install</id>
+								<id>npm install webapp</id>
 								<goals>
 									<goal>npm</goal>
 								</goals>
@@ -140,15 +109,14 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>grunt build</id>
+								<id>npm run build webapp</id>
 								<goals>
-									<goal>grunt</goal>
+									<goal>npm</goal>
 								</goals>
-								<configuration>
-									<arguments>--contextPath ${contextPath} --useSsl ${useSsl}
-										--embedded ${embedded} --embedderURL ${embedderURL}</arguments>
-								</configuration>
 								<phase>generate-resources</phase>
+								<configuration>
+									<arguments>run build-dev  -- --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/</arguments>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
@@ -384,7 +352,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
-					<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+					<packagingExcludes>WEB-INF/classes/lib/*.jar, WEB-INF/lib/*.jar, node_modules/**, node/**</packagingExcludes>
 					<warName>org.geppetto.frontend</warName>
 					<archive>
 						<manifestFile>src/main/webapp/META-INF/MANIFEST.MF</manifestFile>
@@ -425,7 +393,7 @@
 					<recursive>true</recursive>
 					<directoryRoots>
 						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/widgets</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/components/widgets</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/model</directoryRoot>
 						<directoryRoot>${basedir}/src/main/webapp/js/3d_visualization</directoryRoot>
 					</directoryRoots>
@@ -473,19 +441,6 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>com.github.bringking</groupId>
-										<artifactId>requirejs-maven-plugin</artifactId>
-										<versionRange>[2.0.4,)</versionRange>
-										<goals>
-											<goal>optimize</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
 										<groupId>org.codehaus.mojo</groupId>
 										<artifactId>exec-maven-plugin</artifactId>
 										<versionRange>[1.2.1,)</versionRange>
@@ -502,7 +457,7 @@
 									<pluginExecutionFilter>
 										<groupId>com.github.eirslett</groupId>
 										<artifactId>frontend-maven-plugin</artifactId>
-										<versionRange>[0.0.16,)</versionRange>
+										<versionRange>1.3</versionRange>
 										<goals>
 											<goal>npm</goal>
 											<goal>install-node-and-npm</goal>

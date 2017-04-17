@@ -43,13 +43,9 @@ global.jQuery = require("jquery");
 require('../../../style/less/main.less');
 
 var GEPPETTO = require('geppetto');
-
 require('../../components/ComponentFactory')(GEPPETTO);
 
 GEPPETTO.ComponentFactory.loadSpinner();
-
-gran mierda gorda
-
 
 jQuery(function () {
     window.GEPPETTO = require('geppetto');

@@ -1,11 +1,9 @@
 language: java
 install:
-- nvm install 7
-- npm i -g npm@3.9.6
-
+- ./travis-install.sh
 script:
-- ./test_npm_build.sh
-
+- mvn install
+- mvn clean install -P master
 env:
   global:
     secure: EvqtUrZj3GsqzAkjZIVf2ZIze6ec72G8Dnkc0J3lKxwDTK6+KgIYgRWUWWO6tzL5Mn3Y+kkiHvyAkrHNPb2QZVBAdOdE3O308WRi64FF71nurd46zE43K/sSxcX/zCoBtxsz49oRcluPWl+nGDi/iKEysgcnQCvz23VWEYHAsOk=

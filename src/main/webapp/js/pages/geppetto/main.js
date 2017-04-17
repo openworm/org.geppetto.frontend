@@ -48,7 +48,7 @@ require('../../components/ComponentFactory')(GEPPETTO);
 
 GEPPETTO.ComponentFactory.loadSpinner();
 
-
+gran mierda gorda
 
 
 jQuery(function () {

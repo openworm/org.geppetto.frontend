@@ -1,8 +1,11 @@
 language: java
 install:
-- ./travis-install.sh
-script:
+- nvm install 7
+- npm i -g npm@3.9.6
 - ./test_npm_build.sh
+- ./travis-install.sh
+
+script:
 - mvn install
 - mvn clean install -P master
 env:

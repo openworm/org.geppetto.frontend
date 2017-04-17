@@ -107,8 +107,8 @@ define(function (require) {
                     threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
 
-                var [r,g,b] = colorfn(intensity);
-                threeObject.material.color.setRGB(r,g,b);
+                var rgb = colorfn(intensity);
+                threeObject.material.color.setRGB(rgb[0],rgb[1],rgb[2]);
             },
 
             /**

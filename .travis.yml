@@ -1,5 +1,7 @@
 language: java
 install:
+- nvm install 7
+- npm i -g npm@3.9.6
 - ./travis-install.sh
 script:
 - mvn install || travis_terminate 1;

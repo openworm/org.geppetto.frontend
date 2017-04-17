@@ -78,22 +78,43 @@ define(function (require) {
 				return this.componentsMap;
 			},
 
-			addComponent: function(componentID, properties, container, callback){
+			addComponent: function(componentType, properties, container, callback){
 				var that=this;
 
-				require(["./" + components[componentID]], function(loadedModule){
+				require(["./" + components[componentType]], function(loadedModule){
 					var component = React.createFactory(loadedModule)(properties);
 					var renderedComponent = that.renderComponent(component, container);
 					if(callback!=undefined){
 						callback(renderedComponent);
 					}
-
-					// keep track of components in dictionary
+					
+					//create id for the component being rendered
+					var componentID = that.createComponentID(componentType,1);
+					//assign unique id to component
+					renderedComponent.id = componentID;
+					
+					// keep track of components in dictionary by id
 					that.componentsMap[componentID] = renderedComponent;
+					
+					//create autocomplete tags for the component
+					window[componentID] = renderedComponent;
+					GEPPETTO.Console.updateTags(componentID, renderedComponent);
 
 					return renderedComponent;
 				});
 				
+			},
+			
+			/**Creates unique ID's for the components being created*/
+			createComponentID : function(componentType,index){
+				var componentID = componentType.charAt(0).toUpperCase()
+									+ componentType.slice(1).toLowerCase()+ index.toString();
+				
+				if(componentID in this.componentsMap){
+					return this.createComponentID(componentType, ++index);
+				}
+				
+				return componentID;
 			},
 
 			renderComponent: function(component, container){

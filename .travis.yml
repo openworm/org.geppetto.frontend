@@ -1,5 +1,4 @@
 language: java
-node_js: "7"
 install:
 - ./travis-install.sh
 script:

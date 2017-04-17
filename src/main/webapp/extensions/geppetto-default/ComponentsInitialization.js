@@ -1,6 +1,22 @@
 define(function (require) {
 	return function (GEPPETTO) {
 		
+		
+	    window.voltage_color = function(x) {
+	        x = (x+0.07)/0.1; // normalization
+	        if (x < 0) { x = 0; }
+	        if (x > 1) { x = 1; }
+	        if (x < 0.25) {
+	            return [0, x*4, 1];
+	        } else if (x < 0.5) {
+	            return [0, 1, (1-(x-0.25)*4)];
+	        } else if (x < 0.75) {
+	            return [(x-0.5)*4, 1, 0];
+	        } else {
+	            return [1, (1-(x-0.75)*4), 0];
+	        }
+	    };
+	    
 		//Logo initialization
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
 

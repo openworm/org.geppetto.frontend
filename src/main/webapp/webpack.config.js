@@ -55,13 +55,14 @@ for (var extension in extensionConfiguration){
 console.log("Static pages coming from extensions are:\n");
 console.log(availableExtensions);
 
+var isProduction = process.argv.indexOf('-p') >= 0;
+console.log("\n Building for a " + ((isProduction)?"production":"development") + " environment")
 
 module.exports = {
-//	context: __dirname,
+
     entry: entries,
     output: {
         path: './build/',
-    	//path: path.resolve(__dirname, 'build/'),
         filename: '[name].bundle.js',
         publicPath: publicPath
     },
@@ -128,6 +129,11 @@ module.exports = {
             useSsl: useSsl,
             embedderURL: embedderURL,
             chunks: []
+        }),
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
+            },
         }),
     ],
 

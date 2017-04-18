@@ -1,7 +1,6 @@
 language: java
 install:
-- nvm install 7
-- npm i -g npm@3.9.6
+- nvm install 6
 script:
 - cd src/main/webapp
 - npm install

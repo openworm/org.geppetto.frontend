@@ -68,7 +68,8 @@ define(function (require) {
 			'DICOMVIEWER': 'interface/dicomViewer/DicomViewer',
 			'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
 			'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
-			'CAROUSEL': 'interface/carousel/Carousel'
+			'CAROUSEL': 'interface/carousel/Carousel',
+			'3DCANVAS': 'interface/3dCanvas/Canvas',
 			//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 		}
 		

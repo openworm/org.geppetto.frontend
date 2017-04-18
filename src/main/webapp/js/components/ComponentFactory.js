@@ -107,8 +107,7 @@ define(function (require) {
 			
 			/**Creates unique ID's for the components being created*/
 			createComponentID : function(componentType,index){
-				var componentID = componentType.charAt(0).toUpperCase()
-									+ componentType.slice(1).toLowerCase()+ index.toString();
+				var componentID = componentType.charAt(0).toUpperCase() + componentType.slice(1).toLowerCase() + index.toString();
 				
 				if(componentID in this.componentsMap){
 					return this.createComponentID(componentType, ++index);

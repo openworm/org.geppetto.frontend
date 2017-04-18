@@ -16,6 +16,7 @@ define(function (require) {
                 id: 'queryBuilderBtn',
                 className: 'squareB',
                 icon: 'fa fa-cogs',
+                tooltip: 'Build Query',
                 onClick: function () {
                     GEPPETTO.QueryBuilder.open();
                 }

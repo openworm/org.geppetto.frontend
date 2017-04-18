@@ -2,10 +2,9 @@ language: java
 install:
 - nvm install 7
 - npm i -g npm@3.9.6
-- ./travis-install.sh
 script:
-- mvn install || travis_terminate 1;
-- mvn clean install -P master || travis_terminate 1;
+- cd src/main/webapp
+- npm run build-dev -- --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/
 - npm --version
 - node --version
 

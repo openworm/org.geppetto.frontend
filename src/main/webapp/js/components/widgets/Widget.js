@@ -407,8 +407,11 @@ define(function (require) {
             			"<div id='"+ this.id + "-right-nav' class='"+disabled+"fa fa-arrow-right'></div>").click(function (event) {
             				var historyItems = that.getItems(that.controller.history, "controller.history");
             				var item;
-            				if(event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")){
+            				if(event.target.id == (that.id + "-left-nav")){
             					that.executedAction = historyItems.length-1;
+            				}
+                            if(event.target.id == (that.id + "-right-nav")){
+            					that.executedAction = 0;
             				}
     						item = historyItems[that.executedAction].action[0];
     						GEPPETTO.Console.executeImplicitCommand(item);

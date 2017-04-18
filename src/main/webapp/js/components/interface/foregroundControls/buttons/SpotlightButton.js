@@ -16,6 +16,7 @@ define(function (require) {
                 id: 'spotlightBtn',
                 className: 'squareB',
                 icon: 'fa fa-search',
+                tooltip: 'Search',
                 onClick: function () {
                     if(GEPPETTO.Spotlight!=undefined){
                     	GEPPETTO.trigger('spin_logo');

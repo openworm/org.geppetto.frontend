@@ -1,14 +1,8 @@
 language: java
-node_js: "5.12.0"
-before_script:
-- npm install -g grunt
-- npm install -g bower
-- npm install -g grunt-processhtml
 install:
 - ./travis-install.sh
 script:
 - mvn install
-- npm install --save-dev grunt-processhtml
 - mvn clean install -P master
 env:
   global:

@@ -53,9 +53,9 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            traverseInstances: function (instances) {
+            traverseInstances: function (instances, lines, thickness) {
                 for (var j = 0; j < instances.length; j++) {
-                    GEPPETTO.SceneController.checkVisualInstance(instances[j]);
+                    GEPPETTO.SceneController.checkVisualInstance(instances[j], lines, thickness);
                 }
             },
 
@@ -65,17 +65,17 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            checkVisualInstance: function (instance) {
+            checkVisualInstance: function (instance, lines, thickness) {
                 if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                     //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
                     if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
-                        GEPPETTO.SceneFactory.buildVisualInstance(instance);
+                        GEPPETTO.SceneFactory.buildVisualInstance(instance, lines, thickness);
                     }
                     // this block keeps traversing the instances
                     if (instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
-                        GEPPETTO.SceneController.traverseInstances(instance.getChildren());
+                        GEPPETTO.SceneController.traverseInstances(instance.getChildren(), lines, thickness);
                     } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                        GEPPETTO.SceneController.traverseInstances(instance);
+                        GEPPETTO.SceneController.traverseInstances(instance, lines, thickness);
                     }
                 }
             },
@@ -98,13 +98,7 @@ define(function (require) {
              * @param {Float}
              *            intensity - the lighting intensity from 0 (no illumination) to 1 (full illumination)
              */
-            lightUpEntity: function (instance, intensity) {
-                if (intensity <= 0) {
-                    intensity = 1e-6;
-                }
-                if (intensity > 1) {
-                    intensity = 1;
-                }
+            lightUpEntity: function (instance, colorfn, intensity) {
                 var threeObject;
                 if (instance in GEPPETTO.getVARS().meshes) {
                     threeObject = GEPPETTO.getVARS().meshes[instance];
@@ -112,15 +106,9 @@ define(function (require) {
                 else {
                     threeObject = GEPPETTO.getVARS().splitMeshes[instance];
                 }
-                var baseColor = threeObject.material.defaultColor;
-                var tgtColor = intensity < 0.25 ? new THREE.Color(0,intensity*4,1) : (intensity < 0.5 ? new THREE.Color(0,1,1-(intensity-0.25)*4) : intensity < 0.75 ? new THREE.Color((intensity-0.55)*4,1,0) : new THREE.Color(1,1-(intensity-0.75)*4,0))
-                if (threeObject instanceof THREE.Line) {
-                    threeObject.material.color = tgtColor;
-                } else {
-                    threeObject.material.emissive = tgtColor;
-                    threeObject.material.color = tgtColor;
-                }
 
+                var [r,g,b] = colorfn(intensity);
+                threeObject.material.color.setRGB(r,g,b);
             },
 
             /**
@@ -451,9 +439,6 @@ define(function (require) {
                         }
                     }
                 }
-                for (var i = 0; i < instance.getChildren().length; i++) {
-                	this.assignRandomColor(instance.getChildren()[i]);
-                }
 
 
             },
@@ -539,7 +524,8 @@ define(function (require) {
                 } else {
                     return false;
                 }
-                GEPPETTO.SceneFactory.init3DObject(GEPPETTO.SceneFactory.generate3DObjects(instance, lines, thickness), instance);
+
+                this.traverseInstances([instance], lines, thickness);
 
                 return true;
             },

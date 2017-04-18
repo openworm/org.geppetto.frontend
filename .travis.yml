@@ -6,6 +6,9 @@ install:
 script:
 - mvn install || travis_terminate 1;
 - mvn clean install -P master || travis_terminate 1;
+- npm --version
+- node --version
+
 env:
   global:
     secure: EvqtUrZj3GsqzAkjZIVf2ZIze6ec72G8Dnkc0J3lKxwDTK6+KgIYgRWUWWO6tzL5Mn3Y+kkiHvyAkrHNPb2QZVBAdOdE3O308WRi64FF71nurd46zE43K/sSxcX/zCoBtxsz49oRcluPWl+nGDi/iKEysgcnQCvz23VWEYHAsOk=

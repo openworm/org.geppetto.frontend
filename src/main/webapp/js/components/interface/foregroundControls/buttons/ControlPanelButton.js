@@ -16,7 +16,7 @@ define(function (require) {
                 id: 'controlPanelBtn',
                 className: 'squareB',
                 icon: 'fa fa-list',
-                tooltip: 'Control Panel'
+                tooltip: 'Control Panel',
                 onClick: function () {
                     GEPPETTO.ControlPanel.open();
                 }

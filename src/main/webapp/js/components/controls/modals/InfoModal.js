@@ -60,7 +60,7 @@ define(function (require) {
         				<div className="modal-header" id="infomodal-header">
         					<h3 id="infomodal-title" className="text-center">{this.props.title}</h3>
         				</div>
-        				<div className="modal-body" dangerouslySetInnerHTML={{__html: this.props.text}}>
+        				<div className="modal-body" id="infomodal-text" dangerouslySetInnerHTML={{__html: this.props.text}}>
         			 	</div>
         			 	<div className="modal-footer" id="infomodal-footer">
         			 		<button  id="infomodal-btn" className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.onClick} dangerouslySetInnerHTML={{__html: this.props.buttonLabel}}>

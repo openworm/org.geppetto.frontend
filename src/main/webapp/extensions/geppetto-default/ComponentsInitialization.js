@@ -36,6 +36,12 @@ define(function (require) {
 
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
+		
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('HOME', {}, undefined);
+		
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('HOME', {}, undefined);
 
 		//Save initialization
 		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));

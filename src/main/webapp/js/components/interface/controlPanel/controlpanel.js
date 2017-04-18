@@ -1037,7 +1037,9 @@ define(function (require) {
     //Control panel initialization
     var createPlotButtonMenuItems = function(projectId, experimentId, instance){
         var menuButtonItems = [];
-        var plots = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
+        var controller = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT);
+        var plots = controller.getWidgets()
+            .filter(function(plot) { return !controller.isColorbar(plot); });
         if(plots.length > 0){
             for(var i =0 ; i<plots.length; i++){
                 menuButtonItems.push({

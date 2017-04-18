@@ -235,6 +235,29 @@ define(function (require) {
             return this;
         },
         
+            plotGeneric: function(dataset) {
+                if (dataset != undefined)
+                    this.datasets.push(dataset);
+
+                if(this.plotly==null){
+		    this.plotOptions.xaxis.autorange = true;
+		    this.xaxisAutoRange = true;
+		    //Creates new plot using datasets and default options
+		    this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
+                    var that = this;
+		    this.plotDiv.on('plotly_doubleclick', function() {
+		        that.resize();
+		    });
+		    this.plotDiv.on('plotly_click', function() {
+		        that.resize();
+		    });
+	        }else{
+		    Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
+	        }
+	        this.resize(false);
+            },
+
+        
 		/**
 		 * Takes data series and plots them. To plot array(s) , use it as
 		 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
@@ -351,23 +374,8 @@ define(function (require) {
 			
 			this.xVariable = window.time;
 			if(plotable){
-				if(this.plotly==null){
-					this.plotOptions.xaxis.autorange = true;
-					this.xaxisAutoRange = true;
-					//Creates new plot using datasets and default options
-					this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-					this.plotDiv.on('plotly_doubleclick', function() {
-						that.resize();
-					});
-					this.plotDiv.on('plotly_click', function() {
-						that.resize();
-					});
-				}else{
-					Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
+			    this.plotGeneric();
 				}				
-				this.updateAxis(instance.getInstancePath());
-				this.resize(false);
-			}
 			
 			
 			return this;
@@ -520,6 +528,27 @@ define(function (require) {
 			this.updateYAxisRange(timeSeriesX,timeSeriesY);
 			return timeSeriesData;
 		},
+		
+            updateXAxisRange : function(timeSeriesX) {
+                var localxmin = Math.min.apply(null, timeSeriesX);
+	        var localxmax = Math.max.apply(null, timeSeriesX);
+
+                if (this.plotOptions.xaxis.min == undefined ||
+                    isNaN(this.plotOptions.xaxis.min)) {
+                    this.plotOptions.xaxis.min = Number.MAX_SAFE_INTEGER;
+                }
+                if (this.plotOptions.xaxis.max == undefined ||
+                    this.plotOptions.xaxis.max == window.Instances.time.getTimeSeries().slice(-1)[0] ||
+                    isNaN(this.plotOptions.xaxis.max))
+
+                    this.plotOptions.xaxis.max = Number.MIN_SAFE_INTEGER;
+
+	        this.plotOptions.xaxis.min = Math.min(this.plotOptions.xaxis.min, localxmin);
+	        this.plotOptions.xaxis.max = Math.max(this.plotOptions.xaxis.max, localxmax);
+
+	        this.plotOptions.xaxis.range = [this.plotOptions.xaxis.min, this.plotOptions.xaxis.max];
+            },
+
 		
 		updateYAxisRange : function(timeSeriesX, timeSeriesY){
 			var localxmin = Math.min.apply(null, timeSeriesX);

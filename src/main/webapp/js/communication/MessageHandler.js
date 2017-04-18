@@ -10,6 +10,7 @@ define(function (require) {
             EXPERIMENT_UPDATE: "experiment_update",
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",
+            DOWNLOAD_PROJECT : "download_project",
             MODEL_LOADED: "geppetto_model_loaded",
             PROJECT_PROPS_SAVED: "project_props_saved",
             EXPERIMENT_PROPS_SAVED: "experiment_props_saved",
@@ -241,6 +242,11 @@ define(function (require) {
 
         messageHandler[messageTypes.DOWNLOAD_MODEL] = function (payload) {
             GEPPETTO.Console.log("Model downloaded succesfully");
+        };
+        
+        messageHandler[messageTypes.DOWNLOAD_PROJECT] = function (payload) {
+        	GEPPETTO.trigger(GEPPETTO.Events.Project_downloaded);
+            GEPPETTO.Console.log("Project downloaded succesfully");
         };
 
         messageHandler[messageTypes.RESULTS_UPLOADED] = function (payload) {

@@ -229,6 +229,15 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.makeProjectPublic(requestID, projectId,isPublic);
 				break;
 			}
+			case DOWNLOAD_PROJECT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.downloadProject(requestID, projectId);
+				break;
+			}
 			case SAVE_PROJECT_PROPERTIES:
 			{
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
@@ -254,19 +263,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case GET_SCRIPT:
 			{
 				String urlString = gmsg.data;
-				URL url = null;
-				try
-				{
-
-					url = URLReader.getURL(urlString);
-
-					connectionHandler.sendScriptData(requestID, url, this);
-
-				}
-				catch(MalformedURLException e)
-				{
-					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
-				}
+				connectionHandler.sendScriptData(requestID, urlString, this);
 				break;
 			}
 			case GET_DATA_SOURCE_RESULTS:

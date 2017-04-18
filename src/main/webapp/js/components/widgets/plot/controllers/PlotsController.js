@@ -186,6 +186,7 @@ define(function(require) {
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data
                     if (plotWidget != undefined) {
+                    	//plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
                         plotWidget.plotData(inst);
                         this.updateLegend(plotWidget, inst, projectId, experimentId);
                     } else {
@@ -210,6 +211,7 @@ define(function(require) {
                 // we are dealing with external instances, define re-usable callback for plotting external instances
                 var plotExternalCallback = function() {
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
+
                     // if xPath is not specified, assume time
                     if(xPath == undefined){ xPath = 'time(StateVariable)'; }
                     var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, xPath);

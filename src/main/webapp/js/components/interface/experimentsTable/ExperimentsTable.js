@@ -524,9 +524,7 @@ define(function (require) {
             });
 
             GEPPETTO.on(GEPPETTO.Events.Project_persisted, function () {
-                self.forceUpdate();
-                self.updateExperimentStatus();
-				self.updateStatus();
+            	self.refresh();
             });
             
             GEPPETTO.on(GEPPETTO.Events.Experiment_status_check, function () {
@@ -539,6 +537,11 @@ define(function (require) {
 
             GEPPETTO.on(GEPPETTO.Events.Experiment_created, function (experiment) {
                 self.newExperiment(experiment);
+            });
+
+
+            GEPPETTO.on(GEPPETTO.Events.Experiment_renamed, function (experiment) {
+                self.refresh();
             });
 
             GEPPETTO.on(GEPPETTO.Events.Experiment_deleted, function (experiment) {
@@ -569,6 +572,12 @@ define(function (require) {
             }
          
             $("#experimentsButton").show();
+        },
+        
+        refresh: function(){
+            this.forceUpdate();
+            this.updateExperimentStatus();
+            this.updateStatus();
         },
 
         updateStatus: function(){

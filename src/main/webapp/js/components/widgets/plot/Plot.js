@@ -47,6 +47,7 @@ define(function (require) {
         plotElement : null,
         xVariable : null,
         firstStep : 0,
+        updateLegendsState : false,
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -216,48 +217,68 @@ define(function (require) {
          * @param {Object} instance - variable to change display label in legends
          * @param {String} legend - new legend name
          */
-        setLegend: function (instance, legend) {
-            //Check if it is a string or a geppetto object
-            var instancePath = instance;
-            if ((typeof instance) != "string") {
-                instancePath = instance.getInstancePath();
-            }
+		setLegend: function (instance, legend) {
+			//Check if it is a string or a geppetto object
+			var instancePath = instance;
+			if ((typeof instance) != "string") {
+				instancePath = instance.getInstancePath();
+			}
 
-            for(var i =0; i< this.datasets.length; i++){
-            	if(this.datasets[i].name == instancePath){
-            		this.datasets[i].name = legend;
-            	}
-            }
-            
-            Plotly.relayout(this.plotDiv, this.plotOptions);
-            this.labelsMap[instancePath] = legend;
-            
-            return this;
-        },
-        
-            plotGeneric: function(dataset) {
-                if (dataset != undefined)
-                    this.datasets.push(dataset);
+			for(var i =0; i< this.datasets.length; i++){
+				if(this.datasets[i].name == instancePath){
+					this.datasets[i].name = legend;
+				}
+			}
 
-                if(this.plotly==null){
-		    this.plotOptions.xaxis.autorange = true;
-		    this.xaxisAutoRange = true;
-		    //Creates new plot using datasets and default options
-		    this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-                    var that = this;
-		    this.plotDiv.on('plotly_doubleclick', function() {
-		        that.resize();
-		    });
-		    this.plotDiv.on('plotly_click', function() {
-		        that.resize();
-		    });
-	        }else{
-		    Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
-	        }
-	        this.resize(false);
-            },
+			Plotly.relayout(this.plotDiv, this.plotOptions);
+			this.labelsMap[instancePath] = legend;
 
-        
+			return this;
+		},
+		
+		updateLegends : function(legendExtension){
+			if(!this.updateLegendsState){
+				for(var i =0; i< this.datasets.length; i++){
+					var oldLegendName = this.datasets[i].name;
+					var variable = this.variables[this.getLegendInstancePath(oldLegendName)];
+					var newLegend = oldLegendName+ legendExtension;
+					this.variables[newLegend] = variable; 
+					this.datasets[i].name  = newLegend;
+					this.labelsMap[variable.getInstancePath()] = oldLegendName;
+				}
+
+				Plotly.relayout(this.plotDiv, this.plotOptions);
+				this.updateLegendsState = true;
+			}
+		},
+		
+		getVariables : function(){
+			return this.variables;
+		},
+
+		plotGeneric: function(dataset) {
+			if (dataset != undefined)
+				this.datasets.push(dataset);
+
+			if(this.plotly==null){
+				this.plotOptions.xaxis.autorange = true;
+				this.xaxisAutoRange = true;
+				//Creates new plot using datasets and default options
+				this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
+				var that = this;
+				this.plotDiv.on('plotly_doubleclick', function() {
+					that.resize();
+				});
+				this.plotDiv.on('plotly_click', function() {
+					that.resize();
+				});
+			}else{
+				Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
+			}
+			this.resize(false);
+		},
+
+
 		/**
 		 * Takes data series and plots them. To plot array(s) , use it as
 		 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
@@ -419,12 +440,68 @@ define(function (require) {
 		 * Downloads a screenshot of the graphing plots
 		 */
 		downloadImage: function (imageType) {
+			var self = this;
+			
+			//play around with settings to make background temporarily white
+			//and marging wider
+			this.plotOptions.paper_bgcolor = "rgb(255,255,255)";
+			this.plotOptions.xaxis.linecolor = "rgb(0,0,0)";
+			this.plotOptions.yaxis.linecolor = "rgb(0,0,0)";
+			this.plotOptions.xaxis.tickfont.color = "rgb(0,0,0)";
+			this.plotOptions.yaxis.tickfont.color = "rgb(0,0,0)";
+			this.plotOptions.yaxis.titlefont.color = "rgb(0,0,0)";
+			this.plotOptions.xaxis.titlefont.color = "rgb(0,0,0)";
+			this.plotOptions.xaxis.tickfont.size = 18;
+			this.plotOptions.yaxis.tickfont.size = 18;
+			this.plotOptions.xaxis.titlefont.size = 18;
+			this.plotOptions.yaxis.titlefont.size = 18;
+			this.plotOptions.legend.font.size = 18;
+			this.plotOptions.legend.font.family = 'Helvetica Neue';
+			this.plotOptions.legend.font.color = "rgb(0,0,0)";
+			this.plotOptions.legend.bgcolor = "rgb(255,255,255)";
+			this.plotOptions.margin.r= 40;
+			
+			var oldMarginLeft = this.plotOptions.margin.l;
+			this.plotOptions.margin.l= 70;
+			Plotly.relayout(this.plotDiv,this.plotOptions);
+			
+			var height =  this.getSize().height;
+			var width = this.getSize().width;
+			
+			//double the size if the width and height is very small
+			if(height <500 || width <500){
+				height =  height*2;
+				width = width *2;
+			}
+			
 			Plotly.downloadImage(
-				this.plotDiv, {
-					format: imageType,
-					height: window.screen.availHeight,
-					width: window.screen.availWidth,
-				});
+					this.plotDiv, {
+						format: imageType,
+						height: height,
+						width: width
+					});
+			
+			var reset = function(){
+				//reset background and margin
+				self.plotOptions.paper_bgcolor = "rgb(69,59,59)";
+				self.plotOptions.xaxis.linecolor = "rgb(255,255,255)";
+				self.plotOptions.yaxis.linecolor = "rgb(255,255,255)";
+				self.plotOptions.xaxis.tickfont.color = "rgb(255,255,255)";
+				self.plotOptions.yaxis.tickfont.color = "rgb(255,255,255)";
+				self.plotOptions.yaxis.titlefont.color = "rgb(255,255,255)";
+				self.plotOptions.xaxis.titlefont.color = "rgb(255,255,255)";
+				self.plotOptions.xaxis.tickfont.size = 11;
+				self.plotOptions.yaxis.tickfont.size = 11;
+				self.plotOptions.xaxis.titlefont.size = 12;
+				self.plotOptions.yaxis.titlefont.size = 12;
+				self.plotOptions.legend.font.size = 12;
+				self.plotOptions.legend.font.color = "rgb(255,255,255)";
+				self.plotOptions.legend.bgcolor = "rgba(66, 59, 59)";
+				self.plotOptions.margin.r= 0;
+				self.plotOptions.margin.l= oldMarginLeft;
+				Plotly.relayout(self.plotDiv,self.plotOptions);
+			};
+			setTimeout(reset, 100);
 		},
 		
 		/**
@@ -747,8 +824,11 @@ define(function (require) {
 		 * @param unitSymbol - string representing unit symbol
 		 */
 		getUnitLabel: function (unitSymbol) {
-
-			unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+			if(unitSymbol!= null || unitSymbol != undefined){
+				unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+			}else{
+				unitSymbol = "";
+			}
 
 			var unitLabel = unitSymbol;
 

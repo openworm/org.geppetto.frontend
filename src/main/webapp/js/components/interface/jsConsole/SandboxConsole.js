@@ -663,10 +663,7 @@ define(function (require) {
                 },
 
                 // Evaluate a command and save it to history
-                evaluate: function (command, isImplicit) {
-                    if (isImplicit === undefined){
-                        isImplicit = false
-                    }
+                evaluate: function (command, isImplicit = false) {
                     if (!command) {
                         return false;
                     }

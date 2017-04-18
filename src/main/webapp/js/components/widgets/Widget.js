@@ -410,8 +410,8 @@ define(function (require) {
             				if(event.target.id == (that.id + "-left-nav")){
             					that.executedAction = historyItems.length-1;
             				}
-                            if(event.target.id == (that.id + "-right-nav")){
-            					that.executedAction = 0;
+            				if(event.target.id == (that.id + "-right-nav")){
+            					that.executedAction = 1;
             				}
     						item = historyItems[that.executedAction].action[0];
     						GEPPETTO.Console.executeImplicitCommand(item);

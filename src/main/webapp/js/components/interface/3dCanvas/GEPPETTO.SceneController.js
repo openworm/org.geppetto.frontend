@@ -215,19 +215,32 @@ define(function (require) {
                                     if (child.hasOwnProperty("material")) {
                                         GEPPETTO.SceneController.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                                         child.material.opacity = Math.max(0.5, child.material.defaultOpacity);
+                                        child.geometry.computeBoundingBox();
+                                        GEPPETTO.getVARS().controls.target.copy(child.position);
+                                        GEPPETTO.getVARS().controls.target.add(child.geometry.boundingBox.getCenter());
                                     }
                                 });
-                                mesh.selected = true;
-                                mesh.ghosted = false;
                             } else {
                                 GEPPETTO.SceneController.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                                 mesh.material.opacity = Math.max(0.5, mesh.material.defaultOpacity);
-                                mesh.selected = true;
-                                mesh.ghosted = false;
+                                mesh.geometry.computeBoundingBox();
+                                //let's set the center of rotation to the selected mesh
+                                GEPPETTO.getVARS().controls.target.copy(mesh.position);
+                                GEPPETTO.getVARS().controls.target.add(mesh.geometry.boundingBox.getCenter());
                             }
+                            mesh.selected = true;
+                            mesh.ghosted = false;
 
+                            
+                            GEPPETTO.getVARS().camera.updateProjectionMatrix();
+                            
                         }
+                        if(GEPPETTO.isKeyPressed('z')){
+                        	this.zoomTo([eval(instancePath)]);	
+                        }
+                        
                     }
+                    
                     return true;
                 }
                 return false;

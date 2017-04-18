@@ -173,8 +173,8 @@ define(function(require) {
          */
         plotStateVariable: function(projectId, experimentId, path, plotWidget, xPath){
             var self = this;
-            if(window.Project.getId() == projectId && window.Project.getActiveExperiment().getId() == experimentId){
-                // try to resolve path
+            
+            if(window.Project.getId() == projectId && window.Project.getActiveExperiment().getId() == experimentId){    
                 var inst = undefined;
                 try {
                     inst = window.Instances.getInstance(path);
@@ -184,6 +184,7 @@ define(function(require) {
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data
                     if (plotWidget != undefined) {
+                    	//plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
                         plotWidget.plotData(inst);
                         this.updateLegend(plotWidget, inst, projectId, experimentId);
                     } else {
@@ -196,7 +197,7 @@ define(function(require) {
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
                     		plotWidget.plotData(i);
-                    		self.updateLegend(plotWidget,i,projectId,experimentId);
+                    		self.updateLegend(plotWidget, i, projectId, experimentId);
                     	} else {
                     		G.addWidget(0).plotData(i).setName(path);
                     	}
@@ -235,17 +236,17 @@ define(function(require) {
         updateLegend: function(widget, instance, projectId, experimentId) {
             var legend = null;
             var experimentName, projectName;
-            if (window.Project.getId() == projectId) {
-                if (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
-                    //variable belongs to same project,but different experiment
-                    if (window.Project.getActiveExperiment().getId() != experimentId) {
-                        legend = this.getLegendName(projectId, experimentId, instance, true);
-                    }
-                }
-            } else {
-                //variablel belongs to different project and different experiment
-                var experimentPath = projectName + " - " + experimentName;
-                legend = this.getLegendName(projectId, experimentId, instance, false);
+            if(window.Project.getId() == projectId){
+            	if(window.Project.getActiveExperiment()!= null && window.Project.getActiveExperiment() != undefined){
+            		//variable belongs to same project,but different experiment
+            		if(window.Project.getActiveExperiment().getId()!= experimentId){
+            			legend = this.getLegendName(projectId, experimentId, instance, true);
+            		}
+            	}
+            }else{
+            	//variable belongs to different project and different experiment
+            	var experimentPath = projectName + " - " + experimentName;
+    			legend = this.getLegendName(projectId,experimentId,instance,false);
             }
 
             //set legend if it needs to be updated, only null if variable belong to active experiment

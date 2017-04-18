@@ -497,9 +497,9 @@ define(function (require) {
 				self.plotOptions.yaxis.titlefont.size =  defaultOptions.yaxis.titlefont.size;
 				self.plotOptions.legend.font.size =  defaultOptions.legend.font.size;
 				self.plotOptions.legend.font.color =  defaultOptions.legend.font.color;
-				self.plotOptions.legend.bgcolor =  defaultOptions.margin.r;
-				self.plotOptions.margin.l=  defaultOptions.margin.l;
-				
+				self.plotOptions.legend.bgcolor =  defaultOptions.legend.bgcolor;
+				self.plotOptions.margin.l=  oldMarginLeft;
+				self.plotOptions.margin.r=defaultOptions.margin.r;
 				Plotly.relayout(self.plotDiv,self.plotOptions);
 			};
 			setTimeout(reset, 100);

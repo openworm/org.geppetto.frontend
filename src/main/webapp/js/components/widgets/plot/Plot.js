@@ -442,8 +442,7 @@ define(function (require) {
 		downloadImage: function (imageType) {
 			var self = this;
 			
-			//play around with settings to make background temporarily white
-			//and marging wider
+			// play around with settings to make background temporarily white and margins wider
 			this.plotOptions.paper_bgcolor = "rgb(255,255,255)";
 			this.plotOptions.xaxis.linecolor = "rgb(0,0,0)";
 			this.plotOptions.yaxis.linecolor = "rgb(0,0,0)";
@@ -480,28 +479,28 @@ define(function (require) {
 						height: height,
 						width: width
 					});
-			
-			var reset = function(){
-				var defaultOptions = self.defaultOptions();
-				//reset background and margin
-				self.plotOptions.paper_bgcolor = defaultOptions.paper_bgcolor;
-				self.plotOptions.xaxis.linecolor =defaultOptions.xaxis.linecolor;
-				self.plotOptions.yaxis.linecolor = defaultOptions.xaxis.linecolor;
-				self.plotOptions.xaxis.tickfont.color =  defaultOptions.xaxis.tickfont.color;
-				self.plotOptions.yaxis.tickfont.color =  defaultOptions.yaxis.tickfont.color;
-				self.plotOptions.yaxis.titlefont.color =  defaultOptions.yaxis.titlefont.color;
-				self.plotOptions.xaxis.titlefont.color = defaultOptions.xaxis.titlefont.color;
-				self.plotOptions.xaxis.tickfont.size =  defaultOptions.xaxis.tickfont.size;
-				self.plotOptions.yaxis.tickfont.size =  defaultOptions.yaxis.tickfont.size;
-				self.plotOptions.xaxis.titlefont.size =  defaultOptions.xaxis.titlefont.size;
-				self.plotOptions.yaxis.titlefont.size =  defaultOptions.yaxis.titlefont.size;
-				self.plotOptions.legend.font.size =  defaultOptions.legend.font.size;
-				self.plotOptions.legend.font.color =  defaultOptions.legend.font.color;
-				self.plotOptions.legend.bgcolor =  defaultOptions.legend.bgcolor;
-				self.plotOptions.margin.l=  oldMarginLeft;
-				self.plotOptions.margin.r=defaultOptions.margin.r;
-				Plotly.relayout(self.plotDiv,self.plotOptions);
-			};
+
+			//reset background and margin to defaults
+            var reset = function(){
+                var defaultOptions = self.defaultOptions();
+                self.plotOptions.paper_bgcolor = defaultOptions.paper_bgcolor;
+                self.plotOptions.xaxis.linecolor =defaultOptions.xaxis.linecolor;
+                self.plotOptions.yaxis.linecolor = defaultOptions.xaxis.linecolor;
+                self.plotOptions.xaxis.tickfont.color =  defaultOptions.xaxis.tickfont.color;
+                self.plotOptions.yaxis.tickfont.color =  defaultOptions.yaxis.tickfont.color;
+                self.plotOptions.yaxis.titlefont.color =  defaultOptions.yaxis.titlefont.color;
+                self.plotOptions.xaxis.titlefont.color = defaultOptions.xaxis.titlefont.color;
+                self.plotOptions.xaxis.tickfont.size =  defaultOptions.xaxis.tickfont.size;
+                self.plotOptions.yaxis.tickfont.size =  defaultOptions.yaxis.tickfont.size;
+                self.plotOptions.xaxis.titlefont.size =  defaultOptions.xaxis.titlefont.size;
+                self.plotOptions.yaxis.titlefont.size =  defaultOptions.yaxis.titlefont.size;
+                self.plotOptions.legend.font.size =  defaultOptions.legend.font.size;
+                self.plotOptions.legend.font.color =  defaultOptions.legend.font.color;
+                self.plotOptions.legend.bgcolor =  defaultOptions.legend.bgcolor;
+                self.plotOptions.margin.l=  oldMarginLeft;
+                self.plotOptions.margin.r=defaultOptions.margin.r;
+                Plotly.relayout(self.plotDiv,self.plotOptions);
+            };
 			setTimeout(reset, 100);
 		},
 		

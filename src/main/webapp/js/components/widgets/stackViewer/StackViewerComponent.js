@@ -322,14 +322,14 @@ define(function (require) {
         },
 
         callObjects: function () {
-
+            var shift = GEPPETTO.isKeyPressed("shift");
             var i, j, result, id, label;
             var that = this;
             while (GEPPETTO.G.getSelection()[0] != undefined) {
                 GEPPETTO.G.getSelection()[0].deselect();
             }
             $.each(this.state.stack, function (i, item) {
-                (function (i, that) {
+                (function (i, that, shift) {
                     var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                     //get image size;
                     $.ajax({
@@ -343,7 +343,7 @@ define(function (require) {
                                         if (result[j].trim() !== '') {
                                             var index = Number(result[j]);
                                             if (i !== 0 || index !== 0) { // don't select template
-                                                if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
+                                                if (index == 0 && !shift) {
                                                     console.log(that.state.label[i] + ' clicked');
                                                     eval(that.state.id[i][Number(result[j])]).select();
                                                     that.setStatusText(that.state.label[i] + ' selected');
@@ -358,7 +358,7 @@ define(function (require) {
                                                         } catch (ignore) {
                                                             console.log(that.props.templateDomainNames[index] + ' requsted');
                                                             that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                            if (GEPPETTO.isKeyPressed("shift")) {
+                                                            if (shift) {
                                                                 console.log('Adding ' + that.props.templateDomainNames[index]);
                                                                 that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
                                                                 Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
@@ -395,12 +395,13 @@ define(function (require) {
 
         listObjects: function () {
             if (!this.state.loadingLabels) {
+                var shift = GEPPETTO.isKeyPressed("shift");
                 this.state.objects = [];
                 var i, j, result;
                 var that = this;
                 var callX = that.state.posX.toFixed(0), callY = that.state.posY.toFixed(0);
                 $.each(this.state.stack, function (i, item) {
-                    (function (i, that) {
+                    (function (i, that, shift) {
                         if (i == 0) {
                             that.state.loadingLabels = true;
                         }
@@ -419,7 +420,7 @@ define(function (require) {
                                                 var index = Number(result[j]);
                                                 if (i !== 0 || index !== 0) { // don't select template
                                                     if (index == 0) {
-                                                        if (!GEPPETTO.isKeyPressed("shift")) {
+                                                        if (!shift) {
                                                             that.state.objects.push(that.state.label[i]);
                                                         }
                                                     } else {
@@ -433,7 +434,7 @@ define(function (require) {
                                         }
                                         var list = $.unique(that.state.objects).sort();
                                         var objects = '';
-                                        if (GEPPETTO.isKeyPressed("shift")) {
+                                        if (shift) {
                                             objects = 'Click to add: ';
                                         }
                                         for (j in list) {

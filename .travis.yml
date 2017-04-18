@@ -4,6 +4,7 @@ install:
 - npm i -g npm@3.9.6
 script:
 - cd src/main/webapp
+- npm install
 - npm run build-dev -- --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/
 - npm --version
 - node --version

@@ -187,6 +187,7 @@ define(function(require) {
                     	//plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
                         plotWidget.plotData(inst);
                         this.updateLegend(plotWidget, inst, projectId, experimentId);
+                        plotWidget.updateAxis(inst.getInstancePath());
                     } else {
                         var widget = G.addWidget(0);
                         widget.plotData(inst).setName(path);
@@ -199,6 +200,7 @@ define(function(require) {
                     	if(plotWidget != undefined){
                     		plotWidget.plotData(i);
                     		self.updateLegend(plotWidget, i, projectId, experimentId);
+                    		plotWidget.updateAxis(i.getInstancePath());
                     	} else {
                     		var plot = G.addWidget(0);
                             plot.plotData(i).setName(path);
@@ -222,7 +224,6 @@ define(function(require) {
                     } else {
                     	var plot = G.addWidget(0);
                         plot.plotXYData(i, t).setName(path);
-                        plot.updateAxis(path);
                     }
                 };
 

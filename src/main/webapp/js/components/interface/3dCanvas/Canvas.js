@@ -1,4 +1,4 @@
-define(function(require) {
+define(function (require) {
 
     var link = document.createElement("link");
     link.type = "text/css";
@@ -9,7 +9,7 @@ define(function(require) {
     var React = require('react');
 
     var THREE = require('three');
-	var isWebglEnabled = require('detector-webgl');
+    var isWebglEnabled = require('detector-webgl');
     require('./TrackballControls');
     require('./OBJLoader');
     var THREEx = require('./THREEx.KeyboardState');
@@ -23,11 +23,11 @@ define(function(require) {
     THREE.RenderPass = require('imports?THREE=three!exports?THREE.RenderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/RenderPass');
     THREE.BloomPass = require('imports?THREE=three!exports?THREE.BloomPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
     THREE.ShaderPass = require('imports?THREE=three!exports?THREE.ShaderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
-	THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
-	var SceneFactory = require('./SceneFactory');
+    THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
+    var SceneFactory = require('./SceneFactory');
 
     var canvasComponent = React.createClass({
-		factory: new SceneFactory(this),
+        factory: null,
         camera: null,
         container: null,
         controls: null,
@@ -60,7 +60,7 @@ define(function(require) {
         backgroundColor: 0x101010,
 
 
-        setupScene: function() {
+        setupScene: function () {
             this.scene = new THREE.Scene();
             this.visualModelMap = {};
             this.meshes = {};
@@ -71,7 +71,7 @@ define(function(require) {
         /**
          * Sets up the camera that is used to view the objects in the 3D Scene.
          */
-        setupCamera: function() {
+        setupCamera: function () {
             // Camera
             var SCREEN_WIDTH = $(this.container).width();
             var SCREEN_HEIGHT = $(this.container).height();
@@ -90,7 +90,7 @@ define(function(require) {
         /**
          * Set up the WebGL Renderer
          */
-        setupRenderer: function() {
+        setupRenderer: function () {
             // Reuse a single WebGL renderer.
             // NOTE: Recreating the renderer causes camera displacement on Chrome OSX.
             if (!this.canvasCreated) {
@@ -105,14 +105,14 @@ define(function(require) {
             this.canvasCreated = true;
         },
 
-        configureRenderer: function(shaders) {
+        configureRenderer: function (shaders) {
 
             if (shaders == undefined) {
                 shaders = false;
             }
 
             var color = new THREE.Color(this.backgroundColor);
-            //this.renderer.setClearColor(color, 1);
+            this.renderer.setClearColor(color, 1);
             var width = $(this.container).width();
             var height = $(this.container).height();
             this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -151,7 +151,7 @@ define(function(require) {
         /**
          * Light up the scene
          */
-        setupLights: function() {
+        setupLights: function () {
             // Lights
             this.camera.add(new THREE.PointLight(0xffffff, 1.5));
 
@@ -161,7 +161,7 @@ define(function(require) {
          * Sets up the controls used by the camera to make it able to zoom and
          * pan.
          */
-        setupControls: function() {
+        setupControls: function () {
             // Controls
             this.controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
             this.controls.noZoom = false;
@@ -171,21 +171,22 @@ define(function(require) {
         /**
          * Set up the listeners use to detect mouse movement and windoe resizing
          */
-        setupListeners: function() {
+        setupListeners: function () {
             if (!this.listenersCreated) {
+                var that = this;
                 // when the mouse moves, call the given function
-                this.renderer.domElement.addEventListener('mousedown', function(event) {
+                this.renderer.domElement.addEventListener('mousedown', function (event) {
                     if (event.button == 0) //only for left click
                     {
-                        if (this.pickingEnabled) {
-                            var intersects = GEPPETTO.getIntersectedObjects();
+                        if (that.pickingEnabled) {
+                            var intersects = that.getIntersectedObjects();
 
                             if (intersects.length > 0) {
                                 var selected = "";
                                 var geometryIdentifier = "";
 
                                 // sort intersects
-                                var compare = function(a, b) {
+                                var compare = function (a, b) {
                                     if (a.distance < b.distance)
                                         return -1;
                                     if (a.distance > b.distance)
@@ -243,7 +244,7 @@ define(function(require) {
 
 
                                 if (selected != "") {
-                                    if (this.meshes.hasOwnProperty(selected) || this.splitMeshes.hasOwnProperty(selected)) {
+                                    if (that.meshes.hasOwnProperty(selected) || that.splitMeshes.hasOwnProperty(selected)) {
                                         if (!GEPPETTO.isKeyPressed("shift")) {
                                             GEPPETTO.G.unSelectAll();
                                         }
@@ -262,24 +263,294 @@ define(function(require) {
                     }
                 }, false);
 
-				var that=this;
-                this.renderer.domElement.addEventListener('mousemove', function(event) {
-					that.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-					that.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-				}, false);
-
-                this.container.addEventListener('resize', function() {
-					var container = $(that.container);
-					var width = container.width();
-					var height = container.height();
-
-					that.camera.aspect = (width) / (height);
-					that.camera.updateProjectionMatrix();
-					that.renderer.setSize(width, height);
-					that.composer.setSize(width, height);
-				}, false);
+                this.renderer.domElement.addEventListener('mousemove', function (event) {
+                    that.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    that.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                }, false);
+                var dialog=$("[aria-describedby='"+this.props.id+"']");
+                dialog.resize(function () {
+                    var container = $(that.container);
+                    var width = dialog.width();
+                    var height = dialog.height();
+                    container.height(height);
+                    container.width(width);
+                    that.camera.aspect = (width) / (height);
+                    that.camera.updateProjectionMatrix();
+                    that.renderer.setSize(width, height);
+                    that.composer.setSize(width, height);
+                });
 
                 this.listenersCreated = true;
+            }
+        },
+
+
+        /**
+         * Reset camera for scene.
+         */
+        resetCamera: function () {
+            this.controls.reset();
+
+            var aabbMin = null;
+            var aabbMax = null;
+
+            this.scene.traverse(function (child) {
+                if (child.hasOwnProperty("geometry")) {
+                    child.geometry.computeBoundingBox();
+
+                    var bb = child.geometry.boundingBox;
+                    bb.translate(child.localToWorld(new THREE.Vector3()));
+
+                    // If min and max vectors are null, first values become
+                    // default min and max
+                    if (aabbMin == null && aabbMax == null) {
+                        aabbMin = bb.min;
+                        aabbMax = bb.max;
+                    }
+
+                    // Compare other meshes, particles BB's to find min and max
+                    else {
+                        aabbMin.x = Math.min(aabbMin.x, bb.min.x);
+                        aabbMin.y = Math.min(aabbMin.y, bb.min.y);
+                        aabbMin.z = Math.min(aabbMin.z, bb.min.z);
+                        aabbMax.x = Math.max(aabbMax.x, bb.max.x);
+                        aabbMax.y = Math.max(aabbMax.y, bb.max.y);
+                        aabbMax.z = Math.max(aabbMax.z, bb.max.z);
+                    }
+                }
+            });
+
+            if (aabbMin != null && aabbMax != null) {
+                // Compute world AABB center
+                this.sceneCenter.x = (aabbMax.x + aabbMin.x) * 0.5;
+                this.sceneCenter.y = (aabbMax.y + aabbMin.y) * 0.5;
+                this.sceneCenter.z = (aabbMax.z + aabbMin.z) * 0.5;
+
+                this.updateCamera(aabbMax, aabbMin);
+            }
+        },
+
+        /**
+         * Update camera with new position and place to lookat
+         */
+        updateCamera: function (aabbMax, aabbMin) {
+            // Compute world AABB "radius"
+            var diag = new THREE.Vector3();
+            diag = diag.subVectors(aabbMax, aabbMin);
+            var radius = diag.length() * 0.5;
+
+            this.pointCameraTo(this.sceneCenter);
+
+            // Compute offset needed to move the camera back that much needed to center AABB
+            var offset = radius / Math.sin(Math.PI / 180.0 * this.camera.fov * 0.5);
+
+            var dir = this.camera.direction.clone();
+            dir.multiplyScalar(offset);
+
+            // Store camera position
+            this.camera.position.addVectors(dir, this.controls.target);
+            this.camera.updateProjectionMatrix();
+        },
+
+        boundingBox: function (obj) {
+            if (obj instanceof THREE.Mesh) {
+
+                var geometry = obj.geometry;
+                geometry.computeBoundingBox();
+                return geometry.boundingBox;
+
+            }
+
+            if (obj instanceof THREE.Object3D) {
+
+                var bb = new THREE.Box3();
+                for (var i = 0; i < obj.children.length; i++) {
+                    bb.union(this.boundingBox(obj.children[i]));
+                }
+                return bb;
+            }
+        },
+
+        shapeCenterOfGravity: function (obj) {
+            return this.boundingBox(obj).center();
+        },
+
+        /** */
+        pointCameraTo: function (node) {
+            // Refocus camera to the center of the new object
+            var COG;
+            if (node instanceof THREE.Vector3) {
+                COG = node;
+            } else {
+                COG = this.shapeCenterOfGravity(node);
+            }
+            var v = new THREE.Vector3();
+            v.subVectors(COG, this.controls.target);
+            this.camera.position.addVectors(
+                this.camera.position, v);
+
+            // retrieve camera orientation
+
+            this.camera.lookAt(COG);
+            this.controls.target.set(COG.x, COG.y, COG.z);
+        },
+
+        /**
+         * Status of scene, populated or not
+         *
+         * @returns {Boolean} True or false depending whether scene is populated
+         *          or not
+         */
+        isScenePopulated: function () {
+            return !(_.isEmpty(this.visualModelMap));
+        },
+
+        /**
+         * Has canvas been created?
+         *
+         * @returns {Boolean] True or false if canvas has been created or not
+		 */
+        isCanvasCreated: function () {
+            return this.canvasCreated;
+        },
+
+        /**
+         * Sets up the HUD display with the scene stat's fps.
+         */
+        setupStats: function () {
+            // Stats
+            if ($("#stats").length == 0) {
+                if (VARS != null) {
+                    this.stats = new Stats();
+                    this.stats.domElement.style.float = 'right';
+                    this.stats.domElement.style.position = 'absolute';
+                    this.stats.domElement.style.top = '60px';
+                    this.stats.domElement.style.right = '5px';
+                    this.stats.domElement.style.zIndex = 100;
+                    $('#controls').append(this.stats.domElement);
+                }
+            }
+        },
+
+        /**
+         * Displays HUD for FPS stats
+         */
+        toggleStats: function (mode) {
+            if (mode) {
+                if ($("#stats").length == 0) {
+                    this.setupStats();
+                } else {
+                    $("#stats").show();
+                }
+            } else {
+                $("#stats").hide();
+            }
+        },
+
+
+        /**
+         * Adds debug axis to the scene
+         */
+        setupAxis: function () {
+            // To use enter the axis length
+            this.scene.add(new THREE.AxisHelper(200));
+        },
+
+        /**
+         * Renders objects in the scene
+         */
+        renderCanvas: function () {
+            this.renderer.clear();
+            this.composer.render(0.01);
+        },
+
+        /**
+         * Returns intersected objects from mouse click
+         *
+         * @returns {Array} a list of objects intersected by the current mouse coordinates
+         */
+        getIntersectedObjects: function () {
+            // create a Ray with origin at the mouse position and direction into th scene (camera direction)
+            var vector = new THREE.Vector3(this.mouse.x, this.mouse.y, 1);
+            vector.unproject(this.camera);
+
+            var raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+
+            var visibleChildren = [];
+            this.scene.traverse(function (child) {
+                if (child.visible && !(child.clickThrough == true)) {
+                    if (child.geometry != null && child.geometry != undefined) {
+                        child.geometry.computeBoundingBox();
+                        visibleChildren.push(child);
+                    }
+                }
+            });
+
+            // returns an array containing all objects in the scene with which the ray intersects
+            return raycaster.intersectObjects(visibleChildren);
+        },
+
+
+        /**
+         * @param x
+         * @param y
+         */
+        incrementCameraPan: function (x, y) {
+            this.controls.incrementPanEnd(x, y);
+        },
+
+        /**
+         * @param x
+         * @param y
+         * @param z
+         */
+        incrementCameraRotate: function (x, y, z) {
+            this.controls.incrementRotationEnd(x, y, z);
+        },
+
+        /**
+         * @param z
+         */
+        incrementCameraZoom: function (z) {
+            this.controls.incrementZoomEnd(z);
+        },
+
+        /**
+         * @param x
+         * @param y
+         * @param z
+         */
+        setCameraPosition: function (x, y, z) {
+            this.controls.setPosition(x, y, z);
+        },
+
+        /**
+         * @param rx
+         * @param ry
+         * @param rz
+         * @param radius
+         */
+        setCameraRotation: function (rx, ry, rz, radius) {
+            this.controls.setRotation(rx, ry, rz, radius);
+        },
+
+
+        animate: function () {
+            this.debugUpdate = this.needsUpdate;
+            // so that we log only the cycles when we are updating the scene
+
+            this.controls.update();
+
+            this.isAnimated = true;
+            requestAnimationFrame(this.animate);
+            this.renderCanvas();
+
+            if (this.stats) {
+                this.stats.update();
+            }
+
+            if (this.debugUpdate) {
+                GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
             }
         },
 
@@ -288,23 +559,31 @@ define(function(require) {
             return false;
         },
 
-        componentDidMount: function() {
-            this.container = $("#" + this.props.id + "_component").get(0);
-            this.setupScene();
-            this.setupCamera();
-            this.setupRenderer();
-            this.setupLights();
-            this.setupControls();
-            this.setupListeners();
-            this.initialised = true;
+        componentDidMount: function () {
+            if (!isWebglEnabled) {
+                Detector.addGetWebGLMessage();
+            } else {
+                this.factory = new SceneFactory(this);
+                var containerSelector = $("#" + this.props.id + "_component");
+                containerSelector.height(containerSelector.parent().height());
+                containerSelector.width(containerSelector.parent().width());
+                this.container = containerSelector.get(0);
+                this.setupScene();
+                this.setupCamera();
+                this.setupRenderer();
+                this.setupLights();
+                this.setupControls();
+                this.setupListeners();
+                this.animate();
+            }
         },
 
-		render: function () {
-			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-				</div>
-			)
-		}
+        render: function () {
+            return (
+                <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
+                </div>
+            )
+        }
     });
     return canvasComponent;
 });

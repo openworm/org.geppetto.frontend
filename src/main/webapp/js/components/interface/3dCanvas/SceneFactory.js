@@ -1,5 +1,7 @@
 define(['jquery'], function () {
 
+    var THREE = require('three');
+
     function SceneFactory(viewer) {
 
         this.viewer = viewer;
@@ -24,6 +26,7 @@ define(['jquery'], function () {
         buildScene: function (instances) {
             this.traverseInstances(instances);
             this.viewer.scene.updateMatrixWorld(true);
+            this.viewer.resetCamera();
         },
 
 
@@ -37,7 +40,7 @@ define(['jquery'], function () {
                 this.checkVisualInstance(instances[g]);
             }
             if(updateCamera){
-                G.resetCamera();
+                this.viewer.resetCamera();
             }
         },
 

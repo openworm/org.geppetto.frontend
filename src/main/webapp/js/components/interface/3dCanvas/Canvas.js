@@ -112,7 +112,7 @@ define(function (require) {
             }
 
             var color = new THREE.Color(this.backgroundColor);
-            this.renderer.setClearColor(color, 1);
+            //this.renderer.setClearColor(color, 1);
             var width = $(this.container).width();
             var height = $(this.container).height();
             this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -263,22 +263,25 @@ define(function (require) {
                     }
                 }, false);
 
+
+
+                $("#" + this.props.id).on("dialogresizestop", function (event, ui) {
+                    var height=ui.size.height-40;
+                    var width=ui.size.width-30;
+                    $(that.container).height(height);
+                    $(that.container).width(width);
+                    that.camera.aspect = width / height;
+                    that.camera.updateProjectionMatrix();
+                    that.renderer.setSize(width, height);
+                    that.composer.setSize(width, height);
+
+                });
+
                 this.renderer.domElement.addEventListener('mousemove', function (event) {
                     that.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                     that.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
                 }, false);
-                var dialog=$("[aria-describedby='"+this.props.id+"']");
-                dialog.resize(function () {
-                    var container = $(that.container);
-                    var width = dialog.width();
-                    var height = dialog.height();
-                    container.height(height);
-                    container.width(width);
-                    that.camera.aspect = (width) / (height);
-                    that.camera.updateProjectionMatrix();
-                    that.renderer.setSize(width, height);
-                    that.composer.setSize(width, height);
-                });
+
 
                 this.listenersCreated = true;
             }
@@ -565,8 +568,8 @@ define(function (require) {
             } else {
                 this.factory = new SceneFactory(this);
                 var containerSelector = $("#" + this.props.id + "_component");
-                containerSelector.height(containerSelector.parent().height());
-                containerSelector.width(containerSelector.parent().width());
+                containerSelector.height(containerSelector.parent().height()-40);
+                containerSelector.width(containerSelector.parent().width()-30);
                 this.container = containerSelector.get(0);
                 this.setupScene();
                 this.setupCamera();

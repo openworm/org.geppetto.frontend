@@ -16,11 +16,11 @@ define(function (require) {
         /**
          * Creates base view for widget
          */
-        var Widget = React.createClass({
+        return class Widget extends WrappedComponent {
 
-            getInitialState: function () {
-
-                return {
+            constructor(props) {
+                super(props);
+                this.state = $.extend(this.state, {
                     dialog: null,
                     visible: true,
                     destroyed: false,
@@ -36,22 +36,8 @@ define(function (require) {
 
                     defaultSize: { height: 300, width: 350 },
                     defaultPosition: { left: "50%", top: "50%" }
-                };
-            },
-
-
-            /**
-             * Initializes the widget
-             *
-             * @param {String} id - id of widget
-             * @param {String} name - name of widget
-             * @param {String} visibility - visibility of widget window
-             */
-            initialize: function (options) {
-                this.id = options.id;
-                this.name = options.name;
-                this.visible = options.visible;
-            },
+                });
+            }
 
             /**
              * Destroy the widget, remove it from DOM
@@ -59,11 +45,11 @@ define(function (require) {
              * @command destroy()
              * @returns {String} - Action Message
              */
-            destroy: function () {
+            destroy () {
                 this.$el.remove();
                 this.destroyed = true;
                 return this.name + " destroyed";
-            },
+            }
 
             /**
              *ff
@@ -72,13 +58,13 @@ define(function (require) {
              * @command hide()
              * @returns {String} - Action Message
              */
-            hide: function () {
+            hide() {
                 this.$el.dialog('close').dialogExtend();
 
                 this.visible = false;
 
                 return "Hiding " + this.name + " widget";
-            },
+            }
 
             /**
              *  Opens widget dialog
@@ -86,7 +72,7 @@ define(function (require) {
              * @command show()
              * @returns {String} - Action Message
              */
-            show: function () {
+            show() {
                 this.$el.dialog('open').dialogExtend();
                 this.visible = true;
 
@@ -94,7 +80,7 @@ define(function (require) {
                 $(".ui-dialog-titlebar-close").blur();
 
                 return this;
-            },
+            }
 
             /**
              * Gets the name of the widget
@@ -102,30 +88,30 @@ define(function (require) {
              * @command getName()
              * @returns {String} - Name of widget
              */
-            getName: function () {
+            getName() {
                 return this.name;
-            },
+            }
 
             /**
              * Sets the name of the widget
              * @command setName(name)
              * @param {String} name - Name of widget
              */
-            setName: function (name) {
+            setName(name) {
                 this.name = name;
 
                 // set name to widget window
                 this.$el.dialog("option", "title", this.name).dialogExtend();
 
                 return this;
-            },
+            }
 
             /**
              * @command setPosition(left,top)
              * @param {Integer} left -Left position of the widget
              * @param {Integer} top - Top position of the widget
              */
-            setPosition: function (left, top) {
+            setPosition(left, top) {
                 this.position.left = left;
                 this.position.top = top;
 
@@ -136,7 +122,7 @@ define(function (require) {
                         of: $(window)
                     }).dialogExtend();
                 return this;
-            },
+            }
 
             /**
              * Sets the size of the widget
@@ -144,67 +130,67 @@ define(function (require) {
              * @param {Integer} h - Height of the widget
              * @param {Integer} w - Width of the widget
              */
-            setSize: function (h, w) {
+            setSize(h, w) {
                 this.size.height = h;
                 this.size.width = w;
                 this.$el.dialog({ height: this.size.height, width: this.size.width }).dialogExtend();
                 this.$el.trigger('resizeEnd');
                 return this;
-            },
+            }
 
             /**
              * @command setMinHeight(h)
              * @param {Integer} h - Minimum Height of the widget
              */
-            setMinHeight: function (h) {
+            setMinHeight(h) {
                 this.$el.dialog('option', 'minHeight', h).dialogExtend();
                 return this;
-            },
+            }
 
             /**
              * @command setMinWidth(w)
              * @param {Integer} w - Minimum Width of the widget
              */
-            setMinWidth: function (w) {
+            setMinWidth(w) {
                 this.$el.dialog('option', 'minWidth', w).dialogExtend();
                 return this;
-            },
+            }
 
             /**
              * @command setMinSize(h,w)
              * @param {Integer} h - Minimum Height of the widget
              * @param {Integer} w - Minimum Width of the widget
              */
-            setMinSize: function (h, w) {
+            setMinSize(h, w) {
                 this.setMinHeight(h);
                 this.setMinWidth(w);
                 return this;
-            },
+            }
 
             /**
              * @command setResizable(true|false)
              * @param {Boolean} true|false - enables / disables resizability
              */
-            setResizable: function (resize) {
+            setResizable(resize) {
                 this.$el.dialog('option', 'resizable', resize).dialogExtend();
                 return this;
-            },
+            }
 
             /**
              * @command setAutoWidth()
              */
-            setAutoWidth: function () {
+            setAutoWidth() {
                 this.$el.dialog('option', 'width', 'auto').dialogExtend();
                 return this;
-            },
+            }
 
             /**
              * @command setAutoHeigth()
              */
-            setAutoHeight: function () {
+            setAutoHeight() {
                 this.$el.dialog('option', 'height', 'auto').dialogExtend();
                 return this;
-            },
+            }
 
 
             /**
@@ -212,18 +198,18 @@ define(function (require) {
              * @command getPosition()
              * @returns {Object} - Position of the widget
              */
-            getPosition: function () {
+            getPosition() {
                 return this.position;
-            },
+            }
 
             /**
              * Returns the size of the widget
              * @command getSize()
              * @returns {Object} - Size of the widget
              */
-            getSize: function () {
+            getSize() {
                 return this.size;
-            },
+            }
 
             /**
              * Gets the ID of the widget
@@ -231,9 +217,9 @@ define(function (require) {
              * @command getId()
              * @returns {String} - ID of widget
              */
-            getId: function () {
+            getId() {
                 return this.id;
-            },
+            }
 
             /**
              * Returns whether widget is visible or not
@@ -241,9 +227,9 @@ define(function (require) {
              * @command isVisible()
              * @returns {Boolean} - Widget visibility state
              */
-            isVisible: function () {
+            isVisible() {
                 return this.visible;
-            },
+            }
 
             /**
              * Search obj for the value of node within using path.
@@ -251,7 +237,7 @@ define(function (require) {
              * search within the obj to find the value of "tree.v", returning object
              * containing {value : val, unit : unit, scale : scale}.
              */
-            getState: function (tree, state) {
+            getState(tree, state) {
                 var paths = state.split('.')
                     , current = tree
                     , i;
@@ -281,9 +267,9 @@ define(function (require) {
                     }
                 }
                 return current;
-            },
+            }
 
-            getItems: function (history, name) {
+            getItems(history, name) {
                 var data = [];
                 for (var i = 0; i < history.length; i++) {
                     var action = this.getId() + "[" + this.getId() + "." + name + "[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + "." + name + "[" + i + "].arguments)";
@@ -295,9 +281,9 @@ define(function (require) {
                     })
                 }
                 return data;
-            },
+            }
 
-            showHistoryMenu: function (event) {
+            showHistoryMenu(event) {
                 var that = this;
                 if (this.controller.history.length > 0) {
 
@@ -313,9 +299,9 @@ define(function (require) {
                     event.preventDefault();
                 }
                 return false;
-            },
+            }
 
-            showContextMenu: function (event, data) {
+            showContextMenu(event, data) {
                 var handlers = GEPPETTO.MenuManager.getCommandsProvidersFor(data.getMetaType());
 
                 if (handlers.length > 0) {
@@ -338,21 +324,21 @@ define(function (require) {
                 }
 
                 return false;
-            },
+            }
 
             /**
              * hides / shows the title bar
              */
-            showTitleBar: function (show) {
+            showTitleBar(show) {
                 if (show) {
                     this.$el.parent().find(".ui-dialog-titlebar").show();
                 } else {
                     this.$el.parent().find(".ui-dialog-titlebar").hide();
                 }
                 return this;
-            },
+            }
 
-            updateNavigationHistoryBar: function () {
+            updateNavigationHistoryBar() {
                 var disabled = "arrow-disabled";
                 if (this.getItems(this.controller.history, "controller.history").length <= 1) {
                     if (!$("#" + this.id + "-left-nav").hasClass(disabled)) {
@@ -365,9 +351,9 @@ define(function (require) {
                         $("#" + this.id + "-right-nav").removeClass(disabled);
                     }
                 }
-            },
+            }
 
-            showHistoryNavigationBar: function (show) {
+            showHistoryNavigationBar(show) {
                 var leftNav = $("#" + this.id + "-left-nav");
                 var rightNav = $("#" + this.id + "-right-nav");
 
@@ -404,26 +390,26 @@ define(function (require) {
                         this.executedAction = 0;
                     }
                 }
-            },
+            }
 
             /**
              * hides / shows the exit button
              */
-            showCloseButton: function (show) {
+            showCloseButton(show) {
                 if (show) {
                     this.$el.parent().find(".ui-dialog-titlebar-close").show();
                 } else {
                     this.$el.parent().find(".ui-dialog-titlebar-close").hide();
                 }
-            },
+            }
 
-            addButtonToTitleBar: function (button) {
+            addButtonToTitleBar(button) {
                 var dialogParent = this.$el.parent();
                 dialogParent.find("div.ui-dialog-titlebar").prepend(button);
                 $(button).addClass("widget-title-bar-button");
-            },
+            }
 
-            addHelpButton: function () {
+            addHelpButton() {
                 var that = this;
                 this.addButtonToTitleBar($("<div class='fa fa-question' title='Widget Help'></div>").click(function () {
                     GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
@@ -432,14 +418,14 @@ define(function (require) {
                         show: true
                     }, document.getElementById("modal-region"));
                 }));
-            },
+            }
 
             /**
              * Makes the widget draggable or not
              *
              * @param draggable
              */
-            setDraggable: function (draggable) {
+            setDraggable(draggable) {
                 if (draggable) {
                     this.$el.parent().draggable({ disabled: false });
                     // NOTE: this will wipe any class applied to the widget...
@@ -448,14 +434,14 @@ define(function (require) {
                     this.$el.parent().draggable({ disabled: true });
                     this.setClass('noStyleDisableDrag');
                 }
-            },
+            }
 
             /**
              * Set background as transparent
              *
              * @param isTransparent
              */
-            setTrasparentBackground: function (isTransparent) {
+            setTrasparentBackground(isTransparent) {
                 if (isTransparent) {
                     this.$el.parent().addClass('transparent-back');
                     this.previousMaxTransparency = true;
@@ -463,26 +449,26 @@ define(function (require) {
                     this.$el.parent().removeClass('transparent-back');
                 }
                 return this;
-            },
+            }
 
             /**
              * Inject CSS for custom behaviour
              */
-            setClass: function (className) {
+            setClass(className) {
                 this.$el.dialog({ dialogClass: className }).dialogExtend();
-            },
+            }
 
             /**
              * Perform a jquery ui effect to the widget
              */
-            perfomEffect: function (effect, options, speed) {
+            perfomEffect(effect, options, speed) {
                 this.$el.parent().effect(effect, options, speed)
-            },
+            }
 
             /**
              * Perform a shake effect to the widget
              */
-            shake: function (options, speed) {
+            shake(options, speed) {
                 if (options === undefined) {
                     options = { distance: 5, times: 3 }
                 }
@@ -491,13 +477,20 @@ define(function (require) {
                 }
 
                 this.$el.parent().effect('shake', options, speed)
-            },
+            }
 
             shouldComponentUpdate() {
                 return false;
-            },
+            }
 
-            componentDidMount: function () {
+            componentDidMount() {
+                try {
+                    super.componentDidMount();
+                }
+                catch(err) {
+                    console.log('Component does not implement component did mount method')
+                }
+
                 var that = this;
 
                 //create the dialog window for the widget
@@ -510,7 +503,7 @@ define(function (require) {
                         top: 10,
                         height: 300,
                         width: 350,
-                        close: function (event, ui) {
+                        close(event, ui) {
                             if (event.originalEvent &&
                                 $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
                                 that.destroy();
@@ -529,27 +522,27 @@ define(function (require) {
                             "collapse": "fa  fa-chevron-circle-up",
                             "restore": "fa fa-window-restore",
                         },
-                        "load": function (evt, dlg) {
+                        "load"(evt, dlg) {
                             var icons = $("#" + that.id).parent().find(".ui-icon");
                             for (var i = 0; i < icons.length; i++) {
                                 //remove text from span added by vendor library
                                 $(icons[i]).text("");
                             }
                         },
-                        "beforeMinimize": function (evt, dlg) {
+                        "beforeMinimize"(evt, dlg) {
                             var label = that.name;
                             label = label.substring(0, 6);
                             that.$el.dialog({ title: label });
                         },
-                        "beforeMaximize": function (evt, dlg) {
+                        "beforeMaximize"(evt, dlg) {
                             var divheight = that.size.height;
                             var divwidth = that.size.width;
                             that.previousMaxSize = { width: divwidth, height: divheight };
                         },
-                        "minimize": function (evt, dlg) {
+                        "minimize"(evt, dlg) {
                             that.$el.dialog({ title: that.name });
                         },
-                        "maximize": function (evt, dlg) {
+                        "maximize"(evt, dlg) {
                             that.setTrasparentBackground(false);
                             $(this).trigger('resizeEnd');
                             var divheight = $(window).height();
@@ -557,7 +550,7 @@ define(function (require) {
                             that.$el.dialog({ height: divheight, width: divwidth });
                             that.maximize = true;
                         },
-                        "restore": function (evt, dlg) {
+                        "restore"(evt, dlg) {
                             if (that.maximize) {
                                 that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
                                 $(this).trigger('restored', [that.id]);
@@ -567,7 +560,7 @@ define(function (require) {
                             that.maximize = false;
                             that.collapsed = false;
                         },
-                        "collapse": function (evt, dlg) {
+                        "collapse"(evt, dlg) {
                             that.collapsed = true;
                         }
                     });
@@ -617,49 +610,38 @@ define(function (require) {
                         that.maximize = true;
                     }
                 });
-            },
-
-            /**
-             * Renders the widget dialog window
-             */
-            render: function () {
-                return (
-                    <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}>
-                        <WrappedComponent {...this.props} {...this.state}/>
-                    </div>
-                )
-            },
+            }
 
             /**
              * Register event with widget
              *
              * @command registerEvent(event)
              */
-            registerEvent: function (event, callback) {
+            registerEvent(event, callback) {
                 this.registeredEvents.push({ id: event, callback: callback });
-            },
+            }
 
             /**
              * Unregister event with widget
              *
              * @command unregisterEvent(event)
              */
-            unregisterEvent: function (event) {
+            unregisterEvent(event) {
                 this.registeredEvents = _.reject(this.registeredEvents, function (el) {
                     return el.id === event
                 });
-            },
+            }
 
-            getHelp: function () {
+            getHelp() {
                 return '### Inline help not yet available for this widget! \n\n' +
                     'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
-            },
+            }
 
-            setController: function (controller) {
+            setController(controller) {
                 this.controller = controller;
-            },
+            }
 
-            showHistoryIcon: function (show) {
+            showHistoryIcon(show) {
                 var that = this;
                 if (show && this.$el.parent().find(".history-icon").length == 0) {
                     this.addButtonToTitleBar($("<div class='fa fa-history history-icon' title='Show Navigation History'></div>").click(function (event) {
@@ -671,8 +653,22 @@ define(function (require) {
                     this.$el.parent().find(".history-icon").remove();
                 }
             }
-        });
 
-        return Widget;
+            /**
+             * Renders the widget dialog window
+             */
+            render() {
+                /*return (
+                    <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}>
+                        <WrappedComponent 
+                            setName= {this.setName}
+                            {...this.props}
+                            {...this.state}
+                            ref={(c) => this._component = c}/>
+                    </div>
+                )*/
+                return <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}> {super.render()} </div>
+            }
+        };
     }
 })

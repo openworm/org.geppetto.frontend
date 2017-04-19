@@ -411,7 +411,8 @@ define(function (require) {
             					that.executedAction = historyItems.length-1;
             				}
             				if(event.target.id == (that.id + "-right-nav")){
-            					that.executedAction = 1;
+            					historyItems = historyItems.reverse();
+                                that.executedAction = historyItems.length-1;
             				}
     						item = historyItems[that.executedAction].action[0];
     						GEPPETTO.Console.executeImplicitCommand(item);

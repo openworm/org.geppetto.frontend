@@ -191,6 +191,7 @@ define(function(require) {
                         var widget = G.addWidget(0);
                         widget.plotData(inst).setName(path);
                         this.updateLegend(widget, inst, projectId, experimentId);
+                        widget.updateAxis(path);
                     }
                 } else {
                     var cb = function(){
@@ -199,7 +200,9 @@ define(function(require) {
                     		plotWidget.plotData(i);
                     		self.updateLegend(plotWidget, i, projectId, experimentId);
                     	} else {
-                    		G.addWidget(0).plotData(i).setName(path);
+                    		var plot = G.addWidget(0);
+                            plot.plotData(i).setName(path);
+                            plot.updateAxis(path);
                     	}
                     };
                     // trigger get experiment data with projectId, experimentId and path, and callback to plot
@@ -217,7 +220,9 @@ define(function(require) {
                         plotWidget.plotXYData(i, t);
                         self.updateLegend(plotWidget, i, projectId, experimentId);
                     } else {
-                        G.addWidget(0).plotXYData(i, t).setName(path);
+                    	var plot = G.addWidget(0);
+                        plot.plotXYData(i, t).setName(path);
+                        plot.updateAxis(path);
                     }
                 };
 

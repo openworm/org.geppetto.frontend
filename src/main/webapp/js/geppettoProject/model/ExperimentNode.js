@@ -483,11 +483,13 @@ define(['backbone'], function(require) {
          * @returns {exports.view|{}}
          */
         getView: function(){
-            var viewsString = this.get('view');
+            var viewObject = this.get('view');
             var views = undefined;
 
-            if(viewsString != undefined){
-                views = JSON.parse(viewsString);
+            if(viewObject != undefined){
+            	if(viewObject.view!=undefined){
+            			views = viewObject.view.members;
+            	}
             }
 
             return views;

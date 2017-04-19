@@ -23,7 +23,7 @@ define(function (require) {
                         name: project.name,
                         type: project.type,
                         id: project.id,
-                        view: (project.view != undefined) ? project.view.viewString : undefined,
+                        view: (project.view != undefined) ? project.view.view : undefined,
                         _metaType: GEPPETTO.Resources.PROJECT_NODE
                     });
 
@@ -57,10 +57,9 @@ define(function (require) {
                         lastModified: node.lastModified,
                         status: node.status,
                         script: node.script,
-                        view: (node.view != undefined) ? node.view.viewString : undefined,
+                        view: (node.view != undefined) ? node.view: undefined,
                         _metaType: GEPPETTO.Resources.EXPERIMENT_NODE,
                     });
-                
 
                 if(node.details!=null || undefined){
                     var details =  JSON.parse(node.details);

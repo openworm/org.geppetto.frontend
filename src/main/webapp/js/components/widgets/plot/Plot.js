@@ -501,7 +501,7 @@ define(function (require) {
                 self.plotOptions.margin.r=defaultOptions.margin.r;
                 Plotly.relayout(self.plotDiv,self.plotOptions);
             };
-			setTimeout(reset, 100);
+			setTimeout(reset, 10);
 		},
 		
 		/**

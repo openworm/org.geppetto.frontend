@@ -26,6 +26,8 @@ define(function (require) {
     THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
     var SceneFactory = require('./SceneFactory');
 
+    var CameraControls = require('../cameraControls/CameraControls');
+
     var canvasComponent = React.createClass({
         factory: null,
         camera: null,
@@ -579,15 +581,12 @@ define(function (require) {
                 this.setupListeners();
                 this.animate();
             }
-
-            //Camera controls initialization
-		    GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById(this.props.id).getElementsByClassName("camera-controls")[0]);
         },
 
         render: function () {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <div className="camera-controls"></div>
+                    <CameraControls/>
                 </div>
             )
         }

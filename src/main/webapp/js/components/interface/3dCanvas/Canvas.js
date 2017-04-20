@@ -61,7 +61,6 @@ define(function (require) {
         pickingEnabled: true, // flag to enable disable 3d picking
         backgroundColor: 0x101010,
 
-
         setupScene: function () {
             this.scene = new THREE.Scene();
             this.visualModelMap = {};
@@ -586,7 +585,7 @@ define(function (require) {
         render: function () {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <CameraControls/>
+                    <CameraControls viewer={this.props.uniqueId}/>
                 </div>
             )
         }

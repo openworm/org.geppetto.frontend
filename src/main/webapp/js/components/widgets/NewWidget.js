@@ -218,7 +218,7 @@ define(function (require) {
              * @returns {String} - ID of widget
              */
             getId() {
-                return this.id;
+                return this.props.id;
             }
 
             /**
@@ -341,21 +341,21 @@ define(function (require) {
             updateNavigationHistoryBar() {
                 var disabled = "arrow-disabled";
                 if (this.getItems(this.controller.history, "controller.history").length <= 1) {
-                    if (!$("#" + this.id + "-left-nav").hasClass(disabled)) {
-                        $("#" + this.id + "-left-nav").addClass(disabled);
-                        $("#" + this.id + "-right-nav").addClass(disabled);
+                    if (!$("#" + this.props.id + "-left-nav").hasClass(disabled)) {
+                        $("#" + this.props.id + "-left-nav").addClass(disabled);
+                        $("#" + this.props.id + "-right-nav").addClass(disabled);
                     }
                 } else {
-                    if ($("#" + this.id + "-left-nav").hasClass(disabled)) {
-                        $("#" + this.id + "-left-nav").removeClass(disabled);
-                        $("#" + this.id + "-right-nav").removeClass(disabled);
+                    if ($("#" + this.props.id + "-left-nav").hasClass(disabled)) {
+                        $("#" + this.props.id + "-left-nav").removeClass(disabled);
+                        $("#" + this.props.id + "-right-nav").removeClass(disabled);
                     }
                 }
             }
 
             showHistoryNavigationBar(show) {
-                var leftNav = $("#" + this.id + "-left-nav");
-                var rightNav = $("#" + this.id + "-right-nav");
+                var leftNav = $("#" + this.props.id + "-left-nav");
+                var rightNav = $("#" + this.props.id + "-right-nav");
 
                 if (show) {
                     if ((leftNav.length == 0) && (rightNav.length == 0)) {
@@ -366,16 +366,16 @@ define(function (require) {
                         }
 
                         var that = this;
-                        var button = $("<div id='" + this.id + "-left-nav' class='" + disabled + "fa fa-arrow-left'></div>" +
-                            "<div id='" + this.id + "-right-nav' class='" + disabled + "fa fa-arrow-right'></div>").click(function (event) {
+                        var button = $("<div id='" + this.props.id + "-left-nav' class='" + disabled + "fa fa-arrow-left'></div>" +
+                            "<div id='" + this.props.id + "-right-nav' class='" + disabled + "fa fa-arrow-right'></div>").click(function (event) {
                                 var historyItems = that.getItems(that.controller.history, "controller.history");
                                 var item;
-                                if (event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")) {
+                                if (event.target.id == (that.props.id + "-left-nav") || (that.props.id + "-right-nav")) {
                                     that.executedAction = historyItems.length - 1;
                                 }
                                 item = historyItems[that.executedAction].action[0];
                                 GEPPETTO.Console.executeImplicitCommand(item);
-                                $("#" + that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
+                                $("#" + that.props.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
                                 event.stopPropagation();
                             });
 
@@ -413,7 +413,7 @@ define(function (require) {
                 var that = this;
                 this.addButtonToTitleBar($("<div class='fa fa-question' title='Widget Help'></div>").click(function () {
                     GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
-                        title: that.id.slice(0, -1) + ' help',
+                        title: that.props.id.slice(0, -1) + ' help',
                         content: that.getHelp(),
                         show: true
                     }, document.getElementById("modal-region"));
@@ -522,27 +522,27 @@ define(function (require) {
                             "collapse": "fa  fa-chevron-circle-up",
                             "restore": "fa fa-window-restore",
                         },
-                        "load"(evt, dlg) {
-                            var icons = $("#" + that.id).parent().find(".ui-icon");
+                        "load" : function(evt, dlg) {
+                            var icons = $("#" + that.props.id).parent().find(".ui-icon");
                             for (var i = 0; i < icons.length; i++) {
                                 //remove text from span added by vendor library
                                 $(icons[i]).text("");
                             }
                         },
-                        "beforeMinimize"(evt, dlg) {
+                        "beforeMinimize" : function(evt, dlg) {
                             var label = that.name;
                             label = label.substring(0, 6);
                             that.$el.dialog({ title: label });
                         },
-                        "beforeMaximize"(evt, dlg) {
+                        "beforeMaximize" : function(evt, dlg) {
                             var divheight = that.size.height;
                             var divwidth = that.size.width;
                             that.previousMaxSize = { width: divwidth, height: divheight };
                         },
-                        "minimize"(evt, dlg) {
+                        "minimize" : function(evt, dlg) {
                             that.$el.dialog({ title: that.name });
                         },
-                        "maximize"(evt, dlg) {
+                        "maximize" : function(evt, dlg) {
                             that.setTrasparentBackground(false);
                             $(this).trigger('resizeEnd');
                             var divheight = $(window).height();
@@ -550,17 +550,17 @@ define(function (require) {
                             that.$el.dialog({ height: divheight, width: divwidth });
                             that.maximize = true;
                         },
-                        "restore"(evt, dlg) {
+                        "restore" : function(evt, dlg) {
                             if (that.maximize) {
                                 that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
-                                $(this).trigger('restored', [that.id]);
+                                $(this).trigger('restored', [that.props.id]);
                             }
                             that.setTrasparentBackground(that.previousMaxTransparency);
                             $(this).trigger('resizeEnd');
                             that.maximize = false;
                             that.collapsed = false;
                         },
-                        "collapse"(evt, dlg) {
+                        "collapse" : function(evt, dlg) {
                             that.collapsed = true;
                         }
                     });
@@ -577,7 +577,7 @@ define(function (require) {
 
                 //remove the jQuery UI icon
                 dialogParent.find("button.ui-dialog-titlebar-close").html("");
-                dialogParent.find("button").append("<i class='fa fa-close'></i>");
+                dialogParent.find(".ui-dialog-titlebar").find("button").append("<i class='fa fa-close'></i>");
 
 
                 //Take focus away from close button
@@ -598,7 +598,7 @@ define(function (require) {
                     if (registeredItem != null || registeredItem != undefined) {
                         var label = registeredItem["label"];
                         that.title = label;
-                        $("#" + that.id).parent().find(".ui-dialog-title").html(that.title);
+                        $("#" + that.props.id).parent().find(".ui-dialog-title").html(that.title);
                     }
                 });
 

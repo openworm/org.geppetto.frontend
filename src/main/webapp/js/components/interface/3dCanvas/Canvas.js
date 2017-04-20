@@ -579,11 +579,15 @@ define(function (require) {
                 this.setupListeners();
                 this.animate();
             }
+
+            //Camera controls initialization
+		    GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById(this.props.id).getElementsByClassName("camera-controls")[0]);
         },
 
         render: function () {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
+                    <div className="camera-controls"></div>
                 </div>
             )
         }

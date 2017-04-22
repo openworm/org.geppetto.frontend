@@ -322,14 +322,12 @@ define(function (require) {
         },
 
         callObjects: function () {
-            var shift = GEPPETTO.isKeyPressed("shift");
             var i, j, result, id, label;
             var that = this;
-            while (GEPPETTO.G.getSelection()[0] != undefined) {
-                GEPPETTO.G.getSelection()[0].deselect();
-            }
+            GEPPETTO.G.unSelectAll();
             $.each(this.state.stack, function (i, item) {
                 (function (i, that, shift) {
+                    var shift = GEPPETTO.isKeyPressed("shift");
                     var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                     //get image size;
                     $.ajax({
@@ -395,7 +393,6 @@ define(function (require) {
 
         listObjects: function () {
             if (!this.state.loadingLabels) {
-                var shift = GEPPETTO.isKeyPressed("shift");
                 this.state.objects = [];
                 var i, j, result;
                 var that = this;
@@ -405,6 +402,7 @@ define(function (require) {
                         if (i == 0) {
                             that.state.loadingLabels = true;
                         }
+                        var shift = GEPPETTO.isKeyPressed("shift");
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({

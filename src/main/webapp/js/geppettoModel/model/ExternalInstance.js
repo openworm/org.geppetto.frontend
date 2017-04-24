@@ -1,8 +1,7 @@
 
 
 /**
- * Client class use to represent an instance object (instantiation of a
- * variable).
+ * Client class use to represent an instance object (instantiation of a variable)
  * 
  * @module model/Instance
  * @author Giovanni Idili
@@ -12,15 +11,15 @@
 define(function (require) {
 	var Instance = require('./Instance');
 
-
 	function ExternalInstance(options) {
 		Instance.prototype.constructor.call(this, options);
 		this.path = options.path;
-	};
+		this.projectId = options.projectId;
+		this.experimentId = options.experimentId;
+	}
 
 	ExternalInstance.prototype = Object.create(Instance.prototype);
 	ExternalInstance.prototype.constructor = ExternalInstance;
-
 
 	/**
 	 * Get the type for this instance
@@ -84,7 +83,6 @@ define(function (require) {
 		return undefined;
 	};
 
-
 	/**
 	 * Get the variable for this instance
 	 * 
@@ -121,7 +119,6 @@ define(function (require) {
 		return this.path;
 	};
 
-
 	/**
 	 * Get raw instance path (without array shortening)
 	 * 
@@ -133,7 +130,6 @@ define(function (require) {
 	ExternalInstance.prototype.getRawInstancePath = function () {
 		throw "Invalid operation with ExternalInstance";
 	};
-
 
 	/**
 	 * Get parent
@@ -156,8 +152,6 @@ define(function (require) {
 		throw "Invalid operation with ExternalInstance";
 	};
 
-
-
 	/**
 	 * Return connections, user GEPPETTO.Resources.INPUT / OUTPUT /
 	 * INPUT_OUTPUT to filter
@@ -171,15 +165,12 @@ define(function (require) {
 		return this.connections;
 	};
 
-
 	/**
 	 * Deletes instance
 	 */
 	ExternalInstance.prototype.delete = function () {
 		throw "Invalid operation with ExternalInstance";
 	};
-
-
 
 	return ExternalInstance;
 });

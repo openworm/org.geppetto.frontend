@@ -42,10 +42,10 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
     });
 
     casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/", function () {
-        this.waitForSelector('div[project-id="4"]', function () {
+        this.waitForSelector('div[project-id="2"]', function () {
             this.echo("I've waited for the projects to load.");
             test.assertExists('div#logo', "logo is found");
-            test.assertExists('div[project-id="4"]', "Projects from persistence bundle are present")
+            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
             test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
         }, null, 30000);
     });

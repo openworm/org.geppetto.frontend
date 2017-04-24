@@ -168,12 +168,13 @@ define(function(require) {
          * @param projectId
          * @param experimentId
          * @param path
-         * @param plotWidget - options, if not provided a new widget will be created
+         * @param plotWidget - optional, if not provided a new widget will be created
+         * @param xPath - optional, if plotting xy data a path for the x axis
          */
-        plotStateVariable: function(projectId, experimentId, path, plotWidget){
-            if(window.Project.getId() == projectId && window.Project.getActiveExperiment().getId() == experimentId){
-                var self = this;
-                // try to resolve path
+        plotStateVariable: function(projectId, experimentId, path, plotWidget, xPath){
+            var self = this;
+            
+            if(window.Project.getId() == projectId && window.Project.getActiveExperiment().getId() == experimentId){    
                 var inst = undefined;
                 try {
                     inst = window.Instances.getInstance(path);
@@ -183,37 +184,46 @@ define(function(require) {
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data
                     if (plotWidget != undefined) {
+                    	//plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
                         plotWidget.plotData(inst);
                         this.updateLegend(plotWidget, inst, projectId, experimentId);
+                        plotWidget.updateAxis(inst.getInstancePath());
                     } else {
                         var widget = G.addWidget(0);
                         widget.plotData(inst).setName(path);
                         this.updateLegend(widget, inst, projectId, experimentId);
+                        widget.updateAxis(path);
                     }
                 } else {
                     var cb = function(){
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
                     		plotWidget.plotData(i);
-                    		self.updateLegend(plotWidget,i,projectId,experimentId);
+                    		self.updateLegend(plotWidget, i, projectId, experimentId);
+                    		plotWidget.updateAxis(i.getInstancePath());
                     	} else {
-                    		G.addWidget(0).plotData(i).setName(path);
+                    		var plot = G.addWidget(0);
+                            plot.plotData(i).setName(path);
+                            plot.updateAxis(path);
                     	}
                     };
                     // trigger get experiment data with projectId, experimentId and path, and callback to plot
                     GEPPETTO.ExperimentsController.getExperimentState(projectId, experimentId, [path], cb);
                 }
             } else {
+                var self = this;
                 // we are dealing with external instances, define re-usable callback for plotting external instances
                 var plotExternalCallback = function() {
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
-                    var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, 'time(StateVariable)');
-
+                    // if xPath is not specified, assume time
+                    if(xPath == undefined){ xPath = 'time(StateVariable)'; }
+                    var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, xPath);
                     if (plotWidget != undefined) {
                         plotWidget.plotXYData(i, t);
                         self.updateLegend(plotWidget, i, projectId, experimentId);
                     } else {
-                        G.addWidget(0).plotXYData(i, t).setName(path);
+                    	var plot = G.addWidget(0);
+                        plot.plotXYData(i, t).setName(path);
                     }
                 };
 
@@ -233,10 +243,10 @@ define(function(require) {
             var legend = null;
             var experimentName, projectName;
             if(window.Project.getId() == projectId){
-            	if(window.Project.getActiveExperiment()!= null || undefined){
+            	if(window.Project.getActiveExperiment()!= null && window.Project.getActiveExperiment() != undefined){
             		//variable belongs to same project,but different experiment
             		if(window.Project.getActiveExperiment().getId()!= experimentId){
-            			legend = this.getLegendName(projectId,experimentId,instance,true);
+            			legend = this.getLegendName(projectId, experimentId, instance, true);
             		}
             	}
             }else{

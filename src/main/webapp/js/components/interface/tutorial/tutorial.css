@@ -1,25 +1,33 @@
-.tutorial{
-    position: absolute;
-    height: 300px;
-    width: 400px;
-    top:140px;
-  	left: 0; 
-  	right: 0; 
-  	margin-left: auto; 
-  	margin-right: auto; 
-    display: block;
-    z-index:500;
+.tutorial-message .invert{
+    filter: invert(100%);
 }
-
+.tutorial-message .center{
+	margin: 0 auto;
+    display: block;
+    margin-bottom:20px;
+    margin-top:20px;
+}
 .tutorial-message{
 	display: inline-block;
 	width: auto;
 	minHeight: 0px;
 	maxHeight: none;
-	height: 180px;
+	height: 80%;
+	width:100%;
 	color: #fc6320;
+	overflow: scroll!important;
 }
 
+.tutorial-message a{
+	color: #fc6320;
+	cursor:pointer;
+	text-decoration:none;
+}
+
+.tutorial-message a:hover{
+	color: #fc401a;
+}
+	
 #ignoreTutorial {
 	width: auto;
 	margin-top:15px;

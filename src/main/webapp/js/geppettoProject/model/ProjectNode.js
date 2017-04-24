@@ -373,6 +373,20 @@ define(['backbone'], function (require) {
             return views;
         },
 
+         /*** Download this project.
+         *
+         * @command ProjectNode.downloadModel(format)
+         * * @param {String} name - File format to download
+         */
+        download : function(path, format) {
+        	var parameters = {};
+        	parameters["projectId"] = this.getId();
+        	GEPPETTO.MessageSocket.send("download_project", parameters);
+
+        	var formatMessage = (format=="")?"default format":format;
+        	return GEPPETTO.Resources.DOWNLOADING_PROJECT + formatMessage;
+        },
+        
         /**
          * Print out formatted node
          */

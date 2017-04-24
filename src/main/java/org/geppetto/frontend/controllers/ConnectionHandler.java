@@ -2,10 +2,13 @@ package org.geppetto.frontend.controllers;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.beans.PathConfiguration;
@@ -80,6 +84,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	// the geppetto project active for this connection
 	private IGeppettoProject geppettoProject;
 
+	private String urlBase = "";
 	/**
 	 * @param websocketConnection
 	 * @param geppettoManager
@@ -109,7 +114,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			else
 			{
-				loadGeppettoProject(requestID, geppettoProject, experimentId);
+				loadGeppettoProject(requestID, geppettoProject, experimentId,this.urlBase);
 			}
 		}
 		catch(NumberFormatException e)
@@ -125,7 +130,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void loadProjectFromContent(String requestID, String projectContent)
 	{
 		IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), projectContent);
-		loadGeppettoProject(requestID, geppettoProject, -1l);
+		loadGeppettoProject(requestID, geppettoProject, -1l,this.urlBase);
 	}
 
 	/**
@@ -138,9 +143,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			url = URLReader.getURL(urlString);
+			int index = url.toString().lastIndexOf('/');
+			String urlBase = url.toString().substring(0, index);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
-			loadGeppettoProject(requestID, geppettoProject, -1l);
+			this.urlBase = urlBase;
+			loadGeppettoProject(requestID, geppettoProject, -1l, this.urlBase);
 		}
 		catch(IOException e)
 		{
@@ -152,11 +160,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param geppettoProject
 	 */
-	public void loadGeppettoProject(String requestID, IGeppettoProject geppettoProject, long experimentId)
+	public void loadGeppettoProject(String requestID, IGeppettoProject geppettoProject, long experimentId, String urlBase)
 	{
 		try
 		{
-			geppettoManager.loadProject(requestID, geppettoProject);
+			geppettoManager.loadProject(requestID, geppettoProject,urlBase);
 			boolean readOnly = true;
 			if(geppettoProject.isVolatile()){
 				readOnly = false;
@@ -629,15 +637,18 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	/**
 	 * @param requestID
-	 * @param url
+	 * @param urlString
 	 * @param visitor
 	 */
-	public void sendScriptData(String requestID, URL url, WebsocketConnection visitor)
+	public void sendScriptData(String requestID, String urlString, WebsocketConnection visitor)
 	{
 		try
 		{
 			String line = null;
 			StringBuilder sb = new StringBuilder();
+
+			String urlPath = urlBase + urlString;
+			URL url = URLReader.getURL(urlPath);
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -651,7 +662,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(IOException e)
 		{
-			error(e, "Error while reading the script at " + url);
+			error(e, "Error while reading the script at " + urlString);
 		}
 	}
 
@@ -1422,5 +1433,28 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 				
 		websocketConnection.sendMessage(null, OutboundMessages.ERROR_RUNNING_EXPERIMENT, jsonError);
+	}
+
+	public void downloadProject(String requestID, long projectId) {
+		try
+		{
+			
+			Path zipPath = this.geppettoManager.downloadProject(geppettoProject);
+			
+			if(zipPath != null)
+			{
+				// Send zip file to the client
+				websocketConnection.sendBinaryMessage(requestID, zipPath);
+				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_PROJECT,null);
+			
+				//clean temporary directory where files where written
+				FileUtils.cleanDirectory(zipPath.toFile().getParentFile()); 
+			}else{
+				error(null, "Error downloading project");
+			}
+		}
+		catch (Exception e) {
+			error(e, "Error downloading project");
+		}
 	}
 }

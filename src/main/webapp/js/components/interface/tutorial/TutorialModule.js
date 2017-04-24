@@ -146,9 +146,11 @@ define(function (require) {
 				var height =self.getActiveTutorial()["height"];
 				if(height!=undefined){
 					p.height(height+"px");
+					$(self.__container).css("height",height+"px");
 				}
 				if(width!=undefined){
 					p.width(width+"px");
+					$(self.__container).css("width",width+"px");
 				}
 			};
 
@@ -330,15 +332,17 @@ define(function (require) {
 				var lastStep = this.state.currentStep == activeTutorial.steps.length-1;
 				var lastStepLabel = (this.state.currentStep == activeTutorial.steps.length-1)?"Restart":"";
 				var cookieClass=this.state.currentStep==0?"checkbox-inline cookieTutorial":"hide";
-				
+
 				var width =this.getActiveTutorial()["width"];
-	        	var height =this.getActiveTutorial()["height"];
-	        	
+				var height =this.getActiveTutorial()["height"];
+
 				if(height!=undefined){
 					dialog.height(height+"px");
+					$(this.__container).css("height",height+"px");
 				}
 				if(width!=undefined){
 					dialog.width(width+"px");
+					$(this.__container).css("width",width+"px");
 				}
 			    
 				return  <div>

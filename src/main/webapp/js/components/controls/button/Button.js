@@ -37,7 +37,7 @@ define(function(require) {
 	var button = React.createClass({
 		attachTooltip: function(){
 			var self = this;
-			$("#"+this.props.configuration.id).uitooltip({
+			$("#"+this.props.configuration.id).tooltip({
 				position: this.props.configuration.tooltipPosition,
 				tooltipClass: "tooltip-persist",
 				show: {
@@ -61,14 +61,15 @@ define(function(require) {
 			if(position==undefined){
 				position = this.props.configuration.tooltipPosition;
 			}
+			$("#"+this.props.configuration.id).tooltip("option", "show");
 			// update contents of what's displayed on tooltip
-			$("#"+this.props.configuration.id).uitooltip({content: tooltipLabel,
+			$("#"+this.props.configuration.id).tooltip({content: tooltipLabel,
 				position: position});
 			$("#"+this.props.configuration.id).mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
 		},
 		
 		hideToolTip : function(){
-			$("#"+this.props.configuration.id).uitooltip('hide');
+			$("#"+this.props.configuration.id).tooltip("option", "hide");
 		},
 
 		getInitialState: function() {
@@ -82,6 +83,18 @@ define(function(require) {
 		componentDidMount: function() {    		
 			this.attachTooltip();
 			this.props.configuration.eventHandler(this);
+			var self = this;
+			var focused = true;
+
+			window.onfocus = function() {
+			    if(!focused){
+			    	self.hideToolTip();
+			    }
+			    focused = true;
+			};
+			window.onblur = function() {
+			    focused = false;
+			};
 		},
 
 		render:  function () {

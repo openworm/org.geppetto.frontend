@@ -56,11 +56,19 @@ define(function(require) {
 			});
 		},
 
-		showToolTip : function(tooltipLabel){
+		showToolTip : function(tooltipLabel, tooltipPosition){
+			var position = tooltipPosition;
+			if(position==undefined){
+				position = this.props.configuration.tooltipPosition;
+			}
 			// update contents of what's displayed on tooltip
 			$("#"+this.props.configuration.id).uitooltip({content: tooltipLabel,
-				position: this.props.configuration.tooltipPosition});
+				position: position});
 			$("#"+this.props.configuration.id).mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+		},
+		
+		hideToolTip : function(){
+			$("#"+this.props.configuration.id).uitooltip('hide');
 		},
 
 		getInitialState: function() {

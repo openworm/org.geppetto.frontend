@@ -175,9 +175,10 @@ define(function (require) {
             setView: function (view) {
                 var activeExperiment = (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined);
                 var setView = false;
+
                 // go to server to persist only if experiment is persisted
                 if(Project.persisted && GEPPETTO.UserController.persistence){
-                	setView =true;
+                	setView = true;
                 } else if(GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
                     // store view in local storage for this project/experiment/user
                     if(!activeExperiment){
@@ -187,7 +188,7 @@ define(function (require) {
                         // experiment active - save at experiment level
                         localStorage.setItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId()), JSON.stringify(view));
                     }
-                    setView =true;
+                    setView = true;
                 }
                 
                 if(setView){

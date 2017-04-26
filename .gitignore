@@ -47,3 +47,5 @@ org.geppetto.model/
 org.geppetto.simulation/
 /libjhdf5.jnilib
 
+
+src/main/webapp/npm-debug.log

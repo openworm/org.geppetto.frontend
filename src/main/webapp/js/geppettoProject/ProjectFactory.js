@@ -23,7 +23,7 @@ define(function (require) {
                         name: project.name,
                         type: project.type,
                         id: project.id,
-                        view: (project.view != undefined) ? project.view.view : undefined,
+                        view: (project.view != undefined) ? project.view.viewStates : undefined,
                         _metaType: GEPPETTO.Resources.PROJECT_NODE
                     });
 

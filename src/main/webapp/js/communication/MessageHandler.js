@@ -207,6 +207,16 @@ define(function(require) {
 
         messageHandler[messageTypes.PROJECT_PROPS_SAVED] = function(payload) {
             GEPPETTO.Console.log("Project saved succesfully");
+            if(GEPPETTO.ControlPanel.isOpen()){
+            	GEPPETTO.ControlPanel.refresh();
+            }
+        };
+        
+        messageHandler[messageTypes.SET_PARAMETERS] = function(payload) {
+            GEPPETTO.Console.log("Set parameters succesfully");
+            if(GEPPETTO.ControlPanel.isOpen()){
+            	GEPPETTO.ControlPanel.refresh();
+            }
         };
 
         messageHandler[messageTypes.EXPERIMENT_PROPS_SAVED] = function(payload) {
@@ -218,6 +228,10 @@ define(function(require) {
             //right after, the status changes back to DESIGN from ERROR
             if (experiment.getStatus() != data.status) {
                 experiment.setStatus(data.status);
+            }
+            
+            if(GEPPETTO.ControlPanel.isOpen()){
+            	GEPPETTO.ControlPanel.refresh();
             }
         };
 

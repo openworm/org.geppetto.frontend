@@ -636,6 +636,21 @@ define(function (require) {
                     that.computeResult('visualInstancesFilterBtn');
                 }
             });
+            GEPPETTO.on("control_panel_refresh", function(){
+                // when control panel is open and we are using the filter component
+                // if no other main component is toggled show visual instances
+                if(that.state.stateVarsFilterToggled){
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('stateVariablesFilterBtn');
+                }
+                else if(that.state.paramsFilterToggled){
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('parametersFilterBtn');
+                }else if(that.state.visualFilterToggled){
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('visualInstancesFilterBtn');
+                }
+            });
         },
 
         computeResult: function(controlId){
@@ -1433,7 +1448,12 @@ define(function (require) {
         displayName: 'ControlPanel',
 
         refresh: function() {
-            this.forceUpdate();
+        	var self = this;
+        	var callback = function(){
+                self.forceUpdate();
+                GEPPETTO.trigger("control_panel_refresh");
+        	};
+        	GEPPETTO.ProjectsController.refreshUserProjects(callback);
         },
 
         getInitialState: function () {
@@ -1839,6 +1859,10 @@ define(function (require) {
             }
         },
 
+        isOpen : function(){
+        	return $("#controlpanel").is(':visible');
+        },
+        
         componentDidMount: function () {
             var escape = 27;
             var pKey = 80;

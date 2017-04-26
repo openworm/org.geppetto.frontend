@@ -139,7 +139,23 @@ define(function (require) {
 		open : function(started){
 			var p=$(this.__container).parent();
 			p.show();
-			p.effect("shake", {distance:5, times: 3}, 500);
+			
+			var self = this;
+			var callback = function () {
+				var width =self.getActiveTutorial()["width"];
+				var height =self.getActiveTutorial()["height"];
+				if(height!=undefined){
+					p.height(height+"px");
+					$(self.__container).css("height",height+"px");
+				}
+				if(width!=undefined){
+					p.width(width+"px");
+					$(self.__container).css("width",width+"px");
+				}
+			};
+
+			p.effect("shake", {distance:5, times: 3}, 500, callback);
+			
 		},
 
 		setTutorial : function(tutorialURL){
@@ -225,7 +241,7 @@ define(function (require) {
 	        	dialog.find("div.ui-dialog-titlebar").prepend(button);
 	        	$(button).addClass("widget-title-bar-button");
 	        	$(this.__container).css("overflow","scroll");
-	        	$(this.__container).css("height","93%");
+	        	//$(this.__container).css("height","93%");
         	}
         },
 		
@@ -316,12 +332,17 @@ define(function (require) {
 				var lastStep = this.state.currentStep == activeTutorial.steps.length-1;
 				var lastStepLabel = (this.state.currentStep == activeTutorial.steps.length-1)?"Restart":"";
 				var cookieClass=this.state.currentStep==0?"checkbox-inline cookieTutorial":"hide";
-				
-				if(activeTutorial.height!=undefined){
-					dialog.height(activeTutorial.height+"px");
+
+				var width =this.getActiveTutorial()["width"];
+				var height =this.getActiveTutorial()["height"];
+
+				if(height!=undefined){
+					dialog.height(height+"px");
+					$(this.__container).css("height",height+"px");
 				}
-				if(activeTutorial.width!=undefined){
-					dialog.width(activeTutorial.width+"px");
+				if(width!=undefined){
+					dialog.width(width+"px");
+					$(this.__container).css("width",width+"px");
 				}
 			    
 				return  <div>

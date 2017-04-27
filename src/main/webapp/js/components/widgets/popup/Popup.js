@@ -108,6 +108,9 @@ define(function (require) {
 				GEPPETTO.Console.debugLog("Hooked up custom handlers for " + this.id);
 			}
 
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 
@@ -176,6 +179,10 @@ define(function (require) {
 			if(this.collapsed){
 				this.$el.dialogExtend("collapse");
 			}
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 
@@ -288,6 +295,10 @@ define(function (require) {
 
 			// trigger routine that hooks up handlers
 			hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 		
@@ -321,6 +332,8 @@ define(function (require) {
         
         setButtonBarControls : function(controls){
         	this.buttonBarControls = controls;
+			// track change in state of the widget
+			this.dirtyView = true;
         },
         
         setButtonBarConfiguration : function(configuration){
@@ -340,6 +353,9 @@ define(function (require) {
 					$('.colorpicker-visible').addClass('colorpicker-hidden').removeClass('colorpicker-visible');
 				}
 			});
+
+			// track change in state of the widget
+			this.dirtyView = true;
         },
         
         destroy: function () {
@@ -402,6 +418,9 @@ define(function (require) {
 					this.setButtonBarConfiguration(view.componentSpecific.buttonBarConfig);
 				}
 			}
+
+			// after setting view through setView, reset dirty flag
+			this.dirtyView = false;
 		}
 	});
 });

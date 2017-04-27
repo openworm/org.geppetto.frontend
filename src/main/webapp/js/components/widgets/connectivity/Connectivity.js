@@ -103,6 +103,9 @@ define(function (require) {
             	this.createLayout();	
             }
 
+            // track change in state of the widget
+            this.dirtyView = true;
+
             return this;
         },
 
@@ -448,6 +451,9 @@ define(function (require) {
 
                 this.setData(obj, deserializedOptions);
             }
+
+            // after setting view through setView, reset dirty flag
+            this.dirtyView = false;
         }
     });
 });

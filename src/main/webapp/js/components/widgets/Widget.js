@@ -40,6 +40,7 @@ define(function (require) {
             stateless: false,
             showTitleBar: true,
             transparentBackground: false,
+            dirtyView: false,
 
             defaultSize : function(){return {height: 300, width: 350}},
             defaultPosition : function(){return {left: "50%", top: "50%"}},
@@ -61,6 +62,7 @@ define(function (require) {
                 this.widgetType = options.widgetType;
                 this.stateless = (options.stateless != undefined) ? options.stateless : false;
                 this.registeredEvents = [];
+                this.dirtyView = false;
                 
                 var self = this;
                 $(self.historyMenu.el).on('click', function (event) {
@@ -152,7 +154,10 @@ define(function (require) {
                 this.name = name;
 
                 // set name to widget window
-               this.$el.dialog("option", "title", this.name).dialogExtend();
+                this.$el.dialog("option", "title", this.name).dialogExtend();
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
 
                 return this;
             },
@@ -172,6 +177,10 @@ define(function (require) {
             				at: "left top",
             				of: $(window)
             			}).dialogExtend();
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
             	return this;
             },
 
@@ -186,6 +195,10 @@ define(function (require) {
             	this.size.width = w;
             	this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
             	this.$el.trigger('resizeEnd');
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
             	return this;
             },
 
@@ -270,6 +283,27 @@ define(function (require) {
              */
             getId: function () {
                 return this.id;
+            },
+
+            /**
+             * Did something change in the state of the widget?
+             *
+             * @command isDirty()
+             * @returns {boolean} - ID of widget
+             */
+            isDirty: function () {
+                return this.dirtyView;
+            },
+
+            /**
+             * Explicitly sets status of view
+             * NOTE: we need to be able to control this from outside the component
+             *
+             * @command setDirty()
+             * @param {boolean} dirty
+             */
+            setDirty: function (dirty) {
+                this.dirtyView = dirty;
             },
 
             /**
@@ -388,6 +422,10 @@ define(function (require) {
                 } else {
                    this.$el.parent().find(".ui-dialog-titlebar").hide();
                 }
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
                 return this;
             },
             
@@ -724,6 +762,9 @@ define(function (require) {
                 if(view.transparentBackground != undefined){
                     this.setTrasparentBackground(view.transparentBackground);
                 }
+
+                // after setting view through setView, reset dirty flag
+                this.dirtyView = false;
             }
         })
     };

@@ -174,6 +174,9 @@ define(function (require) {
                 $('[data-toggle="tooltip"]').tooltip()
             });
 
+            // track change in state of the widget
+            this.dirtyView = true;
+
             return this;
         },
 
@@ -258,6 +261,9 @@ define(function (require) {
             if(view.componentSpecific != undefined){
                 this.renderBar(view.componentSpecific.barName, view.componentSpecific.barBody);
             }
+
+            // after setting view through setView, reset dirty flag
+            this.dirtyView = false;
         }
 
     });

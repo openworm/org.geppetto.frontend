@@ -152,9 +152,13 @@ define(function (require) {
 					p.width(width+"px");
 					$(self.__container).css("width",width+"px");
 				}
+				$(self.__container).css("top","30%");
+				$(self.__container).css("left","30%");
 			};
-
-			p.effect("shake", {distance:5, times: 3}, 500, callback);
+			
+			if(!started){
+				p.effect("shake", {distance:5, times: 3}, 500, callback);
+			}
 			
 		},
 

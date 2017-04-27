@@ -367,9 +367,12 @@ define(['backbone'], function (require) {
             var views = undefined;
 
             if(viewsString != undefined){
-                views = JSON.parse(viewsString);
+            	if(viewsString.members!=undefined){
+            		if(viewsString.members.views!=undefined){
+                		views = viewsString.members;
+                	}
+            	}
             }
-
             return views;
         },
 

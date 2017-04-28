@@ -51,8 +51,7 @@ define(function (require) {
 	$.cookie=require('js-cookie');
 	
 	var Tutorial = React.createClass({
-		
-		/**
+				/**
 		 * Stores cookie to avoid showing tutorial next time at startup
 		 */
 		dontShowAtStartup: function(val){
@@ -178,7 +177,7 @@ define(function (require) {
 				dataType: 'json',
 				url: tutorialURL,
 				success: function (responseData, textStatus, jqXHR) {
-					self.loadTutorial(responseData);
+					self.loadTutorial(responseData, false);
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
@@ -186,13 +185,15 @@ define(function (require) {
 			});
 		},
 		
-		loadTutorial : function(tutorialData){
+		loadTutorial : function(tutorialData,start){
 			this.state.tutorialData[tutorialData.name] = tutorialData; 
 			this.state.activeTutorial=tutorialData.name;
 			this.state.currentStep=0;
-			this.forceUpdate();
 			if(!this.getCookie()){
-				this.start();
+				if(start){
+					this.forceUpdate();
+					this.start();
+				}
 			}
 		},
 		
@@ -269,7 +270,7 @@ define(function (require) {
 						self.addTutorial(self.props.tutorialURL);
 					}
 					else if(self.props.tutorialData){
-						self.loadTutorial(self.props.tutorialData);
+						self.loadTutorial(self.props.tutorialData,true);
 					}
 					self.dontShowTutorial = true;
 				}

@@ -532,39 +532,6 @@ define(function (require) {
                 return true;
             },
 
-            toggleMaterial: function(instance, threeMaterial) {
-                var meshes = this.getRealMeshesForInstancePath(instance.getPath());
-                if (meshes.length == 0) {
-                    var children = instance.getChildren();
-                    for (var i=0; i<children.length; ++i)
-                        GEPPETTO.SceneController.toggleMaterial(children[i], threeMaterial);
-                }
-                if (threeMaterial === undefined) {
-                    var threeMaterial = this.getMaterial(instance) == "MeshPhongMaterial" ?
-                        THREE.MeshBasicMaterial : THREE.MeshPhongMaterial;
-                }
-
-                for (var i=0; i<meshes.length; ++i) {
-                    var mesh = meshes[i];
-                    var defaultColor = mesh.material.defaultColor;
-                    var color = mesh.material.color.getHex();
-                    var defaultOpacity = mesh.material.defaultOpacity;
-                    var selected = mesh.selected;
-                    var ghosted = mesh.ghosted;
-                    mesh.material = new threeMaterial({ color: color });
-                    mesh.material.defaultColor = defaultColor;
-                    mesh.material.defaultOpacity = defaultOpacity;
-                    mesh.material.selected = selected;
-                    mesh.material.ghosted = ghosted;
-                    mesh.geometry.uvsNeedsUpdate = true;
-                }
-            },
-
-            getMaterial: function(instance) {
-                var meshes = this.getRealMeshesForInstancePath(instance.getPath());
-                return meshes.map(function(x) { return x.material.type });
-            },
-
             /**
              * Set the type of geometry used to visualize all the instances in the scene
              * @param type - The geometry type either "lines", "tubes" or "cylinders"

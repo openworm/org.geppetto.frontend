@@ -92,20 +92,20 @@ define(function(require) {
         render: function () {
             return (
             	<div className="position-toolbar">
-                    <button id="panLeftBtn" className="btn squareB fa fa-chevron-left pan-left" onClick={this.panLeft}></button>
-                    <button id="panUpBtn" className="btn squareB fa fa-chevron-up pan-top" onClick={this.panUp}></button>
-                    <button id="panRightBtn" className="btn squareB fa fa-chevron-right pan-right" onClick={this.panRight}></button>
-                    <button id="panDownBtn" className="btn squareB fa fa-chevron-down pan-bottom" onClick={this.panDown}></button>
-                    <button id="panHomeBtn" className="btn squareB fa fa-home pan-home" onClick={this.cameraHome}></button>
+                    <button id="panLeftBtn" className="btn squareB fa fa-chevron-left pan-left" onClick={this.panLeft} title="Pan Left"></button>
+                    <button id="panUpBtn" className="btn squareB fa fa-chevron-up pan-top" onClick={this.panUp} title="Pan Up"></button>
+                    <button id="panRightBtn" className="btn squareB fa fa-chevron-right pan-right" onClick={this.panRight} title="Pan Right"></button>
+                    <button id="panDownBtn" className="btn squareB fa fa-chevron-down pan-bottom" onClick={this.panDown} title="Pan Down"></button>
+                    <button id="panHomeBtn" className="btn squareB fa fa-home pan-home" onClick={this.cameraHome} title="Reset to Home Position"></button>
 
-                    <button id="rotateLeftBtn" className="btn squareB fa fa-undo rotate-left" onClick={this.rotateLeft}></button>
-                    <button id="rotateUpBtn" className="btn squareB fa fa-repeat rotate90 rotate-top" onClick={this.rotateUp}></button>
-                    <button id="rotateRightBtn" className="btn squareB fa fa-repeat rotate-right" onClick={this.rotateRight}></button>
-                    <button id="rotateDownBtn" className="btn squareB fa fa-undo rotate90 rotate-bottom" onClick={this.rotateDown}></button>
-                    <button id="rotateBtn" className="btn squareB fa fa-video-camera rotate-home" onClick={this.rotate}></button>
+                    <button id="rotateLeftBtn" className="btn squareB fa fa-undo rotate-left" onClick={this.rotateLeft} title="Rotate Left"></button>
+                    <button id="rotateUpBtn" className="btn squareB fa fa-repeat rotate90 rotate-top" onClick={this.rotateUp} title="Rotate Up"></button>
+                    <button id="rotateRightBtn" className="btn squareB fa fa-repeat rotate-right" onClick={this.rotateRight} title="Rotate Right"></button>
+                    <button id="rotateDownBtn" className="btn squareB fa fa-undo rotate90 rotate-bottom" onClick={this.rotateDown} title="Rotate Down"></button>
+                    <button id="rotateBtn" className="btn squareB fa fa-video-camera rotate-home" onClick={this.rotate} title="Rotate the scene"></button>
 
-                    <button id="zoomInBtn" className="btn squareB fa fa-search-plus zoom-in" onClick={this.zoomIn}></button>
-                    <button id="zoomOutBtn" className="btn squareB fa fa-search-minus zoom-out" onClick={this.zoomOut}></button>
+                    <button id="zoomInBtn" className="btn squareB fa fa-search-plus zoom-in" onClick={this.zoomIn} title="Zoom In"></button>
+                    <button id="zoomOutBtn" className="btn squareB fa fa-search-minus zoom-out" onClick={this.zoomOut} title="Zoom Out"></button>
                 </div>
 
             );

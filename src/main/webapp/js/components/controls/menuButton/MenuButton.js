@@ -34,9 +34,7 @@ define(function (require) {
             };
         },
 
-        select: function () {
-            this.props.handleSelect(this.props.item.value, this.props.item.radio);
-
+        select: function (indirect) {
             var iconState = this.icons.default;
             var action = null;
 
@@ -63,11 +61,12 @@ define(function (require) {
             }
 
             // execute action
-            if(action != null){
+            if(action != null && indirect != true){
                 GEPPETTO.Console.executeImplicitCommand(action);
             }
 
             this.setState({icon: iconState});
+            this.props.handleSelect(this.props.item.value, this.props.item.radio);
         },
 
         componentDidMount: function () {
@@ -84,8 +83,8 @@ define(function (require) {
         		try {
         		    condition = eval(this.props.item.condition);
         		} catch(e){
-                            condition = false; // condition may depend on something loaded asynch
-        		    // throw( "Could not evaluate condition [" + this.props.item.condition + "]" );
+                            condition = false; // condition may depend on something being loaded async
+        			//throw( "Could not evaluate condition [" + this.props.item.condition + "]" );
         		}
 
         		if(typeof(condition) === "boolean"){
@@ -166,7 +165,8 @@ define(function (require) {
                     if ((ref.props.item.value != value) &&
                         (ref.state.icon == ref.icons.checked) &&
                         ref.props.item.radio) {
-                        ref.select();
+                        ref.select(true);
+                        this.forceUpdate();
                     }
                 }
             }

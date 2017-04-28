@@ -48,9 +48,16 @@ define(function (require) {
             isBrightnessFunctionSet: function() {
                 return this.brightnessFunctionSet;
             },
-            
-            addWidget: function (type) {
-                var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
+
+            /**
+             * Adds widgets to Geppetto
+             *
+             * @param type
+             * @param isStateless
+             * @returns {*}
+             */
+            addWidget: function (type, isStateless) {
+                var newWidget = GEPPETTO.WidgetFactory.addWidget(type, isStateless);
                 return newWidget;
             },
 
@@ -176,8 +183,22 @@ define(function (require) {
                 return GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/pages/geppetto/G.js", GEPPETTO.G, "G");
             },
 
+            /**
+             * Sets idle timeout, -1 for no timeout
+             *
+             * @param timeOut
+             */
             setIdleTimeOut: function (timeOut) {
                 GEPPETTO.Main.idleTime = timeOut;
+            },
+
+            /**
+             * Enables Geppetto local storage features (persist views with no db)
+             *
+             * @param enabled
+             */
+            enableLocalStorage: function (enabled) {
+                GEPPETTO.Main.localStorageEnabled = enabled;
             },
 
             /**
@@ -265,7 +286,7 @@ define(function (require) {
             
             toggleTutorial : function() {
             	 var returnMessage;
-            	 var modalVisible = $('#tutorial').is(':visible');
+            	 var modalVisible = $('#tutorial_dialog').is(':visible');
             	 
                  if (modalVisible) {
                 	 GEPPETTO.trigger(GEPPETTO.Events.Hide_Tutorial);
@@ -456,7 +477,9 @@ define(function (require) {
              * @param {Instance} node - node to which callbacks are coupled
              */
             clearOnNodeUpdateCallback: function (node) {
-                this.listeners[node.getInstancePath()] = null;
+                for (var listener in this.listeners)
+                    if (listener.startsWith(node.getInstancePath()))
+                        GEPPETTO.G.listeners[listener] = null;
             },
 
             /**
@@ -506,9 +529,6 @@ define(function (require) {
              */
             addBrightnessFunctionBulkSimplified: function (instances, colorfn) {
             	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
-                for (var i=0; i<instances.length; ++i){
-                    this.litUpInstances.push(instances[i]);
-                }
             	var compositeToLit={};
             	var visualObjectsToLit={};
             	var variables={};
@@ -539,7 +559,8 @@ define(function (require) {
 
             		if(multicompartment){
                             for (var j=0; j<composite.getChildren().length; ++j){
-                                visualObjectsToLit[currentCompositePath].push(composite.getChildren()[j].getId());
+                                if (instances.filter((x) => x.getPath().startsWith(composite.getChildren()[j].getPath())).length > 0)
+                                    visualObjectsToLit[currentCompositePath].push(composite.getChildren()[j].getId());
                             }
             		}
             		variables[currentCompositePath].push(instances[i]);
@@ -579,6 +600,8 @@ define(function (require) {
              * @param {Function} colorfn - Converts time-series value to [r,g,b]
              */
             addBrightnessFunctionBulk: function (instance, visualObjects, stateVariableInstances, colorfn) {
+                this.litUpInstances.push(instance);
+
             	var modulations = [];
             	if (visualObjects != null){
             		if (visualObjects.length > 0 ){
@@ -599,9 +622,7 @@ define(function (require) {
             	//statevariableinstances come out of order, needs to sort into map to avoid nulls
             	for (var index in modulations){
                     for(var i in stateVariableInstances){
-                         if(stateVariableInstances[i].getParent().getInstancePath()==modulations[index]){
-                             matchedMap[modulations[index]]=stateVariableInstances[i];
-                         }
+                        matchedMap[modulations[index]] = stateVariableInstances[i];
                     }
                	}
             	

@@ -24,7 +24,7 @@ define(function (require) {
              *            skeleton with instances and visual entities
              */
             buildScene: function (instances) {
-                GEPPETTO.SceneController.traverseInstances(instances);
+                GEPPETTO.SceneController.traverseInstances(instances, GEPPETTO.Resources.GeometryTypes.CYLINDER);
                 GEPPETTO.getVARS().scene.updateMatrixWorld(true);
             },
 
@@ -53,9 +53,9 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            traverseInstances: function (instances, lines, thickness) {
+            traverseInstances: function (instances, geometry, thickness) {
                 for (var j = 0; j < instances.length; j++) {
-                    GEPPETTO.SceneController.checkVisualInstance(instances[j], lines, thickness);
+                    GEPPETTO.SceneController.checkVisualInstance(instances[j], geometry, thickness);
                 }
             },
 
@@ -65,17 +65,17 @@ define(function (require) {
              * @param instances -
              *            skeleton with instances and visual entities
              */
-            checkVisualInstance: function (instance, lines, thickness) {
+            checkVisualInstance: function (instance, geometry, thickness) {
                 if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                     //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
                     if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
-                        GEPPETTO.SceneFactory.buildVisualInstance(instance, lines, thickness);
+                        GEPPETTO.SceneFactory.buildVisualInstance(instance, geometry, thickness);
                     }
                     // this block keeps traversing the instances
                     if (instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
-                        GEPPETTO.SceneController.traverseInstances(instance.getChildren(), lines, thickness);
+                        GEPPETTO.SceneController.traverseInstances(instance.getChildren(), geometry, thickness);
                     } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                        GEPPETTO.SceneController.traverseInstances(instance, lines, thickness);
+                        GEPPETTO.SceneController.traverseInstances(instance, geometry, thickness);
                     }
                 }
             },
@@ -100,15 +100,25 @@ define(function (require) {
              */
             lightUpEntity: function (instance, colorfn, intensity) {
                 var threeObject;
-                if (instance in GEPPETTO.getVARS().meshes) {
-                    threeObject = GEPPETTO.getVARS().meshes[instance];
+                if (instance in GEPPETTO.getVARS().splitMeshes) {
+                    // ensure we light up children as well if mesh is split
+                    threeObject = Object.keys(GEPPETTO.getVARS().splitMeshes)
+                        .filter((x) => x.startsWith(instance))
+                        .reduce((objs,k) => {
+                            objs.push(GEPPETTO.getVARS().splitMeshes[k]);
+                            return objs;
+                        }, [])
                 }
                 else {
-                    threeObject = GEPPETTO.getVARS().splitMeshes[instance];
+                    threeObject = GEPPETTO.getVARS().meshes[instance];
                 }
 
                 var [r,g,b] = colorfn(intensity);
-                threeObject.material.color.setRGB(r,g,b);
+
+                if (threeObject.length > 0)
+                    threeObject.map((x) => x.material.color.setRGB(r,g,b));
+                else
+                    threeObject.material.color.setRGB(r,g,b);
             },
 
             /**
@@ -264,7 +274,11 @@ define(function (require) {
                 }
                 else {
                     if (instancePath in GEPPETTO.getVARS().meshes) {
-                        meshes.push(GEPPETTO.getVARS().meshes[instancePath]);
+                        var instanceMeshes = GEPPETTO.getVARS().meshes[instancePath];
+                        if (instanceMeshes.length > 0)
+                            meshes = meshes.concat(instanceMeshes);
+                        else
+                            meshes.push(instanceMeshes);
                     }
                 }
                 return meshes;
@@ -514,20 +528,41 @@ define(function (require) {
              *            thickness - Optional: the thickness to be used if the geometry is "lines"
              */
             setGeometryType: function (instance, type, thickness) {
-                var lines = false;
-                if (type === GEPPETTO.Resources.GeometryTypes.LINES) {
-                    lines = true;
-                } else if (type === GEPPETTO.Resources.GeometryTypes.TUBES) {
-                    lines = false
-                } else if (type === GEPPETTO.Resources.GeometryTypes.CYLINDERS) {
-                    lines = false
-                } else {
-                    return false;
+		this.traverseInstances([instance], type, thickness);
+                return true;
+            },
+
+            toggleMaterial: function(instance, threeMaterial) {
+                var meshes = this.getRealMeshesForInstancePath(instance.getPath());
+                if (meshes.length == 0) {
+                    var children = instance.getChildren();
+                    for (var i=0; i<children.length; ++i)
+                        GEPPETTO.SceneController.toggleMaterial(children[i], threeMaterial);
+                }
+                if (threeMaterial === undefined) {
+                    var threeMaterial = this.getMaterial(instance) == "MeshPhongMaterial" ?
+                        THREE.MeshBasicMaterial : THREE.MeshPhongMaterial;
                 }
 
-                this.traverseInstances([instance], lines, thickness);
+                for (var i=0; i<meshes.length; ++i) {
+                    var mesh = meshes[i];
+                    var defaultColor = mesh.material.defaultColor;
+                    var color = mesh.material.color.getHex();
+                    var defaultOpacity = mesh.material.defaultOpacity;
+                    var selected = mesh.selected;
+                    var ghosted = mesh.ghosted;
+                    mesh.material = new threeMaterial({ color: color });
+                    mesh.material.defaultColor = defaultColor;
+                    mesh.material.defaultOpacity = defaultOpacity;
+                    mesh.material.selected = selected;
+                    mesh.material.ghosted = ghosted;
+                    mesh.geometry.uvsNeedsUpdate = true;
+                }
+            },
 
-                return true;
+            getMaterial: function(instance) {
+                var meshes = this.getRealMeshesForInstancePath(instance.getPath());
+                return meshes.map(function(x) { return x.material.type });
             },
 
             /**
@@ -979,6 +1014,9 @@ define(function (require) {
 
                 // retrieve the merged mesh
                 var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
+
+                if (!(mergedMesh.length > 0))
+                    mergedMesh = [mergedMesh]
                 // create object to hold geometries used for merging objects in
                 // groups
                 var geometryGroups = {};
@@ -999,8 +1037,10 @@ define(function (require) {
                     geometryGroups[groupName] = geometry;
                 }
 
+                for (var i=0; i<mergedMesh.length; ++i) {
+
                 // get map of all meshes that merged mesh was merging
-                var map = mergedMesh.mergedMeshesPaths;
+                var map = mergedMesh[i].mergedMeshesPaths;
 
                 // flag for keep track what visual objects were added to group
                 // meshes already
@@ -1048,6 +1088,8 @@ define(function (require) {
                     }
                 }
 
+                }
+
                 groupElements[instancePath] = {};
                 groupElements[instancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
                 GEPPETTO.SceneController.createGroupMeshes(instancePath, geometryGroups, groupElements);
@@ -1086,9 +1128,13 @@ define(function (require) {
              */
             createGroupMeshes: function (instancePath, geometryGroups, groups) {
                 var mergedMesh = GEPPETTO.getVARS().meshes[instancePath];
+                if (!(mergedMesh.length > 0))
+                    mergedMesh = [mergedMesh]
+
+                for (var i=0; i<mergedMesh.length; ++i) {
                 // switch visible flag to false for merged mesh and remove from scene
-                mergedMesh.visible = false;
-                GEPPETTO.getVARS().scene.remove(mergedMesh);
+                mergedMesh[i].visible = false;
+                GEPPETTO.getVARS().scene.remove(mergedMesh[i]);
 
                 for (g in groups) {
                     var groupName = g;
@@ -1099,7 +1145,7 @@ define(function (require) {
                     var groupMesh = GEPPETTO.getVARS().splitMeshes[groupName];
                     var geometryGroup = geometryGroups[groupName];
 
-                    if (mergedMesh instanceof THREE.Line) {
+                    if (mergedMesh[i] instanceof THREE.Line) {
                         var material = GEPPETTO.SceneFactory.getLineMaterial();
                         groupMesh = new THREE.LineSegments(geometryGroup, material);
                     } else {
@@ -1109,23 +1155,24 @@ define(function (require) {
                     groupMesh.instancePath = instancePath;
                     groupMesh.geometryIdentifier = g;
                     groupMesh.geometry.dynamic = false;
-                    groupMesh.position.copy(mergedMesh.position);
+                    groupMesh.position.copy(mergedMesh[i].position);
 
 
                     GEPPETTO.getVARS().splitMeshes[groupName] = groupMesh;
 
                     // Update visualization feature for a mesh
-                    if (mergedMesh.ghosted) {
+                    if (mergedMesh[i].ghosted) {
                         GEPPETTO.SceneController.ghostEffect([groupMesh], true);
                     }
-                    if (mergedMesh.selected) {
+                    if (mergedMesh[i].selected) {
                         GEPPETTO.SceneController.selectInstance(groupName);
                     }
-                    groupMesh.selected = mergedMesh.selected;
+                    groupMesh.selected = mergedMesh[i].selected;
 
                     // add split mesh to scenne and set flag to visible
                     groupMesh.visible = true;
                     GEPPETTO.getVARS().scene.add(groupMesh);
+                }
                 }
             },
 

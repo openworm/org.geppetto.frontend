@@ -82,9 +82,10 @@ define(function (require) {
         		// evaluate condition
         		var condition = null;
         		try {
-        			condition = eval(this.props.item.condition);
+        		    condition = eval(this.props.item.condition);
         		} catch(e){
-        			throw( "Could not evaluate condition [" + this.props.item.condition + "]" );
+                            condition = false; // condition may depend on something loaded asynch
+        		    // throw( "Could not evaluate condition [" + this.props.item.condition + "]" );
         		}
 
         		if(typeof(condition) === "boolean"){

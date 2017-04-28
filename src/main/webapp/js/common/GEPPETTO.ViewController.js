@@ -90,19 +90,33 @@ define(function(require)
                 for(var c in components){
                     // call getView API if the method is exposed and the component is not stateless
                     if(
+                        // check if state-view API is implemented by the component
                         typeof components[c].getView == 'function' &&
+                        // check that component is not stateless
                         components[c].stateless != undefined &&
-                        !components[c].stateless
+                        !components[c].stateless &&
+                        // check if view is dirty so only dirty views get added
+                        components[c].isDirty()
                     ) {
                         // build object literal with view state for all the widgets/components
                         viewState.views[c] = components[c].getView();
+                        // reset view as clean so we don't keep retrieving the same view if nothing changed
+                        components[c].setDirty(false);
                     }
                 }
 
                 // set view on experiment or project
-                if(window.Project.getActiveExperiment()!=null && window.Project.getActiveExperiment()!=undefined){
+                if(
+                    window.Project.getActiveExperiment()!=null &&
+                    window.Project.getActiveExperiment()!=undefined &&
+                    // check if any views were added
+                    Object.keys(viewState.views).length > 0
+                ){
                     window.Project.getActiveExperiment().setView(viewState);
-                } else {
+                } else if (
+                    // check if any views were added
+                    Object.keys(viewState.views).length > 0
+                ){
                     window.Project.setView(viewState);
                 }
             }

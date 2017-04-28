@@ -396,8 +396,10 @@ define(function (require) {
 			this.xVariable = window.time;
 			if(plotable){
 			    this.plotGeneric();
-				}				
-			
+			}
+
+			// track change in state of the widget
+			this.dirtyView = true;
 			
 			return this;
 		},
@@ -979,6 +981,10 @@ define(function (require) {
 				//Set title to widget
 				this.setName(plotTitle);
 			}
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 
@@ -1050,6 +1056,10 @@ define(function (require) {
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
 			this.initialized = true;
 			this.resize();
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 		
@@ -1124,6 +1134,10 @@ define(function (require) {
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
             this.updateAxis(dataY.getInstancePath());
             this.resize();
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 
@@ -1196,6 +1210,9 @@ define(function (require) {
 					}
 				}
 			}
+
+			// after setting view through setView, reset dirty flag
+			this.dirtyView = false;
 		}
 
 	});

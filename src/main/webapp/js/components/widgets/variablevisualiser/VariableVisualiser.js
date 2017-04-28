@@ -89,6 +89,10 @@ define(function (require) {
 
             this.setHeader(this.variable.name);
             this.updateVariable(0, false);
+
+            // track change in state of the widget
+            this.dirtyView = true;
+
             return "Variable visualisation added to widget";
         },
 
@@ -174,6 +178,9 @@ define(function (require) {
                 var variable = eval(view.data);
                 this.setVariable(variable);
             }
+
+            // after setting view through setView, reset dirty flag
+            this.dirtyView = false;
         }
     });
 });

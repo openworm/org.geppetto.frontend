@@ -153,8 +153,10 @@ define(function (require) {
 					$(self.__container).css("width",width+"px");
 				}
 			};
-
-			p.effect("shake", {distance:5, times: 3}, 500, callback);
+			
+			if(!started){
+				p.effect("shake", {distance:5, times: 3}, 500, callback);
+			}
 			
 		},
 
@@ -241,8 +243,18 @@ define(function (require) {
 	        	dialog.find("div.ui-dialog-titlebar").prepend(button);
 	        	$(button).addClass("widget-title-bar-button");
 	        	$(this.__container).css("overflow","scroll");
-	        	//$(this.__container).css("height","93%");
         	}
+        	
+        	
+        	//centers the tutorials
+        	var screenWidth = $( window ).width();
+			var screenHeight = $( window ).height();
+			
+			var left = (screenWidth/2) - ($(this.__container).parent().width()/2);
+			var top = (screenHeight/2) - ($(this.__container).parent().height()/2);
+			
+			$(this.__container).parent().css("top",top+"px");
+			$(this.__container).parent().css("left",left+"px");
         },
 		
 		componentDidMount:function(){

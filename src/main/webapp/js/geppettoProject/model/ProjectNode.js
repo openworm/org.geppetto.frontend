@@ -369,7 +369,6 @@ define(['backbone'], function (require) {
             if(viewsString != undefined){
                 views = JSON.parse(viewsString);
             }
-
             return views;
         },
 

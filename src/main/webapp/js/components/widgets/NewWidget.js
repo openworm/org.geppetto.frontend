@@ -544,10 +544,10 @@ define(function (require) {
                         },
                         "maximize" : function(evt, dlg) {
                             that.setTrasparentBackground(false);
-                            $(this).trigger('resizeEnd');
                             var divheight = $(window).height();
                             var divwidth = $(window).width();
                             that.$el.dialog({ height: divheight, width: divwidth });
+                            $(this).trigger('resizeEnd');
                             that.maximize = true;
                         },
                         "restore" : function(evt, dlg) {

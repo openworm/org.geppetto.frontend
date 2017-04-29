@@ -264,18 +264,12 @@ define(function (require) {
                     }
                 }, false);
 
-
-
-                $("#" + this.props.id).on("dialogresizestop", function (event, ui) {
-                    var height=ui.size.height-40;
-                    var width=ui.size.width-30;
-                    $(that.container).height(height);
-                    $(that.container).width(width);
+                $("#" + this.props.id).on("dialogresizestop resizeEnd", function (event, ui) {
+                    var [width, height] = that.setContainerDimensions()
                     that.camera.aspect = width / height;
                     that.camera.updateProjectionMatrix();
                     that.renderer.setSize(width, height);
                     that.composer.setSize(width, height);
-
                 });
 
                 this.renderer.domElement.addEventListener('mousemove', function (event) {
@@ -288,6 +282,17 @@ define(function (require) {
             }
         },
 
+        /**
+         * Set container dimensions depending on parent dialog
+         */
+        setContainerDimensions: function(){
+            var containerSelector = $(this.container);
+            var height=containerSelector.parent().height()-40
+            var width=containerSelector.parent().width()-30
+            containerSelector.height(height);
+            containerSelector.width(width);
+            return [width, height];
+        },
 
         /**
          * Reset camera for scene.
@@ -568,10 +573,8 @@ define(function (require) {
                 Detector.addGetWebGLMessage();
             } else {
                 this.factory = new SceneFactory(this);
-                var containerSelector = $("#" + this.props.id + "_component");
-                containerSelector.height(containerSelector.parent().height()-40);
-                containerSelector.width(containerSelector.parent().width()-30);
-                this.container = containerSelector.get(0);
+                this.container = $("#" + this.props.id + "_component").get(0);
+                this.setContainerDimensions();
                 this.setupScene();
                 this.setupCamera();
                 this.setupRenderer();

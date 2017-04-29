@@ -39,7 +39,8 @@ define(function (require) {
 		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
 		var addWidget = require('./widgets/NewWidget.js');
-		
+		var _widgets = {};
+
 		//All the components potentially instantiable go here
 		var components = {
 			'FORM':'interface/form/Form',
@@ -69,7 +70,7 @@ define(function (require) {
 			'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
 			'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
 			'CAROUSEL': 'interface/carousel/Carousel',
-			'3DCANVAS': 'interface/3dCanvas/Canvas',
+			'CANVAS3D': 'interface/3dCanvas/Canvas',
 			//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 		}
 		
@@ -91,11 +92,138 @@ define(function (require) {
 				
 			},
 
+			camelize: function(str) {
+				return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+					if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
+					return index == 0 ? match.toUpperCase() : match.toLowerCase();
+				});
+			},
+
+
+			/**
+             * Get an available id for an specific widget
+             *
+             * @module WidgetUtility
+             * @param {String} prefix
+             * @param {Array} widgetsList
+             * @returns {String} id - Available id for a widget
+             */
+            getAvailableWidgetId: function (prefix, widgetsList) {
+                var index = 0;
+                var id = "";
+                var available;
+
+                do {
+                    index++;
+                    id = prefix + index;
+                    available = true;
+
+                    for (var p in widgetsList) {
+                        if (widgetsList[p].getId().toUpperCase() == id.toUpperCase()) {
+                            available = false;
+                            break;
+                        }
+                    }
+                }
+                while (available == false);
+
+                return this.camelize(id);
+            },
+
+			/**
+             * Get the comments of a given widget file through an Ajax call. This is used to extract the comments on the methods
+             * and visualize them when using the help command.
+             *
+             * @param {String} file
+             */
+            getFileComments: function (file) {
+				// var comments = "";
+                // if (comments.length == 0) {
+                    var comments = [];
+                    //retrieve the script to get the comments for all the methods
+                    $.ajax({
+                        async: false,
+                        type: 'GET',
+                        url: file,
+                        dataType: "text",
+                        //at success, read the file and extract the comments
+                        success: function (data) {
+                            var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+                            comments = data.match(STRIP_COMMENTS);
+                        },
+                        error: function () {
+                            console.log('error fetching file with Ajax request');
+                        }
+                    });
+
+                    // comments = fetchedComments;
+                // }
+                return comments;
+            },
+
 			addWidget: function(componentID, properties, callback){
+				
+				if (!("id" in properties)){
+					var widgetsList = [];
+					if(componentID in _widgets){
+						widgetsList = _widgets[componentID].widgets;
+					}
+					else{
+						_widgets[componentID] = {widgets: [], comments: this.getFileComments("geppetto/js/components/" + components[componentID] + ".js")}
+					}
+					properties["id"] = this.getAvailableWidgetId(componentID, widgetsList);
+
+					
+					
+				}
+
+
 				var that=this;
 				require(["./" + components[componentID]], function(loadedModule){
 					var component = React.createFactory(addWidget(loadedModule))(properties);
-					var renderedComponent = that.renderComponent(component, document.getElementById('widgetContainer'), callback);
+					var renderedComponent = window[properties.id] = that.renderComponent(component, document.getElementById('widgetContainer'), callback);
+					_widgets[componentID].widgets.push(renderedComponent);
+					GEPPETTO.Console.updateHelpCommand(renderedComponent, properties.id, _widgets[componentID].comments);
+					GEPPETTO.Console.updateTags(properties.id, renderedComponent);
+
+					//registers remove handler for widget
+					renderedComponent.$el.on("remove", function () {
+						
+						console.log('Pako');
+						//remove tags and delete object upon destroying widget
+						GEPPETTO.Console.removeCommands(properties.id);
+						var widgetsList = _widgets[componentID].widgets;
+						for (var p in widgetsList) {
+							if (widgetsList[p].getId() == this.id) {
+								widgetsList.splice(p, 1);
+								break;
+							}
+						}
+					});
+
+					//register resize handler for widget
+					renderedComponent.$el.on("dialogresizestop", function (event, ui) {
+
+						var height = ui.size.height;
+						var width = ui.size.width;
+
+						GEPPETTO.Console.executeImplicitCommand(properties.id + ".setSize(" + height + "," + width + ")");
+
+						var left = ui.position.left;
+						var top = ui.position.top;
+
+						window[properties.id].setPosition(left, top);
+					});
+
+					// //register drag handler for widget
+					renderedComponent.$el.on("dialogdragstop", function (event, ui) {
+
+						var left = ui.position.left;
+						var top = ui.position.top;
+
+						GEPPETTO.Console.executeImplicitCommand(properties.id + ".setPosition(" + left + "," + top + ")");
+					});
+
 					return renderedComponent;
 				});
 			},

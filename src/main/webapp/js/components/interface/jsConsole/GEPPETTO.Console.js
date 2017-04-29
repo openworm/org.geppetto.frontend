@@ -591,7 +591,8 @@ define(function (require) {
 
                 var commandsCount = commands.length;
 
-                var proto = object.__proto__;
+                //var proto = object.__proto__;
+                var proto = object;
                 //	find all functions of object Simulation
                 for (var prop in proto) {
                     if (typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
@@ -649,7 +650,7 @@ define(function (require) {
                 }
 
                 if (proto.__proto__ != null) {
-                    GEPPETTO.Console.updateHelpCommand(proto, id, comments);
+                    GEPPETTO.Console.updateHelpCommand(proto.__proto__, id, comments);
                 }
             },
 

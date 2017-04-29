@@ -54,43 +54,43 @@ define(function (require) {
                     GEPPETTO.Console.debugLog('added new observer');
                 }
 
-                //registers remove handler for widget
-                $("#" + widgetID).on("remove", function () {
-                    //remove tags and delete object upon destroying widget
-                    GEPPETTO.Console.removeCommands(widgetID);
+                // //registers remove handler for widget
+                // $("#" + widgetID).on("remove", function () {
+                //     //remove tags and delete object upon destroying widget
+                //     GEPPETTO.Console.removeCommands(widgetID);
 
-                    var widgets = controller.getWidgets();
+                //     var widgets = controller.getWidgets();
 
-                    for (var p in widgets) {
-                        if (widgets[p].getId() == this.id) {
-                            widgets.splice(p, 1);
-                            break;
-                        }
-                    }
-                });
+                //     for (var p in widgets) {
+                //         if (widgets[p].getId() == this.id) {
+                //             widgets.splice(p, 1);
+                //             break;
+                //         }
+                //     }
+                // });
 
-                //register resize handler for widget
-                $("#" + widgetID).on("dialogresizestop", function (event, ui) {
+                // //register resize handler for widget
+                // $("#" + widgetID).on("dialogresizestop", function (event, ui) {
 
-                    var height = ui.size.height;
-                    var width = ui.size.width;
+                //     var height = ui.size.height;
+                //     var width = ui.size.width;
 
-                    GEPPETTO.Console.executeImplicitCommand(widgetID + ".setSize(" + height + "," + width + ")");
+                //     GEPPETTO.Console.executeImplicitCommand(widgetID + ".setSize(" + height + "," + width + ")");
 
-                    var left = ui.position.left;
-                    var top = ui.position.top;
+                //     var left = ui.position.left;
+                //     var top = ui.position.top;
 
-                    window[widgetID].setPosition(left, top);
-                });
+                //     window[widgetID].setPosition(left, top);
+                // });
 
-                //register drag handler for widget
-                $("#" + widgetID).on("dialogdragstop", function (event, ui) {
+                // //register drag handler for widget
+                // $("#" + widgetID).on("dialogdragstop", function (event, ui) {
 
-                    var left = ui.position.left;
-                    var top = ui.position.top;
+                //     var left = ui.position.left;
+                //     var top = ui.position.top;
 
-                    GEPPETTO.Console.executeImplicitCommand(widgetID + ".setPosition(" + left + "," + top + ")");
-                });
+                //     GEPPETTO.Console.executeImplicitCommand(widgetID + ".setPosition(" + left + "," + top + ")");
+                // });
             },
 
             /**

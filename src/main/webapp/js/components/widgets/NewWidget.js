@@ -37,6 +37,11 @@ define(function (require) {
                     defaultSize: { height: 300, width: 350 },
                     defaultPosition: { left: "50%", top: "50%" }
                 });
+
+            }
+
+            help () {
+                return GEPPETTO.Console.getObjectCommands(this.props.id);
             }
 
             /**
@@ -610,6 +615,7 @@ define(function (require) {
                         that.maximize = true;
                     }
                 });
+
             }
 
             /**
@@ -637,9 +643,9 @@ define(function (require) {
                     'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
             }
 
-            setController(controller) {
-                this.controller = controller;
-            }
+            // setController(controller) {
+            //     this.controller = controller;
+            // }
 
             showHistoryIcon(show) {
                 var that = this;

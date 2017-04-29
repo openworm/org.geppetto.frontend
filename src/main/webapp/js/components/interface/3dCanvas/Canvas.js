@@ -71,6 +71,7 @@ define(function (require) {
 
         /**
          * Sets up the camera that is used to view the objects in the 3D Scene.
+         * @command setupCamera()
          */
         setupCamera: function () {
             // Camera

@@ -106,8 +106,9 @@ public class Application
 	}
 
 	@RequestMapping(value = "/geppetto", method = RequestMethod.GET)
-	public String geppetto(HttpServletRequest req)
+	public String geppetto(HttpServletRequest req, Model model)
 	{
+		model.addAttribute("mainJsPath", "geppetto/build/main.bundle.js");
 		return getGeppetto(req);
 	}
 
@@ -116,6 +117,7 @@ public class Application
 	{
 		InputStream content = Application.class.getResourceAsStream("/build/static/" + page + ".html");
 		model.addAttribute("content", new String(new Scanner(content, "UTF-8").useDelimiter("\\A").next()));
+		model.addAttribute("mainJsPath", "../geppetto/build/main.bundle.js");
 		return getGeppetto(req);
 	}
 	

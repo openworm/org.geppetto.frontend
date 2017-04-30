@@ -68,11 +68,7 @@ module.exports = {
     },
 
     plugins: [
-        new CopyWebpackPlugin(availableExtensions
-//        		[ { from: 'extensions/geppetto-tibs/static/biography.html',
-//            to: 'biography.html' } ]
-        		
-        ),
+        new CopyWebpackPlugin(availableExtensions),
         new HtmlWebpackPlugin({
             filename: 'geppetto.vm',
             template: './js/pages/geppetto/geppetto.ejs',

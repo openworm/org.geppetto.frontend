@@ -60,8 +60,8 @@ class WidgetController {
 
 		//registers remove handler for widget
 		widget.$el.on("remove", function () {
+			//FIXME: Called twice
 			
-			console.log('Pako');
 			//remove tags and delete object upon destroying widget
 			GEPPETTO.Console.removeCommands(widget.getId());
 			var widgetsList = that.widgets;

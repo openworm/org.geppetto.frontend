@@ -50,8 +50,10 @@ define(function (require) {
             },
             
             addWidget: function (type) {
-                var newWidget = GEPPETTO.WidgetFactory.addWidget(type);
+                var newWidget = GEPPETTO.ComponentFactory.addWidget(type);
                 return newWidget;
+                // var newWidget = GEPPETTO.ComponentFactory.addWidget(type);
+                // return newWidget;
             },
 
             /**

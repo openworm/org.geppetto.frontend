@@ -16,6 +16,7 @@ define(function (require) {
         /**
          * Creates base view for widget
          */
+        //https://gist.github.com/aldendaniels/5d94ecdbff89295f4cd6
         return class Widget extends WrappedComponent {
 
             constructor(props) {
@@ -136,8 +137,7 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize(h, w) {
-                this.size.height = h;
-                this.size.width = w;
+                this.size = {height: h, width:w};
                 this.$el.dialog({ height: this.size.height, width: this.size.width }).dialogExtend();
                 this.$el.trigger('resizeEnd');
                 return this;
@@ -489,13 +489,6 @@ define(function (require) {
             }
 
             componentDidMount() {
-                try {
-                    super.componentDidMount();
-                }
-                catch(err) {
-                    console.log('Component does not implement component did mount method')
-                }
-
                 var that = this;
 
                 //create the dialog window for the widget
@@ -616,6 +609,9 @@ define(function (require) {
                     }
                 });
 
+                if (super.componentDidMount) {
+                    super.componentDidMount();
+                }
             }
 
             /**

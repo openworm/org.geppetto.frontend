@@ -838,6 +838,7 @@ define(function (require) {
 				var mathUnit = math.unit(1, unitSymbol);
 
 				var formattedUnitName = (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
+				(mathUnit.units.length > 1) ? formattedUnitName += " OVER " + mathUnit.units[1].unit.base.key : "";
 
 				if (formattedUnitName != "") {
 					formattedUnitName = formattedUnitName.replace(/_/g, " ");

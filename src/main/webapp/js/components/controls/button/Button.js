@@ -83,18 +83,6 @@ define(function(require) {
 		componentDidMount: function() {    		
 			this.attachTooltip();
 			this.props.configuration.eventHandler(this);
-			var self = this;
-			var focused = true;
-
-			window.onfocus = function() {
-			    if(!focused){
-			    	self.hideToolTip();
-			    }
-			    focused = true;
-			};
-			window.onblur = function() {
-			    focused = false;
-			};
 		},
 
 		render:  function () {

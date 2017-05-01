@@ -34,7 +34,7 @@ class WidgetController {
 	constructor(componentID) {
 		this.componentID = componentID;
 		this.widgets = [];
-		this.comments = this.getFileComments("geppetto/js/components/" + GEPPETTO.ComponentFactory.components[componentID] + ".js");
+		this.comments = this.getFileComments();
 		this.history = [];
 		this.WIDGET_EVENT_TYPE = {
 			DELETE: "delete",
@@ -104,27 +104,12 @@ class WidgetController {
 	 * @param {String} file
 	 */
 	getFileComments(file) {
-		// var comments = "";
-		// if (comments.length == 0) {
-			var comments = [];
-			//retrieve the script to get the comments for all the methods
-			$.ajax({
-				async: false,
-				type: 'GET',
-				url: file,
-				dataType: "text",
-				//at success, read the file and extract the comments
-				success: function (data) {
-					var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-					comments = data.match(STRIP_COMMENTS);
-				},
-				error: function () {
-					console.log('error fetching file with Ajax request');
-				}
-			});
-
-			// comments = fetchedComments;
-		// }
+		//var fileContent = require("raw-loader!./" + GEPPETTO.ComponentFactory.components[this.componentID] + ".js");
+		var fileContent = "";
+		
+		var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+		var comments = [];
+		comments = fileContent.match(STRIP_COMMENTS);
 		return comments;
 	}
 

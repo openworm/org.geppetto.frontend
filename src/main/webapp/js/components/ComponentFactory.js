@@ -72,7 +72,14 @@ define(function (require) {
 				'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
 				'CAROUSEL': 'interface/carousel/Carousel',
 				'CANVAS3D': 'interface/3dCanvas/Canvas',
+				'PLOT': 'interface/plot/Plot',
+				'POPUP': 'interface/popup/Popup'
+				
 				//'WIDGETCONTAINER': 'widgets/WidgetContainer'
+			},
+
+			componentsShortcut : {
+				"1": "POPUP"
 			},
 				
 			loadSpinner:function(){
@@ -91,6 +98,12 @@ define(function (require) {
 			},
 
 			addWidget: function(componentID, properties, callback){
+				if (properties === undefined){
+					properties = {};
+				}
+				if (componentID in this.componentsShortcut){
+					componentID = this.componentsShortcut[componentID];
+				}
 
 				var that=this;
 				require(["./" + GEPPETTO.ComponentFactory.components[componentID]], function(loadedModule){

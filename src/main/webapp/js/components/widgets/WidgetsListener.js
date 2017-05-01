@@ -79,6 +79,8 @@ define(function (require) {
                             break;
                         }
                     }
+
+                    GEPPETTO.trigger(GEPPETTO.Events.Component_destroyed, widgetID);
                 });
 
                 //register resize handler for widget

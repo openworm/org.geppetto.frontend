@@ -13,7 +13,6 @@ define(function (require) {
          * @class GEPPETTO.Events
          */
         GEPPETTO.Events = {
-
             Select: "experiment:selection_changed",
 			Visibility_changed : "experiment:visibility_changed",
 			Focus_changed: "experiment:focus_changed",
@@ -55,6 +54,7 @@ define(function (require) {
 			Control_panel_open: "control_panel:open",
 			Control_panel_close: "control_panel:close",
 			Lit_entities_changed: "lit_entities_changed",
+            Component_destroyed: "component_destroyed",
 
             listening: false,
 
@@ -118,8 +118,11 @@ define(function (require) {
                 GEPPETTO.on(this.Lit_entities_changed, function (parameters) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Lit_entities_changed, parameters);
                 });
-		GEPPETTO.on(this.Do_experiment_play, function () {
+		        GEPPETTO.on(this.Do_experiment_play, function () {
                     Project.getActiveExperiment().playAll();
+                });
+                GEPPETTO.on(GEPPETTO.Events.Component_destroyed, function(){
+                    GEPPETTO.ViewController.anyComponentsDestroyed = true;
                 });
             }
         };

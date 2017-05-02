@@ -36,7 +36,7 @@ define(function (require) {
 
 		var WidgetController = require('./WidgetController');
 
-		GEPPETTO.WidgetFactory = {
+		GEPPETTO.NewWidgetFactory = {
 
 			_widgetsControllers : {},
 		

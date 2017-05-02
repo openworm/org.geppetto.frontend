@@ -24,11 +24,13 @@ define(function (require) {
         },
 
         displayAllInstances: function () {
-            //TODO: Implement this which will add all models and start listening when new models are added or removed
-            //ON GEPPETTO.Events.Instances_created
-            //GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
-            //ON GEPPETTO.Events.Instance_deleted
-            //GEPPETTO.SceneController.removeFromScene(instance);
+            var that = this;
+            GEPPETTO.on(GEPPETTO.Events.Instances_created,function(instances){
+    			that.engine.updateSceneWithNewInstances(instances);
+    		});
+            GEPPETTO.on(GEPPETTO.Events.Instance_deleted,function(instance){
+    			that.engine.removeFromScene();
+    		});
             return this;
         },
 

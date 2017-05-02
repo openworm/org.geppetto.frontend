@@ -68,8 +68,8 @@ class WidgetController {
 	 * @param {String} file
 	 */
 	getFileComments(file) {
-		var fileContent = require("raw-loader!./" + GEPPETTO.ComponentFactory.components[this.componentID] + ".js");
-		//var fileContent = "";
+		//var fileContent = require("raw-loader!./" + GEPPETTO.ComponentFactory.components[this.componentID] + ".js");
+		var fileContent = "";
 		
 		var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 		var comments = [];

@@ -663,14 +663,14 @@ define(['jquery'], function () {
             if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
                 for (var v in visualType.getVariables()) {
                     var visualValue = visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
-                    threeDeeObj = this.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
+                    threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
                     if (threeDeeObj) {
                         threeDeeObjList.push(threeDeeObj);
                     }
                 }
             } else {
                 var visualValue = visualType.getWrappedObj().defaultValue;
-                threeDeeObj = this.visualizationTreeNodeTo3DObj(instance, visualValue, visualType.getId(), materials, lines);
+                threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getId(), materials, lines);
                 if (threeDeeObj) {
                     threeDeeObjList.push(threeDeeObj);
                 }
@@ -752,7 +752,7 @@ define(['jquery'], function () {
          * @param lines
          * @returns {*}
          */
-        visualizationTreeNodeTo3DObj: function (instance, node, id, materials, lines) {
+        create3DObjectFromInstance: function (instance, node, id, materials, lines) {
             var threeObject = null;
 
             if (lines === undefined) {
@@ -1405,6 +1405,9 @@ define(['jquery'], function () {
          *            instancePath - Path of aspect of mesh to select
          */
         selectInstance: function (instancePath, geometryIdentifier) {
+            if (!this.hasInstance(instancePath)) {
+                return;
+            }
             var that = this;
             if (geometryIdentifier != undefined && geometryIdentifier != "") {
                 instancePath = instancePath + "." + geometryIdentifier;
@@ -1493,6 +1496,9 @@ define(['jquery'], function () {
          *            instancePath - Path of the mesh/aspect to select
          */
         deselectInstance: function (instancePath) {
+            if (!this.hasInstance(instancePath)) {
+                return;
+            }
             var meshes = this.getRealMeshesForInstancePath(instancePath);
             if (meshes.length > 0) {
                 for (var meshesIndex in meshes) {
@@ -1681,6 +1687,9 @@ define(['jquery'], function () {
          *            instancePath - Instance path of aspect to make visible
          */
         showInstance: function (instancePath) {
+            if (!this.hasInstance(instancePath)) {
+                return;
+            }
             var meshes = this.getRealMeshesForInstancePath(instancePath);
             if (meshes.length > 0) {
                 for (var i = 0; i < meshes.length; i++) {
@@ -1701,6 +1710,9 @@ define(['jquery'], function () {
          *            instancePath - Path of the aspect to make invisible
          */
         hideInstance: function (instancePath) {
+            if (!this.hasInstance(instancePath)) {
+                return;
+            }
             var meshes = this.getRealMeshesForInstancePath(instancePath);
             for (var i = 0; i < meshes.length; i++) {
                 var mesh = meshes[i];
@@ -1719,6 +1731,9 @@ define(['jquery'], function () {
          *            instancePath - Instance path of aspect to change color
          */
         setColor: function (instancePath, color) {
+            if (!this.hasInstance(instancePath)) {
+                return;
+            }
             var meshes = this.getRealMeshesForInstancePath(instancePath);
             if (meshes.length > 0) {
                 for (var i = 0; i < meshes.length; i++) {
@@ -1741,6 +1756,9 @@ define(['jquery'], function () {
          * @param instance
          */
         assignRandomColor: function (instance) {
+            if (!this.hasInstance(instance)) {
+                return;
+            }
             var getRandomColor = function () {
                 var letters = '0123456789ABCDEF';
                 var color = '0x';
@@ -1776,6 +1794,9 @@ define(['jquery'], function () {
         *            instancePath - Instance path of aspect to change opacity for
         */
         setOpacity: function (instancePath, opacity) {
+            if (!this.hasInstance(instancePath)) {
+                return;
+            }
             var mesh = this.meshes[instancePath];
             if (mesh != undefined) {
                 mesh.defaultOpacity = opacity;
@@ -1822,6 +1843,9 @@ define(['jquery'], function () {
          *            thickness - Optional: the thickness to be used if the geometry is "lines"
          */
         setGeometryType: function (instance, type, thickness) {
+            if (!this.hasInstance(instance)) {
+                return;
+            }
             var lines = false;
             if (type === GEPPETTO.Resources.GeometryTypes.LINES) {
                 lines = true;
@@ -1862,6 +1886,9 @@ define(['jquery'], function () {
          * @param instance
          */
         zoomToInstance: function (instance) {
+            if (!this.hasInstance(instance)) {
+                return;
+            }
             this.controls.reset();
 
             var zoomParameters = {};
@@ -1885,7 +1912,9 @@ define(['jquery'], function () {
          *            type - Type of connection, input or output (See GEPPETTO.Resources.INPUT/OUTPUT)
          */
         highlightConnectedInstances: function (instance, type) {
-
+            if (!this.hasInstance(instance)) {
+                return;
+            }
             var inputs = {};
             var outputs = {};
 
@@ -1929,6 +1958,11 @@ define(['jquery'], function () {
             }
         },
 
+        hasInstance: function (instance) {
+            var instancePath = typeof instance == "string" ? instance : instance.getInstancePath();
+            return this.meshes[instancePath] != undefined;
+        },
+
         /**
          * Restore the original colour of the connected instances
          *
@@ -1936,8 +1970,12 @@ define(['jquery'], function () {
          *            instance - A connected instance
          */
         restoreConnectedInstancesColour: function (instance) {
+            if (!this.hasInstance(instance)) {
+                return;
+            }
 
             var connections = instance.getConnections();
+
 
             for (var c = 0; c < connections.length; c++) {
                 var connection = connections[c];
@@ -1945,6 +1983,8 @@ define(['jquery'], function () {
                 var mesh = connection.getA().getPath() == instance.getInstancePath() ?
                     this.meshes[connection.getB().getPath()] :
                     this.meshes[connection.getA().getPath()];
+
+
 
                 // if mesh is not selected, give it ghost or default color and opacity
                 if (!mesh.selected) {

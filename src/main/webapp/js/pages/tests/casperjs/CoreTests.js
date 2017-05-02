@@ -170,7 +170,7 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 	});
 });
 
-function hhcellTest(test){
+function hhcellTest(test,name){
 	casper.then(function () {
 		this.echo("Opening controls panel");
 		this.evaluate(function() {
@@ -188,7 +188,7 @@ function hhcellTest(test){
 
 			casper.evaluate(function(){
 				$("#stateVariablesFilterBtn").click();
-			})
+			});
 
 			casper.wait(500,function(){
 				this.evaluate(function(){
@@ -203,6 +203,50 @@ function hhcellTest(test){
 					});
 					this.echo("I've waited for Plot1 to come up");
 					test.assertEquals(plots, 1,"Amount of plot widgets in existence passed");
+					
+					this.evaluate(function(){
+						$("#anyProjectFilterBtn").click();
+					});
+					
+					this.wait(500,function(){
+						var rows = casper.evaluate(function() {
+							var rows = $(".standard-row").length;
+							return rows;
+						});
+						test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
+						
+						casper.evaluate(function() {
+							$("#controlpanel").hide();
+						});
+						
+						test.assertExists('i.fa-search', "Spotlight button exists")
+						this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
+
+						this.waitUntilVisible('div#spotlight', function () {
+							test.assertVisible('div#spotlight', "Spotlight opened");
+
+							//type in the spotlight
+							this.sendKeys('input#typeahead', "hhcell.hhpop[0].v", {keepFocus: true});
+							//press enter
+							this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
+
+							casper.waitUntilVisible('div#spotlight', function () {
+								casper.then(function () {
+									this.echo("Waiting to see if the Plot variables button becomes visible");
+									casper.waitUntilVisible('button#plot', function () {
+										test.assertVisible('button#plot', "Plot variables icon correctly visible");
+										this.echo("Plot variables button became visible correctly");
+										this.evaluate(function(){
+											$("#plot").click();
+										});
+										this.waitUntilVisible('div[id="Plot2"]', function () {
+											this.echo("Plot 2 came up correctly");
+										});
+									}, null, 8000);
+								});
+							});
+						});
+					});
 				});
 			});
 		}, null, 500);
@@ -242,7 +286,48 @@ function c302Test(test){
 
 					this.waitUntilVisible('div[id="Plot2"]', function () {
 						this.echo("I've waited for Plot2 to come up");
-						test.assertEquals(plots, 2,"Amount of plot widgets in existence passed");
+						this.evaluate(function(){
+							$("#anyProjectFilterBtn").click();
+						});
+						this.wait(500,function(){
+							var rows = casper.evaluate(function() {
+								var rows = $(".standard-row").length;
+								return rows;
+							});
+							test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
+							
+							casper.evaluate(function() {
+								$("#controlpanel").hide();
+							});
+							
+							test.assertExists('i.fa-search', "Spotlight button exists")
+							this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
+
+							this.waitUntilVisible('div#spotlight', function () {
+								test.assertVisible('div#spotlight', "Spotlight opened");
+
+								//type in the spotlight
+								this.sendKeys('input#typeahead', "c302.ADAL[0].v", {keepFocus: true});
+								//press enter
+								this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
+
+								casper.waitUntilVisible('div#spotlight', function () {
+									casper.then(function () {
+										this.echo("Waiting to see if the Plot variables button becomes visible");
+										casper.waitUntilVisible('button#plot', function () {
+											test.assertVisible('button#plot', "Plot variables icon correctly visible");
+											this.echo("Plot variables button became visible correctly");
+											this.evaluate(function(){
+												$("#plot").click();
+											});
+											this.waitUntilVisible('div[id="Plot3"]', function () {
+												this.echo("Plot 3 came up correctly");
+											});
+										}, null, 8000);
+									});
+								});
+							});
+						});
 					});
 				});
 			}, null, 500);
@@ -283,9 +368,41 @@ function acnetTest(test){
 					});
 					this.echo("I've waited for Plot1 to come up");
 					test.assertEquals(plots, 1,"Amount of plot widgets in existence passed");
+					
+					casper.evaluate(function() {
+						$("#controlpanel").hide();
+					});
+					
+					test.assertExists('i.fa-search', "Spotlight button exists")
+					this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
+
+					this.waitUntilVisible('div#spotlight', function () {
+						test.assertVisible('div#spotlight', "Spotlight opened");
+
+						//type in the spotlight
+						this.sendKeys('input#typeahead', "acnet2.pyramidals_48[1].soma_0.v", {keepFocus: true});
+						//press enter
+						this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
+
+						casper.waitUntilVisible('div#spotlight', function () {
+							casper.then(function () {
+								this.echo("Waiting to see if the Plot variables button becomes visible");
+								casper.waitUntilVisible('button#plot', function () {
+									test.assertVisible('button#plot', "Plot variables icon correctly visible");
+									this.echo("Plot variables button became visible correctly");
+									this.evaluate(function(){
+										$("#plot").click();
+									});
+									this.waitUntilVisible('div[id="Plot2"]', function () {
+										this.echo("Plot 2 came up correctly");
+									});
+								}, null, 8000);
+							});
+						});
+					});
 				});
 			});
-		}, null, 500);
+		}, null, 1000);
 	});
 }
 
@@ -297,6 +414,67 @@ function ca1Test(test){
 		test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
 		test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
 		test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial camera controls");
+		
+		casper.then(function () {
+			this.echo("Opening controls panel");
+			this.evaluate(function() {
+				$("#controlPanelBtn").click();
+			});
+
+			this.waitUntilVisible('div#controlpanel', function () {
+				test.assertVisible('div#controlpanel', "The control panel is correctly open.");
+
+				var rows = casper.evaluate(function() {
+					var rows = $(".standard-row").length;
+					return rows;
+				});
+				test.assertEquals(rows, 3, "The control panel opened with right amount of rows");
+
+				this.evaluate(function(){
+					$("#anyProjectFilterBtn").click();
+				});
+
+				this.wait(500,function(){
+					var rows = casper.evaluate(function() {
+						var rows = $(".standard-row").length;
+						return rows;
+					});
+					test.assertEquals(rows, 3, "Correct amount of rows for Global filter");
+					
+					casper.evaluate(function() {
+						$("#controlpanel").hide();
+					});
+					
+					test.assertExists('i.fa-search', "Spotlight button exists")
+					this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
+
+					this.waitUntilVisible('div#spotlight', function () {
+						test.assertVisible('div#spotlight', "Spotlight opened");
+
+						//type in the spotlight
+						this.sendKeys('input#typeahead', "ca1.CA1_CG[0].Seg0_apical_dendrite_22_1158.v", {keepFocus: true});
+						//press enter
+						this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
+
+						casper.waitUntilVisible('div#spotlight', function () {
+							casper.then(function () {
+								this.echo("Waiting to see if the Plot variables button becomes visible");
+								casper.waitUntilVisible('button#plot', function () {
+									test.assertVisible('button#plot', "Plot variables icon correctly visible");
+									this.echo("Plot variables button became visible correctly");
+//									this.evaluate(function(){
+//										$("#plot").click();
+//									});
+//									this.waitUntilVisible('div[id="Plot1"]', function () {
+//										this.echo("Plot 1 came up correctly");
+//									}, null, 20000);
+								}, null, 8000);
+							});
+						});
+					});
+				});
+			}, null, 500);
+		});
 	}, null, 30000);
 }
 

@@ -102,8 +102,8 @@ define(function (require) {
 
 				return this.camelize(id);
 			},
-			
-			addComponent: function(componentType, properties, container, callback){
+
+			_createComponent: function(componentType, properties, container, callback, isWidget){
 				var that=this;
 				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
 					
@@ -114,50 +114,38 @@ define(function (require) {
 						properties["id"] = that.getAvailableComponentId(componentType);
 					}
 					
-					var component = React.createFactory(loadedModule)(properties);
+					var type = loadedModule;
+					if (isWidget){
+						type = addWidget(loadedModule);
+					}
+					var component = React.createFactory(type)(properties);
 					var renderedComponent = window[properties.id] = that.renderComponent(component, container, callback);
 					
 					if (!(componentType in that.componentsMap)){
 						that.componentsMap[componentType] = []
 					}
 					that.componentsMap[componentType].push(renderedComponent);
-					GEPPETTO.Console.updateTags(componentType, renderedComponent);
 
+					if (isWidget){
+						var widgetController = GEPPETTO.NewWidgetFactory.getController(componentType);	
+						widgetController.registerWidget(renderedComponent)
+					}
+					else{
+						GEPPETTO.Console.updateTags(componentType, renderedComponent);
+					}
+					
 					return renderedComponent;
 				});
-				
+			},
+			
+			addComponent: function(componentType, properties, container, callback){
+				this._createComponent(componentType, properties, container, callback, false);
 			},
 			
 			addWidget: function(componentType, properties, callback){
 				
 				if (componentType in this.components){
-
-					var that=this;
-					require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
-
-						if (properties === undefined){
-							properties = {};
-						}
-						// if (componentType in this.componentsShortcut){
-						// 	componentType = this.componentsShortcut[componentType];
-						// }
-
-						if (!("id" in properties)){
-							properties["id"] = that.getAvailableComponentId(componentType);
-						}
-
-						var component = React.createFactory(addWidget(loadedModule))(properties);
-						var renderedComponent = window[properties.id] = that.renderComponent(component, document.getElementById('widgetContainer'), callback);
-
-						if (!(componentType in that.componentsMap)){
-							that.componentsMap[componentType] = []
-						}
-						that.componentsMap[componentType].push(renderedComponent);
-
-						var widgetController = GEPPETTO.NewWidgetFactory.getController(componentType);	
-						widgetController.registerWidget(renderedComponent)
-						return renderedComponent;
-					});
+					this._createComponent(componentType, properties, document.getElementById('widgetContainer'), callback, true);
 				}
 				else{
 					var isStateless = false;

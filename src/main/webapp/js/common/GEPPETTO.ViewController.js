@@ -7,6 +7,7 @@ define(function(require)
     return function(GEPPETTO) {
         GEPPETTO.ViewController = {
             monitorInterval: undefined,
+            anyComponentsDestroyed: false,
 
             resolveViews: function(){
                 // apply persisted views if any for both project and experiment
@@ -53,7 +54,10 @@ define(function(require)
                 }
 
                 // setup monitor loop to track changes every 1000ms
-                this.monitorInterval = setInterval(this.monitorView, 1000);
+                var that = this;
+                this.monitorInterval = setInterval(function(){
+                    that.monitorView()
+                }, 1000);
             },
 
             applyViewToComponentOrCreate: function(componentViews){
@@ -83,9 +87,11 @@ define(function(require)
              * Monitors changes in the view
              */
             monitorView: function(){
-                // retrieve list of widgets (components in future)
+                // retrieve list of widgets (components too in the future)
                 var components = GEPPETTO.ComponentFactory.getComponents();
                 var viewState = { views: {} };
+
+                var anyChanges = false;
 
                 for(var c in components){
                     // call getView API if the method is exposed and the component is not stateless
@@ -93,11 +99,9 @@ define(function(require)
                         // check if state-view API is implemented by the component
                         typeof components[c].getView == 'function' &&
                         // check that component is not stateless
-                        components[c].stateless != undefined &&
-                        !components[c].stateless &&
-                        // check if view is dirty so only dirty views get added
-                        components[c].isDirty()
+                        components[c].stateless != undefined & !components[c].stateless
                     ) {
+                        anyChanges = !anyChanges ? components[c].isDirty() : anyChanges;
                         // build object literal with view state for all the widgets/components
                         viewState.views[c] = components[c].getView();
                         // reset view as clean so we don't keep retrieving the same view if nothing changed
@@ -109,15 +113,17 @@ define(function(require)
                 if(
                     window.Project.getActiveExperiment()!=null &&
                     window.Project.getActiveExperiment()!=undefined &&
-                    // check if any views were added
-                    Object.keys(viewState.views).length > 0
+                    // check if any views were added or any components were destroyed
+                    (anyChanges || this.anyComponentsDestroyed)
                 ){
                     window.Project.getActiveExperiment().setView(viewState);
+                    this.anyComponentsDestroyed = false;
                 } else if (
-                    // check if any views were added
-                    Object.keys(viewState.views).length > 0
+                    // check if any views were added or any components were destroyed
+                    anyChanges || this.anyComponentsDestroyed
                 ){
                     window.Project.setView(viewState);
+                    this.anyComponentsDestroyed = false;
                 }
             }
         };

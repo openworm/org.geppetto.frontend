@@ -64,7 +64,8 @@ define(function (require) {
 			'TEXTFIELD': 'controls/TextField',
 			'RAISEDBUTTON': 'controls/RaisedButton',
 			'BUTTON':'controls/button/Button'
-		}
+		};
+
 		GEPPETTO.ComponentFactory = {
 
 			componentsMap: {},
@@ -88,15 +89,15 @@ define(function (require) {
 						callback(renderedComponent);
 					}
 					
-					//create id for the component being rendered
+					// create id for the component being rendered
 					var componentID = that.createComponentID(componentType,1);
-					//assign unique id to component
+					// assign unique id to component
 					renderedComponent.id = componentID;
 					
 					// keep track of components in dictionary by id
 					that.componentsMap[componentID] = renderedComponent;
 					
-					//create autocomplete tags for the component
+					// create autocomplete tags for the component
 					window[componentID] = renderedComponent;
 					GEPPETTO.Console.updateTags(componentID, renderedComponent);
 

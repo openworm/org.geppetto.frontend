@@ -45,7 +45,7 @@ require('../../../style/less/main.less');
 var GEPPETTO = require('geppetto');
 
 require('../../components/ComponentFactory')(GEPPETTO);
-require('../../components/WidgetFactory')(GEPPETTO);
+require('../../components/NewWidgetFactory')(GEPPETTO);
 
 GEPPETTO.ComponentFactory.loadSpinner();
 

@@ -110,27 +110,13 @@ define(function (require) {
 					if (properties === undefined){
 						properties = {};
 					}
-
 					if (!("id" in properties)){
 						properties["id"] = that.getAvailableComponentId(componentType);
 					}
 					
 					var component = React.createFactory(loadedModule)(properties);
-					var renderedComponent = window[properties.id] = that.renderComponent(component, container);
-					if(callback!=undefined){
-						callback(renderedComponent);
-					}
+					var renderedComponent = window[properties.id] = that.renderComponent(component, container, callback);
 					
-					// create id for the component being rendered
-					//var componentID = that.createComponentID(componentType,1);
-					// assign unique id to component
-					//renderedComponent.id = componentID;
-					
-					// keep track of components in dictionary by id
-					//that.componentsMap[componentID] = renderedComponent;
-					
-					// create autocomplete tags for the component
-					//window[componentID] = renderedComponent;
 					if (!(componentType in that.componentsMap)){
 						that.componentsMap[componentType] = []
 					}

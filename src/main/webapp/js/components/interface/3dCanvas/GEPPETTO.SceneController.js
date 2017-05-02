@@ -50,6 +50,35 @@ define(function (require) {
                     return selected;
                 },
 
+                /**
+                 *
+                 * Returns all the selected instances
+                 *
+                 * @command G.getSelection()
+                 * @returns  {Array} Returns list of all instances selected
+                 */
+                getSelection: function () {
+                    var selection = this.traverseSelection(window.Instances);
+                    return selection;
+                },
+
+                /**
+                 * Helper method that traverses through run time tree looking for selected entities.
+                 */
+                traverseSelection: function (instances) {
+                    var selection = [];
+                    if (instances != null || undefined) {
+                        for (var e = 0; e < instances.length; e++) {
+                            var instance = instances[e];
+                            if (instance.selected) {
+                                selection.push(instance);
+                            }
+                            selection = selection.concat(this.traverseSelection(instance.getChildren()));
+                        }
+                    }
+                    return selection;
+                },
+
                 select: function (instances) {
                     for (var i = 0; i < instances.length; i++) {
                         instances[i].select();
@@ -64,7 +93,7 @@ define(function (require) {
                 },
 
                 /**
-                 * Selects an instance given its. 
+                 * Selects an instance in all existing canvas
                  *
                  * @param {String} instancePath - Path of instance to select
                  * @param {String} geometryIdentifier - Identifier of the geometry that was clicked
@@ -72,6 +101,18 @@ define(function (require) {
                 selectInstance: function (instancePath, geometryIdentifier) {
                     for (var i = 0; i < this.canvasComponents.length; i++) {
                         this.canvasComponents[i].selectInstance(instancePath, geometryIdentifier);
+                    }
+                },
+
+                /**
+                 * Deselects an instance in all existing canvas
+                 *
+                 * @param {String} instancePath - Path of instance to select
+                 * @param {String} geometryIdentifier - Identifier of the geometry that was clicked
+                 */
+                deselectInstance: function (instancePath) {
+                    for (var i = 0; i < this.canvasComponents.length; i++) {
+                        this.canvasComponents[i].deselectInstance(instancePath);
                     }
                 },
 

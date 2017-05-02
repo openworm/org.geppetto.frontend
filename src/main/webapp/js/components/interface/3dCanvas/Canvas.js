@@ -15,7 +15,6 @@ define(function (require) {
     var canvasComponent = React.createClass({
         engine: null,
         container: null,
-        selected: [],
         backgroundColor: 0x101010,
 
 
@@ -41,6 +40,17 @@ define(function (require) {
          */
         selectInstance: function (instancePath, geometryIdentifier) {
             this.engine.selectInstance(instancePath, geometryIdentifier);
+            return this;
+        },
+
+        /**
+         * Deselects an instance
+         *
+         * @param {String} instancePath - Path of instance to select
+         * @param {String} geometryIdentifier - Identifier of the geometry that was clicked
+         */
+        deselectInstance: function (instancePath) {
+            this.engine.deselectInstance(instancePath);
             return this;
         },
 
@@ -233,8 +243,8 @@ define(function (require) {
          */
         setContainerDimensions: function () {
             var containerSelector = $(this.container);
-            var height = containerSelector.parent().height() - 40
-            var width = containerSelector.parent().width() - 30
+            var height = containerSelector.parent().height();
+            var width = containerSelector.parent().width();
             containerSelector.height(height);
             containerSelector.width(width);
             return [width, height];
@@ -250,9 +260,9 @@ define(function (require) {
                 Detector.addGetWebGLMessage();
             } else {
                 this.container = $("#" + this.props.id + "_component").get(0);
+                this.setContainerDimensions();
                 this.engine = new ThreeDEngine(this.container, this.props.id);
                 GEPPETTO.SceneController.add3DCanvas(this);
-                this.setContainerDimensions();
                 var that = this;
                 $("#" + this.props.id).on("dialogresizestop resizeEnd", function (event, ui) {
                     var [width, height] = that.setContainerDimensions()

@@ -6,6 +6,11 @@
 */
 define(['jquery'], function () {
 
+    var Instance = require('../../../geppettoModel/model/Instance');
+    var ArrayInstance = require('../../../geppettoModel/model/ArrayInstance');
+    var Type = require('../../../geppettoModel/model/Type');
+    var Variable = require('../../../geppettoModel/model/Variable');
+
     var THREE = require('three');
     require('./TrackballControls');
     require('./OBJLoader');
@@ -169,7 +174,7 @@ define(['jquery'], function () {
                                     } else {
                                         //if there are more than one element intersected and opacity of the current one is less than 1
                                         //we skip it to realize a "pick through"
-                                        var opacity = this.meshes[instancePath].defaultOpacity;
+                                        var opacity = that.meshes[instancePath].defaultOpacity;
                                         if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
                                             selected = instancePath;
                                             selectedIntersect = intersects[i];
@@ -194,7 +199,7 @@ define(['jquery'], function () {
                             if (selected != "") {
                                 if (that.meshes.hasOwnProperty(selected) || that.splitMeshes.hasOwnProperty(selected)) {
                                     if (!GEPPETTO.isKeyPressed("shift")) {
-                                        that.unSelectAll();
+                                        that.deselectAll();
                                     }
 
                                     var selectedIntersectCoordinates = [selectedIntersect.point.x, selectedIntersect.point.y, selectedIntersect.point.z]
@@ -205,7 +210,7 @@ define(['jquery'], function () {
                                 }
                             }
                         } else if (GEPPETTO.isKeyPressed("ctrl")) {
-                            that.unSelectAll();
+                            that.deselectAll();
                         }
                     }
                 }
@@ -236,13 +241,14 @@ define(['jquery'], function () {
             var width = $(this.container).width();
             var height = $(this.container).height();
             this.renderer.setPixelRatio(window.devicePixelRatio);
-            this.renderer.setSize(width, height);
+
             this.renderer.autoClear = false;
             this.container.appendChild(this.renderer.domElement);
 
             var renderModel = new THREE.RenderPass(this.scene, this.camera);
 
             this.composer = new THREE.EffectComposer(this.renderer);
+            this.setSize(width, height);
 
             if (shaders) {
                 var effectBloom = new THREE.BloomPass(0.75);
@@ -1399,6 +1405,7 @@ define(['jquery'], function () {
          *            instancePath - Path of aspect of mesh to select
          */
         selectInstance: function (instancePath, geometryIdentifier) {
+            var that = this;
             if (geometryIdentifier != undefined && geometryIdentifier != "") {
                 instancePath = instancePath + "." + geometryIdentifier;
             }
@@ -1414,15 +1421,15 @@ define(['jquery'], function () {
                         if (mesh instanceof THREE.Object3D) {
                             mesh.traverse(function (child) {
                                 if (child.hasOwnProperty("material")) {
-                                    this.threeEngine.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.SELECTED);
+                                    that.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                                     child.material.opacity = Math.max(0.5, child.material.defaultOpacity);
                                     child.geometry.computeBoundingBox();
-                                    this.controls.target.copy(child.position);
-                                    this.controls.target.add(child.geometry.boundingBox.getCenter());
+                                    that.controls.target.copy(child.position);
+                                    that.controls.target.add(child.geometry.boundingBox.getCenter());
                                 }
                             });
                         } else {
-                            this.threeEngine.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.SELECTED);
+                            this.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                             mesh.material.opacity = Math.max(0.5, mesh.material.defaultOpacity);
                             mesh.geometry.computeBoundingBox();
                             //let's set the center of rotation to the selected mesh
@@ -1442,9 +1449,40 @@ define(['jquery'], function () {
 
                 }
 
-                return true;
             }
-            return false;
+
+            var instance = eval(instancePath);
+
+            // Behaviour: help exploration of networks by ghosting and not highlighting non connected or selected
+            if (instance.getConnections().length > 0) {
+                // allOtherMeshes will contain a list of all the non connected entities in the scene
+                var allOtherMeshes = $.extend({}, this.meshes);
+                // look on the simulation selection options and perform necessary operations
+                if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
+                    var meshes = this.highlightInstances(true);
+                    for (var i in meshes) {
+                        delete allOtherMeshes[meshes[i]];
+                    }
+                }
+                else if (G.getSelectionOptions().show_inputs) {
+                    var inputs = this.highlightInstances(true, GEPPETTO.Resources.INPUT);
+                    for (var i in inputs) {
+                        delete allOtherMeshes[inputs[i]];
+                    }
+                }
+                else if (G.getSelectionOptions().show_outputs) {
+                    var outputs = this.highlightInstances(true, GEPPETTO.Resources.OUTPUT);
+                    for (var o in outputs) {
+                        delete allOtherMeshes[outputs[o]];
+                    }
+                }
+                if (G.getSelectionOptions().draw_connection_lines) {
+                    this.showConnectionLines(instancePath, true);
+                }
+                if (G.getSelectionOptions().unselected_transparent) {
+                    this.unselectedTransparent(allOtherMeshes, true);
+                }
+            }
         },
 
 
@@ -1481,10 +1519,160 @@ define(['jquery'], function () {
                         mesh.selected = false;
                     }
                 }
-                return true;
             }
-            return false;
+
+            if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
+                this.highlightInstances(instancePath, false);
+            }
+            else if (G.getSelectionOptions().show_inputs) {
+                this.highlightInstances(instancePath, false, GEPPETTO.Resources.INPUT);
+            }
+            else if (G.getSelectionOptions().show_outputs) {
+                this.highlightInstances(instancePath, false, GEPPETTO.Resources.OUTPUT);
+            }
+
+            if (G.getSelectionOptions().draw_connection_lines) {
+                this.showConnectionLines(instancePath, false);
+            }
+
+            // TODO: trigger highlight on the ones still selected
+
+            var selection = GEPPETTO.SceneController.getSelection();
+
+            // NOTE: do this down here, ghost effect won't be removed if stuff is still highlighted
+            if (G.getSelectionOptions().unselected_transparent) {
+                if (selection != undefined && selection.length > 0) {
+                    // else (there is something selected) make this transparent
+                    var mesh = {};
+                    mesh[instancePath] = this.meshes[instancePath];
+                    if (mesh[instancePath] != undefined) {
+                        this.unselectedTransparent(mesh, true);
+                    }
+                } else {
+                    // if nothing else is selected do remove ghost effect
+                    this.unselectedTransparent(false);
+                }
+            }
+
         },
+
+        /**
+         * Show output connections for this object.
+
+         * @command AVisualCapability.highlightInstances()
+         * @param {boolean} mode - Show or hide output connections
+         */
+        highlightInstances: function (path, mode, type) {
+            if (mode == null || mode == undefined) {
+                mode = true;
+            }
+            var entity = eval(path);
+            if (entity instanceof Instance || entity instanceof ArrayInstance) {
+                //show/hide connections
+                if (mode) {
+                    this.highlightConnectedInstances(entity, type);
+                }
+                else {
+                    this.restoreConnectedInstancesColour(entity);
+                }
+            } else if (entity instanceof Type || entity instanceof Variable) {
+                // fetch all instances for the given type or variable and call hide on each
+                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(entity);
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability('VisualCapability')) {
+                        this.highlightInstances(instances[j].getInstancePath(), mode, type);
+                    }
+                }
+            }
+        },
+
+        /**
+         * Deselects all selected instancies
+         *
+         */
+        deselectAll: function () {
+            var selection = GEPPETTO.SceneController.getSelection();
+            if (selection.length > 0) {
+                for (var key in selection) {
+                    var entity = selection[key];
+                    entity.deselect();
+                }
+            }
+
+            if (G.getSelectionOptions().unselected_transparent) {
+                this.unselectedTransparent(false);
+            }
+            return GEPPETTO.Resources.DESELECT_ALL;
+        },
+
+
+        /**
+         * Make unselected instances transparent or not
+         *
+         * @param {boolean}
+         *            apply - Turn on or off the transparency
+         */
+        unselectedTransparent: function (apply) {
+            GEPPETTO.SceneController.unselectedTransparent(this.meshes, apply);
+            GEPPETTO.SceneController.unselectedTransparent(this.splitMeshes, apply);
+        },
+
+        /**
+         * Make unselected instances transparent or not
+         *
+         * @param {Array}
+         *            meshes - Array of meshes to apply the transparency to
+         * @param {boolean}
+         *            apply - Transparency effect on or off
+         */
+        unselectedTransparent: function (meshes, apply) {
+            for (var v in meshes) {
+                var mesh = meshes[v];
+                if (mesh != null && mesh.visible) {
+                    if (apply && (!mesh.ghosted) && (!mesh.selected)) {
+                        if (mesh instanceof THREE.Object3D) {
+                            mesh.ghosted = true;
+                            mesh.traverse(function (object) {
+                                if (object.hasOwnProperty("material")) {
+                                    if (object.visible) {
+                                        object.ghosted = true;
+                                        object.material.transparent = true;
+                                        object.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+                                    }
+                                }
+                            });
+                        } else {
+                            mesh.ghosted = true;
+                            mesh.material.transparent = true;
+                            mesh.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
+                        }
+                    } else if ((!apply) && (mesh.ghosted)) {
+                        if (mesh instanceof THREE.Object3D) {
+                            mesh.ghosted = false;
+                            mesh.traverse(function (object) {
+                                if (object.hasOwnProperty("material")) {
+                                    if (object.visible) {
+                                        object.ghosted = false;
+                                        object.material.opacity = object.material.defaultOpacity;
+                                        if (object.material.opacity == 1) {
+                                            object.material.transparent = false;
+                                        }
+                                    }
+                                }
+                            });
+                        } else {
+                            mesh.ghosted = false;
+                            mesh.material.opacity = mesh.material.defaultOpacity;
+                            if (mesh.material.opacity == 1) {
+                                mesh.material.transparent = false;
+                            }
+                        }
+                    }
+                }
+
+            }
+        },
+
 
         /**
          * Show aspect, make it visible.
@@ -1779,11 +1967,43 @@ define(['jquery'], function () {
             }
         },
 
+
         /**
+        * Show connection lines for this instance.
+
+        * @command AVisualCapability.showConnectionLines()
+        * @param {boolean} mode - Show or hide connection lines
+        */
+        showConnectionLines: function (instancePath, mode) {
+            if (mode == null || mode == undefined) {
+                mode = true;
+            }
+            var entity = eval(instancePath);
+            if (entity instanceof Instance || entity instanceof ArrayInstance) {
+                //show or hide connection lines
+                if (mode) {
+                    this.showConnectionLinesForInstance(entity);
+                }
+                else {
+                    this.removeConnectionLines(entity);
+                }
+            } else if (entity instanceof Type || entity instanceof Variable) {
+                // fetch all instances for the given type or variable and call hide on each
+                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(entity);
+                for (var j = 0; j < instances.length; j++) {
+                    if (instances[j].hasCapability('VisualCapability')) {
+                        this.showConnectionLines(instances[j], mode);
+                    }
+                }
+            }
+        },
+
+        /**
+         * 
          *
          * @param instance
          */
-        showConnectionLines: function (instance) {
+        showConnectionLinesForInstance: function (instance) {
             var connections = instance.getConnections();
 
             var mesh = this.meshes[instance.getInstancePath()];
@@ -1801,7 +2021,6 @@ define(['jquery'], function () {
                 var otherEndPath = connection.getA().getPath() == instance.getInstancePath() ?
                     connection.getB().getPath() :
                     connection.getA().getPath();
-
 
                 var otherEndMesh = this.meshes[otherEndPath];
 

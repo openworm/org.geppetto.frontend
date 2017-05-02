@@ -1,34 +1,3 @@
-/*******************************************************************************
- *
- * Copyright (c) 2011, 2016 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
 class WidgetController {
 
 	constructor(componentID) {
@@ -44,12 +13,7 @@ class WidgetController {
 		}
 	}
 
-	camelize(str) {
-		return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
-			if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
-			return index == 0 ? match.toUpperCase() : match.toLowerCase();
-		});
-	}
+	
 
 	registerWidget(widget){
 		var that = this;
@@ -111,36 +75,6 @@ class WidgetController {
 		var comments = [];
 		comments = fileContent.match(STRIP_COMMENTS);
 		return comments;
-	}
-
-	/**
-	 * Get an available id for an specific widget
-	 *
-	 * @module WidgetUtility
-	 * @param {String} prefix
-	 * @param {Array} widgetsList
-	 * @returns {String} id - Available id for a widget
-	 */
-	getAvailableWidgetId () {
-		var index = 0;
-		var id = "";
-		var available;
-
-		do {
-			index++;
-			id = this.componentID + index;
-			available = true;
-
-			for (var p in this.widgets) {
-				if (this.widgets[p].getId().toUpperCase() == id.toUpperCase()) {
-					available = false;
-					break;
-				}
-			}
-		}
-		while (available == false);
-
-		return this.camelize(id);
 	}
 
 	/**

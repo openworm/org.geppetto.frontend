@@ -1,34 +1,3 @@
-/*******************************************************************************
- *
- * Copyright (c) 2011, 2016 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
 
 define(function (require) {
 
@@ -43,7 +12,7 @@ define(function (require) {
 		GEPPETTO.ComponentFactory = {
 
 			//All the components potentially instantiable go here
-			var components = {
+			components : {
 				'FORM':'interface/form/Form',
 				'PANEL':'controls/panel/Panel',
 				'LOGO':'interface/logo/Logo',
@@ -91,72 +60,125 @@ define(function (require) {
 			getComponents: function(){
 				return this.componentsMap;
 			},
+
+			camelize(str) {
+				return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+					if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
+					return index == 0 ? match.toUpperCase() : match.toLowerCase();
+				});
+			},
+
+			/**
+			 * Get an available id for an specific widget
+			 *
+			 * @module WidgetUtility
+			 * @param {String} prefix
+			 * @param {Array} widgetsList
+			 * @returns {String} id - Available id for a widget
+			 */
+			getAvailableComponentId (componentType) {
+				var index = 0;
+				var id = "";
+				var available;
+
+				var components = []
+				if (componentType in this.componentsMap){
+					components = this.componentsMap[componentType];
+				}
+
+				do {
+					index++;
+					id = componentType + index;
+					available = true;
+					
+					for (var componentsIndex in components) {
+						if (components[componentsIndex].props.id.toUpperCase() == id.toUpperCase()) {
+							available = false;
+							break;
+						}
+					}
+				}
+				while (available == false);
+
+				return this.camelize(id);
+			},
 			
 			addComponent: function(componentType, properties, container, callback){
 				var that=this;
 				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
+					
+					if (properties === undefined){
+						properties = {};
+					}
+
+					if (!("id" in properties)){
+						properties["id"] = that.getAvailableComponentId(componentType);
+					}
+					
 					var component = React.createFactory(loadedModule)(properties);
-					var renderedComponent = that.renderComponent(component, container);
+					var renderedComponent = window[properties.id] = that.renderComponent(component, container);
 					if(callback!=undefined){
 						callback(renderedComponent);
 					}
 					
 					// create id for the component being rendered
-					var componentID = that.createComponentID(componentType,1);
+					//var componentID = that.createComponentID(componentType,1);
 					// assign unique id to component
-					renderedComponent.id = componentID;
+					//renderedComponent.id = componentID;
 					
 					// keep track of components in dictionary by id
-					that.componentsMap[componentID] = renderedComponent;
+					//that.componentsMap[componentID] = renderedComponent;
 					
 					// create autocomplete tags for the component
-					window[componentID] = renderedComponent;
-					GEPPETTO.Console.updateTags(componentID, renderedComponent);
+					//window[componentID] = renderedComponent;
+					if (!(componentType in that.componentsMap)){
+						that.componentsMap[componentType] = []
+					}
+					that.componentsMap[componentType].push(renderedComponent);
+					GEPPETTO.Console.updateTags(componentType, renderedComponent);
 
 					return renderedComponent;
 				});
 				
 			},
 			
-			/**Creates unique ID's for the components being created*/
-			createComponentID : function(componentType,index){
-				var componentID = componentType.charAt(0).toUpperCase() + componentType.slice(1).toLowerCase() + index.toString();
+			addWidget: function(componentType, properties, callback){
 				
-				if(componentID in this.componentsMap){
-					return this.createComponentID(componentType, ++index);
-				}
-				
-				return componentID;
-			},
-
-			addWidget: function(componentID, properties, callback){
-				
-				if (componentID in this.components){
-					if (properties === undefined){
-						properties = {};
-					}
-					// if (componentID in this.componentsShortcut){
-					// 	componentID = this.componentsShortcut[componentID];
-					// }
+				if (componentType in this.components){
 
 					var that=this;
-					require(["./" + GEPPETTO.ComponentFactory.components[componentID]], function(loadedModule){
-						
-						var widgetController = GEPPETTO.NewWidgetFactory.getController(componentID);	
+					require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
+
+						if (properties === undefined){
+							properties = {};
+						}
+						// if (componentType in this.componentsShortcut){
+						// 	componentType = this.componentsShortcut[componentType];
+						// }
+
 						if (!("id" in properties)){
-							properties["id"] = widgetController.getAvailableWidgetId();
+							properties["id"] = that.getAvailableComponentId(componentType);
 						}
 
 						var component = React.createFactory(addWidget(loadedModule))(properties);
 						var renderedComponent = window[properties.id] = that.renderComponent(component, document.getElementById('widgetContainer'), callback);
-						
+
+						if (!(componentType in that.componentsMap)){
+							that.componentsMap[componentType] = []
+						}
+						that.componentsMap[componentType].push(renderedComponent);
+
+						var widgetController = GEPPETTO.NewWidgetFactory.getController(componentType);	
 						widgetController.registerWidget(renderedComponent)
 						return renderedComponent;
 					});
 				}
 				else{
-					var newWidget = GEPPETTO.WidgetFactory.addWidget(componentID);
-                	return newWidget;
+					var isStateless = false;
+					if (properties !== undefined && isStateless in properties){
+						isStateless = properties["isStateless"];
+					}
+					return GEPPETTO.WidgetFactory.addWidget(componentType, isStateless);
 				}
 				
 			},

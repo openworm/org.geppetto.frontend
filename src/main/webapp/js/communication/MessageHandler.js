@@ -315,18 +315,6 @@ define(function (require) {
                 this.augmentInstancesArray(window.Instances);
                 console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);
 
-                console.time(GEPPETTO.Resources.CREATING_SCENE);
-                GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.CREATING_SCENE);
-                // build scene here from Geppetto model populating visual objects in the instance tree
-                // Updates the simulation controls visibility
-                var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-
-                if (webGLStarted) {
-                    // we call it only the first time
-                    GEPPETTO.SceneController.animate();
-                }
-                GEPPETTO.SceneController.buildScene(window.Instances, window.Model);
-                console.timeEnd(GEPPETTO.Resources.CREATING_SCENE);
                 GEPPETTO.trigger(GEPPETTO.Events.Model_loaded);
                 GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
 
@@ -377,8 +365,7 @@ define(function (require) {
                 // STEP 2: add new instances for new variables if any
                 var newInstances = GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
 
-                // STEP: 3 update scene
-                GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
+
 
                 // STEP: 4 update components
                 GEPPETTO.trigger(GEPPETTO.Events.Instances_created, newInstances);
@@ -426,10 +413,7 @@ define(function (require) {
                 // STEP 2: add new instances for new types if any
                 var newInstances = GEPPETTO.ModelFactory.createInstancesFromDiffReport(diffReport);
 
-                // STEP 3: update scene
-                GEPPETTO.SceneController.updateSceneWithNewInstances(newInstances);
-
-                // STEP: 4 update components
+                // STEP: 3 update components
                 GEPPETTO.trigger(GEPPETTO.Events.Instances_created, newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);

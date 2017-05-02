@@ -27,33 +27,27 @@ define(function (require) {
                 unselected_transparent: true
             },
             litUpInstances: [],
-            
+
             //TODO Design something better to hold abritrary status
-            timeWidget : {},
-            timeWidgetVisible : false,
-            recordedVariablesWidget : {},
-            recordedVariablesPlot : false,
-            enableColorPlottingActive : false,
+            timeWidget: {},
+            timeWidgetVisible: false,
+            recordedVariablesWidget: {},
+            recordedVariablesPlot: false,
+            enableColorPlottingActive: false,
             brightnessFunctionSet: false,
-            consoleFocused : true,
-            
-            isConsoleFocused : function(){
-            	return this.consoleFocused;
-            },
-            
-            autoFocusConsole : function(mode){
-            	this.consoleFocused = mode;
+            consoleFocused: true,
+
+            isConsoleFocused: function () {
+                return this.consoleFocused;
             },
 
-            isBrightnessFunctionSet: function() {
-                return this.brightnessFunctionSet;
+            autoFocusConsole: function (mode) {
+                this.consoleFocused = mode;
             },
-            
+
             addWidget: function (type) {
                 var newWidget = GEPPETTO.ComponentFactory.addWidget(type);
                 return newWidget;
-                // var newWidget = GEPPETTO.ComponentFactory.addWidget(type);
-                // return newWidget;
             },
 
             /**
@@ -142,16 +136,11 @@ define(function (require) {
              *
              */
             debug: function (mode) {
-                debugMode = mode;
-
-                if (mode) {
-                    GEPPETTO.toggleStats(true);
-                    return GEPPETTO.Resources.DEBUG_ON;
+                this.debugMode = mode;
+                if(!GEPPETTO.Console.getConsole().showImplicitCommands){
+                	GEPPETTO.Console.toggleImplicitCommands();
                 }
-                else {
-                    GEPPETTO.toggleStats(false);
-                    return GEPPETTO.Resources.DEBUG_OFF;
-                }
+                return mode?GEPPETTO.Resources.DEBUG_ON:GEPPETTO.Resources.DEBUG_OFF;
             },
 
             /**
@@ -212,7 +201,7 @@ define(function (require) {
 
                 return GEPPETTO.Resources.RUNNING_SCRIPT;
             },
-            
+
             /**
              * Show or hide console using command
              *
@@ -234,7 +223,7 @@ define(function (require) {
                 return returnMessage;
             },
 
-            
+
 
             /**
              * Show or hide help window using command
@@ -264,31 +253,20 @@ define(function (require) {
                 }
                 return returnMessage;
             },
-            
-            toggleTutorial : function() {
-            	 var returnMessage;
-            	 var modalVisible = $('#tutorial').is(':visible');
-            	 
-                 if (modalVisible) {
-                	 GEPPETTO.trigger(GEPPETTO.Events.Hide_Tutorial);
-                     returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
-                 }
-                 else {
-                	 GEPPETTO.trigger(GEPPETTO.Events.Show_Tutorial);
-                     returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
-                 }
-                 return returnMessage;
-            },
 
-            /**
-             *
-             * Waits certain amount of time before running next command. Must be
-             * used inside a script.
-             *
-             * @command G.wait(ms)
-             */
-            wait: function () {
-                return GEPPETTO.Resources.INVALID_WAIT_USE;
+            toggleTutorial: function () {
+                var returnMessage;
+                var modalVisible = $('#tutorial').is(':visible');
+
+                if (modalVisible) {
+                    GEPPETTO.trigger(GEPPETTO.Events.Hide_Tutorial);
+                    returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
+                }
+                else {
+                    GEPPETTO.trigger(GEPPETTO.Events.Show_Tutorial);
+                    returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
+                }
+                return returnMessage;
             },
 
             /**
@@ -337,119 +315,18 @@ define(function (require) {
             },
 
             /**
-             * Resets Camera to initial position - same as after loading.
-             *
-             * @command - G.resetCamera()
-             */
-            resetCamera: function () {
-                GEPPETTO.resetCamera();
-
-                return GEPPETTO.Resources.CAMERA_RESET;
-            },
-
-            
-            /**
-             * Increments camera rotation.
-             *
-             * @command - G.incrementCameraRotate()
-             * @param {Integer} x - x coordinate of rotate increment vector
-             * @param {Integer} y - y coordinate of rotate increment vector
-             * @param {Integer} z - z coordinate of rotate increment vector
-             */
-            autoRotate: function () {
-            	if(this.rotate==null){
-            		GEPPETTO.Init.movieMode(true);
-            		this.rotate=setInterval(function(){G.incrementCameraRotate(0.01, 0)}, 100);
-            	}
-            	else{
-            		GEPPETTO.Init.movieMode(false);
-            		clearInterval(this.rotate);
-            		this.rotate=null;
-            	}
-            },
-            
-            /**
-             * Increments camera pan.
-             *
-             * @command - G.incrementCameraPan()
-             * @param {Integer} x - x coordinate of pan increment vector
-             * @param {Integer} y - y coordinate of pan increment vector
-             */
-            incrementCameraPan: function (x, y) {
-                GEPPETTO.incrementCameraPan(x, y);
-
-                return GEPPETTO.Resources.CAMERA_PAN_INCREMENT;
-            },
-
-            /**
-             * Increments camera rotation.
-             *
-             * @command - G.incrementCameraRotate()
-             * @param {Integer} x - x coordinate of rotate increment vector
-             * @param {Integer} y - y coordinate of rotate increment vector
-             * @param {Integer} z - z coordinate of rotate increment vector
-             */
-            incrementCameraRotate: function (x, y, z) {
-                GEPPETTO.incrementCameraRotate(x, y, z);
-
-                return GEPPETTO.Resources.CAMERA_ROTATE_INCREMENT;
-            },
-
-            /**
-             * Increments camera zoom.
-             *
-             * @command - G.incrementCameraZoom()
-             * @param {Integer} z - z coordinate for zoom increment vector
-             */
-            incrementCameraZoom: function (z) {
-                GEPPETTO.incrementCameraZoom(z);
-
-                return GEPPETTO.Resources.CAMERA_ZOOM_INCREMENT;
-            },
-
-            /**
-             * Sets the camera position
-             *
-             * @command - G.setCameraPosition()
-             * @param {Integer} x - new x axis position for the camera
-             * @param {Integer} y - new y axis position for the camera
-             * @param {Integer} z - new z axis position for the camera
-             */
-            setCameraPosition: function (x, y, z) {
-                GEPPETTO.setCameraPosition(x, y, z);
-
-                return GEPPETTO.Resources.CAMERA_SET_POSITION;
-            },
-
-            /**
-             * Sets the camera rotation
-             *
-             * @command - G.setCameraRotation()
-             * @param {Integer} rx - x euler angle for the rotation
-             * @param {Integer} ry - y euler angle for the rotation
-             * @param {Integer} rz - z euler angle for the rotation
-             * @param {Integer} a  - trackball's radius
-             */
-            setCameraRotation: function (rx, ry, rz, a) {
-                GEPPETTO.setCameraRotation(rx, ry, rz, a);
-
-                return GEPPETTO.Resources.CAMERA_SET_ROTATION;
-            },
-
-
-            /**
              * Callback to be called whenever a watched node changes
              *
              * @param {Instance} node - node to couple callback to
              * @param {Function} callback - Callback function to be called whenever _variable_ changes
              */
             addOnNodeUpdatedCallback: function (node, callback) {
-            	if(node !=null ||undefined){
-            		if (!this.listeners[node.getInstancePath()]) {
-            			this.listeners[node.getInstancePath()] = [];
-            		}
-            		this.listeners[node.getInstancePath()].push(callback);
-            	}
+                if (node != null || undefined) {
+                    if (!this.listeners[node.getInstancePath()]) {
+                        this.listeners[node.getInstancePath()] = [];
+                    }
+                    this.listeners[node.getInstancePath()].push(callback);
+                }
             },
 
             /**
@@ -483,20 +360,20 @@ define(function (require) {
              * @param {Function} colorfn - Converts time-series value to [r,g,b]
              */
             addBrightnessFunction: function (instance, stateVariableInstances, colorfn) {
-            	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
-            	var newInstance = "";
-            	var visualObjects = [];
-            	if (instance.getInstancePath() in GEPPETTO.getVARS().meshes){
-            		newInstance = instance; 
-            	}
-            	else{
-            		newInstance = instance.getParent();
-            		visualObjects= [instance.getId()];
-            	}
-            	
-            	this.addBrightnessFunctionBulk(newInstance, visualObjects, [stateVariableInstances], colorfn);
+                // Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
+                var newInstance = "";
+                var visualObjects = [];
+                if (instance.getInstancePath() in GEPPETTO.getVARS().meshes) {
+                    newInstance = instance;
+                }
+                else {
+                    newInstance = instance.getParent();
+                    visualObjects = [instance.getId()];
+                }
+
+                this.addBrightnessFunctionBulk(newInstance, visualObjects, [stateVariableInstances], colorfn);
             },
-            
+
             /**
              * Modulates the brightness of an aspect visualization, given a watched node
              * and a color function. The color function should receive
@@ -507,52 +384,52 @@ define(function (require) {
              * @param {Function} colorfn - Converts time-series value to [r,g,b]
              */
             addBrightnessFunctionBulkSimplified: function (instances, colorfn) {
-            	// Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
-                for (var i=0; i<instances.length; ++i){
+                // Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
+                for (var i = 0; i < instances.length; ++i) {
                     this.litUpInstances.push(instances[i]);
                 }
-            	var compositeToLit={};
-            	var visualObjectsToLit={};
-            	var variables={};
-            	var currentCompositePath=undefined;
-            		
-            	for(var i=0;i<instances.length;i++){
-            	    var composite =  undefined;
-            	    var multicompartment=false;
+                var compositeToLit = {};
+                var visualObjectsToLit = {};
+                var variables = {};
+                var currentCompositePath = undefined;
+
+                for (var i = 0; i < instances.length; i++) {
+                    var composite = undefined;
+                    var multicompartment = false;
 
                     composite = instances[i].getParent();
-                    
-                    while (composite.getMetaType() != GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE){
+
+                    while (composite.getMetaType() != GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
                         if (composite.getParent() == null) {
                             throw "Unsupported model to use this function";
                         } else {
                             composite = composite.getParent();
-                            multicompartment=true;
+                            multicompartment = true;
                         }
                     }
 
-            	    var currentCompositePath = composite.getInstancePath();
-            		if (!compositeToLit.hasOwnProperty(currentCompositePath)){
-            			compositeToLit[currentCompositePath]=composite;
-            			visualObjectsToLit[currentCompositePath]=[];
-            			variables[currentCompositePath]=[];
-            			
-            		}
+                    var currentCompositePath = composite.getInstancePath();
+                    if (!compositeToLit.hasOwnProperty(currentCompositePath)) {
+                        compositeToLit[currentCompositePath] = composite;
+                        visualObjectsToLit[currentCompositePath] = [];
+                        variables[currentCompositePath] = [];
 
-            		if(multicompartment){
-                            for (var j=0; j<composite.getChildren().length; ++j){
-                                visualObjectsToLit[currentCompositePath].push(composite.getChildren()[j].getId());
-                            }
-            		}
-            		variables[currentCompositePath].push(instances[i]);
-                	
-            	}
+                    }
 
-            	for(var i in Object.keys(compositeToLit)){
-            		var path=Object.keys(compositeToLit)[i];
-            		this.addBrightnessFunctionBulk(compositeToLit[path], visualObjectsToLit[path], variables[path], colorfn);
-            	}
-            	
+                    if (multicompartment) {
+                        for (var j = 0; j < composite.getChildren().length; ++j) {
+                            visualObjectsToLit[currentCompositePath].push(composite.getChildren()[j].getId());
+                        }
+                    }
+                    variables[currentCompositePath].push(instances[i]);
+
+                }
+
+                for (var i in Object.keys(compositeToLit)) {
+                    var path = Object.keys(compositeToLit)[i];
+                    this.addBrightnessFunctionBulk(compositeToLit[path], visualObjectsToLit[path], variables[path], colorfn);
+                }
+
             },
 
             /**
@@ -561,9 +438,9 @@ define(function (require) {
              * @param {Instance} instance - The instance to be lit
              */
             removeBrightnessFunctionBulkSimplified: function (instances) {
-                while (instances.length > 0){
-            	    this.clearBrightnessFunctions(instances[0]);
-            	}
+                while (instances.length > 0) {
+                    this.clearBrightnessFunctions(instances[0]);
+                }
 
                 // update flag
                 if (this.litUpInstances.length == 0) {
@@ -581,51 +458,51 @@ define(function (require) {
              * @param {Function} colorfn - Converts time-series value to [r,g,b]
              */
             addBrightnessFunctionBulk: function (instance, visualObjects, stateVariableInstances, colorfn) {
-            	var modulations = [];
-            	if (visualObjects != null){
-            		if (visualObjects.length > 0 ){
-		            	var elements = {};
-		            	for (var voIndex in visualObjects){
-		            		elements[visualObjects[voIndex]] = "";
-		            		modulations.push(instance.getInstancePath() + "." + visualObjects[voIndex]);
-		            		
-		            	}
-		            	GEPPETTO.SceneController.splitGroups(instance, elements);
-            		}
-            		else{
-            			modulations.push(instance.getInstancePath());
-            		}
-            	}
-            	
-            	var matchedMap = [];
-            	//statevariableinstances come out of order, needs to sort into map to avoid nulls
-            	for (var index in modulations){
-                    for(var i in stateVariableInstances){
-                         if(stateVariableInstances[i].getParent().getInstancePath()==modulations[index]){
-                             matchedMap[modulations[index]]=stateVariableInstances[i];
-                         }
+                var modulations = [];
+                if (visualObjects != null) {
+                    if (visualObjects.length > 0) {
+                        var elements = {};
+                        for (var voIndex in visualObjects) {
+                            elements[visualObjects[voIndex]] = "";
+                            modulations.push(instance.getInstancePath() + "." + visualObjects[voIndex]);
+
+                        }
+                        GEPPETTO.SceneController.splitGroups(instance, elements);
                     }
-               	}
-            	
-            	//add brightness listener for map of variables
-            	for (var index in matchedMap){
-	                this.addBrightnessListener(index, matchedMap[index], colorfn);
-            	}
+                    else {
+                        modulations.push(instance.getInstancePath());
+                    }
+                }
+
+                var matchedMap = [];
+                //statevariableinstances come out of order, needs to sort into map to avoid nulls
+                for (var index in modulations) {
+                    for (var i in stateVariableInstances) {
+                        if (stateVariableInstances[i].getParent().getInstancePath() == modulations[index]) {
+                            matchedMap[modulations[index]] = stateVariableInstances[i];
+                        }
+                    }
+                }
+
+                //add brightness listener for map of variables
+                for (var index in matchedMap) {
+                    this.addBrightnessListener(index, matchedMap[index], colorfn);
+                }
 
                 // update flag
                 this.brightnessFunctionSet = true;
             },
-            
-            addBrightnessListener: function(instance, modulation, colorfn){
+
+            addBrightnessListener: function (instance, modulation, colorfn) {
                 GEPPETTO.trigger(GEPPETTO.Events.Lit_entities_changed);
-            	this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
-            	    if((stateVariableInstance.getTimeSeries() != undefined) &&
-                       (step<stateVariableInstance.getTimeSeries().length)){
-            		    GEPPETTO.SceneController.lightUpEntity(instance, colorfn, stateVariableInstance.getTimeSeries()[step]);
-            		}
+                this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
+                    if ((stateVariableInstance.getTimeSeries() != undefined) &&
+                        (step < stateVariableInstance.getTimeSeries().length)) {
+                        GEPPETTO.SceneController.lightUpEntity(instance, colorfn, stateVariableInstance.getTimeSeries()[step]);
+                    }
                 });
             },
-            
+
             clearBrightnessFunctions: function (varnode) {
                 var i = this.litUpInstances.indexOf(varnode);
                 this.litUpInstances.splice(i, 1);
@@ -740,28 +617,9 @@ define(function (require) {
              * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
              */
             setBackgroundColour: function (color) {
-                // set the VAR so that when the canvas refresh on timeout it keeps the color
-                GEPPETTO.getVARS().backgroundColor = color;
                 $("body").css("background", color);
-            },
+            }
 
-            /**
-             * Helper method that traverses through run time tree looking for selected entities.
-             */
-            traverseSelection: function (instances) {
-                var selection = [];
-                if(instances!=null || undefined){
-                	for (var e = 0; e < instances.length; e++) {
-                		var instance = instances[e];
-                		if (instance.selected) {
-                			selection.push(instance);
-                		}
-                		selection = selection.concat(this.traverseSelection(instance.getChildren()));
-                	}
-                }
-
-                return selection;
-            },
         };
     };
 });

@@ -64,9 +64,7 @@ define(function (require) {
                     //trigger focus change event
                     GEPPETTO.trigger(GEPPETTO.Events.Focus_changed);
                 });
-                GEPPETTO.on(this.Model_loaded, function () {
-                    G.resetCamera();
-                });
+
                 GEPPETTO.on(this.Experiment_active, function () {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
                 });

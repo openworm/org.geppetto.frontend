@@ -27,6 +27,9 @@ define(function (require) {
             maxSteps: 0,
             externalExperiments: {},
             state:ExperimentStateEnum.STOPPED,
+            step : 0,
+            playTimerStep: 5, // timer step in milliseconds
+            playLoop: false,
 
             isPlayExperimentReady: function(){
             	return this.playExperimentReady;

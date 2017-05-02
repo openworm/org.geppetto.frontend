@@ -100,7 +100,7 @@ define(function (require) {
             	for (var i = 0; i < experimentState.recordedVariables.length; i++) {
                     var recordedVariable = experimentState.recordedVariables[i];
                     var instancePath = recordedVariable.pointer.path;
-                    var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath);
+                    var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath, experimentState.projectId, experimentState.experimentId);
                     instance.extendApi(AStateVariableCapability);
                     instance.setWatched(true, false);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
@@ -112,7 +112,7 @@ define(function (require) {
                     for (var i = 0; i < experimentState.setParameters.length; i++) {
                         var setParameter = experimentState.setParameters[i];
                         var instancePath = setParameter.pointer.path;
-                        var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath);
+                        var instance = GEPPETTO.ModelFactory.createExternalInstance(instancePath, experimentState.projectId, experimentState.experimentId);
                         instance.extendApi(AParameterCapability);
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
                             instance.setValue(setParameter.value.value, false);
@@ -140,35 +140,9 @@ define(function (require) {
                 parameters["experimentId"] = experiment.id;
                 parameters["projectId"] = experiment.getParent().getId();
                 
-                /* ATTEMPT TO NOT REMOVE THE WIDGETS OPTIONALLY WHEN SWTICHING EXPERIMENT
-                 * To work we need to mark the old widget as inactive so that we don't try to update them 
-                if($("div.ui-widget").length>0){
-                	GEPPETTO.FE.inputDialog(
-                			"Do you want to remove the existing widgets?", 
-                			"You are loading a different experiment, do you want to retain the existing widgets? Note that the underlining data will cease existing as you are switching to a different experiment.", 
-                			"Remove widgets", 
-                			function(){
-                	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
-                				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-                				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                			}, 
-                			"Keep widgets", 
-                			function(){
-                	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
-                				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                			}
-        			);
-                }
-                else{
-    	            GEPPETTO.trigger('show_spinner', GEPPETTO.Resources.LOADING_EXPERIMENT);
-    				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-    				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-                }*/
-                
 	            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 				GEPPETTO.MessageSocket.send("load_experiment", parameters);
-
             },
 
             /**
@@ -193,6 +167,41 @@ define(function (require) {
 
                     GEPPETTO.MessageSocket.send("set_parameters", parameters);
 
+                }
+            },
+
+            /**
+             * Sets view for this experiment / project.
+             *
+             * @command ExperimentsController.setView(view)
+             */
+            setView: function (view) {
+                var activeExperiment = (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined);
+                var setView = false;
+
+                // go to server to persist only if experiment is persisted
+                if(Project.persisted && GEPPETTO.UserController.persistence){
+                	setView = true;
+                } else if(GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
+                    // store view in local storage for this project/experiment/user
+                    if(!activeExperiment){
+                        // no experiment active - save at project level
+                        localStorage.setItem("{0}_view".format(Project.getId()), JSON.stringify(view));
+                    } else {
+                        // experiment active - save at experiment level
+                        localStorage.setItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId()), JSON.stringify(view));
+                    }
+                    setView = true;
+                }
+                
+                if(setView){
+                    var parameters = {};
+                    var experimentId = activeExperiment ? Project.getActiveExperiment().getId() : -1;
+                    parameters["experimentId"] = experimentId;
+                    parameters["projectId"] = Project.getId();
+                    parameters["view"] = JSON.stringify(view);
+                    
+                    GEPPETTO.MessageSocket.send("set_experiment_view", parameters);
                 }
             },
 

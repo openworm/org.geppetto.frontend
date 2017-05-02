@@ -45,8 +45,19 @@ define(function (require) {
                 this.consoleFocused = mode;
             },
 
-            addWidget: function (type) {
-                var newWidget = GEPPETTO.ComponentFactory.addWidget(type);
+            isBrightnessFunctionSet: function() {
+                return this.brightnessFunctionSet;
+            },
+            
+            /**
+             * Adds widgets to Geppetto
+             *
+             * @param type
+             * @param isStateless
+             * @returns {*}
+             */
+            addWidget: function (type, isStateless) {
+                var newWidget = GEPPETTO.ComponentFactory.addWidget(type, isStateless);
                 return newWidget;
             },
 
@@ -167,8 +178,22 @@ define(function (require) {
                 return GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/pages/geppetto/G.js", GEPPETTO.G, "G");
             },
 
+            /**
+             * Sets idle timeout, -1 for no timeout
+             *
+             * @param timeOut
+             */
             setIdleTimeOut: function (timeOut) {
                 GEPPETTO.Main.idleTime = timeOut;
+            },
+
+            /**
+             * Enables Geppetto local storage features (persist views with no db)
+             *
+             * @param enabled
+             */
+            enableLocalStorage: function (enabled) {
+                GEPPETTO.Main.localStorageEnabled = enabled;
             },
 
             /**
@@ -253,20 +278,20 @@ define(function (require) {
                 }
                 return returnMessage;
             },
-
-            toggleTutorial: function () {
-                var returnMessage;
-                var modalVisible = $('#tutorial').is(':visible');
-
-                if (modalVisible) {
-                    GEPPETTO.trigger(GEPPETTO.Events.Hide_Tutorial);
-                    returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
-                }
-                else {
-                    GEPPETTO.trigger(GEPPETTO.Events.Show_Tutorial);
-                    returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
-                }
-                return returnMessage;
+            
+            toggleTutorial : function() {
+            	 var returnMessage;
+            	 var modalVisible = $('#tutorial_dialog').is(':visible');
+            	 
+                 if (modalVisible) {
+                	 GEPPETTO.trigger(GEPPETTO.Events.Hide_Tutorial);
+                     returnMessage = GEPPETTO.Resources.HIDE_TUTORIAL;
+                 }
+                 else {
+                	 GEPPETTO.trigger(GEPPETTO.Events.Show_Tutorial);
+                     returnMessage = GEPPETTO.Resources.SHOW_TUTORIAL;
+                 }
+                 return returnMessage;
             },
 
             /**

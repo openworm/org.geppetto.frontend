@@ -36,6 +36,11 @@ define(function (require) {
             previousMaxSize : {},
             maximize : false,
             collapsed : false,
+            widgetType: null,
+            stateless: false,
+            showTitleBar: true,
+            transparentBackground: false,
+            dirtyView: false,
 
             defaultSize : function(){return {height: 300, width: 350}},
             defaultPosition : function(){return {left: "50%", top: "50%"}},
@@ -54,7 +59,10 @@ define(function (require) {
                 this.position = this.defaultPosition();
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
+                this.widgetType = options.widgetType;
+                this.stateless = (options.stateless != undefined) ? options.stateless : false;
                 this.registeredEvents = [];
+                this.dirtyView = false;
                 
                 var self = this;
                 $(self.historyMenu.el).on('click', function (event) {
@@ -83,20 +91,19 @@ define(function (require) {
              * @returns {String} - Action Message
              */
             destroy: function () {
-               this.$el.remove();
-                this.destroyed=true;
+                this.$el.remove();
+                this.destroyed = true;
                 return this.name + " destroyed";
             },
 
             /**
-             *ff
              * Hides the widget
              *
              * @command hide()
              * @returns {String} - Action Message
              */
             hide: function () {
-               this.$el.dialog('close').dialogExtend();
+                this.$el.dialog('close').dialogExtend();
 
                 this.visible = false;
 
@@ -107,16 +114,25 @@ define(function (require) {
              *  Opens widget dialog
              *
              * @command show()
-             * @returns {String} - Action Message
+             * @returns {Object} - Action Message
              */
             show: function () {
-               this.$el.dialog('open').dialogExtend();
+                this.$el.dialog('open').dialogExtend();
                 this.visible = true;
 
                 //Unfocused close button
                 $(".ui-dialog-titlebar-close").blur();
 
                 return this;
+            },
+
+            /**
+             * Returns widget type as defined in GEPPETTO.Widgets
+             *
+             * @returns {int}
+             */
+            getWidgetType: function(){
+                return this.widgetType;
             },
 
             /**
@@ -138,7 +154,10 @@ define(function (require) {
                 this.name = name;
 
                 // set name to widget window
-               this.$el.dialog("option", "title", this.name).dialogExtend();
+                this.$el.dialog("option", "title", this.name).dialogExtend();
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
 
                 return this;
             },
@@ -158,6 +177,10 @@ define(function (require) {
             				at: "left top",
             				of: $(window)
             			}).dialogExtend();
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
             	return this;
             },
 
@@ -172,6 +195,10 @@ define(function (require) {
             	this.size.width = w;
             	this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
             	this.$el.trigger('resizeEnd');
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
             	return this;
             },
 
@@ -180,7 +207,7 @@ define(function (require) {
              * @param {Integer} h - Minimum Height of the widget
              */
             setMinHeight: function (h) {
-               this.$el.dialog('option', 'minHeight', h).dialogExtend();
+                this.$el.dialog('option', 'minHeight', h).dialogExtend();
                 return this;
             },
 
@@ -189,7 +216,7 @@ define(function (require) {
              * @param {Integer} w - Minimum Width of the widget
              */
             setMinWidth: function (w) {
-               this.$el.dialog('option', 'minWidth', w).dialogExtend();
+                this.$el.dialog('option', 'minWidth', w).dialogExtend();
                 return this;
             },
 
@@ -256,6 +283,27 @@ define(function (require) {
              */
             getId: function () {
                 return this.id;
+            },
+
+            /**
+             * Did something change in the state of the widget?
+             *
+             * @command isDirty()
+             * @returns {boolean} - ID of widget
+             */
+            isDirty: function () {
+                return this.dirtyView;
+            },
+
+            /**
+             * Explicitly sets status of view
+             * NOTE: we need to be able to control this from outside the component
+             *
+             * @command setDirty()
+             * @param {boolean} dirty
+             */
+            setDirty: function (dirty) {
+                this.dirtyView = dirty;
             },
 
             /**
@@ -367,11 +415,17 @@ define(function (require) {
              * hides / shows the title bar
              */
             showTitleBar: function (show) {
+                this.showTitleBar = show;
+
                 if (show) {
                    this.$el.parent().find(".ui-dialog-titlebar").show();
                 } else {
                    this.$el.parent().find(".ui-dialog-titlebar").hide();
                 }
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
                 return this;
             },
             
@@ -479,6 +533,8 @@ define(function (require) {
              * @param isTransparent
              */
             setTrasparentBackground: function(isTransparent) {
+                this.transparentBackground = isTransparent;
+
                 if(isTransparent){
                    this.$el.parent().addClass('transparent-back');
                    this.previousMaxTransparency = true;
@@ -499,7 +555,7 @@ define(function (require) {
              * Perform a jquery ui effect to the widget
              */
             perfomEffect: function (effect, options, speed){
-                this.$el.parent().effect(effect, options, speed)
+                this.$el.parent().effect(effect, options, speed);
             },
 
             /**
@@ -609,7 +665,6 @@ define(function (require) {
 
                 //add help button
                 this.addHelpButton();
-
             },
 
             /**
@@ -641,7 +696,7 @@ define(function (require) {
             	this.controller = controller;
             },
             
-            showHistoryIcon : function(show){
+            showHistoryIcon: function(show){
             	var that=this;
             	if(show && this.$el.parent().find(".history-icon").length==0){
                     this.addButtonToTitleBar($("<div class='fa fa-history history-icon' title='Show Navigation History'></div>").click(function (event) {
@@ -652,10 +707,66 @@ define(function (require) {
             	else{
             		this.$el.parent().find(".history-icon").remove();
             	}
+            },
+
+            /**
+             * Get view with attributes common to all widgets
+             *
+             * @returns {{size: {height: *, width: *}, position: {left: *, top: *}}}
+             */
+            getView: function(){
+                // get default stuff such as id, position and size
+                return {
+                    widgetType: this.widgetType,
+                    showTitleBar: this.showTitleBar,
+                    transparentBackground: this.transparentBackground,
+                    name: this.name,
+                    size: {
+                        height: this.size.height,
+                        width: this.size.width
+                    },
+                    position: {
+                        left: this.position.left,
+                        top: this.position.top
+                    }
+                }
+            },
+
+            /**
+             * Set attributes common to all widgets - override for widget specific behaviour
+             *
+             * @param view
+             */
+            setView: function(view){
+                // set default stuff such as position and size
+                if(view.size != undefined && view.size.height != 0 && view.size.width != 0){
+                    this.setSize(view.size.height, view.size.width);
+                } else {
+                    // trigger auto size if we have no size info
+                    this.setAutoWidth();
+                    this.setAutoHeight();
+                }
+
+                if(view.position != undefined){
+                    this.setPosition(view.position.left, view.position.top);
+                }
+
+                if(view.name != undefined){
+                    this.setName(view.name);
+                }
+
+                if(view.showTitleBar != undefined){
+                    this.showTitleBar(view.showTitleBar);
+                }
+
+                if(view.transparentBackground != undefined){
+                    this.setTrasparentBackground(view.transparentBackground);
+                }
+
+                // after setting view through setView, reset dirty flag
+                this.dirtyView = false;
             }
         })
-    }
-        ;
+    };
 
-})
-;
+});

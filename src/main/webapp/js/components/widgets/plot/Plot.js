@@ -15,9 +15,11 @@ define(function (require) {
 	var FileSaver = require('file-saver');
 	var pako = require('pako');
 	var JSZip = require("jszip");
-	
+
 	var widgetUtility = require("../WidgetUtility");
     widgetUtility.loadCss("geppetto/js/components/widgets/plot/Plot.css");
+
+	var ExternalInstance = require('../../../geppettoModel/model/ExternalInstance');
 
 	return Widget.View.extend({
 		plotly: null,
@@ -34,13 +36,18 @@ define(function (require) {
 		plotOptions : null,
 		reIndexUpdate : 0,
 		updateRedraw : 3,
-        functionNode: false,
+        isFunctionNode: false,
+		functionNodeData: null,
+		hasXYData: false,
+		xyData: [],
+		hasStandardPlotData: false,
         xaxisAutoRange : false,
         yaxisAutoRange : false,
         imageTypes : [],
         plotElement : null,
         xVariable : null,
         firstStep : 0,
+        updateLegendsState : false,
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -143,6 +150,7 @@ define(function (require) {
 			this.visible = options.visible;
 			this.datasets = [];
 			this.variables = [];
+			this.xyData = [];
 			this.plotOptions = this.defaultOptions();
 			//Merge passed options into existing defaultOptions object
 			$.extend( this.plotOptions, options);
@@ -209,48 +217,68 @@ define(function (require) {
          * @param {Object} instance - variable to change display label in legends
          * @param {String} legend - new legend name
          */
-        setLegend: function (instance, legend) {
-            //Check if it is a string or a geppetto object
-            var instancePath = instance;
-            if ((typeof instance) != "string") {
-                instancePath = instance.getInstancePath();
-            }
+		setLegend: function (instance, legend) {
+			//Check if it is a string or a geppetto object
+			var instancePath = instance;
+			if ((typeof instance) != "string") {
+				instancePath = instance.getInstancePath();
+			}
 
-            for(var i =0; i< this.datasets.length; i++){
-            	if(this.datasets[i].name == instancePath){
-            		this.datasets[i].name = legend;
-            	}
-            }
-            
-            Plotly.relayout(this.plotDiv, this.plotOptions);
-            this.labelsMap[instancePath] = legend;
-            
-            return this;
-        },
-        
-            plotGeneric: function(dataset) {
-                if (dataset != undefined)
-                    this.datasets.push(dataset);
+			for(var i =0; i< this.datasets.length; i++){
+				if(this.datasets[i].name == instancePath){
+					this.datasets[i].name = legend;
+				}
+			}
 
-                if(this.plotly==null){
-		    this.plotOptions.xaxis.autorange = true;
-		    this.xaxisAutoRange = true;
-		    //Creates new plot using datasets and default options
-		    this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-                    var that = this;
-		    this.plotDiv.on('plotly_doubleclick', function() {
-		        that.resize();
-		    });
-		    this.plotDiv.on('plotly_click', function() {
-		        that.resize();
-		    });
-	        }else{
-		    Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
-	        }
-	        this.resize(false);
-            },
+			Plotly.relayout(this.plotDiv, this.plotOptions);
+			this.labelsMap[instancePath] = legend;
 
-        
+			return this;
+		},
+		
+		updateLegends : function(legendExtension){
+			if(!this.updateLegendsState){
+				for(var i =0; i< this.datasets.length; i++){
+					var oldLegendName = this.datasets[i].name;
+					var variable = this.variables[this.getLegendInstancePath(oldLegendName)];
+					var newLegend = oldLegendName+ legendExtension;
+					this.variables[newLegend] = variable; 
+					this.datasets[i].name  = newLegend;
+					this.labelsMap[variable.getInstancePath()] = oldLegendName;
+				}
+
+				Plotly.relayout(this.plotDiv, this.plotOptions);
+				this.updateLegendsState = true;
+			}
+		},
+		
+		getVariables : function(){
+			return this.variables;
+		},
+
+		plotGeneric: function(dataset) {
+			if (dataset != undefined)
+				this.datasets.push(dataset);
+
+			if(this.plotly==null){
+				this.plotOptions.xaxis.autorange = true;
+				this.xaxisAutoRange = true;
+				//Creates new plot using datasets and default options
+				this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
+				var that = this;
+				this.plotDiv.on('plotly_doubleclick', function() {
+					that.resize();
+				});
+				this.plotDiv.on('plotly_click', function() {
+					that.resize();
+				});
+			}else{
+				Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
+			}
+			this.resize(false);
+		},
+
+
 		/**
 		 * Takes data series and plots them. To plot array(s) , use it as
 		 * plotData([[1,2],[2,3]]) To plot a geppetto simulation variable , use it as
@@ -262,6 +290,10 @@ define(function (require) {
 		 * @param {Object} options - options for the plotting widget, if null uses default
 		 */
 		plotData: function (data, options) {
+			// set flags for function node and xy both to false
+			this.isFunctionNode = false;
+			this.hasStandardPlotData = true;
+
 			var validVariable = eval(data);
 			if(validVariable == null || undefined){
 				return "Can't plot undefined variable";
@@ -364,8 +396,10 @@ define(function (require) {
 			this.xVariable = window.time;
 			if(plotable){
 			    this.plotGeneric();
-				}				
-			
+			}
+
+			// track change in state of the widget
+			this.dirtyView = true;
 			
 			return this;
 		},
@@ -381,8 +415,7 @@ define(function (require) {
 					this.plotOptions.height = this.plotElement.height();
 					this.plotOptions.width = this.plotElement.width();
 				}
-				//resizes plot right after creation, needed for d3 to resize 
-				//to parent's widht and height
+				//resizes plot right after creation, needed for d3 to resize to parent's width and height
 				Plotly.relayout(this.plotDiv,this.plotOptions);
 			}
 		},
@@ -409,19 +442,75 @@ define(function (require) {
 		 * Downloads a screenshot of the graphing plots
 		 */
 		downloadImage: function (imageType) {
+			var self = this;
+			
+			// play around with settings to make background temporarily white and margins wider
+			this.plotOptions.paper_bgcolor = "rgb(255,255,255)";
+			this.plotOptions.xaxis.linecolor = "rgb(0,0,0)";
+			this.plotOptions.yaxis.linecolor = "rgb(0,0,0)";
+			this.plotOptions.xaxis.tickfont.color = "rgb(0,0,0)";
+			this.plotOptions.yaxis.tickfont.color = "rgb(0,0,0)";
+			this.plotOptions.yaxis.titlefont.color = "rgb(0,0,0)";
+			this.plotOptions.xaxis.titlefont.color = "rgb(0,0,0)";
+			this.plotOptions.xaxis.tickfont.size = 18;
+			this.plotOptions.yaxis.tickfont.size = 18;
+			this.plotOptions.xaxis.titlefont.size = 18;
+			this.plotOptions.yaxis.titlefont.size = 18;
+			this.plotOptions.legend.font.size = 18;
+			this.plotOptions.legend.font.family = 'Helvetica Neue';
+			this.plotOptions.legend.font.color = "rgb(0,0,0)";
+			this.plotOptions.legend.bgcolor = "rgb(255,255,255)";
+			this.plotOptions.margin.r= 40;
+			
+			var oldMarginLeft = this.plotOptions.margin.l;
+			this.plotOptions.margin.l= 70;
+			Plotly.relayout(this.plotDiv,this.plotOptions);
+			
+			var height =  this.getSize().height;
+			var width = this.getSize().width;
+			
+			//double the size if the width and height is very small
+			if(height <500 || width <500){
+				height =  height*2;
+				width = width *2;
+			}
+			
 			Plotly.downloadImage(
-				this.plotDiv, {
-					format: imageType,
-					height: window.screen.availHeight,
-					width: window.screen.availWidth,
-				});
+					this.plotDiv, {
+						format: imageType,
+						height: height,
+						width: width
+					});
+
+			//reset background and margin to defaults
+            var reset = function(){
+                var defaultOptions = self.defaultOptions();
+                self.plotOptions.paper_bgcolor = defaultOptions.paper_bgcolor;
+                self.plotOptions.xaxis.linecolor =defaultOptions.xaxis.linecolor;
+                self.plotOptions.yaxis.linecolor = defaultOptions.xaxis.linecolor;
+                self.plotOptions.xaxis.tickfont.color =  defaultOptions.xaxis.tickfont.color;
+                self.plotOptions.yaxis.tickfont.color =  defaultOptions.yaxis.tickfont.color;
+                self.plotOptions.yaxis.titlefont.color =  defaultOptions.yaxis.titlefont.color;
+                self.plotOptions.xaxis.titlefont.color = defaultOptions.xaxis.titlefont.color;
+                self.plotOptions.xaxis.tickfont.size =  defaultOptions.xaxis.tickfont.size;
+                self.plotOptions.yaxis.tickfont.size =  defaultOptions.yaxis.tickfont.size;
+                self.plotOptions.xaxis.titlefont.size =  defaultOptions.xaxis.titlefont.size;
+                self.plotOptions.yaxis.titlefont.size =  defaultOptions.yaxis.titlefont.size;
+                self.plotOptions.legend.font.size =  defaultOptions.legend.font.size;
+                self.plotOptions.legend.font.color =  defaultOptions.legend.font.color;
+                self.plotOptions.legend.bgcolor =  defaultOptions.legend.bgcolor;
+                self.plotOptions.margin.l=  oldMarginLeft;
+                self.plotOptions.margin.r=defaultOptions.margin.r;
+                Plotly.relayout(self.plotDiv,self.plotOptions);
+            };
+			setTimeout(reset, 10);
 		},
 		
 		/**
 		 * Downloads a zip with the plotting data
 		 */
 		downloadPlotData : function(){
-			if(!this.functionNode){
+			if(!this.isFunctionNode){
 				var data = new Array();
 				var xCopied = false;
 				
@@ -589,7 +678,7 @@ define(function (require) {
 		 * Updates the plot widget with new data
 		 */
 		updateDataSet: function (step, playAll) {
-			if(!this.functionNode){
+			if(!this.isFunctionNode){
 				/*Clears the data of the plot widget if the initialized flag 
 				 *has not be set to true, which means arrays are populated but not yet plot*/
 				if(!this.initialized){
@@ -737,8 +826,11 @@ define(function (require) {
 		 * @param unitSymbol - string representing unit symbol
 		 */
 		getUnitLabel: function (unitSymbol) {
-
-			unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+			if(unitSymbol!= null || unitSymbol != undefined){
+				unitSymbol = unitSymbol.replace(/_per_/gi, " / ");
+			}else{
+				unitSymbol = "";
+			}
 
 			var unitLabel = unitSymbol;
 
@@ -746,6 +838,7 @@ define(function (require) {
 				var mathUnit = math.unit(1, unitSymbol);
 
 				var formattedUnitName = (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
+				(mathUnit.units.length > 1) ? formattedUnitName += " OVER " + mathUnit.units[1].unit.base.key : "";
 
 				if (formattedUnitName != "") {
 					formattedUnitName = formattedUnitName.replace(/_/g, " ");
@@ -793,7 +886,7 @@ define(function (require) {
 		},
 
 		clean: function (playAll) {
-			if(!this.functionNode){
+			if(!this.isFunctionNode){
 				this.plotOptions.playAll = playAll;
 				this.plotOptions.margin.r = 10;
 				this.cleanDataSets();
@@ -839,8 +932,11 @@ define(function (require) {
 		 * @param {Node} functionNode - Function Node to be displayed
 		 */
 		plotFunctionNode: function (functionNode) {
-
-            this.functionNode = true;
+			// set flags and keep track of state
+            this.isFunctionNode = true;
+			this.hasStandardPlotData = false;
+			this.hasXYData = false;
+			this.functionNodeData = functionNode.getPath();
 
 			//Check there is metada information to plot
 			if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
@@ -866,7 +962,7 @@ define(function (require) {
 				var YAxisLabel = plotMetadata["yAxisLabel"];
 				
 				//Generate options from metadata information
-				options = {
+				var options = {
 						xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
 						yaxis: {axisLabel: YAxisLabel},
 						legendText: plotTitle
@@ -886,6 +982,10 @@ define(function (require) {
 				//Set title to widget
 				this.setName(plotTitle);
 			}
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 
@@ -957,6 +1057,10 @@ define(function (require) {
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
 			this.initialized = true;
 			this.resize();
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 		
@@ -978,6 +1082,16 @@ define(function (require) {
 					return "Variable already in Plot";
 				}
 			}
+
+			// set flags
+			this.hasXYData = true;
+			this.isFunctionNode = false;
+			var xyDataEntry = { dataY : dataY.getPath(), dataX: dataX.getPath() };
+			if(dataY instanceof ExternalInstance){
+				xyDataEntry.projectId = dataY.projectId;
+				xyDataEntry.experimentId = dataY.experimentId;
+			}
+			this.xyData.push(xyDataEntry);
 
 			this.controller.addToHistory("Plot "+dataY.getInstancePath()+"/"+dataX.getInstancePath(),"plotXYData",[dataY,dataX,options],this.getId());
 
@@ -1021,7 +1135,85 @@ define(function (require) {
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
             this.updateAxis(dataY.getInstancePath());
             this.resize();
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
+		},
+
+		getView: function(){
+			var baseView = Widget.View.prototype.getView.call(this);
+
+			// handle case of function node, data function and x,y data
+			if(this.isFunctionNode){
+				baseView.dataType = 'function';
+				baseView.data = this.functionNodeData;
+			} else {
+
+				if (this.hasXYData){
+					baseView.dataType = 'object';
+					baseView.xyData = this.xyData.slice(0);
+				}
+
+				if (this.hasStandardPlotData) {
+					// simple plot with non external instances
+					baseView.dataType = 'object';
+					baseView.data = [];
+					for(var item in this.variables){
+						// only add non external instances
+						if(!(this.variables[item] instanceof ExternalInstance)){
+							baseView.data.push(item)
+						}
+					}
+				}
+			}
+
+			return baseView;
+		},
+
+		setView: function(view){
+			// set base properties
+			Widget.View.prototype.setView.call(this, view);
+
+			if(view.dataType == 'function'){
+				var functionNode = eval(view.data);
+				this.plotFunctionNode(functionNode);
+			} else if (view.dataType == 'object') {
+				// if any xy data loop through it
+				if(view.xyData != undefined){
+					for(var i=0; i<view.xyData.length; i++) {
+						var yPath = view.xyData[i].dataY;
+						var xPath = view.xyData[i].dataX;
+						// project and experiment id could be any project and any experiment
+						var projectId = view.xyData[i].projectId != undefined ? view.xyData[i].projectId : Project.getId();
+						var experimentId = view.xyData[i].projectId != undefined ? view.xyData[i].experimentId : Project.getActiveExperiment().getId();
+						this.controller.plotStateVariable(
+							projectId,
+							experimentId,
+							yPath,
+							this,
+							xPath
+						);
+					}
+				}
+
+				// if any data, loop through it
+				if(view.data != undefined){
+					for (var index in view.data) {
+						var path = view.data[index];
+						this.controller.plotStateVariable(
+							Project.getId(),
+							Project.getActiveExperiment().getId(),
+							path,
+							this
+						);
+					}
+				}
+			}
+
+			// after setting view through setView, reset dirty flag
+			this.dirtyView = false;
 		}
 
 	});

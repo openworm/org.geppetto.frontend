@@ -23,7 +23,8 @@ define(function (require) {
             idleTime: 0,
             disconnected: false,
             status: 0,
-            statusWorker: null,
+            statusWorker : null,
+            localStorageEnabled : false,
 
             getStatusWorker: function () {
                 return this.statusWorker;

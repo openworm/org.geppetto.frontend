@@ -16,7 +16,7 @@ var getCLIParameter=function(param){
 		}
 	}
 	return "";
-}
+};
 
 console.log("\nThe arguments passed to HtmlWebpackPlugin are:\n");
 

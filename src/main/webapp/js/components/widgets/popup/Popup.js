@@ -92,6 +92,8 @@ define(function (require) {
 		 * @param {String} msg - The message that is displayed inside the widget
 		 */
 		setMessage: function (msg) {
+			this.data = msg;
+
 			$("#" + this.id).html(msg);
 			GEPPETTO.Console.debugLog("Set new Message for " + this.id);
 
@@ -105,6 +107,9 @@ define(function (require) {
 				hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
 				GEPPETTO.Console.debugLog("Hooked up custom handlers for " + this.id);
 			}
+
+			// track change in state of the widget
+			this.dirtyView = true;
 
 			return this;
 		},
@@ -174,6 +179,10 @@ define(function (require) {
 			if(this.collapsed){
 				this.$el.dialogExtend("collapse");
 			}
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 
@@ -286,6 +295,10 @@ define(function (require) {
 
 			// trigger routine that hooks up handlers
 			hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
+
+			// track change in state of the widget
+			this.dirtyView = true;
+
 			return this;
 		},
 		
@@ -319,6 +332,8 @@ define(function (require) {
         
         setButtonBarControls : function(controls){
         	this.buttonBarControls = controls;
+			// track change in state of the widget
+			this.dirtyView = true;
         },
         
         setButtonBarConfiguration : function(configuration){
@@ -338,6 +353,9 @@ define(function (require) {
 					$('.colorpicker-visible').addClass('colorpicker-hidden').removeClass('colorpicker-visible');
 				}
 			});
+
+			// track change in state of the widget
+			this.dirtyView = true;
         },
         
         destroy: function () {
@@ -346,6 +364,63 @@ define(function (require) {
         		ReactDOM.unmountComponentAtNode(bar);
         	}
             Widget.View.prototype.destroy.call(this);
-        }
+        },
+
+		getView: function(){
+			var baseView = Widget.View.prototype.getView.call(this);
+
+			// add data-type and data field + any other custom fields in the component-specific attribute
+			baseView.dataType = (typeof this.data == "string") ? "string" : "object";
+			baseView.data = this.data;
+			baseView.componentSpecific = {
+				customHandlers: this.customHandlers.map(function(item){
+					return {
+						funct: item.funct.toString(),
+						event: item.event,
+						metType: item.metType
+					}
+				}),
+				buttonBarControls: this.buttonBarControls,
+				buttonBarConfig: this.buttonBarConfig
+			};
+
+			return baseView;
+		},
+
+		setView: function(view){
+			// set base properties
+			Widget.View.prototype.setView.call(this, view);
+
+			// set data
+			if(view.data != undefined){
+				if(view.dataType == 'string'){
+					this.setMessage(view.data);
+				} else {
+					// it's an object
+					this.setData(view.data);
+				}
+			}
+
+			// set component specific stuff, only custom handlers for popup widget
+			if(view.componentSpecific != undefined){
+				if(view.componentSpecific.customHandlers != undefined){
+					for(var i=0; i<view.componentSpecific.customHandlers.length; i++){
+						this.addCustomNodeHandler(
+							eval("(" + view.componentSpecific.customHandlers[i].funct + ")"),
+							view.componentSpecific.customHandlers[i].event,
+							view.componentSpecific.customHandlers[i].metaType
+						);
+					}
+				}
+
+				if(view.componentSpecific.buttonBarControls != undefined && view.componentSpecific.buttonBarConfig != undefined){
+					this.setButtonBarControls(view.componentSpecific.buttonBarControls);
+					this.setButtonBarConfiguration(view.componentSpecific.buttonBarConfig);
+				}
+			}
+
+			// after setting view through setView, reset dirty flag
+			this.dirtyView = false;
+		}
 	});
 });

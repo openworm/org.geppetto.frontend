@@ -1,6 +1,7 @@
 define(function (require) {
 	return function (GEPPETTO) {
-		
+		// Enable local storage
+		G.enableLocalStorage(true);
 		
 	    window.voltage_color = function(x) {
 	        x = (x+0.07)/0.1; // normalization
@@ -50,6 +51,12 @@ define(function (require) {
 
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
+		
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('HOME', {}, undefined);
+		
+		//Home button initialization
+		GEPPETTO.ComponentFactory.addComponent('HOME', {}, undefined);
 
 		//Save initialization
 		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));

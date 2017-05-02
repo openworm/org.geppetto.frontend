@@ -21,6 +21,7 @@ define(['backbone'], function (require) {
         downloadPermission : null,
         readOnly : true,
         isPublicProject : false,
+        view: {},
 
         /**
          * Initializes this project with passed attributes
@@ -346,6 +347,45 @@ define(['backbone'], function (require) {
             }
         },
 
+        /**
+         * Set project view
+         *
+         * @param view
+         */
+        setView: function(view){
+            this.set('view', JSON.stringify(view));
+            GEPPETTO.ExperimentsController.setView(view);
+        },
+
+        /**
+         * Gets project view
+         *
+         * @returns {exports.view|{}}
+         */
+        getView: function(){
+            var viewsString = this.get('view');
+            var views = undefined;
+
+            if(viewsString != undefined){
+                views = JSON.parse(viewsString);
+            }
+            return views;
+        },
+
+         /*** Download this project.
+         *
+         * @command ProjectNode.downloadModel(format)
+         * * @param {String} name - File format to download
+         */
+        download : function(path, format) {
+        	var parameters = {};
+        	parameters["projectId"] = this.getId();
+        	GEPPETTO.MessageSocket.send("download_project", parameters);
+
+        	var formatMessage = (format=="")?"default format":format;
+        	return GEPPETTO.Resources.DOWNLOADING_PROJECT + formatMessage;
+        },
+        
         /**
          * Print out formatted node
          */

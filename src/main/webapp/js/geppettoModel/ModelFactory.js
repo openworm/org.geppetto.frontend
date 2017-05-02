@@ -2119,10 +2119,12 @@ define(function (require) {
             },
 
             /** Creates an instance */
-            createExternalInstance: function (path) {
+            createExternalInstance: function (path, projectId, experimentId) {
                 var options = {
             		_metaType: GEPPETTO.Resources.INSTANCE_NODE,
-            		path:path
+            		path: path,
+                    projectId: projectId,
+                    experimentId: experimentId
         		};
           
                 return new ExternalInstance(options);

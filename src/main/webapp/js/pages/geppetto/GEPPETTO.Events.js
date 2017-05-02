@@ -13,13 +13,13 @@ define(function (require) {
          * @class GEPPETTO.Events
          */
         GEPPETTO.Events = {
-
             Select: "experiment:selection_changed",
 			Visibility_changed : "experiment:visibility_changed",
 			Focus_changed: "experiment:focus_changed",
 			Experiment_over: "experiment:over",
 			Project_loading: "project:loading",
 			Project_loaded: "project:loaded",
+			Project_downloaded : "project:downloaded",
 			Model_loaded: "model:loaded",
 			Experiment_loaded: "experiment:loaded",
 			ModelTree_populated: "experiment:modeltreepopulated",
@@ -35,6 +35,7 @@ define(function (require) {
 			Experiment_failed: "experiment:failed",
 			Experiment_update: "experiment:update",
 			Experiment_updated: "experiment:updated",
+			Experiment_renamed: "experiment:renamed",
 			Experiment_deleted: "experiment_deleted",
 			Experiment_active: "experiment_active",
 			Experiment_created:"experiment:created",
@@ -53,6 +54,7 @@ define(function (require) {
 			Control_panel_open: "control_panel:open",
 			Control_panel_close: "control_panel:close",
 			Lit_entities_changed: "lit_entities_changed",
+            Component_destroyed: "component_destroyed",
 
             listening: false,
 
@@ -114,8 +116,11 @@ define(function (require) {
                 GEPPETTO.on(this.Lit_entities_changed, function (parameters) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Lit_entities_changed, parameters);
                 });
-		GEPPETTO.on(this.Do_experiment_play, function () {
+		        GEPPETTO.on(this.Do_experiment_play, function () {
                     Project.getActiveExperiment().playAll();
+                });
+                GEPPETTO.on(GEPPETTO.Events.Component_destroyed, function(){
+                    GEPPETTO.ViewController.anyComponentsDestroyed = true;
                 });
             }
         };

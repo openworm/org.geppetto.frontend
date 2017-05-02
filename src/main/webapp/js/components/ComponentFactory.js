@@ -43,7 +43,7 @@ define(function (require) {
 		GEPPETTO.ComponentFactory = {
 
 			//All the components potentially instantiable go here
-			components : {
+			var components = {
 				'FORM':'interface/form/Form',
 				'PANEL':'controls/panel/Panel',
 				'LOGO':'interface/logo/Logo',
@@ -67,6 +67,7 @@ define(function (require) {
 				'CHECKBOX': 'controls/Checkbox',
 				'TEXTFIELD': 'controls/TextField',
 				'RAISEDBUTTON': 'controls/RaisedButton',
+				'BUTTON':'controls/button/Button',
 				'DICOMVIEWER': 'interface/dicomViewer/DicomViewer',
 				'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
 				'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
@@ -74,8 +75,6 @@ define(function (require) {
 				'CANVAS3D': 'interface/3dCanvas/Canvas'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
-				
-				//'WIDGETCONTAINER': 'widgets/WidgetContainer'
 			},
 
 			// componentsShortcut : {
@@ -86,15 +85,48 @@ define(function (require) {
 				//We require this synchronously to properly show spinner when loading projects
 				this.renderComponent(React.createFactory(spinner)(),document.getElementById("load-spinner"));
 			},
+
+			componentsMap: {},
+
+			getComponents: function(){
+				return this.componentsMap;
+			},
 			
-			addComponent: function(componentID, properties, container, callback){
+			addComponent: function(componentType, properties, container, callback){
 				var that=this;
-				require(["./" + GEPPETTO.ComponentFactory.components[componentID]], function(loadedModule){
-					var component = React.createFactory(loadedModule)(properties)
-					var renderedComponent = that.renderComponent(component, container, callback);
+				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
+					var component = React.createFactory(loadedModule)(properties);
+					var renderedComponent = that.renderComponent(component, container);
+					if(callback!=undefined){
+						callback(renderedComponent);
+					}
+					
+					// create id for the component being rendered
+					var componentID = that.createComponentID(componentType,1);
+					// assign unique id to component
+					renderedComponent.id = componentID;
+					
+					// keep track of components in dictionary by id
+					that.componentsMap[componentID] = renderedComponent;
+					
+					// create autocomplete tags for the component
+					window[componentID] = renderedComponent;
+					GEPPETTO.Console.updateTags(componentID, renderedComponent);
+
 					return renderedComponent;
 				});
 				
+			},
+			
+			/**Creates unique ID's for the components being created*/
+			createComponentID : function(componentType,index){
+				var componentID = componentType.charAt(0).toUpperCase() + componentType.slice(1).toLowerCase() + index.toString();
+				
+				if(componentID in this.componentsMap){
+					return this.createComponentID(componentType, ++index);
+				}
+				
+				return componentID;
 			},
 
 			addWidget: function(componentID, properties, callback){

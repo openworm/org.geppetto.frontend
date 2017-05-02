@@ -56,8 +56,8 @@ define(function (require) {
              * @param isStateless
              * @returns {*}
              */
-            addWidget: function (type, isStateless) {
-                var newWidget = GEPPETTO.ComponentFactory.addWidget(type, isStateless);
+            addWidget: function (type, properties, callback) {
+                var newWidget = GEPPETTO.ComponentFactory.addWidget(type, properties, callback);
                 return newWidget;
             },
 

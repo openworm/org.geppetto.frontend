@@ -20,7 +20,7 @@ define(['./extensionsConfiguration.json', 'geppetto','../js/components/Component
     for (var pathIndex in paths){
     	for (var availableExtensionIndex in availableExtensions){
     		try {
-		    	require(['../extensions/' + availableExtensions[availableExtensionIndex] + "/" + paths[pathIndex]], function(componentsInitialization){
+		    	require(['../extensions/' + availableExtensions[availableExtensionIndex] + "/" + paths[pathIndex] + "/" + paths[pathIndex]], function(componentsInitialization){
 					componentsInitialization(GEPPETTO);
 				});
     		}

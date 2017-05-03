@@ -18,11 +18,13 @@ define(function(require)
              *  e.g "kilometer" for unit : "km"
              */
             addUnit : function(unit,label){
+            	unit = unit.replace(/\s/g,'');
             	this.unitsMap[unit] = label;
             },
             
             getUnitLabel : function(unit){
             	var label;
+            	unit = unit.replace(/\s/g,'');
             	if(unit!=undefined && unit != null){
             		label = this.unitsMap[unit];
             	}
@@ -34,11 +36,15 @@ define(function(require)
             },
             
             hasUnit : function(unit){
+            	unit = unit.replace(/\s/g,'');
+            	
+            	var hasUnit = false;
             	var match = this.unitsMap[unit];
             	if(match!=undefined || match !=null){
-            		return true;
+                    hasUnit = true;
             	}
-            	return false;
+
+            	return hasUnit;
             }
         };
 

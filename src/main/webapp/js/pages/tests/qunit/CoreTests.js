@@ -109,10 +109,14 @@ define(function (require) {
 
             var initialLabel = plot.getUnitLabel("S / m2");
             
-            assert.equal(initialLabel,"Electric conductance over surface (S/m<sup>2</sup>)", "Test Math.js unit");
+            assert.equal(initialLabel,"Electric conductance over surface (S / m<sup>2</sup>)", "Test Math.js unit");
             
             GEPPETTO.UnitsController.addUnit("S/m2","Electric conductance OVER density");
             initialLabel = plot.getUnitLabel("S / m2");
+            
+            assert.equal(initialLabel,"Electric conductance over density (S / m<sup>2</sup>)", "Test Math.js unit");
+            
+            initialLabel = plot.getUnitLabel("S/m2");
             
             assert.equal(initialLabel,"Electric conductance over density (S/m<sup>2</sup>)", "Test Math.js unit");
 

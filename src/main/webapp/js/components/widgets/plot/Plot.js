@@ -836,7 +836,6 @@ define(function (require) {
 
 			if (unitSymbol != undefined && unitSymbol != null && unitSymbol != "") {
 				var formattedUnitName = "";
-				unitSymbol = unitSymbol.replace(/\s/g,'');
 				if(GEPPETTO.UnitsController.hasUnit(unitSymbol)){
 					formattedUnitName =GEPPETTO.UnitsController.getUnitLabel(unitSymbol);
 				}else{

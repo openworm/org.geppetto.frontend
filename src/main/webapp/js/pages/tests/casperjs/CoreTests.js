@@ -462,12 +462,6 @@ function ca1Test(test){
 								casper.waitUntilVisible('button#plot', function () {
 									test.assertVisible('button#plot', "Plot variables icon correctly visible");
 									this.echo("Plot variables button became visible correctly");
-//									this.evaluate(function(){
-//										$("#plot").click();
-//									});
-//									this.waitUntilVisible('div[id="Plot1"]', function () {
-//										this.echo("Plot 1 came up correctly");
-//									}, null, 20000);
 								}, null, 8000);
 							});
 						});

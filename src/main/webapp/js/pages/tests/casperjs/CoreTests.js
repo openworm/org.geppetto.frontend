@@ -71,7 +71,7 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 			test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
 			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
 			c302Test(test);
-		},null,30000);
+		},null,450000);
 	});
 
 	/**Tests Acnet project**/
@@ -389,6 +389,7 @@ function acnetTest(test){
 								this.echo("Waiting to see if the Plot variables button becomes visible");
 								casper.waitUntilVisible('button#plot', function () {
 									test.assertVisible('button#plot', "Plot variables icon correctly visible");
+									test.assertDoesntExist('button#watch', "Watch button correctly hidden");
 									this.echo("Plot variables button became visible correctly");
 									this.evaluate(function(){
 										$("#plot").click();
@@ -399,6 +400,31 @@ function acnetTest(test){
 								}, null, 8000);
 							});
 						});
+						
+						this.mouseEvent('click', 'i.fa-search', "attempting to close spotlight");
+						
+						casper.waitWhileVisible(function(){
+							this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
+
+							this.waitUntilVisible('div#spotlight', function () {
+								test.assertVisible('div#spotlight', "Spotlight opened");
+
+								//type in the spotlight
+								this.sendKeys('input#typeahead', 
+										"acnet2.pyramidals_48[0].biophys.membraneProperties.Ca_pyr_soma_group.gDensity", {keepFocus: true});
+								//press enter
+								this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
+
+								casper.wait(1000, function () {
+									casper.then(function () {
+										this.echo("Waiting to see if the Plot and watch variable buttons becomes visible");
+										test.assertDoesntExist('button#plot', "Plot variables icon correctly invisible");
+										test.assertDoesntExist('button#watch', "Watch button correctly hidden");
+										this.echo("Variables button are hidden correctly");
+									});
+								});
+							});
+						},null,1000);
 					});
 				});
 			});

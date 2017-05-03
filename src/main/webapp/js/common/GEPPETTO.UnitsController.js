@@ -34,11 +34,14 @@ define(function(require)
             },
             
             hasUnit : function(unit){
+                var hasUnit = false;
+
             	var match = this.unitsMap[unit];
             	if(match!=undefined || match !=null){
-            		return true;
+                    hasUnit = true;
             	}
-            	return false;
+
+            	return hasUnit;
             }
         };
 

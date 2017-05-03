@@ -17,6 +17,11 @@ define(function (require) {
 	            return [1, (1-(x-0.75)*4), 0];
 	        }
 	    };
+
+		//Canvas initialisation
+		GEPPETTO.ComponentFactory.addComponent('CANVAS3D', {}, document.getElementById("sim"), function () {
+            this.displayAllInstances();
+        });
 	    
 		//Logo initialization
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));

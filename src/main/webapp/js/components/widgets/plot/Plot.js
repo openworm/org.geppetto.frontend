@@ -835,11 +835,17 @@ define(function (require) {
 			var unitLabel = unitSymbol;
 
 			if (unitSymbol != undefined && unitSymbol != null && unitSymbol != "") {
-				var mathUnit = math.unit(1, unitSymbol);
+				var formattedUnitName = "";
+				unitSymbol = unitSymbol.replace(/\s/g,'');
+				if(GEPPETTO.UnitsController.hasUnit(unitSymbol)){
+					formattedUnitName =GEPPETTO.UnitsController.getUnitLabel(unitSymbol);
+				}else{
+					var mathUnit = math.unit(1, unitSymbol);
 
-				var formattedUnitName = (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
-				(mathUnit.units.length > 1) ? formattedUnitName += " OVER " + mathUnit.units[1].unit.base.key : "";
-
+					formattedUnitName = (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
+					(mathUnit.units.length > 1) ? formattedUnitName += " OVER " + mathUnit.units[1].unit.base.key : "";
+				}
+				
 				if (formattedUnitName != "") {
 					formattedUnitName = formattedUnitName.replace(/_/g, " ");
 					formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();

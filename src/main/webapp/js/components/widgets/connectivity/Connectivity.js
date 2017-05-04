@@ -449,7 +449,11 @@ define(function (require) {
                     }
                 }
 
-                this.setData(obj, deserializedOptions);
+                var that = this;
+                // resolve connections and pass the line below as a callback
+                Model.neuroml.resolveAllImportTypes(function(){
+                    that.setData(obj, deserializedOptions);
+                });
             }
 
             // after setting view through setView, reset dirty flag

@@ -352,6 +352,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
+					<warSourceExcludes>node_modules/**</warSourceExcludes>
 					<packagingExcludes>WEB-INF/classes/lib/*.jar, WEB-INF/lib/*.jar, node_modules/**, node/**</packagingExcludes>
 					<warName>org.geppetto.frontend</warName>
 					<archive>

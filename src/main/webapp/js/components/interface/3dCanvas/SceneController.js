@@ -240,6 +240,34 @@ define(['jquery'], function () {
         },
 
         /**
+         * Retrieves the color for a given instance.
+         * If multiple canvas are present and they have different colors associated to the given instance an array is returned instead.
+         *
+         * @param {String}
+         *            instancePath - Instance path of the instance to change color
+         */
+        getColor: function (instance) {
+            var colors=[];
+            for (var i = 0; i < this.canvasComponents.length; i++) {
+                var c = this.canvasComponents[i].getColor(instance);
+                if(!$.inArray(c,colors)){
+                    colors.push(c);
+                }
+            }
+            if(colors.length==1){
+                return colors[0];
+            }
+            else if(colors.length==0){
+                return undefined;
+            }
+            else{
+                return colors;
+            }
+        },
+
+
+
+        /**
          * Change the default opacity for a given instance in all existing canvas.
          *
          * @param {String}

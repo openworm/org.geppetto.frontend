@@ -127,6 +127,17 @@ define(function (require) {
         },
 
         /**
+         * Retrieves the color of a given instance
+         *
+         * @param {String}
+         *            instance - Instance we want the color of
+         */
+        getColor: function (instance) {
+            this.engine.getColor(instance);
+            return this;
+        },
+
+        /**
          * Change the default opacity for a given instance
          *
          * @param {String}

@@ -1454,18 +1454,23 @@ define(['jquery'], function () {
                                 if (child.hasOwnProperty("material")) {
                                     that.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                                     child.material.opacity = Math.max(0.5, child.material.defaultOpacity);
-                                    child.geometry.computeBoundingBox();
-                                    that.controls.target.copy(child.position);
-                                    that.controls.target.add(child.geometry.boundingBox.getCenter());
+
+                                    if (GEPPETTO.isKeyPressed('c')) {
+                                        child.geometry.computeBoundingBox();
+                                        that.controls.target.copy(child.position);
+                                        that.controls.target.add(child.geometry.boundingBox.getCenter());
+                                    }
                                 }
                             });
                         } else {
                             this.setThreeColor(mesh.material.color, GEPPETTO.Resources.COLORS.SELECTED);
                             mesh.material.opacity = Math.max(0.5, mesh.material.defaultOpacity);
-                            mesh.geometry.computeBoundingBox();
-                            //let's set the center of rotation to the selected mesh
-                            this.controls.target.copy(mesh.position);
-                            this.controls.target.add(mesh.geometry.boundingBox.getCenter());
+                            if (GEPPETTO.isKeyPressed('c')) {
+                                mesh.geometry.computeBoundingBox();
+                                //let's set the center of rotation to the selected mesh
+                                this.controls.target.copy(mesh.position);
+                                this.controls.target.add(mesh.geometry.boundingBox.getCenter());
+                            }
                         }
                         mesh.selected = true;
                         mesh.ghosted = false;
@@ -1753,10 +1758,10 @@ define(['jquery'], function () {
         },
 
         /**
-         * Change the color of a given aspect
+         * Change the color of a given instance
          *
-         * @param {String}
-         *            instancePath - Instance path of aspect to change color
+         * @param instancePath
+         * @param color
          */
         setColor: function (instancePath, color) {
             if (!this.hasInstance(instancePath)) {
@@ -1779,6 +1784,52 @@ define(['jquery'], function () {
             }
         },
 
+        /**
+         * Retrieves the color of a given instance in this canvas
+         * @param instance
+         * @return {string}
+         */
+        getColor: function (instance) {
+            var color = "";
+            if (typeof instance.getChildren === "function") {
+                //this is a an array, it will contain children
+                var children = instance.getChildren();
+
+                var color = "";
+                for (var i = 0; i < children.length; i++) {
+                    if (typeof children[i].getColor === "function") {
+                        var newColor = children[i].getColor();
+                        if (color == "") {
+                            color = newColor;
+                        }
+                        else if (color != newColor) {
+                            return "";
+                        }
+                    }
+                }
+            }
+
+            var meshes = this.getRealMeshesForInstancePath(instance.getInstancePath());
+            if (meshes.length > 0) {
+                for (var i = 0; i < meshes.length; i++) {
+                    var mesh = meshes[i];
+                    if (mesh) {
+                        mesh.traverse(function (object) {
+                            if (object.hasOwnProperty("material")) {
+                                if (color == "") {
+                                    color = object.material.defaultColor;
+                                }
+                                else if (color != object.material.defaultColor) {
+                                    return "";
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            return color;
+        },
         /**
          * Assign random color to instance if leaf - if not leaf assign random colr to all leaf children recursively
          * @param instance
@@ -1813,7 +1864,9 @@ define(['jquery'], function () {
             }
 
 
-        },
+        }
+
+        ,
 
         /**
          * Change the default opacity for a given aspect. The opacity set with this command API will be persisted across different workflows, e.g. selection.
@@ -1849,7 +1902,8 @@ define(['jquery'], function () {
                 return true;
             }
             return false;
-        },
+        }
+        ,
 
         /**
          * Set the threshold (number of 3D primitives on the scene) above which we switch the visualization to lines
@@ -1858,7 +1912,8 @@ define(['jquery'], function () {
          */
         setLinesThreshold: function (threshold) {
             this.linesThreshold = threshold;
-        },
+        }
+        ,
 
         /**
          * Change the type of geometry used to visualize the instance
@@ -1888,7 +1943,8 @@ define(['jquery'], function () {
             this.traverseInstances([instance], lines, thickness);
 
             return true;
-        },
+        }
+        ,
 
         /**
          * Set the type of geometry used to visualize all the instances in the scene
@@ -1906,7 +1962,8 @@ define(['jquery'], function () {
                     }
                 }
             }
-        },
+        }
+        ,
 
 
         /**
@@ -1929,7 +1986,44 @@ define(['jquery'], function () {
 
             this.zoomToParameters(zoomParameters);
 
+        }
+        ,
+
+        /**
+         *
+         * @param instances
+         */
+        zoomTo: function (instances) {
+            this.controls.reset();
+            this.zoomToParameters(this.zoomIterator(instances, {}));
         },
+
+        /**
+         *
+         * @param instances
+         * @param zoomParameters
+         * @returns {*}
+         */
+        zoomIterator: function (instances, zoomParameters) {
+            var that = this;
+            for (var i = 0; i < instances.length; i++) {
+                var instancePath = instances[i].getInstancePath();
+                var mesh = this.meshes[instancePath];
+                if (mesh) {
+                    mesh.traverse(function (object) {
+                        if (object.hasOwnProperty("geometry")) {
+                            that.addMeshToZoomParameters(object, zoomParameters);
+                        }
+                    });
+                }
+                else {
+                    zoomParameters = this.zoomIterator(instances[i].getChildren(), zoomParameters);
+                }
+
+            }
+            return zoomParameters;
+        },
+
 
         /**
          * Change color for meshes that are connected to other meshes. Color depends on whether that instance is an output, input or both
@@ -1984,7 +2078,8 @@ define(['jquery'], function () {
                     outputs[otherEndPath] = connection.getInstancePath();
                 }
             }
-        },
+        }
+        ,
 
         /**
          *
@@ -1994,7 +2089,8 @@ define(['jquery'], function () {
         hasInstance: function (instance) {
             var instancePath = typeof instance == "string" ? instance : instance.getInstancePath();
             return this.meshes[instancePath] != undefined;
-        },
+        }
+        ,
 
         /**
          * Restore the original colour of the connected instances
@@ -2037,7 +2133,8 @@ define(['jquery'], function () {
                     mesh.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                 }
             }
-        },
+        }
+        ,
 
 
         /**
@@ -2069,7 +2166,8 @@ define(['jquery'], function () {
                     }
                 }
             }
-        },
+        }
+        ,
 
         /**
          *
@@ -2189,7 +2287,8 @@ define(['jquery'], function () {
                 this.scene.add(line);
                 this.connectionLines[connection.getInstancePath()] = line;
             }
-        },
+        }
+        ,
 
         /**
          * Removes connection lines, all if nothing is passed in or just the ones passed in.
@@ -2219,7 +2318,8 @@ define(['jquery'], function () {
                 }
                 this.connectionLines = [];
             }
-        },
+        }
+        ,
 
         /**
          *
@@ -2272,7 +2372,8 @@ define(['jquery'], function () {
                 this.createGroupMeshes(a, geometryGroups, newGroups);
             }
             return groups;
-        },
+        }
+        ,
 
         /**
          * Highlight part of a mesh
@@ -2301,7 +2402,8 @@ define(['jquery'], function () {
                     this.setThreeColor(groupMesh.material.color, splitHighlightedGroups[groupName].color.getHex());
                 }
             }
-        },
+        }
+        ,
 
         /**
          * Split merged mesh into individual meshes
@@ -2393,7 +2495,8 @@ define(['jquery'], function () {
             groupElements[instancePath] = {};
             groupElements[instancePath].color = GEPPETTO.Resources.COLORS.SPLIT;
             this.createGroupMeshes(instancePath, geometryGroups, groupElements);
-        },
+        }
+        ,
 
         /**
          * Add mesh to geometry groups
@@ -2424,7 +2527,8 @@ define(['jquery'], function () {
                 geometry.merge(m.geometry, m.matrix);
             }
             return true;
-        },
+        }
+        ,
 
         /**
          * Create group meshes for given groups, retrieves from map if already present
@@ -2478,7 +2582,8 @@ define(['jquery'], function () {
                 groupMesh.visible = true;
                 this.scene.add(groupMesh);
             }
-        },
+        }
+        ,
 
         /**
          * Merge mesh that was split before
@@ -2511,7 +2616,8 @@ define(['jquery'], function () {
                     this.scene.add(mergedMesh);
                 }
             }
-        },
+        }
+        ,
 
         /**
          *
@@ -2547,7 +2653,8 @@ define(['jquery'], function () {
             }
 
             this.showVisualGroupsRaw(elements, instance, this.splitMeshes);
-        },
+        }
+        ,
 
         /**
          *
@@ -2572,7 +2679,8 @@ define(['jquery'], function () {
                 groupMesh.visible = true;
                 this.setThreeColor(groupMesh.material.color, visualGroup.color);
             }
-        },
+        }
+        ,
 
         /**
          * Shows a visual group
@@ -2599,7 +2707,8 @@ define(['jquery'], function () {
 
                 }
             }
-        },
+        }
+        ,
 
         /**
          *
@@ -2615,7 +2724,8 @@ define(['jquery'], function () {
                 }
             }
             return visible;
-        },
+        }
+        ,
 
         /**
          *
@@ -2631,7 +2741,8 @@ define(['jquery'], function () {
                 }
             }
             return selected;
-        },
+        }
+        ,
 
         /**
          * Reinitializes the camera with the Y axis flipped
@@ -2640,7 +2751,8 @@ define(['jquery'], function () {
             this.camera.up = new THREE.Vector3(0, -1, 0);
             this.setupControls();
             this.resetCamera();
-        },
+        }
+        ,
 
         /**
          *
@@ -2649,7 +2761,8 @@ define(['jquery'], function () {
             this.camera.direction = new THREE.Vector3(0, 0, -1);
             this.setupControls();
             this.resetCamera();
-        },
+        }
+        ,
 
         /**
          *
@@ -2657,7 +2770,8 @@ define(['jquery'], function () {
          */
         movieMode: function (toggle) {
             this.configureRenderer(toggle);
-        },
+        }
+        ,
 
         /**
          * Resets the scene controller
@@ -2667,7 +2781,8 @@ define(['jquery'], function () {
             this.aboveLinesThreshold = false;
         }
 
-    };
+    }
+    ;
 
     return ThreeDEngine;
 });

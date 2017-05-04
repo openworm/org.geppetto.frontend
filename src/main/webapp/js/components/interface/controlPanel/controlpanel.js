@@ -1,35 +1,3 @@
-/*******************************************************************************
- *
- * Copyright (c) 2011, 2016 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
 define(function (require) {
 
     function loadCss(url) {
@@ -354,14 +322,15 @@ define(function (require) {
                 if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                     defColor = entity.getColor();
                 }
-
-                // init dat color picker
                 var coloPickerElement = $('#' + this.colorPickerBtnId);
                 coloPickerElement.colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
-                coloPickerElement.colorpicker('setValue', defColor.replace(/0X/i, "#"));
+
+                if(defColor!=undefined){
+                    // init dat color picker
+                    coloPickerElement.colorpicker('setValue', defColor.replace(/0X/i, "#"));
+                }
 
                 // closure on local scope at this point - hook on change event
-                
                 coloPickerElement.on('changeColor', function (e) {
                     that.colorPickerActionFn(e.color.toHex().replace("#", "0x"));
                     $(this).css("color", e.color.toHex());
@@ -490,9 +459,12 @@ define(function (require) {
                         if (entity != undefined && controlConfig.id == "color") {
                             that.colorPickerBtnId = idVal;
                             that.colorPickerActionFn = actionFn;
-                            // set style val to color tint icon
-                            var colorVal = String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0, 7);
-                            styleVal = {color: colorVal.startsWith('#') ? colorVal : ('#' + colorVal) };
+                            var color = entity.getColor();
+                            if(color!=undefined) {
+                                // set style val to color tint icon
+                                var colorVal = String(color.replace(/0X/i, "#") + "0000").slice(0, 7);
+                                styleVal = {color: colorVal.startsWith('#') ? colorVal : ('#' + colorVal)};
+                            }
                             classVal += " color-picker-button";
                         }
 

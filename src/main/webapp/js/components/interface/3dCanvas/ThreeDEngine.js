@@ -29,7 +29,7 @@ define(['jquery'], function () {
     function ThreeDEngine(container, viewerId) {
 
         this.container = container;
-        this.colorController = require('./ColorController');
+        this.colorController = new(require('./ColorController'))();
         this.viewerId = viewerId;
 
         //Engine components
@@ -2585,7 +2585,7 @@ define(['jquery'], function () {
 
                 // Update visualization feature for a mesh
                 if (mergedMesh.ghosted) {
-                    this.ghostEffect([groupMesh], true);
+                    this.unselectedTransparent([groupMesh], true);
                 }
                 if (mergedMesh.selected) {
                     this.selectInstance(groupName);

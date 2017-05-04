@@ -513,7 +513,7 @@ define(function (require) {
             }
 
             if (useSelection) {
-                var selection = GEPPETTO.G.getSelection();
+                var selection = GEPPETTO.SceneController.getSelection();
                 if (selection.length > 0) {
                     this.openToInstance(selection[selection.length - 1]);
                     return;

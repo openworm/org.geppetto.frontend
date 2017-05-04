@@ -536,25 +536,34 @@ define(function(require) {
 
                     for (var i = 0; i < instancePath.length; i++) {
                         try {
-                            instances[i] = eval(InstanceVarName + instancePath[i]);
-                            if (instances[i] == undefined) {
+                            var potentialVar = eval(InstanceVarName + instancePath[i]);
+                            if(potentialVar!=undefined){
+                                if (override) {
+                                    GEPPETTO.ModelFactory.deleteInstance(instances[i]);
+                                    Instances.addInstances(instancePath[i]);
+                                    instances.push(eval(InstanceVarName + instancePath[i]));
+                                }
+                                else{
+                                    instances.push(potentialVar);
+                                }
+                            }
+                            else {
                                 if (create) {
                                     Instances.addInstances(instancePath[i]);
-                                    instances[i] = eval(InstanceVarName + instancePath[i]);
+                                    instances.push(eval(InstanceVarName + instancePath[i]));
                                 }
-                            } else if (override) {
-                                GEPPETTO.ModelFactory.deleteInstance(instances[i]);
-                                Instances.addInstances(instancePath[i]);
-                                instances[i] = eval(InstanceVarName + instancePath[i]);
                             }
                         } catch (e) {
                             if (create) {
-                                Instances.addInstances(instancePath[i]);
-                                instances[i] = eval(InstanceVarName + instancePath[i]);
+                                try{
+
+                                    Instances.addInstances(instancePath[i]);
+                                    instances[i] = eval(InstanceVarName + instancePath[i]);
+                                }
+                                catch(e){
+                                    throw ("The instance " + instancePath[i] + " does not exist in the current model");
+                                }
                             }
-                        }
-                        if (instances[i] == undefined && create) {
-                            throw ("The instance " + instancePath[i] + " does not exist in the current model");
                         }
                     }
 

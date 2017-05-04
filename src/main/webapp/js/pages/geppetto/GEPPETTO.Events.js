@@ -99,22 +99,11 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_play, parameters);
                 });
 
-                GEPPETTO.on(this.Experiment_update, function (parameters) {
-                    if (parameters.playAll != null || parameters.step != undefined) {
-                        //update scene brightness
-                        for (var key in GEPPETTO.G.listeners) {
-                            if (GEPPETTO.G.listeners[key] != null || undefined) {
-                                for (var i = 0; i < GEPPETTO.G.listeners[key].length; i++) {
-                                    GEPPETTO.G.listeners[key][i](Instances.getInstance(key), parameters.step);
-                                }
-                            }
-                        }
-                    }
-                    //notify widgets a restart of data is needed
-                    GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_update, parameters);
+                GEPPETTO.on(this.Experiment_stop, function (parameters) {
                 });
 
-                GEPPETTO.on(this.Experiment_stop, function (parameters) {
+                GEPPETTO.on(this.Experiment_update, function (parameters) {
+                    GEPPETTO.WidgetsListener.update(GEPPETTO.Events.Experiment_update, parameters);
                 });
 
                 GEPPETTO.on(this.Lit_entities_changed, function (parameters) {

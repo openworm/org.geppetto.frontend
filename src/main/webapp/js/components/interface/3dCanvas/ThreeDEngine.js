@@ -29,7 +29,7 @@ define(['jquery'], function () {
     function ThreeDEngine(container, viewerId) {
 
         this.container = container;
-        this.colorController = new(require('./ColorController'))();
+        this.colorController = new(require('./ColorController'))(this);
         this.viewerId = viewerId;
 
         //Engine components

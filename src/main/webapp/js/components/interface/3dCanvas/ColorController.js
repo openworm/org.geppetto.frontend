@@ -10,6 +10,21 @@ define(['jquery'], function () {
         this.litUpInstances = [];
         this.colorFunctionSet = false;
 
+        var that = this;
+
+        GEPPETTO.on(GEPPETTO.Events.Experiment_update, function (parameters) {
+            if (parameters.playAll != null || parameters.step != undefined) {
+                //update scene brightness
+                for (var key in that.listeners) {
+                    if (that.listeners[key] != null || undefined) {
+                        for (var i = 0; i < that.listeners[key].length; i++) {
+                            that.listeners[key][i](Instances.getInstance(key), parameters.step);
+                        }
+                    }
+                }
+            }
+        });
+
     };
 
 
@@ -146,7 +161,7 @@ define(['jquery'], function () {
                         modulations.push(instance.getInstancePath() + "." + visualObjects[voIndex]);
 
                     }
-                    GEPPETTO.SceneController.splitGroups(instance, elements);
+                    this.engine.splitGroups(instance, elements);
                 }
                 else {
                     modulations.push(instance.getInstancePath());
@@ -179,13 +194,35 @@ define(['jquery'], function () {
          * @param colorfn
          */
         addColorListener: function (instance, modulation, colorfn) {
+            var that = this;
             GEPPETTO.trigger(GEPPETTO.Events.Lit_entities_changed);
             this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
                 if ((stateVariableInstance.getTimeSeries() != undefined) &&
                     (step < stateVariableInstance.getTimeSeries().length)) {
-                    GEPPETTO.SceneController.lightUpEntity(instance, colorfn, stateVariableInstance.getTimeSeries()[step]);
+                    that.colorInstance(instance, colorfn, stateVariableInstance.getTimeSeries()[step]);
                 }
             });
+        },
+
+        /**
+         * Light up the entity
+         *
+         * @param {Instance}
+         *            instance - the instance to be lit
+         * @param {Float}
+         *            intensity - the lighting intensity from 0 (no illumination) to 1 (full illumination)
+         */
+        colorInstance: function (instance, colorfn, intensity) {
+            var threeObject;
+            if (instance in this.engine.meshes) {
+                threeObject = this.engine.meshes[instance];
+            }
+            else {
+                threeObject = this.engine.splitMeshes[instance];
+            }
+
+            var [r,g,b] = colorfn(intensity);
+            threeObject.material.color.setRGB(r,g,b);
         },
 
         /**

@@ -133,8 +133,7 @@ define(function (require) {
          *            instance - Instance we want the color of
          */
         getColor: function (instance) {
-            this.engine.getColor(instance);
-            return this;
+            return this.engine.getColor(instance);
         },
 
         /**

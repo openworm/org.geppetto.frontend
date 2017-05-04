@@ -250,7 +250,7 @@ define(['jquery'], function () {
             var colors=[];
             for (var i = 0; i < this.canvasComponents.length; i++) {
                 var c = this.canvasComponents[i].getColor(instance);
-                if(!$.inArray(c,colors)){
+                if($.inArray(c,colors)==-1){
                     colors.push(c);
                 }
             }

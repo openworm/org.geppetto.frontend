@@ -57,20 +57,11 @@ define(function (require) {
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
 		
-		//Home button initialization
-		GEPPETTO.ComponentFactory.addComponent('HOME', {}, undefined);
-		
-		//Home button initialization
-		GEPPETTO.ComponentFactory.addComponent('HOME', {}, undefined);
-
 		//Save initialization
 		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));
 
 		//Simulation controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SIMULATIONCONTROLS', {}, document.getElementById("sim-toolbar"));
-
-		//Camera controls initialization
-		GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
 
 		//Share controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));		

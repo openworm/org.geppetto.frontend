@@ -73,7 +73,7 @@ define(function(require) {
             }
 
             GEPPETTO.trigger('geppetto:error', error.msg);
-            GEPPETTO.FE.errorDialog(GEPPETTO.Resources.ERROR, error.message, error.code, error.exception);
+            GEPPETTO.ModalFactory.errorDialog(GEPPETTO.Resources.ERROR, error.message, error.code, error.exception);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         };
 
@@ -193,7 +193,7 @@ define(function(require) {
         //handles the case where service doesn't support feature and shows message
         messageHandler[messageTypes.NO_FEATURE] = function() {
             //Updates the simulation controls visibility
-            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.NO_FEATURE, payload.message);
+            GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.NO_FEATURE, payload.message);
         };
 
         //received model tree from server
@@ -276,6 +276,10 @@ define(function(require) {
                 }
             },
 
+            /**
+             *
+             * @param payload
+             */
             persistProject: function(payload) {
                 var message = JSON.parse(payload.update);
                 var projectID = message.projectID;
@@ -292,6 +296,10 @@ define(function(require) {
                 GEPPETTO.Console.log("The project has been persisted  [id=" + projectID + "].");
             },
 
+            /**
+             *
+             * @param payload
+             */
             loadProject: function(payload) {
                 // we remove anything from any previous loaded project if there was one
                 GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_PROJECT);
@@ -306,11 +314,15 @@ define(function(require) {
                 window.Project = GEPPETTO.ProjectFactory.createProjectNode(project, persisted);
                 window.Project.readOnly = update.isReadOnly;
 
-                GEPPETTO.Init.initEventListeners();
+
                 GEPPETTO.trigger(GEPPETTO.Events.Project_loaded);
                 GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
             },
 
+            /**
+             *
+             * @param payload
+             */
             loadModel: function(payload) {
 
                 console.time(GEPPETTO.Resources.PARSING_MODEL);
@@ -438,6 +450,11 @@ define(function(require) {
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },
 
+            /**
+             *
+             * @param typePath
+             * @param callback
+             */
             resolveImportValue: function(typePath, callback) {
                 var params = {};
                 params["experimentId"] = Project.getActiveExperiment().getId();
@@ -463,6 +480,7 @@ define(function(require) {
 
                 GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_VALUE_RESOLVED);
             },
+
             /**
              * Augments the instances array with some utilities methods for ease of access
              */
@@ -549,6 +567,10 @@ define(function(require) {
                 };
             },
 
+            /**
+             *
+             * @param payload
+             */
             loadExperiment: function(payload) {
                 console.time(GEPPETTO.Resources.LOADING_EXPERIMENT);
 
@@ -575,6 +597,11 @@ define(function(require) {
                 console.timeEnd(GEPPETTO.Resources.LOADING_EXPERIMENT);
             },
 
+            /**
+             *
+             * @param payload
+             * @returns {*}
+             */
             createExperiment: function(payload) {
                 var experiment = JSON.parse(payload.experiment_created);
 
@@ -592,6 +619,10 @@ define(function(require) {
                 return newExperiment;
             },
 
+            /**
+             *
+             * @param payload
+             */
             deleteExperiment: function(payload) {
                 var data = JSON.parse(payload.update);
                 var experiment = null;

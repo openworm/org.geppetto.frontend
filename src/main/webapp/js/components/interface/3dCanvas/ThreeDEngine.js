@@ -1,9 +1,9 @@
 /*
-* The 3D engine used by the 3D canvas component. This class is internal, any method you 
-* use from inside here might break between versions. Methods maintained are the exposed ones
-* through the 3D canvas component.
-* 
-*/
+ * The 3D engine used by the 3D canvas component. This class is internal, any method you
+ * use from inside here might break between versions. Methods maintained are the exposed ones
+ * through the 3D canvas component.
+ *
+ */
 define(['jquery'], function () {
 
     var Instance = require('../../../geppettoModel/model/Instance');
@@ -29,6 +29,7 @@ define(['jquery'], function () {
     function ThreeDEngine(container, viewerId) {
 
         this.container = container;
+        this.colorController = require('./ColorController');
         this.viewerId = viewerId;
 
         //Engine components
@@ -41,7 +42,7 @@ define(['jquery'], function () {
         this.sceneCenter = new THREE.Vector3();
         this.cameraPosition = new THREE.Vector3();
 
-        this.mouse = { x: 0, y: 0 };
+        this.mouse = {x: 0, y: 0};
 
         //The content of the scene
         this.meshes = {};
@@ -70,14 +71,15 @@ define(['jquery'], function () {
         this.animate();
     };
 
+
     ThreeDEngine.prototype = {
 
         constructor: ThreeDEngine,
 
         /**
-        * Sets up the controls used by the camera to make it able to zoom and
-        * pan.
-        */
+         * Sets up the controls used by the camera to make it able to zoom and
+         * pan.
+         */
         setupControls: function () {
             // Controls
             this.controls = new THREE.TrackballControls(this.camera, this.renderer.domElement, this.viewerId);
@@ -223,6 +225,11 @@ define(['jquery'], function () {
 
         },
 
+        /**
+         *
+         * @param width
+         * @param height
+         */
         setSize: function (width, height) {
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
@@ -230,6 +237,10 @@ define(['jquery'], function () {
             this.composer.setSize(width, height);
         },
 
+        /**
+         *
+         * @param shaders
+         */
         configureRenderer: function (shaders) {
 
             if (shaders == undefined) {
@@ -283,6 +294,10 @@ define(['jquery'], function () {
 
         },
 
+        /**
+         *
+         * @param askUser
+         */
         setLinesUserInput: function (askUser) {
             this.linesUserInput = askUser;
         },
@@ -354,6 +369,11 @@ define(['jquery'], function () {
             this.camera.updateProjectionMatrix();
         },
 
+        /**
+         *
+         * @param obj
+         * @returns {*}
+         */
         boundingBox: function (obj) {
             if (obj instanceof THREE.Mesh) {
 
@@ -373,10 +393,19 @@ define(['jquery'], function () {
             }
         },
 
+        /**
+         *
+         * @param obj
+         * @returns {*}
+         */
         shapeCenterOfGravity: function (obj) {
             return this.boundingBox(obj).center();
         },
 
+        /**
+         *
+         * @param node
+         */
         pointCameraTo: function (node) {
             // Refocus camera to the center of the new object
             var COG;
@@ -473,6 +502,10 @@ define(['jquery'], function () {
         },
 
 
+        /**
+         *
+         * @param instances
+         */
         buildScene: function (instances) {
             this.traverseInstances(instances);
             this.scene.updateMatrixWorld(true);
@@ -480,6 +513,10 @@ define(['jquery'], function () {
         },
 
 
+        /**
+         *
+         * @param instances
+         */
         updateSceneWithNewInstances: function (instances) {
             var updateCamera = false;
             if (Object.keys(this.meshes).length === 0) {
@@ -528,6 +565,12 @@ define(['jquery'], function () {
         },
 
 
+        /**
+         *
+         * @param instance
+         * @param lines
+         * @param thickness
+         */
         buildVisualInstance: function (instance, lines, thickness) {
             var meshes = this.generate3DObjects(instance, lines, thickness);
             this.init3DObject(meshes, instance);
@@ -610,10 +653,10 @@ define(['jquery'], function () {
             var that = this;
             //TODO This can be optimised, no need to create both
             var materials =
-                {
-                    "mesh": that.getMeshPhongMaterial(color),
-                    "line": that.getLineMaterial(thickness, color)
-                };
+            {
+                "mesh": that.getMeshPhongMaterial(color),
+                "line": that.getLineMaterial(thickness, color)
+            };
             var instanceObjects = [];
             var threeDeeObjList = this.walkVisTreeGen3DObjs(instance, materials, lines);
 
@@ -983,7 +1026,7 @@ define(['jquery'], function () {
         },
 
         /**
-         * Add a 3D sphere to the scene at the given coordinates (4) points. 
+         * Add a 3D sphere to the scene at the given coordinates (4) points.
          * It could be any geometry really.
          * @returns {THREE.Mesh}
          */
@@ -992,13 +1035,13 @@ define(['jquery'], function () {
                 radius = 1;
             }
 
-            var material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+            var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
             material.nowireframe = true;
             material.opacity = 0.6;
             material.transparent = true;
             material.color.setHex("0xff0000");
 
-            var sphereNode = { radius: radius, position: { x: x, y: y, z: z } }
+            var sphereNode = {radius: radius, position: {x: x, y: y, z: z}}
             var mesh = this.create3DSphereFromNode(sphereNode, material)
             mesh.renderOrder = 1;
             mesh.clickThrough = true;
@@ -1008,7 +1051,7 @@ define(['jquery'], function () {
 
 
         /**
-         * Add a 3D plane to the scene at the given coordinates (4) points. 
+         * Add a 3D plane to the scene at the given coordinates (4) points.
          * It could be any geometry really.
          * @returns {THREE.Mesh}
          */
@@ -1050,7 +1093,7 @@ define(['jquery'], function () {
             geometry.uvsNeedUpdate = true;
             geometry.dynamic = true;
 
-            var material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+            var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
             material.nowireframe = true;
             if (textureURL != undefined) {
                 var loader = new THREE.TextureLoader();
@@ -1093,7 +1136,7 @@ define(['jquery'], function () {
         },
 
         /**
-         * Modify the coordinates (4) points of an existing plane. 
+         * Modify the coordinates (4) points of an existing plane.
          * @returns {THREE.Mesh}
          */
         modify3DPlane: function (object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
@@ -1270,26 +1313,6 @@ define(['jquery'], function () {
             }
         },
 
-
-        /**
-   * Status of scene, populated or not
-   *
-   * @returns {Boolean} True or false depending whether scene is populated
-   *          or not
-   */
-        isScenePopulated: function () {
-            return !(_.isEmpty(this.visualModelMap));
-        },
-
-        /**
-         * Has canvas been created?
-         *
-         * @returns {Boolean] True or false if canvas has been created or not
-		 */
-        isCanvasCreated: function () {
-            return this.canvasCreated;
-        },
-
         /**
          * @param x
          * @param y
@@ -1341,7 +1364,9 @@ define(['jquery'], function () {
             var that = this;
             if (this.rotate == null) {
                 this.movieMode(true);
-                this.rotate = setInterval(function () { that.incrementCameraRotate(0.01, 0) }, 100);
+                this.rotate = setInterval(function () {
+                    that.incrementCameraRotate(0.01, 0)
+                }, 100);
             }
             else {
                 this.movieMode(false);
@@ -1350,6 +1375,9 @@ define(['jquery'], function () {
             }
         },
 
+        /**
+         *
+         */
         animate: function () {
             var that = this;
             that.debugUpdate = that.needsUpdate;
@@ -1788,11 +1816,11 @@ define(['jquery'], function () {
         },
 
         /**
-        * Change the default opacity for a given aspect. The opacity set with this command API will be persisted across different workflows, e.g. selection.
-        *
-        * @param {String}
-        *            instancePath - Instance path of aspect to change opacity for
-        */
+         * Change the default opacity for a given aspect. The opacity set with this command API will be persisted across different workflows, e.g. selection.
+         *
+         * @param {String}
+         *            instancePath - Instance path of aspect to change opacity for
+         */
         setOpacity: function (instancePath, opacity) {
             if (!this.hasInstance(instancePath)) {
                 return;
@@ -1958,6 +1986,11 @@ define(['jquery'], function () {
             }
         },
 
+        /**
+         *
+         * @param instance
+         * @returns {boolean}
+         */
         hasInstance: function (instance) {
             var instancePath = typeof instance == "string" ? instance : instance.getInstancePath();
             return this.meshes[instancePath] != undefined;
@@ -1966,8 +1999,8 @@ define(['jquery'], function () {
         /**
          * Restore the original colour of the connected instances
          *
-         * @param {Instance}
          *            instance - A connected instance
+         * @param instance
          */
         restoreConnectedInstancesColour: function (instance) {
             if (!this.hasInstance(instance)) {
@@ -1983,7 +2016,6 @@ define(['jquery'], function () {
                 var mesh = connection.getA().getPath() == instance.getInstancePath() ?
                     this.meshes[connection.getB().getPath()] :
                     this.meshes[connection.getA().getPath()];
-
 
 
                 // if mesh is not selected, give it ghost or default color and opacity
@@ -2009,11 +2041,12 @@ define(['jquery'], function () {
 
 
         /**
-        * Show connection lines for this instance.
+         * Show connection lines for this instance.
 
-        * @command AVisualCapability.showConnectionLines()
-        * @param {boolean} mode - Show or hide connection lines
-        */
+         * @command AVisualCapability.showConnectionLines()
+         * @param {boolean} mode - Show or hide connection lines
+         * @param instancePath
+         */
         showConnectionLines: function (instancePath, mode) {
             if (mode == null || mode == undefined) {
                 mode = true;
@@ -2039,7 +2072,7 @@ define(['jquery'], function () {
         },
 
         /**
-         * 
+         *
          *
          * @param instance
          */
@@ -2084,7 +2117,8 @@ define(['jquery'], function () {
 
                 if (connection.getB().getPoint() == undefined) {
                     //same as before
-                    destination = otherEndMesh.position.clone();;
+                    destination = otherEndMesh.position.clone();
+                    ;
                 }
                 else {
                     //the specified coordinate
@@ -2141,7 +2175,7 @@ define(['jquery'], function () {
                     }
                 }
 
-                var material = new THREE.LineDashedMaterial({ dashSize: 3, gapSize: 1 });
+                var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1});
                 material.color.setHex(colour);
 
                 var line = new THREE.LineSegments(geometry, material);
@@ -2187,6 +2221,12 @@ define(['jquery'], function () {
             }
         },
 
+        /**
+         *
+         * @param targetObjects
+         * @param aspects
+         * @returns {{}}
+         */
         splitHighlightedMesh: function (targetObjects, aspects) {
             var groups = {};
             for (a in aspects) {
@@ -2274,7 +2314,9 @@ define(['jquery'], function () {
          *            groups - The groups that we need to split mesh into
          */
         splitGroups: function (instance, groupElements) {
-
+            if (!this.hasInstance(instance)) {
+                return;
+            }
             var instancePath = instance.getInstancePath();
 
             // retrieve the merged mesh
@@ -2366,6 +2408,9 @@ define(['jquery'], function () {
          *            m - current mesh
          */
         addMeshToGeometryGroup: function (instance, id, geometryGroups, m) {
+            if (!this.hasInstance(instance)) {
+                return;
+            }
             // name of group, mix of aspect path and group name
             var groupName = instance.getInstancePath() + "." + id;
             // retrieve corresponding geometry for this group
@@ -2383,8 +2428,14 @@ define(['jquery'], function () {
 
         /**
          * Create group meshes for given groups, retrieves from map if already present
+         * @param instancePath
+         * @param geometryGroups
+         * @param groups
          */
         createGroupMeshes: function (instancePath, geometryGroups, groups) {
+            if (!this.hasInstance(instancePath)) {
+                return;
+            }
             var mergedMesh = this.meshes[instancePath];
             // switch visible flag to false for merged mesh and remove from scene
             mergedMesh.visible = false;
@@ -2432,12 +2483,13 @@ define(['jquery'], function () {
         /**
          * Merge mesh that was split before
          *
-         * @param {String}
          *            aspectPath - Path to aspect that points to mesh
+         * @param instancePath
+         * @param visible
          */
-        merge: function (aspectPath, visible) {
+        merge: function (instancePath, visible) {
             // get mesh from map
-            var mergedMesh = this.meshes[aspectPath];
+            var mergedMesh = this.meshes[instancePath];
 
             // if merged mesh is not visible, turn it on and turn split one
             // off
@@ -2446,7 +2498,7 @@ define(['jquery'], function () {
                     // retrieve split mesh that is on the scene
                     var splitMesh = this.splitMeshes[path];
                     if (splitMesh) {
-                        if (aspectPath == splitMesh.instancePath) {
+                        if (instancePath == splitMesh.instancePath) {
                             splitMesh.visible = false;
                             // remove split mesh from scene
                             this.scene.remove(splitMesh);
@@ -2461,6 +2513,48 @@ define(['jquery'], function () {
             }
         },
 
+        /**
+         *
+         * @param visualGroups
+         * @param instance
+         * @param meshesContainer
+         */
+        showVisualGroupsForInstance: function (instance) {
+            if (!this.hasInstance(instance)) {
+                return;
+            }
+            var instancePath = instance.getInstancePath();
+            // retrieve the merged mesh
+            var mergedMesh = this.meshes[instancePath];
+
+            // get map of all meshes that merged mesh was merging
+            var map = mergedMesh.mergedMeshesPaths;
+
+            var elements = {}
+            for (var v in map) {
+                if (v != undefined) {
+                    eval(map[v].substring(0, map[v].lastIndexOf(".")));
+                    var object = instance.getVisualType()[map[v].replace(instancePath + ".", "")];
+                    // get group elements list for object
+                    var groupElementsReference = object.getInitialValue().value.groupElements;
+                    for (var i = 0; i < groupElementsReference.length; i++) {
+                        var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
+                        if (objectGroup == this.getId()) {
+                            elements[object.getId()] = {'color': this.getColor()}
+                        }
+                    }
+                }
+            }
+
+            this.showVisualGroupsRaw(elements, instance, this.splitMeshes);
+        },
+
+        /**
+         *
+         * @param visualGroups
+         * @param instance
+         * @param meshesContainer
+         */
         showVisualGroupsRaw: function (visualGroups, instance, meshesContainer) {
             var instancePath = instance.getInstancePath();
             for (g in visualGroups) {
@@ -2482,6 +2576,9 @@ define(['jquery'], function () {
 
         /**
          * Shows a visual group
+         * @param visualGroups
+         * @param mode
+         * @param instances
          */
         showVisualGroups: function (visualGroups, mode, instances) {
             for (var i = 0; i < instances.length; i++) {
@@ -2504,6 +2601,11 @@ define(['jquery'], function () {
             }
         },
 
+        /**
+         *
+         * @param variables
+         * @returns {boolean}
+         */
         isVisible: function (variables) {
             var visible = false;
             for (var i = 0; i < variables.length; i++) {
@@ -2515,6 +2617,11 @@ define(['jquery'], function () {
             return visible;
         },
 
+        /**
+         *
+         * @param variables
+         * @returns {boolean}
+         */
         isSelected: function (variables) {
             var selected = false;
             for (var i = 0; i < variables.length; i++) {
@@ -2535,12 +2642,19 @@ define(['jquery'], function () {
             this.resetCamera();
         },
 
+        /**
+         *
+         */
         flipCameraZ: function () {
             this.camera.direction = new THREE.Vector3(0, 0, -1);
             this.setupControls();
             this.resetCamera();
         },
 
+        /**
+         *
+         * @param toggle
+         */
         movieMode: function (toggle) {
             this.configureRenderer(toggle);
         },

@@ -2686,9 +2686,6 @@ define(function (require) {
                     delete parent[instance.getId()];
                 }
 
-                // remove from scene
-                GEPPETTO.SceneController.removeFromScene(instance);
-
                 // unresolve type
                 for (var j = 0; j < instance.getTypes().length; j++) {
                     this.unresolveType(instance.getTypes()[j]);

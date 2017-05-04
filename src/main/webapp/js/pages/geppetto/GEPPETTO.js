@@ -1,6 +1,6 @@
 /**
  *
- * @author matteo@openworm.org (Matteo Cantarelli)
+ * @author Matteo Cantarelli
  * @authot Jesus R Martinez (jesus@metacell.us)
  */
 define(function (require) {
@@ -42,10 +42,7 @@ define(function (require) {
                 var curr_min = d.getMinutes();
                 var curr_sec = d.getSeconds();
                 var curr_msec = d.getMilliseconds();
-
-                console.log(curr_hour + ":" + curr_min + ":" + curr_sec + ":"
-                    + curr_msec + ' - ' + msg, "");
-
+                console.log(curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec + ' - ' + msg, "");
             }
         },
 
@@ -73,14 +70,15 @@ define(function (require) {
     require('../../common/GEPPETTO.Resources')(GEPPETTO);
     require('../../common/GEPPETTO.ViewController')(GEPPETTO);
     require('./GEPPETTO.Events')(GEPPETTO);
-    require('./GEPPETTO.Init')(GEPPETTO);
-    require('../../components/interface/3dCanvas/GEPPETTO.SceneController')(GEPPETTO);
-    require('./GEPPETTO.FE')(GEPPETTO);
     require('../../common/GEPPETTO.UserController')(GEPPETTO);
     require('./GEPPETTO.Flows')(GEPPETTO);
     require('../../common/GEPPETTO.ScriptRunner')(GEPPETTO);
     require('../../components/interface/jsEditor/GEPPETTO.JSEditor')(GEPPETTO);
     require('../../components/interface/jsConsole/GEPPETTO.Console')(GEPPETTO);
+
+    GEPPETTO.ModalFactory = new(require('../../components/controls/modals/ModalFactory'))();
+    GEPPETTO.SceneController =  new(require('../../components/interface/3dCanvas/SceneController'))();
+
     require('../../common/GEPPETTO.Utility')(GEPPETTO);
     require('../../components/widgets/MenuManager')(GEPPETTO);
     require('../../communication/MessageSocket')(GEPPETTO);

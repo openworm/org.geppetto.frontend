@@ -141,7 +141,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.(js)$/, exclude: [/node_modules\/(?!(ami.js)\/).*/, /build/, /\.bundle/, ], loader: ['babel-loader'],
+                test: /\.(js)$/, exclude: [/node_modules\/(?!(ami.js)\/).*/, /build/, /\.bundle/], loader: ['babel-loader'],
                 query: {
                     presets: ['react', 'es2015']
                 }
@@ -149,6 +149,10 @@ module.exports = {
             {
                 test: /\.json$/,
                 loader: "json-loader"
+            },
+            {
+                test: /Dockerfile/,
+                loader: 'ignore-loader'
             },
             {
                 test: /\.(py|png|jpeg|svg|gif|css|jpg|md|hbs|dcm|gz|xmi|dzi)$/,

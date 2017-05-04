@@ -17,20 +17,28 @@ define(function (require) {
         container: null,
         backgroundColor: 0x101010,
 
-
+        /**
+         * Displays all the passed instances in this canvas component
+         * @param instances an array of instances
+         * @returns {canvasComponent}
+         */
         display: function (instances) {
             this.engine.buildScene(instances);
             return this;
         },
 
+        /**
+         * Displays all the instances available in the current model in this canvas
+         * @returns {canvasComponent}
+         */
         displayAllInstances: function () {
             var that = this;
-            GEPPETTO.on(GEPPETTO.Events.Instances_created,function(instances){
-    			that.engine.updateSceneWithNewInstances(instances);
-    		});
-            GEPPETTO.on(GEPPETTO.Events.Instance_deleted,function(instance){
-    			that.engine.removeFromScene();
-    		});
+            GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
+                that.engine.updateSceneWithNewInstances(instances);
+            });
+            GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (instance) {
+                that.engine.removeFromScene(instance);
+            });
             return this;
         },
 
@@ -45,17 +53,22 @@ define(function (require) {
             return this;
         },
 
+
         /**
-         * Deselects an instance
-         *
-         * @param {String} instancePath - Path of instance to select
-         * @param {String} geometryIdentifier - Identifier of the geometry that was clicked
+         * Deselects an instance given its path
+         * @param instancePath
+         * @returns {canvasComponent}
          */
         deselectInstance: function (instancePath) {
             this.engine.deselectInstance(instancePath);
             return this;
         },
 
+        /**
+         *
+         * @param instance
+         * @returns {canvasComponent}
+         */
         assignRandomColor: function (instance) {
             this.engine.assignRandomColor(instance);
             return this;
@@ -71,7 +84,7 @@ define(function (require) {
         },
 
         /**
-         * Sets whether to use wireframe or not to visualize any instance. 
+         * Sets whether to use wireframe or not to visualize any instance.
          */
         setWireframe: function (wireframe) {
             this.engine.setWireframe(wireframe);
@@ -131,7 +144,7 @@ define(function (require) {
          * @param threshold
          */
         setLinesThreshold: function (threshold) {
-            this.engine.setLinesThreshold(ithreshold);
+            this.engine.setLinesThreshold(threshold);
             return this;
         },
 
@@ -160,17 +173,35 @@ define(function (require) {
         },
 
         /**
-         * Light up the passed instance
+         * Associate a color function to a group of instances
          *
-         * @param {Instance}
-         *            instance - the instance to be lit
-         * @param {Instance}
-         *            colorfn - a function to map the intensity to a color
-         * @param {Float}
-         *            intensity - the lighting intensity from 0 (no illumination) to 1 (full illumination)
+         * @param instances - The instances we want to change the color of
+         * @param colorfn - The function to be used to modulate the color
+         * @return {canvasComponent}
          */
-        lightUpEntity: function (instance, colorfn, intensity) {
-            this.engine.lightUpEntity(instance, colorfn, intensity);
+        addColorFunction: function (instances, colorfn) {
+            this.engine.colorController.addColorFunction(instances, colorfn);
+            return this;
+        },
+
+        /**
+         * Remove a previously associated color function
+         *
+         * @param instances
+         * @return {canvasComponent}
+         */
+        removeColorFunction: function (instances) {
+            this.engine.colorController.removeColorFunction(instances);
+            return this;
+        },
+
+        /**
+         * Shows the visual groups associated to the passed instance
+         * @param instance
+         * @returns {canvasComponent}
+         */
+        showVisualGroupsForInstance: function (instance) {
+            this.engine.showVisualGroupsForInstance(instance);
             return this;
         },
 
@@ -232,7 +263,9 @@ define(function (require) {
         },
 
         /**
-         * Reset camera
+         * Resets the camera
+         *
+         * @returns {canvasComponent}
          */
         resetCamera: function () {
             this.engine.resetCamera();
@@ -252,7 +285,10 @@ define(function (require) {
             return [width, height];
         },
 
-
+        /**
+         *
+         * @returns {boolean}
+         */
         shouldComponentUpdate() {
             return false;
         },
@@ -277,7 +313,7 @@ define(function (require) {
         render: function () {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <CameraControls viewer={this.props.id} />
+                    <CameraControls viewer={this.props.id}/>
                 </div>
             )
         }

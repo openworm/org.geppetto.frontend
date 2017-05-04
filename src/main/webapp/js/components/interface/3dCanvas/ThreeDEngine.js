@@ -1835,9 +1835,9 @@ define(['jquery'], function () {
          * @param instance
          */
         assignRandomColor: function (instance) {
-            if (!this.hasInstance(instance)) {
-                return;
-            }
+
+            var that = this;
+
             var getRandomColor = function () {
                 var letters = '0123456789ABCDEF';
                 var color = '0x';
@@ -1847,18 +1847,32 @@ define(['jquery'], function () {
                 return color;
             };
 
-            var meshes = this.getRealMeshesForInstancePath(instance.getInstancePath());
-            if (meshes.length > 0) {
-                for (var i = 0; i < meshes.length; i++) {
-                    var mesh = meshes[i];
-                    if (mesh) {
-                        var randomColor = getRandomColor();
-                        mesh.traverse(function (object) {
-                            if (object.hasOwnProperty("material")) {
-                                this.setThreeColor(object.material.color, randomColor);
-                                object.material.defaultColor = randomColor;
+            if (instance.hasCapability('VisualCapability')) {
+                var children = instance.getChildren();
+
+                if (children.length == 0 || instance.getMetaType() == GEPPETTO.Resources.ARRAY_ELEMENT_INSTANCE_NODE) {
+                    if (!this.hasInstance(instance)) {
+                        return;
+                    }
+                    var meshes = this.getRealMeshesForInstancePath(instance.getInstancePath());
+                    if (meshes.length > 0) {
+                        for (var i = 0; i < meshes.length; i++) {
+                            var mesh = meshes[i];
+                            if (mesh) {
+                                var randomColor = getRandomColor();
+
+                                mesh.traverse(function (object) {
+                                    if (object.hasOwnProperty("material")) {
+                                        that.setThreeColor(object.material.color, randomColor);
+                                        object.material.defaultColor = randomColor;
+                                    }
+                                });
                             }
-                        });
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < children.length; i++) {
+                        this.assignRandomColor(children[i]);
                     }
                 }
             }

@@ -41,7 +41,7 @@ define(function (require) {
 				'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
 				'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
 				'CAROUSEL': 'interface/carousel/Carousel',
-				'CANVAS3D': 'interface/3dCanvas/Canvas'
+				'CANVAS': 'interface/3dCanvas/Canvas'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},

@@ -392,19 +392,8 @@
 				<configuration>
 					<recursive>true</recursive>
 					<directoryRoots>
-						<directoryRoot>${basedir}/src/main/webapp/js/geppetto-objects</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/components/widgets</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/model</directoryRoot>
-						<directoryRoot>${basedir}/src/main/webapp/js/3d_visualization</directoryRoot>
+						<directoryRoot>${basedir}/src/main/webapp/js/</directoryRoot>
 					</directoryRoots>
-					<sourceFiles>
-						<sourceFile>src/main/webapp/js/GEPPETTO.Console.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.FE.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.JSEditor.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.Main.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.MenuManager.js</sourceFile>
-						<sourceFile>src/main/webapp/js/GEPPETTO.ScriptRunner.js</sourceFile>
-					</sourceFiles>
 					<outputDirectory>${basedir}/src/main/webapp/jsdocs</outputDirectory>
 				</configuration>
 				<executions>

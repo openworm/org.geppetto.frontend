@@ -120,6 +120,14 @@ define(['jquery'], function () {
         },
 
         /**
+         *
+         * @returns {Array}
+         */
+        getColorFunctionInstances: function () {
+            return this.litUpInstances;
+        },
+
+        /**
          * Modulates the color of an aspect visualization, given a watched node
          * and a color function. The color function should receive
          * the value of the watched node and output [r,g,b].

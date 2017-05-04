@@ -35,9 +35,11 @@ define(function (require) {
             var that = this;
             GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
                 that.engine.updateSceneWithNewInstances(instances);
+                that.resetCamera();
             });
             GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (instance) {
                 that.engine.removeFromScene(instance);
+                that.resetCamera();
             });
             return this;
         },
@@ -206,6 +208,15 @@ define(function (require) {
         },
 
         /**
+         * Returns all the instances that are being listened to
+         *
+         * @return {Array}
+         */
+        getColorFunctionInstances: function () {
+            return this.engine.colorController.getColorFunctionInstances();
+        },
+
+        /**
          * Shows the visual groups associated to the passed instance
          * @param instance
          * @returns {canvasComponent}
@@ -308,14 +319,22 @@ define(function (require) {
                 Detector.addGetWebGLMessage();
             } else {
                 this.container = $("#" + this.props.id + "_component").get(0);
-                this.setContainerDimensions();
+                var [width, height] = this.setContainerDimensions();
                 this.engine = new ThreeDEngine(this.container, this.props.id);
+                this.engine.setSize(width, height);
+
                 GEPPETTO.SceneController.add3DCanvas(this);
+
                 var that = this;
                 $("#" + this.props.id).on("dialogresizestop resizeEnd", function (event, ui) {
-                    var [width, height] = that.setContainerDimensions()
+                    var [width, height] = that.setContainerDimensions();
                     that.engine.setSize(width, height);
                 });
+
+                window.addEventListener('resize', function () {
+                    var [width, height] = that.setContainerDimensions();
+                    that.engine.setSize(width, height);
+                }, false);
 
             }
         },

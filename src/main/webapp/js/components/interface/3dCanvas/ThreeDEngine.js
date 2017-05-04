@@ -249,8 +249,6 @@ define(['jquery'], function () {
 
             var color = new THREE.Color(this.backgroundColor);
             //this.renderer.setClearColor(color, 1);
-            var width = $(this.container).width();
-            var height = $(this.container).height();
             this.renderer.setPixelRatio(window.devicePixelRatio);
 
             this.renderer.autoClear = false;
@@ -259,7 +257,6 @@ define(['jquery'], function () {
             var renderModel = new THREE.RenderPass(this.scene, this.camera);
 
             this.composer = new THREE.EffectComposer(this.renderer);
-            this.setSize(width, height);
 
             if (shaders) {
                 var effectBloom = new THREE.BloomPass(0.75);

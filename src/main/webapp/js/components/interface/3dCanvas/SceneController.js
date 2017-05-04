@@ -332,11 +332,12 @@ define(['jquery'], function () {
         },
 
         /**
-         * Associate a color function to a group of instances for all the existing canvas
+         * Associate a color function to a group of instances for all the existing canvas.
+         * The visual instance that will be colored is the one associated with the composite type
+         * which contains the state variables passed as parameter.
          *
-         * @param instances - The instances we want to change the color of
+         * @param instances - The state variable instances we are listening to
          * @param colorfn - The function to be used to modulate the color
-         * @return {canvasComponent}
          */
         addColorFunction: function (instances, colorfn) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
@@ -348,7 +349,6 @@ define(['jquery'], function () {
          * Remove a previously associated color function for all existing canvas
          *
          * @param instances
-         * @return {canvasComponent}
          */
         removeColorFunction: function (instances) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
@@ -356,6 +356,19 @@ define(['jquery'], function () {
             }
         },
 
+
+        /**
+         * Returns all the instances that are being listened to
+         *
+         * @return {Array}
+         */
+        getColorFunctionInstances: function () {
+            var instances=[];
+            for (var i = 0; i < this.canvasComponents.length; i++) {
+                instances.concat(this.canvasComponents[i].getColorFunctionInstances());
+            }
+            return instances;
+        },
 
     };
 

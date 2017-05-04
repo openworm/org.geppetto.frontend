@@ -1,35 +1,3 @@
-/*******************************************************************************
- *
- * Copyright (c) 2011, 2016 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
 define(function (require) {
 
     function loadCss(url) {
@@ -54,9 +22,9 @@ define(function (require) {
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
     GEPPETTO.ImageComponent = React.createClass({
-        attachTooltip: function(){
+        attachTooltip: function () {
             $('img[rel="tooltip"]').uitooltip({
-                position: { my: "left+15 center", at: "right center" },
+                position: {my: "left+15 center", at: "right center"},
                 tooltipClass: "tooltip-container",
                 content: function () {
                     return this.getAttribute("title");
@@ -64,17 +32,17 @@ define(function (require) {
             });
         },
 
-        componentDidMount: function(){
+        componentDidMount: function () {
             this.attachTooltip();
         },
 
         render: function () {
-            var imgId = this.props.rowData.path.replace(/\./g,'_') + "_thumbnail";
+            var imgId = this.props.rowData.path.replace(/\./g, '_') + "_thumbnail";
             var titleValue = "<img src='" + this.props.data + "' class='thumbnail-img-tooltip'/>";
 
             var imgElement = "";
-            if(this.props.data.indexOf("http") > -1){
-                imgElement = <img id={imgId} src={this.props.data} title={titleValue} className="thumbnail-img" rel="tooltip" />
+            if (this.props.data.indexOf("http") > -1) {
+                imgElement = <img id={imgId} src={this.props.data} title={titleValue} className="thumbnail-img" rel="tooltip"/>
             }
 
             return (
@@ -131,12 +99,12 @@ define(function (require) {
                             // retrieve markup to inject as string
                             var markupToInject = domObj.prop('outerHTML');
 
-                            var getMarkup = function() {
+                            var getMarkup = function () {
                                 return {__html: markupToInject};
                             };
 
                             return (
-                                <span key={i} dangerouslySetInnerHTML={getMarkup()} />
+                                <span key={i} dangerouslySetInnerHTML={getMarkup()}/>
                             );
                         })
                     }
@@ -173,18 +141,18 @@ define(function (require) {
     });
 
     GEPPETTO.ParameterInputComponent = React.createClass({
-        refresh: function() {
+        refresh: function () {
             this.forceUpdate();
         },
 
-        replaceTokensWithProjectExperimentIds: function(inputStr, projectId, experimentId){
+        replaceTokensWithProjectExperimentIds: function (inputStr, projectId, experimentId) {
             return inputStr.replace(/\$projectId\$/gi, projectId).replace(/\$experimentId\$/gi, experimentId);
         },
 
         componentDidMount: function () {
-        	
-        	var that = this;
-        	
+
+            var that = this;
+
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
             GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
                 that.refresh();
@@ -196,8 +164,8 @@ define(function (require) {
                 that.refresh();
             });
         },
-        
-        componentWillUnmount: function() {
+
+        componentWillUnmount: function () {
             GEPPETTO.off(GEPPETTO.Events.Experiment_failed, this.refresh, this);
             GEPPETTO.off(GEPPETTO.Events.Experiment_running, this.refresh, this);
             GEPPETTO.off(GEPPETTO.Events.Experiment_completed, this.refresh, this);
@@ -208,26 +176,26 @@ define(function (require) {
             var path = this.props.rowData.path;
             var projectId = this.props.rowData.projectId;
             var experimentId = this.props.rowData.experimentId;
-            var entity=undefined;
+            var entity = undefined;
             var unit = undefined;
             var defaultValue = undefined;
             var initialValue = undefined;
 
-            if(this.props.rowData.fetched_value != undefined){
+            if (this.props.rowData.fetched_value != undefined) {
                 // we have a value in the record, we are dealing with an external item, it's not an actual entity that can be evaluated
                 unit = this.props.rowData.unit;
-                defaultValue = this.props.rowData.fetched_value -1; //we don't have the default value and will never show it, this only allows for the value to show as edited
+                defaultValue = this.props.rowData.fetched_value - 1; //we don't have the default value and will never show it, this only allows for the value to show as edited
                 initialValue = this.props.rowData.fetched_value;
             } else {
-                try{
-                    entity=eval(path);
+                try {
+                    entity = eval(path);
                     // fetch unit
                     unit = entity.getUnit();
                     // fetch current or default value
                     defaultValue = entity.getInitialValue();
                     initialValue = entity.getValue();
                 }
-                catch(e){
+                catch (e) {
                     // something went horribly wrong - this should never happen
                     throw "ParameterInputComponent - could not eval path: " + path;
                 }
@@ -235,7 +203,7 @@ define(function (require) {
 
             // figure out if input is readonly, this is always true if not dealing with entities (entity == undefined)
             var readOnly = true;
-            if(entity != undefined) {
+            if (entity != undefined) {
                 try {
                     var deTokenizedCondition = this.replaceTokensWithProjectExperimentIds(this.props.metadata.readOnlyCondition, projectId, experimentId);
                     // eval condition + make sure we have a real entity
@@ -244,12 +212,12 @@ define(function (require) {
                     // nothing to do here readOnly defaults to true if evaluation failed
                 }
             }
-            
+
             var that = this;
             // get and ready action string
             var actionStr = this.props.metadata.actions;
-            var onInputChangeHandler = function(event){
-                if(!readOnly) {
+            var onInputChangeHandler = function (event) {
+                if (!readOnly) {
                     var newVal = event.target.value;
 
                     // only set if it's different than its current value, could be initial or set value
@@ -265,8 +233,8 @@ define(function (require) {
                 }
             };
 
-            var onKeyPressHandler = function(event){
-                if(event.key == 'Enter'){
+            var onKeyPressHandler = function (event) {
+                if (event.key == 'Enter') {
                     onInputChangeHandler(event);
                 }
             };
@@ -291,32 +259,32 @@ define(function (require) {
         colorPickerBtnId: '',
         colorPickerActionFn: '',
 
-        refresh: function() {
+        refresh: function () {
             this.forceUpdate();
         },
-        
-        replaceTokensWithPath: function(inputStr, path){
+
+        replaceTokensWithPath: function (inputStr, path) {
             return inputStr.replace(/\$instance\$/gi, path).replace(/\$instances\$/gi, '[' + path + ']');
         },
 
-        replaceTokensWithProjectExperimentIds: function(inputStr, projectId, experimentId){
+        replaceTokensWithProjectExperimentIds: function (inputStr, projectId, experimentId) {
             return inputStr.replace(/\$projectId\$/gi, projectId).replace(/\$experimentId\$/gi, experimentId);
         },
 
-        replaceAllTokensKnownToMan: function(inputStr, path, projectId, experimentId){
+        replaceAllTokensKnownToMan: function (inputStr, path, projectId, experimentId) {
             return this.replaceTokensWithProjectExperimentIds(this.replaceTokensWithPath(inputStr, path), projectId, experimentId);
         },
 
         getActionString: function (control, path, projectId, experimentId) {
             var actionStr = '';
 
-            if(control.actions!=null || undefined){
-            	if (control.actions.length > 0) {
-            		for (var i = 0; i < control.actions.length; i++) {
+            if (control.actions != null || undefined) {
+                if (control.actions.length > 0) {
+                    for (var i = 0; i < control.actions.length; i++) {
                         var deTokenizedStr = this.replaceAllTokensKnownToMan(control.actions[i], path, projectId, experimentId);
-            			actionStr += ((i != 0) ? ";" : "") + deTokenizedStr;
-            		}
-            	}
+                        actionStr += ((i != 0) ? ";" : "") + deTokenizedStr;
+                    }
+                }
             }
             return actionStr;
         },
@@ -354,14 +322,22 @@ define(function (require) {
                 if (entity.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                     defColor = entity.getColor();
                 }
-
-                // init dat color picker
                 var coloPickerElement = $('#' + this.colorPickerBtnId);
                 coloPickerElement.colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
-                coloPickerElement.colorpicker('setValue', defColor.replace(/0X/i, "#"));
+
+                if (defColor != undefined) {
+                    var setColor = ""
+                    if ($.isArray(defColor)) {
+                        setColor = "0xfc6320";
+                    }
+                    else {
+                        setColor = defColor.replace(/0X/i, "#");
+                    }
+                    // init dat color picker
+                    coloPickerElement.colorpicker('setValue', setColor);
+                }
 
                 // closure on local scope at this point - hook on change event
-                
                 coloPickerElement.on('changeColor', function (e) {
                     that.colorPickerActionFn(e.color.toHex().replace("#", "0x"));
                     $(this).css("color", e.color.toHex());
@@ -379,27 +355,27 @@ define(function (require) {
                 that.refresh();
             });
         },
-        
-        componentWillUnmount: function() {
+
+        componentWillUnmount: function () {
             GEPPETTO.off(GEPPETTO.Events.Experiment_failed, this.refresh, this);
             GEPPETTO.off(GEPPETTO.Events.Experiment_running, this.refresh, this);
             GEPPETTO.off(GEPPETTO.Events.Experiment_completed, this.refresh, this);
         },
-        
+
 
         // Utility method to iterate over a config property and populate a list of control buttons to be created
-        addControlButtons: function(controlsConfig, showControlsConfig, configPropertyName, buttonsList, targetPath, projectId, experimentId){
+        addControlButtons: function (controlsConfig, showControlsConfig, configPropertyName, buttonsList, targetPath, projectId, experimentId) {
             for (var control in controlsConfig[configPropertyName]) {
                 if ($.inArray(control.toString(), showControlsConfig[configPropertyName]) != -1) {
                     var add = true;
 
                     // check show condition
-                    if(controlsConfig[configPropertyName][control].showCondition != undefined){
+                    if (controlsConfig[configPropertyName][control].showCondition != undefined) {
                         var condition = this.replaceAllTokensKnownToMan(controlsConfig[configPropertyName][control].showCondition, targetPath, projectId, experimentId);
                         add = eval(condition);
                     }
 
-                    if(add) {
+                    if (add) {
                         buttonsList.push(controlsConfig[configPropertyName][control]);
                     }
                 }
@@ -444,9 +420,9 @@ define(function (require) {
                 <div>
                     {ctrlButtons.map(function (control, id) {
                         var menuButton = false;
-                    	if(control.menu!=undefined && control.menu!=null){
-                    		menuButton = control.menu;
-                    	}
+                        if (control.menu != undefined && control.menu != null) {
+                            menuButton = control.menu;
+                        }
                         // grab attributes to init button attributes
                         var controlConfig = that.resolveCondition(control, path, false, projectId, experimentId);
                         var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
@@ -470,7 +446,7 @@ define(function (require) {
                             if (actionStr != '' && actionStr != undefined) {
                                 GEPPETTO.Console.executeImplicitCommand(actionStr);
                                 // check custom action to run after configured command
-                                if(that.props.metadata.actions != '' && that.props.metadata.actions != undefined) {
+                                if (that.props.metadata.actions != '' && that.props.metadata.actions != undefined) {
                                     // straight up eval as we don't want this to show on the geppetto console
                                     var evalString = that.replaceAllTokensKnownToMan(that.props.metadata.actions, path, projectId, experimentId);
                                     eval(evalString);
@@ -490,55 +466,66 @@ define(function (require) {
                         if (entity != undefined && controlConfig.id == "color") {
                             that.colorPickerBtnId = idVal;
                             that.colorPickerActionFn = actionFn;
-                            // set style val to color tint icon
-                            var colorVal = String(entity.getColor().replace(/0X/i, "#") + "0000").slice(0, 7);
-                            styleVal = {color: colorVal.startsWith('#') ? colorVal : ('#' + colorVal) };
+                            var color = entity.getColor();
+                            if (color != undefined) {
+
+                                var colorVal = ""
+                                if ($.isArray(color)) {
+                                    colorVal = "#fc6320";
+                                }
+                                else {
+                                    colorVal = String(color.replace(/0X/i, "#") + "0000").slice(0, 7);
+                                }
+
+                                styleVal = {color: colorVal.startsWith('#') ? colorVal : ('#' + colorVal)};
+                            }
                             classVal += " color-picker-button";
                         }
 
-                        var controlPanelMenuButtonConfig= {};
-                        if(control.menu){
-                        	var menuButtonItems = [];
-                        	if(control.menuItems!=null || control.menuItems != undefined){
-                        		for(var i =0; i<control.menuItems.length; i++){
-                        			var action = that.replaceAllTokensKnownToMan(control.menuItems[i].action, path, projectId, experimentId);
-                        			control.menuItems[i].action = action;
-                        		}
-                        		menuButtonItems = control.menuItems;
-                        	}else{
-                        		menuButtonItems = control.menuMaker(projectId, experimentId, path);
-                        	}
+                        var controlPanelMenuButtonConfig = {};
+                        if (control.menu) {
+                            var menuButtonItems = [];
+                            if (control.menuItems != null || control.menuItems != undefined) {
+                                for (var i = 0; i < control.menuItems.length; i++) {
+                                    var action = that.replaceAllTokensKnownToMan(control.menuItems[i].action, path, projectId, experimentId);
+                                    control.menuItems[i].action = action;
+                                }
+                                menuButtonItems = control.menuItems;
+                            } else {
+                                menuButtonItems = control.menuMaker(projectId, experimentId, path);
+                            }
 
-                        	controlPanelMenuButtonConfig = {
-                        			id: idVal,
-                        			openByDefault: false,
-                        			closeOnClick: true,
-                        			label: '',
-                        			iconOff: "",
-                        			iconOn: "",
-                        			containerClassName : "menuButtonContainer",
-                        			buttonClassName : "ctrlpanel-button fa "+controlConfig.icon,
-                        			menuPosition: null,
-                                    horizontalOffset: 107,
-                        			menuSize: {width : 150, height : 'auto'},
-                        			menuCSS : 'menuButtonStyle',
-                        			menuItems: menuButtonItems,
-                        			onClickHandler: actionFn
-                        	};
+                            controlPanelMenuButtonConfig = {
+                                id: idVal,
+                                openByDefault: false,
+                                closeOnClick: true,
+                                label: '',
+                                iconOff: "",
+                                iconOn: "",
+                                containerClassName: "menuButtonContainer",
+                                buttonClassName: "ctrlpanel-button fa " + controlConfig.icon,
+                                menuPosition: null,
+                                horizontalOffset: 107,
+                                menuSize: {width: 150, height: 'auto'},
+                                menuCSS: 'menuButtonStyle',
+                                menuItems: menuButtonItems,
+                                onClickHandler: actionFn
+                            };
                         }
                         return (
                             <span key={id}>
                             {menuButton ?
-                            		<MenuButton ref={idVal} type={control.menuItemsType} configuration={controlPanelMenuButtonConfig} />
-                             	:
-                             		<button id={idVal}
+                                <MenuButton ref={idVal} type={control.menuItemsType} configuration={controlPanelMenuButtonConfig}/>
+                                :
+                                <button id={idVal}
                                         className={classVal}
                                         style={styleVal}
                                         title={tooltip}
                                         onClick={
-                                            controlConfig.id == "color" ? function(){} : actionFn
+                                            controlConfig.id == "color" ? function () {
+                                            } : actionFn
                                         }>
-                             	    </button>
+                                </button>
                             }
                             </span>
                         )
@@ -626,23 +613,38 @@ define(function (require) {
             this.forceUpdate();
         },
 
-        componentDidMount: function(){
+        componentDidMount: function () {
             var that = this;
-            GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function(){
+            GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function () {
                 // when control panel is open and we are using the filter component
                 // if no other main component is toggled show visual instances
-                if(!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled){
+                if (!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled) {
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('visualInstancesFilterBtn');
+                }
+            });
+            GEPPETTO.on("control_panel_refresh", function () {
+                // when control panel is open and we are using the filter component
+                // if no other main component is toggled show visual instances
+                if (that.state.stateVarsFilterToggled) {
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('stateVariablesFilterBtn');
+                }
+                else if (that.state.paramsFilterToggled) {
+                    // same logic as if viz instances filter was clicked
+                    that.computeResult('parametersFilterBtn');
+                } else if (that.state.visualFilterToggled) {
                     // same logic as if viz instances filter was clicked
                     that.computeResult('visualInstancesFilterBtn');
                 }
             });
         },
 
-        computeResult: function(controlId){
+        computeResult: function (controlId) {
             // logic for disable/enable stuff here
-            switch(controlId) {
+            switch (controlId) {
                 case 'visualInstancesFilterBtn':
-                    if(!this.state.visualFilterToggled){
+                    if (!this.state.visualFilterToggled) {
                         this.setTogglesState(
                             // visual instance being toggled on, untoggle everything else
                             true, false, false, false, false, false, false,
@@ -654,9 +656,9 @@ define(function (require) {
                     }
                     break;
                 case 'stateVariablesFilterBtn':
-                    if(!this.state.stateVarsFilterToggled){
+                    if (!this.state.stateVarsFilterToggled) {
                         var activeExperimentToggleStatus = this.state.activeExperimentFilterToggled;
-                        if(!(this.state.activeExperimentFilterToggled || this.state.anyExperimentFilterToggled || this.state.anyProjectFilterToggled)){
+                        if (!(this.state.activeExperimentFilterToggled || this.state.anyExperimentFilterToggled || this.state.anyProjectFilterToggled)) {
                             // if state var is selected and none of the relevant sub-toggles are selected, select active experiment
                             activeExperimentToggleStatus = true;
                         }
@@ -672,9 +674,9 @@ define(function (require) {
                     }
                     break;
                 case 'parametersFilterBtn':
-                    if(!this.state.paramsFilterToggled){
+                    if (!this.state.paramsFilterToggled) {
                         var activeExperimentToggleStatus = this.state.activeExperimentFilterToggled;
-                        if(!(this.state.activeExperimentFilterToggled || this.state.anyExperimentFilterToggled || this.state.anyProjectFilterToggled)){
+                        if (!(this.state.activeExperimentFilterToggled || this.state.anyExperimentFilterToggled || this.state.anyProjectFilterToggled)) {
                             // if params is selected and none of the relevant sub-toggles are selected, select active experiment
                             activeExperimentToggleStatus = true;
                         }
@@ -690,7 +692,7 @@ define(function (require) {
                     }
                     break;
                 case 'activeExperimentFilterBtn':
-                    if(!this.state.activeExperimentFilterToggled){
+                    if (!this.state.activeExperimentFilterToggled) {
                         // recorded filter is only visible for state vars in the active experiment
                         // NOTE: this variable assignment is verbose but more readable
                         var recordedVisibility = this.state.stateVarsFilterToggled ? true : false;
@@ -706,7 +708,7 @@ define(function (require) {
                     }
                     break;
                 case 'anyExperimentFilterBtn':
-                    if(!this.state.anyExperimentFilterToggled){
+                    if (!this.state.anyExperimentFilterToggled) {
                         // auto-toggle recording if state vars filter is toggled (can only look at recorded state vars for external experiments) otherwise leave as is
                         var recordingToggleStatus = this.state.visualFilterToggled ? true : this.state.recordedFilterToggled;
 
@@ -721,7 +723,7 @@ define(function (require) {
                     }
                     break;
                 case 'anyProjectFilterBtn':
-                    if(!this.state.anyProjectFilterToggled){
+                    if (!this.state.anyProjectFilterToggled) {
                         // auto-toggle recording if state vars filter is toggled (can only look at recorded state vars for external projects/experiments) otherwise leave as is
                         var recordingToggleStatus = this.state.visualFilterToggled ? true : this.state.recordedFilterToggled;
 
@@ -744,24 +746,24 @@ define(function (require) {
 
             // this will cause the control panel to refresh data based on injected filter handler
             var filterHandler = this.props.filterHandler;
-            if(this.state.visualFilterToggled){
+            if (this.state.visualFilterToggled) {
                 filterHandler('VISUAL_INSTANCES');
-            } else if(this.state.stateVarsFilterToggled){
-                if(this.state.activeExperimentFilterToggled && this.state.recordedFilterToggled){
+            } else if (this.state.stateVarsFilterToggled) {
+                if (this.state.activeExperimentFilterToggled && this.state.recordedFilterToggled) {
                     filterHandler('ACTIVE_RECORDED_STATE_VARIABLES');
-                } else if(this.state.activeExperimentFilterToggled && !this.state.recordedFilterToggled){
+                } else if (this.state.activeExperimentFilterToggled && !this.state.recordedFilterToggled) {
                     filterHandler('ACTIVE_STATE_VARIABLES');
-                } else if(this.state.anyExperimentFilterToggled){
+                } else if (this.state.anyExperimentFilterToggled) {
                     filterHandler('ANY_EXPERIMENT_RECORDED_STATE_VARIABLES');
-                } else if(this.state.anyProjectFilterToggled){
+                } else if (this.state.anyProjectFilterToggled) {
                     filterHandler('ANY_PROJECT_GLOBAL_STATE_VARIABLES');
                 }
-            } else if (this.state.paramsFilterToggled){
-                if(this.state.activeExperimentFilterToggled){
+            } else if (this.state.paramsFilterToggled) {
+                if (this.state.activeExperimentFilterToggled) {
                     filterHandler('ACTIVE_PARAMETERS');
-                } else if(this.state.anyExperimentFilterToggled){
+                } else if (this.state.anyExperimentFilterToggled) {
                     filterHandler('ANY_EXPERIMENT_PARAMETERS');
-                } else if(this.state.anyProjectFilterToggled){
+                } else if (this.state.anyProjectFilterToggled) {
                     filterHandler('ANY_PROJECT_PARAMETERS');
                 }
             }
@@ -771,7 +773,9 @@ define(function (require) {
             var that = this;
             var vizConfig = {
                 id: 'visualInstancesFilterBtn',
-                condition: function(){return that.state.visualFilterToggled;},
+                condition: function () {
+                    return that.state.visualFilterToggled;
+                },
                 true: {
                     icon: 'gpt-3dshape',
                     action: '',
@@ -779,7 +783,7 @@ define(function (require) {
                     tooltip: 'Visual objects'
                 },
                 false: {
-                	icon: 'gpt-3dshape',
+                    icon: 'gpt-3dshape',
                     action: '',
                     label: '',
                     tooltip: 'Visual objects'
@@ -788,7 +792,9 @@ define(function (require) {
             };
             var stateVarConfig = {
                 id: 'stateVariablesFilterBtn',
-                condition: function(){return that.state.stateVarsFilterToggled;},
+                condition: function () {
+                    return that.state.stateVarsFilterToggled;
+                },
                 true: {
                     icon: 'fa fa-superscript',
                     action: '',
@@ -805,7 +811,9 @@ define(function (require) {
             };
             var paramConfig = {
                 id: 'parametersFilterBtn',
-                condition: function(){return that.state.paramsFilterToggled;},
+                condition: function () {
+                    return that.state.paramsFilterToggled;
+                },
                 true: {
                     icon: 'fa fa-sign-in',
                     action: '',
@@ -813,7 +821,7 @@ define(function (require) {
                     tooltip: 'Parameters'
                 },
                 false: {
-                	icon: 'fa fa-sign-in',
+                    icon: 'fa fa-sign-in',
                     action: '',
                     label: '',
                     tooltip: 'Parameters'
@@ -822,7 +830,9 @@ define(function (require) {
             };
             var activeConfig = {
                 id: 'activeExperimentFilterBtn',
-                condition: function(){return that.state.activeExperimentFilterToggled;},
+                condition: function () {
+                    return that.state.activeExperimentFilterToggled;
+                },
                 true: {
                     icon: 'gpt-activeExp',
                     action: '',
@@ -830,7 +840,7 @@ define(function (require) {
                     label: ''
                 },
                 false: {
-                	icon: 'gpt-activeExp',
+                    icon: 'gpt-activeExp',
                     action: '',
                     tooltip: 'Active Experiment',
                     label: ''
@@ -839,16 +849,18 @@ define(function (require) {
             };
             var anyExpConfig = {
                 id: 'anyExperimentFilterBtn',
-                condition: function(){return that.state.anyExperimentFilterToggled;},
-                tooltipPosition: { my: "center bottom",at: "center-50 top-10"},
+                condition: function () {
+                    return that.state.anyExperimentFilterToggled;
+                },
+                tooltipPosition: {my: "center bottom", at: "center-50 top-10"},
                 true: {
-                	icon: 'fa fa-flask',
+                    icon: 'fa fa-flask',
                     action: '',
                     tooltip: 'Look in any Experiment for the current project',
                     label: ''
                 },
                 false: {
-                	icon: 'fa fa-flask',
+                    icon: 'fa fa-flask',
                     action: '',
                     tooltip: 'Look in any Experiment for the current project',
                     label: ''
@@ -857,8 +869,10 @@ define(function (require) {
             };
             var anyProjConfig = {
                 id: 'anyProjectFilterBtn',
-                condition: function(){return that.state.anyProjectFilterToggled;},
-                tooltipPosition: { my: "center bottom",at: "center-50 top-10"},
+                condition: function () {
+                    return that.state.anyProjectFilterToggled;
+                },
+                tooltipPosition: {my: "center bottom", at: "center-50 top-10"},
                 true: {
                     icon: 'fa fa-globe',
                     action: '',
@@ -866,7 +880,7 @@ define(function (require) {
                     label: ''
                 },
                 false: {
-                	icon: 'fa fa-globe',
+                    icon: 'fa fa-globe',
                     action: '',
                     tooltip: 'Look in any of your projects',
                     label: ''
@@ -875,7 +889,9 @@ define(function (require) {
             };
             var recordedConfig = {
                 id: 'recordedFilterBtn',
-                condition: function(){return that.state.recordedFilterToggled;},
+                condition: function () {
+                    return that.state.recordedFilterToggled;
+                },
                 true: {
                     icon: 'fa fa-dot-circle-o',
                     action: '',
@@ -883,7 +899,7 @@ define(function (require) {
                     label: ''
                 },
                 false: {
-                	icon: 'fa fa-dot-circle-o',
+                    icon: 'fa fa-dot-circle-o',
                     action: '',
                     tooltip: 'Recorded variables',
                     label: ''
@@ -896,27 +912,27 @@ define(function (require) {
                     <div className="left-filter-panel">
                         <ToggleButton id="visualInstancesFilterBtn" ignoreProjectEvents={true} hidden={!this.state.visualFilterVisible}
                                       disabled={!this.state.visualFilterEnabled} toggled={this.state.visualFilterToggled}
-                                      configuration={vizConfig} className="control-panel-filter-toggle" />
+                                      configuration={vizConfig} className="control-panel-filter-toggle"/>
                         <ToggleButton id="stateVariablesFilterBtn" ignoreProjectEvents={true} hidden={!this.state.stateVarsFilterVisible}
                                       disabled={!this.state.stateVarsFilterEnabled} toggled={this.state.stateVarsFilterToggled}
-                                      configuration={stateVarConfig} className="control-panel-filter-toggle" />
+                                      configuration={stateVarConfig} className="control-panel-filter-toggle"/>
                         <ToggleButton id="parametersFilterBtn" ignoreProjectEvents={true} hidden={!this.state.paramsFilterVisible}
                                       disabled={!this.state.paramsFilterEnabled} toggled={this.state.paramsFilterToggled}
-                                      configuration={paramConfig} className="control-panel-filter-toggle" />
+                                      configuration={paramConfig} className="control-panel-filter-toggle"/>
                     </div>
                     <div className="right-filter-panel">
                         <ToggleButton id="recordedFilterBtn" ignoreProjectEvents={true} hidden={!this.state.recordedFilterVisible}
                                       disabled={!this.state.recordedFilterEnabled} toggled={this.state.recordedFilterToggled}
-                                      configuration={recordedConfig} className="control-panel-filter-toggle" />
+                                      configuration={recordedConfig} className="control-panel-filter-toggle"/>
                         <ToggleButton id="activeExperimentFilterBtn" ignoreProjectEvents={true} hidden={!this.state.activeExperimentFilterVisible}
                                       disabled={!this.state.activeExperimentFilterEnabled} toggled={this.state.activeExperimentFilterToggled}
-                                      configuration={activeConfig} className="control-panel-filter-toggle" />
+                                      configuration={activeConfig} className="control-panel-filter-toggle"/>
                         <ToggleButton id="anyExperimentFilterBtn" ignoreProjectEvents={true} hidden={!this.state.anyExperimentFilterVisible}
                                       disabled={!this.state.anyExperimentFilterEnabled} toggled={this.state.anyExperimentFilterToggled}
-                                      configuration={anyExpConfig} className="control-panel-filter-toggle" />
+                                      configuration={anyExpConfig} className="control-panel-filter-toggle"/>
                         <ToggleButton id="anyProjectFilterBtn" ignoreProjectEvents={true} hidden={!this.state.anyProjectFilterVisible}
                                       disabled={!this.state.anyProjectFilterEnabled} toggled={this.state.anyProjectFilterToggled}
-                                      configuration={anyProjConfig} className="control-panel-filter-toggle" />
+                                      configuration={anyProjConfig} className="control-panel-filter-toggle"/>
                     </div>
                 </div>
             )
@@ -979,7 +995,7 @@ define(function (require) {
                     "label": "Selected",
                     "tooltip": "Deselect"
                 },
-            },"visibility": {
+            }, "visibility": {
                 "condition": "GEPPETTO.SceneController.isVisible($instances$)",
                 "false": {
                     "id": "visibility",
@@ -1030,29 +1046,31 @@ define(function (require) {
         },
         "Common": {}
     };
-    var defaultDataFilter = function(entities){
+    var defaultDataFilter = function (entities) {
         return GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.VISUAL_CAPABILITY, entities);
     };
 
     //Control panel initialization
-    var createPlotButtonMenuItems = function(projectId, experimentId, instance){
+    var createPlotButtonMenuItems = function (projectId, experimentId, instance) {
         var menuButtonItems = [];
         var controller = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT);
         var plots = controller.getWidgets()
-            .filter(function(plot) { return !controller.isColorbar(plot); });
-        if(plots.length > 0){
-            for(var i =0 ; i<plots.length; i++){
+            .filter(function (plot) {
+                return !controller.isColorbar(plot);
+            });
+        if (plots.length > 0) {
+            for (var i = 0; i < plots.length; i++) {
                 menuButtonItems.push({
-                    label: "Add to " +plots[i].getId(),
-                    action:"GEPPETTO.ControlPanel.plotController.plotStateVariable(" + projectId + "," + experimentId + ",'" + instance + "'," + plots[i].getId() + ")",
+                    label: "Add to " + plots[i].getId(),
+                    action: "GEPPETTO.ControlPanel.plotController.plotStateVariable(" + projectId + "," + experimentId + ",'" + instance + "'," + plots[i].getId() + ")",
                     value: "plot_variable"
                 });
             }
-        }else{
+        } else {
             //add default item
             menuButtonItems.push({
                 label: "Add new plot ",
-                action:"GEPPETTO.ControlPanel.plotController.plotStateVariable(" + projectId + "," + experimentId + ",'" + instance + "')",
+                action: "GEPPETTO.ControlPanel.plotController.plotStateVariable(" + projectId + "," + experimentId + ",'" + instance + "')",
                 value: "plot_variable"
             });
         }
@@ -1213,9 +1231,9 @@ define(function (require) {
             },
             //dynamic menu button, no initial list of items, and adds menu items on the go as plots are created
             "plot2": {
-                "menu" :true,
-                "menuMaker" : createPlotButtonMenuItems,
-                "actions" :["GEPPETTO.ControlPanel.refresh();"],
+                "menu": true,
+                "menuMaker": createPlotButtonMenuItems,
+                "actions": ["GEPPETTO.ControlPanel.refresh();"],
                 "showCondition": "GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal($projectId$, $experimentId$, '$instance$');",
                 "id": "plot2",
                 "icon": "gpt-addplot",
@@ -1228,7 +1246,7 @@ define(function (require) {
     var instancesControls = {
         "Common": [],
         "VisualCapability": ['color', 'randomcolor', 'visibility', 'zoom'],
-        "StateVariableCapability": ['watch', 'plot','plot2']
+        "StateVariableCapability": ['watch', 'plot', 'plot2']
     };
 
     // state variables config (treated as potential instances)
@@ -1331,9 +1349,9 @@ define(function (require) {
             },
             //dynamic menu button, no initial list of items, and adds menu items on the go as plots are created
             "plot2": {
-                "menu" :true,
-                "menuMaker" : createPlotButtonMenuItems,
-                "actions" :["GEPPETTO.ControlPanel.refresh();"],
+                "menu": true,
+                "menuMaker": createPlotButtonMenuItems,
+                "actions": ["GEPPETTO.ControlPanel.refresh();"],
                 "showCondition": "GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal($projectId$, $experimentId$, '$instance$');",
                 "id": "plot2",
                 "icon": "gpt-addplot",
@@ -1342,7 +1360,7 @@ define(function (require) {
             }
         }
     };
-    var stateVariablesControls = { "Common": ['watch', 'plot', 'plot2'] };
+    var stateVariablesControls = {"Common": ['watch', 'plot', 'plot2']};
 
     // parameters config (treated as potential instances)
     var parametersColMeta = [
@@ -1423,17 +1441,21 @@ define(function (require) {
             "visible": false
         }
     ];
-    var paramsCols = ['name',  'value'];
+    var paramsCols = ['name', 'value'];
     var paramsColsWithExperiment = ['name', 'value', 'experimentName'];
     var paramsColsWithProjectAndExperiment = ['name', 'value', 'projectName', 'experimentName'];
     var parametersControlsConfig = {};
-    var parametersControls = { "Common": [] };
+    var parametersControls = {"Common": []};
 
     var ControlPanel = React.createClass({
         displayName: 'ControlPanel',
 
-        refresh: function() {
-            this.forceUpdate();
+        refresh: function () {
+            var self = this;
+            var callback = function () {
+                self.forceUpdate();
+            };
+            GEPPETTO.ProjectsController.refreshUserProjects(callback);
         },
 
         getInitialState: function () {
@@ -1462,35 +1484,35 @@ define(function (require) {
             this.setState({columnMeta: colMeta});
         },
 
-        addData: function(instances){
-        	if(instances!= undefined && instances.length>0){
-        		
-	            var columnMeta = this.state.columnMeta;
-	
-	            // filter new records with data filter
-	            var records = this.state.dataFilter(instances);
-	
-	            // grab existing input
-	            var gridInput = this.state.data;
-	
-	            for (var i = 0; i < records.length; i++) {
-	                var gridRecord = {};
+        addData: function (instances) {
+            if (instances != undefined && instances.length > 0) {
+
+                var columnMeta = this.state.columnMeta;
+
+                // filter new records with data filter
+                var records = this.state.dataFilter(instances);
+
+                // grab existing input
+                var gridInput = this.state.data;
+
+                for (var i = 0; i < records.length; i++) {
+                    var gridRecord = {};
                     var entityPath = records[i].getPath();
 
                     // check for duplicates
                     var isDuplicate = false;
-                    for(var k=0; k<gridInput.length; k++){
-                        if(gridInput[k].path == entityPath){
+                    for (var k = 0; k < gridInput.length; k++) {
+                        if (gridInput[k].path == entityPath) {
                             isDuplicate = true;
                         }
                     }
 
-                    if(!isDuplicate) {
+                    if (!isDuplicate) {
                         // loop column meta and grab column names + source
                         for (var j = 0; j < columnMeta.length; j++) {
                             // eval result - empty string by default so griddle doesn't complain
                             var result = '';
-                            if(columnMeta[j].source != undefined) {
+                            if (columnMeta[j].source != undefined) {
                                 var sourceActionStr = columnMeta[j].source;
 
                                 // replace token with path from input entity
@@ -1513,36 +1535,36 @@ define(function (require) {
 
                         gridInput.push(gridRecord);
                     }
-	            }
-	
-	            // set state to refresh grid
-	            this.setState({data: gridInput});
-        	}
+                }
+
+                // set state to refresh grid
+                this.setState({data: gridInput});
+            }
         },
 
-        deleteData: function(instancePaths){
-            if(instancePaths!= undefined && instancePaths.length>0){
+        deleteData: function (instancePaths) {
+            if (instancePaths != undefined && instancePaths.length > 0) {
                 // grab existing input
                 var gridInput = this.state.data;
                 var newGridInput = [];
 
                 // remove unwanted instances from grid input
-                for(var i=0; i<instancePaths.length; i++){
-                    for(var j=0; j<gridInput.length; j++){
-                        if(instancePaths[i] != gridInput[j].path){
+                for (var i = 0; i < instancePaths.length; i++) {
+                    for (var j = 0; j < gridInput.length; j++) {
+                        if (instancePaths[i] != gridInput[j].path) {
                             newGridInput.push(gridInput[j]);
                         }
                     }
                 }
 
                 // set state to refresh grid
-                if(gridInput.length != newGridInput.length){
+                if (gridInput.length != newGridInput.length) {
                     this.setState({data: newGridInput});
                 }
             }
         },
 
-        clearData: function(){
+        clearData: function () {
             // set state to refresh grid
             this.setState({data: []});
         },
@@ -1560,21 +1582,21 @@ define(function (require) {
                 var gridRecord = {};
 
                 // loop column meta and grab column names + source
-                for(var j=0; j<columnMeta.length; j++){
+                for (var j = 0; j < columnMeta.length; j++) {
                     // eval result - empty string by default so griddle doesn't complain
                     var result = '';
-                    if(columnMeta[j].source != undefined) {
+                    if (columnMeta[j].source != undefined) {
                         var sourceActionStr = columnMeta[j].source;
 
                         // replace token with path from input entity
                         var entityPath = records[i].getPath();
                         sourceActionStr = sourceActionStr.replace(/\$entity\$/gi, entityPath);
 
-                        try{
-                            if(sourceActionStr != "") {
+                        try {
+                            if (sourceActionStr != "") {
                                 result = eval(sourceActionStr);
                             }
-                        } catch(e){
+                        } catch (e) {
                             GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
                         }
                     } else {
@@ -1619,7 +1641,7 @@ define(function (require) {
 
             GEPPETTO.trigger(GEPPETTO.Events.Control_panel_open);
         },
-        
+
         close: function () {
             // hide any color picker that is still visible
             $(".colorpicker-visible").addClass('colorpicker-hidden').removeClass('colorpicker-visible');
@@ -1629,14 +1651,14 @@ define(function (require) {
             GEPPETTO.trigger(GEPPETTO.Events.Control_panel_close);
         },
 
-        setFilter: function(filterText){
+        setFilter: function (filterText) {
             var filterElement = $('#controlpanel input.form-control[name=filter]');
             filterElement.val(filterText);
             // trigger input change the way react likes it
-            filterElement[0].dispatchEvent(new Event('input', { bubbles: true }));
+            filterElement[0].dispatchEvent(new Event('input', {bubbles: true}));
         },
 
-        resetControlPanel: function(columns, colMeta, controls, controlsConfig){
+        resetControlPanel: function (columns, colMeta, controls, controlsConfig) {
             // reset filter and wipe data
             this.setFilter('');
             this.clearData();
@@ -1675,7 +1697,9 @@ define(function (require) {
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
-                    setTimeout(function () {that.setData(visualInstances);}, 5);
+                    setTimeout(function () {
+                        that.setData(visualInstances);
+                    }, 5);
                     break;
                 case 'ACTIVE_STATE_VARIABLES':
                     // displays potential instances
@@ -1708,7 +1732,9 @@ define(function (require) {
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
-                    setTimeout(function () {that.setData(potentialStateVarInstances);}, 5);
+                    setTimeout(function () {
+                        that.setData(potentialStateVarInstances);
+                    }, 5);
                     break;
                 case 'ACTIVE_RECORDED_STATE_VARIABLES':
                     // displays actual instances
@@ -1735,7 +1761,9 @@ define(function (require) {
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
-                    setTimeout(function () {that.setData(recordedStateVars);}, 5);
+                    setTimeout(function () {
+                        that.setData(recordedStateVars);
+                    }, 5);
                     break;
                 case 'ANY_EXPERIMENT_RECORDED_STATE_VARIABLES':
                     // this will display potential instances with state variables col meta / controls
@@ -1745,7 +1773,9 @@ define(function (require) {
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
-                    setTimeout(function () {that.setData(projectStateVars);}, 5);
+                    setTimeout(function () {
+                        that.setData(projectStateVars);
+                    }, 5);
                     break;
                 case 'ANY_PROJECT_GLOBAL_STATE_VARIABLES':
                     // this will display potential instances with state variables col meta / controls
@@ -1755,7 +1785,9 @@ define(function (require) {
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
-                    setTimeout(function () {that.setData(globalStateVars);}, 5);
+                    setTimeout(function () {
+                        that.setData(globalStateVars);
+                    }, 5);
                     break;
                 case 'ACTIVE_PARAMETERS':
                     // displays indexed parameters / similar to potential instances
@@ -1782,7 +1814,9 @@ define(function (require) {
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
-                    setTimeout(function () {that.setData(potentialParamInstances);}, 5);
+                    setTimeout(function () {
+                        that.setData(potentialParamInstances);
+                    }, 5);
                     break;
                 case 'ANY_EXPERIMENT_PARAMETERS':
                     // this will display potential instances with parameters col meta / controls
@@ -1824,7 +1858,9 @@ define(function (require) {
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
-                    setTimeout(function () {that.setData(projectEditedParameters);}, 5);
+                    setTimeout(function () {
+                        that.setData(projectEditedParameters);
+                    }, 5);
                     break;
                 case 'ANY_PROJECT_PARAMETERS':
                     // this will display potential instances with parameters col meta / controls
@@ -1834,9 +1870,15 @@ define(function (require) {
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
-                    setTimeout(function () {that.setData(globalEditedParameters);}, 5);
+                    setTimeout(function () {
+                        that.setData(globalEditedParameters);
+                    }, 5);
                     break;
             }
+        },
+
+        isOpen: function () {
+            return $("#controlpanel").is(':visible');
         },
 
         componentDidMount: function () {
@@ -1873,13 +1915,13 @@ define(function (require) {
                 that.clearData();
             });
 
-            if(this.props.listenToInstanceCreationEvents){
+            if (this.props.listenToInstanceCreationEvents) {
                 GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (parameters) {
                     that.deleteData([parameters]);
                 });
 
-                GEPPETTO.on(GEPPETTO.Events.Instances_created, function(instances){
-                    if(instances!=undefined){
+                GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
+                    if (instances != undefined) {
                         that.addData(instances);
                     }
                 });
@@ -1890,7 +1932,7 @@ define(function (require) {
             }
 
             this.plotController = new PlotCtrlr();
-            
+
             this.addData(window.Instances);
         },
 
@@ -1910,20 +1952,20 @@ define(function (require) {
                     menuItems: this.props.menuButtonItems
                 };
                 menuButtonMarkup = (
-                    <MenuButton configuration={controlPanelMenuButtonConfig} />
+                    <MenuButton configuration={controlPanelMenuButtonConfig}/>
                 );
             }
 
             var filterMarkup = '';
             if (this.props.useBuiltInFilters === true) {
                 filterMarkup = (
-                    <FilterComponent id="controlPanelBuiltInFilter" filterHandler={this.filterOptionsHandler} />
+                    <FilterComponent id="controlPanelBuiltInFilter" filterHandler={this.filterOptionsHandler}/>
                 );
             }
 
             // figure out if we are to use infinite scrolling for results and store in state
             var infiniteScroll = true;
-            if(this.props.enablePagination != undefined) {
+            if (this.props.enablePagination != undefined) {
                 infiniteScroll = !this.props.enablePagination;
             }
 
@@ -1932,8 +1974,8 @@ define(function (require) {
                     {menuButtonMarkup}
                     {filterMarkup}
                     <Griddle columns={this.state.columns} results={this.state.data}
-                    showFilter={true} showSettings={false} enableInfiniteScroll={infiniteScroll} resultsPerPage={this.props.resultsPerPage}
-                    bodyHeight={400} useGriddleStyles={false} columnMetadata={this.state.columnMeta} />
+                             showFilter={true} showSettings={false} enableInfiniteScroll={infiniteScroll} resultsPerPage={this.props.resultsPerPage}
+                             bodyHeight={400} useGriddleStyles={false} columnMetadata={this.state.columnMeta}/>
                 </div>
             );
         }

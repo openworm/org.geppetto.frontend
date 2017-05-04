@@ -442,8 +442,6 @@ define(function (require) {
              * Creates and populates initial instance tree skeleton with any instance that needs to be visualized
              */
             createInstances: function (geppettoModel) {
-                // reset scene complexity index
-                GEPPETTO.SceneController.reset();
 
                 var instances = [];
 
@@ -911,10 +909,7 @@ define(function (require) {
                                     instances[j].setVisualGroups(visualType.getVisualGroups());
                                 }
 
-                                // increase scene complexity counter
-                                if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
-                                    GEPPETTO.SceneController.complexity += visualType.getVariables().length;
-                                }
+
                             }
                         }
 
@@ -1293,11 +1288,6 @@ define(function (require) {
                                     explodedInstance.extendApi(AVisualGroupCapability);
                                     explodedInstance.setVisualGroups(visualType.getVisualGroups());
                                 }
-
-                                // increase scene complexity counter
-                                if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
-                                    GEPPETTO.SceneController.complexity += visualType.getVariables().length;
-                                }
                             }
 
                             // check if it has connections and inject AConnectionCapability
@@ -1371,10 +1361,6 @@ define(function (require) {
                                 newlyCreatedInstance.setVisualGroups(visualType.getVisualGroups());
                             }
 
-                            // increase scene complexity counter
-                            if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
-                                GEPPETTO.SceneController.complexity += visualType.getVariables().length;
-                            }
                         }
 
                         // check if it has connections and inject AConnectionCapability
@@ -2133,10 +2119,12 @@ define(function (require) {
             },
 
             /** Creates an instance */
-            createExternalInstance: function (path) {
+            createExternalInstance: function (path, projectId, experimentId) {
                 var options = {
             		_metaType: GEPPETTO.Resources.INSTANCE_NODE,
-            		path:path
+            		path: path,
+                    projectId: projectId,
+                    experimentId: experimentId
         		};
           
                 return new ExternalInstance(options);
@@ -2697,9 +2685,6 @@ define(function (require) {
                     // remove reference
                     delete parent[instance.getId()];
                 }
-
-                // remove from scene
-                GEPPETTO.SceneController.removeFromScene(instance);
 
                 // unresolve type
                 for (var j = 0; j < instance.getTypes().length; j++) {

@@ -239,7 +239,7 @@ define(function (require) {
 
 				watchedVariables += "</ul>";
 
-        		GEPPETTO.FE.infoDialog("Recorded variables ", watchedVariables);
+        		GEPPETTO.ModalFactory.infoDialog("Recorded variables ", watchedVariables);
         	}
         },
         
@@ -255,7 +255,7 @@ define(function (require) {
        		
        		
        		modifiedParameters += "</ul>";
-        	GEPPETTO.FE.infoDialog("Set Parameters ", modifiedParameters);
+        	GEPPETTO.ModalFactory.infoDialog("Set Parameters ", modifiedParameters);
         },
 
         render: function () {
@@ -342,7 +342,7 @@ define(function (require) {
         		if(error!= null || undefined){
             		e.stopPropagation();
             		e.nativeEvent.stopImmediatePropagation();
-            		GEPPETTO.FE.infoDialog("Experiment Failed ",  error.exception);
+            		GEPPETTO.ModalFactory.infoDialog("Experiment Failed ",  error.exception);
         		}
         	}
         },
@@ -395,7 +395,7 @@ define(function (require) {
             if(login){
                 GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
             }else{
-        		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, 
+        		GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.ERROR,
         				GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.USER_NOT_LOGIN);
             }
         },
@@ -403,7 +403,7 @@ define(function (require) {
         deleteExperiment : function(e){
             var experiment = this.props.experiment;
             var index = window.Project.getExperiments().indexOf(experiment);
-            GEPPETTO.FE.inputDialog(
+            GEPPETTO.ModalFactory.inputDialog(
                 "Are you sure?",
                 "Delete " + experiment.name + "?",
                 "Yes",
@@ -524,9 +524,7 @@ define(function (require) {
             });
 
             GEPPETTO.on(GEPPETTO.Events.Project_persisted, function () {
-                self.forceUpdate();
-                self.updateExperimentStatus();
-				self.updateStatus();
+            	self.refresh();
             });
             
             GEPPETTO.on(GEPPETTO.Events.Experiment_status_check, function () {
@@ -541,9 +539,14 @@ define(function (require) {
                 self.newExperiment(experiment);
             });
 
+
+            GEPPETTO.on(GEPPETTO.Events.Experiment_renamed, function (experiment) {
+                self.refresh();
+            });
+
             GEPPETTO.on(GEPPETTO.Events.Experiment_deleted, function (experiment) {
                 self.deleteExperiment(experiment);
-                GEPPETTO.FE.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
+                GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
             });
             
 
@@ -569,6 +572,12 @@ define(function (require) {
             }
          
             $("#experimentsButton").show();
+        },
+        
+        refresh: function(){
+            this.forceUpdate();
+            this.updateExperimentStatus();
+            this.updateStatus();
         },
 
         updateStatus: function(){

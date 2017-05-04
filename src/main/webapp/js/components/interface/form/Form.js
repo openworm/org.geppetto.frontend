@@ -14,6 +14,11 @@ define(function (require) {
 	var uiSchema ={};
 	
 	var formComponent = React.createClass({
+
+		shouldComponentUpdate() {
+			return false;
+		},
+
 		render: function(){
 		     return (
 		    		 <Form id={this.props.id} 

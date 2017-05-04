@@ -51,14 +51,12 @@ define(function (require) {
         default_height: 120,
 
         /**
-         * Initialises viriables visualiser with a set of options
+         * Initialises variables visualiser with a set of options
          *
          * @param {Object} options - Object with options for the widget
          */
         initialize: function (options) {
-            this.id = options.id;
-            this.name = options.name;
-            this.options = options;
+            Widget.View.prototype.initialize.call(this, options);
 
             if (!('width' in options)) {
                 options.width = this.default_width;
@@ -91,6 +89,10 @@ define(function (require) {
 
             this.setHeader(this.variable.name);
             this.updateVariable(0, false);
+
+            // track change in state of the widget
+            this.dirtyView = true;
+
             return "Variable visualisation added to widget";
         },
 
@@ -156,6 +158,29 @@ define(function (require) {
          */
         getSelector: function (name) {
             return $(this.root.selector + " ." + name);
+        },
+
+        getView: function(){
+            var baseView = Widget.View.prototype.getView.call(this);
+
+            // add data
+            baseView.dataType = 'object';
+            baseView.data = this.variable.name;
+
+            return baseView;
+        },
+
+        setView: function(view){
+            // set base properties
+            Widget.View.prototype.setView.call(this, view);
+
+            if(view.dataType == 'object' && view.data != undefined && view.data != ''){
+                var variable = eval(view.data);
+                this.setVariable(variable);
+            }
+
+            // after setting view through setView, reset dirty flag
+            this.dirtyView = false;
         }
     });
 });

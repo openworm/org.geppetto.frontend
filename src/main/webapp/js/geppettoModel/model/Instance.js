@@ -11,7 +11,6 @@
 define(function (require) {
 
     function Instance(options) {
-
         this.id = options.id;
         this.name = options.name;
         this._metaType = options._metaType;

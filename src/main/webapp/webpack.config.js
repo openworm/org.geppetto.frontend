@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 console.log("\nThe arguments passed to webpack are:\n");
 console.log(process.argv);
@@ -15,7 +16,7 @@ var getCLIParameter=function(param){
 		}
 	}
 	return "";
-}
+};
 
 console.log("\nThe arguments passed to HtmlWebpackPlugin are:\n");
 
@@ -43,6 +44,17 @@ if (generateTestsBundle) {
 console.log("The Webpack entries are:\n");
 console.log(entries);
 
+
+var extensionConfiguration = require('./extensions/extensionsConfiguration.json');
+var availableExtensions = [];
+for (var extension in extensionConfiguration){
+	if (extensionConfiguration[extension]){
+		availableExtensions.push({from: 'extensions/' + extension.split("/")[0] + "/static/*", to: 'static', flatten: true});
+	}
+}
+console.log("Static pages coming from extensions are:\n");
+console.log(availableExtensions);
+
 var isProduction = process.argv.indexOf('-p') >= 0;
 console.log("\n Building for a " + ((isProduction)?"production":"development") + " environment")
 
@@ -56,6 +68,7 @@ module.exports = {
     },
 
     plugins: [
+        new CopyWebpackPlugin(availableExtensions),
         new HtmlWebpackPlugin({
             filename: 'geppetto.vm',
             template: './js/pages/geppetto/geppetto.ejs',
@@ -128,7 +141,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, ], loader: ['babel-loader'],
+                test: /\.(js)$/, exclude: [/node_modules(?!(\/|\\)ami.js)/, /build/, /\.bundle/], loader: ['babel-loader'],
                 query: {
                     presets: ['react', 'es2015']
                 }
@@ -138,7 +151,11 @@ module.exports = {
                 loader: "json-loader"
             },
             {
-                test: /\.(py|png|svg|gif|css|jpg|md|hbs)$/,
+                test: /Dockerfile/,
+                loader: 'ignore-loader'
+            },
+            {
+                test: /\.(py|png|jpeg|svg|gif|css|jpg|md|hbs|dcm|gz|xmi|dzi)$/,
                 loader: 'ignore-loader'
             },
             {   test: /\.css$/,
@@ -151,7 +168,11 @@ module.exports = {
             {
                 test: /\.(eot|svg|ttf|woff|woff2)$/,
                 loader: 'file?name=/fonts/[name].[ext]'
-            }
+            },
+            {
+                test: /\.html$/,
+                loader: 'raw-loader'
+             }
         ]
     },
     node: {

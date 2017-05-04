@@ -34,8 +34,6 @@ public class TransportMessageFactory {
 		List<SimpleEntry<String, String>> params = new ArrayList<SimpleEntry<String, String>>();
 
 		switch(type){
-			case RELOAD_CANVAS:
-				break;	
 			case ERROR:
 				params.add(new SimpleEntry<String, String>("message", update));
 				break;
@@ -81,6 +79,9 @@ public class TransportMessageFactory {
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case DOWNLOAD_MODEL:
+				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
+				break;
+			case DOWNLOAD_PROJECT:
 				params.add(new SimpleEntry<String, String>("update", (update!=null) ? update : EMPTY_STRING));
 				break;
 			case GET_EXPERIMENT_STATE:

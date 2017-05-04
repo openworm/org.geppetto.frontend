@@ -18,6 +18,7 @@ public enum InboundMessages {
 	SAVE_PROJECT_PROPERTIES("save_project_properties"),
 	PERSIST_PROJECT("persist_project"),
 	MAKE_PROJECT_PUBLIC("make_project_public"),
+	DOWNLOAD_PROJECT("download_project"),
 	
 	//EXPERIMENT MESSAGES
 	NEW_EXPERIMENT("new_experiment"),
@@ -33,6 +34,7 @@ public enum InboundMessages {
 	GET_WATCH("get_watch"),
 	CLEAR_WATCHED_VARIABLES("clear_watch"),
 	SET_PARAMETERS("set_parameters"),
+	SET_EXPERIMENT_VIEW("set_experiment_view"),
 	
 	LINK_DROPBOX("link_dropbox"),
 	UNLINK_DROPBOX("unlink_drobpox"),

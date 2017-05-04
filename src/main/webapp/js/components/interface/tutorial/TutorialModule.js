@@ -51,31 +51,24 @@ define(function (require) {
 	$.cookie=require('js-cookie');
 	
 	var Tutorial = React.createClass({
-		stepIndex : 0,
-		totalSteps : 0,
-		dontShowTutorial : false,
-		started : false,
-		tutorialLoaded : false,
-		tutorialMap : {},
-		
-		/**
+				/**
 		 * Stores cookie to avoid showing tutorial next time at startup
 		 */
 		dontShowAtStartup: function(val){
 			$.cookie('ignore_tutorial', true);
 		},
-
+		
+		getDefaultProps: function() {
+		   return {
+			   id: "tutorial"
+		   };
+		 },
+		
 		getInitialState: function() {
 			return {
 				tutorialData: {},
-				tutorialTitle : "",
-				tutorialMessage : "",
-				iconClass: "",
-				cookieClass : "checkbox-inline cookieTutorial",
-				prevBtnDisabled : true,
-				nextBtnLast : false,
-				nextBtnLabel : "",
-				visible : true,
+				activeTutorial : undefined,
+				currentStep : 0
 			};
 		},
 
@@ -83,149 +76,201 @@ define(function (require) {
 		 * Initial message at launch of tutorial
 		 */
 		start : function(){
-			this.stepIndex = 0;
-			var title = this.state.tutorialData.steps[this.stepIndex].title;
-			var message = this.state.tutorialData.steps[this.stepIndex].message;
-			var action = this.state.tutorialData.steps[this.stepIndex].action;
-			var icon = this.state.tutorialData.steps[this.stepIndex].icon;
+			this.state.currentStep=0;
 			this.open(true);
-			this.updateTutorialWindow(title,message,action,icon);			
+			this.updateTutorialWindow();			
 			this.started = true;
 		},
+		
+		getActiveTutorial : function(){
+			return this.state.tutorialData[this.state.activeTutorial];
+		},
 
-		updateTutorialWindow : function(title, message, action,icon){
-			var newIconClass = "";
-			if(icon!=null || undefined){
-				if(icon!=""){
-					newIconClass = icon+" fa-3x"; 
-				}
-			}
+		updateTutorialWindow : function(){
+			var self = this;
+			var step = this.getActiveTutorial().steps[this.state.currentStep];
 			
-			//Hides checkbox after initial welcome window
-			var newCookieClass = this.state.cookieClass;
-			if(this.stepIndex==1){
-				newCookieClass = "hide";
+			if(step.content_url!=undefined){
+				$.ajax({
+					type: 'GET',
+					dataType: 'html',
+					url: step.content_url,
+					success: function (responseData, textStatus, jqXHR) {
+						step.message = responseData; 
+						self.forceUpdate();
+					},
+					error: function (responseData, textStatus, errorThrown) {
+						throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
+					}
+				});
 			}
-
-			var prevDisabled = true;
-			var lastStep = false;
-			var lastStepLabel = "";
-			
-			if(this.stepIndex ==this.totalSteps){
-				lastStep = true;
-				lastStepLabel = "Restart";
-				prevDisabled = false;
-			}else if(this.stepIndex  >= 1){
-				prevDisabled = false;
-			}else if(this.stepIndex <=0){
-				prevDisabled = true;
+			else{
+				this.forceUpdate();
 			}
-			
-			this.setState({nextBtnLast : lastStep, nextBtnLabel : lastStepLabel, prevBtnDisabled : prevDisabled, tutorialTitle: title, iconClass: newIconClass, tutorialMessage : message, cookieClass : newCookieClass});
 
 			//execute action associated with message
-			if(action!=null || undefined){
-				if(action!=""){
-					eval(action);
+			if(step.action!=undefined){
+				if(step.action!=""){
+					eval(step.action);
 				}
 			}
 		},
 
 		nextStep: function(){
-			this.stepIndex++;
-			if(this.stepIndex <= this.totalSteps){
-				var title = this.state.tutorialData.steps[this.stepIndex].title;
-				var message = this.state.tutorialData.steps[this.stepIndex].message;
-				var action = this.state.tutorialData.steps[this.stepIndex].action;
-				var icon = this.state.tutorialData.steps[this.stepIndex].icon;
-
-				this.updateTutorialWindow(title,message,action,icon);
-			}else if(this.stepIndex>this.totalSteps){
-				this.start();
+			this.state.currentStep++;
+			if(this.state.currentStep <= this.getActiveTutorial().steps.length-1){
+				this.updateTutorialWindow();
 			}else{
-				this.close();
-				this.started = false;
+				this.start();
 			}
 		},
 
 		prevStep: function() {
-			if(this.stepIndex ==0){
-				this.close();
-			}else if(this.stepIndex > this.totalSteps){
-				this.stepIndex = this.totalSteps;
-			}else{
-				this.stepIndex--;
-				GEPPETTO.tutorialEnabled = false;
-				var title = this.state.tutorialData.steps[this.stepIndex].title;
-				var message = this.state.tutorialData.steps[this.stepIndex].message;
-				var action = this.state.tutorialData.steps[this.stepIndex].action;
-				var icon = this.state.tutorialData.steps[this.stepIndex].icon;
-
-				this.updateTutorialWindow(title,message,action,icon);
-			}
+			this.state.currentStep--;
+			GEPPETTO.tutorialEnabled = false;
+			this.updateTutorialWindow();
 		},
 
 		close : function(){
-			$('#tutorial').hide();
+			$(this.__container).parent().hide();
 		},
 
 		open : function(started){
-			$('#tutorial').show();
+			var p=$(this.__container).parent();
+			p.show();
+			
+			var self = this;
+			var callback = function () {
+				var width =self.getActiveTutorial()["width"];
+				var height =self.getActiveTutorial()["height"];
+				if(height!=undefined){
+					p.height(height+"px");
+					$(self.__container).css("height",height+"px");
+				}
+				if(width!=undefined){
+					p.width(width+"px");
+					$(self.__container).css("width",width+"px");
+				}
+			};
+			
 			if(!started){
-				$('#tutorialMain').removeClass("hideTutorial");
+				p.effect("shake", {distance:5, times: 3}, 500, callback);
 			}
-		},
-		
-		setTutorial : function(event, configurationURL){
-			this.tutorialMap[event] = configurationURL;			
+			
 		},
 
-		loadTutorial : function(tutorialData){
-			this.setState({ tutorialData: tutorialData });
-			this.totalSteps = this.state.tutorialData.steps.length-1;
-			if(this.state.visible){
-				this.start();
-			}
-			this.tutorialLoaded = true;
+		setTutorial : function(tutorialURL){
+			this.state.tutorialData={};
+			this.addTutorial(tutorialURL);
 		},
 		
-		/**
-		 * Extracts tutorial data for given configuration
-		 */
-		tutorialData : function(configurationURL){
+		goToChapter: function(chapter){
+			this.state.activeTutorial=chapter;
+			this.start();
+		},
+		
+		addTutorial : function(tutorialURL){
 			var self = this;
 
 			$.ajax({
 				type: 'GET',
 				dataType: 'json',
-				url: configurationURL,
+				url: tutorialURL,
 				success: function (responseData, textStatus, jqXHR) {
-					self.loadTutorial(responseData);
+					self.loadTutorial(responseData, false);
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
 				}
 			});
 		},
+		
+		loadTutorial : function(tutorialData,start){
+			this.state.tutorialData[tutorialData.name] = tutorialData; 
+			this.state.activeTutorial=tutorialData.name;
+			this.state.currentStep=0;
+			if(!this.getCookie()){
+				if(start){
+					this.forceUpdate();
+					this.start();
+				}
+			}
+		},
+		
+		showChaptersMenu: function (event) {
+            var that = this;
+            var allTutorials = Object.keys(this.state.tutorialData);
+            if (allTutorials.length > 0) {
 
+                var data = [];
+                for (var i = 0; i < allTutorials.length; i++) {
+                    data.push({
+                        "label": allTutorials[i],
+                        "action": ["GEPPETTO.Tutorial.goToChapter('"+allTutorials[i]+"')"],
+                        "icon": "fa fa-bookmark",
+                        "position": i
+                    })
+                }
+                
+                this.chaptersMenu.show({
+                    top: event.pageY,
+                    left: event.pageX + 1,
+                    groups: data,
+                    data: that
+                });
+            }
+
+            if (event != null) {
+                event.preventDefault();
+            }
+            return false;
+        },
+
+        
+        componentDidUpdate:function(){
+        	if(this.chaptersMenu==undefined){
+        		var that = this;
+				this.chaptersMenu = new GEPPETTO.ContextMenuView();
+				
+				var button = $("<div class='fa fa-leanpub' title='Select chapter'></div>").on('click', function(event) {
+					that.showChaptersMenu(event);
+	                event.stopPropagation();
+				});
+	
+	        	var dialog = $(this.__container).parent();
+	        	var closeButton=dialog.find("button.ui-dialog-titlebar-close");
+	        	closeButton.off("click");
+	        	closeButton.click(this.close);
+	        	dialog.find("div.ui-dialog-titlebar").prepend(button);
+	        	$(button).addClass("widget-title-bar-button");
+	        	$(this.__container).css("overflow","scroll");
+        	}
+        	
+        	
+        	//centers the tutorials
+        	var screenWidth = $( window ).width();
+			var screenHeight = $( window ).height();
+			
+			var left = (screenWidth/2) - ($(this.__container).parent().width()/2);
+			var top = (screenHeight/2) - ($(this.__container).parent().height()/2);
+			
+			$(this.__container).parent().css("top",top+"px");
+			$(this.__container).parent().css("left",left+"px");
+        },
+		
 		componentDidMount:function(){
 			this.close();
 			var self = this;
-
+			
 			//launches specific tutorial is experiment is loaded
 			GEPPETTO.on(GEPPETTO.Events.Model_loaded,function(){
 				if(!self.dontShowTutorial){
 					//default tutorial when user doesn't specify one for this event
 					if(self.props.tutorialURL){
-						var tutorialURL = self.props.tutorialURL;
-						if(self.tutorialMap[GEPPETTO.Events.Model_loaded]!=null || undefined){
-							tutorialURL = self.tutorialMap[GEPPETTO.Events.Model_loaded];
-						}
-						
-						self.tutorialData(tutorialURL);
+						self.addTutorial(self.props.tutorialURL);
 					}
 					else if(self.props.tutorialData){
-						self.loadTutorial(self.props.tutorialData);
+						self.loadTutorial(self.props.tutorialData,true);
 					}
 					self.dontShowTutorial = true;
 				}
@@ -241,12 +286,14 @@ define(function (require) {
 						self.open(false);
 					}else{
 						//default tutorial when user doesn't specify one for this event
-						var tutorialURL = "/org.geppetto.frontend/geppetto/js/components/interface/tutorial/configuration/experiment_loaded_tutorial.json";
-						if(self.tutorialMap[GEPPETTO.Events.Show_Tutorial]!=null || undefined){
-							tutorialURL = self.tutorialMap[GEPPETTO.Events.Show_Tutorial];
+						if(self.state.tutorialData=={}){
+							self.setTutorial("/org.geppetto.frontend/geppetto/js/components/interface/tutorial/configuration/experiment_loaded_tutorial.json", "Geppetto tutorial");
 						}
-
-						self.tutorialData(tutorialURL);
+						else{
+							if(!this.getCookie()){
+								this.start();
+							}
+						}
 					}
 				}
 			});
@@ -259,56 +306,80 @@ define(function (require) {
 			GEPPETTO.Tutorial = this;
 			
 			if(GEPPETTO.ForegroundControls != undefined){
-                		GEPPETTO.ForegroundControls.refresh();
-            		}
+        		GEPPETTO.ForegroundControls.refresh();
+    		}
 		},
 
-		/**
-		 * Allows for using HTML tags as part of messages defined in .json configuration
-		 */
-		createTutorialMessage : function(){
-			return {__html: this.state.tutorialMessage}; 
-		},
 		
 		getCookie : function(){
 			var ignoreTutorial = $.cookie('ignore_tutorial');
 			if(ignoreTutorial == undefined){
-				//sets to string instead of boolean since $.cookie returns string even 
-				//when storing as boolean
-				ignoreTutorial = false;
+				//sets to string instead of boolean since $.cookie returns string even when storing as boolean
+				return false;
 			}else{
-				ignoreTutorial = (ignoreTutorial === "true");
+				return ignoreTutorial === "true";
 			}
-			
-			return ignoreTutorial;
+		},
+		
+		getHTML(message){
+			return {__html: message};
 		},
 		
 		render: function () {
-			var ignoreTutorial = this.getCookie();
-									
-			this.state.visible = !ignoreTutorial;
-			return  <div id="tutorialMain" className={(ignoreTutorial? "hideTutorial" : "showTutorial") + " tutorial ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable ui-draggable-disabled ui-state-disabled noStyleDisableDrag"}>
-			<div className="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-				<span id="ui-id-5" className="tutorialTitle">{this.state.tutorialTitle}</span>
-					<button className="ui-dialog-titlebar-close" onClick={this.close}><i className="fa fa-close" /></button>
-			</div>
-			<div className="tutorial-message dialog ui-dialog-content ui-widget-content popup">
-			 <div id="tutorialIcon" className={this.state.iconClass}></div>
-			 <p id="message" dangerouslySetInnerHTML={this.createTutorialMessage()}></p>
-			</div>
-			<div className="btn-group tutorial-buttons" role="group">
-				<div className="tutorial-buttons">
-					<button className="prevBtn btn btn-default btn-lg" disabled={this.state.prevBtnDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous step" data-container="body" onClick={this.prevStep}>
-						<span><i className="fa fa-arrow-left fa-2x" aria-hidden="true"></i></span>
-					</button>
-					<button className="nextBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Next step" data-container="body" onClick={this.nextStep}>
-						<span>{this.state.nextBtnLabel}   <i className={this.state.nextBtnLast ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
-					</button>
-				</div>
-			<label className={this.state.cookieClass} id="ignoreTutorial"><input type="checkbox" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
-			</div>
 			
-			</div>
+			var ignoreTutorial = this.getCookie();
+			var activeTutorial = this.getActiveTutorial();
+			if(activeTutorial!=undefined){
+				
+			
+				var step = activeTutorial.steps[this.state.currentStep];
+										
+				var dialog = $(this.__container).parent();
+				dialog.find(".ui-dialog-title").html(step.title);
+				var iconClass = "";
+				if(step.icon!=null && step.icon!=undefined && step.icon!=""){
+					iconClass = step.icon+" fa-3x"; 
+				}
+				
+				var prevDisabled = this.state.currentStep == 0;
+				var lastStep = this.state.currentStep == activeTutorial.steps.length-1;
+				var lastStepLabel = (this.state.currentStep == activeTutorial.steps.length-1)?"Restart":"";
+				var cookieClass=this.state.currentStep==0?"checkbox-inline cookieTutorial":"hide";
+
+				var width =this.getActiveTutorial()["width"];
+				var height =this.getActiveTutorial()["height"];
+
+				if(height!=undefined){
+					dialog.height(height+"px");
+					$(this.__container).css("height",height+"px");
+				}
+				if(width!=undefined){
+					dialog.width(width+"px");
+					$(this.__container).css("width",width+"px");
+				}
+			    
+				return  <div>
+				<div className="tutorial-message">
+				 <div id="tutorialIcon" className={iconClass}></div>
+				 <div id="message" dangerouslySetInnerHTML={this.getHTML(step.message)}></div>
+				</div>
+				<div className="btn-group tutorial-buttons" role="group">
+					<div className="tutorial-buttons">
+						<button className="prevBtn btn btn-default btn-lg" disabled={prevDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous step" data-container="body" onClick={this.prevStep}>
+							<span><i className="fa fa-arrow-left fa-2x" aria-hidden="true"></i></span>
+						</button>
+						<button className="nextBtn btn btn-default btn-lg" data-toogle="tooltip" data-placement="bottom" title="Next step" data-container="body" onClick={this.nextStep}>
+							<span>{lastStepLabel}   <i className={lastStep ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
+						</button>
+					</div>
+				<label className={cookieClass} id="ignoreTutorial"><input type="checkbox" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
+				</div>
+				
+				</div>
+			}
+			else{
+				return null;
+			}
 		}
 	});
 	

@@ -16,6 +16,7 @@
 	<mvc:annotation-driven />
 	
 	<!-- Map static resources to /assets/* url -->
+	<mvc:resources mapping="/geppetto/geppetto/**" location="/" />
 	<mvc:resources mapping="/geppetto/**" location="/" />
 
 	<mvc:resources mapping="/jsdocs/**" location="/jsdocs/" />

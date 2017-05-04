@@ -513,7 +513,7 @@ define(function (require) {
             }
 
             if (useSelection) {
-                var selection = GEPPETTO.G.getSelection();
+                var selection = GEPPETTO.SceneController.getSelection();
                 if (selection.length > 0) {
                     this.openToInstance(selection[selection.length - 1]);
                     return;
@@ -926,17 +926,31 @@ define(function (require) {
                     if ((instanceToCheck.getCapabilities().indexOf(groupName) != -1) ||
                         (instanceToCheck.getType().getMetaType() == groupName)) {
                 		if(modifiable){
-                			tbar.append(that.createButtonGroup(groupName, groupDef, instance));
+                			var copiedObject = jQuery.extend({}, groupDef);
+                			delete copiedObject["plot"];
+                			tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
                 		}else{
                 			//don't load default toolbar for these two types if modifiable flag set to false,
                 			if(groupName!="StateVariableCapability" && groupName!="ParameterCapability"){
-                                tbar.append(that.createButtonGroup(groupName, groupDef, instance));
+                				if(modifiable){
+                					var copiedObject = jQuery.extend({}, groupDef);
+                        			delete copiedObject["plot"];
+                					delete copiedObject["plot"];
+                				}
+                                tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
                 			}else{
                 				//don't show watch button if no permissions
                 				if(groupName == "StateVariableCapability"){
                 					//make copy since modifying original removes it through session
                 					var copiedObject = jQuery.extend({}, groupDef);
-                   					delete copiedObject["watch"];
+                					if(instanceToCheck.watched){
+                						delete copiedObject["watch"];
+                					}else{
+                						if(!modifiable){
+                							delete copiedObject["watch"];
+                						}
+                						delete copiedObject["plot"];
+                					}
                    					tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
                 				}
                 			}

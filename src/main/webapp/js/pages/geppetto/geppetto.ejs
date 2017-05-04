@@ -24,27 +24,34 @@
 </head>
 <body>
 
+<!-- For index purposes -->
+<div style="display:none" id="content">
+$content
+</div>
+
+<div id="widgetContainer"></div>
 <div id="modal-region"></div>
 <div id="load-spinner"></div>
 
-<div id="controls" class="noSelection">
 
-    <div id="SaveButton" class="row"></div>
-    <div id="PublicProject" class="row"></div>
-    <div id="HomeButton" class="row"></div>
-    <div id="ControlsMenuButton" class="row"></div>
-    <div id="sim-toolbar" class="row"></div>
-    <div id="tutorial"></div>
-    <div id="camera-controls"></div>
-    <div id="foreground-toolbar" class="row"></div>
-    <div id="github">
-        <a href="https://github.com/openworm/org.geppetto" target="_blank">
-            <icon class="fa fa-github" id="git"></icon>
-        </a>
-    </div>
-</div>
 
 <div id="mainContainer">
+    <div id="controls" class="noSelection">
+		<div id="DownloadProjectButton" class="row"></div>
+        <div id="SaveButton" class="row"></div>
+        <div id="PublicProject" class="row"></div>
+        <div id="HomeButton" class="row"></div>
+        <div id="ControlsMenuButton" class="row"></div>
+        <div id="sim-toolbar" class="row"></div>
+        <div id="tutorial"></div>
+        <div id="foreground-toolbar" class="row"></div>
+        <div id="github">
+            <a href="https://github.com/openworm/org.geppetto" target="_blank">
+                <icon class="fa fa-github" id="git"></icon>
+            </a>
+        </div>
+    </div>
+
     <div id="geppettologo" class="noSelection"></div>
     <div id="spotlight" class="hiddenStart"></div>
     <div id="controlpanel" class="hiddenStart"></div>
@@ -101,6 +108,6 @@
     ga('send', 'pageview');
 </script>
 
-<script charset="utf-8" type="text/javascript" src="geppetto/build/main.bundle.js"></script>
+<script charset="utf-8" type="text/javascript" src="$mainJsPath"></script>
 </body>
 </html>

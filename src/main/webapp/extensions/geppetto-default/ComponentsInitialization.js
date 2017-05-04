@@ -1,6 +1,7 @@
 define(function (require) {
 	return function (GEPPETTO) {
-		
+		// Enable local storage
+		G.enableLocalStorage(true);
 		
 	    window.voltage_color = function(x) {
 	        x = (x+0.07)/0.1; // normalization
@@ -16,6 +17,11 @@ define(function (require) {
 	            return [1, (1-(x-0.75)*4), 0];
 	        }
 	    };
+
+		//Canvas initialisation
+		GEPPETTO.ComponentFactory.addComponent('CANVAS', {}, document.getElementById("sim"), function () {
+            this.displayAllInstances();
+        });
 	    
 		//Logo initialization
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
@@ -50,15 +56,12 @@ define(function (require) {
 
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));
-
+		
 		//Save initialization
 		GEPPETTO.ComponentFactory.addComponent('SAVECONTROL', {}, document.getElementById("SaveButton"));
 
 		//Simulation controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SIMULATIONCONTROLS', {}, document.getElementById("sim-toolbar"));
-
-		//Camera controls initialization
-		GEPPETTO.ComponentFactory.addComponent('CAMERACONTROLS', {}, document.getElementById("camera-controls"));
 
 		//Share controls initialization
 		GEPPETTO.ComponentFactory.addComponent('SHARE', {}, document.getElementById("share-button"));		

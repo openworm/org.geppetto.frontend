@@ -30,14 +30,20 @@ define(function (require) {
         /**
          * Adds a new Connectivity Widget to Geppetto
          */
-        addConnectivityWidget: function () {
+        addConnectivityWidget: function (isStateless) {
+            if(isStateless == undefined){
+                isStateless = false;
+            }
+
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("Connectivity", this.widgets);
             var name = id;
 
-
             //create tree visualiser widget
-            var cnt = window[name] = new Connectivity({id: id, name: name, visible: false, width: 500, height: 500, controller: this});
+            var cnt = window[name] = new Connectivity({
+                id: id, name: name, visible: false, width: 500, height: 500, controller: this,
+                widgetType: GEPPETTO.Widgets.CONNECTIVITY, stateless: isStateless
+            });
 
             //create help command for connw
             cnt.help = function () {

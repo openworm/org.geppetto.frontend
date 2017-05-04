@@ -179,14 +179,19 @@ define(function (require) {
                             if (refStr != undefined) {
                                 // go grab correct type from Geppetto Model
                                 var typeObj = this.resolve(refStr);
+				
+				if (typeObj != undefined) {
+				    
+					// track if we have pointer type
+					if (typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE) {
+					    hasPointerType = true;
+					}
 
-                                // track if we have pointer type
-                                if (typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE) {
-                                    hasPointerType = true;
-                                }
-
-                                // add to list
-                                referencedTypes.push(typeObj);
+					// add to list
+					referencedTypes.push(typeObj);
+				}else{
+					console.log("Error: refStr(" + refStr + ") resolved to undefined");
+				}    
                             }
                         }
 

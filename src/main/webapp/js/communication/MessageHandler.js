@@ -619,7 +619,6 @@ define(function(require) {
                 newExperiment.setParent(window.Project);
                 newExperiment.setActive();
 
-                G.unSelectAll();
                 GEPPETTO.ExperimentsController.closeCurrentExperiment();
                 window.Project.setActiveExperiment(newExperiment);
                 GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);

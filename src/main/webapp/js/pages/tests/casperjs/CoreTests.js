@@ -55,10 +55,10 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 			test.assertTitle("geppetto", "geppetto title is ok");
 			test.assertUrlMatch(/load_project_from_id=1/, "project load attempted");
 			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
+			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
 			hhcellTest(test);
-		},null,20000);
+		},null,30000);
 	});
 	
 	/**Tests C302 project**/
@@ -68,7 +68,7 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 			test.assertTitle("geppetto", "geppetto title is ok");
 			test.assertUrlMatch(/load_project_from_id=6/, "project load attempted");
 			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
+			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
 			c302Test(test);
 		},null,450000);
@@ -81,10 +81,10 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 			test.assertTitle("geppetto", "geppetto title is ok");
 			test.assertUrlMatch(/load_project_from_id=5/, "project load attempted");
 			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
+			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
 			acnetTest(test);
-		},null,30000);
+		},null,40000);
 	});
 
 	/**Tests CA1 project**/
@@ -94,10 +94,10 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 			test.assertTitle("geppetto", "geppetto title is ok");
 			test.assertUrlMatch(/load_project_from_id=3/, "project load attempted");
 			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
+			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
 			ca1Test(test);
-		},null,30000);
+		},null,40000);
 	});
 	
 	/**Tests EyeWire project**/
@@ -107,9 +107,9 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 			test.assertTitle("geppetto", "geppetto title is ok");
 			test.assertUrlMatch(/load_project_from_id=9/, "project load attempted");
 			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
+			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-		}, null, 30000);
+		}, null, 50000);
 	});
 	
 	/**Tests Pharyngeal project**/
@@ -119,10 +119,10 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 			test.assertTitle("geppetto", "geppetto title is ok");
 			test.assertUrlMatch(/load_project_from_id=58/, "project load attempted");
 			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
+			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
 			pharyngealTest(test);
-		},null,30000);
+		},null,50000);
 	});
 	
 	/**Tests NWB project**/
@@ -132,10 +132,10 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 			test.assertTitle("geppetto", "geppetto title is ok");
 			test.assertUrlMatch(/load_project_from_id=18/, "project load attempted");
 			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
+			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
 			nwbSampleTest(test);
-		},null,30000);
+		},null,50000);
 	});
 	
 //	casper.thenOpen(urlBase+baseFollowUp+cElegansConnectome,function() {
@@ -438,7 +438,7 @@ function ca1Test(test){
 		test.assertTitle("geppetto", "geppetto title is ok");
 		test.assertUrlMatch(/load_project_from_id=3/, "project load attempted");
 		test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-		test.assertExists('div[id="camera-controls"]', "geppetto loads the initial camera controls");
+		test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 		test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial camera controls");
 		
 		casper.then(function () {
@@ -482,13 +482,12 @@ function ca1Test(test){
 						//press enter
 						this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
 
-						casper.waitUntilVisible('div#spotlight', function () {
+						casper.wait(1000, function () {
 							casper.then(function () {
-								this.echo("Waiting to see if the Plot variables button becomes visible");
-								casper.waitUntilVisible('button#plot', function () {
-									test.assertVisible('button#plot', "Plot variables icon correctly visible");
-									this.echo("Plot variables button became visible correctly");
-								}, null, 8000);
+								this.echo("Waiting to see if the Plot and watch variable buttons becomes visible");
+								test.assertDoesntExist('button#plot', "Plot variables icon correctly invisible");
+								test.assertDoesntExist('button#watch', "Watch button correctly hidden");
+								this.echo("Variables button are hidden correctly");
 							});
 						});
 					});

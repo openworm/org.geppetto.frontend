@@ -134,7 +134,6 @@ define(function (require) {
             },
             
             setActive:function(experiment){
-                G.unSelectAll();
                 GEPPETTO.ExperimentsController.closeCurrentExperiment();
                 var parameters = {};
                 parameters["experimentId"] = experiment.id;

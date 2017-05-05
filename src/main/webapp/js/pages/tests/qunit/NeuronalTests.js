@@ -1,7 +1,7 @@
 
 define(function (require) {
     var QUnit = require("qunitjs");
-
+    require('../../../components/ComponentFactory')(GEPPETTO);
     /**
      * Closes socket and clears handlers. Method is called from each test.
      */

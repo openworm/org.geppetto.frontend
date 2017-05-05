@@ -1454,7 +1454,6 @@ define(function (require) {
             var self = this;
             var callback = function () {
                 self.forceUpdate();
-                GEPPETTO.trigger("control_panel_refresh");
             };
             GEPPETTO.ProjectsController.refreshUserProjects(callback);
         },

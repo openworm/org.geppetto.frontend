@@ -62,6 +62,7 @@
     "raw-loader": "^0.5.1",
     "react": "15.4.1",
     "react-dom": "15.4.1",
+    "react-jsonschema-form": "^0.48.0",
     "react-simpletabs": "^0.7.0",
     "react-slick": "^0.14.8",
     "remarkable": "^1.7.1",
@@ -77,10 +78,12 @@
     "webpack": "1.13.2",
     "webpack-dev-server": "^1.16.2"
   },
-   "buildOptions": {
+  "buildOptions": {
     "emitEntryPoint": true,
     "compile": {
-        "exclude": ["node_modules"]
+      "exclude": [
+        "node_modules"
+      ]
     }
-    }
+  }
 }

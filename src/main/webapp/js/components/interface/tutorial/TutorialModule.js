@@ -132,11 +132,11 @@ define(function (require) {
 		},
 
 		close : function(){
-			$(this.__container).parent().hide();
+			this.dialog.parent().hide();
 		},
 
 		open : function(started){
-			var p=$(this.__container).parent();
+			var p=this.dialog.parent();
 			p.show();
 			
 			var self = this;
@@ -145,11 +145,11 @@ define(function (require) {
 				var height =self.getActiveTutorial()["height"];
 				if(height!=undefined){
 					p.height(height+"px");
-					$(self.__container).css("height",height+"px");
+					this.dialog.css("height",height+"px");
 				}
 				if(width!=undefined){
 					p.width(width+"px");
-					$(self.__container).css("width",width+"px");
+					this.dialog.css("width",width+"px");
 				}
 			};
 			
@@ -237,13 +237,13 @@ define(function (require) {
 	                event.stopPropagation();
 				});
 	
-	        	var dialog = $(this.__container).parent();
+	        	var dialog = this.dialog.parent();
 	        	var closeButton=dialog.find("button.ui-dialog-titlebar-close");
 	        	closeButton.off("click");
 	        	closeButton.click(this.close);
 	        	dialog.find("div.ui-dialog-titlebar").prepend(button);
 	        	$(button).addClass("widget-title-bar-button");
-	        	$(this.__container).css("overflow","scroll");
+				this.dialog.css("overflow","scroll");
         	}
         	
         	
@@ -251,17 +251,17 @@ define(function (require) {
         	var screenWidth = $( window ).width();
 			var screenHeight = $( window ).height();
 			
-			var left = (screenWidth/2) - ($(this.__container).parent().width()/2);
-			var top = (screenHeight/2) - ($(this.__container).parent().height()/2);
-			
-			$(this.__container).parent().css("top",top+"px");
-			$(this.__container).parent().css("left",left+"px");
+			var left = (screenWidth/2) - (this.dialog.parent().width()/2);
+			var top = (screenHeight/2) - (this.dialog.parent().height()/2);
+
+			this.dialog.parent().css("top",top+"px");
+			this.dialog.parent().css("left",left+"px");
         },
 		
 		componentDidMount:function(){
 			this.close();
 			var self = this;
-			
+
 			//launches specific tutorial is experiment is loaded
 			GEPPETTO.on(GEPPETTO.Events.Model_loaded,function(){
 				if(!self.dontShowTutorial){
@@ -334,7 +334,7 @@ define(function (require) {
 			
 				var step = activeTutorial.steps[this.state.currentStep];
 										
-				var dialog = $(this.__container).parent();
+				var dialog = this.dialog.parent();
 				dialog.find(".ui-dialog-title").html(step.title);
 				var iconClass = "";
 				if(step.icon!=null && step.icon!=undefined && step.icon!=""){
@@ -351,11 +351,11 @@ define(function (require) {
 
 				if(height!=undefined){
 					dialog.height(height+"px");
-					$(this.__container).css("height",height+"px");
+					this.dialog.css("height",height+"px");
 				}
 				if(width!=undefined){
 					dialog.width(width+"px");
-					$(this.__container).css("width",width+"px");
+					this.dialog.css("width",width+"px");
 				}
 			    
 				return  <div>

@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Scanner;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.google.gson.Gson;
 
@@ -44,7 +42,7 @@ public class Application
 	private static Log logger = LogFactory.getLog(Application.class);
 
 
-	private String getGeppetto(HttpServletRequest req){
+	private String getGeppetto(HttpServletRequest req, String page){
 		try
 		{
 			IAuthService authService = AuthServiceCreator.getService();
@@ -102,23 +100,24 @@ public class Application
 		{
 			logger.error("Error while retrieving an authentication service", e);
 		}
-		return "redirect:http://geppetto.org";
+		return "redirect:http://geppetto.org"; 
 	}
 
 	@RequestMapping(value = "/geppetto", method = RequestMethod.GET)
 	public String geppetto(HttpServletRequest req, Model model)
 	{
-		model.addAttribute("mainJsPath", "geppetto/build/main.bundle.js");
-		return getGeppetto(req);
+		return getGeppetto(req, "");
 	}
 
-	@RequestMapping(value = "/geppetto/{page}", method = RequestMethod.GET)
-	public String geppettoWithContent(HttpServletRequest req, Model model, @PathVariable("page") String page)
+	@RequestMapping(value = "/**", method = RequestMethod.GET)
+	public String geppettoExtensiont(HttpServletRequest req, Model model)
 	{
-		InputStream content = Application.class.getResourceAsStream("/build/static/" + page + ".html");
-		model.addAttribute("content", new String(new Scanner(content, "UTF-8").useDelimiter("\\A").next()));
-		model.addAttribute("mainJsPath", "../geppetto/build/main.bundle.js");
-		return getGeppetto(req);
+		String path = "/build/static" + req.getServletPath() + ".html";
+		if (Application.class.getResource(path) != null){
+			InputStream content = Application.class.getResourceAsStream(path);
+			model.addAttribute("content", new String(new Scanner(content, "UTF-8").useDelimiter("\\A").next()));
+		}
+		return getGeppetto(req, "");
 	}
 	
 	@RequestMapping(value = "/geppettotestingprojects", method = RequestMethod.GET)
@@ -168,5 +167,7 @@ public class Application
 	{
 		return "dashboard";
 	}
+	
+	
 
 }

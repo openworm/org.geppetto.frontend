@@ -110,7 +110,7 @@ public class Application
 	}
 
 	@RequestMapping(value = "/**", method = RequestMethod.GET)
-	public String geppettoExtensiont(HttpServletRequest req, Model model)
+	public String geppettoExtension(HttpServletRequest req, Model model)
 	{
 		String path = "/build/static" + req.getServletPath() + ".html";
 		if (Application.class.getResource(path) != null){

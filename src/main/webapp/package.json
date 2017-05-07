@@ -63,6 +63,8 @@
     "react": "15.4.1",
     "react-dom": "15.4.1",
     "react-jsonschema-form": "^0.48.0",
+    "react-router": "^4.1.1",
+    "react-router-dom": "^4.1.1",
     "react-simpletabs": "^0.7.0",
     "react-slick": "^0.14.8",
     "remarkable": "^1.7.1",

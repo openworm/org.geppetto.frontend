@@ -81,7 +81,7 @@ define(function (require) {
 				var id = "";
 				var available;
 
-				var components = []
+				var components = [];
 				if (componentType in this.componentsMap){
 					components = this.componentsMap[componentType];
 				}

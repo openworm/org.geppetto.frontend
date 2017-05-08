@@ -48,31 +48,31 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
         }, null, 3000);
     });
 
-	/**Tests HHCELL project**/
-	casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
-		this.waitWhileVisible('div[id="loading-spinner"]', function () {
-			this.echo("I've waited for hhcell project to load.");
-			test.assertTitle("geppetto", "geppetto title is ok");
-			test.assertUrlMatch(/load_project_from_id=1/, "project load attempted");
-			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
-			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-			hhcellTest(test);
-		},null,30000);
-	});
-	
-	/**Tests C302 project**/
-	casper.thenOpen(urlBase+baseFollowUp+c302Project,function() {		
-		this.waitWhileVisible('div[id="loading-spinner"]', function () {
-			this.echo("I've waited for c302 project to load.");
-			test.assertTitle("geppetto", "geppetto title is ok");
-			test.assertUrlMatch(/load_project_from_id=6/, "project load attempted");
-			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
-			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-			c302Test(test);
-		},null,450000);
-	});
+//	/**Tests HHCELL project**/
+//	casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
+//		this.waitWhileVisible('div[id="loading-spinner"]', function () {
+//			this.echo("I've waited for hhcell project to load.");
+//			test.assertTitle("geppetto", "geppetto title is ok");
+//			test.assertUrlMatch(/load_project_from_id=1/, "project load attempted");
+//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
+//			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
+//			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
+//			hhcellTest(test);
+//		},null,50000);
+//	});
+//	
+//	/**Tests C302 project**/
+//	casper.thenOpen(urlBase+baseFollowUp+c302Project,function() {		
+//		this.waitWhileVisible('div[id="loading-spinner"]', function () {
+//			this.echo("I've waited for c302 project to load.");
+//			test.assertTitle("geppetto", "geppetto title is ok");
+//			test.assertUrlMatch(/load_project_from_id=6/, "project load attempted");
+//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
+//			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
+//			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
+//			c302Test(test);
+//		},null,450000);
+//	});
 
 	/**Tests Acnet project**/
 	casper.thenOpen(urlBase+baseFollowUp+acnetProject,function() {
@@ -172,6 +172,9 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 
 function hhcellTest(test,name){
 	casper.then(function () {
+		var defaultColor = [0.00392156862745098,0.6,0.9098039215686274];
+		test3DMeshColor(test,defaultColor,"hhcell.hppop[0]");
+		
 		this.echo("Opening controls panel");
 		this.evaluate(function() {
 			$("#controlPanelBtn").click();
@@ -196,15 +199,10 @@ function hhcellTest(test,name){
 				});
 
 				this.waitUntilVisible('div[id="Plot1"]', function () {
-					var plots = this.evaluate(function(){
-						var plots = $("#Plot1").length;
-
-						return plots;
-					});
 					this.echo("I've waited for Plot1 to come up");
-					test.assertEquals(plots, 1,"Amount of plot widgets in existence passed");
 					
 					this.evaluate(function(){
+						$("#Plot1").remove();
 						$("#anyProjectFilterBtn").click();
 					});
 					
@@ -218,40 +216,107 @@ function hhcellTest(test,name){
 						casper.evaluate(function() {
 							$("#controlpanel").hide();
 						});
-						
-						test.assertExists('i.fa-search', "Spotlight button exists")
-						this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
 
-						this.waitUntilVisible('div#spotlight', function () {
-							test.assertVisible('div#spotlight', "Spotlight opened");
-
-							//type in the spotlight
-							this.sendKeys('input#typeahead', "hhcell.hhpop[0].v", {keepFocus: true});
-							//press enter
-							this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
-
-							casper.waitUntilVisible('div#spotlight', function () {
-								casper.then(function () {
-									this.echo("Waiting to see if the Plot variables button becomes visible");
-									casper.waitUntilVisible('button#plot', function () {
-										test.assertVisible('button#plot', "Plot variables icon correctly visible");
-										this.echo("Plot variables button became visible correctly");
-										this.evaluate(function(){
-											$("#plot").click();
-										});
-										this.waitUntilVisible('div[id="Plot2"]', function () {
-											this.echo("Plot 2 came up correctly");
-										});
-									}, null, 8000);
-								});
-							});
-						});
+						testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,true,"hhcell");
 					});
 				});
 			});
 		}, null, 500);
 	});
 };
+
+function test3DMeshColor(test,testColor,variableName){
+	var color = casper.evaluate(function(variableName) {
+		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[0].material.color;
+		return [color.r, color.g, color.b];
+	},variableName);
+	
+	casper.echo("color"+color);
+	test.assertEquals(testColor[0], color[0], "Red default color is correct");
+	test.assertEquals(testColor[1], color[1], "Green default color is correct");
+	test.assertEquals(testColor[2], color[2], "Black default color is correct");
+}
+
+function testSelection(test,variableName){
+	casper.mouseEvent('click', 'div#spotlight', "attempting to close spotlight");
+    casper.echo("Clicking to close spotlight");
+    casper.sendKeys('input#typeahead', casper.page.event.key.Escape, {keepFocus: true});
+    casper.echo("Hitting escape to close spotlight");
+
+    casper.waitWhileVisible('div#spotlight', function () {
+    	casper.echo("Spotlight closed");
+    	casper.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
+
+    	casper.waitUntilVisible('div#spotlight', function () {
+    		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});
+    		casper.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
+    		casper.waitUntilVisible('button#buttonOne', function () {
+    			test.assertVisible('button#buttonOne', "Select button correctly visible");
+    			this.evaluate(function(){
+    				$("#buttonOne").click();
+    			});
+    			this.wait(500, function () {
+    				var selectColor = [1,0.8,0];
+    				test3DMeshColor(test,selectColor);
+    			});
+    		});
+    	});
+    }, null, 1000);
+}
+
+function testSpotlight(test, variableName,plotName,expectButton,testSelect, selectionName){
+	test.assertExists('i.fa-search', "Spotlight button exists")
+	casper.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
+
+	casper.waitUntilVisible('div#spotlight', function () {
+		test.assertVisible('div#spotlight', "Spotlight opened");
+
+		//type in the spotlight
+		this.sendKeys('input#typeahead', variableName, {keepFocus: true});
+		//press enter
+		this.sendKeys('input#typeahead', this.page.event.key.Return, {keepFocus: true});
+
+		casper.waitUntilVisible('div#spotlight', function () {
+			casper.then(function () {
+				this.echo("Waiting to see if the Plot variables button becomes visible");
+				if(expectButton){
+					casper.waitUntilVisible('button#plot', function () {
+						test.assertVisible('button#plot', "Plot variables icon correctly visible");
+						this.echo("Plot variables button became visible correctly");
+						this.evaluate(function(){
+							$("#plot").click();
+						});
+						this.waitUntilVisible(plotName, function () {
+							this.echo("Plot 2 came up correctly");
+							if(testSelect){
+								testSelection(test, selectionName);
+							}
+						});
+					}, null, 8000);
+				}else{
+					casper.wait(1000, function () {
+						casper.then(function () {
+							this.echo("Waiting to see if the Plot and watch variable buttons becomes visible");
+							test.assertDoesntExist('button#plot', "Plot variables icon correctly invisible");
+							test.assertDoesntExist('button#watch', "Watch button correctly hidden");
+							this.echo("Variables button are hidden correctly");
+							if(testSelect){
+								testSelection(test, selectionName);
+							}
+							this.evaluate(function(){
+								$(".js-plotly-plot").remove();
+							});
+							
+							this.waitWhileVisible('div[id="Plot1"]', function () {
+								this.echo("I've waited for Plot1 to disappear");
+							},null,1000);
+						});
+					});
+				}
+			});
+		});
+	});
+}
 
 function c302Test(test){
 	casper.waitForSelector('div[id="Plot1"]', function() {
@@ -300,33 +365,7 @@ function c302Test(test){
 								$("#controlpanel").hide();
 							});
 							
-							test.assertExists('i.fa-search', "Spotlight button exists")
-							this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
-
-							this.waitUntilVisible('div#spotlight', function () {
-								test.assertVisible('div#spotlight', "Spotlight opened");
-
-								//type in the spotlight
-								this.sendKeys('input#typeahead', "c302.ADAL[0].v", {keepFocus: true});
-								//press enter
-								this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
-
-								casper.waitUntilVisible('div#spotlight', function () {
-									casper.then(function () {
-										this.echo("Waiting to see if the Plot variables button becomes visible");
-										casper.waitUntilVisible('button#plot', function () {
-											test.assertVisible('button#plot', "Plot variables icon correctly visible");
-											this.echo("Plot variables button became visible correctly");
-											this.evaluate(function(){
-												$("#plot").click();
-											});
-											this.waitUntilVisible('div[id="Plot3"]', function () {
-												this.echo("Plot 3 came up correctly");
-											});
-										}, null, 8000);
-									});
-								});
-							});
+							testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot3"]',true,false);
 						});
 					});
 				});
@@ -337,6 +376,9 @@ function c302Test(test){
 
 function acnetTest(test){
 	casper.then(function () {
+		var defaultColor = [0.00392156862745098,0.6,0.9098039215686274];
+		test3DMeshColor(test,defaultColor,"acnet2.pyramidals_48[0]");
+		
 		this.echo("Opening controls panel");
 		this.evaluate(function() {
 			$("#controlPanelBtn").click();
@@ -373,59 +415,9 @@ function acnetTest(test){
 						$("#controlpanel").hide();
 					});
 					
-					test.assertExists('i.fa-search', "Spotlight button exists")
-					this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
-
-					this.waitUntilVisible('div#spotlight', function () {
-						test.assertVisible('div#spotlight', "Spotlight opened");
-
-						//type in the spotlight
-						this.sendKeys('input#typeahead', "acnet2.pyramidals_48[1].soma_0.v", {keepFocus: true});
-						//press enter
-						this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
-
-						casper.waitUntilVisible('div#spotlight', function () {
-							casper.then(function () {
-								this.echo("Waiting to see if the Plot variables button becomes visible");
-								casper.waitUntilVisible('button#plot', function () {
-									test.assertVisible('button#plot', "Plot variables icon correctly visible");
-									test.assertDoesntExist('button#watch', "Watch button correctly hidden");
-									this.echo("Plot variables button became visible correctly");
-									this.evaluate(function(){
-										$("#plot").click();
-									});
-									this.waitUntilVisible('div[id="Plot2"]', function () {
-										this.echo("Plot 2 came up correctly");
-									});
-								}, null, 8000);
-							});
-						});
-						
-						this.mouseEvent('click', 'i.fa-search', "attempting to close spotlight");
-						
-						casper.waitWhileVisible(function(){
-							this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
-
-							this.waitUntilVisible('div#spotlight', function () {
-								test.assertVisible('div#spotlight', "Spotlight opened");
-
-								//type in the spotlight
-								this.sendKeys('input#typeahead', 
-										"acnet2.pyramidals_48[0].biophys.membraneProperties.Ca_pyr_soma_group.gDensity", {keepFocus: true});
-								//press enter
-								this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
-
-								casper.wait(1000, function () {
-									casper.then(function () {
-										this.echo("Waiting to see if the Plot and watch variable buttons becomes visible");
-										test.assertDoesntExist('button#plot', "Plot variables icon correctly invisible");
-										test.assertDoesntExist('button#watch', "Watch button correctly hidden");
-										this.echo("Variables button are hidden correctly");
-									});
-								});
-							});
-						},null,1000);
-					});
+					testSpotlight(test, "acnet2.pyramidals_48[1].soma_0.v",'div[id="Plot2"]',true,true,"acnet2.pyramidals_48[0]");	
+					this.mouseEvent('click', 'i.fa-search', "attempting to close spotlight");
+					testSpotlight(test, "acnet2.pyramidals_48[0].biophys.membraneProperties.Ca_pyr_soma_group.gDensity",'div[id="Plot2"]',false,false);	
 				});
 			});
 		}, null, 1000);

@@ -210,16 +210,12 @@ define(function(require) {
 
         messageHandler[messageTypes.PROJECT_PROPS_SAVED] = function(payload) {
             GEPPETTO.Console.log("Project saved succesfully");
-            if(GEPPETTO.ControlPanel.isOpen()){
-            	GEPPETTO.ControlPanel.refresh();
-            }
+            GEPPETTO.trigger(GEPPETTO.Events.Project_properties_saved);
         };
         
         messageHandler[messageTypes.SET_PARAMETERS] = function(payload) {
             GEPPETTO.Console.log("Set parameters succesfully");
-            if(GEPPETTO.ControlPanel.isOpen()){
-            	GEPPETTO.ControlPanel.refresh();
-            }
+            GEPPETTO.trigger(GEPPETTO.Events.Parameters_set);
         };
 
         messageHandler[messageTypes.EXPERIMENT_PROPS_SAVED] = function(payload) {
@@ -233,9 +229,7 @@ define(function(require) {
                 experiment.setStatus(data.status);
             }
             
-            if(GEPPETTO.ControlPanel.isOpen()){
-            	GEPPETTO.ControlPanel.refresh();
-            }
+            GEPPETTO.trigger(GEPPETTO.Events.Experiment_properties_saved);
         };
 
         messageHandler[messageTypes.DROPBOX_LINKED] = function(payload) {

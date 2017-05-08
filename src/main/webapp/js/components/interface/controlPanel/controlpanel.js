@@ -1452,6 +1452,11 @@ define(function (require) {
 
         refresh: function () {
             var self = this;
+            self.forceUpdate();
+        },
+        
+        refreshData: function () {
+            var self = this;
             var callback = function () {
                 self.forceUpdate();
             };
@@ -1913,6 +1918,24 @@ define(function (require) {
             // listen to events we need to react to
             GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
                 that.clearData();
+            });
+            
+            GEPPETTO.on(GEPPETTO.Events.Experiment_properties_saved, function () {
+            	if(that.isOpen()){
+            		that.refreshData();
+            	}
+            });
+            
+            GEPPETTO.on(GEPPETTO.Events.Project_properties_saved, function () {
+            	if(that.isOpen()){
+            		that.refreshData();
+            	}
+            });
+            
+            GEPPETTO.on(GEPPETTO.Events.Parameters_set, function () {
+            	if(that.isOpen()){
+            		that.refreshData();
+            	}
             });
 
             if (this.props.listenToInstanceCreationEvents) {

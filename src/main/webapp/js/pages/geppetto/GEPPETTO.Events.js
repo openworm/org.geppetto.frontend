@@ -54,6 +54,9 @@ define(function (require) {
             Control_panel_close: "control_panel:close",
             Lit_entities_changed: "lit_entities_changed",
             Component_destroyed: "component_destroyed",
+            Experiment_properties_saved : "experiment_properties_saved",
+            Project_properties_saved : "project_properties_saved",
+            Parameters_set : "parameters_set",
 
             listen: function () {
                 GEPPETTO.on(this.Select, function () {

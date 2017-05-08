@@ -925,17 +925,16 @@ define(function (require) {
                 $.each(buttonGroups, function (groupName, groupDef) {
                     if ((instanceToCheck.getCapabilities().indexOf(groupName) != -1) ||
                         (instanceToCheck.getType().getMetaType() == groupName)) {
+            			var copiedObject = jQuery.extend({}, groupDef);
                 		if(modifiable){
-                			var copiedObject = jQuery.extend({}, groupDef);
                 			delete copiedObject["plot"];
                 			tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
                 		}else{
                 			//don't load default toolbar for these two types if modifiable flag set to false,
                 			if(groupName!="StateVariableCapability" && groupName!="ParameterCapability"){
+            					var copiedObject = jQuery.extend({}, groupDef);
                 				if(modifiable){
-                					var copiedObject = jQuery.extend({}, groupDef);
                         			delete copiedObject["plot"];
-                					delete copiedObject["plot"];
                 				}
                                 tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
                 			}else{

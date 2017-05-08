@@ -1069,13 +1069,8 @@ define(function (require) {
 
                             assert.equal(window.Project.getExperiments().length, newLength, "Experiment deleted succesfully");
 
-                            this.runTimes++;
-                            if(this.runTimes>5){
-                            	done();
-                            	resetConnection();
-                            }else{
-                            	window.Project.getExperiments()[0].clone();
-                            }
+                            done();
+                        	resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:

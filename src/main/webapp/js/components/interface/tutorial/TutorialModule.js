@@ -43,7 +43,6 @@ define(function (require) {
 	document.getElementsByTagName("head")[0].appendChild(link);
 
 	var React = require('react'),
-	ReactDOM = require('react-dom'),
 	$ = require('jquery'),
 	Button = require('../../controls/mixins/bootstrap/button'),
 	GEPPETTO = require('geppetto');
@@ -51,7 +50,11 @@ define(function (require) {
 	$.cookie=require('js-cookie');
 	
 	var Tutorial = React.createClass({
-				/**
+
+		isDirty: false,
+		tutorials: [],
+
+		/**
 		 * Stores cookie to avoid showing tutorial next time at startup
 		 */
 		dontShowAtStartup: function(val){
@@ -116,6 +119,15 @@ define(function (require) {
 			}
 		},
 
+		gotToStep: function(currentStep){
+			this.state.currentStep = currentStep;
+			if(this.state.currentStep <= this.getActiveTutorial().steps.length-1){
+				this.updateTutorialWindow();
+			}else{
+				this.start();
+			}
+		},
+
 		nextStep: function(){
 			this.state.currentStep++;
 			if(this.state.currentStep <= this.getActiveTutorial().steps.length-1){
@@ -170,6 +182,11 @@ define(function (require) {
 		},
 		
 		addTutorial : function(tutorialURL){
+			// do not add if the same url was already successfully added
+			if(this.tutorials.includes(tutorialURL)){
+				return;
+			}
+
 			var self = this;
 
 			$.ajax({
@@ -177,6 +194,10 @@ define(function (require) {
 				dataType: 'json',
 				url: tutorialURL,
 				success: function (responseData, textStatus, jqXHR) {
+					// on success add to tutorials utl list for view-state
+					self.tutorials.push(tutorialURL);
+					self.setDirty(true);
+					// load tutorial
 					self.loadTutorial(responseData, false);
 				},
 				error: function (responseData, textStatus, errorThrown) {
@@ -226,7 +247,6 @@ define(function (require) {
             return false;
         },
 
-        
         componentDidUpdate:function(){
         	if(this.chaptersMenu==undefined){
         		var that = this;
@@ -310,7 +330,6 @@ define(function (require) {
     		}
 		},
 
-		
 		getCookie : function(){
 			var ignoreTutorial = $.cookie('ignore_tutorial');
 			if(ignoreTutorial == undefined){
@@ -380,6 +399,54 @@ define(function (require) {
 			else{
 				return null;
 			}
+		},
+
+		isDirty: function(){
+			return this.isDirty;
+		},
+
+		setDirty: function(dirty){
+			this.isDirty = dirty;
+		},
+
+		getView: function(){
+			var baseView = {};
+
+			// add data-type and data field + any other custom fields in the component-specific attribute
+			baseView.dataType = "array";
+			baseView.data = this.tutorials;
+			baseView.componentSpecific = {
+				activeTutorial: this.state.activeTutorial,
+				currentStep: this.state.currentStep,
+			};
+
+			return baseView;
+		},
+
+		setView: function(view){
+			// TODO: set base properties
+
+			// set data
+			if(view.data != undefined){
+				if(view.dataType == 'array'){
+					for(var i=0; i<view.data.length; i++){
+						this.addTutorial(view.data[i]);
+					}
+				}
+			}
+
+			// set component specific stuff, only custom handlers for popup widget
+			if(view.componentSpecific != undefined){
+				if(view.componentSpecific.activeTutorial != undefined){
+					this.goToChapter(view.componentSpecific.activeTutorial);
+				}
+
+				if(view.componentSpecific.currentStep != undefined){
+					this.gotToStep(view.componentSpecific.currentStep);
+				}
+			}
+
+			this.setDirty(true);
 		}
 	});
 	

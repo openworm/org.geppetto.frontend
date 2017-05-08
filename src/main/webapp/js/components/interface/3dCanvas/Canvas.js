@@ -15,7 +15,21 @@ define(function (require) {
     var canvasComponent = React.createClass({
         engine: null,
         container: null,
-        backgroundColor: 0x101010,
+
+        isDirty: false,
+
+        //State
+        canvasState: {
+            cameraPosition: {x: 0, y: 0, z: 0},
+            cameraRotation: {rx: 0, ry: 0, rz: 0, radius: 0},
+            colorMap: {},
+            colorFunctionMap: {},
+            opacityMap: {},
+            geometryTypeMap: {},
+            instances: [],
+            backgroundColor: 0x101010
+        },
+
 
         /**
          * Displays all the passed instances in this canvas component
@@ -24,8 +38,32 @@ define(function (require) {
          */
         display: function (instances) {
             this.engine.buildScene(instances);
+            this.instances = this.canvasState.instances.concat(instances.map(function (item) {
+                return item.getInstancePath();
+            }));
+            this.setDirty(true);
             return this;
         },
+
+        /**
+         * Remove all the passed instances from this canvas component
+         * This method is only able to remove instances that were explicitly added
+         * e.g. if acnet2 is added acent2.baskets[3] can't be removed.
+         * @param instances an array of instances
+         * @returns {canvasComponent}
+         */
+        remove: function (instances) {
+            for (var i = 0; i < instances.length; i++) {
+                if (this.canvasState.instances.indexOf(instances[i].getInstancePath()) != -1) {
+                    this.canvasState.instances.splice(this.canvasState.instances.indexOf(instances[i].getInstancePath()), 1);
+                }
+                this.engine.removeFromScene(instances[i]);
+            }
+            this.setDirty(true);
+            this.resetCamera();
+            return this;
+        },
+
 
         /**
          * Displays all the instances available in the current model in this canvas
@@ -33,11 +71,20 @@ define(function (require) {
          */
         displayAllInstances: function () {
             var that = this;
+            //TODO if the component is added after the events are triggered traverse all the existing instances
             GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
+                that.canvasState.instances = that.canvasState.instances.concat(instances.map(function (item) {
+                    return item.getInstancePath();
+                }));
+                that.setDirty(true);
                 that.engine.updateSceneWithNewInstances(instances);
                 that.resetCamera();
             });
             GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (instance) {
+                if (that.canvasState.instances.indexOf(instance.getInstancePath()) != -1) {
+                    that.canvasState.instances.splice(that.canvasState.instances.indexOf(instance.getInstancePath()), 1);
+                }
+                that.setDirty(true);
                 that.engine.removeFromScene(instance);
                 that.resetCamera();
             });
@@ -116,6 +163,17 @@ define(function (require) {
         },
 
         /**
+         * Set background color for this canvas
+         *
+         * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
+         */
+        setBackgroundColor: function (color) {
+            this.canvasState.backgroundColor = color;
+            this.setDirty(true);
+            this.dialog.css("background", color);
+        },
+
+        /**
          * Change the color of a given instance
          *
          * @param {String}
@@ -125,6 +183,8 @@ define(function (require) {
          */
         setColor: function (instancePath, color) {
             this.engine.setColor(instancePath, color);
+            this.canvasState.colorMap[instancePath] = color;
+            this.setDirty(true);
             return this;
         },
 
@@ -148,6 +208,8 @@ define(function (require) {
          */
         setOpacity: function (instancePath, opacity) {
             this.engine.setOpacity(instancePath, opacity);
+            this.canvasState.opacityMap[instancePath] = opacity;
+            this.setDirty(true);
             return this;
         },
 
@@ -172,6 +234,8 @@ define(function (require) {
          */
         setGeometryType: function (instance, type, thickness) {
             this.engine.setGeometryType(instance, type, thickness);
+            this.canvasState.geometryTypeMap[instance.getInstancePath()] = {"type": type, "thickness": thickness};
+            this.setDirty(true);
             return this;
         },
 
@@ -193,6 +257,10 @@ define(function (require) {
          */
         addColorFunction: function (instances, colorfn) {
             this.engine.colorController.addColorFunction(instances, colorfn);
+            for (var i = 0; i < instances.length; i++) {
+                this.canvasState.colorFunctionMap[instances[i].getInstancePath()] = colorfn.toString();
+            }
+            this.setDirty(true);
             return this;
         },
 
@@ -203,6 +271,12 @@ define(function (require) {
          * @return {canvasComponent}
          */
         removeColorFunction: function (instances) {
+            for (var i = 0; i < instances.length; i++) {
+                if (this.colorFunctionMap[instances[i].getInstancePath()] != undefined) {
+                    delete this.canvasState.colorFunctionMap[instances[i].getInstancePath()];
+                }
+            }
+            this.setDirty(true);
             this.engine.colorController.removeColorFunction(instances);
             return this;
         },
@@ -259,6 +333,10 @@ define(function (require) {
          * @param z
          */
         setCameraPosition: function (x, y, z) {
+            this.canvasState.cameraPosition.x = x;
+            this.canvasState.cameraPosition.y = y;
+            this.canvasState.cameraPosition.z = z;
+            this.setDirty(true);
             this.engine.setCameraPosition(x, y, z);
             return this;
         },
@@ -270,6 +348,11 @@ define(function (require) {
          * @param radius
          */
         setCameraRotation: function (rx, ry, rz, radius) {
+            this.canvasState.cameraRotation.rx = rx;
+            this.canvasState.cameraRotation.ry = ry;
+            this.canvasState.cameraRotation.rz = rz;
+            this.canvasState.cameraRotation.radius = radius;
+            this.setDirty(true);
             this.engine.setCameraRotation(rx, ry, rz, radius);
             return this;
         },
@@ -306,6 +389,106 @@ define(function (require) {
             return [width, height];
         },
 
+
+        //TODO Move to base class for components
+        /**
+         * Did something change in the state of the widget?
+         *
+         * @command isDirty()
+         * @returns {boolean} - ID of widget
+         */
+        isDirty: function () {
+            return this.isDirty;
+        },
+
+        //TODO Move to base class for components
+        /**
+         * Explicitly sets status of view
+         * NOTE: we need to be able to control this from outside the component
+         *
+         * @command setDirty()
+         * @param {boolean} dirty
+         */
+        setDirty: function (dirty) {
+            this.isDirty = dirty;
+        },
+
+        /**
+         *
+         * @param view
+         */
+        setView: function (view) {
+            // set base properties
+            Widget.View.prototype.setView.call(this, view);
+
+            // set data
+            if (view.data != undefined) {
+                if (view.dataType == 'instances') {
+                    this.display(view.data);
+                }
+            }
+
+            // set component specific stuff, only custom handlers for popup widget
+            if (view.componentSpecific != undefined) {
+                if (view.componentSpecific.cameraRotation != undefined) {
+                    this.setCameraRotation(
+                        view.componentSpecific.cameraRotation.rx,
+                        view.componentSpecific.cameraRotation.ry,
+                        view.componentSpecific.cameraRotation.rz,
+                        view.componentSpecific.cameraRotation.radius);
+                }
+                if (view.componentSpecific.cameraPosition != undefined) {
+                    this.setCameraPosition(
+                        view.componentSpecific.cameraPosition.x,
+                        view.componentSpecific.cameraPosition.y,
+                        view.componentSpecific.cameraPosition.z);
+                }
+                if (view.componentSpecific.colorMap != undefined) {
+                    for (var path in view.componentSpecific.colorMap) {
+                        this.setColor(path, view.componentSpecific.colorMap[path]);
+                    }
+                }
+                if (view.componentSpecific.opacityMap != undefined) {
+                    for (var path in view.componentSpecific.opacityMap) {
+                        this.setOpacity(path, view.componentSpecific.opacityMap[path]);
+                    }
+                }
+                if (view.componentSpecific.geometryTypeMap != undefined) {
+                    for (var path in view.componentSpecific.geometryTypeMap) {
+                        this.setGeometryType(eval(path),
+                            view.componentSpecific.geometryTypeMap[path].type,
+                            view.componentSpecific.geometryTypeMap[path].thickness);
+                    }
+                }
+                if (view.componentSpecific.colorFunctionMap != undefined) {
+                    for (var path in view.componentSpecific.colorFunctionMap) {
+                        this.addColorFunction([eval(path)], eval("(" + view.componentSpecific.colorFunctionMap[path] + ")"));
+                    }
+                }
+                if (view.componentSpecific.backgroundColor != undefined) {
+                    this.setBackgroundColor(view.componentSpecific.backgroundColor);
+                }
+            }
+
+            // after setting view through setView, reset dirty flag
+            this.setDirty(false);
+        },
+
+
+        /**
+         *
+         * @returns {*}
+         */
+        getView: function () {
+            var baseView = Widget.View.prototype.getView.call(this);
+
+            // add data-type and data field + any other custom fields in the component-specific attribute
+            baseView.dataType = "instances";
+            baseView.data = this.instances;
+            baseView.componentSpecific = this.canvasState;
+            return baseView;
+        },
+
         /**
          *
          * @returns {boolean}
@@ -314,6 +497,9 @@ define(function (require) {
             return false;
         },
 
+        /**
+         *
+         */
         componentDidMount: function () {
             if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
@@ -339,6 +525,10 @@ define(function (require) {
             }
         },
 
+        /**
+         *
+         * @returns {XML}
+         */
         render: function () {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">

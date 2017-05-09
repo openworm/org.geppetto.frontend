@@ -4,6 +4,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>geppetto</title>
 
+    <base href="/<%=htmlWebpackPlugin.options.contextPath%>/" />
+
     <!-- CSS -->
     <link rel="stylesheet" href="geppetto/style/css/custom-theme/jquery-ui-1.10.0.custom.css"/>
     <link rel="stylesheet" href="geppetto/style/css/font-awesome.min.css"/>
@@ -11,7 +13,6 @@
     <link rel="stylesheet" href="geppetto/style/css/lesser-dark.css"/>
     <link rel="stylesheet" href="geppetto/style/css/jsConsole.css"/>
     <link rel="stylesheet" href="geppetto/style/css/gpt-icons.css"/>
-
 
     <script>
         window.BUNDLE_CONTEXT_PATH = "<%=htmlWebpackPlugin.options.contextPath%>";

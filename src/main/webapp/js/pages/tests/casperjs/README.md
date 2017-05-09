@@ -6,6 +6,8 @@ to test that Casper is properly installed.
 
 Run `casperjs test UITests.js --engine=slimerjs` to run Geppetto UI Tests.
 
+Run `casperjs test --includes=CoreTestsUtility.js CoreTests.js ` to run Core projects Tests
+
 ##Prereqs
 
 * node.js

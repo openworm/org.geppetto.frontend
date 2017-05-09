@@ -537,6 +537,17 @@ define(function (require) {
 
     var FilterComponent = React.createClass({
 
+        optionsMap: {
+            VISUAL_INSTANCES: ['visualInstancesFilterBtn'],
+            ACTIVE_STATE_VARIABLES: ['stateVariablesFilterBtn', 'activeExperimentFilterBtn'],
+            ACTIVE_RECORDED_STATE_VARIABLES: ['stateVariablesFilterBtn', 'activeExperimentFilterBtn', 'recordedFilterBtn'],
+            ANY_EXPERIMENT_RECORDED_STATE_VARIABLES: ['stateVariablesFilterBtn', 'anyExperimentFilterBtn'],
+            ANY_PROJECT_GLOBAL_STATE_VARIABLES: ['stateVariablesFilterBtn', 'anyProjectFilterBtn'],
+            ACTIVE_PARAMETERS: ['parametersFilterBtn', 'activeExperimentFilterBtn'],
+            ANY_EXPERIMENT_PARAMETERS: ['parametersFilterBtn', 'anyExperimentFilterBtn'],
+            ANY_PROJECT_PARAMETERS: ['parametersFilterBtn', 'anyProjectFilterBtn']
+        },
+
         getInitialState: function () {
             return {
                 visualFilterEnabled: true,
@@ -616,9 +627,16 @@ define(function (require) {
         componentDidMount: function () {
             var that = this;
             GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function () {
-                // when control panel is open and we are using the filter component
-                // if no other main component is toggled show visual instances
-                if (!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled) {
+                // when control panel is open check if we have filter coming down from props
+                if(that.props.filterOption != undefined){
+                    var buttonsToToggle = that.optionsMap[that.props.filterOption];
+                    if(buttonsToToggle != undefined){
+                        for(var i=0; i<buttonsToToggle.length; i++){
+                            that.computeResult(buttonsToToggle[i]);
+                        }
+                    }
+                } else if (!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled) {
+                    // if no other main component is toggled show visual instances
                     // same logic as if viz instances filter was clicked
                     that.computeResult('visualInstancesFilterBtn');
                 }
@@ -747,24 +765,24 @@ define(function (require) {
             // this will cause the control panel to refresh data based on injected filter handler
             var filterHandler = this.props.filterHandler;
             if (this.state.visualFilterToggled) {
-                filterHandler('VISUAL_INSTANCES');
+                filterHandler(controlPanelFilterOptions.VISUAL_INSTANCES);
             } else if (this.state.stateVarsFilterToggled) {
                 if (this.state.activeExperimentFilterToggled && this.state.recordedFilterToggled) {
-                    filterHandler('ACTIVE_RECORDED_STATE_VARIABLES');
+                    filterHandler(controlPanelFilterOptions.ACTIVE_RECORDED_STATE_VARIABLES);
                 } else if (this.state.activeExperimentFilterToggled && !this.state.recordedFilterToggled) {
-                    filterHandler('ACTIVE_STATE_VARIABLES');
+                    filterHandler(controlPanelFilterOptions.ACTIVE_STATE_VARIABLES);
                 } else if (this.state.anyExperimentFilterToggled) {
-                    filterHandler('ANY_EXPERIMENT_RECORDED_STATE_VARIABLES');
+                    filterHandler(controlPanelFilterOptions.ANY_EXPERIMENT_RECORDED_STATE_VARIABLES);
                 } else if (this.state.anyProjectFilterToggled) {
-                    filterHandler('ANY_PROJECT_GLOBAL_STATE_VARIABLES');
+                    filterHandler(controlPanelFilterOptions.ANY_PROJECT_GLOBAL_STATE_VARIABLES);
                 }
             } else if (this.state.paramsFilterToggled) {
                 if (this.state.activeExperimentFilterToggled) {
-                    filterHandler('ACTIVE_PARAMETERS');
+                    filterHandler(controlPanelFilterOptions.ACTIVE_PARAMETERS);
                 } else if (this.state.anyExperimentFilterToggled) {
-                    filterHandler('ANY_EXPERIMENT_PARAMETERS');
+                    filterHandler(controlPanelFilterOptions.ANY_EXPERIMENT_PARAMETERS);
                 } else if (this.state.anyProjectFilterToggled) {
-                    filterHandler('ANY_PROJECT_PARAMETERS');
+                    filterHandler(controlPanelFilterOptions.ANY_PROJECT_PARAMETERS);
                 }
             }
         },
@@ -1447,8 +1465,20 @@ define(function (require) {
     var parametersControlsConfig = {};
     var parametersControls = {"Common": []};
 
+    var controlPanelFilterOptions = {
+        VISUAL_INSTANCES: 'VISUAL_INSTANCES',
+        ACTIVE_STATE_VARIABLES: 'ACTIVE_STATE_VARIABLES',
+        ACTIVE_RECORDED_STATE_VARIABLES: 'ACTIVE_RECORDED_STATE_VARIABLES',
+        ANY_EXPERIMENT_RECORDED_STATE_VARIABLES: 'ANY_EXPERIMENT_RECORDED_STATE_VARIABLES',
+        ANY_PROJECT_GLOBAL_STATE_VARIABLES: 'ANY_PROJECT_GLOBAL_STATE_VARIABLES',
+        ACTIVE_PARAMETERS: 'ACTIVE_PARAMETERS',
+        ANY_EXPERIMENT_PARAMETERS: 'ANY_EXPERIMENT_PARAMETERS',
+        ANY_PROJECT_PARAMETERS: 'ANY_PROJECT_PARAMETERS'
+    };
+
     var ControlPanel = React.createClass({
         displayName: 'ControlPanel',
+        filterOptions: controlPanelFilterOptions,
 
         refresh: function () {
             var self = this;
@@ -1470,7 +1500,8 @@ define(function (require) {
                 controls: {"Common": [], "VisualCapability": ['color', 'randomcolor', 'visibility', 'zoom']},
                 controlsConfig: defaultControlsConfiguration,
                 dataFilter: defaultDataFilter,
-                columnMeta: defaultControlPanelColumnMeta
+                columnMeta: defaultControlPanelColumnMeta,
+                filterOption: this.VISUAL_INSTANCES
             };
         },
 
@@ -1638,9 +1669,30 @@ define(function (require) {
             GEPPETTO.ControlPanel = this;
         },
 
+        openWithFilter: function(filterTabOption, filterText) {
+            if (filterTabOption == undefined) {
+                filterTabOption = this.filterOptions.VISUAL_INSTANCES;
+            }
+
+            if (filterText == undefined){
+                filterText = '';
+            }
+
+            // set state this like this to avoid double refresh, open will trigger a refresh
+            this.state.filterOption = filterTabOption;
+
+            // show control panel
+            this.open();
+            var that = this;
+            setTimeout(function () {
+                that.setFilter(filterText);
+            }, 25);
+        },
+
         open: function () {
             // show control panel
             $("#controlpanel").show();
+
             // refresh to reflect latest state (might have changed)
             this.refresh();
 
@@ -1677,7 +1729,7 @@ define(function (require) {
 
         filterOptionsHandler: function (value) {
             switch (value) {
-                case 'VISUAL_INSTANCES':
+                case this.filterOptions.VISUAL_INSTANCES:
                     // displays actual instances
                     this.resetControlPanel(instancesCols, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
 
@@ -1706,7 +1758,7 @@ define(function (require) {
                         that.setData(visualInstances);
                     }, 5);
                     break;
-                case 'ACTIVE_STATE_VARIABLES':
+                case this.filterOptions.ACTIVE_STATE_VARIABLES:
                     // displays potential instances
                     this.resetControlPanel(stateVariablesCols, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
 
@@ -1741,7 +1793,7 @@ define(function (require) {
                         that.setData(potentialStateVarInstances);
                     }, 5);
                     break;
-                case 'ACTIVE_RECORDED_STATE_VARIABLES':
+                case this.filterOptions.ACTIVE_RECORDED_STATE_VARIABLES:
                     // displays actual instances
                     this.resetControlPanel(instancesColsWithoutType, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
 
@@ -1770,7 +1822,7 @@ define(function (require) {
                         that.setData(recordedStateVars);
                     }, 5);
                     break;
-                case 'ANY_EXPERIMENT_RECORDED_STATE_VARIABLES':
+                case this.filterOptions.ANY_EXPERIMENT_RECORDED_STATE_VARIABLES:
                     // this will display potential instances with state variables col meta / controls
                     this.resetControlPanel(stateVariablesColsWithExperiment, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
 
@@ -1782,7 +1834,7 @@ define(function (require) {
                         that.setData(projectStateVars);
                     }, 5);
                     break;
-                case 'ANY_PROJECT_GLOBAL_STATE_VARIABLES':
+                case this.filterOptions.ANY_PROJECT_GLOBAL_STATE_VARIABLES:
                     // this will display potential instances with state variables col meta / controls
                     this.resetControlPanel(stateVariablesColsWithProjectAndExperiment, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
 
@@ -1794,7 +1846,7 @@ define(function (require) {
                         that.setData(globalStateVars);
                     }, 5);
                     break;
-                case 'ACTIVE_PARAMETERS':
+                case this.filterOptions.ACTIVE_PARAMETERS:
                     // displays indexed parameters / similar to potential instances
                     this.resetControlPanel(paramsCols, parametersColMeta, parametersControls, parametersControlsConfig);
 
@@ -1823,7 +1875,7 @@ define(function (require) {
                         that.setData(potentialParamInstances);
                     }, 5);
                     break;
-                case 'ANY_EXPERIMENT_PARAMETERS':
+                case this.filterOptions.ANY_EXPERIMENT_PARAMETERS:
                     // this will display potential instances with parameters col meta / controls
                     this.resetControlPanel(paramsColsWithExperiment, parametersColMeta, parametersControls, parametersControlsConfig);
 
@@ -1867,7 +1919,7 @@ define(function (require) {
                         that.setData(projectEditedParameters);
                     }, 5);
                     break;
-                case 'ANY_PROJECT_PARAMETERS':
+                case this.filterOptions.ANY_PROJECT_PARAMETERS:
                     // this will display potential instances with parameters col meta / controls
                     this.resetControlPanel(paramsColsWithProjectAndExperiment, parametersColMeta, parametersControls, parametersControlsConfig);
 
@@ -1982,7 +2034,7 @@ define(function (require) {
             var filterMarkup = '';
             if (this.props.useBuiltInFilters === true) {
                 filterMarkup = (
-                    <FilterComponent id="controlPanelBuiltInFilter" filterHandler={this.filterOptionsHandler}/>
+                    <FilterComponent id="controlPanelBuiltInFilter" filterOption={this.state.filterOption} filterHandler={this.filterOptionsHandler}/>
                 );
             }
 

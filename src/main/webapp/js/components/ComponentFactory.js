@@ -8,7 +8,6 @@ define(function (require) {
 		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
 		var addWidget = require('./widgets/NewWidget.js');
-		var getEnhanceComponent = require('./widgets/AbstractComponent.js');
 		
 		GEPPETTO.ComponentFactory = {
 

@@ -14,8 +14,8 @@ define(function (require) {
 
     var AbstractComponent = require('../../widgets/AbstractComponent');
 
-    return class Canvas extends AbstractComponent{
-        
+    return class Canvas extends AbstractComponent {
+
 
         constructor(props) {
             super(props);
@@ -25,8 +25,8 @@ define(function (require) {
 
             //State
             this.canvasState = {
-                cameraPosition: {x: 0, y: 0, z: 0},
-                cameraRotation: {rx: 0, ry: 0, rz: 0, radius: 0},
+                cameraPosition: { x: 0, y: 0, z: 0 },
+                cameraRotation: { rx: 0, ry: 0, rz: 0, radius: 0 },
                 colorMap: {},
                 colorFunctionMap: {},
                 opacityMap: {},
@@ -35,14 +35,14 @@ define(function (require) {
                 backgroundColor: 0x101010
             }
 
-        }       
+        }
 
         /**
          * Displays all the passed instances in this canvas component
          * @param instances an array of instances
          * @returns {canvasComponent}
          */
-        display (instances) {
+        display(instances) {
             this.engine.buildScene(instances);
             this.instances = this.canvasState.instances.concat(instances.map(function (item) {
                 return item.getInstancePath();
@@ -58,7 +58,7 @@ define(function (require) {
          * @param instances an array of instances
          * @returns {canvasComponent}
          */
-        remove (instances) {
+        remove(instances) {
             for (var i = 0; i < instances.length; i++) {
                 if (this.canvasState.instances.indexOf(instances[i].getInstancePath()) != -1) {
                     this.canvasState.instances.splice(this.canvasState.instances.indexOf(instances[i].getInstancePath()), 1);
@@ -75,7 +75,7 @@ define(function (require) {
          * Displays all the instances available in the current model in this canvas
          * @returns {canvasComponent}
          */
-        displayAllInstances () {
+        displayAllInstances() {
             var that = this;
             //TODO if the component is added after the events are triggered traverse all the existing instances
             GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
@@ -103,7 +103,7 @@ define(function (require) {
          * @param {String} instancePath - Path of instance to select
          * @param {String} geometryIdentifier - Identifier of the geometry that was clicked
          */
-        selectInstance (instancePath, geometryIdentifier) {
+        selectInstance(instancePath, geometryIdentifier) {
             this.engine.selectInstance(instancePath, geometryIdentifier);
             return this;
         }
@@ -114,7 +114,7 @@ define(function (require) {
          * @param instancePath
          * @returns {canvasComponent}
          */
-        deselectInstance (instancePath) {
+        deselectInstance(instancePath) {
             this.engine.deselectInstance(instancePath);
             return this;
         }
@@ -124,7 +124,7 @@ define(function (require) {
          * @param instance
          * @returns {canvasComponent}
          */
-        assignRandomColor (instance) {
+        assignRandomColor(instance) {
             this.engine.assignRandomColor(instance);
             return this;
         }
@@ -133,7 +133,7 @@ define(function (require) {
          * Zoom to the passed instances
          * @param instances
          */
-        zoomTo (instances) {
+        zoomTo(instances) {
             this.engine.zoomTo(instances);
             return this;
         }
@@ -141,7 +141,7 @@ define(function (require) {
         /**
          * Sets whether to use wireframe or not to visualize any instance.
          */
-        setWireframe (wireframe) {
+        setWireframe(wireframe) {
             this.engine.setWireframe(wireframe);
             return this;
         }
@@ -152,7 +152,7 @@ define(function (require) {
          * @param {String}
          *            instancePath - Instance path of the instance to make visible
          */
-        showInstance (instancePath) {
+        showInstance(instancePath) {
             this.engine.showInstance(instancePath);
             return this;
         }
@@ -163,7 +163,7 @@ define(function (require) {
          * @param {String}
          *            instancePath - Path of the instance to hide
          */
-        hideInstance (instancePath) {
+        hideInstance(instancePath) {
             this.engine.hideInstance(instancePath);
             return this;
         }
@@ -173,7 +173,7 @@ define(function (require) {
          *
          * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
          */
-        setBackgroundColor (color) {
+        setBackgroundColor(color) {
             this.canvasState.backgroundColor = color;
             this.setDirty(true);
             // this.dialog.css("background", color);
@@ -187,7 +187,7 @@ define(function (require) {
          * @param {String}
          *            color - The color to set
          */
-        setColor (instancePath, color) {
+        setColor(instancePath, color) {
             this.engine.setColor(instancePath, color);
             this.canvasState.colorMap[instancePath] = color;
             this.setDirty(true);
@@ -200,7 +200,7 @@ define(function (require) {
          * @param {String}
          *            instance - Instance we want the color of
          */
-        getColor (instance) {
+        getColor(instance) {
             return this.engine.getColor(instance);
         }
 
@@ -212,7 +212,7 @@ define(function (require) {
          * @param {String}
          *            opacity - The value of the opacity between 0 and 1
          */
-        setOpacity (instancePath, opacity) {
+        setOpacity(instancePath, opacity) {
             this.engine.setOpacity(instancePath, opacity);
             this.canvasState.opacityMap[instancePath] = opacity;
             this.setDirty(true);
@@ -223,7 +223,7 @@ define(function (require) {
          * Set the threshold (number of 3D primitives on the scene) above which we switch the visualization to lines
          * @param threshold
          */
-        setLinesThreshold (threshold) {
+        setLinesThreshold(threshold) {
             this.engine.setLinesThreshold(threshold);
             return this;
         }
@@ -238,9 +238,9 @@ define(function (require) {
          * @param {String}
          *            thickness - Optional: the thickness to be used if the geometry is "lines"
          */
-        setGeometryType (instance, type, thickness) {
+        setGeometryType(instance, type, thickness) {
             this.engine.setGeometryType(instance, type, thickness);
-            this.canvasState.geometryTypeMap[instance.getInstancePath()] = {"type": type, "thickness": thickness};
+            this.canvasState.geometryTypeMap[instance.getInstancePath()] = { "type": type, "thickness": thickness };
             this.setDirty(true);
             return this;
         }
@@ -249,7 +249,7 @@ define(function (require) {
         /**
          * Activates a visual group
          */
-        showVisualGroups (visualGroup, mode, instances) {
+        showVisualGroups(visualGroup, mode, instances) {
             this.engine.showVisualGroups(visualGroup, mode, instances);
             return this;
         }
@@ -261,7 +261,7 @@ define(function (require) {
          * @param colorfn - The function to be used to modulate the color
          * @return {canvasComponent}
          */
-        addColorFunction (instances, colorfn) {
+        addColorFunction(instances, colorfn) {
             this.engine.colorController.addColorFunction(instances, colorfn);
             for (var i = 0; i < instances.length; i++) {
                 this.canvasState.colorFunctionMap[instances[i].getInstancePath()] = colorfn.toString();
@@ -276,7 +276,7 @@ define(function (require) {
          * @param instances
          * @return {canvasComponent}
          */
-        removeColorFunction (instances) {
+        removeColorFunction(instances) {
             for (var i = 0; i < instances.length; i++) {
                 if (this.colorFunctionMap[instances[i].getInstancePath()] != undefined) {
                     delete this.canvasState.colorFunctionMap[instances[i].getInstancePath()];
@@ -292,7 +292,7 @@ define(function (require) {
          *
          * @return {Array}
          */
-        getColorFunctionInstances () {
+        getColorFunctionInstances() {
             return this.engine.colorController.getColorFunctionInstances();
         }
 
@@ -301,7 +301,7 @@ define(function (require) {
          * @param instance
          * @returns {canvasComponent}
          */
-        showVisualGroupsForInstance (instance) {
+        showVisualGroupsForInstance(instance) {
             this.engine.showVisualGroupsForInstance(instance);
             return this;
         }
@@ -310,7 +310,7 @@ define(function (require) {
          * @param x
          * @param y
          */
-        incrementCameraPan (x, y) {
+        incrementCameraPan(x, y) {
             this.engine.incrementCameraPan(x, y);
             return this;
         }
@@ -320,7 +320,7 @@ define(function (require) {
          * @param y
          * @param z
          */
-        incrementCameraRotate (x, y, z) {
+        incrementCameraRotate(x, y, z) {
             this.engine.incrementCameraRotate(x, y, z);
             return this;
         }
@@ -328,7 +328,7 @@ define(function (require) {
         /**
          * @param z
          */
-        incrementCameraZoom (z) {
+        incrementCameraZoom(z) {
             this.engine.incrementCameraZoom(z);
             return this;
         }
@@ -338,7 +338,7 @@ define(function (require) {
          * @param y
          * @param z
          */
-        setCameraPosition (x, y, z) {
+        setCameraPosition(x, y, z) {
             this.canvasState.cameraPosition.x = x;
             this.canvasState.cameraPosition.y = y;
             this.canvasState.cameraPosition.z = z;
@@ -353,7 +353,7 @@ define(function (require) {
          * @param rz
          * @param radius
          */
-        setCameraRotation (rx, ry, rz, radius) {
+        setCameraRotation(rx, ry, rz, radius) {
             this.canvasState.cameraRotation.rx = rx;
             this.canvasState.cameraRotation.ry = ry;
             this.canvasState.cameraRotation.rz = rz;
@@ -367,7 +367,7 @@ define(function (require) {
          * Rotate the camera around the selection
          *
          */
-        autoRotate () {
+        autoRotate() {
             this.engine.autoRotate();
             return this;
         }
@@ -377,7 +377,7 @@ define(function (require) {
          *
          * @returns {canvasComponent}
          */
-        resetCamera () {
+        resetCamera() {
             this.engine.resetCamera();
             return this;
         }
@@ -386,7 +386,7 @@ define(function (require) {
         /**
          * Set container dimensions depending on parent dialog
          */
-        setContainerDimensions () {
+        setContainerDimensions() {
             var containerSelector = $(this.container);
             var height = containerSelector.parent().height();
             var width = containerSelector.parent().width();
@@ -399,10 +399,9 @@ define(function (require) {
          *
          * @param view
          */
-        setView (view) {
+        setView(view) {
             // set base properties
-            // Widget.View.prototype.setView.call(this, view);
-            super.setView()
+            super.setView(view)
 
             // set data
             if (view.data != undefined) {
@@ -459,7 +458,7 @@ define(function (require) {
          *
          * @returns {*}
          */
-        getView  () {
+        getView() {
             // add data-type and data field + any other custom fields in the component-specific attribute
             var baseView = super.getView();
             baseView.dataType = "instances";
@@ -479,7 +478,7 @@ define(function (require) {
         /**
          *
          */
-        componentDidMount () {
+        componentDidMount() {
             if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
             } else {
@@ -508,13 +507,13 @@ define(function (require) {
          *
          * @returns {XML}
          */
-        render () {
+        render() {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <CameraControls viewer={this.props.id}/>
+                    <CameraControls viewer={this.props.id} />
                 </div>
             )
         }
     };
-//     return canvasComponent;
+    //     return canvasComponent;
 });

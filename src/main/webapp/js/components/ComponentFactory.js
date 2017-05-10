@@ -121,7 +121,7 @@ define(function (require) {
 					// Create component/widget
 					var type = loadedModule;
 					if (isWidget){
-						type = addWidget(type);
+						type = addWidget(loadedModule);
 					}
 					var component = React.createFactory(type)(properties);
 					var renderedComponent = window[properties.id] = that.renderComponent(component, container, callback);

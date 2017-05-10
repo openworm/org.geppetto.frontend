@@ -44,126 +44,84 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 		casper.then(function(){launchTest(test,"ACNet");});
 		casper.then(function(){acnetTest(test);});
 	});
-//	
-//	/**Tests C302 project**/
-//	casper.thenOpen(urlBase+baseFollowUp+c302Project,function() {		
-//		this.waitWhileVisible('div[id="loading-spinner"]', function () {
-//			this.echo("I've waited for c302 project to load.");
-//			test.assertTitle("geppetto", "geppetto title is ok");
-//			test.assertUrlMatch(/load_project_from_id=6/, "project load attempted");
-//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-//			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
-//			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-//			c302Test(test);
-//		},null,450000);
-//	});
-
-
-//
-//	/**Tests CA1 project**/
-//	casper.thenOpen(urlBase+baseFollowUp+ca1Project,function() {
-//		this.waitWhileVisible('div[id="loading-spinner"]', function () {
-//			this.echo("I've waited for CA1 project to load.");
-//			test.assertTitle("geppetto", "geppetto title is ok");
-//			test.assertUrlMatch(/load_project_from_id=3/, "project load attempted");
-//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-//			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
-//			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-//			ca1Test(test);
-//		},null,40000);
-//	});
-//	
-//	/**Tests EyeWire project**/
-//	casper.thenOpen(urlBase+baseFollowUp+eyeWire,function() {
-//		this.waitForSelector('div[id="Popup1"]', function() {
-//			this.echo("I've waited for the EyeWireGanglionCell project to load.");
-//			test.assertTitle("geppetto", "geppetto title is ok");
-//			test.assertUrlMatch(/load_project_from_id=9/, "project load attempted");
-//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-//			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
-//			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-//		}, null, 50000);
-//	});
-//	
-//	/**Tests Pharyngeal project**/
-//	casper.thenOpen(urlBase+baseFollowUp+Pharyngeal,function() {
-//		this.waitWhileVisible('div[id="loading-spinner"]', function () {
-//			this.echo("I've waited for the Pharyngeal project to load.");
-//			test.assertTitle("geppetto", "geppetto title is ok");
-//			test.assertUrlMatch(/load_project_from_id=58/, "project load attempted");
-//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-//			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
-//			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-//			pharyngealTest(test);
-//		},null,50000);
-//	});
-//	
-//	/**Tests NWB project**/
-//	casper.thenOpen(urlBase+baseFollowUp+nwbSample,function() {
-//		this.waitWhileVisible('div[id="loading-spinner"]', function () {
-//			this.echo("I've waited for NWB project to load.");
-//			test.assertTitle("geppetto", "geppetto title is ok");
-//			test.assertUrlMatch(/load_project_from_id=18/, "project load attempted");
-//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-//			test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
-//			test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-//			nwbSampleTest(test);
-//		},null,50000);
-//	});
+	
+	/**Tests C302 project**/
+	casper.thenOpen(urlBase+baseFollowUp+c302Project,function() {
+		casper.then(function(){launchTest(test,"C302");});
+		casper.then(function(){c302Test(test);});
+	});
+	
+	/**Tests CA1 project**/
+	casper.thenOpen(urlBase+baseFollowUp+ca1Project,function() {
+		casper.then(function(){launchTest(test,"CA1");});
+		casper.then(function(){ca1Test(test);});
+	});
+	
+	/**Tests EyeWire project**/
+	casper.thenOpen(urlBase+baseFollowUp+eyeWire,function() {
+		casper.then(function(){launchTest(test,"EyeWireGanglionCell");});
+	});
+	
+	/**Tests Pharyngeal project**/
+	casper.thenOpen(urlBase+baseFollowUp+Pharyngeal,function() {
+		casper.then(function(){launchTest(test,"Pharyngeal");});
+		casper.then(function(){pharyngealTest(test);});
+	});
+	
+	/**Tests NWB project**/
+	casper.thenOpen(urlBase+baseFollowUp+nwbSample,function() {
+		casper.then(function(){launchTest(test,"NWB Sample");});
+		casper.then(function(){nwbSampleTest(test);});
+	});
 	
 //	casper.thenOpen(urlBase+baseFollowUp+cElegansConnectome,function() {
-//		this.waitForSelector('div[id="sim-toolbar"]', function() {
-//			this.echo("I've waited for the simulation controls to load.");
-//			test.assertTitle("geppetto", "geppetto title is ok");
-//			test.assertUrlMatch(/load_project_from_id=16/, "project load attempted");
-//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-//		}, null, 30000);
+//		casper.then(function(){launchTest(test,"cElegansConnectome");});
 //	});
 //	
 //	casper.thenOpen(urlBase+baseFollowUp+cElegansMuscleModel,function() {
-//		this.waitForSelector('div[id="sim-toolbar"]', function() {
-//			this.echo("I've waited for the simulation controls to load.");
-//			test.assertTitle("geppetto", "geppetto title is ok");
-//			test.assertUrlMatch(/load_project_from_id=4/, "project load attempted");
-//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-//		}, null, 30000);
+//		casper.then(function(){launchTest(test,"cElegansMuscleModel");});
 //	});
 //	
 //	casper.thenOpen(urlBase+baseFollowUp+cElegansPVDR,function() {
-//		this.waitForSelector('div[id="sim-toolbar"]', function() {
-//			this.echo("I've waited for the simulation controls to load.");
-//			test.assertTitle("geppetto", "geppetto title is ok");
-//			test.assertUrlMatch(/load_project_from_id=8/, "project load attempted");
-//			test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-//		}, null, 30000);
+//		casper.then(function(){launchTest(test,"cElegansPVDR");});
 //	});
-//	
+	
 	casper.run(function() {
 		test.done();
 	});
 });
 
 /**
- * 
- * @param test
- * @param name
+ * Main method for testing the HHCEll project
  * @returns
  */
 function hhcellTest(test,name){
 	casper.echo("------------STARTING HHCELL TEST--------------");
-	testCameraControls(test, [0,0,30.90193733102435]);
-	casper.then(function () {
-		test3DMeshColor(test,defaultColor,"hhcell.hhpop[0]");
-		casper.echo("Opening controls panel");
-		buttonClick("#controlPanelBtn");
+	casper.then(function(){
+		removeAllPlots();
 	});
 	casper.then(function(){
+		casper.echo("-------Testing Camera Controls--------");
+		testCameraControls(test, [0,0,30.90193733102435]);
+	});
+	casper.then(function () {
+		casper.echo("-------Testing Original Color--------");
+		test3DMeshColor(test,defaultColor,"hhcell.hhpop[0]");
+		casper.echo("Opening controls panel");
+		casper.evaluate(function(){
+			GEPPETTO.ControlPanel.open();
+		});
+	});
+	casper.then(function(){
+		casper.echo("-------Testing Control Panel--------");
 		testInitialControlPanelValues(test,3);
 	})
 	casper.then(function(){
+		casper.echo("-------Testing Mesh Visibility--------");
 		testVisibility(test,"hhcell.hhpop[0]","#hhcell_hhpop_0__visibility_ctrlPanel_btn");
 	})
 	casper.then(function () {
+		casper.echo("-------Testing Plotting from Control Panel--------");
 		buttonClick("#stateVariablesFilterBtn");
 	});
 	casper.then(function () {
@@ -174,40 +132,52 @@ function hhcellTest(test,name){
 	casper.then(function(){
 		this.waitUntilVisible('div[id="Plot1"]', function () {
 			this.echo("I've waited for Plot1 to come up");
-			removeAllPlots();
 			buttonClick("#anyProjectFilterBtn");
 		});
 	});	
+	
 	casper.then(function(){
+		removeAllPlots();
+	});
+	
+	casper.then(function(){
+		casper.echo("-------Testing Spotlight--------");
 		this.wait(500,function(){
 			var rows = casper.evaluate(function() {
 				var rows = $(".standard-row").length;
 				return rows;
 			});
 			test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
-			buttonClick("#controlpanel");
+			casper.evaluate(function(){
+				GEPPETTO.ControlPanel.close();
+			});
 			testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,true,"hhcell","hhcell.hhpop[0]");
 		});
 	});
 	
 	casper.then(function(){
 		closeSpotlight();
+		casper.echo("-------Testing Canvas Widget and Color Function--------");
 		casper.evaluate(function(){
 			eval("hhcell.deselect()");
-			eval("GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([hhcell])});")
-			eval("GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);");
-			eval("Project.getActiveExperiment().play({step:1})");
+			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([hhcell])});
+			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
+			Project.getActiveExperiment().play({step:1});
+			eval("Plot1.setPosition(0,300)");
 		});
 		
-		testCameraControls(test, [0,0,30.90193733102435]);
+		var mesh = casper.evaluate(function(){
+			var mesh = Canvas2.engine.getRealMeshesForInstancePath("hhcell.hhpop[0]").length;
+			return mesh;
+		});
+		test.assertEquals(mesh, 1, "Canvas widget has hhcell");
 		
+		casper.echo("-------Testing Camera Controls--------");
+		testCameraControlsWithCanvasWidget(test, [0,0,30.90193733102435]);
 		casper.wait(1000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 		});
-		casper.wait(3000, function(){
-			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
-		});
-		casper.wait(5000, function(){
+		casper.wait(2000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");
 		})
@@ -215,26 +185,34 @@ function hhcellTest(test,name){
 };
 
 /**
- * 
- * @param test
- * @returns
+ * Main method for testing ACNet
  */
 function acnetTest(test){
 	casper.echo("------------STARTING ACNET TEST--------------");
-	testCameraControls(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
+	casper.then(function(){
+		removeAllDialogs();
+	});
+	casper.then(function(){
+		casper.echo("-------Testing Camera Controls--------");
+		testCameraControls(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
+	});
 	casper.then(function () {
+		casper.echo("-------Testing Original Color--------");
 		test3DMeshColor(test,defaultColor,"acnet2.pyramidals_48[0]");
 		this.echo("Opening controls panel");
 		buttonClick("#controlPanelBtn");
 	});
 	
 	casper.then(function () {
+		casper.echo("-------Testing Control Panel--------");
 		testInitialControlPanelValues(test,10);
 	});
 	casper.then(function(){
+		casper.echo("-------Testing Mesh Visibility--------");
 		testVisibility(test,"acnet2.pyramidals_48[0]","#acnet2_pyramidals_48_0__visibility_ctrlPanel_btn");
 	})
 	casper.then(function () {
+		casper.echo("-------Testing Plotting from Control Panel--------");
 		buttonClick("#stateVariablesFilterBtn");
 	});
 	
@@ -253,33 +231,45 @@ function acnetTest(test){
 		});
 	});
 
+	casper.then(function(){
+		removeAllPlots(); //removes exisiting plots for clearer view
+	});
+	
 	casper.then(function () {
-		testSpotlight(test, "acnet2.pyramidals_48[1].soma_0.v",'div[id="Plot2"]',true,true,"acnet2.pyramidals_48[0]","acnet2.pyramidals_48[0]");	
+		casper.echo("-------Testing Spotlight--------");
+		testSpotlight(test, "acnet2.pyramidals_48[1].soma_0.v",'div[id="Plot1"]',true,true,"acnet2.pyramidals_48[0]","acnet2.pyramidals_48[0]");	
 		this.mouseEvent('click', 'i.fa-search', "attempting to close spotlight");
 	});
 	
 	casper.then(function () {
-		testSpotlight(test, "acnet2.pyramidals_48[0].biophys.membraneProperties.Ca_pyr_soma_group.gDensity",'div[id="Plot2"]',false,false,"acnet2.pyramidals_48[0]");	
+		testSpotlight(test, "acnet2.pyramidals_48[0].biophys.membraneProperties.Ca_pyr_soma_group.gDensity",'div[id="Plot1"]',false,false,"acnet2.pyramidals_48[0]");	
 	});
 	
 	casper.then(function(){
-		closeSpotlight();
+		closeSpotlight(); //close spotlight before continuing
+		casper.echo("-------Testing Canvas Widget and Color Function--------");
 		casper.evaluate(function(){
-			eval("acnet2.pyramidals_48[0].deselect()");
-			eval("GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});");
-			eval("GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);");
-			eval("Project.getActiveExperiment().play({step:10})");
+			acnet2.pyramidals_48[0].deselect();
+			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
+			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
+			Project.getActiveExperiment().play({step:10});
+			eval("Plot1.setPosition(0,300)");
+			acnet2.baskets_12[4].getVisualGroups()[0].show(true);
 		});
 		
+		testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
+		
+		testVisualGroup(test,"acnet2.baskets_12[0]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
+		
+		testVisualGroup(test,"acnet2.baskets_12[5]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
+		
+		//test color function
 		casper.wait(2000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
 		});
-		casper.wait(3000, function(){
+		casper.wait(1000, function(){
+			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
-		});
-		casper.wait(5000, function(){
-			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
-			removeAllPlots();
 			casper.echo("Done Playing, now exiting");
 		})
 	})
@@ -287,9 +277,97 @@ function acnetTest(test){
 
 function c302Test(test){
 	casper.echo("------------STARTING C302 TEST--------------");
+	
 	casper.waitForSelector('div[id="Plot1"]', function() {
 		this.echo("I've waited for Plot1 to load.");
 		test.assertExists('div[id="Plot1"]', "geppetto loads the initial Plot1");
+	}, null, 5000);
+	
+	casper.then(function(){
+		resetCameraTest(test, [49.25,-0.8000001907348633,733.3303486467378]);
+	});
+	
+	casper.then(function(){
+		removeAllDialogs();
+	});
+	
+	casper.then(function(){
+		casper.echo("-------Testing Camera Controls--------");
+		testCameraControls(test, [49.25,-0.8000001907348633,733.3303486467378]);
+	});
+	casper.then(function () {
+		test3DMeshColor(test,defaultColor,"c302.ADAL[0]");
+		casper.echo("Opening controls panel");
+		buttonClick("#controlPanelBtn");
+	});
+	
+	casper.then(function(){
+		testInitialControlPanelValues(test,10);
+	});
+	
+	casper.then(function () {
+		buttonClick("#stateVariablesFilterBtn");
+	});
+	
+	casper.then(function(){
+		this.waitUntilVisible('button[id="c302_ADAL_0__v_plot_ctrlPanel_btn"]', function () {
+			buttonClick("#c302_ADAL_0__v_plot_ctrlPanel_btn");
+		});
+	})
+
+	casper.then(function(){
+		this.waitUntilVisible('div[id="Plot1"]', function () {
+			this.echo("I've waited for Plot1 to come up");
+			buttonClick("#anyProjectFilterBtn");
+			this.wait(500,function(){
+				var rows = casper.evaluate(function() {
+					var rows = $(".standard-row").length;
+					return rows;
+				});
+				test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
+				casper.evaluate(function(){
+					GEPPETTO.ControlPanel.close();
+				});
+				casper.echo("-------Testing Spotlight--------");
+				testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot2"]',true,false);
+			});
+		});
+	})
+
+	casper.then(function(){
+		casper.echo("-------Testing Spotlight--------");
+		testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot2"]',true,false);
+	})
+
+	casper.then(function(){
+		closeSpotlight(); //close spotlight before continuing
+		casper.echo("-------Testing Canvas Widget and Color Function--------");
+		casper.evaluate(function(){
+			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([c302])});
+			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
+			Project.getActiveExperiment().play({step:10});
+			eval("Plot1.setPosition(0,300)");
+		});
+		
+		testCameraControlsWithCanvasWidget(test,[49.25,-0.8000001907348633,733.3303486467378]);
+		
+		//test color function
+		casper.wait(2000, function(){
+			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
+		});
+		casper.wait(1000, function(){
+			//test color function
+			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
+			casper.echo("Done Playing, now exiting");
+		})
+	})
+}
+
+function ca1Test(test){
+	casper.echo("------------STARTING CA1 TEST--------------");
+	casper.waitForSelector('div[id="TreeVisualiserDAT1"]', function() {
+		this.echo("I've waited for the TreeVisualiserDAT1 to load.");
+		test.assertExists('div[id="TreeVisualiserDAT1"]', "geppetto loads the initial TreeVisualiserDAT1");
 	}, null, 5000);
 	
 	casper.then(function () {
@@ -298,91 +376,26 @@ function c302Test(test){
 	});
 	
 	casper.then(function(){
-		testInitialControlPanelValues(test,10);
+		testInitialControlPanelValues(test,3);
+	});
+
+	casper.then(function(){
+		this.evaluate(function(){
+			$("#anyProjectFilterBtn").click();
+		});
+	})
+
+	casper.then(function(){
+		casper.evaluate(function(){
+			GEPPETTO.ControlPanel.close();
+		});
+		casper.echo("-------Testing Spotlight--------");
+		testSpotlight(test,  "ca1.CA1_CG[0].Seg0_apical_dendrite_22_1158.v",'',false,false);
 	});
 	
 	casper.then(function(){
-		var plots = this.evaluate(function(){
-			buttonClick("#c302_ADAL_0__v_plot_ctrlPanel_btn");
-			var plots = $(".js-plotly-plot").length;
-			return plots;
-		});
-
-		this.waitUntilVisible('div[id="Plot2"]', function () {
-			this.echo("I've waited for Plot2 to come up");
-			buttonClick("#anyProjectFilterBtn");
-			this.wait(500,function(){
-				var rows = casper.evaluate(function() {
-					var rows = $(".standard-row").length;
-					return rows;
-				});
-				test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
-				casper.evaluate(function() {
-					$("#controlpanel").hide();
-				});
-				testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot3"]',true,false);
-			});
-		});
-	})
-}
-
-function ca1Test(test){
-	casper.waitForSelector('div[id="TreeVisualiserDAT1"]', function() {
-		this.echo("I've waited for the TreeVisualiserDAT1 to load.");
-		casper.then(function () {
-			this.echo("Opening controls panel");
-			this.evaluate(function() {
-				$("#controlPanelBtn").click();
-			});
-
-			this.waitUntilVisible('div#controlpanel', function () {
-				test.assertVisible('div#controlpanel', "The control panel is correctly open.");
-
-				var rows = casper.evaluate(function() {
-					var rows = $(".standard-row").length;
-					return rows;
-				});
-				test.assertEquals(rows, 3, "The control panel opened with right amount of rows");
-
-				this.evaluate(function(){
-					$("#anyProjectFilterBtn").click();
-				});
-
-				this.wait(500,function(){
-					var rows = casper.evaluate(function() {
-						var rows = $(".standard-row").length;
-						return rows;
-					});
-					test.assertEquals(rows, 3, "Correct amount of rows for Global filter");
-					
-					casper.evaluate(function() {
-						$("#controlpanel").hide();
-					});
-					
-					test.assertExists('i.fa-search', "Spotlight button exists")
-					this.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
-
-					this.waitUntilVisible('div#spotlight', function () {
-						test.assertVisible('div#spotlight', "Spotlight opened");
-
-						//type in the spotlight
-						this.sendKeys('input#typeahead', "ca1.CA1_CG[0].Seg0_apical_dendrite_22_1158.v", {keepFocus: true});
-						//press enter
-						this.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
-
-						casper.wait(1000, function () {
-							casper.then(function () {
-								this.echo("Waiting to see if the Plot and watch variable buttons becomes visible");
-								test.assertDoesntExist('button#plot', "Plot variables icon correctly invisible");
-								test.assertDoesntExist('button#watch', "Watch button correctly hidden");
-								this.echo("Variables button are hidden correctly");
-							});
-						});
-					});
-				});
-			}, null, 500);
-		});
-	}, null, 30000);
+		closeSpotlight(); //close spotlight before continuing
+	});
 }
 
 function pharyngealTest(test){
@@ -390,8 +403,8 @@ function pharyngealTest(test){
 		casper.waitForSelector('div[id="Plot1"]', function() {
 			this.echo("I've waited for Plot1 to load.");
 			this.echo("Opening controls panel");
-			this.evaluate(function() {
-				$("#controlPanelBtn").click();
+			casper.evaluate(function(){
+				GEPPETTO.ControlPanel.open();
 			});
 		}, null, 30000);
 	});

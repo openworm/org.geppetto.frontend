@@ -306,7 +306,7 @@ define(function (require) {
          */
         zoomTo: function () {
             if (this instanceof Instance || this instanceof ArrayInstance) {
-                GEPPETTO.SceneController.zoomToInstance(this);
+                GEPPETTO.SceneController.zoomTo(this);
                 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.getInstancePath();
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each

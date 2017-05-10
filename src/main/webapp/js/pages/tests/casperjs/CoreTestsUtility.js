@@ -21,11 +21,19 @@ function launchTest(test, projectName){
 		test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
 		test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 		test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-	},null,30000);
+	},null,50000);
 }
 
 function resetCameraTest(test,expectedCameraPosition){
 	buttonClick("#panHomeBtn");
+	testCameraPosition(test,expectedCameraPosition);
+}
+
+function resetCameraTestWithCanvasWidget(test,expectedCameraPosition){
+	buttonClick("#panHomeBtn");
+	casper.evaluate(function(){
+		$("#Canvas2_component").find(".position-toolbar").find(".pan-home").click();
+	})
 	testCameraPosition(test,expectedCameraPosition);
 }
 
@@ -51,13 +59,21 @@ function removeAllPlots(){
 	});
 }
 
+function removeAllDialogs(){
+	casper.then(function(){
+		casper.evaluate(function() {
+			$("div.ui-widget").remove();
+		});
+	});
+}
+
 function buttonClick(buttonName){
 	casper.evaluate(function(buttonName) {
 		$(buttonName).click();
 	},buttonName);
 }
 /**
- * 
+ * Tests visibility of a mesh
  * @param test
  * @param variableName
  * @param buttonName
@@ -86,7 +102,7 @@ function testVisibility(test,variableName, buttonName){
 }
 
 /**
- * 
+ * Tests an instance's mesh visibility
  * @param test
  * @param visible
  * @param variableName
@@ -101,7 +117,12 @@ function testMeshVisibility(test,visible,variableName){
 	test.assertEquals(visibility,visible, variableName +" visibility correct");
 }
 
-
+/**
+ * Tests camera position 
+ * @param test
+ * @param expectedCamPosition
+ * @returns
+ */
 function testCameraPosition(test,expectedCamPosition){
 	var camPosition = casper.evaluate(function() {
 		var position = Canvas1.engine.camera.position;
@@ -114,28 +135,41 @@ function testCameraPosition(test,expectedCamPosition){
 }
 
 /**
- * 
+ * Tests default color of mesh
  * @param test
  * @param testColor
  * @param variableName
  * @returns
  */
-function test3DMeshColor(test,testColor,variableName){
-	var color = casper.evaluate(function(variableName) {
-		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[0].material.color;
+function test3DMeshColor(test,testColor,variableName,index){
+	if(index==undefined){
+		index=0;
+	}
+	var color = casper.evaluate(function(variableName,index) {
+		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[index].material.color;
 		return [color.r, color.g, color.b];
-	},variableName);
+	},variableName,index);
 	
 	test.assertEquals(testColor[0], color[0], "Red default color is correct for "+ variableName);
 	test.assertEquals(testColor[1], color[1], "Green default color is correct for " + variableName);
 	test.assertEquals(testColor[2], color[2], "Black default color is correct for " +variableName);
 }
 
-function test3DMeshColorNotEquals(test,testColor,variableName){
-	var color = casper.evaluate(function(variableName) {
-		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[0].material.color;
+/**
+ * Tests color of mesh
+ * @param test
+ * @param testColor
+ * @param variableName
+ * @returns
+ */
+function test3DMeshColorNotEquals(test,testColor,variableName,index){
+	if(index==undefined){
+		index=0;
+	}
+	var color = casper.evaluate(function(variableName,index) {
+		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[index].material.color;
 		return [color.r, color.g, color.b];
-	},variableName);
+	},variableName,index);
 	
 	test.assertNotEquals(testColor[0], color[0], "Red default color is correctly different for "+ variableName);
 	test.assertNotEquals(testColor[1], color[1], "Green default color is correctly different for " + variableName);
@@ -143,7 +177,7 @@ function test3DMeshColorNotEquals(test,testColor,variableName){
 }
 
 /**
- * Test Selection 
+ * Test Selection of instances in main canvas
  * @param test - Global test variable reference
  * @param variableName - Name of instance to apply selection to
  * @param selectColorVarName - Expected color to find in istance's mesh material
@@ -163,7 +197,7 @@ function testSelection(test,variableName,selectColorVarName){
     			buttonClick("#buttonOne");
     			this.wait(500, function () {
     				var selectColor = [1,0.8,0];
-    				test3DMeshColor(test,selectColor,selectColorVarName);
+    				test3DMeshColor(test,selectColor,selectColorVarName,0);
     			});
     		});
     	});
@@ -178,7 +212,7 @@ function closeSpotlight(){
 }
 
 /**
- * 
+ * Tests spotlight functionality 
  * @param test
  * @param variableName
  * @param plotName
@@ -233,6 +267,12 @@ function testSpotlight(test, variableName,plotName,expectButton,testSelect, sele
 	});
 }
 
+/**
+ * Tests camera controls for main canvas
+ * @param test
+ * @param expectedCameraPosition
+ * @returns
+ */
 function testCameraControls(test, expectedCameraPosition){
 	casper.then(function(){
 		casper.echo("------Zoom-------")
@@ -261,4 +301,61 @@ function testCameraControls(test, expectedCameraPosition){
 	casper.then(function(){
 		resetCameraTest(test, expectedCameraPosition);
 	});//reset home
+}
+
+/**
+ * Tests Camera controls for Main canvas and a canvas widget
+ * @param test
+ * @param expectedCameraPosition
+ * @returns
+ */
+function testCameraControlsWithCanvasWidget(test, expectedCameraPosition){
+	casper.echo("-------Testing Camera Controls while playing experiment--------");
+	casper.then(function(){
+		casper.echo("------Zoom-------")
+		casper.repeat(zoomClicks*2, function() {
+			this.thenClick("button#zoomInBtn", function() {});
+			this.thenClick("#Canvas2 button#zoomInBtn", function() {});
+		});
+	});//zoom in 
+	casper.then(function(){
+		resetCameraTestWithCanvasWidget(test, expectedCameraPosition);
+	});//reset home camera position
+	casper.then(function(){
+		casper.echo("------Pan-------");
+		casper.repeat(panClicks*2, function() {
+			this.thenClick("button#panRightBtn", function(){});
+			this.thenClick("#Canvas2 button#panRightBtn", function(){});
+		});
+	});//pan right test
+	casper.then(function(){
+		resetCameraTestWithCanvasWidget(test, expectedCameraPosition);
+	});//reset home position
+	casper.then(function(){
+		casper.echo("------Rotate-------");
+		casper.repeat(rotateClicks*2, function() {
+			this.thenClick("button#rotateRightBtn", function(){});
+			this.thenClick("#Canvas2 button#rotateRightBtn", function(){});
+		});
+	});//rotate test
+	casper.then(function(){
+		resetCameraTestWithCanvasWidget(test, expectedCameraPosition);
+	});//reset home
+}
+
+function testVisualGroup(test,variableName, expectedMeshes,expectedColors){
+	casper.then(function(){
+		casper.echo("-------Testing Visual Group--------");
+		var i=1;
+		casper.repeat(expectedMeshes, function() {
+			casper.echo("variableName "+ variableName);
+			var color = casper.evaluate(function(variableName,i) {
+				var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[i].material.color;
+				return [color.r, color.g, color.b];
+			},variableName,i);
+			test3DMeshColorNotEquals(test,color, variableName);
+			test3DMeshColor(test,expectedColors[i], variableName,i);
+			++i;
+		});
+	});
 }

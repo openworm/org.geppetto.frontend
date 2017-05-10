@@ -210,27 +210,28 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 		} catch (GeppettoExecutionException | GeppettoAccessException e) {
 			error(e, "Error creating a new experiment");
 		}
-
+		
 	}
 	
 	/**
 	 * Creates new experiments in a batch
+	 * 
 	 * @param requestID
 	 * @param projectId
 	 * @param batchSize - how many experiments we need to create
 	 * @param names - experiment names
 	 */
-	public void createExperimentBatch(String requestID, long projectId, int batchSize, List<String> names) {
+	public void newExperimentBatch(String requestID, long projectId, List<String> names) {
 
 		IGeppettoProject project = retrieveGeppettoProject(projectId);
 		Gson gson = new Gson();
 
 		try {
-			List<String> experiments = new ArrayList<String>();
-			for(int i=0; i<batchSize; i++){
+			List<IExperiment> experiments = new ArrayList<IExperiment>();
+			for(int i=0; i<names.size(); i++){
 				IExperiment experiment = geppettoManager.newExperiment(requestID, project);
-				String json = gson.toJson(experiment);
-				experiments.add(json);
+				experiment.setName(names.get(i));
+				experiments.add(experiment);
 			}
 
 			String jsonExperiments = gson.toJson(experiments);
@@ -239,7 +240,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 		} catch (GeppettoExecutionException | GeppettoAccessException e) {
 			error(e, "Error creating a new experiment");
 		}
-
+		
 	}
 
 	/**

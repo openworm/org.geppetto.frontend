@@ -14,6 +14,7 @@ define(function(require) {
             PROJECT_PROPS_SAVED: "project_props_saved",
             EXPERIMENT_PROPS_SAVED: "experiment_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
+            EXPERIMENT_BATCH_CREATED: "experiment_batch_created",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
             VARIABLE_FETCHED: "variable_fetched",
@@ -57,6 +58,12 @@ define(function(require) {
 
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {
             var newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
+        };
+
+        messageHandler[messageTypes.EXPERIMENT_BATCH_CREATED] = function(payload) {
+            var test = payload;
+
+            // TODO: iterate through expeirment json and create experiments inthe runtime model
         };
 
         messageHandler[messageTypes.ERROR_RUNNING_EXPERIMENT] = function(payload) {

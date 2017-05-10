@@ -160,7 +160,7 @@ define(['backbone'], function (require) {
         },
 
         /**
-         * Gets an experiment from this project.
+         * Create new experiment for this project.
          *
          * @command ProjectNode.newExperiment()
          * @returns {ExperimentNode} Creates a new ExperimentNode
@@ -173,6 +173,23 @@ define(['backbone'], function (require) {
         	}else{
         		return GEPPETTO.Utility.persistedAndWriteMessage(this);
         	}
+        },
+
+        /**
+         * Create a set of new experiments for this project.
+         *
+         * @command ProjectNode.newExperiment()
+         * @returns {ExperimentNode} Creates a new ExperimentNode
+         */
+        newExperimentBatch: function (experimentNames) {
+            if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()){
+                var parameters = {};
+                parameters["projectId"] = this.id;
+                parameters["experimentNames"] = JSON.stringify(experimentNames);
+                GEPPETTO.MessageSocket.send("new_experiment_batch", parameters);
+            }else{
+                return GEPPETTO.Utility.persistedAndWriteMessage(this);
+            }
         },
 
         /**

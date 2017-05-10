@@ -22,6 +22,7 @@ public enum InboundMessages {
 	
 	//EXPERIMENT MESSAGES
 	NEW_EXPERIMENT("new_experiment"),
+	NEW_EXPERIMENT_BATCH("new_experiment_batch"),
 	CLONE_EXPERIMENT("clone_experiment"),
 	LOAD_EXPERIMENT("load_experiment"),
 	SAVE_EXPERIMENT_PROPERTIES("save_experiment_properties"),

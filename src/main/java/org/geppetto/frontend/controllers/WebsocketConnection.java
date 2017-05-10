@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,6 +173,17 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.newExperiment(requestID, projectId);
+				break;
+			}
+			case NEW_EXPERIMENT_BATCH:
+			{
+				Gson gson = new Gson();
+				parameters = gson.fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				List<String> experimentNames = Arrays.asList(gson.fromJson(parameters.get("experimentNames"), String[].class));
+				connectionHandler.newExperimentBatch(requestID, projectId, experimentNames);
 				break;
 			}
 			case CLONE_EXPERIMENT:

@@ -499,7 +499,7 @@ define(function (require) {
         	var self = this;
         	// Handles new experiment button click
             $("#new_experiment").click(function () {
-            	//retrieve last created experimet and used it to clone new one
+            	//retrieve last created experiment and used it to clone new one
             	var experiments = window.Project.getExperiments();
             	var experiment = window.Project.getActiveExperiment();
             	if(experiments.length==0){
@@ -608,9 +608,6 @@ define(function (require) {
             }
 
             this.setState({experiments: rows});
-//            this.setState({
-//            	  experiments: rows.filter((_, i) => i !== index);
-//            	});
             this.state.counter++;
         },
 

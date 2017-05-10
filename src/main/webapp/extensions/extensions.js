@@ -15,19 +15,5 @@ define(['./extensionsConfiguration.json', 'geppetto','../js/components/Component
 			loadExtension(extension);
 		}
 	}
-	
-    // var paths = GEPPETTO.Utility.getPathStringParameters();
-    // for (var pathIndex in paths){
-    // 	for (var availableExtensionIndex in availableExtensions){
-    // 		try {
-	// 	    	require(['../extensions/' + availableExtensions[availableExtensionIndex] + "/" + paths[pathIndex] + "/" + paths[pathIndex]], function(componentsInitialization){
-	// 				componentsInitialization(GEPPETTO);
-	// 			});
-    // 		}
-    // 		catch( e ) {
-    // 			console.log('Components Initialization ' + paths[pathIndex] + ' can not be found in extension ' + availableExtensions[availableExtensionIndex]);
-    // 		}
-    // 	}
-    // }
-    
+   
 });

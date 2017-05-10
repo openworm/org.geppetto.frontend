@@ -13,19 +13,19 @@ class WidgetController {
 		}
 	}
 
-	
 
-	registerWidget(widget){
+
+	registerWidget(widget) {
 		var that = this;
 		this.widgets.push(widget);
-					
+
 		GEPPETTO.Console.updateHelpCommand(widget, widget.getId(), this.comments);
 		GEPPETTO.Console.updateTags(widget.getId(), widget);
 
 		//registers remove handler for widget
 		widget.$el.on("remove", function () {
-			//FIXME: Called twice
-			
+
+
 			//remove tags and delete object upon destroying widget
 			GEPPETTO.Console.removeCommands(widget.getId());
 			var widgetsList = that.widgets;
@@ -35,6 +35,20 @@ class WidgetController {
 					break;
 				}
 			}
+
+			// remove from component factory dictionary
+			var comps = GEPPETTO.ComponentFactory.getComponents()[widget.getComponentType()];
+			for (var c in comps) {
+				if (comps[c].getId() == this.id) {
+					comps.splice(c, 1);
+					break;
+				}
+			}
+
+			//FIXME: Called twice
+			GEPPETTO.trigger(GEPPETTO.Events.Component_destroyed, widget.getId());
+
+
 		});
 
 		//register resize handler for widget
@@ -70,7 +84,7 @@ class WidgetController {
 	getFileComments(file) {
 		//var fileContent = require("raw-loader!./" + GEPPETTO.ComponentFactory.components[this.componentID] + ".js");
 		var fileContent = "";
-		
+
 		var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 		var comments = [];
 		comments = fileContent.match(STRIP_COMMENTS);
@@ -80,7 +94,7 @@ class WidgetController {
 	/**
 	 * Removes existing plotting widgets
 	 */
-	removeWidgets () {
+	removeWidgets() {
 		//remove all existing widgets
 		for (var i = 0; i < this.widgets.length; i++) {
 			var widget = this.widgets[i];
@@ -100,11 +114,11 @@ class WidgetController {
 	 *
 	 * @returns {Array} Array containing all plots
 	 */
-	getWidgets () {
+	getWidgets() {
 		return this.widgets;
 	}
 
-	addToHistory (label, method, args, id) {
+	addToHistory(label, method, args, id) {
 		var elementPresentInHistory = false;
 		for (var i = 0; i < this.history.length; i++) {
 			if (this.history[i].label == label && this.history[i].method == method) {
@@ -121,7 +135,7 @@ class WidgetController {
 				"arguments": args,
 			});
 		}
-		
+
 		var widget = this.getWidgetById(id);
 		widget.updateNavigationHistoryBar();
 	}
@@ -129,7 +143,7 @@ class WidgetController {
 	/**
 	 * Toggles variable visualiser widget on and off
 	 */
-	toggle () {
+	toggle() {
 		if (this.widgets.length > 0) {
 			this.on = !this.on;
 			for (var w in this.widgets) {
@@ -143,18 +157,18 @@ class WidgetController {
 		}
 	}
 
-	getWidgetById(id){
-		for (var i = 0; i< this.widgets.length; i++) {
+	getWidgetById(id) {
+		for (var i = 0; i < this.widgets.length; i++) {
 			var widget = this.widgets[i];
-			if(widget.getId()==id){
+			if (widget.getId() == id) {
 				return widget;
 			}
 		}
-		
+
 		return null;
 	}
 
-	update (event, parameters) {
+	update(event, parameters) {
 		//delete popup widget(s)
 		if (event == this.WIDGET_EVENT_TYPE.DELETE) {
 			this.removeWidgets();

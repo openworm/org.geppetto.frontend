@@ -131,7 +131,7 @@ define(function (require) {
              *
              * @returns {int}
              */
-            getWidgetType: function(){
+            getComponentType: function(){
                 return this.widgetType;
             },
 
@@ -718,6 +718,7 @@ define(function (require) {
                 // get default stuff such as id, position and size
                 return {
                     widgetType: this.widgetType,
+                    isWidget: this.isWidget(),   
                     showTitleBar: this.showTitleBar,
                     transparentBackground: this.transparentBackground,
                     name: this.name,
@@ -765,6 +766,14 @@ define(function (require) {
 
                 // after setting view through setView, reset dirty flag
                 this.dirtyView = false;
+            },
+
+            isStateLess(){
+                return this.stateless;
+            },
+
+            isWidget (){
+                return true;
             }
         })
     };

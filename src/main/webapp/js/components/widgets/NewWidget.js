@@ -41,6 +41,10 @@ define(function (require) {
 
             }
 
+            isWidget() {
+                return true;
+            }
+
             help () {
                 return GEPPETTO.Console.getObjectCommands(this.props.id);
             }
@@ -58,7 +62,7 @@ define(function (require) {
             }
 
             /**
-             *ff
+             *
              * Hides the widget
              *
              * @command hide()
@@ -109,6 +113,9 @@ define(function (require) {
                 // set name to widget window
                 this.$el.dialog("option", "title", this.name).dialogExtend();
 
+                // set flag to indicate something changed
+                this.dirtyView = true;
+                
                 return this;
             }
 
@@ -127,6 +134,10 @@ define(function (require) {
                         at: "left top",
                         of: $(window)
                     }).dialogExtend();
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
                 return this;
             }
 
@@ -140,6 +151,10 @@ define(function (require) {
                 this.size = {height: h, width:w};
                 this.$el.dialog({ height: this.size.height, width: this.size.width }).dialogExtend();
                 this.$el.trigger('resizeEnd');
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
                 return this;
             }
 
@@ -214,16 +229,6 @@ define(function (require) {
              */
             getSize() {
                 return this.size;
-            }
-
-            /**
-             * Gets the ID of the widget
-             *
-             * @command getId()
-             * @returns {String} - ID of widget
-             */
-            getId() {
-                return this.props.id;
             }
 
             /**
@@ -340,6 +345,10 @@ define(function (require) {
                 } else {
                     this.$el.parent().find(".ui-dialog-titlebar").hide();
                 }
+
+                // set flag to indicate something changed
+                this.dirtyView = true;
+
                 return this;
             }
 
@@ -634,11 +643,6 @@ define(function (require) {
                 });
             }
 
-            getHelp() {
-                return '### Inline help not yet available for this widget! \n\n' +
-                    'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
-            }
-
             // setController(controller) {
             //     this.controller = controller;
             // }
@@ -655,6 +659,61 @@ define(function (require) {
                     this.$el.parent().find(".history-icon").remove();
                 }
             }
+
+            getView() {
+                var view = super.getView();
+                
+                // get default stuff such as id, position and size
+                return  $.extend(view, {
+                    name: this.name,
+                    isWidget: this.isWidget(),
+                    showTitleBar: this.showTitleBar,
+                    transparentBackground: this.transparentBackground,
+                    size: {
+                        height: this.size.height,
+                        width: this.size.width
+                    },
+                    position: {
+                        left: this.position.left,
+                        top: this.position.top
+                    }
+                })
+            }
+
+            /**
+             * Set attributes common to all widgets - override for widget specific behaviour
+             *
+             * @param view
+             */
+            setView (view){
+                // set default stuff such as position and size
+                if(view.size != undefined && view.size.height != 0 && view.size.width != 0){
+                    this.setSize(view.size.height, view.size.width);
+                } else {
+                    // trigger auto size if we have no size info
+                    this.setAutoWidth();
+                    this.setAutoHeight();
+                }
+
+                if(view.position != undefined){
+                    this.setPosition(view.position.left, view.position.top);
+                }
+
+                if(view.name != undefined){
+                    this.setName(view.name);
+                }
+
+                if(view.showTitleBar != undefined){
+                    this.showTitleBar(view.showTitleBar);
+                }
+
+                if(view.transparentBackground != undefined){
+                    this.setTrasparentBackground(view.transparentBackground);
+                }
+
+                super.setView(view);
+            }
+
 
             /**
              * Renders the widget dialog window

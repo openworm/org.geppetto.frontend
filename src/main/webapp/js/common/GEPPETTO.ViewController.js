@@ -64,18 +64,29 @@ define(function(require)
                 if(componentViews != undefined){
                     for(var cv in componentViews){
                         // retrieve widget / component from factory
-                        var component = GEPPETTO.ComponentFactory.getComponents()[cv];
+                        var componentsMap = GEPPETTO.ComponentFactory.getComponents()[componentViews[cv].widgetType];
+                        var component = undefined;
+                        for (var c in componentsMap){
+                            if (cv === componentsMap[c].getId()){
+                                component = componentsMap[c];
+                                break;
+                            }
+                        }
+                        
                         // widget / component not found, need to create it
-                        if(component == undefined) {
+                        if(component === undefined) {
                             // NOTE: this bit needs to be refactored once widgets/components are consolidated
-                            if(componentViews[cv].widgetType != undefined){
-                                component = GEPPETTO.WidgetFactory.addWidget(componentViews[cv].widgetType);
+                            if(componentViews[cv].widgetType != undefined && componentViews[cv].isWidget){
+                                component = GEPPETTO.ComponentFactory.addWidget(componentViews[cv].widgetType, {}, function () {
+                                    console.log(this);
+                                    this.setView(componentViews[cv])
+                                });
                             } else if(componentViews[cv].componentType != undefined) {
                                 // TODO: create component with component factory
                             }
                         }
 
-                        if(typeof component.setView == 'function'){
+                        if(component !== undefined && component !== null && typeof component.setView == 'function'){
                             // if the interface is exposed, set view
                             component.setView(componentViews[cv]);
                         }
@@ -88,24 +99,27 @@ define(function(require)
              */
             monitorView: function(){
                 // retrieve list of widgets (components too in the future)
-                var components = GEPPETTO.ComponentFactory.getComponents();
+                var componentsMap = GEPPETTO.ComponentFactory.getComponents();
                 var viewState = { views: {} };
 
                 var anyChanges = false;
 
-                for(var c in components){
-                    // call getView API if the method is exposed and the component is not stateless
-                    if(
-                        // check if state-view API is implemented by the component
-                        typeof components[c].getView == 'function' &&
-                        // check that component is not stateless
-                        components[c].stateless != undefined & !components[c].stateless
-                    ) {
-                        anyChanges = !anyChanges ? components[c].isDirty() : anyChanges;
-                        // build object literal with view state for all the widgets/components
-                        viewState.views[c] = components[c].getView();
-                        // reset view as clean so we don't keep retrieving the same view if nothing changed
-                        components[c].setDirty(false);
+                for(var cm in componentsMap){
+                    var components = componentsMap[cm];
+                    for(var c in components){
+                        // call getView API if the method is exposed and the component is not stateless
+                        if(
+                            // check if state-view API is implemented by the component
+                            typeof components[c].getView == 'function' &&
+                            // check that component is not stateless
+                            components[c].isStateLess() != undefined & !components[c].isStateLess()
+                        ) {
+                            anyChanges = !anyChanges ? components[c].isDirty() : anyChanges;
+                            // build object literal with view state for all the widgets/components
+                            viewState.views[components[c].getId()] = components[c].getView();
+                            // reset view as clean so we don't keep retrieving the same view if nothing changed
+                            components[c].setDirty(false);
+                        }
                     }
                 }
 

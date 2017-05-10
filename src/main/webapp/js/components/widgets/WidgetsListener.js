@@ -62,6 +62,7 @@ define(function (require) {
                     GEPPETTO.Console.removeCommands(widgetID);
 
                     var widgets = controller.getWidgets();
+                    var componentType = controller.widgets[0].getComponentType()
 
                     for (var p in widgets) {
                         if (widgets[p].getId() == this.id) {
@@ -72,7 +73,7 @@ define(function (require) {
 
                     // remove from component factory dictionary
                     // NOTE: this will go away after widgets/components refactoring
-                    var comps = GEPPETTO.ComponentFactory.getComponents()[controller.widgets[0].getWidgetType()];
+                    var comps = GEPPETTO.ComponentFactory.getComponents()[componentType];
                     for(var c in comps){
                         if(comps[c].getId() == widgetID){
                             comps.splice(c, 1);

@@ -131,7 +131,7 @@ define(function (require) {
              *
              * @returns {int}
              */
-            getWidgetType: function(){
+            getComponentType: function(){
                 return this.widgetType;
             },
 

@@ -37,7 +37,7 @@ class WidgetController {
 			}
 
 			// remove from component factory dictionary
-			var comps = GEPPETTO.ComponentFactory.getComponents()[widget.getWidgetType()];
+			var comps = GEPPETTO.ComponentFactory.getComponents()[widget.getComponentType()];
 			for (var c in comps) {
 				if (comps[c].getId() == this.id) {
 					comps.splice(c, 1);

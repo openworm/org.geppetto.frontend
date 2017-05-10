@@ -52,6 +52,7 @@ public enum OutboundMessages {
 	UPDATE_MODEL_TREE("update_model_tree"), 
 	EXPERIMENT_CREATED("experiment_created"),
 	EXPERIMENT_CLONED("experiment_cloned"),
+	EXPERIMENT_BATCH_CREATED("experiment_batch_created"),
 	GEPPETTO_MODEL_LOADED("geppetto_model_loaded"), 
 	VARIABLE_FETCHED("variable_fetched"),
 	USER_PRIVILEGES("user_privileges"),

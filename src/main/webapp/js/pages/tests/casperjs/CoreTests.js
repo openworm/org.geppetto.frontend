@@ -35,56 +35,59 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 
 	/**Tests HHCELL project**/
 	casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
-		casper.then(function(){launchTest(test,"Hhcell");});
+		casper.then(function(){launchTest(test,"Hhcell",30000);});
 		casper.then(function(){hhcellTest(test);});
 	});
 	
 	/**Tests Acnet project**/
 	casper.thenOpen(urlBase+baseFollowUp+acnetProject,function() {
-		casper.then(function(){launchTest(test,"ACNet");});
+		casper.then(function(){launchTest(test,"ACNet",30000);});
 		casper.then(function(){acnetTest(test);});
 	});
 	
 	/**Tests C302 project**/
 	casper.thenOpen(urlBase+baseFollowUp+c302Project,function() {
-		casper.then(function(){launchTest(test,"C302");});
+		casper.then(function(){launchTest(test,"C302",450000);});
 		casper.then(function(){c302Test(test);});
 	});
 	
 	/**Tests CA1 project**/
 	casper.thenOpen(urlBase+baseFollowUp+ca1Project,function() {
-		casper.then(function(){launchTest(test,"CA1");});
+		casper.then(function(){launchTest(test,"CA1",45000);});
 		casper.then(function(){ca1Test(test);});
 	});
 	
 	/**Tests EyeWire project**/
 	casper.thenOpen(urlBase+baseFollowUp+eyeWire,function() {
-		casper.then(function(){launchTest(test,"EyeWireGanglionCell");});
+		casper.then(function(){launchTest(test,"EyeWireGanglionCell",45000);});
 	});
 	
 	/**Tests Pharyngeal project**/
 	casper.thenOpen(urlBase+baseFollowUp+Pharyngeal,function() {
-		casper.then(function(){launchTest(test,"Pharyngeal");});
+		casper.then(function(){launchTest(test,"Pharyngeal",45000);});
 		casper.then(function(){pharyngealTest(test);});
 	});
 	
 	/**Tests NWB project**/
 	casper.thenOpen(urlBase+baseFollowUp+nwbSample,function() {
-		casper.then(function(){launchTest(test,"NWB Sample");});
+		casper.then(function(){launchTest(test,"NWB Sample",45000);});
 		casper.then(function(){nwbSampleTest(test);});
 	});
 	
-//	casper.thenOpen(urlBase+baseFollowUp+cElegansConnectome,function() {
-//		casper.then(function(){launchTest(test,"cElegansConnectome");});
-//	});
-//	
-//	casper.thenOpen(urlBase+baseFollowUp+cElegansMuscleModel,function() {
-//		casper.then(function(){launchTest(test,"cElegansMuscleModel");});
-//	});
-//	
-//	casper.thenOpen(urlBase+baseFollowUp+cElegansPVDR,function() {
-//		casper.then(function(){launchTest(test,"cElegansPVDR");});
-//	});
+	/**Tests cElegansConnectome project**/
+	casper.thenOpen(urlBase+baseFollowUp+cElegansConnectome,function() {
+		casper.then(function(){launchTest(test,"cElegansConnectome",180000);});
+	});
+	
+	/**Tests cElegansMuscleModel project**/
+	casper.thenOpen(urlBase+baseFollowUp+cElegansMuscleModel,function() {
+		casper.then(function(){launchTest(test,"cElegansMuscleModel",180000);});
+	});
+	
+	/**Tests cElegansPVDR project**/
+	casper.thenOpen(urlBase+baseFollowUp+cElegansPVDR,function() {
+		casper.then(function(){launchTest(test,"cElegansPVDR",180000);});
+	});
 	
 	casper.run(function() {
 		test.done();
@@ -436,5 +439,27 @@ function nwbSampleTest(test){
 		this.waitForSelector('div[id="Popup2"]', function() {
 			this.echo("I've waited for Popup2 component to load.");
 		});
+	}, null, 30000);
+}
+
+function c302Muscle(test){
+	casper.echo("------------STARTING C302 Muscle Model TEST--------------");
+	casper.waitForSelector('div[id="Popup1"]', function() {
+		this.echo("I've waited for Popup1 to load.");
+	}, null, 30000);
+}
+
+function c302Connectome(test){
+	casper.echo("------------STARTING C302 Muscle Model TEST--------------");
+	casper.waitForSelector('div[id="Popup1"]', function() {
+		this.echo("I've waited for Popup1 to load.");
+	}, null, 30000);
+}
+
+
+function c302PVDR(test){
+	casper.echo("------------STARTING C302 Muscle Model TEST--------------");
+	casper.waitForSelector('div[id="Popup1"]', function() {
+		this.echo("I've waited for Popup1 to load.");
 	}, null, 30000);
 }

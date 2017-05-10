@@ -14,14 +14,14 @@ var Pharyngeal = "load_project_from_id=58";
 var defaultColor = [0.00392156862745098,0.6,0.9098039215686274];
 var zoomClicks = 50, panClicks=10, rotateClicks=20;
 
-function launchTest(test, projectName){
+function launchTest(test, projectName, timeAllowed){
 	casper.waitWhileVisible('div[id="loading-spinner"]', function () {
 		this.echo("I've waited for "+projectName+" project to load.");
 		test.assertTitle("geppetto", "geppetto title is ok");
 		test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
 		test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 		test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-	},null,50000);
+	},null,timeAllowed);
 }
 
 function resetCameraTest(test,expectedCameraPosition){
@@ -53,9 +53,7 @@ function removeAllPlots(){
 		casper.evaluate(function() {
 			$("div.js-plotly-plot").remove();
 		});
-		this.waitWhileVisible('div[id="Plot1"]', function () {
-			this.echo("I've waited for Plot1 to disappear");
-		},null,1000);
+		this.wait(1000, function () {});
 	});
 }
 

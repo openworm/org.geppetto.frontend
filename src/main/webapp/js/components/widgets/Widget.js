@@ -765,6 +765,10 @@ define(function (require) {
 
                 // after setting view through setView, reset dirty flag
                 this.dirtyView = false;
+            },
+
+            isStateLess(){
+                return this.stateless;
             }
         })
     };

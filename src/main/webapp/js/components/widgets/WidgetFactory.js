@@ -100,8 +100,8 @@ define(function (require) {
 
                 // add to component factory stack
                 // NOTE: this will go away after widgets/components refactoring
-                var components = GEPPETTO.ComponentFactory.getComponents();
-                components[widget.getId()] = widget;
+                // var components = GEPPETTO.ComponentFactory.getComponents();
+                // components[widget.getId()] = widget;
 
                 return widget;
             },

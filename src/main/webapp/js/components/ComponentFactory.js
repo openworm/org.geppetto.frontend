@@ -8,6 +8,7 @@ define(function (require) {
 		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
 		var addWidget = require('./widgets/NewWidget.js');
+		var getEnhanceComponent = require('./widgets/AbstractComponent.js');
 		
 		GEPPETTO.ComponentFactory = {
 
@@ -106,26 +107,33 @@ define(function (require) {
 			_createComponent: function(componentType, properties, container, callback, isWidget){
 				var that=this;
 				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
-					
+					// Prepare properties
 					if (properties === undefined){
 						properties = {};
 					}
+					properties.componentType = componentType;
 					if (!("id" in properties)){
 						properties["id"] = that.getAvailableComponentId(componentType);
 					}
+					if (!("isStateless" in properties)){
+						properties["isStateless"] = false;
+					}
 					
+					// Create component/widget
 					var type = loadedModule;
 					if (isWidget){
-						type = addWidget(loadedModule);
+						type = addWidget(type);
 					}
 					var component = React.createFactory(type)(properties);
 					var renderedComponent = window[properties.id] = that.renderComponent(component, container, callback);
 					
+					// Register in component map
 					if (!(componentType in that.componentsMap)){
 						that.componentsMap[componentType] = []
 					}
 					that.componentsMap[componentType].push(renderedComponent);
 
+					// Register widget/controller for events, etc
 					if (isWidget){
 						var widgetController = GEPPETTO.NewWidgetFactory.getController(componentType);	
 						widgetController.registerWidget(renderedComponent)
@@ -152,7 +160,14 @@ define(function (require) {
 					if (properties !== undefined && isStateless in properties){
 						isStateless = properties["isStateless"];
 					}
-					return GEPPETTO.WidgetFactory.addWidget(componentType, isStateless);
+					var widget = GEPPETTO.WidgetFactory.addWidget(componentType, isStateless);
+
+					// Register in component map
+					if (!(componentType in this.componentsMap)){
+						this.componentsMap[componentType] = []
+					}
+					this.componentsMap[componentType].push(widget);
+					return widget;
 				}
 				
 			},

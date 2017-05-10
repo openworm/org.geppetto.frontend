@@ -13,7 +13,7 @@ define(function (require) {
 
 	$.cookie = require('js-cookie');
 
-	var AbstractComponent = require('../../widgets/AbstractComponent');
+	var AbstractComponent = require('../../AComponent');
 
 	return class Tutorial extends AbstractComponent {
 

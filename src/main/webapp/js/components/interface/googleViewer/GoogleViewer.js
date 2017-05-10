@@ -8,7 +8,7 @@ define(function (require) {
 
 	var React = require('react');
 	var GoogleMapsLoader = require('google-maps');
-	var AbstractComponent = require('../../widgets/AbstractComponent');
+	var AbstractComponent = require('../../AComponent');
 
 	return class GoogleViewer extends AbstractComponent {
 

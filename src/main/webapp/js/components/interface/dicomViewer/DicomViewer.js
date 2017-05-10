@@ -11,7 +11,7 @@ define(function (require) {
 	var AMI = require('ami.js');
 	var dat = require('dat-gui');
 
-	var AbstractComponent = require('../../widgets/AbstractComponent');
+	var AbstractComponent = require('../../AComponent');
 
 	return class DicomViewer extends AbstractComponent {
 

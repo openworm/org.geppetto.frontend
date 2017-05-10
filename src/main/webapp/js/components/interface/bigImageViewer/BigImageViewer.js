@@ -8,7 +8,7 @@ define(function (require) {
 
 	var React = require('react');
 	var OpenSeaDragon = require('openseadragon');
-	var AbstractComponent = require('../../widgets/AbstractComponent');
+	var AbstractComponent = require('../../AComponent');
 
 	return class BigImageViewer extends AbstractComponent {
 

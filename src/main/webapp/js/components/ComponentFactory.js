@@ -7,7 +7,7 @@ define(function (require) {
 		var ReactDOM = require('react-dom');
 		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
-		var addWidget = require('./widgets/NewWidget.js');
+		var addWidget = require('./widgets/AWidget.js');
 		
 		GEPPETTO.ComponentFactory = {
 

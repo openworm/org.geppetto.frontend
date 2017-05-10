@@ -8,7 +8,7 @@ define(function (require) {
 
 	var React = require('react');
 	var Slider = require('react-slick');
-	var AbstractComponent = require('../../widgets/AbstractComponent');
+	var AbstractComponent = require('../../AComponent');
 
 	return class Carousel extends AbstractComponent {
 

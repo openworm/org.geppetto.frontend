@@ -159,11 +159,11 @@ function hhcellTest(test,name){
 		closeSpotlight();
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
 		casper.evaluate(function(){
-			eval("hhcell.deselect()");
+			hhcell.deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([hhcell])});
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:1});
-			eval("Plot1.setPosition(0,300)");
+			Plot1.setPosition(0,300);
 		});
 		
 		var mesh = casper.evaluate(function(){
@@ -242,6 +242,21 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
+		casper.echo("-------Testing Connected cells to Instance--------");
+		
+		//testing right amount of connection lines are shown
+		testingConnectionLines(test,23);
+		
+		//testing that connected cells of acnet2.pyramidals_48[0] have changed color
+		test3DMeshColorNotEquals(test,defaultColor, "acnet2.baskets_12[4]");
+		test3DMeshColor(test,[0.39215686274509803,0.5882352941176471,0.08235294117647059], "acnet2.baskets_12[4]");
+		
+		test3DMeshColorNotEquals(test,defaultColor, "acnet2.baskets_12[1]");
+		test3DMeshColor(test,[1,0.35294117647058826,0.00784313725490196], "acnet2.baskets_12[1]");
+
+	});
+	
+	casper.then(function () {
 		testSpotlight(test, "acnet2.pyramidals_48[0].biophys.membraneProperties.Ca_pyr_soma_group.gDensity",'div[id="Plot1"]',false,false,"acnet2.pyramidals_48[0]");	
 	});
 	
@@ -253,7 +268,7 @@ function acnetTest(test){
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
-			eval("Plot1.setPosition(0,300)");
+			Plot1.setPosition(0,300);
 			acnet2.baskets_12[4].getVisualGroups()[0].show(true);
 		});
 		
@@ -346,7 +361,7 @@ function c302Test(test){
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([c302])});
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
-			eval("Plot1.setPosition(0,300)");
+			Plot1.setPosition(0,300);
 		});
 		
 		testCameraControlsWithCanvasWidget(test,[49.25,-0.8000001907348633,733.3303486467378]);
@@ -411,12 +426,6 @@ function pharyngealTest(test){
 
 	casper.then(function(){
 		testInitialControlPanelValues(test,10);
-	});
-	
-	casper.then(function(){
-		casper.waitForSelector('div[id="ButtonBar1"]', function() {
-			this.echo("I've waited for ButtonBar component to load.");
-		});
 	});
 };
 

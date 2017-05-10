@@ -27,6 +27,9 @@ define(function (require) {
 				activeTutorial: undefined,
 				currentStep: 0
 			};
+
+			this.prevStep = this.prevStep.bind(this);
+			this.nextStep = this.nextStep.bind(this);
 		}
 
 		/**
@@ -305,6 +308,44 @@ define(function (require) {
 			return { __html: message };
 		}
 
+		getView() {
+			// add data-type and data field + any other custom fields in the component-specific attribute
+			var baseView = super.getView();
+			baseView.dataType = "array";
+			baseView.data = this.tutorials;
+			baseView.componentSpecific = {
+				activeTutorial: this.state.activeTutorial,
+				currentStep: this.state.currentStep,
+			};
+
+			return baseView;
+		}
+
+		setView(view) {
+			// set base properties
+			super.setView(view)
+
+			// set data
+			if (view.data != undefined) {
+				if (view.dataType == 'array') {
+					for (var i = 0; i < view.data.length; i++) {
+						this.addTutorial(view.data[i]);
+					}
+				}
+			}
+
+			// set component specific stuff, only custom handlers for popup widget
+			if (view.componentSpecific != undefined) {
+				if (view.componentSpecific.activeTutorial != undefined) {
+					this.goToChapter(view.componentSpecific.activeTutorial);
+				}
+
+				if (view.componentSpecific.currentStep != undefined) {
+					this.gotToStep(view.componentSpecific.currentStep);
+				}
+			}
+		}
+
 		render() {
 
 			var ignoreTutorial = this.getCookie();
@@ -359,44 +400,6 @@ define(function (require) {
 			}
 			else {
 				return null;
-			}
-		}
-
-		getView() {
-			// add data-type and data field + any other custom fields in the component-specific attribute
-			var baseView = super.getView();
-			baseView.dataType = "array";
-			baseView.data = this.tutorials;
-			baseView.componentSpecific = {
-				activeTutorial: this.state.activeTutorial,
-				currentStep: this.state.currentStep,
-			};
-
-			return baseView;
-		}
-
-		setView(view) {
-			// set base properties
-			super.setView(view)
-
-			// set data
-			if (view.data != undefined) {
-				if (view.dataType == 'array') {
-					for (var i = 0; i < view.data.length; i++) {
-						this.addTutorial(view.data[i]);
-					}
-				}
-			}
-
-			// set component specific stuff, only custom handlers for popup widget
-			if (view.componentSpecific != undefined) {
-				if (view.componentSpecific.activeTutorial != undefined) {
-					this.goToChapter(view.componentSpecific.activeTutorial);
-				}
-
-				if (view.componentSpecific.currentStep != undefined) {
-					this.gotToStep(view.componentSpecific.currentStep);
-				}
 			}
 		}
 	};

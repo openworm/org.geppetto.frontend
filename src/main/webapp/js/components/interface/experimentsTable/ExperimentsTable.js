@@ -409,21 +409,21 @@ define(function (require) {
                 "Yes",
                 function(){
                     GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
-                    e.stopPropagation();
-                    e.nativeEvent.stopImmediatePropagation();
                 },
                 "Cancel",
                 function(){
                 }
             );
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
         },
         
         cloneExperiment : function(e){
         	var experiment = this.props.experiment;
         	var index = window.Project.getExperiments().indexOf(experiment);
         	GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].clone();");
-       	 	e.stopPropagation();
-       	 	e.nativeEvent.stopImmediatePropagation();
+        	e.stopPropagation();
+        	e.nativeEvent.stopImmediatePropagation();
         },
         downloadModels : function(e){
         	var experiment = this.props.experiment;

@@ -212,6 +212,35 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 		}
 
 	}
+	
+	/**
+	 * Creates new experiments in a batch
+	 * @param requestID
+	 * @param projectId
+	 * @param batchSize - how many experiments we need to create
+	 * @param names - experiment names
+	 */
+	public void createExperimentBatch(String requestID, long projectId, int batchSize, List<String> names) {
+
+		IGeppettoProject project = retrieveGeppettoProject(projectId);
+		Gson gson = new Gson();
+
+		try {
+			List<String> experiments = new ArrayList<String>();
+			for(int i=0; i<batchSize; i++){
+				IExperiment experiment = geppettoManager.newExperiment(requestID, project);
+				String json = gson.toJson(experiment);
+				experiments.add(json);
+			}
+
+			String jsonExperiments = gson.toJson(experiments);
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_BATCH_CREATED, jsonExperiments);
+
+		} catch (GeppettoExecutionException | GeppettoAccessException e) {
+			error(e, "Error creating a new experiment");
+		}
+
+	}
 
 	/**
 	 * @param projectId
@@ -558,8 +587,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 			StringBuilder sb = new StringBuilder();
 
 			String urlPath = urlString;
-			if(!urlPath.startsWith("http")){
-				urlPath =  urlBase + urlString;
+			if (!urlPath.startsWith("http")) {
+				urlPath = urlBase + urlString;
 			}
 			URL url = URLReader.getURL(urlPath);
 

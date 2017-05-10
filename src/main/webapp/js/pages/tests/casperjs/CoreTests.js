@@ -427,12 +427,6 @@ function pharyngealTest(test){
 	casper.then(function(){
 		testInitialControlPanelValues(test,10);
 	});
-	
-	casper.then(function(){
-		casper.waitForSelector('div[id="ButtonBar1"]', function() {
-			this.echo("I've waited for ButtonBar component to load.");
-		});
-	});
 };
 
 function nwbSampleTest(test){

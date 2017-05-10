@@ -89,19 +89,9 @@ define(function (require) {
                     case GEPPETTO.Widgets.STACKVIEWER:
                         widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget(isStateless);
                         break;
-                    //Use as template for new widgets
-                    //create WIDGETNAME
-                    //case GEPPETTO.Widgets.WIDGETNAME:
-                    //    widget = this.getController(GEPPETTO.Widgets.WIDGETNAME).addWIDGETNAMEWidget();
-                    //    break;
                     default:
                         break;
                 }
-
-                // add to component factory stack
-                // NOTE: this will go away after widgets/components refactoring
-                // var components = GEPPETTO.ComponentFactory.getComponents();
-                // components[widget.getId()] = widget;
 
                 return widget;
             },

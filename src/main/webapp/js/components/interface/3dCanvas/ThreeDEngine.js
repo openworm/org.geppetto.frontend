@@ -1492,7 +1492,7 @@ define(['jquery'], function () {
                 var allOtherMeshes = $.extend({}, this.meshes);
                 // look on the simulation selection options and perform necessary operations
                 if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
-                    var meshes = this.highlightInstances(true);
+                    var meshes = this.highlightInstances(instancePath,true);
                     for (var i in meshes) {
                         delete allOtherMeshes[meshes[i]];
                     }

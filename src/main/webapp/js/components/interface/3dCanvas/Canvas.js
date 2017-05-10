@@ -12,38 +12,44 @@ define(function (require) {
 
     var CameraControls = require('../cameraControls/CameraControls');
 
-    var canvasComponent = React.createClass({
-        engine: null,
-        container: null,
+    var AbstractComponent = require('../../widgets/AbstractComponent');
 
-        isDirty: false,
+    return class Canvas extends AbstractComponent {
 
-        //State
-        canvasState: {
-            cameraPosition: {x: 0, y: 0, z: 0},
-            cameraRotation: {rx: 0, ry: 0, rz: 0, radius: 0},
-            colorMap: {},
-            colorFunctionMap: {},
-            opacityMap: {},
-            geometryTypeMap: {},
-            instances: [],
-            backgroundColor: 0x101010
-        },
 
+        constructor(props) {
+            super(props);
+
+            this.engine = null
+            this.container = null
+
+            //State
+            this.canvasState = {
+                cameraPosition: { x: 0, y: 0, z: 0 },
+                cameraRotation: { rx: 0, ry: 0, rz: 0, radius: 0 },
+                colorMap: {},
+                colorFunctionMap: {},
+                opacityMap: {},
+                geometryTypeMap: {},
+                instances: [],
+                backgroundColor: 0x101010
+            }
+
+        }
 
         /**
          * Displays all the passed instances in this canvas component
          * @param instances an array of instances
          * @returns {canvasComponent}
          */
-        display: function (instances) {
+        display(instances) {
             this.engine.buildScene(instances);
             this.instances = this.canvasState.instances.concat(instances.map(function (item) {
                 return item.getInstancePath();
             }));
             this.setDirty(true);
             return this;
-        },
+        }
 
         /**
          * Remove all the passed instances from this canvas component
@@ -52,7 +58,7 @@ define(function (require) {
          * @param instances an array of instances
          * @returns {canvasComponent}
          */
-        remove: function (instances) {
+        remove(instances) {
             for (var i = 0; i < instances.length; i++) {
                 if (this.canvasState.instances.indexOf(instances[i].getInstancePath()) != -1) {
                     this.canvasState.instances.splice(this.canvasState.instances.indexOf(instances[i].getInstancePath()), 1);
@@ -62,14 +68,14 @@ define(function (require) {
             this.setDirty(true);
             this.resetCamera();
             return this;
-        },
+        }
 
 
         /**
          * Displays all the instances available in the current model in this canvas
          * @returns {canvasComponent}
          */
-        displayAllInstances: function () {
+        displayAllInstances() {
             var that = this;
             //TODO if the component is added after the events are triggered traverse all the existing instances
             GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
@@ -89,7 +95,7 @@ define(function (require) {
                 that.resetCamera();
             });
             return this;
-        },
+        }
 
         /**
          * Selects an instance
@@ -97,10 +103,10 @@ define(function (require) {
          * @param {String} instancePath - Path of instance to select
          * @param {String} geometryIdentifier - Identifier of the geometry that was clicked
          */
-        selectInstance: function (instancePath, geometryIdentifier) {
+        selectInstance(instancePath, geometryIdentifier) {
             this.engine.selectInstance(instancePath, geometryIdentifier);
             return this;
-        },
+        }
 
 
         /**
@@ -108,37 +114,37 @@ define(function (require) {
          * @param instancePath
          * @returns {canvasComponent}
          */
-        deselectInstance: function (instancePath) {
+        deselectInstance(instancePath) {
             this.engine.deselectInstance(instancePath);
             return this;
-        },
+        }
 
         /**
          *
          * @param instance
          * @returns {canvasComponent}
          */
-        assignRandomColor: function (instance) {
+        assignRandomColor(instance) {
             this.engine.assignRandomColor(instance);
             return this;
-        },
+        }
 
         /**
          * Zoom to the passed instances
          * @param instances
          */
-        zoomTo: function (instances) {
+        zoomTo(instances) {
             this.engine.zoomTo(instances);
             return this;
-        },
+        }
 
         /**
          * Sets whether to use wireframe or not to visualize any instance.
          */
-        setWireframe: function (wireframe) {
+        setWireframe(wireframe) {
             this.engine.setWireframe(wireframe);
             return this;
-        },
+        }
 
         /**
          * Show an instance
@@ -146,10 +152,10 @@ define(function (require) {
          * @param {String}
          *            instancePath - Instance path of the instance to make visible
          */
-        showInstance: function (instancePath) {
+        showInstance(instancePath) {
             this.engine.showInstance(instancePath);
             return this;
-        },
+        }
 
         /**
          * Hide an instance
@@ -157,21 +163,21 @@ define(function (require) {
          * @param {String}
          *            instancePath - Path of the instance to hide
          */
-        hideInstance: function (instancePath) {
+        hideInstance(instancePath) {
             this.engine.hideInstance(instancePath);
             return this;
-        },
+        }
 
         /**
          * Set background color for this canvas
          *
          * * @param {String} color - hex or rgb color. e.g. "#ff0000" / "rgb(255,0,0)"
          */
-        setBackgroundColor: function (color) {
+        setBackgroundColor(color) {
             this.canvasState.backgroundColor = color;
             this.setDirty(true);
-            this.dialog.css("background", color);
-        },
+            // this.dialog.css("background", color);
+        }
 
         /**
          * Change the color of a given instance
@@ -181,12 +187,12 @@ define(function (require) {
          * @param {String}
          *            color - The color to set
          */
-        setColor: function (instancePath, color) {
+        setColor(instancePath, color) {
             this.engine.setColor(instancePath, color);
             this.canvasState.colorMap[instancePath] = color;
             this.setDirty(true);
             return this;
-        },
+        }
 
         /**
          * Retrieves the color of a given instance
@@ -194,9 +200,9 @@ define(function (require) {
          * @param {String}
          *            instance - Instance we want the color of
          */
-        getColor: function (instance) {
+        getColor(instance) {
             return this.engine.getColor(instance);
-        },
+        }
 
         /**
          * Change the default opacity for a given instance
@@ -206,21 +212,21 @@ define(function (require) {
          * @param {String}
          *            opacity - The value of the opacity between 0 and 1
          */
-        setOpacity: function (instancePath, opacity) {
+        setOpacity(instancePath, opacity) {
             this.engine.setOpacity(instancePath, opacity);
             this.canvasState.opacityMap[instancePath] = opacity;
             this.setDirty(true);
             return this;
-        },
+        }
 
         /**
          * Set the threshold (number of 3D primitives on the scene) above which we switch the visualization to lines
          * @param threshold
          */
-        setLinesThreshold: function (threshold) {
+        setLinesThreshold(threshold) {
             this.engine.setLinesThreshold(threshold);
             return this;
-        },
+        }
 
         /**
          * Change the type of geometry used to visualize a given instance
@@ -232,21 +238,21 @@ define(function (require) {
          * @param {String}
          *            thickness - Optional: the thickness to be used if the geometry is "lines"
          */
-        setGeometryType: function (instance, type, thickness) {
+        setGeometryType(instance, type, thickness) {
             this.engine.setGeometryType(instance, type, thickness);
-            this.canvasState.geometryTypeMap[instance.getInstancePath()] = {"type": type, "thickness": thickness};
+            this.canvasState.geometryTypeMap[instance.getInstancePath()] = { "type": type, "thickness": thickness };
             this.setDirty(true);
             return this;
-        },
+        }
 
 
         /**
          * Activates a visual group
          */
-        showVisualGroups: function (visualGroup, mode, instances) {
+        showVisualGroups(visualGroup, mode, instances) {
             this.engine.showVisualGroups(visualGroup, mode, instances);
             return this;
-        },
+        }
 
         /**
          * Associate a color function to a group of instances
@@ -255,14 +261,14 @@ define(function (require) {
          * @param colorfn - The function to be used to modulate the color
          * @return {canvasComponent}
          */
-        addColorFunction: function (instances, colorfn) {
+        addColorFunction(instances, colorfn) {
             this.engine.colorController.addColorFunction(instances, colorfn);
             for (var i = 0; i < instances.length; i++) {
                 this.canvasState.colorFunctionMap[instances[i].getInstancePath()] = colorfn.toString();
             }
             this.setDirty(true);
             return this;
-        },
+        }
 
         /**
          * Remove a previously associated color function
@@ -270,7 +276,7 @@ define(function (require) {
          * @param instances
          * @return {canvasComponent}
          */
-        removeColorFunction: function (instances) {
+        removeColorFunction(instances) {
             for (var i = 0; i < instances.length; i++) {
                 if (this.colorFunctionMap[instances[i].getInstancePath()] != undefined) {
                     delete this.canvasState.colorFunctionMap[instances[i].getInstancePath()];
@@ -279,67 +285,67 @@ define(function (require) {
             this.setDirty(true);
             this.engine.colorController.removeColorFunction(instances);
             return this;
-        },
+        }
 
         /**
          * Returns all the instances that are being listened to
          *
          * @return {Array}
          */
-        getColorFunctionInstances: function () {
+        getColorFunctionInstances() {
             return this.engine.colorController.getColorFunctionInstances();
-        },
+        }
 
         /**
          * Shows the visual groups associated to the passed instance
          * @param instance
          * @returns {canvasComponent}
          */
-        showVisualGroupsForInstance: function (instance) {
+        showVisualGroupsForInstance(instance) {
             this.engine.showVisualGroupsForInstance(instance);
             return this;
-        },
+        }
 
         /**
          * @param x
          * @param y
          */
-        incrementCameraPan: function (x, y) {
+        incrementCameraPan(x, y) {
             this.engine.incrementCameraPan(x, y);
             return this;
-        },
+        }
 
         /**
          * @param x
          * @param y
          * @param z
          */
-        incrementCameraRotate: function (x, y, z) {
+        incrementCameraRotate(x, y, z) {
             this.engine.incrementCameraRotate(x, y, z);
             return this;
-        },
+        }
 
         /**
          * @param z
          */
-        incrementCameraZoom: function (z) {
+        incrementCameraZoom(z) {
             this.engine.incrementCameraZoom(z);
             return this;
-        },
+        }
 
         /**
          * @param x
          * @param y
          * @param z
          */
-        setCameraPosition: function (x, y, z) {
+        setCameraPosition(x, y, z) {
             this.canvasState.cameraPosition.x = x;
             this.canvasState.cameraPosition.y = y;
             this.canvasState.cameraPosition.z = z;
             this.setDirty(true);
             this.engine.setCameraPosition(x, y, z);
             return this;
-        },
+        }
 
         /**
          * @param rx
@@ -347,7 +353,7 @@ define(function (require) {
          * @param rz
          * @param radius
          */
-        setCameraRotation: function (rx, ry, rz, radius) {
+        setCameraRotation(rx, ry, rz, radius) {
             this.canvasState.cameraRotation.rx = rx;
             this.canvasState.cameraRotation.ry = ry;
             this.canvasState.cameraRotation.rz = rz;
@@ -355,71 +361,47 @@ define(function (require) {
             this.setDirty(true);
             this.engine.setCameraRotation(rx, ry, rz, radius);
             return this;
-        },
+        }
 
         /**
          * Rotate the camera around the selection
          *
          */
-        autoRotate: function () {
+        autoRotate() {
             this.engine.autoRotate();
             return this;
-        },
+        }
 
         /**
          * Resets the camera
          *
          * @returns {canvasComponent}
          */
-        resetCamera: function () {
+        resetCamera() {
             this.engine.resetCamera();
             return this;
-        },
+        }
 
 
         /**
          * Set container dimensions depending on parent dialog
          */
-        setContainerDimensions: function () {
+        setContainerDimensions() {
             var containerSelector = $(this.container);
             var height = containerSelector.parent().height();
             var width = containerSelector.parent().width();
             containerSelector.height(height);
             containerSelector.width(width);
             return [width, height];
-        },
-
-
-        //TODO Move to base class for components
-        /**
-         * Did something change in the state of the widget?
-         *
-         * @command isDirty()
-         * @returns {boolean} - ID of widget
-         */
-        isDirty: function () {
-            return this.isDirty;
-        },
-
-        //TODO Move to base class for components
-        /**
-         * Explicitly sets status of view
-         * NOTE: we need to be able to control this from outside the component
-         *
-         * @command setDirty()
-         * @param {boolean} dirty
-         */
-        setDirty: function (dirty) {
-            this.isDirty = dirty;
-        },
+        }
 
         /**
          *
          * @param view
          */
-        setView: function (view) {
+        setView(view) {
             // set base properties
-            Widget.View.prototype.setView.call(this, view);
+            super.setView(view)
 
             // set data
             if (view.data != undefined) {
@@ -469,25 +451,21 @@ define(function (require) {
                     this.setBackgroundColor(view.componentSpecific.backgroundColor);
                 }
             }
-
-            // after setting view through setView, reset dirty flag
-            this.setDirty(false);
-        },
+        }
 
 
         /**
          *
          * @returns {*}
          */
-        getView: function () {
-            var baseView = Widget.View.prototype.getView.call(this);
-
+        getView() {
             // add data-type and data field + any other custom fields in the component-specific attribute
+            var baseView = super.getView();
             baseView.dataType = "instances";
             baseView.data = this.instances;
             baseView.componentSpecific = this.canvasState;
             return baseView;
-        },
+        }
 
         /**
          *
@@ -495,12 +473,12 @@ define(function (require) {
          */
         shouldComponentUpdate() {
             return false;
-        },
+        }
 
         /**
          *
          */
-        componentDidMount: function () {
+        componentDidMount() {
             if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
             } else {
@@ -523,19 +501,19 @@ define(function (require) {
                 }, false);
 
             }
-        },
+        }
 
         /**
          *
          * @returns {XML}
          */
-        render: function () {
+        render() {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <CameraControls viewer={this.props.id}/>
+                    <CameraControls viewer={this.props.id} />
                 </div>
             )
         }
-    });
-    return canvasComponent;
+    };
+    //     return canvasComponent;
 });

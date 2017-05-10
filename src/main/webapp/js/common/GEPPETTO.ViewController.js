@@ -65,17 +65,18 @@ define(function(require)
                     for(var cv in componentViews){
                         // retrieve widget / component from factory
                         var componentsMap = GEPPETTO.ComponentFactory.getComponents()[componentViews[cv].widgetType];
-                        var notFound = true;
+                        var component = undefined;
                         for (var c in componentsMap){
                             if (cv === componentsMap[c].getId()){
-                                notFound = false;
+                                component = componentsMap[c];
                                 break;
                             }
                         }
+                        
                         // widget / component not found, need to create it
-                        if(notFound) {
+                        if(component === undefined) {
                             // NOTE: this bit needs to be refactored once widgets/components are consolidated
-                            if(componentViews[cv].widgetType != undefined){
+                            if(componentViews[cv].widgetType != undefined && componentViews[cv].isWidget){
                                 component = GEPPETTO.ComponentFactory.addWidget(componentViews[cv].widgetType, {}, function () {
                                     console.log(this);
                                     this.setView(componentViews[cv])
@@ -115,7 +116,7 @@ define(function(require)
                         ) {
                             anyChanges = !anyChanges ? components[c].isDirty() : anyChanges;
                             // build object literal with view state for all the widgets/components
-                            viewState.views[c] = components[c].getView();
+                            viewState.views[components[c].getId()] = components[c].getView();
                             // reset view as clean so we don't keep retrieving the same view if nothing changed
                             components[c].setDirty(false);
                         }

@@ -117,7 +117,7 @@ define(function (require) {
                     Project.getActiveExperiment().playAll();
                 });
 
-                GEPPETTO.on(GEPPETTO.Events.Component_destroyed, function () {
+                GEPPETTO.on(this.Component_destroyed, function () {
                     GEPPETTO.ViewController.anyComponentsDestroyed = true;
                 });
             }

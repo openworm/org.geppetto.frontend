@@ -176,7 +176,7 @@ define(function (require) {
         setBackgroundColor (color) {
             this.canvasState.backgroundColor = color;
             this.setDirty(true);
-            this.dialog.css("background", color);
+            // this.dialog.css("background", color);
         }
 
         /**

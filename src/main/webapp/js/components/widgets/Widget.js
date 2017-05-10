@@ -718,6 +718,7 @@ define(function (require) {
                 // get default stuff such as id, position and size
                 return {
                     widgetType: this.widgetType,
+                    isWidget: this.isWidget(),   
                     showTitleBar: this.showTitleBar,
                     transparentBackground: this.transparentBackground,
                     name: this.name,
@@ -769,6 +770,10 @@ define(function (require) {
 
             isStateLess(){
                 return this.stateless;
+            },
+
+            isWidget (){
+                return true;
             }
         })
     };

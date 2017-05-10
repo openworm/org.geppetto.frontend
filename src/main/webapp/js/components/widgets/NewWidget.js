@@ -711,7 +711,7 @@ define(function (require) {
                     this.setTrasparentBackground(view.transparentBackground);
                 }
 
-                super.setView();
+                super.setView(view);
             }
 
 

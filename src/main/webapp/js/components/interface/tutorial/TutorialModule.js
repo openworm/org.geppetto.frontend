@@ -21,6 +21,12 @@ define(function (require) {
 			super(props);
 
 			this.tutorials = []
+
+			this.state = {
+				tutorialData: {},
+				activeTutorial: undefined,
+				currentStep: 0
+			};
 		}
 
 		/**
@@ -28,20 +34,6 @@ define(function (require) {
 		 */
 		dontShowAtStartup(val) {
 			$.cookie('ignore_tutorial', true);
-		}
-
-		getDefaultProps() {
-			return {
-				id: "tutorial"
-			};
-		}
-
-		getInitialState() {
-			return {
-				tutorialData: {},
-				activeTutorial: undefined,
-				currentStep: 0
-			};
 		}
 
 		/**

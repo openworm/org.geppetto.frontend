@@ -112,7 +112,7 @@ define(function(require)
                             // check if state-view API is implemented by the component
                             typeof components[c].getView == 'function' &&
                             // check that component is not stateless
-                            components[c].isStateLess != undefined & !components[c].isStateLess()
+                            components[c].isStateLess != undefined && !components[c].isStateLess()
                         ) {
                             anyChanges = !anyChanges ? components[c].isDirty() : anyChanges;
                             // build object literal with view state for all the widgets/components

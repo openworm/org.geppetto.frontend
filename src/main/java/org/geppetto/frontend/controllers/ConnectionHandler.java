@@ -221,17 +221,40 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 	 * @param batchSize - how many experiments we need to create
 	 * @param names - experiment names
 	 */
-	public void newExperimentBatch(String requestID, long projectId, List<String> names) {
+	public void newExperimentBatch(String requestID, long projectId, Map<String,Map<String, Object>> dataMap) {
 
 		IGeppettoProject project = retrieveGeppettoProject(projectId);
 		Gson gson = new Gson();
 
 		try {
 			List<IExperiment> experiments = new ArrayList<IExperiment>();
-			for(int i=0; i<names.size(); i++){
-				IExperiment experiment = geppettoManager.newExperiment(requestID, project);
-				experiment.setName(names.get(i));
-				experiments.add(experiment);
+			
+			for (Map.Entry<String, Map<String, Object>> entry : dataMap.entrySet()) {
+			    String key = entry.getKey();
+			    IExperiment experiment = geppettoManager.newExperiment(requestID, project);
+				experiment.setName(key);
+			    
+				// get value to get experiment data out
+				Map<String, Object> value = entry.getValue();
+				
+				Map<String, Map<String, Object>> params = (Map<String, Map<String, Object>>) value.get("parameters");
+				// loop first set of keys (labels)
+				for (Map.Entry<String, Map<String, Object>> param : params.entrySet()) {
+					// loop again and grab param names and values
+					Map<String, Object> paramVal = param.getValue();
+					for (Map.Entry<String, Object> p : paramVal.entrySet()) {
+						String paramPath = p.getKey();
+						Double paramValue = (Double)p.getValue();
+						
+						// TODO: set model parameter on experiment
+					}
+				}
+				
+			    Double timestep = (Double) value.get("timeStep");
+			    Double duration = (Double) value.get("duration");
+			    // TODO: set simulator parameters
+			    
+			    experiments.add(experiment);
 			}
 
 			String jsonExperiments = gson.toJson(experiments);

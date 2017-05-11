@@ -219,12 +219,12 @@ define(function (require) {
 				var button = $("<div class='fa fa-leanpub' title='Select chapter'></div>").on('click', function (event) {
 					that.showChaptersMenu(event);
 					event.stopPropagation();
-				});
+				}).bind(this);
 
 				var dialog = this.dialog.parent();
 				var closeButton = dialog.find("button.ui-dialog-titlebar-close");
 				closeButton.off("click");
-				closeButton.click(this.close);
+				closeButton.click(this.close.bind(this));
 				dialog.find("div.ui-dialog-titlebar").prepend(button);
 				$(button).addClass("widget-title-bar-button");
 				this.dialog.css("overflow", "scroll");

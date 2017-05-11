@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 console.log("\nThe arguments passed to webpack are:\n");
 console.log(process.argv);
@@ -159,7 +160,7 @@ module.exports = {
                 loader: 'ignore-loader'
             },
             {   test: /\.css$/,
-                loader: 'style-loader!css-loader'
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader") 
             },
             {
                 test: /\.less$/,
@@ -179,5 +180,8 @@ module.exports = {
         fs: 'empty',
         child_process: 'empty',
         module: 'empty'
-    }
+    },
+    plugins: [
+        new ExtractTextPlugin("[name].css")
+    ]
 };

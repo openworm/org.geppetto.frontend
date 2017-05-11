@@ -39,6 +39,7 @@
 
 //Widget Classes
 define(function (require) {
+
     return function (GEPPETTO) {
 
         require('./WidgetFactory')(GEPPETTO);
@@ -50,8 +51,6 @@ define(function (require) {
 		//TreeVisualiser DAT Widget
         require("./treevisualiser/treevisualiserdat/config")(GEPPETTO);
 
-        //WIDGETNAME widget Do not remove or uncomment, use as template for new widgets (this is only required if you want to use context menus)
-        //require("widgets/template/config");
-        widgetUtility.loadCss("geppetto/js/components/widgets/Widget.css");
+        require("./Widget.css");
     };
 });

@@ -182,8 +182,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				{
 				}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
-				List<String> experimentNames = Arrays.asList(gson.fromJson(parameters.get("experimentNames"), String[].class));
-				connectionHandler.newExperimentBatch(requestID, projectId, experimentNames);
+				Map<String,Map<String, Object>> experimentData = gson.fromJson(parameters.get("experimentNames"), Map.class);
+				connectionHandler.newExperimentBatch(requestID, projectId, experimentData);
 				break;
 			}
 			case CLONE_EXPERIMENT:

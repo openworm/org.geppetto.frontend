@@ -11,13 +11,19 @@ define(function (require) {
 	var AMI = require('ami.js');
 	var dat = require('dat-gui');
 
-	var dicomViewerComponent = React.createClass({
+	var AbstractComponent = require('../../AComponent');
+
+	return class DicomViewer extends AbstractComponent {
+
+		constructor(props) {
+            super(props);
+		}
 
 		shouldComponentUpdate() {
 			return false;
-		},
+		}
 
-		componentDidMount: function () {
+		componentDidMount () {
 
 			// VJS classes we will be using in this lesson
 			var LoadersVolume = AMI.default.Loaders.Volume;
@@ -234,9 +240,9 @@ define(function (require) {
 					window.console.log('oops... something went wrong...');
 					window.console.log(error);
 				});
-		},
+		}
 
-		render: function () {
+		render () {
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"}>
 					<div className="dicomViewer" style={{float:'left'}}>
@@ -246,6 +252,6 @@ define(function (require) {
 				</div>
 			)
 		}
-	});
-	return dicomViewerComponent;
+	};
+	
 });

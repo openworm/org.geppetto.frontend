@@ -50,8 +50,7 @@ define(function (require) {
              * @returns {*}
              */
             addWidget: function (type, properties, callback) {
-                var newWidget = GEPPETTO.ComponentFactory.addWidget(type, properties, callback);
-                return newWidget;
+                return GEPPETTO.ComponentFactory.addWidget(type, properties, callback);
             },
 
             /**

@@ -13,7 +13,7 @@ require('../../../style/less/main.less');
 var GEPPETTO = require('geppetto');
 
 require('../../components/ComponentFactory')(GEPPETTO);
-require('../../components/NewWidgetFactory')(GEPPETTO);
+require('../../components/WidgetFactory')(GEPPETTO);
 
 GEPPETTO.ComponentFactory.loadSpinner();
 

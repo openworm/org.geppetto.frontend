@@ -246,7 +246,7 @@ function testSpotlight(test, variableName,plotName,expectButton,testSelect, sele
 								testSelection(test, selectionName,selectColorVarName);
 							}
 						});
-					}, null, 8000);
+					}, null, 5000);
 				}else{
 					casper.wait(1000, function () {
 						casper.then(function () {

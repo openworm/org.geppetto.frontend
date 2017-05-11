@@ -145,17 +145,15 @@ function hhcellTest(test,name){
 	
 	casper.then(function(){
 		casper.echo("-------Testing Spotlight--------");
-		this.wait(500,function(){
-			var rows = casper.evaluate(function() {
-				var rows = $(".standard-row").length;
-				return rows;
-			});
-			test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
-			casper.evaluate(function(){
-				GEPPETTO.ControlPanel.close();
-			});
-			testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,true,"hhcell","hhcell.hhpop[0]");
+		var rows = casper.evaluate(function() {
+			var rows = $(".standard-row").length;
+			return rows;
 		});
+		test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
+		casper.evaluate(function(){
+			GEPPETTO.ControlPanel.close();
+		});
+		testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,true,"hhcell","hhcell.hhpop[0]");
 	});
 	
 	casper.then(function(){

@@ -181,12 +181,12 @@ define(['backbone'], function (require) {
          * @command ProjectNode.newExperiment()
          * @returns {ExperimentNode} Creates a new ExperimentNode
          */
-        newExperimentBatch: function (experimentNames) {
+        newExperimentBatch: function (experimentNames, callback) {
             if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()){
                 var parameters = {};
                 parameters["projectId"] = this.id;
                 parameters["experimentNames"] = JSON.stringify(experimentNames);
-                GEPPETTO.MessageSocket.send("new_experiment_batch", parameters);
+                GEPPETTO.MessageSocket.send("new_experiment_batch", parameters, callback);
             }else{
                 return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }

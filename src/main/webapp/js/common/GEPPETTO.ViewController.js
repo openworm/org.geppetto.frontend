@@ -7,6 +7,7 @@ define(function(require)
     return function(GEPPETTO) {
         GEPPETTO.ViewController = {
             monitorInterval: undefined,
+            anyComponentsDestroyed: false,
 
             resolveViews: function(){
                 // apply persisted views if any for both project and experiment
@@ -53,25 +54,39 @@ define(function(require)
                 }
 
                 // setup monitor loop to track changes every 1000ms
-                this.monitorInterval = setInterval(this.monitorView, 1000);
+                var that = this;
+                this.monitorInterval = setInterval(function(){
+                    that.monitorView()
+                }, 1000);
             },
 
             applyViewToComponentOrCreate: function(componentViews){
                 if(componentViews != undefined){
                     for(var cv in componentViews){
                         // retrieve widget / component from factory
-                        var component = GEPPETTO.ComponentFactory.getComponents()[cv];
+                        var componentsMap = GEPPETTO.ComponentFactory.getComponents()[componentViews[cv].widgetType];
+                        var component = undefined;
+                        for (var c in componentsMap){
+                            if (cv === componentsMap[c].getId()){
+                                component = componentsMap[c];
+                                break;
+                            }
+                        }
+                        
                         // widget / component not found, need to create it
-                        if(component == undefined) {
+                        if(component === undefined) {
                             // NOTE: this bit needs to be refactored once widgets/components are consolidated
-                            if(componentViews[cv].widgetType != undefined){
-                                component = GEPPETTO.WidgetFactory.addWidget(componentViews[cv].widgetType);
+                            if(componentViews[cv].widgetType != undefined && componentViews[cv].isWidget){
+                                component = GEPPETTO.ComponentFactory.addWidget(componentViews[cv].widgetType, {}, function () {
+                                    console.log(this);
+                                    this.setView(componentViews[cv])
+                                });
                             } else if(componentViews[cv].componentType != undefined) {
                                 // TODO: create component with component factory
                             }
                         }
 
-                        if(typeof component.setView == 'function'){
+                        if(component !== undefined && component !== null && typeof component.setView == 'function'){
                             // if the interface is exposed, set view
                             component.setView(componentViews[cv]);
                         }
@@ -83,25 +98,28 @@ define(function(require)
              * Monitors changes in the view
              */
             monitorView: function(){
-                // retrieve list of widgets (components in future)
-                var components = GEPPETTO.ComponentFactory.getComponents();
+                // retrieve list of widgets (components too in the future)
+                var componentsMap = GEPPETTO.ComponentFactory.getComponents();
                 var viewState = { views: {} };
 
-                for(var c in components){
-                    // call getView API if the method is exposed and the component is not stateless
-                    if(
-                        // check if state-view API is implemented by the component
-                        typeof components[c].getView == 'function' &&
-                        // check that component is not stateless
-                        components[c].stateless != undefined &&
-                        !components[c].stateless &&
-                        // check if view is dirty so only dirty views get added
-                        components[c].isDirty()
-                    ) {
-                        // build object literal with view state for all the widgets/components
-                        viewState.views[c] = components[c].getView();
-                        // reset view as clean so we don't keep retrieving the same view if nothing changed
-                        components[c].setDirty(false);
+                var anyChanges = false;
+
+                for(var cm in componentsMap){
+                    var components = componentsMap[cm];
+                    for(var c in components){
+                        // call getView API if the method is exposed and the component is not stateless
+                        if(
+                            // check if state-view API is implemented by the component
+                            typeof components[c].getView == 'function' &&
+                            // check that component is not stateless
+                            components[c].isStateLess() != undefined & !components[c].isStateLess()
+                        ) {
+                            anyChanges = !anyChanges ? components[c].isDirty() : anyChanges;
+                            // build object literal with view state for all the widgets/components
+                            viewState.views[components[c].getId()] = components[c].getView();
+                            // reset view as clean so we don't keep retrieving the same view if nothing changed
+                            components[c].setDirty(false);
+                        }
                     }
                 }
 
@@ -109,15 +127,17 @@ define(function(require)
                 if(
                     window.Project.getActiveExperiment()!=null &&
                     window.Project.getActiveExperiment()!=undefined &&
-                    // check if any views were added
-                    Object.keys(viewState.views).length > 0
+                    // check if any views were added or any components were destroyed
+                    (anyChanges || this.anyComponentsDestroyed)
                 ){
                     window.Project.getActiveExperiment().setView(viewState);
+                    this.anyComponentsDestroyed = false;
                 } else if (
-                    // check if any views were added
-                    Object.keys(viewState.views).length > 0
+                    // check if any views were added or any components were destroyed
+                    anyChanges || this.anyComponentsDestroyed
                 ){
                     window.Project.setView(viewState);
+                    this.anyComponentsDestroyed = false;
                 }
             }
         };

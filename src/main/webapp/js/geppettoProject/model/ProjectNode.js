@@ -341,7 +341,7 @@ define(['backbone'], function (require) {
         			message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED + GEPPETTO.Resources.DOWNLOAD_PRIVILEGES_NOT_SUPPORTED;
         		}
             	
-        		GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR, message);
+        		GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.ERROR, message);
         		
             	return message;
             }

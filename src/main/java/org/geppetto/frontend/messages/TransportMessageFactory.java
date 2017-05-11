@@ -34,8 +34,6 @@ public class TransportMessageFactory {
 		List<SimpleEntry<String, String>> params = new ArrayList<SimpleEntry<String, String>>();
 
 		switch(type){
-			case RELOAD_CANVAS:
-				break;	
 			case ERROR:
 				params.add(new SimpleEntry<String, String>("message", update));
 				break;

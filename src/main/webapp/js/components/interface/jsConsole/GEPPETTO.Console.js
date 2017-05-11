@@ -591,7 +591,8 @@ define(function (require) {
 
                 var commandsCount = commands.length;
 
-                var proto = object.__proto__;
+                //var proto = object.__proto__;
+                var proto = object;
                 //	find all functions of object Simulation
                 for (var prop in proto) {
                     if (typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
@@ -613,30 +614,33 @@ define(function (require) {
                             commandsCount++;
                             //match the function to comment
                             var matchedDescription = "";
-                            for (var i = 0; i < comments.length; i++) {
-                                var description = comments[i].toString();
+                            if (comments != null){
+                                for (var i = 0; i < comments.length; i++) {
+                                    var description = comments[i].toString();
 
-                                //items matched
-                                if (description.indexOf(prop) != -1) {
+                                    //items matched
+                                    if (description.indexOf(prop) != -1) {
 
-                                    /*series of formatting of the comments for the function, removes unnecessary
-                                     * blank and special characters.
-                                     */
-                                    var splitComments = description.replace(/\*/g, "").split("\n");
-                                    splitComments.splice(0, 1);
-                                    splitComments.splice(splitComments.length - 1, 1);
-                                    for (var s = 0; s < splitComments.length; s++) {
-                                        var line = splitComments[s].trim();
-                                        if (line != "") {
-                                            //ignore the name line, already have it
-                                            if (line.indexOf("@command") == -1) {
-                                                //build description for function
-                                                matchedDescription += "         " + line + "\n";
+                                        /*series of formatting of the comments for the function, removes unnecessary
+                                        * blank and special characters.
+                                        */
+                                        var splitComments = description.replace(/\*/g, "").split("\n");
+                                        splitComments.splice(0, 1);
+                                        splitComments.splice(splitComments.length - 1, 1);
+                                        for (var s = 0; s < splitComments.length; s++) {
+                                            var line = splitComments[s].trim();
+                                            if (line != "") {
+                                                //ignore the name line, already have it
+                                                if (line.indexOf("@command") == -1) {
+                                                    //build description for function
+                                                    matchedDescription += "         " + line + "\n";
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                            
                             //format and keep track of all commands available
                             commandsFormmatted += ("      -- " + functionName + "\n" + matchedDescription + "\n");
                         }
@@ -649,7 +653,7 @@ define(function (require) {
                 }
 
                 if (proto.__proto__ != null) {
-                    GEPPETTO.Console.updateHelpCommand(proto, id, comments);
+                    GEPPETTO.Console.updateHelpCommand(proto.__proto__, id, comments);
                 }
             },
 

@@ -148,6 +148,18 @@ define(function (require) {
                 var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(location.search);
                 return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
             },
+            
+            getPathStringParameters: function () {
+            	var paths = []
+            	var locationPaths = location.pathname.split("/");
+            	for (var pathIndex in locationPaths){
+            		var locationPath = locationPaths[pathIndex];	
+            		if (locationPath != 'geppetto' && locationPath != 'org.geppetto.frontend' && locationPath != ''){
+            			paths.push(locationPath);
+            		}
+            	}
+            	return paths;
+            },
 
             persistedAndWriteMessage: function (caller) {
                 var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;

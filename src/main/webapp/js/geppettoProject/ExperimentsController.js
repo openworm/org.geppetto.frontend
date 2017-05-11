@@ -27,6 +27,9 @@ define(function (require) {
             maxSteps: 0,
             externalExperiments: {},
             state:ExperimentStateEnum.STOPPED,
+            step : 0,
+            playTimerStep: 5, // timer step in milliseconds
+            playLoop: false,
 
             isPlayExperimentReady: function(){
             	return this.playExperimentReady;
@@ -131,7 +134,6 @@ define(function (require) {
             },
             
             setActive:function(experiment){
-                G.unSelectAll();
                 GEPPETTO.ExperimentsController.closeCurrentExperiment();
                 var parameters = {};
                 parameters["experimentId"] = experiment.id;
@@ -264,7 +266,7 @@ define(function (require) {
                     }
 
                 } else {
-                    GEPPETTO.FE.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + experiment.name + " with id " + experiment.id + " isn't completed, and can't be played.");
+                    GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.CANT_PLAY_EXPERIMENT, "Experiment " + experiment.name + " with id " + experiment.id + " isn't completed, and can't be played.");
                 }
             },
             
@@ -357,7 +359,7 @@ define(function (require) {
                     this.worker = new Worker("geppetto/js/geppettoProject/ExperimentWorker.js");
 
                     // tells worker to update each half a second
-                    this.worker.postMessage([GEPPETTO.Events.Experiment_play, GEPPETTO.getVARS().playTimerStep, this.playOptions.step]);
+                    this.worker.postMessage([GEPPETTO.Events.Experiment_play, GEPPETTO.ExperimentsController.playTimerStep, this.playOptions.step]);
 
                     var that = this;
                     // receives message from web worker

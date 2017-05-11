@@ -7,13 +7,18 @@ define(function (require) {
     document.getElementsByTagName("head")[0].appendChild(link);
 	
 	var React = require('react');
-	var reactJsonSchemaForm = require('./react-jsonschema-form');
+	var reactJsonSchemaForm = require('react-jsonschema-form');
 	
 	var Form = reactJsonSchemaForm.default;
 
 	var uiSchema ={};
 	
 	var formComponent = React.createClass({
+
+		shouldComponentUpdate() {
+			return false;
+		},
+
 		render: function(){
 		     return (
 		    		 <Form id={this.props.id} 

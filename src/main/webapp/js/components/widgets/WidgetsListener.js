@@ -62,6 +62,7 @@ define(function (require) {
                     GEPPETTO.Console.removeCommands(widgetID);
 
                     var widgets = controller.getWidgets();
+                    var componentType = controller.widgets[0].getComponentType()
 
                     for (var p in widgets) {
                         if (widgets[p].getId() == this.id) {
@@ -72,13 +73,15 @@ define(function (require) {
 
                     // remove from component factory dictionary
                     // NOTE: this will go away after widgets/components refactoring
-                    var comps = GEPPETTO.ComponentFactory.getComponents();
+                    var comps = GEPPETTO.ComponentFactory.getComponents()[componentType];
                     for(var c in comps){
-                        if(c == widgetID){
-                            delete comps[c];
+                        if(comps[c].getId() == widgetID){
+                            comps.splice(c, 1);
                             break;
                         }
                     }
+
+                    GEPPETTO.trigger(GEPPETTO.Events.Component_destroyed, widgetID);
                 });
 
                 //register resize handler for widget

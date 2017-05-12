@@ -29,7 +29,7 @@ define(['jquery'], function () {
     function ThreeDEngine(container, viewerId) {
 
         this.container = container;
-        this.colorController = new(require('./ColorController'))(this);
+        this.colorController = new (require('./ColorController'))(this);
         this.viewerId = viewerId;
 
         //Engine components
@@ -503,29 +503,10 @@ define(['jquery'], function () {
          *
          * @param instances
          */
-        buildScene: function (instances) {
+        updateSceneWithNewInstances: function (instances) {
             this.traverseInstances(instances);
             this.scene.updateMatrixWorld(true);
             this.resetCamera();
-        },
-
-
-        /**
-         *
-         * @param instances
-         */
-        updateSceneWithNewInstances: function (instances) {
-            var updateCamera = false;
-            if (Object.keys(this.meshes).length === 0) {
-                updateCamera = true;
-            }
-            for (var g = 0; g < instances.length; g++) {
-                // add instance to scene
-                this.checkVisualInstance(instances[g]);
-            }
-            if (updateCamera) {
-                this.resetCamera();
-            }
         },
 
         /**
@@ -1492,7 +1473,7 @@ define(['jquery'], function () {
                 var allOtherMeshes = $.extend({}, this.meshes);
                 // look on the simulation selection options and perform necessary operations
                 if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
-                    var meshes = this.highlightInstances(instancePath,true);
+                    var meshes = this.highlightInstances(instancePath, true);
                     for (var i in meshes) {
                         delete allOtherMeshes[meshes[i]];
                     }

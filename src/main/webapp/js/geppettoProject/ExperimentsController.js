@@ -193,7 +193,7 @@ define(function (require) {
                     setView = true;
                 }
                 
-                if(setView){
+                if(setView && GEPPETTO.UserController.persistence){
                     var parameters = {};
                     var experimentId = activeExperiment ? Project.getActiveExperiment().getId() : -1;
                     parameters["experimentId"] = experimentId;

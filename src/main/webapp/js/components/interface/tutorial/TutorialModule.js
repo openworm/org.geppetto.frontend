@@ -20,7 +20,7 @@ define(function (require) {
 		constructor(props) {
 			super(props);
 
-			this.tutorials = []
+			this.tutorials = [];
 
 			this.state = {
 				tutorialData: {},
@@ -90,6 +90,8 @@ define(function (require) {
 			} else {
 				this.start();
 			}
+
+			this.setDirty(true);
 		}
 
 		nextStep() {
@@ -99,12 +101,15 @@ define(function (require) {
 			} else {
 				this.start();
 			}
+
+			this.setDirty(true);
 		}
 
 		prevStep() {
 			this.state.currentStep--;
 			GEPPETTO.tutorialEnabled = false;
 			this.updateTutorialWindow();
+			this.setDirty(true);
 		}
 
 		close() {
@@ -138,11 +143,13 @@ define(function (require) {
 		setTutorial(tutorialURL) {
 			this.state.tutorialData = {};
 			this.addTutorial(tutorialURL);
+			this.setDirty(true);
 		}
 
 		goToChapter(chapter) {
 			this.state.activeTutorial = chapter;
 			this.start();
+			this.setDirty(true);
 		}
 
 		addTutorial(tutorialURL) {
@@ -322,9 +329,6 @@ define(function (require) {
 		}
 
 		setView(view) {
-			// set base properties
-			super.setView(view)
-
 			// set data
 			if (view.data != undefined) {
 				if (view.dataType == 'array') {
@@ -344,6 +348,9 @@ define(function (require) {
 					this.gotToStep(view.componentSpecific.currentStep);
 				}
 			}
+
+			// set base properties
+			super.setView(view);
 		}
 
 		render() {

@@ -132,6 +132,7 @@ module.exports = {
                 'NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
             },
         }),
+        new ExtractTextPlugin("[name].css"),
     ],
 
     resolve: {
@@ -180,8 +181,5 @@ module.exports = {
         fs: 'empty',
         child_process: 'empty',
         module: 'empty'
-    },
-    plugins: [
-        new ExtractTextPlugin("[name].css")
-    ]
+    }
 };

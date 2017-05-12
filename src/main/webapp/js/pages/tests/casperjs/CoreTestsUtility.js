@@ -368,3 +368,8 @@ function testingConnectionLines(test, expectedLines){
 		test.assertEquals(expectedLines, connectionLines, "The control panel opened with right amount of rows");
 	});
 }
+
+function testMoviePlayerWidget(test,id){
+	test.assertExists('div[id="'+id+'"]', "Movie player exists");
+	test.assertExists("iframe[id=\"widget6\"]", "Movie player iframe exists");
+}

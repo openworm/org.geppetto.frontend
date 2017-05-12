@@ -21,7 +21,7 @@ define(function (require) {
             super(props);
 
             this.engine = null
-            this.container = null
+            // this.container = null
 
             //State
             this.canvasState = {
@@ -387,7 +387,7 @@ define(function (require) {
          * Set container dimensions depending on parent dialog
          */
         setContainerDimensions() {
-            var containerSelector = $(this.container);
+            var containerSelector = $(this.getContainer());
             var height = containerSelector.parent().height();
             var width = containerSelector.parent().width();
             containerSelector.height(height);
@@ -482,9 +482,9 @@ define(function (require) {
             if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
             } else {
-                this.container = $("#" + this.props.id + "_component").get(0);
+                // this.container = $("#" + this.props.id + "_component").get(0);
                 var [width, height] = this.setContainerDimensions();
-                this.engine = new ThreeDEngine(this.container, this.props.id);
+                this.engine = new ThreeDEngine(this.getContainer(), this.props.id);
                 this.engine.setSize(width, height);
 
                 GEPPETTO.SceneController.add3DCanvas(this);

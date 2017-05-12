@@ -576,6 +576,7 @@ define(function (require) {
                 //this.dialog.dialog('open')
 
                 this.$el = $("#" + this.props.id);
+                this.container = this.$el.children().get(0);
                 var dialogParent = this.$el.parent();
 
 

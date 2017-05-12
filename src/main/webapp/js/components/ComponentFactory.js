@@ -139,6 +139,7 @@ define(function (require) {
 					}
 					else{
 						GEPPETTO.Console.updateTags(componentType, renderedComponent);
+						renderedComponent.container = container;
 					}
 					
 					return renderedComponent;

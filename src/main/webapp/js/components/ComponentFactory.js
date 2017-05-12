@@ -117,6 +117,7 @@ define(function (require) {
 					if (!("isStateless" in properties)){
 						properties["isStateless"] = false;
 					}
+					properties["parentContainer"] = container;
 					
 					// Create component/widget
 					var type = loadedModule;

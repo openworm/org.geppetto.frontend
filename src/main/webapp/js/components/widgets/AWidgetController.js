@@ -143,24 +143,23 @@ define(function (require) {
              */
             getFileComments: function (file) {
                 if (this.comments.length == 0) {
-                    var fetchedComments = [];
+                    var that = this;
                     //retrieve the script to get the comments for all the methods
                     $.ajax({
-                        async: false,
+                        async: true,
                         type: 'GET',
                         url: file,
                         dataType: "text",
                         //at success, read the file and extract the comments
                         success: function (data) {
                             var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-                            fetchedComments = data.match(STRIP_COMMENTS);
+                            that.comments = data.match(STRIP_COMMENTS);
                         },
                         error: function () {
                             console.log('error fetching file with Ajax request');
                         }
                     });
 
-                    this.comments = fetchedComments;
                 }
                 return this.comments;
             }

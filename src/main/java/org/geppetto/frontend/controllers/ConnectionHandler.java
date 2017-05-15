@@ -210,33 +210,36 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 		} catch (GeppettoExecutionException | GeppettoAccessException e) {
 			error(e, "Error creating a new experiment");
 		}
-		
+
 	}
-	
+
 	/**
 	 * Creates new experiments in a batch
 	 * 
 	 * @param requestID
 	 * @param projectId
-	 * @param batchSize - how many experiments we need to create
-	 * @param names - experiment names
+	 * @param batchSize
+	 *            - how many experiments we need to create
+	 * @param names
+	 *            - experiment names
 	 */
-	public void newExperimentBatch(String requestID, long projectId, Map<String,Map<String, Object>> dataMap) {
+	public void newExperimentBatch(String requestID, long projectId, Map<String, Map<String, Object>> dataMap) {
 
 		IGeppettoProject project = retrieveGeppettoProject(projectId);
 		Gson gson = new Gson();
 
 		try {
 			List<IExperiment> experiments = new ArrayList<IExperiment>();
-			
+
 			for (Map.Entry<String, Map<String, Object>> entry : dataMap.entrySet()) {
-			    String key = entry.getKey();
-			    IExperiment experiment = geppettoManager.newExperiment(requestID, project);
+				String key = entry.getKey();
+				IExperiment experiment = geppettoManager.newExperiment(requestID, project);
 				experiment.setName(key);
-			    
+
+				Map<String, String> parametersMap = new HashMap<String, String>();
+
 				// get value to get experiment data out
 				Map<String, Object> value = entry.getValue();
-				
 				Map<String, Map<String, Object>> params = (Map<String, Map<String, Object>>) value.get("parameters");
 				// loop first set of keys (labels)
 				for (Map.Entry<String, Map<String, Object>> param : params.entrySet()) {
@@ -245,16 +248,32 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 					for (Map.Entry<String, Object> p : paramVal.entrySet()) {
 						String paramPath = p.getKey();
 						Double paramValue = (Double)p.getValue();
-						
-						// TODO: set model parameter on experiment
+
+						// add model parameter on parameters map
+						parametersMap.put(paramPath, paramValue.toString());
 					}
 				}
+
+				// set parameters for experiment
+				geppettoManager.setModelParameters(parametersMap, experiment, project);
+
+				Double timestep = (Double) value.get("timeStep");
+				Double duration = (Double) value.get("duration");
+				String simulatorId = (String) value.get("simulator");
+				String aspectPath = (String) value.get("aspectPath");
 				
-			    Double timestep = (Double) value.get("timeStep");
-			    Double duration = (Double) value.get("duration");
-			    // TODO: set simulator parameters
-			    
-			    experiments.add(experiment);
+				IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+				// set simulator parameters
+                 for (IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations()) {
+                     if (aspectConfiguration.getInstance().equals(aspectPath)) {
+                    	 aspectConfiguration.getSimulatorConfiguration().setTimestep(timestep.floatValue());
+                         aspectConfiguration.getSimulatorConfiguration().setLength(duration.floatValue());
+                         aspectConfiguration.getSimulatorConfiguration().setSimulatorId(simulatorId);
+                         dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
+                     }
+                 }
+
+				experiments.add(experiment);
 			}
 
 			String jsonExperiments = gson.toJson(experiments);
@@ -263,7 +282,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 		} catch (GeppettoExecutionException | GeppettoAccessException e) {
 			error(e, "Error creating a new experiment");
 		}
-		
+
 	}
 
 	/**
@@ -1062,8 +1081,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 	 * @param experimentId
 	 * @param properties
 	 */
-	public void saveExperimentProperties(String requestID, long projectId, long experimentId,
-			Map<String, String> properties) {
+	public void saveExperimentProperties(String requestID, long projectId, long experimentId, Map<String, String> properties) {
 		if (DataManagerHelper.getDataManager().isDefault()) {
 			info(requestID, Resources.UNSUPPORTED_OPERATION.toString());
 		}
@@ -1095,8 +1113,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 					String aspectPath = properties.get("aspectInstancePath");
 					for (IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations()) {
 						if (aspectConfiguration.getInstance().equals(aspectPath)) {
-							aspectConfiguration.getSimulatorConfiguration()
-									.setTimestep(Float.parseFloat(properties.get(p)));
+							aspectConfiguration.getSimulatorConfiguration().setTimestep(Float.parseFloat(properties.get(p)));
 							dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
 							break;
 						}
@@ -1107,8 +1124,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 					String aspectPath = properties.get("aspectInstancePath");
 					for (IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations()) {
 						if (aspectConfiguration.getInstance().equals(aspectPath)) {
-							aspectConfiguration.getSimulatorConfiguration()
-									.setLength(Float.parseFloat(properties.get(p)));
+							aspectConfiguration.getSimulatorConfiguration().setLength(Float.parseFloat(properties.get(p)));
 							dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
 							break;
 						}

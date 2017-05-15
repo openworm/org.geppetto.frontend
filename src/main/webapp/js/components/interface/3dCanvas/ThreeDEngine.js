@@ -1563,7 +1563,7 @@ define(['jquery'], function () {
                     var mesh = {};
                     mesh[instancePath] = this.meshes[instancePath];
                     if (mesh[instancePath] != undefined) {
-                        this.unselectedTransparent(mesh, true);
+                        this.unselectedTransparent(this.meshes, false);
                     }
                 } else {
                     // if nothing else is selected do remove ghost effect
@@ -1648,14 +1648,13 @@ define(['jquery'], function () {
                 if (mesh != null && mesh.visible) {
                     if (apply && (!mesh.ghosted) && (!mesh.selected)) {
                         if (mesh instanceof THREE.Object3D) {
+                            mesh.ghosted = true;
                             mesh.traverse(function (object) {
                                 if (object.hasOwnProperty("material")) {
                                     if (object.visible) {
-                                    	object.ghosted = false;
-                                        object.material.opacity = object.material.defaultOpacity;
-                                        if (object.material.opacity == 1) {
-                                            object.material.transparent = false;
-                                        }
+                                        object.ghosted = true;
+                                        object.material.transparent = true;
+                                        object.material.opacity = GEPPETTO.Resources.OPACITY.GHOST;
                                     }
                                 }
                             });

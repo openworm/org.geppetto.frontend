@@ -538,7 +538,9 @@ define(function (require) {
                         },
                         "beforeMinimize" : function(evt, dlg) {
                             var label = that.name;
-                            label = label.substring(0, 6);
+                            if(label!=undefined){
+                                label = label.substring(0, 6);
+                            }
                             that.$el.dialog({ title: label });
                         },
                         "beforeMaximize" : function(evt, dlg) {

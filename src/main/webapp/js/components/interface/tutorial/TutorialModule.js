@@ -45,8 +45,10 @@ define(function (require) {
 		start() {
 			this.state.currentStep = 0;
 			this.open(true);
-			this.updateTutorialWindow();
 			this.started = true;
+			if(this.getActiveTutorial()!=undefined){
+				this.updateTutorialWindow();
+			}
 		}
 
 		getActiveTutorial() {
@@ -152,7 +154,7 @@ define(function (require) {
 			this.setDirty(true);
 		}
 
-		addTutorial(tutorialURL) {
+		addTutorial(tutorialURL,callback) {
 			// do not add if the same url was already successfully added
 			if (this.tutorials.includes(tutorialURL)) {
 				return;
@@ -170,6 +172,10 @@ define(function (require) {
 					self.setDirty(true);
 					// load tutorial
 					self.loadTutorial(responseData, false);
+					self.updateTutorialWindow();
+					if(callback!=undefined){
+						callback(responseData.name);
+					}
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
@@ -329,23 +335,27 @@ define(function (require) {
 		}
 
 		setView(view) {
+			var self = this;
+			var callback = function(tutorial){
+				if(view.componentSpecific.activeTutorial==tutorial){
+					// set component specific stuff, only custom handlers for popup widget
+					if (view.componentSpecific != undefined) {
+						if (view.componentSpecific.activeTutorial != undefined) {
+							self.goToChapter(view.componentSpecific.activeTutorial);
+						}
+
+						if (view.componentSpecific.currentStep != undefined) {
+							self.gotToStep(view.componentSpecific.currentStep);
+						}
+					}
+				}
+			}
 			// set data
 			if (view.data != undefined) {
 				if (view.dataType == 'array') {
 					for (var i = 0; i < view.data.length; i++) {
-						this.addTutorial(view.data[i]);
+						this.addTutorial(view.data[i],callback);
 					}
-				}
-			}
-
-			// set component specific stuff, only custom handlers for popup widget
-			if (view.componentSpecific != undefined) {
-				if (view.componentSpecific.activeTutorial != undefined) {
-					this.goToChapter(view.componentSpecific.activeTutorial);
-				}
-
-				if (view.componentSpecific.currentStep != undefined) {
-					this.gotToStep(view.componentSpecific.currentStep);
 				}
 			}
 

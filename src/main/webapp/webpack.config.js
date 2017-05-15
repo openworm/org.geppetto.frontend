@@ -136,7 +136,11 @@ module.exports = {
     ],
 
     resolve: {
-        alias: {geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js')},
+        alias: {
+        	geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js'),
+        	handlebars : 'handlebars/dist/handlebars.js'
+        	    
+        },
         extensions: ['', '.js', '.json'],
     },
 

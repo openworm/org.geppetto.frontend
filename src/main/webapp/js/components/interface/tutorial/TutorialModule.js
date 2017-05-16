@@ -21,6 +21,7 @@ define(function (require) {
 			super(props);
 
 			this.tutorials = [];
+			this.tutorialsMap = {};
 
 			this.state = {
 				tutorialData: {},
@@ -155,6 +156,8 @@ define(function (require) {
 		addTutorial(tutorialURL,callback) {
 			// do not add if the same url was already successfully added
 			if (this.tutorials.includes(tutorialURL)) {
+				var name = this.tutorialsMap[tutorialURL]
+				callback(name);
 				return;
 			}
 
@@ -166,6 +169,7 @@ define(function (require) {
 				url: tutorialURL,
 				success: function (responseData, textStatus, jqXHR) {
 					// on success add to tutorials utl list for view-state
+					self.tutorialsMap[tutorialURL]=responseData.name;
 					self.tutorials.push(tutorialURL);
 					self.setDirty(true);
 					// load tutorial
@@ -335,7 +339,6 @@ define(function (require) {
 		setView(view) {
 			// set base properties
 			super.setView(view);
-			
 			var self = this;
 			var callback = function(tutorial){
 				if(view.componentSpecific.activeTutorial==tutorial){

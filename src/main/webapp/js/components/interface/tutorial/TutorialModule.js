@@ -126,11 +126,11 @@ define(function (require) {
 				var height = self.getActiveTutorial()["height"];
 				if (height != undefined) {
 					p.height(height + "px");
-					this.dialog.css("height", height + "px");
+					self.dialog.css("height", height + "px");
 				}
 				if (width != undefined) {
 					p.width(width + "px");
-					this.dialog.css("width", width + "px");
+					self.dialog.css("width", width + "px");
 				}
 			};
 

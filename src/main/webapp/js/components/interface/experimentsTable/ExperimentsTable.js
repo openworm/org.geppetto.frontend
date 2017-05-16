@@ -8,6 +8,8 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var GEPPETTO = require('geppetto');
 
+    require('./ExperimentsTable.less');
+
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
     /**

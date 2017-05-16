@@ -1,6 +1,6 @@
 define(function (require) {
 
-    require('./Canvas.css');
+    require('./Canvas.less');
 
     var React = require('react');
     var Instance = require('../../../geppettoModel/model/Instance');

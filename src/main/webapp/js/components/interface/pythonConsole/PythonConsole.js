@@ -10,6 +10,8 @@ define(function (require) {
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
+    require('./PythonConsole.less');
+
     /**
      * Creates a table html component used to dipslay the experiments
      */

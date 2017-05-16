@@ -27,7 +27,7 @@ define(function (require) {
 				'HOME':'interface/home/HomeControl',
 				'SIMULATIONCONTROLS':'interface/simulationControls/ExperimentControls',
 				'CAMERACONTROLS': 'interface/cameraControls/CameraControls',
-				'SHARE':'interface/share/share',
+				'SHARE':'interface/share/Share',
 				'INFOMODAL':'controls/modals/InfoModal',
 				'MDMODAL':'controls/modals/MarkDownModal',
 				'QUERY':'interface/query/query',

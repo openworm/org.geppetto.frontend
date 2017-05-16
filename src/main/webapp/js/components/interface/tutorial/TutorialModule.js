@@ -349,7 +349,8 @@ define(function (require) {
 						}
 					}
 				}
-			}
+			};
+			
 			// set data
 			if (view.data != undefined) {
 				if (view.dataType == 'array') {
@@ -359,7 +360,7 @@ define(function (require) {
 				}
 			}
 
-
+			this.setDirty(false);
 		}
 
 		render() {

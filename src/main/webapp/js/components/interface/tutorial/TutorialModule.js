@@ -169,9 +169,10 @@ define(function (require) {
 					self.tutorials.push(tutorialURL);
 					self.setDirty(true);
 					// load tutorial
-					self.loadTutorial(responseData, false);
 					if(callback!=undefined){
 						callback(responseData.name);
+					}else{
+						self.loadTutorial(responseData,false);
 					}
 				},
 				error: function (responseData, textStatus, errorThrown) {
@@ -182,12 +183,12 @@ define(function (require) {
 
 		loadTutorial(tutorialData, start) {
 			this.state.tutorialData[tutorialData.name] = tutorialData;
+			this.state.activeTutorial = tutorialData.name;
+			this.state.currentStep = 0;
 			if (!this.getCookie()) {
 				if (start) {
-					this.state.activeTutorial = tutorialData.name;
-					this.state.currentStep = 0;
-					this.forceUpdate();
 					this.start();
+					this.forceUpdate();
 				}
 			}
 		}

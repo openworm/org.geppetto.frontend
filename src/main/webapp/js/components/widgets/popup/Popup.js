@@ -92,6 +92,7 @@ define(function (require) {
 		 * @param {String} msg - The message that is displayed inside the widget
 		 */
 		setMessage: function (msg) {
+			this.data = msg;
 			$("#" + this.id).html(msg);
 			GEPPETTO.Console.debugLog("Set new Message for " + this.id);
 
@@ -393,7 +394,7 @@ define(function (require) {
 			// set data
 			if(view.data != undefined){
 				if(view.dataType == 'string'){
-					this.setData(eval(view.data));
+					this.setMessage(view.data);
 				} else if($.isArray(view.data)){
 					this.setData(eval(view.data[0]));
 				}else {

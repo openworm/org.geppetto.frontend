@@ -45,10 +45,8 @@ define(function (require) {
 		start() {
 			this.state.currentStep = 0;
 			this.open(true);
+			this.updateTutorialWindow();
 			this.started = true;
-			if(this.getActiveTutorial()!=undefined){
-				this.updateTutorialWindow();
-			}
 		}
 
 		getActiveTutorial() {
@@ -172,7 +170,6 @@ define(function (require) {
 					self.setDirty(true);
 					// load tutorial
 					self.loadTutorial(responseData, false);
-					self.updateTutorialWindow();
 					if(callback!=undefined){
 						callback(responseData.name);
 					}
@@ -185,10 +182,10 @@ define(function (require) {
 
 		loadTutorial(tutorialData, start) {
 			this.state.tutorialData[tutorialData.name] = tutorialData;
-			this.state.activeTutorial = tutorialData.name;
-			this.state.currentStep = 0;
 			if (!this.getCookie()) {
 				if (start) {
+					this.state.activeTutorial = tutorialData.name;
+					this.state.currentStep = 0;
 					this.forceUpdate();
 					this.start();
 				}
@@ -335,6 +332,9 @@ define(function (require) {
 		}
 
 		setView(view) {
+			// set base properties
+			super.setView(view);
+			
 			var self = this;
 			var callback = function(tutorial){
 				if(view.componentSpecific.activeTutorial==tutorial){
@@ -359,8 +359,7 @@ define(function (require) {
 				}
 			}
 
-			// set base properties
-			super.setView(view);
+
 		}
 
 		render() {

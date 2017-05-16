@@ -1,15 +1,11 @@
 define(function (require) {
 
-	var link = document.createElement("link");
-	link.type = "text/css";
-	link.rel = "stylesheet";
-	link.href = "geppetto/js/components/interface/tutorial/tutorial.css";
-	document.getElementsByTagName("head")[0].appendChild(link);
-
 	var React = require('react'),
 		$ = require('jquery'),
 		Button = require('../../controls/mixins/bootstrap/button'),
 		GEPPETTO = require('geppetto');
+
+	require('./Tutorial.less');
 
 	$.cookie = require('js-cookie');
 

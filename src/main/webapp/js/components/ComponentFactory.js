@@ -31,7 +31,7 @@ define(function (require) {
 				'INFOMODAL':'controls/modals/InfoModal',
 				'MDMODAL':'controls/modals/MarkDownModal',
 				'QUERY':'interface/query/query',
-				'TUTORIAL':'interface/tutorial/TutorialModule',
+				'TUTORIAL':'interface/tutorial/Tutorial',
 				'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
 				'CHECKBOX': 'controls/Checkbox',
 				'TEXTFIELD': 'controls/TextField',

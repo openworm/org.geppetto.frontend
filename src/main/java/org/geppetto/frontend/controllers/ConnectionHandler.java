@@ -247,31 +247,36 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 					Map<String, Object> paramVal = param.getValue();
 					for (Map.Entry<String, Object> p : paramVal.entrySet()) {
 						String paramPath = p.getKey();
-						Double paramValue = (Double)p.getValue();
+						Double paramValue = (Double) p.getValue();
 
 						// add model parameter on parameters map
 						parametersMap.put(paramPath, paramValue.toString());
 					}
 				}
 
-				// set parameters for experiment
-				geppettoManager.setModelParameters(parametersMap, experiment, project);
+				// set parameters for experiment (one at the time)
+				for (Map.Entry<String, String> pmt : parametersMap.entrySet()) {
+					Map<String, String> pMap = new HashMap<String, String>();
+					pMap.put(pmt.getKey(), pmt.getValue());
+					geppettoManager.setModelParameters(pMap, experiment, project);
+				}
 
 				Double timestep = (Double) value.get("timeStep");
 				Double duration = (Double) value.get("duration");
 				String simulatorId = (String) value.get("simulator");
 				String aspectPath = (String) value.get("aspectPath");
-				
+
 				IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 				// set simulator parameters
-                 for (IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations()) {
-                     if (aspectConfiguration.getInstance().equals(aspectPath)) {
-                    	 aspectConfiguration.getSimulatorConfiguration().setTimestep(timestep.floatValue());
-                         aspectConfiguration.getSimulatorConfiguration().setLength(duration.floatValue());
-                         aspectConfiguration.getSimulatorConfiguration().setSimulatorId(simulatorId);
-                         dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
-                     }
-                 }
+				for (IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations()) {
+					if (aspectConfiguration.getInstance().equals(aspectPath)) {
+						aspectConfiguration.getSimulatorConfiguration().setTimestep(timestep.floatValue());
+						aspectConfiguration.getSimulatorConfiguration().setLength(duration.floatValue());
+						aspectConfiguration.getSimulatorConfiguration().setSimulatorId(simulatorId);
+						// TODO: add target here
+						dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
+					}
+				}
 
 				experiments.add(experiment);
 			}
@@ -1081,7 +1086,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 	 * @param experimentId
 	 * @param properties
 	 */
-	public void saveExperimentProperties(String requestID, long projectId, long experimentId, Map<String, String> properties) {
+	public void saveExperimentProperties(String requestID, long projectId, long experimentId,
+			Map<String, String> properties) {
 		if (DataManagerHelper.getDataManager().isDefault()) {
 			info(requestID, Resources.UNSUPPORTED_OPERATION.toString());
 		}
@@ -1113,7 +1119,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 					String aspectPath = properties.get("aspectInstancePath");
 					for (IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations()) {
 						if (aspectConfiguration.getInstance().equals(aspectPath)) {
-							aspectConfiguration.getSimulatorConfiguration().setTimestep(Float.parseFloat(properties.get(p)));
+							aspectConfiguration.getSimulatorConfiguration()
+									.setTimestep(Float.parseFloat(properties.get(p)));
 							dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
 							break;
 						}
@@ -1124,7 +1131,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener {
 					String aspectPath = properties.get("aspectInstancePath");
 					for (IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations()) {
 						if (aspectConfiguration.getInstance().equals(aspectPath)) {
-							aspectConfiguration.getSimulatorConfiguration().setLength(Float.parseFloat(properties.get(p)));
+							aspectConfiguration.getSimulatorConfiguration()
+									.setLength(Float.parseFloat(properties.get(p)));
 							dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
 							break;
 						}

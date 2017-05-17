@@ -110,7 +110,9 @@ define(function(require) {
             else if (event == GEPPETTO.Events.Lit_entities_changed) {
                 for (var i = 0; i < this.widgets.length; i++) {
                     var plot = this.widgets[i];
-                    if (this.isColorbar(plot)) {
+                    if (this.isColorbar(plot) &&
+                        // prevent plots from being destroyed when views are loading
+                        !GEPPETTO.Spinner.visible) {
                         plot.destroy();
                     }
                 }

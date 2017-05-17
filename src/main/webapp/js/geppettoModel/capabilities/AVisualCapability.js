@@ -72,7 +72,7 @@ define(function (require) {
             }
 
             if (this instanceof Instance || this instanceof ArrayInstance) {
-                GEPPETTO.SceneController.showInstance(this.getInstancePath());
+
 
                 this.visible = true;
 
@@ -128,31 +128,9 @@ define(function (require) {
          * @command AVisualCapability.setOpacity(opacity)
          *
          */
-        setOpacity: function (opacity, nested) {
-            if (nested === undefined) {
-                nested = true;
-            }
+        setOpacity: function (opacity) {
 
-            if (this instanceof Instance || this instanceof ArrayInstance) {
-                GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
-
-                if (nested === true && typeof this.getChildren === "function") {
-                    var children = this.getChildren();
-                    for (var i = 0; i < children.length; i++) {
-                        if (typeof children[i].setOpacity === "function") {
-                            children[i].setOpacity(opacity, nested);
-                        }
-                    }
-                }
-            } else if (this instanceof Type || this instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for (var j = 0; j < instances.length; j++) {
-                    if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].setOpacity(opacity, nested);
-                    }
-                }
-            }
+            GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
         },
 
 
@@ -170,31 +148,9 @@ define(function (require) {
          * @command AVisualCapability.setColor(color)
          *
          */
-        setColor: function (color, nested) {
-            if (nested === undefined) {
-                nested = true;
-            }
+        setColor: function (color) {
 
-            if (this instanceof Instance || this instanceof ArrayInstance) {
-                GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
-
-                if (nested === true && typeof this.getChildren === "function") {
-                    var children = this.getChildren();
-                    for (var i = 0; i < children.length; i++) {
-                        if (typeof children[i].setColor === "function") {
-                            children[i].setColor(color, nested);
-                        }
-                    }
-                }
-            } else if (this instanceof Type || this instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for (var j = 0; j < instances.length; j++) {
-                    if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].setColor(color, nested);
-                    }
-                }
-            }
+            GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
 
             GEPPETTO.trigger(GEPPETTO.Events.Color_set, {instance: this, color: color});
 
@@ -319,43 +275,9 @@ define(function (require) {
         /**
          * Set the type of geometry to be used for this aspect
          */
-        setGeometryType: function (type, thickness, nested) {
-            if (nested === undefined) {
-                nested = true;
-            }
-
-            var message = '';
-
-            if (this instanceof Instance || this instanceof ArrayInstance) {
-                if (GEPPETTO.SceneController.setGeometryType(this, type, thickness)) {
-                    message = "Geometry type successfully changed for " + this.getInstancePath();
-                }
-                else {
-                    message = "Error changing the geometry type for " + this.getInstancePath();
-                }
-
-                // nested
-                if (nested === true && typeof this.getChildren === "function") {
-                    var children = this.getChildren();
-                    for (var i = 0; i < children.length; i++) {
-                        if (typeof children[i].setGeometryType === "function") {
-                            children[i].setGeometryType(type, thickness, nested);
-                        }
-                    }
-                }
-            } else if (this instanceof Type || this instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for (var j = 0; j < instances.length; j++) {
-                    if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].setGeometryType(type, thickness, nested);
-                    }
-                }
-
-                message = GEPPETTO.Resources.BATCH_SET_GEOMETRY;
-            }
-
-            return message;
+        setGeometryType: function (type, thickness) {
+            GEPPETTO.SceneController.setGeometryType(this, type, thickness)
+            return this;
         }
 
 

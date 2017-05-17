@@ -186,6 +186,7 @@ define(function (require) {
             return this;
         }
 
+
         /**
          * Change the color of a given entity
          *
@@ -195,29 +196,33 @@ define(function (require) {
          * @return {Canvas}
          */
         setColor(path, color, recursion) {
-            if(recursion===undefined){
-                recursion=false;
+            if (recursion === undefined) {
+                recursion = false;
             }
             var entity = eval(path);
-            if (entity instanceof Instance || entity instanceof ArrayInstance) {
-                this.engine.setColor(path, color);
+            if (entity.hasCapability("VisualCapability")) {
+                if (entity instanceof Instance || entity instanceof ArrayInstance) {
 
-                if (typeof entity.getChildren === "function") {
-                    var children = entity.getChildren();
-                    for (var i = 0; i < children.length; i++) {
-                        this.setColor(children[i].getInstancePath(), color, true);
+                    this.engine.setColor(path, color);
+
+                    if (typeof entity.getChildren === "function") {
+                        var children = entity.getChildren();
+                        for (var i = 0; i < children.length; i++) {
+                            this.setColor(children[i].getInstancePath(), color, true);
+                        }
+                    }
+
+                } else if (entity instanceof Type || entity instanceof Variable) {
+                    // fetch all instances for the given type or variable and call hide on each
+                    var instances = GEPPETTO.ModelFactory.getAllInstancesOf(entity);
+                    for (var j = 0; j < instances.length; j++) {
+                        this.setColor(instances[j].getInstancePath(), color, true);
                     }
                 }
-            } else if (entity instanceof Type || entity instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(entity);
-                for (var j = 0; j < instances.length; j++) {
-                    this.setColor(instances[j].getInstancePath(), color, true);
+                if (!recursion) {
+                    this.viewState.custom.colorMap[path] = color;
+                    this.setDirty(true);
                 }
-            }
-            if(!recursion){
-                this.viewState.custom.colorMap[path] = color;
-                this.setDirty(true);
             }
             return this;
         }
@@ -247,10 +252,34 @@ define(function (require) {
          * @param opacity
          * @returns {Canvas}
          */
-        setOpacity(instancePath, opacity) {
-            this.engine.setOpacity(instancePath, opacity);
-            this.viewState.custom.opacityMap[instancePath] = opacity;
-            this.setDirty(true);
+        setOpacity(instancePath, opacity, recursion) {
+            if (recursion === undefined) {
+                recursion = false;
+            }
+            var entity = eval(path);
+            if (entity.hasCapability("VisualCapability")) {
+                if (entity instanceof Instance || entity instanceof ArrayInstance) {
+                    this.engine.setOpacity(instancePath, opacity);
+
+                    if (typeof entity.getChildren === "function") {
+                        var children = entity.getChildren();
+                        for (var i = 0; i < children.length; i++) {
+                            this.setOpacity(children[i].getInstancePath(), opacity, true);
+                        }
+                    }
+                } else if (entity instanceof Type || entity instanceof Variable) {
+                    // fetch all instances for the given type or variable and call hide on each
+                    var instances = GEPPETTO.ModelFactory.getAllInstancesOf(entity);
+                    for (var j = 0; j < instances.length; j++) {
+                        this.setOpacity(instancePath, opacity, true);
+                    }
+                }
+                if (!recursion) {
+                    this.viewState.custom.opacityMap[instancePath] = opacity;
+                    this.setDirty(true);
+                }
+            }
+
             return this;
         }
 
@@ -272,10 +301,35 @@ define(function (require) {
          * @param thickness Optional: the thickness to be used if the geometry is "lines"
          * @return {Canvas}
          */
-        setGeometryType(instance, type, thickness) {
-            this.engine.setGeometryType(instance, type, thickness);
-            this.viewState.custom.geometryTypeMap[instance.getInstancePath()] = {"type": type, "thickness": thickness};
-            this.setDirty(true);
+        setGeometryType(instance, type, thickness, recursion) {
+
+            if (recursion === undefined) {
+                recursion = false;
+            }
+            var entity = eval(path);
+            if (entity.hasCapability("VisualCapability")) {
+                if (entity instanceof Instance || entity instanceof ArrayInstance) {
+                    this.engine.setGeometryType(instance, type, thickness);
+
+                    if (typeof entity.getChildren === "function") {
+                        var children = entity.getChildren();
+                        for (var i = 0; i < children.length; i++) {
+                            this.setGeometryType(children[i].getInstancePath(), type, thickness, true);
+                        }
+                    }
+                } else if (entity instanceof Type || entity instanceof Variable) {
+                    // fetch all instances for the given type or variable and call hide on each
+                    var instances = GEPPETTO.ModelFactory.getAllInstancesOf(entity);
+                    for (var j = 0; j < instances.length; j++) {
+                        this.setGeometryType(instance, type, thickness, true);
+                    }
+                }
+                if (!recursion) {
+                    this.viewState.custom.geometryTypeMap[instance.getInstancePath()] = {"type": type, "thickness": thickness};
+                    this.setDirty(true);
+                }
+            }
+
             return this;
         }
 

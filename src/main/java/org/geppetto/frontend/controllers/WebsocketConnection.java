@@ -528,8 +528,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		String name;
 		Map<String, String> modelParameters;
 		Map<String, String> simulatorParameters;
-		Long duration;
-		Long timeStep;
+		Float duration;
+		Float timeStep;
 		String simulator;
 		String aspectPath;
 	}

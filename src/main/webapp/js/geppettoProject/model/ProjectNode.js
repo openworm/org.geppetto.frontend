@@ -183,10 +183,11 @@ define(['backbone'], function (require) {
          */
         newExperimentBatch: function (experimentData, callback) {
             if(this.writePermission && this.persisted && GEPPETTO.UserController.isLoggedIn()){
-                var parameters = {};
-                parameters["projectId"] = this.id;
-                parameters["experiments"] = JSON.stringify(experimentData);
-                GEPPETTO.MessageSocket.send("new_experiment_batch", parameters, callback);
+                var parameters = {
+                    projectId: this.id,
+                    experiments: experimentData
+                };
+                GEPPETTO.MessageSocket.send("new_experiment_batch", JSON.stringify(parameters), callback);
             }else{
                 return GEPPETTO.Utility.persistedAndWriteMessage(this);
             }

@@ -264,8 +264,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				{
 					if(aspectConfiguration.getInstance().equals(e.aspectPath))
 					{
-						aspectConfiguration.getSimulatorConfiguration().setTimestep(e.timeStep.floatValue());
-						aspectConfiguration.getSimulatorConfiguration().setLength(e.duration.floatValue());
+						aspectConfiguration.getSimulatorConfiguration().setTimestep(e.timeStep);
+						aspectConfiguration.getSimulatorConfiguration().setLength(e.duration);
 						aspectConfiguration.getSimulatorConfiguration().setSimulatorId(e.simulator);
 						aspectConfiguration.getSimulatorConfiguration().getParameters().putAll(e.simulatorParameters);
 						dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());

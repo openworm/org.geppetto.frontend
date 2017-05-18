@@ -1213,9 +1213,9 @@ define(['jquery'], function () {
          * @param color
          */
         setThreeColor: function (threeColor, color) {
-            if (color.indexOf && color.indexOf("rgb") == -1) {
+            if (!isNaN(color % 1)) {
+                // we have an integer (hex) value
                 threeColor.setHex(color);
-
             } else if (color.hasOwnProperty("r") && color.hasOwnProperty("g") && color.hasOwnProperty("b")) {
                 threeColor.r = color.r;
                 threeColor.g = color.g;

@@ -30,7 +30,7 @@ define(function (require) {
                     colorFunctionMap: {},
                     opacityMap: {},
                     geometryTypeMap: {},
-                    backgroundColor: 0x101010
+                    backgroundColor: "0x101010"
                 },
                 instances: []
             }

@@ -177,13 +177,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			}
 			case NEW_EXPERIMENT_BATCH:
 			{
-				Gson gson = new Gson();
-				parameters = gson.fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				Map<String,Map<String, Object>> experimentData = gson.fromJson(parameters.get("experimentNames"), Map.class);
-				connectionHandler.newExperimentBatch(requestID, projectId, experimentData);
+				BatchExperiment receivedObject = new Gson().fromJson(gmsg.data, BatchExperiment.class);
+				connectionHandler.newExperimentBatch(requestID, receivedObject.projectId, receivedObject);
 				break;
 			}
 			case CLONE_EXPERIMENT:
@@ -520,6 +515,23 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Map<String, String> modelParameters;
 		Map<String, String> properties;
 		String view;
+	}
+	
+	class BatchExperiment
+	{
+		Long projectId;
+		List<NewExperiment> experiments;
+	}
+	
+	class NewExperiment
+	{
+		String name;
+		Map<String, String> modelParameters;
+		Map<String, String> simulatorParameters;
+		Long duration;
+		Long timeStep;
+		String simulator;
+		String aspectPath;
 	}
 
 	class GeppettoModelAPIParameters

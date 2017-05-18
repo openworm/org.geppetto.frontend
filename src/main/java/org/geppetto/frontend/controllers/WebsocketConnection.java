@@ -526,6 +526,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	class NewExperiment
 	{
 		String name;
+		List<String> watchedVariables;
 		Map<String, String> modelParameters;
 		Map<String, String> simulatorParameters;
 		Float duration;

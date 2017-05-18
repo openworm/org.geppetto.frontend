@@ -257,7 +257,17 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				IExperiment experiment = geppettoManager.newExperiment(requestID, project);
 				experiment.setName(e.name);
-				geppettoManager.setModelParameters(e.modelParameters, experiment, project);
+				// set watched variables
+				geppettoManager.setWatchedVariables(e.watchedVariables, experiment, project, true);
+				
+				// set model paramerers
+				for (Map.Entry<String, String> entry : e.modelParameters.entrySet()) {
+				    String key = entry.getKey();
+				    String value = entry.getValue();
+				    Map<String, String> modelParam = new HashMap<String, String>();
+				    modelParam.put(key, value);
+				    geppettoManager.setModelParameters(modelParam, experiment, project);
+				}
 				IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 				// set simulator parameters
 				for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())

@@ -308,9 +308,8 @@ define(function(require) {
                 var update = JSON.parse(payload.project_loaded);
                 var project = update.project;
                 var persisted = update.persisted;
-                var readOnly = update.isReadOnly;
                 window.Project = GEPPETTO.ProjectFactory.createProjectNode(project, persisted);
-                window.Project.readOnly = update.isReadOnly;
+                window.Project.readOnly = !update.persisted;
 
 
                 GEPPETTO.trigger(GEPPETTO.Events.Project_loaded);

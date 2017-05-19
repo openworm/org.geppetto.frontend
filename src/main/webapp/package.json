@@ -11,7 +11,6 @@
     "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/"
   },
   "devDependencies": {
-    "ami.js": "0.0.15",
     "anchorme": "^0.7.1",
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",

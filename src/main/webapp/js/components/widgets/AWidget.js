@@ -493,10 +493,6 @@ define(function (require) {
                 this.$el.parent().effect('shake', options, speed)
             }
 
-            shouldComponentUpdate() {
-                return false;
-            }
-
             componentDidMount() {
                 var that = this;
 

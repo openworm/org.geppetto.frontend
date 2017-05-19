@@ -1,4 +1,4 @@
-var urlBase = "http://127.0.0.1:8081/";
+var urlBase = "http://127.0.0.1:8080/";
 var baseFollowUp = "org.geppetto.frontend/geppetto?";
 
 var hhcellProject = "load_project_from_id=1";
@@ -14,14 +14,14 @@ var Pharyngeal = "load_project_from_id=58";
 var defaultColor = [0.00392156862745098,0.6,0.9098039215686274];
 var zoomClicks = 50, panClicks=10, rotateClicks=20;
 
-function launchTest(test, projectName){
+function launchTest(test, projectName, timeAllowed){
 	casper.waitWhileVisible('div[id="loading-spinner"]', function () {
 		this.echo("I've waited for "+projectName+" project to load.");
 		test.assertTitle("geppetto", "geppetto title is ok");
 		test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
 		test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
 		test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-	},null,50000);
+	},null,timeAllowed);
 }
 
 function resetCameraTest(test,expectedCameraPosition){
@@ -53,9 +53,7 @@ function removeAllPlots(){
 		casper.evaluate(function() {
 			$("div.js-plotly-plot").remove();
 		});
-		this.waitWhileVisible('div[id="Plot1"]', function () {
-			this.echo("I've waited for Plot1 to disappear");
-		},null,1000);
+		this.wait(1000, function () {});
 	});
 }
 
@@ -150,9 +148,21 @@ function test3DMeshColor(test,testColor,variableName,index){
 		return [color.r, color.g, color.b];
 	},variableName,index);
 	
-	test.assertEquals(testColor[0], color[0], "Red default color is correct for "+ variableName);
-	test.assertEquals(testColor[1], color[1], "Green default color is correct for " + variableName);
-	test.assertEquals(testColor[2], color[2], "Black default color is correct for " +variableName);
+	test.assertEquals(color[0],testColor[0], "Red default color is correct for "+ variableName);
+	test.assertEquals(color[1],testColor[1],"Green default color is correct for " + variableName);
+	test.assertEquals(color[2],testColor[2],"Black default color is correct for " +variableName);
+}
+
+function test3DMeshOpacity(test,opactityExpected,variableName,index){
+	if(index==undefined){
+		index=0;
+	}
+	var opacity = casper.evaluate(function(variableName,index) {
+		var opacity = Canvas1.engine.getRealMeshesForInstancePath(variableName)[index].material.opacity;
+		return opacity;
+	},variableName,index);
+	
+	test.assertEquals(opacity,opactityExpected, "Opacity is correct for "+ variableName);
 }
 
 /**

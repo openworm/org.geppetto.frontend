@@ -78,7 +78,6 @@ define(function(require)
                             // NOTE: this bit needs to be refactored once widgets/components are consolidated
                             if(componentViews[cv].widgetType != undefined && componentViews[cv].isWidget){
                                 component = GEPPETTO.ComponentFactory.addWidget(componentViews[cv].widgetType, {}, function () {
-                                    console.log(this);
                                     this.setView(componentViews[cv])
                                 });
                             } else if(componentViews[cv].componentType != undefined) {
@@ -112,7 +111,7 @@ define(function(require)
                             // check if state-view API is implemented by the component
                             typeof components[c].getView == 'function' &&
                             // check that component is not stateless
-                            components[c].isStateLess() != undefined & !components[c].isStateLess()
+                            components[c].isStateLess != undefined && !components[c].isStateLess()
                         ) {
                             anyChanges = !anyChanges ? components[c].isDirty() : anyChanges;
                             // build object literal with view state for all the widgets/components

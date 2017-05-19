@@ -35,56 +35,59 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 
 	/**Tests HHCELL project**/
 	casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
-		casper.then(function(){launchTest(test,"Hhcell");});
+		casper.then(function(){launchTest(test,"Hhcell",30000);});
 		casper.then(function(){hhcellTest(test);});
 	});
 	
 	/**Tests Acnet project**/
 	casper.thenOpen(urlBase+baseFollowUp+acnetProject,function() {
-		casper.then(function(){launchTest(test,"ACNet");});
+		casper.then(function(){launchTest(test,"ACNet",30000);});
 		casper.then(function(){acnetTest(test);});
 	});
 	
 	/**Tests C302 project**/
 	casper.thenOpen(urlBase+baseFollowUp+c302Project,function() {
-		casper.then(function(){launchTest(test,"C302");});
+		casper.then(function(){launchTest(test,"C302",450000);});
 		casper.then(function(){c302Test(test);});
 	});
 	
 	/**Tests CA1 project**/
 	casper.thenOpen(urlBase+baseFollowUp+ca1Project,function() {
-		casper.then(function(){launchTest(test,"CA1");});
+		casper.then(function(){launchTest(test,"CA1",45000);});
 		casper.then(function(){ca1Test(test);});
 	});
 	
 	/**Tests EyeWire project**/
 	casper.thenOpen(urlBase+baseFollowUp+eyeWire,function() {
-		casper.then(function(){launchTest(test,"EyeWireGanglionCell");});
+		casper.then(function(){launchTest(test,"EyeWireGanglionCell",45000);});
 	});
 	
 	/**Tests Pharyngeal project**/
 	casper.thenOpen(urlBase+baseFollowUp+Pharyngeal,function() {
-		casper.then(function(){launchTest(test,"Pharyngeal");});
+		casper.then(function(){launchTest(test,"Pharyngeal",45000);});
 		casper.then(function(){pharyngealTest(test);});
 	});
 	
 	/**Tests NWB project**/
 	casper.thenOpen(urlBase+baseFollowUp+nwbSample,function() {
-		casper.then(function(){launchTest(test,"NWB Sample");});
+		casper.then(function(){launchTest(test,"NWB Sample",45000);});
 		casper.then(function(){nwbSampleTest(test);});
 	});
 	
-//	casper.thenOpen(urlBase+baseFollowUp+cElegansConnectome,function() {
-//		casper.then(function(){launchTest(test,"cElegansConnectome");});
-//	});
-//	
-//	casper.thenOpen(urlBase+baseFollowUp+cElegansMuscleModel,function() {
-//		casper.then(function(){launchTest(test,"cElegansMuscleModel");});
-//	});
-//	
-//	casper.thenOpen(urlBase+baseFollowUp+cElegansPVDR,function() {
-//		casper.then(function(){launchTest(test,"cElegansPVDR");});
-//	});
+	/**Tests cElegansConnectome project**/
+	casper.thenOpen(urlBase+baseFollowUp+cElegansConnectome,function() {
+		casper.then(function(){launchTest(test,"cElegansConnectome",180000);});
+	});
+	
+	/**Tests cElegansMuscleModel project**/
+	casper.thenOpen(urlBase+baseFollowUp+cElegansMuscleModel,function() {
+		casper.then(function(){launchTest(test,"cElegansMuscleModel",180000);});
+	});
+	
+	/**Tests cElegansPVDR project**/
+	casper.thenOpen(urlBase+baseFollowUp+cElegansPVDR,function() {
+		casper.then(function(){launchTest(test,"cElegansPVDR",180000);});
+	});
 	
 	casper.run(function() {
 		test.done();
@@ -107,10 +110,10 @@ function hhcellTest(test,name){
 	casper.then(function () {
 		casper.echo("-------Testing Original Color--------");
 		test3DMeshColor(test,defaultColor,"hhcell.hhpop[0]");
+	});
+	casper.then(function () {
 		casper.echo("Opening controls panel");
-		casper.evaluate(function(){
-			GEPPETTO.ControlPanel.open();
-		});
+		buttonClick("#controlPanelBtn");
 	});
 	casper.then(function(){
 		casper.echo("-------Testing Control Panel--------");
@@ -132,27 +135,29 @@ function hhcellTest(test,name){
 	casper.then(function(){
 		this.waitUntilVisible('div[id="Plot1"]', function () {
 			this.echo("I've waited for Plot1 to come up");
-			buttonClick("#anyProjectFilterBtn");
 		});
 	});	
 	
 	casper.then(function(){
+		buttonClick("#anyProjectFilterBtn");
 		removeAllPlots();
 	});
 	
 	casper.then(function(){
-		casper.echo("-------Testing Spotlight--------");
-		this.wait(500,function(){
-			var rows = casper.evaluate(function() {
-				var rows = $(".standard-row").length;
-				return rows;
-			});
-			test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
-			casper.evaluate(function(){
-				GEPPETTO.ControlPanel.close();
-			});
-			testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,true,"hhcell","hhcell.hhpop[0]");
+		removeAllPlots();
+		var rows = casper.evaluate(function() {
+			var rows = $(".standard-row").length;
+			return rows;
 		});
+		test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
+		casper.evaluate(function() {
+			$("#controlpanel").hide();
+		});
+	});
+	
+	casper.then(function(){
+		casper.echo("-------Testing Spotlight--------");
+		testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,true,"hhcell","hhcell.hhpop[0]");
 	});
 	
 	casper.then(function(){
@@ -171,7 +176,7 @@ function hhcellTest(test,name){
 			return mesh;
 		});
 		test.assertEquals(mesh, 1, "Canvas widget has hhcell");
-		
+
 		casper.echo("-------Testing Camera Controls--------");
 		testCameraControlsWithCanvasWidget(test, [0,0,30.90193733102435]);
 		casper.wait(1000, function(){
@@ -253,6 +258,10 @@ function acnetTest(test){
 		
 		test3DMeshColorNotEquals(test,defaultColor, "acnet2.baskets_12[1]");
 		test3DMeshColor(test,[1,0.35294117647058826,0.00784313725490196], "acnet2.baskets_12[1]");
+		
+		//test they are ghosted
+		test3DMeshOpacity(test,0.3, "acnet2.baskets_12[4]");
+		test3DMeshOpacity(test,0.3, "acnet2.baskets_12[1]");
 
 	});
 	
@@ -277,6 +286,10 @@ function acnetTest(test){
 		testVisualGroup(test,"acnet2.baskets_12[0]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
 		
 		testVisualGroup(test,"acnet2.baskets_12[5]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
+		
+		//test these cells are no longer ghosted
+		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
+		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
 		
 		//test color function
 		casper.wait(2000, function(){
@@ -340,9 +353,9 @@ function c302Test(test){
 					return rows;
 				});
 				test.assertEquals(rows, 10, "Correct amount of rows for Global filter");
-				casper.evaluate(function(){
-					GEPPETTO.ControlPanel.close();
-				});
+				casper.evaluate(function() {
+					$("#controlpanel").hide();
+				});	
 				casper.echo("-------Testing Spotlight--------");
 				testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot2"]',true,false);
 			});
@@ -401,9 +414,9 @@ function ca1Test(test){
 	})
 
 	casper.then(function(){
-		casper.evaluate(function(){
-			GEPPETTO.ControlPanel.close();
-		});
+		casper.evaluate(function() {
+			$("#controlpanel").hide();
+		});	
 		casper.echo("-------Testing Spotlight--------");
 		testSpotlight(test,  "ca1.CA1_CG[0].Seg0_apical_dendrite_22_1158.v",'',false,false);
 	});
@@ -414,16 +427,11 @@ function ca1Test(test){
 }
 
 function pharyngealTest(test){
-	casper.then(function(){
-		casper.waitForSelector('div[id="Plot1"]', function() {
-			this.echo("I've waited for Plot1 to load.");
-			this.echo("Opening controls panel");
-			casper.evaluate(function(){
-				GEPPETTO.ControlPanel.open();
-			});
-		}, null, 30000);
+	casper.then(function () {
+		casper.echo("Opening controls panel");
+		buttonClick("#controlPanelBtn");
 	});
-
+	
 	casper.then(function(){
 		testInitialControlPanelValues(test,10);
 	});
@@ -436,5 +444,27 @@ function nwbSampleTest(test){
 		this.waitForSelector('div[id="Popup2"]', function() {
 			this.echo("I've waited for Popup2 component to load.");
 		});
+	}, null, 30000);
+}
+
+function c302Muscle(test){
+	casper.echo("------------STARTING C302 Muscle Model TEST--------------");
+	casper.waitForSelector('div[id="Popup1"]', function() {
+		this.echo("I've waited for Popup1 to load.");
+	}, null, 30000);
+}
+
+function c302Connectome(test){
+	casper.echo("------------STARTING C302 Muscle Model TEST--------------");
+	casper.waitForSelector('div[id="Popup1"]', function() {
+		this.echo("I've waited for Popup1 to load.");
+	}, null, 30000);
+}
+
+
+function c302PVDR(test){
+	casper.echo("------------STARTING C302 Muscle Model TEST--------------");
+	casper.waitForSelector('div[id="Popup1"]', function() {
+		this.echo("I've waited for Popup1 to load.");
 	}, null, 30000);
 }

@@ -50,8 +50,7 @@ define(function (require) {
              * @returns {*}
              */
             addWidget: function (type, properties, callback) {
-                var newWidget = GEPPETTO.ComponentFactory.addWidget(type, properties, callback);
-                return newWidget;
+                return GEPPETTO.ComponentFactory.addWidget(type, properties, callback);
             },
 
             /**
@@ -177,7 +176,8 @@ define(function (require) {
              * @returns {String} All commands and descriptions for G.
              */
             help: function () {
-                return GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/pages/geppetto/G.js", GEPPETTO.G, "G");
+                GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/pages/geppetto/G.js", GEPPETTO.G, "G");
+                return this;
             },
 
             /**

@@ -5,7 +5,6 @@ define(function(require) {
     return function(GEPPETTO) {
 
         var messageTypes = {
-
             EXPERIMENT_UPDATE: "experiment_update",
             SIMULATION_CONFIGURATION: "project_configuration",
             PROJECT_LOADED: "project_loaded",
@@ -14,6 +13,7 @@ define(function(require) {
             PROJECT_PROPS_SAVED: "project_props_saved",
             EXPERIMENT_PROPS_SAVED: "experiment_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
+            EXPERIMENT_BATCH_CREATED: "experiment_batch_created",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
             VARIABLE_FETCHED: "variable_fetched",
@@ -48,15 +48,19 @@ define(function(require) {
 
         messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {
             GEPPETTO.SimulationHandler.loadProject(payload);
-            GEPPETTO.ViewController.resolveViews();
         };
 
         messageHandler[messageTypes.MODEL_LOADED] = function(payload) {
             GEPPETTO.SimulationHandler.loadModel(payload);
+            GEPPETTO.ViewController.resolveViews();
         };
 
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {
-            var newExperiment = GEPPETTO.SimulationHandler.createExperiment(payload);
+            GEPPETTO.SimulationHandler.createExperiment(payload);
+        };
+
+        messageHandler[messageTypes.EXPERIMENT_BATCH_CREATED] = function(payload) {
+            GEPPETTO.SimulationHandler.createExperimentBatch(payload);
         };
 
         messageHandler[messageTypes.ERROR_RUNNING_EXPERIMENT] = function(payload) {
@@ -619,6 +623,24 @@ define(function(require) {
                 GEPPETTO.trigger(GEPPETTO.Events.Experiment_created, newExperiment);
 
                 return newExperiment;
+            },
+
+            /**
+             * Creates experiment batch on project model
+             *
+             * @param payload
+             */
+            createExperimentBatch: function(payload) {
+                var experiments = JSON.parse(payload.experiment_batch_created);
+
+                for(var i=0; i<experiments.length; i++){
+                    var newExperiment = GEPPETTO.ProjectFactory.createExperimentNode(experiments[i]);
+                    window.Project.getExperiments().push(newExperiment);
+                    newExperiment.setParent(window.Project);
+                    GEPPETTO.trigger(GEPPETTO.Events.Experiment_created, newExperiment);
+                }
+
+                GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_BATCH_CREATED);
             },
 
             /**

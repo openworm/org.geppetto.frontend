@@ -8,6 +8,8 @@ define(function (require) {
     var React = require('react'), $ = require('jquery');
     var GEPPETTO = require('geppetto');
 
+    require('./ExperimentsTable.less');
+
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
     /**
@@ -409,21 +411,21 @@ define(function (require) {
                 "Yes",
                 function(){
                     GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].deleteExperiment();");
-                    e.stopPropagation();
-                    e.nativeEvent.stopImmediatePropagation();
                 },
                 "Cancel",
                 function(){
                 }
             );
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
         },
         
         cloneExperiment : function(e){
         	var experiment = this.props.experiment;
         	var index = window.Project.getExperiments().indexOf(experiment);
         	GEPPETTO.Console.executeImplicitCommand("Project.getExperiments()[" + index + "].clone();");
-       	 	e.stopPropagation();
-       	 	e.nativeEvent.stopImmediatePropagation();
+        	e.stopPropagation();
+        	e.nativeEvent.stopImmediatePropagation();
         },
         downloadModels : function(e){
         	var experiment = this.props.experiment;
@@ -499,7 +501,7 @@ define(function (require) {
         	var self = this;
         	// Handles new experiment button click
             $("#new_experiment").click(function () {
-            	//retrieve last created experimet and used it to clone new one
+            	//retrieve last created experiment and used it to clone new one
             	var experiments = window.Project.getExperiments();
             	var experiment = window.Project.getActiveExperiment();
             	if(experiments.length==0){
@@ -608,9 +610,6 @@ define(function (require) {
             }
 
             this.setState({experiments: rows});
-//            this.setState({
-//            	  experiments: rows.filter((_, i) => i !== index);
-//            	});
             this.state.counter++;
         },
 

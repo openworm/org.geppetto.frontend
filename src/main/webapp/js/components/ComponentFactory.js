@@ -7,7 +7,7 @@ define(function (require) {
 		var ReactDOM = require('react-dom');
 		var spinner=require('./interface/loadingSpinner/LoadingSpinner.js');
 
-		var addWidget = require('./widgets/NewWidget.js');
+		var addWidget = require('./widgets/AWidget.js');
 		
 		GEPPETTO.ComponentFactory = {
 
@@ -27,11 +27,11 @@ define(function (require) {
 				'HOME':'interface/home/HomeControl',
 				'SIMULATIONCONTROLS':'interface/simulationControls/ExperimentControls',
 				'CAMERACONTROLS': 'interface/cameraControls/CameraControls',
-				'SHARE':'interface/share/share',
+				'SHARE':'interface/share/Share',
 				'INFOMODAL':'controls/modals/InfoModal',
 				'MDMODAL':'controls/modals/MarkDownModal',
 				'QUERY':'interface/query/query',
-				'TUTORIAL':'interface/tutorial/TutorialModule',
+				'TUTORIAL':'interface/tutorial/Tutorial',
 				'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
 				'CHECKBOX': 'controls/Checkbox',
 				'TEXTFIELD': 'controls/TextField',
@@ -117,11 +117,12 @@ define(function (require) {
 					if (!("isStateless" in properties)){
 						properties["isStateless"] = false;
 					}
+					properties["parentContainer"] = container;
 					
 					// Create component/widget
 					var type = loadedModule;
 					if (isWidget){
-						type = addWidget(type);
+						type = addWidget(loadedModule);
 					}
 					var component = React.createFactory(type)(properties);
 					var renderedComponent = window[properties.id] = that.renderComponent(component, container, callback);
@@ -139,6 +140,7 @@ define(function (require) {
 					}
 					else{
 						GEPPETTO.Console.updateTags(componentType, renderedComponent);
+						renderedComponent.container = container;
 					}
 					
 					return renderedComponent;

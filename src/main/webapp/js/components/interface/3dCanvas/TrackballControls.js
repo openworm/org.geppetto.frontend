@@ -428,6 +428,7 @@ THREE.TrackballControls = function ( object, domElement, viewerId ) {
 	};
 	
 	this.reset = function () {
+		_this.cameraByConsoleLock = true;
 
 		_state = STATE.NONE;
 		_prevState = STATE.NONE;
@@ -443,6 +444,9 @@ THREE.TrackballControls = function ( object, domElement, viewerId ) {
 		_this.dispatchEvent( changeEvent );
 
 		lastPosition.copy( _this.object.position );
+
+		_this.cameraChanged = true;
+		_this.unsetCameraByConsoleLock();
 
 	};
 

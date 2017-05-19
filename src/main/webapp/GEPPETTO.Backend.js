@@ -4,10 +4,10 @@ var app = express();
 var expressWs = require('express-ws')(app)
 
 // Redirection for static content
-app.use('/geppetto', express.static(__dirname + '/'));
+app.use('/org.geppetto.frontend/geppetto', express.static(__dirname + '/'));
 
 // Web handler
-app.get('/', function (req, res) {
+app.get('/org.geppetto.frontend/geppetto', function (req, res) {
 	velocity.renderOnce("geppetto.vm", {}, "build/", function(err, data) {
 	    if (err) {
 	        console.error(err);
@@ -27,12 +27,10 @@ app.ws('/org.geppetto.frontend/GeppettoServlet', function(ws, req) {
 			console.log("Geppetto Version...")
 			ws.send(JSON.stringify({"requestID":msgParsed['requestID'],"type":"geppetto_version","data":"{\"geppetto_version\":\"0.3.4\"}"}));
 		}
-	
 	});
 
 	console.log("Opening ws...")
 	ws.send(JSON.stringify({"type":"client_id","data":"{\"clientID\":\"Connection161\"}"}));
-	
 });
 
 // Creating server

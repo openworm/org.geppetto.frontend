@@ -210,16 +210,24 @@ define(function (require) {
          * @returns {String} - Instance path
          *
          */
-        getInstancePath: function () {
+        getInstancePath: function (useType) {
+            if(useType==undefined){
+                useType=false;
+            }
+
             var parent = this.parent;
             var parentPath = "";
 
             if (parent != null && parent != undefined) {
-                parentPath = parent.getInstancePath();
+                parentPath = parent.getInstancePath(useType);
             }
             var path = parentPath + "." + this.getId();
 
-            return (parentPath != "") ? path : this.getId();
+            if(useType){
+                path+="("+this.getType().getId()+")";
+            }
+
+            return (parentPath != "") ? path : path.replace('.','');
         },
 
         /**

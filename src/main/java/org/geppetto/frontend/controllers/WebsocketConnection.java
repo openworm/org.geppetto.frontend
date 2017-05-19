@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,6 +173,12 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
 				connectionHandler.newExperiment(requestID, projectId);
+				break;
+			}
+			case NEW_EXPERIMENT_BATCH:
+			{
+				BatchExperiment receivedObject = new Gson().fromJson(gmsg.data, BatchExperiment.class);
+				connectionHandler.newExperimentBatch(requestID, receivedObject.projectId, receivedObject);
 				break;
 			}
 			case CLONE_EXPERIMENT:
@@ -508,6 +515,24 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Map<String, String> modelParameters;
 		Map<String, String> properties;
 		String view;
+	}
+	
+	class BatchExperiment
+	{
+		Long projectId;
+		List<NewExperiment> experiments;
+	}
+	
+	class NewExperiment
+	{
+		String name;
+		List<String> watchedVariables;
+		Map<String, String> modelParameters;
+		Map<String, String> simulatorParameters;
+		Float duration;
+		Float timeStep;
+		String simulator;
+		String aspectPath;
 	}
 
 	class GeppettoModelAPIParameters

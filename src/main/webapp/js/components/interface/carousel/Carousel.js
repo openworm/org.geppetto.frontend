@@ -1,17 +1,14 @@
 define(function (require) {
 
-	// var link = document.createElement("link");
-	// link.type = "text/css";
-	// link.rel = "stylesheet";
-	// link.href = "geppetto/js/components/interface/carousel/Carousel.css";
-	// document.getElementsByTagName("head")[0].appendChild(link);
-
 	var React = require('react');
-
 	var Slider = require('react-slick');
-	var carouselComponent = React.createClass({
+	var AbstractComponent = require('../../AComponent');
 
-		getInitialState: function() {
+	return class Carousel extends AbstractComponent {
+
+		constructor(props) {
+            super(props);
+
 			var settings = {
 				infinite: true,
 				speed: 500,
@@ -19,14 +16,13 @@ define(function (require) {
 				slidesToScroll: 1
 			};
 			
-			return {
+			this.state = {
             	settings: $.extend(settings, this.props.settings),
             	files: this.props.files
             };
-        },
+		}
 
-
-		render: function () {
+		render () {
 			var items = this.state.files.map(function (path) {		            			 
     			 return (<div><img src={path} /></div>);
     		 });
@@ -37,6 +33,5 @@ define(function (require) {
 				</Slider>
 			)
 		}
-	});
-	return carouselComponent;
+	};
 });

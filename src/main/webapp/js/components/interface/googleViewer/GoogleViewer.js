@@ -7,11 +7,14 @@ define(function (require) {
 	document.getElementsByTagName("head")[0].appendChild(link);
 
 	var React = require('react');
-
 	var GoogleMapsLoader = require('google-maps');
-	var googleViewerComponent = React.createClass({
+	var AbstractComponent = require('../../AComponent');
 
-		getInitialState: function () {
+	return class GoogleViewer extends AbstractComponent {
+
+		constructor(props) {
+            super(props);
+
 			var _this = this;
 			var mapSettings = {
 				center: { lat: 0, lng: 0 },
@@ -37,22 +40,22 @@ define(function (require) {
 				radius: 1738000
 			}
 
-			return {
+			this.state = {
 				mapSettings: $.extend(mapSettings, this.props.mapSettings),
 				imageMapTypeSettings: $.extend(imageMapTypeSettings, this.props.imageMapTypeSettings),
 				tileWidth: (this.props.tileWidth != undefined)?this.props.tileWidth:256 ,
 				tileHeight: (this.props.tileHeight != undefined)?this.props.tileHeight:256,
 				path: this.props.path
 			};
-		},
+		}
 
 		shouldComponentUpdate() {
 			return false;
-		},
+		}
 
 		// Normalizes the coords that tiles repeat across the x axis (horizontally)
 		// like the standard Google map tiles.
-		getNormalizedCoord: function (coord, zoom) {
+		getNormalizedCoord (coord, zoom) {
 			var y = coord.y;
 			var x = coord.x;
 
@@ -71,9 +74,9 @@ define(function (require) {
 			}
 
 			return { x: x, y: y };
-		},
+		}
 
-		componentDidMount: function () {
+		componentDidMount () {
 			var _this = this;
 			GoogleMapsLoader.KEY = this.props.googleKey;
 			GoogleMapsLoader.load(function (google) {
@@ -93,14 +96,13 @@ define(function (require) {
 			GoogleMapsLoader.onLoad(function (google) {
 				//console.log('I just loaded google maps api');
 			});
-		},
+		}
 
-		render: function () {
+		render () {
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="googleViewer">
 				</div>
 			)
 		}
-	});
-	return googleViewerComponent;
+	};
 });

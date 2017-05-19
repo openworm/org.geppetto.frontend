@@ -27,6 +27,7 @@ define(function (require) {
 			};
 
 			this.changeMode = this.changeMode.bind(this);
+			this.changeOrientation = this.changeOrientation.bind(this);
 		}
 
 		loadSingleView() {
@@ -49,6 +50,8 @@ define(function (require) {
 				container.clientHeight / 2, container.clientHeight / -2,
 				0.1, 10000);
 
+			this.camera = camera;
+
 			// Setup controls
 			var controls = new ControlsOrthographic(camera, container);
 			controls.staticMoving = true;
@@ -58,6 +61,7 @@ define(function (require) {
 			/**
 			 * Handle window resize
 			 */
+			var _this = this;
 			function onWindowResize() {
 				camera.canvas = {
 					width: container.offsetWidth,
@@ -92,7 +96,9 @@ define(function (require) {
 
 				// request new frame
 				requestAnimationFrame(function () {
-					animate();
+					if (_this.state.mode == "single_view") {
+						animate();
+					}
 				});
 			}
 			animate();
@@ -109,8 +115,9 @@ define(function (require) {
 					loader = null;
 					// be carefull that series and target stack exist!
 					var stackHelper = new HelpersStack(stack);
+					_this.stackHelper = stackHelper;
 					// stackHelper.orientation = 2;
-					// stackHelper.index = 56;
+					stackHelper.index = Math.floor(stack._dimensionsIJK.z/2);
 
 					// tune bounding box
 					stackHelper.bbox.visible = false;
@@ -123,9 +130,8 @@ define(function (require) {
 
 					// hook up callbacks
 					controls.addEventListener('OnScroll', function (e) {
-						console.log("scrolling");
 						if (e.delta > 0) {
-							if (stackHelper.index >= stack.dimensionsIJK.z - 1) {
+							if (stackHelper.index >= stackHelper.orientationMaxIndex - 1) {
 								return false;
 							}
 							stackHelper.index += 1;
@@ -420,6 +426,7 @@ define(function (require) {
 				rendererObj.localizerScene.add(rendererObj.localizerHelper);
 			}
 
+			var _this = this;
 			/**
 			 * Init the quadview
 			 */
@@ -484,7 +491,9 @@ define(function (require) {
 
 					// request new frame
 					requestAnimationFrame(function () {
-						animate();
+						if (_this.state.mode == "quad_view") {
+							animate();
+						}
 					});
 				}
 
@@ -888,11 +897,27 @@ define(function (require) {
 
 		changeMode() {
 			if (this.state.mode == "single_view") {
-				this.setState({mode: "quad_view"});
+				this.setState({ mode: "quad_view" });
 			}
 			else {
-				this.setState({mode: "single_view"});
+				this.setState({ mode: "single_view" });
 			}
+		}
+
+		changeOrientation() {
+			if (this.camera.orientation == "coronal"){
+				this.camera.orientation = "sagittal";
+			}
+			else if (this.camera.orientation == "sagittal"){
+				this.camera.orientation = "axial";
+			}
+			else if (this.camera.orientation == "axial"){
+				this.camera.orientation = "coronal";
+			}
+			this.camera.update()
+			this.camera.fitBox(2)
+			this.stackHelper.orientation = this.camera.stackOrientation;
+			this.stackHelper.index = Math.floor(this.stackHelper.orientationMaxIndex/2);
 		}
 
 		render() {
@@ -923,6 +948,17 @@ define(function (require) {
 						border: 0,
 						background: 'transparent'
 					}} className="btn fa fa-home" onClick={this.changeMode} title={'Change Mode'} />
+
+					{(this.state.mode == "single_view") ? (
+						<button style={{
+							position: 'absolute',
+							left: 2.5,
+							top: 22.5,
+							padding: 0,
+							border: 0,
+							background: 'transparent'
+						}} className="btn fa fa-chevron-down" onClick={this.changeOrientation} title={'Change Mode'} />
+					) : null}
 
 					{dicomViewerContent}
 				</div>

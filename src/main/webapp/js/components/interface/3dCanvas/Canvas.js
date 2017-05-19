@@ -306,20 +306,20 @@ define(function (require) {
             if (recursion === undefined) {
                 recursion = false;
             }
-            var entity = eval(path);
-            if (entity.hasCapability("VisualCapability")) {
-                if (entity instanceof Instance || entity instanceof ArrayInstance) {
+
+            if (instance.hasCapability("VisualCapability")) {
+                if (instance instanceof Instance || instance instanceof ArrayInstance) {
                     this.engine.setGeometryType(instance, type, thickness);
 
-                    if (typeof entity.getChildren === "function") {
-                        var children = entity.getChildren();
+                    if (typeof instance.getChildren === "function") {
+                        var children = instance.getChildren();
                         for (var i = 0; i < children.length; i++) {
-                            this.setGeometryType(children[i].getInstancePath(), type, thickness, true);
+                            this.setGeometryType(children[i], type, thickness, true);
                         }
                     }
-                } else if (entity instanceof Type || entity instanceof Variable) {
+                } else if (instance instanceof Type || instance instanceof Variable) {
                     // fetch all instances for the given type or variable and call hide on each
-                    var instances = GEPPETTO.ModelFactory.getAllInstancesOf(entity);
+                    var instances = GEPPETTO.ModelFactory.getAllInstancesOf(instance);
                     for (var j = 0; j < instances.length; j++) {
                         this.setGeometryType(instance, type, thickness, true);
                     }

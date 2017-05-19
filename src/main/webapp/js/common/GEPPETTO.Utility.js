@@ -18,77 +18,82 @@ define(function (require) {
              * @returns - Formmatted commands with descriptions
              */
             extractCommandsFromFile: function (script, Object, objectName) {
-                var commandsFormatted = objectName + GEPPETTO.Resources.COMMANDS;
 
-                var descriptions = [];
+
 
                 //retrieve the script to get the comments for all the methods
                 $.ajax({
-                    async: false,
+                    async: true,
                     type: 'GET',
                     url: script,
                     dataType: "text",
                     //at success, read the file and extract the comments
                     success: function (data) {
                         var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-                        descriptions = data.match(STRIP_COMMENTS);
-                    }
-                });
 
-                //find all functions of object Simulation
-                for (var prop in Object) {
-                    if (typeof Object[prop] === "function") {
-                        var f = Object[prop].toString();
-                        //get the argument for this function
-                        var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
+                        var commandsFormatted = objectName + GEPPETTO.Resources.COMMANDS;
+                        var descriptions = data.match(STRIP_COMMENTS);
 
-                        var functionName = objectName + "." + prop + "(" + parameter + ")";
+                        //find all functions of object Simulation
+                        for (var prop in Object) {
+                            if (typeof Object[prop] === "function") {
+                                var f = Object[prop].toString();
+                                //get the argument for this function
+                                var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
 
-                        //match the function to comment
-                        var matchedDescription = "";
-                        for (var i = 0; i < descriptions.length; i++) {
-                            var description = descriptions[i].toString();
+                                var functionName = objectName + "." + prop + "(" + parameter + ")";
 
-                            //items matched
-                            if (description.indexOf(functionName) != -1) {
+                                //match the function to comment
+                                var matchedDescription = "";
+                                for (var i = 0; i < descriptions.length; i++) {
+                                    var description = descriptions[i].toString();
 
-                                /*series of formatting of the comments for the function, removes unnecessary
-                                 * blank and special characters.
-                                 */
-                                var splitComments = description.replace(/\*/g, "").split("\n");
-                                splitComments.splice(0, 1);
-                                splitComments.splice(splitComments.length - 1, 1);
-                                for (var s = 0; s < splitComments.length; s++) {
-                                    var line = splitComments[s].trim();
-                                    if (line != "") {
-                                        //ignore the name line, already have it
-                                        if (line.indexOf("@command") == -1) {
-                                            //build description for function
-                                            matchedDescription += "         " + line + "\n";
-                                        }
+                                    //items matched
+                                    if (description.indexOf(functionName) != -1) {
 
-                                        //ignore the name line, already have it
-                                        if (line.indexOf("@returns") != -1) {
-                                            //build description for function
-                                            var match = line.match(/\{.*?\}/);
+                                        /*series of formatting of the comments for the function, removes unnecessary
+                                         * blank and special characters.
+                                         */
+                                        var splitComments = description.replace(/\*/g, "").split("\n");
+                                        splitComments.splice(0, 1);
+                                        splitComments.splice(splitComments.length - 1, 1);
+                                        for (var s = 0; s < splitComments.length; s++) {
+                                            var line = splitComments[s].trim();
+                                            if (line != "") {
+                                                //ignore the name line, already have it
+                                                if (line.indexOf("@command") == -1) {
+                                                    //build description for function
+                                                    matchedDescription += "         " + line + "\n";
+                                                }
 
-                                            if (match != null) {
-                                                if (match[0] == "{String}" && parameter != "") {
-                                                    functionName = functionName.replace("(", "(\"");
-                                                    functionName = functionName.replace(")", "\")");
+                                                //ignore the name line, already have it
+                                                if (line.indexOf("@returns") != -1) {
+                                                    //build description for function
+                                                    var match = line.match(/\{.*?\}/);
+
+                                                    if (match != null) {
+                                                        if (match[0] == "{String}" && parameter != "") {
+                                                            functionName = functionName.replace("(", "(\"");
+                                                            functionName = functionName.replace(")", "\")");
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                //format and keep track of all commands available
+                                commandsFormatted += ("      -- " + functionName + "\n" + matchedDescription + "\n");
+                                //remove last two blank lines
+                                commandsFormatted = commandsFormatted.substring(0, commandsFormatted.length - 2)
+
                             }
                         }
-                        //format and keep track of all commands available
-                        commandsFormatted += ("      -- " + functionName + "\n" + matchedDescription + "\n");
+
+                        GEPPETTO.Console.log(commandsFormatted);
                     }
-                }
-                //returned formatted string with commands and description, remove last two blank lines
-                return commandsFormatted.substring(0, commandsFormatted.length - 2);
+                });
+
             },
 
             extractMethodsFromObject: function (object, original) {
@@ -149,6 +154,18 @@ define(function (require) {
                 return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
             },
 
+            getPathStringParameters: function () {
+                var paths = []
+                var locationPaths = location.pathname.split("/");
+                for (var pathIndex in locationPaths) {
+                    var locationPath = locationPaths[pathIndex];
+                    if (locationPath != 'geppetto' && locationPath != 'org.geppetto.frontend' && locationPath != '') {
+                        paths.push(locationPath);
+                    }
+                }
+                return paths;
+            },
+
             persistedAndWriteMessage: function (caller) {
                 var message = GEPPETTO.Resources.OPERATION_NOT_SUPPORTED;
                 if (!GEPPETTO.UserController.isLoggedIn()) {
@@ -174,7 +191,7 @@ define(function (require) {
         };
 
         // inject saveData into utility, need to do it this way because it's adding things to the DOM
-        // and returning the function with clousre on the DOM elements
+        // and returning the function with closure on the DOM elements
         GEPPETTO.Utility.saveData = (function () {
             var a = document.createElement("a");
             document.body.appendChild(a);
@@ -193,13 +210,24 @@ define(function (require) {
         }());
 
         /**
-         * Adding method to javascript string class to test
-         * if beginning of string matches another string being passed.
+         * Adding method to javascript string class to test if beginning of string matches another string being passed.
          */
         if (typeof String.prototype.startsWith != 'function') {
             String.prototype.startsWith = function (str) {
                 return this.substring(0, str.length) === str;
             }
+        }
+
+        /**
+         * Extend string prototype to enable posh string formatting
+         */
+        if (!String.prototype.format) {
+            String.prototype.format = function () {
+                var args = arguments;
+                return this.replace(/{(\d+)}/g, function (match, number) {
+                    return typeof args[number] != 'undefined' ? args[number] : match;
+                });
+            };
         }
     };
 

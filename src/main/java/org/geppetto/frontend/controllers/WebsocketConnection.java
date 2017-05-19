@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,6 +175,12 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.newExperiment(requestID, projectId);
 				break;
 			}
+			case NEW_EXPERIMENT_BATCH:
+			{
+				BatchExperiment receivedObject = new Gson().fromJson(gmsg.data, BatchExperiment.class);
+				connectionHandler.newExperimentBatch(requestID, receivedObject.projectId, receivedObject);
+				break;
+			}
 			case CLONE_EXPERIMENT:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
@@ -229,6 +236,15 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.makeProjectPublic(requestID, projectId,isPublic);
 				break;
 			}
+			case DOWNLOAD_PROJECT:
+			{
+				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				{
+				}.getType());
+				projectId = Long.parseLong(parameters.get("projectId"));
+				connectionHandler.downloadProject(requestID, projectId);
+				break;
+			}
 			case SAVE_PROJECT_PROPERTIES:
 			{
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
@@ -254,19 +270,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case GET_SCRIPT:
 			{
 				String urlString = gmsg.data;
-				URL url = null;
-				try
-				{
-
-					url = URLReader.getURL(urlString);
-
-					connectionHandler.sendScriptData(requestID, url, this);
-
-				}
-				catch(MalformedURLException e)
-				{
-					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
-				}
+				connectionHandler.sendScriptData(requestID, urlString, this);
 				break;
 			}
 			case GET_DATA_SOURCE_RESULTS:
@@ -353,6 +357,12 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			{
 				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
 				connectionHandler.setParameters(requestID, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
+				break;
+			}
+			case SET_EXPERIMENT_VIEW:
+			{
+				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+				connectionHandler.setExperimentView(requestID, receivedObject.view, receivedObject.projectId, receivedObject.experimentId);
 				break;
 			}
 			case LINK_DROPBOX:
@@ -504,6 +514,25 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		boolean watch;
 		Map<String, String> modelParameters;
 		Map<String, String> properties;
+		String view;
+	}
+	
+	class BatchExperiment
+	{
+		Long projectId;
+		List<NewExperiment> experiments;
+	}
+	
+	class NewExperiment
+	{
+		String name;
+		List<String> watchedVariables;
+		Map<String, String> modelParameters;
+		Map<String, String> simulatorParameters;
+		Float duration;
+		Float timeStep;
+		String simulator;
+		String aspectPath;
 	}
 
 	class GeppettoModelAPIParameters

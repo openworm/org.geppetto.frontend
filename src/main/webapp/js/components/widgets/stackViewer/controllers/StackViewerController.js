@@ -53,11 +53,19 @@ define(function (require) {
         /**
          * Creates new stack viewer widget
          */
-        addStackViewerWidget: function () {
+        addStackViewerWidget: function (isStateless) {
+            if(isStateless == undefined){
+                // stateless by default
+                isStateless = true;
+            }
+
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("StackViewer", this.widgets);
             var name = id;
-            var vv = window[name] = new Stack({id: id, name: name, visible: true});
+            var vv = window[name] = new Stack({
+                id: id, name: name, visible: true,
+                widgetType: GEPPETTO.Widgets.STACKVIEWER, stateless: isStateless
+            });
             vv.help = function () {
                 return GEPPETTO.Console.getObjectCommands(id);
             };

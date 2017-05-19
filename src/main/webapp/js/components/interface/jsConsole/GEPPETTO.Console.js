@@ -63,7 +63,7 @@ define(function (require) {
              * Set of commands being inherited from Backbone ojects, ignored them while displaying
              * autocomplete commands.
              */
-            nonCommands = ["constructor()", "constructor(options)","initialize(options)", "on(t,e,i)", "once(t,e,r)", "off(t,e,r)", "trigger(t)", "stopListening(t,e,r)", "listenTo(e,r,s)",
+            nonCommands = ["constructor()", "constructor(options)", "initialize(options)", "on(t,e,i)", "once(t,e,r)", "off(t,e,r)", "trigger(t)", "stopListening(t,e,r)", "listenTo(e,r,s)",
                 "listenToOnce(e,r,s)", "bind(t,e,i)", "unbind(t,e,r)", "$(t)", "initialize()", "remove()", "setElement(t,i)", "delegateEvents(t)",
                 "undelegateEvents()", "_ensureElement()", "constructor(a,c)", "on(a,c,d)", "off(a,c,d)", "get(a)", "set(a,c,d)", "_set(a,c)",
                 "_setAttr(c={})", "_bubbleEvent(a,c,d)", "_isEventAvailable(a,c)", "_setupParents(a,c)", "_createCollection(a,c)", "_processPendingEvents()",
@@ -80,56 +80,56 @@ define(function (require) {
             $('#consoleButton').click(function () {
                 GEPPETTO.Console.toggleConsole();
             });
-            
-            /**Series of moustenter and mouseleave events register to footer 
-            *elements aka console and experiments. This is done so zindex of footer
-            *div can be modified if user has mouse over console or not, if user has mouse
-            *away from console then z-index is set to lowest to avoid it being above
-            *widgets and other html elements.*/
-            
+
+            /**Series of moustenter and mouseleave events register to footer
+             *elements aka console and experiments. This is done so zindex of footer
+             *div can be modified if user has mouse over console or not, if user has mouse
+             *away from console then z-index is set to lowest to avoid it being above
+             *widgets and other html elements.*/
+
             $('#consoleButton').mouseenter(function () {
-            	toggleFooterZIndex(true);
+                toggleFooterZIndex(true);
             });
-            
+
             $('#experimentsButton').mouseenter(function () {
-            	toggleFooterZIndex(true);
+                toggleFooterZIndex(true);
             });
-            
+
             $('#consoleButton').mouseleave(function () {
-            	toggleFooterZIndex(false);
+                toggleFooterZIndex(false);
             });
-            
+
             $('#experimentsButton').mouseleave(function () {
-            	toggleFooterZIndex(false);
+                toggleFooterZIndex(false);
             });
-            
+
             $('#console').mouseenter(function () {
-            	toggleFooterZIndex(true);
+                toggleFooterZIndex(true);
             });
-            
+
             $('#experiments').mouseenter(function () {
-            	toggleFooterZIndex(true);
+                toggleFooterZIndex(true);
             });
-            
+
             $('#console').mouseleave(function () {
-            	toggleFooterZIndex(false);
+                toggleFooterZIndex(false);
             });
-            
+
             $('#experiments').mouseleave(function () {
-            	toggleFooterZIndex(false);
+                toggleFooterZIndex(false);
             });
         });
 
-        function toggleFooterZIndex(focus){
-        	if(G.isConsoleFocused()){
-        		if(focus){
-        			GEPPETTO.Console.focusFooter();
-        		}else{
-        			GEPPETTO.Console.unfocusFooter();
-        		}
-        	}
+        function toggleFooterZIndex(focus) {
+            if (G.isConsoleFocused()) {
+                if (focus) {
+                    GEPPETTO.Console.focusFooter();
+                } else {
+                    GEPPETTO.Console.unfocusFooter();
+                }
+            }
         }
-        
+
         /**
          * Matches user input in console to terms in tags map, this to retrieve suggestions
          * for autocompletion.
@@ -154,11 +154,11 @@ define(function (require) {
             }
 
             if (nodePath == "") {
-            	nodePath = nodePath.substring(0, nodePath.length - 1);
+                nodePath = nodePath.substring(0, nodePath.length - 1);
             }
 
-            if(avail.length==0 && nodePath==(request.term+".")){
-            	avail.push(nodePath.substring(0, nodePath.length - 1));
+            if (avail.length == 0 && nodePath == (request.term + ".")) {
+                avail.push(nodePath.substring(0, nodePath.length - 1));
             }
 
 
@@ -188,7 +188,7 @@ define(function (require) {
          */
         function autoComplete() {
 
-        	var autocompleteOn = true;
+            var autocompleteOn = true;
             GEPPETTO.Console.populateTags();
             //bind console input area to autocomplete event
             $("#commandInputArea").bind("keydown", function (event) {
@@ -197,7 +197,7 @@ define(function (require) {
                     event.preventDefault();
                 }
                 if (event.keyCode === $.ui.keyCode.BACKSPACE) {
-                	autocompleteOn = false;
+                    autocompleteOn = false;
                 }
             })
                 .autocomplete({
@@ -209,60 +209,60 @@ define(function (require) {
                         return false;
                     },
                     open: function (event, ui) {
-                    	if(autocompleteOn){
-                    		var suggestions = $(this).data("uiAutocomplete").menu.element[0].children
-                    		, firstElement = suggestions[0]
-                    		, inpt = $('#commandInputArea')
-                    		, original = inpt.val()
-                    		, firstElementText = $(firstElement).text()
-                    		, suggestionsSize = suggestions.length;
-                    		/*
-                         here we want to make sure that we're not matching something that doesn't start
-                         with what was typed in
-                    		 */
-                    		if (firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0) {
+                        if (autocompleteOn) {
+                            var suggestions = $(this).data("uiAutocomplete").menu.element[0].children
+                                , firstElement = suggestions[0]
+                                , inpt = $('#commandInputArea')
+                                , original = inpt.val()
+                                , firstElementText = $(firstElement).text()
+                                , suggestionsSize = suggestions.length;
+                            /*
+                             here we want to make sure that we're not matching something that doesn't start
+                             with what was typed in
+                             */
+                            if (firstElementText.toLowerCase().indexOf(original.toLowerCase()) === 0) {
 
-                    			//only one suggestion
-                    			if (suggestionsSize == 1) {
-                    				if (inpt.val() !== firstElementText) {
-                    					inpt.val(firstElementText); //change the input to the first match
+                                //only one suggestion
+                                if (suggestionsSize == 1) {
+                                    if (inpt.val() !== firstElementText) {
+                                        inpt.val(firstElementText); //change the input to the first match
 
-                    					inpt[0].selectionStart = original.length; //highlight from beginning of input
-                    					inpt[0].selectionEnd = firstElementText.length;//highlight to the end
-                    				}
-                    			}
-                    			//match multiple suggestions
-                    			else {
-                    				if (inpt.val() !== "") {
+                                        inpt[0].selectionStart = original.length; //highlight from beginning of input
+                                        inpt[0].selectionEnd = firstElementText.length;//highlight to the end
+                                    }
+                                }
+                                //match multiple suggestions
+                                else {
+                                    if (inpt.val() !== "") {
 
-                    					var elementsText = [];
-                    					for (var i = 0; i < suggestionsSize; i++) {
-                    						elementsText[i] = $(suggestions[i]).text();
-                    					}
-                    					var A = elementsText.slice(0).sort(),
-                    					word1 = A[0], word2 = A[A.length - 1],
-                    					i = 0;
-                    					if (word1 != word2) {
-                    						while (word1.charAt(i) == word2.charAt(i))++i;
-                    						//match up most common part
-                    						mostCommon = word1.substring(0, i);
-                    					}
-                    					else {
-                    						mostCommon = word1;
-                    					}
+                                        var elementsText = [];
+                                        for (var i = 0; i < suggestionsSize; i++) {
+                                            elementsText[i] = $(suggestions[i]).text();
+                                        }
+                                        var A = elementsText.slice(0).sort(),
+                                            word1 = A[0], word2 = A[A.length - 1],
+                                            i = 0;
+                                        if (word1 != word2) {
+                                            while (word1.charAt(i) == word2.charAt(i))++i;
+                                            //match up most common part
+                                            mostCommon = word1.substring(0, i);
+                                        }
+                                        else {
+                                            mostCommon = word1;
+                                        }
 
-                    					if (inpt.val().indexOf(mostCommon) == -1) {
-                    						inpt.val(mostCommon);//change the input to the first match
+                                        if (inpt.val().indexOf(mostCommon) == -1) {
+                                            inpt.val(mostCommon);//change the input to the first match
 
-                    						inpt[0].selectionStart = original.length; //highlight from end of input
-                    						inpt[0].selectionEnd = mostCommon.length;//highlight to the end
-                    					}
-                    				}
-                    			}
-                    		}
-                    	}else{
-                    		autocompleteOn = true;
-                    	}
+                                            inpt[0].selectionStart = original.length; //highlight from end of input
+                                            inpt[0].selectionEnd = mostCommon.length;//highlight to the end
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            autocompleteOn = true;
+                        }
                     }
                 });
         }
@@ -278,17 +278,17 @@ define(function (require) {
             tags: [],
             objectTags: [],
 
-            
-            focusFooter : function(){
-            	$("#footer").removeClass("footerOutFocus");
-            	$("#footer").addClass("footerFocus");
+
+            focusFooter: function () {
+                $("#footer").removeClass("footerOutFocus");
+                $("#footer").addClass("footerFocus");
             },
 
-            unfocusFooter : function(){
-            	$("#footer").removeClass("footerFocus");
-            	$("#footer").addClass("footerOutFocus");
+            unfocusFooter: function () {
+                $("#footer").removeClass("footerFocus");
+                $("#footer").addClass("footerOutFocus");
             },
-            
+
             /**
              * Global help functions with all commands in global objects.
              *
@@ -330,14 +330,14 @@ define(function (require) {
                     if (!this.visible) {
                         //$('#console').slideToggle(200);
                         $('#commandInputArea').focus();
-                        setTimeout(function(){
-                        	//make console scroll to bottom
+                        setTimeout(function () {
+                            //make console scroll to bottom
                             var output = document.getElementsByClassName("output")[0];
                             output.scrollTop = output.scrollHeight;
                         }, 100);
                     }
-                  
-                     GEPPETTO.Console.focusFooter();
+
+                    GEPPETTO.Console.focusFooter();
                 }
                 else {
                     $('#footer').height('');
@@ -391,7 +391,7 @@ define(function (require) {
                         clearInterval(sendMessage);
                     }
                 }, 100);
-                                
+
                 return console;
             },
 
@@ -437,10 +437,10 @@ define(function (require) {
                 GEPPETTO.trackActivity("Console", justCommand, commandParams);
             },
 
-            executeImplicitCommand: function(command){
+            executeImplicitCommand: function (command) {
                 this.executeCommand(command, true);
             },
-            
+
             /**
              * Available commands stored in an array, used for autocomplete.
              *
@@ -509,10 +509,6 @@ define(function (require) {
             },
 
             getHelpObjectsMap: function () {
-                if (jQuery.isEmptyObject(helpObjectsMap)) {
-                    helpObjectsMap = {"G": GEPPETTO.G.help()};
-                }
-
                 return helpObjectsMap;
             },
 
@@ -591,7 +587,8 @@ define(function (require) {
 
                 var commandsCount = commands.length;
 
-                var proto = object.__proto__;
+                //var proto = object.__proto__;
+                var proto = object;
                 //	find all functions of object Simulation
                 for (var prop in proto) {
                     if (typeof proto[prop] === "function" && proto.hasOwnProperty(prop)) {
@@ -613,30 +610,33 @@ define(function (require) {
                             commandsCount++;
                             //match the function to comment
                             var matchedDescription = "";
-                            for (var i = 0; i < comments.length; i++) {
-                                var description = comments[i].toString();
+                            if (comments != null) {
+                                for (var i = 0; i < comments.length; i++) {
+                                    var description = comments[i].toString();
 
-                                //items matched
-                                if (description.indexOf(prop) != -1) {
+                                    //items matched
+                                    if (description.indexOf(prop) != -1) {
 
-                                    /*series of formatting of the comments for the function, removes unnecessary
-                                     * blank and special characters.
-                                     */
-                                    var splitComments = description.replace(/\*/g, "").split("\n");
-                                    splitComments.splice(0, 1);
-                                    splitComments.splice(splitComments.length - 1, 1);
-                                    for (var s = 0; s < splitComments.length; s++) {
-                                        var line = splitComments[s].trim();
-                                        if (line != "") {
-                                            //ignore the name line, already have it
-                                            if (line.indexOf("@command") == -1) {
-                                                //build description for function
-                                                matchedDescription += "         " + line + "\n";
+                                        /*series of formatting of the comments for the function, removes unnecessary
+                                         * blank and special characters.
+                                         */
+                                        var splitComments = description.replace(/\*/g, "").split("\n");
+                                        splitComments.splice(0, 1);
+                                        splitComments.splice(splitComments.length - 1, 1);
+                                        for (var s = 0; s < splitComments.length; s++) {
+                                            var line = splitComments[s].trim();
+                                            if (line != "") {
+                                                //ignore the name line, already have it
+                                                if (line.indexOf("@command") == -1) {
+                                                    //build description for function
+                                                    matchedDescription += "         " + line + "\n";
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+
                             //format and keep track of all commands available
                             commandsFormmatted += ("      -- " + functionName + "\n" + matchedDescription + "\n");
                         }
@@ -649,7 +649,7 @@ define(function (require) {
                 }
 
                 if (proto.__proto__ != null) {
-                    GEPPETTO.Console.updateHelpCommand(proto, id, comments);
+                    GEPPETTO.Console.updateHelpCommand(proto.__proto__, id, comments);
                 }
             },
 

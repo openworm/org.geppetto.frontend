@@ -24,13 +24,20 @@ define(function (require) {
         /**
          * Creates popup widget
          */
-        addPopupWidget: function () {
+        addPopupWidget: function (isStateless) {
+            if(isStateless == undefined){
+                isStateless = false;
+            }
+
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("Popup", this.widgets);
             var name = id;
 
             //create popup widget
-            var p = window[name] = new Popup({id: id, name: name, visible: true, controller: this});
+            var p = window[name] = new Popup({
+                id: id, name: name, visible: true, controller: this,
+                widgetType: GEPPETTO.Widgets.POPUP, stateless: isStateless
+            });
             p.setController(this);
             p.setSize(394,490);
             //create help command for plot

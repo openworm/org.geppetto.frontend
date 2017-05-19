@@ -17,7 +17,8 @@ define(function (require) {
                     className: 'btn ' + this.props.className + ((this.props.hidden === true) ? ' hiddenElement' : ''),
                     'data-toggle': this.props['data-toggle'],
                     onClick: this.props.onClick,
-                    disabled: this.props.disabled
+                    disabled: this.props.disabled,
+                    icon : this.props.icon
                 }, React.DOM.i({className: this.props.icon}), " " + this.props.label)
             );
         }

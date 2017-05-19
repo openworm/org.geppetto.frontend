@@ -46,7 +46,8 @@ define(function (require) {
 
     return Widget.View.extend({
         variable: null,
-        options: null,
+        barName: "",
+        barBody: {},
 
         /**
          * Initialises button bar
@@ -55,9 +56,7 @@ define(function (require) {
          *            options - Object with options for the widget
          */
         initialize: function (options) {
-            this.id = options.id;
-            this.name = options.name;
-            this.options = options;
+            Widget.View.prototype.initialize.call(this, options);
 
             this.render();
 
@@ -166,11 +165,17 @@ define(function (require) {
         },
 
         renderBar: function (name, barObject) {
+            this.barName = name;
+            this.barBody = barObject;
+
             this.setName(name);
             this.setBody(this.BootstrapMenuMaker.generateToolbar(barObject));
             $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
             });
+
+            // track change in state of the widget
+            this.dirtyView = true;
 
             return this;
         },
@@ -235,6 +240,30 @@ define(function (require) {
          */
         setBody: function (content) {
             this.innerButtonBarContainer.html(content);
+        },
+
+        getView: function(){
+            var baseView = Widget.View.prototype.getView.call(this);
+
+            baseView.componentSpecific = {};
+
+            // component specific stuff
+            baseView.componentSpecific.barName = this.barName;
+            baseView.componentSpecific.barBody = this.barBody;
+
+            return baseView;
+        },
+
+        setView: function(view){
+            // set base properties
+            Widget.View.prototype.setView.call(this, view);
+
+            if(view.componentSpecific != undefined){
+                this.renderBar(view.componentSpecific.barName, view.componentSpecific.barBody);
+            }
+
+            // after setting view through setView, reset dirty flag
+            this.dirtyView = false;
         }
 
     });

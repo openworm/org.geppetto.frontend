@@ -72,7 +72,7 @@ define(function (require) {
             }
 
             if (this instanceof Instance || this instanceof ArrayInstance) {
-                GEPPETTO.SceneController.showInstance(this.getInstancePath());
+
 
                 this.visible = true;
 
@@ -128,31 +128,9 @@ define(function (require) {
          * @command AVisualCapability.setOpacity(opacity)
          *
          */
-        setOpacity: function (opacity, nested) {
-            if (nested === undefined) {
-                nested = true;
-            }
+        setOpacity: function (opacity) {
 
-            if (this instanceof Instance || this instanceof ArrayInstance) {
-                GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
-
-                if (nested === true && typeof this.getChildren === "function") {
-                    var children = this.getChildren();
-                    for (var i = 0; i < children.length; i++) {
-                        if (typeof children[i].setOpacity === "function") {
-                            children[i].setOpacity(opacity, nested);
-                        }
-                    }
-                }
-            } else if (this instanceof Type || this instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for (var j = 0; j < instances.length; j++) {
-                    if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].setOpacity(opacity, nested);
-                    }
-                }
-            }
+            GEPPETTO.SceneController.setOpacity(this.getInstancePath(), opacity);
         },
 
 
@@ -161,46 +139,7 @@ define(function (require) {
          * @returns {*}
          */
         getColor: function () {
-
-            var color = "";
-            if (typeof this.getChildren === "function") {
-                //this is a an array, it will contain children
-                var children = this.getChildren();
-
-                var color = "";
-                for (var i = 0; i < children.length; i++) {
-                    if (typeof children[i].getColor === "function") {
-                        var newColor = children[i].getColor();
-                        if (color == "") {
-                            color = newColor;
-                        }
-                        else if (color != newColor) {
-                            return "";
-                        }
-                    }
-                }
-            }
-
-            var meshes = GEPPETTO.SceneController.getRealMeshesForInstancePath(this.getInstancePath());
-            if (meshes.length > 0) {
-                for (var i = 0; i < meshes.length; i++) {
-                    var mesh = meshes[i];
-                    if (mesh) {
-                        mesh.traverse(function (object) {
-                            if (object.hasOwnProperty("material")) {
-                                if (color == "") {
-                                    color = object.material.defaultColor;
-                                }
-                                else if (color != object.material.defaultColor) {
-                                    return "";
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-
-            return color;
+            return GEPPETTO.SceneController.getColor(this);
         },
 
         /**
@@ -209,31 +148,9 @@ define(function (require) {
          * @command AVisualCapability.setColor(color)
          *
          */
-        setColor: function (color, nested) {
-            if (nested === undefined) {
-                nested = true;
-            }
+        setColor: function (color) {
 
-            if (this instanceof Instance || this instanceof ArrayInstance) {
-                GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
-
-                if (nested === true && typeof this.getChildren === "function") {
-                    var children = this.getChildren();
-                    for (var i = 0; i < children.length; i++) {
-                        if (typeof children[i].setColor === "function") {
-                            children[i].setColor(color, nested);
-                        }
-                    }
-                }
-            } else if (this instanceof Type || this instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for (var j = 0; j < instances.length; j++) {
-                    if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].setColor(color, nested);
-                    }
-                }
-            }
+            GEPPETTO.SceneController.setColor(this.getInstancePath(), color);
 
             GEPPETTO.trigger(GEPPETTO.Events.Color_set, {instance: this, color: color});
 
@@ -255,48 +172,11 @@ define(function (require) {
 
             if (this instanceof Instance || this instanceof ArrayInstance) {
                 if (!this.selected) {
-                    //first, before doing anything, we check what is currently selected
-
-                    if (G.getSelectionOptions().unselected_transparent) {
-                        //something is already selected, we make everything not selected transparent
-                        GEPPETTO.SceneController.setGhostEffect(true);
-                    }
-
                     // set selection flag local to the instance and add to geppetto selection list
                     this.selected = true;
                     GEPPETTO.SceneController.selectInstance(this.getInstancePath(), geometryIdentifier);
                     message = GEPPETTO.Resources.SELECTING_ASPECT + this.getInstancePath();
 
-                    // Behaviour: help exploration of networks by ghosting and not highlighting non connected or selected
-                    if (this.getConnections().length > 0) {
-                        // allOtherMeshes will contain a list of all the non connected entities in the scene
-                        var allOtherMeshes = $.extend({}, GEPPETTO.getVARS().meshes);
-                        // look on the simulation selection options and perform necessary operations
-                        if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
-                            var meshes = this.highlightInstances(true);
-                            for (var i in meshes) {
-                                delete allOtherMeshes[meshes[i]];
-                            }
-                        }
-                        else if (G.getSelectionOptions().show_inputs) {
-                            var inputs = this.highlightInstances(true, GEPPETTO.Resources.INPUT);
-                            for (var i in inputs) {
-                                delete allOtherMeshes[inputs[i]];
-                            }
-                        }
-                        else if (G.getSelectionOptions().show_outputs) {
-                            var outputs = this.highlightInstances(true, GEPPETTO.Resources.OUTPUT);
-                            for (var o in outputs) {
-                                delete allOtherMeshes[outputs[o]];
-                            }
-                        }
-                        if (G.getSelectionOptions().draw_connection_lines) {
-                            this.showConnectionLines(true);
-                        }
-                        if (G.getSelectionOptions().unselected_transparent) {
-                            GEPPETTO.SceneController.ghostEffect(allOtherMeshes, true);
-                        }
-                    }
                     //signal selection has changed in simulation pass instance
                     GEPPETTO.trigger(GEPPETTO.Events.Select, this, geometryIdentifier, point);
                 } else {
@@ -344,38 +224,6 @@ define(function (require) {
                     message = GEPPETTO.Resources.DESELECTING_ASPECT + this.getInstancePath();
                     GEPPETTO.SceneController.deselectInstance(this.getInstancePath());
                     this.selected = false;
-
-                    if (G.getSelectionOptions().show_inputs && G.getSelectionOptions().show_outputs) {
-                        this.highlightInstances(false);
-                    }
-                    else if (G.getSelectionOptions().show_inputs) {
-                        this.highlightInstances(false, GEPPETTO.Resources.INPUT);
-                    }
-                    else if (G.getSelectionOptions().show_outputs) {
-                        this.highlightInstances(false, GEPPETTO.Resources.OUTPUT);
-                    }
-
-                    if (G.getSelectionOptions().draw_connection_lines) {
-                        this.showConnectionLines(false);
-                    }
-
-                    // TODO: trigger highlight on the ones still selected
-
-                    // NOTE: do this down here, ghost effect won't be removed if stuff is still highlighted
-                    if (G.getSelectionOptions().unselected_transparent) {
-                        if (G.getSelection() != undefined && G.getSelection().length > 0) {
-                            // else (there is something selected) make this ghosted
-                            var mesh = {};
-                            mesh[this.getInstancePath()] = GEPPETTO.getVARS().meshes[this.getInstancePath()];
-                            if (mesh[this.getInstancePath()] != undefined) {
-                                GEPPETTO.SceneController.ghostEffect(mesh, true);
-                            }
-                        } else {
-                            // if nothing else is selected do remove ghost effect
-                            GEPPETTO.SceneController.setGhostEffect(false);
-                        }
-                    }
-
                     //trigger event that selection has been changed
                     GEPPETTO.trigger(GEPPETTO.Events.Select, this);
                 } else {
@@ -414,7 +262,7 @@ define(function (require) {
          */
         zoomTo: function () {
             if (this instanceof Instance || this instanceof ArrayInstance) {
-                GEPPETTO.SceneController.zoomToInstance(this);
+                GEPPETTO.SceneController.zoomTo([this]);
                 return GEPPETTO.Resources.ZOOM_TO_ENTITY + this.getInstancePath();
             } else if (this instanceof Type || this instanceof Variable) {
                 // fetch all instances for the given type or variable and call hide on each
@@ -427,106 +275,13 @@ define(function (require) {
         /**
          * Set the type of geometry to be used for this aspect
          */
-        setGeometryType: function (type, thickness, nested) {
-            if (nested === undefined) {
-                nested = true;
-            }
-
-            var message = '';
-
-            if (this instanceof Instance || this instanceof ArrayInstance) {
-                if (GEPPETTO.SceneController.setGeometryType(this, type, thickness)) {
-                    message = "Geometry type successfully changed for " + this.getInstancePath();
-                }
-                else {
-                    message = "Error changing the geometry type for " + this.getInstancePath();
-                }
-
-                // nested
-                if (nested === true && typeof this.getChildren === "function") {
-                    var children = this.getChildren();
-                    for (var i = 0; i < children.length; i++) {
-                        if (typeof children[i].setGeometryType === "function") {
-                            children[i].setGeometryType(type, thickness, nested);
-                        }
-                    }
-                }
-            } else if (this instanceof Type || this instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for (var j = 0; j < instances.length; j++) {
-                    if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].setGeometryType(type, thickness, nested);
-                    }
-                }
-
-                message = GEPPETTO.Resources.BATCH_SET_GEOMETRY;
-            }
-
-            return message;
-        },
-
-
-        /**
-         * Show output connections for this object.
-
-         * @command AVisualCapability.highlightInstances()
-         * @param {boolean} mode - Show or hide output connections
-         */
-        highlightInstances: function (mode, type) {
-            if (mode == null || mode == undefined) {
-                mode = true;
-            }
-
-            if (this instanceof Instance || this instanceof ArrayInstance) {
-                //show/hide connections
-                if (mode) {
-                    GEPPETTO.SceneController.highlightConnectedInstances(this, type);
-                }
-                else {
-                    GEPPETTO.SceneController.restoreConnectedInstancesColour(this);
-                }
-            } else if (this instanceof Type || this instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for (var j = 0; j < instances.length; j++) {
-                    if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].highlightInstances(mode, type);
-                    }
-                }
-            }
-        },
-
-
-        /**
-         * Show connection lines for this instance.
-
-         * @command AVisualCapability.showConnectionLines()
-         * @param {boolean} mode - Show or hide connection lines
-         */
-        showConnectionLines: function (mode) {
-            if (mode == null || mode == undefined) {
-                mode = true;
-            }
-
-            if (this instanceof Instance || this instanceof ArrayInstance) {
-                //show or hide connection lines
-                if (mode) {
-                    GEPPETTO.SceneController.showConnectionLines(this);
-                }
-                else {
-                    GEPPETTO.SceneController.removeConnectionLines(this);
-                }
-            } else if (this instanceof Type || this instanceof Variable) {
-                // fetch all instances for the given type or variable and call hide on each
-                var instances = GEPPETTO.ModelFactory.getAllInstancesOf(this);
-                for (var j = 0; j < instances.length; j++) {
-                    if (instances[j].hasCapability(this.capabilityId)) {
-                        instances[j].showConnectionLines(mode);
-                    }
-                }
-            }
+        setGeometryType: function (type, thickness) {
+            GEPPETTO.SceneController.setGeometryType(this, type, thickness)
+            return this;
         }
+
+
+        
 
     }
 });

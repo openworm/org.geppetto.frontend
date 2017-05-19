@@ -1,4 +1,3 @@
-
 /**
  * Handles general incoming messages, excluding Simulation
  */
@@ -8,11 +7,7 @@ define(function (require) {
 
         var messageTypes =
         {
-            /*
-             * Messages handle by GlobalHandler
-             */
             CLIENT_ID: "client_id",
-            RELOAD_CANVAS: "reload_canvas",
             ERROR_LOADING_SIM: "error_loading_simulation",
             ERROR_LOADING_PROJECT: "error_loading_project",
             ERROR_DOWNLOADING_MODEL: "error_downloading_model",
@@ -41,44 +36,31 @@ define(function (require) {
         	GEPPETTO.UserController.setUserPrivileges(user_privileges);
         };
 
-        // clear canvas, used when loading a new model or re-loading previous
-        // one
-        messageHandler[messageTypes.RELOAD_CANVAS] = function () {
-            GEPPETTO.Console.debugLog(GEPPETTO.Resources.CLEAR_CANVAS);
-            var webGLStarted = GEPPETTO.init(GEPPETTO.FE.createContainer());
-            var webWorkersSupported = (typeof(Worker) !== "undefined") ? true : false;
-
-            if (!webGLStarted || !webWorkersSupported) {
-                GEPPETTO.FE.notifyInitErrors(webGLStarted, webWorkersSupported);
-                GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
-            }
-        };
-
         // Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_LOADING_SIM] = function (payload) {
             GEPPETTO.trigger('geppetto:error', payload.message);
-            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INVALID_SIMULATION_FILE, payload.message);
+            GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.INVALID_SIMULATION_FILE, payload.message);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         };
 
         // Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_LOADING_PROJECT] = function (payload) {
             GEPPETTO.trigger('geppetto:error', payload.message);
-            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_LOADING_PROJECT, payload.message);
+            GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.ERROR_LOADING_PROJECT, payload.message);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         };
 
         // Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_DOWNLOADING_MODEL] = function (payload) {
             GEPPETTO.trigger('geppetto:error', payload.message);
-            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_DOWNLOADING_MODEL, payload.message);
+            GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.ERROR_DOWNLOADING_MODEL, payload.message);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         };
 
         // Error loading simulation, invalid url or simulation file
         messageHandler[messageTypes.ERROR_DOWNLOADING_RESULTS] = function (payload) {
             GEPPETTO.trigger('geppetto:error', payload.message);
-            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.ERROR_DOWNLOADING_RESULTS, payload.message);
+            GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.ERROR_DOWNLOADING_RESULTS, payload.message);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         };
 
@@ -86,14 +68,14 @@ define(function (require) {
         messageHandler[messageTypes.INFO_MESSAGE] = function (payload) {
             var message = JSON.parse(payload.message);
             GEPPETTO.trigger('geppetto:info', message);
-            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.INCOMING_MESSAGE, message);
+            GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.INCOMING_MESSAGE, message);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         };
 
         messageHandler[messageTypes.ERROR] = function (payload) {
             var error = JSON.parse(payload.message);
             GEPPETTO.trigger('geppetto:error', error.msg);
-            GEPPETTO.FE.errorDialog(GEPPETTO.Resources.ERROR, error.message, error.code, error.exception);
+            GEPPETTO.ModalFactory.errorDialog(GEPPETTO.Resources.ERROR, error.message, error.code, error.exception);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         };
 
@@ -114,7 +96,7 @@ define(function (require) {
 
         // Simulation server became available
         messageHandler[messageTypes.SERVER_AVAILABLE] = function (payload) {
-            GEPPETTO.FE.infoDialog(GEPPETTO.Resources.SERVER_AVAILABLE, payload.message);
+            GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.SERVER_AVAILABLE, payload.message);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
         };
 

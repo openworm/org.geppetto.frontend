@@ -23,18 +23,20 @@ define(function (require) {
         /**
          * Adds a new TreeVisualizerDAT Widget to Geppetto
          */
-        addTreeVisualiserDATWidget: function () {
+        addTreeVisualiserDATWidget: function (isStateless) {
+            if(isStateless == undefined){
+                // stateless by default
+                isStateless = true;
+            }
+
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("TreeVisualiserDAT", this.widgets);
             var name = id;
 
             // create tree visualiser widget
             var tvdat = window[name] = new TreeVisualiserDAT({
-                id: id,
-                name: name,
-                visible: true,
-                width: 260,
-                height: 350
+                id: id, name: name, visible: true, width: 260, height: 350,
+                widgetType: GEPPETTO.Widgets.TREEVISUALISERDAT, stateless: isStateless
             });
             // create help command for plot
             tvdat.help = function () {

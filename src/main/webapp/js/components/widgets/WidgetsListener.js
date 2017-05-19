@@ -54,12 +54,15 @@ define(function (require) {
                     GEPPETTO.Console.debugLog('added new observer');
                 }
 
+                var widgetSelector = $("#" + widgetID);
+
                 //registers remove handler for widget
-                $("#" + widgetID).on("remove", function () {
+                widgetSelector.on("remove", function () {
                     //remove tags and delete object upon destroying widget
                     GEPPETTO.Console.removeCommands(widgetID);
 
                     var widgets = controller.getWidgets();
+                    var componentType = controller.widgets[0].getComponentType()
 
                     for (var p in widgets) {
                         if (widgets[p].getId() == this.id) {
@@ -67,10 +70,22 @@ define(function (require) {
                             break;
                         }
                     }
+
+                    // remove from component factory dictionary
+                    // NOTE: this will go away after widgets/components refactoring
+                    var comps = GEPPETTO.ComponentFactory.getComponents()[componentType];
+                    for(var c in comps){
+                        if(comps[c].getId() == widgetID){
+                            comps.splice(c, 1);
+                            break;
+                        }
+                    }
+
+                    GEPPETTO.trigger(GEPPETTO.Events.Component_destroyed, widgetID);
                 });
 
                 //register resize handler for widget
-                $("#" + widgetID).on("dialogresizestop", function (event, ui) {
+                widgetSelector.on("dialogresizestop", function (event, ui) {
 
                     var height = ui.size.height;
                     var width = ui.size.width;
@@ -84,7 +99,7 @@ define(function (require) {
                 });
 
                 //register drag handler for widget
-                $("#" + widgetID).on("dialogdragstop", function (event, ui) {
+                widgetSelector.on("dialogdragstop", function (event, ui) {
 
                     var left = ui.position.left;
                     var top = ui.position.top;

@@ -4,6 +4,15 @@ define(function (require) {
 	window.THREE = require('three');
 	var AMI = require('./ami.min.js');
 
+	var LoadersVolume = AMI.default.Loaders.Volume;
+	var CamerasOrthographic = AMI.default.Cameras.Orthographic;
+	var ControlsOrthographic = AMI.default.Controls.TrackballOrtho;
+	var HelpersStack = AMI.default.Helpers.Stack;
+	var ControlsTrackball = AMI.default.Controls.Trackball;
+	var HelpersBoundingBox = AMI.default.Helpers.BoundingBox;
+	var ModelsStack = AMI.default.Models.Stack;
+	var HelpersLocalizer = AMI.default.Helpers.Localizer;
+
 	require('./DicomViewer.less');
 
 	var AbstractComponent = require('../../AComponent');
@@ -12,24 +21,162 @@ define(function (require) {
 
 		constructor(props) {
 			super(props);
+
+			this.state = {
+				mode: this.props.mode
+			};
+
+			this.changeMode = this.changeMode.bind(this);
 		}
 
-		shouldComponentUpdate() {
-			return false;
+		loadSingleView() {
+			// Setup renderer
+			var container = document.getElementById(this.props.id).getElementsByClassName('dicomViewer')[0];
+			var renderer = new THREE.WebGLRenderer({
+				antialias: true,
+			});
+			renderer.setSize(container.offsetWidth, container.offsetHeight);
+			renderer.setClearColor(0x353535, 1);
+			renderer.setPixelRatio(window.devicePixelRatio);
+			container.appendChild(renderer.domElement);
+
+			// Setup scene
+			var scene = new THREE.Scene();
+
+			// Setup camera
+			var camera = new CamerasOrthographic(
+				container.clientWidth / -2, container.clientWidth / 2,
+				container.clientHeight / 2, container.clientHeight / -2,
+				0.1, 10000);
+
+			// Setup controls
+			var controls = new ControlsOrthographic(camera, container);
+			controls.staticMoving = true;
+			controls.noRotate = true;
+			camera.controls = controls;
+
+			/**
+			 * Handle window resize
+			 */
+			function onWindowResize() {
+				camera.canvas = {
+					width: container.offsetWidth,
+					height: container.offsetHeight,
+				};
+				camera.fitBox(2);
+
+				renderer.setSize(container.offsetWidth, container.offsetHeight);
+			}
+			window.addEventListener('resize', onWindowResize, false);
+
+			$("#" + this.props.id).on("dialogresizestop", function (event, ui) {
+				camera.canvas = {
+					// width: ui.size.width - 260 - 30,
+					// height: ui.size.height - 30,
+					width: container.offsetWidth,
+					height: container.offsetHeight,
+				};
+				camera.fitBox(2);
+
+				// renderer.setSize(ui.size.width - 260 - 30, ui.size.height - 30);
+				renderer.setSize(container.offsetWidth, container.offsetHeight);
+
+			});
+
+			/**
+			 * Start animation loop
+			 */
+			function animate() {
+				controls.update();
+				renderer.render(scene, camera);
+
+				// request new frame
+				requestAnimationFrame(function () {
+					animate();
+				});
+			}
+			animate();
+
+			// Setup loader
+			var _this = this;
+			var loader = new LoadersVolume(container);
+			loader.load(this.props.files)
+				.then(function () {
+					// merge files into clean series/stack/frame structure
+					var series = loader.data[0].mergeSeries(loader.data);
+					var stack = series[0].stack[0];
+					loader.free();
+					loader = null;
+					// be carefull that series and target stack exist!
+					var stackHelper = new HelpersStack(stack);
+					// stackHelper.orientation = 2;
+					// stackHelper.index = 56;
+
+					// tune bounding box
+					stackHelper.bbox.visible = false;
+
+					// tune slice border
+					stackHelper.border.color = 0xFF9800;
+					// stackHelper.border.visible = false;
+
+					scene.add(stackHelper);
+
+					// hook up callbacks
+					controls.addEventListener('OnScroll', function (e) {
+						console.log("scrolling");
+						if (e.delta > 0) {
+							if (stackHelper.index >= stack.dimensionsIJK.z - 1) {
+								return false;
+							}
+							stackHelper.index += 1;
+						} else {
+							if (stackHelper.index <= 0) {
+								return false;
+							}
+							stackHelper.index -= 1;
+						}
+
+					});
+
+					// center camera and interactor to center of bouding box
+					// for nicer experience
+					// set camera
+					var worldbb = stack.worldBoundingBox();
+					var lpsDims = new THREE.Vector3(
+						worldbb[1] - worldbb[0],
+						worldbb[3] - worldbb[2],
+						worldbb[5] - worldbb[4]
+					);
+
+					// box: {halfDimensions, center}
+					var box = {
+						center: stack.worldCenter().clone(),
+						halfDimensions:
+						new THREE.Vector3(lpsDims.x + 10, lpsDims.y + 10, lpsDims.z + 10),
+					};
+
+					// init and zoom
+					var canvas = {
+						width: container.clientWidth,
+						height: container.clientHeight,
+					};
+
+					camera.directions = [stack.xCosine, stack.yCosine, stack.zCosine];
+					camera.box = box;
+					camera.canvas = canvas;
+					camera.update();
+
+					// Not working properly. See issue: https://github.com/FNNDSC/ami/issues/120
+					//camera.fitBox(2, 2);
+					camera.fitBox(2);
+				})
+				.catch(function (error) {
+					window.console.log('oops... something went wrong...');
+					window.console.log(error);
+				});
 		}
 
-		componentDidMount() {
-
-			// VJS classes we will be using in this lesson
-			var LoadersVolume = AMI.default.Loaders.Volume;
-			var CamerasOrthographic = AMI.default.Cameras.Orthographic;
-			var ControlsOrthographic = AMI.default.Controls.TrackballOrtho;
-			var HelpersStack = AMI.default.Helpers.Stack;
-			var ControlsTrackball = AMI.default.Controls.Trackball;
-			var HelpersBoundingBox = AMI.default.Helpers.BoundingBox;
-			var ModelsStack = AMI.default.Models.Stack;
-			var HelpersLocalizer = AMI.default.Helpers.Localizer;
-
+		loadQuadView() {
 			let ready = false;
 
 			// 3d renderer
@@ -717,36 +864,67 @@ define(function (require) {
 					window.console.log('oops... something went wrong...');
 					window.console.log(error);
 				});
+		}
 
-			
+		componentDidMount() {
+
+			if (this.state.mode == "single_view") {
+				this.loadSingleView();
+			}
+			else if (this.state.mode == "quad_view") {
+				this.loadQuadView();
+			}
+		}
+
+		componentDidUpdate() {
+
+			if (this.state.mode == "single_view") {
+				this.loadSingleView();
+			}
+			else if (this.state.mode == "quad_view") {
+				this.loadQuadView();
+			}
+		}
+
+		changeMode() {
+			if (this.state.mode == "single_view") {
+				this.setState({mode: "quad_view"});
+			}
+			else {
+				this.setState({mode: "single_view"});
+			}
 		}
 
 		render() {
-			/*var dicomViewerContent;
-			if (this.props.mode == "single_view") {
+			var dicomViewerContent;
+			if (this.state.mode == "single_view") {
 				dicomViewerContent = (
-					<div className="dicomViewer" style={{ float: 'left' }}>
+					<div className="dicomViewer">
 					</div>
 				)
 			}
-			else if (this.props.mode == "quad_view") {
+			else if (this.state.mode == "quad_view") {
 				dicomViewerContent = (
-					<div className="visualizer">
-						<div id="r0" className="renderer"></div>
-						<div id="r1" className="renderer"></div>
-						<div id="r2" className="renderer"></div>
-						<div id="r3" className="renderer"></div>
-					</div>
-				)
-			}*/
-			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} style={{ width: '100%', height: '100%' }}>
 					<div className="dicomViewer">
 						<div id="r0" className="renderer"></div>
 						<div id="r1" className="renderer"></div>
 						<div id="r2" className="renderer"></div>
 						<div id="r3" className="renderer"></div>
 					</div>
+				)
+			}
+			return (
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} style={{ width: '100%', height: '100%' }}>
+					<button style={{
+						position: 'absolute',
+						left: 2.5,
+						top: 2.5,
+						padding: 0,
+						border: 0,
+						background: 'transparent'
+					}} className="btn fa fa-home" onClick={this.changeMode} title={'Change Mode'} />
+
+					{dicomViewerContent}
 				</div>
 			)
 		}

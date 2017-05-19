@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 console.log("\nThe arguments passed to webpack are:\n");
 console.log(process.argv);
@@ -131,17 +132,22 @@ module.exports = {
                 'NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
             },
         }),
+        new ExtractTextPlugin("[name].css"),
     ],
 
     resolve: {
-        alias: {geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js')},
+        alias: {
+        	geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js'),
+        	handlebars : 'handlebars/dist/handlebars.js'
+        	    
+        },
         extensions: ['', '.js', '.json'],
     },
 
     module: {
         loaders: [
             {
-                test: /\.(js)$/, exclude: [/node_modules(?!(\/|\\)ami.js)/, /build/, /\.bundle/], loader: ['babel-loader'],
+                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/], loader: ['babel-loader'],
                 query: {
                     presets: ['react', 'es2015']
                 }
@@ -159,7 +165,7 @@ module.exports = {
                 loader: 'ignore-loader'
             },
             {   test: /\.css$/,
-                loader: 'style-loader!css-loader'
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader") 
             },
             {
                 test: /\.less$/,

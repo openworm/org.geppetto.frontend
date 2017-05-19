@@ -20,6 +20,14 @@ define(function (require) {
             constructor(props) {
                 super(props);
                 this.dirtyView = false;
+                this.container = null;
+            }
+
+            getContainer() {
+                if (this.container == null){
+                    this.container = $(this.props.parentContainer).children().get(0);
+                }
+                return this.container;
             }
 
             isWidget() {

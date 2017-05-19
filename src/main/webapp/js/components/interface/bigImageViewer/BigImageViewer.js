@@ -1,10 +1,6 @@
 define(function (require) {
 
-	var link = document.createElement("link");
-	link.type = "text/css";
-	link.rel = "stylesheet";
-	link.href = "geppetto/js/components/interface/bigImageViewer/BigImageViewer.css";
-	document.getElementsByTagName("head")[0].appendChild(link);
+	require("./BigImageViewer.less")
 
 	var React = require('react');
 	var OpenSeaDragon = require('openseadragon');

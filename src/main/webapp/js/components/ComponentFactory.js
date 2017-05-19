@@ -27,11 +27,11 @@ define(function (require) {
 				'HOME':'interface/home/HomeControl',
 				'SIMULATIONCONTROLS':'interface/simulationControls/ExperimentControls',
 				'CAMERACONTROLS': 'interface/cameraControls/CameraControls',
-				'SHARE':'interface/share/share',
+				'SHARE':'interface/share/Share',
 				'INFOMODAL':'controls/modals/InfoModal',
 				'MDMODAL':'controls/modals/MarkDownModal',
 				'QUERY':'interface/query/query',
-				'TUTORIAL':'interface/tutorial/TutorialModule',
+				'TUTORIAL':'interface/tutorial/Tutorial',
 				'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
 				'CHECKBOX': 'controls/Checkbox',
 				'TEXTFIELD': 'controls/TextField',
@@ -118,6 +118,7 @@ define(function (require) {
 					if (!("isStateless" in properties)){
 						properties["isStateless"] = false;
 					}
+					properties["parentContainer"] = container;
 					
 					// Create component/widget
 					var type = loadedModule;
@@ -140,6 +141,7 @@ define(function (require) {
 					}
 					else{
 						GEPPETTO.Console.updateTags(componentType, renderedComponent);
+						renderedComponent.container = container;
 					}
 					
 					return renderedComponent;

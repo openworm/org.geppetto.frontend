@@ -493,10 +493,6 @@ define(function (require) {
                 this.$el.parent().effect('shake', options, speed)
             }
 
-            shouldComponentUpdate() {
-                return false;
-            }
-
             componentDidMount() {
                 var that = this;
 
@@ -538,7 +534,9 @@ define(function (require) {
                         },
                         "beforeMinimize" : function(evt, dlg) {
                             var label = that.name;
-                            label = label.substring(0, 6);
+                            if(label!=undefined){
+                                label = label.substring(0, 6);
+                            }
                             that.$el.dialog({ title: label });
                         },
                         "beforeMaximize" : function(evt, dlg) {
@@ -576,6 +574,7 @@ define(function (require) {
                 //this.dialog.dialog('open')
 
                 this.$el = $("#" + this.props.id);
+                this.container = this.$el.children().get(0);
                 var dialogParent = this.$el.parent();
 
 

@@ -1,15 +1,11 @@
 define(function (require) {
 
-	var link = document.createElement("link");
-	link.type = "text/css";
-	link.rel = "stylesheet";
-	link.href = "geppetto/js/components/interface/tutorial/tutorial.css";
-	document.getElementsByTagName("head")[0].appendChild(link);
-
 	var React = require('react'),
 		$ = require('jquery'),
 		Button = require('../../controls/mixins/bootstrap/button'),
 		GEPPETTO = require('geppetto');
+
+	require('./Tutorial.less');
 
 	$.cookie = require('js-cookie');
 
@@ -20,7 +16,8 @@ define(function (require) {
 		constructor(props) {
 			super(props);
 
-			this.tutorials = []
+			this.tutorials = [];
+			this.tutorialsMap = {};
 
 			this.state = {
 				tutorialData: {},
@@ -90,6 +87,8 @@ define(function (require) {
 			} else {
 				this.start();
 			}
+
+			this.setDirty(true);
 		}
 
 		nextStep() {
@@ -99,12 +98,15 @@ define(function (require) {
 			} else {
 				this.start();
 			}
+
+			this.setDirty(true);
 		}
 
 		prevStep() {
 			this.state.currentStep--;
 			GEPPETTO.tutorialEnabled = false;
 			this.updateTutorialWindow();
+			this.setDirty(true);
 		}
 
 		close() {
@@ -121,11 +123,11 @@ define(function (require) {
 				var height = self.getActiveTutorial()["height"];
 				if (height != undefined) {
 					p.height(height + "px");
-					this.dialog.css("height", height + "px");
+					self.dialog.css("height", height + "px");
 				}
 				if (width != undefined) {
 					p.width(width + "px");
-					this.dialog.css("width", width + "px");
+					self.dialog.css("width", width + "px");
 				}
 			};
 
@@ -138,16 +140,20 @@ define(function (require) {
 		setTutorial(tutorialURL) {
 			this.state.tutorialData = {};
 			this.addTutorial(tutorialURL);
+			this.setDirty(true);
 		}
 
 		goToChapter(chapter) {
 			this.state.activeTutorial = chapter;
 			this.start();
+			this.setDirty(true);
 		}
 
-		addTutorial(tutorialURL) {
+		addTutorial(tutorialURL,callback) {
 			// do not add if the same url was already successfully added
 			if (this.tutorials.includes(tutorialURL)) {
+				var name = this.tutorialsMap[tutorialURL]
+				callback(name);
 				return;
 			}
 
@@ -159,10 +165,15 @@ define(function (require) {
 				url: tutorialURL,
 				success: function (responseData, textStatus, jqXHR) {
 					// on success add to tutorials utl list for view-state
+					self.tutorialsMap[tutorialURL]=responseData.name;
 					self.tutorials.push(tutorialURL);
 					self.setDirty(true);
 					// load tutorial
-					self.loadTutorial(responseData, false);
+					if(callback!=undefined){
+						callback(responseData.name);
+					}else{
+						self.loadTutorial(responseData,false);
+					}
 				},
 				error: function (responseData, textStatus, errorThrown) {
 					throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
@@ -176,8 +187,8 @@ define(function (require) {
 			this.state.currentStep = 0;
 			if (!this.getCookie()) {
 				if (start) {
-					this.forceUpdate();
 					this.start();
+					this.forceUpdate();
 				}
 			}
 		}
@@ -323,27 +334,33 @@ define(function (require) {
 
 		setView(view) {
 			// set base properties
-			super.setView(view)
+			super.setView(view);
+			var self = this;
+			var callback = function(tutorial){
+				if(view.componentSpecific.activeTutorial==tutorial){
+					// set component specific stuff, only custom handlers for popup widget
+					if (view.componentSpecific != undefined) {
+						if (view.componentSpecific.activeTutorial != undefined) {
+							self.goToChapter(view.componentSpecific.activeTutorial);
+						}
 
+						if (view.componentSpecific.currentStep != undefined) {
+							self.gotToStep(view.componentSpecific.currentStep);
+						}
+					}
+				}
+			};
+			
 			// set data
 			if (view.data != undefined) {
 				if (view.dataType == 'array') {
 					for (var i = 0; i < view.data.length; i++) {
-						this.addTutorial(view.data[i]);
+						this.addTutorial(view.data[i],callback);
 					}
 				}
 			}
 
-			// set component specific stuff, only custom handlers for popup widget
-			if (view.componentSpecific != undefined) {
-				if (view.componentSpecific.activeTutorial != undefined) {
-					this.goToChapter(view.componentSpecific.activeTutorial);
-				}
-
-				if (view.componentSpecific.currentStep != undefined) {
-					this.gotToStep(view.componentSpecific.currentStep);
-				}
-			}
+			this.setDirty(false);
 		}
 
 		render() {

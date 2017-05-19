@@ -78,7 +78,6 @@ define(function(require)
                             // NOTE: this bit needs to be refactored once widgets/components are consolidated
                             if(componentViews[cv].widgetType != undefined && componentViews[cv].isWidget){
                                 component = GEPPETTO.ComponentFactory.addWidget(componentViews[cv].widgetType, {}, function () {
-                                    console.log(this);
                                     this.setView(componentViews[cv])
                                 });
                             } else if(componentViews[cv].componentType != undefined) {

@@ -1154,7 +1154,11 @@ define(function (require) {
 			if(this.isFunctionNode){
 				baseView.dataType = 'function';
 				baseView.data = this.functionNodeData;
-			} else {
+			} else if (this.controller.isColorbar(this)) {
+                            baseView.dataType = 'colorbar';
+                            baseView.options = this.plotOptions;
+                            baseView.data = this.datasets[0];
+                        } else {
 
 				if (this.hasXYData){
 					baseView.dataType = 'object';
@@ -1184,7 +1188,10 @@ define(function (require) {
 			if(view.dataType == 'function'){
 				var functionNode = eval(view.data);
 				this.plotFunctionNode(functionNode);
-			} else if (view.dataType == 'object') {
+			} else if (view.dataType == 'colorbar') {
+                            this.plotGeneric(view.data);
+                            this.setOptions(view.options);
+                        } else if (view.dataType == 'object') {
 				// if any xy data loop through it
 				if(view.xyData != undefined){
 					for(var i=0; i<view.xyData.length; i++) {

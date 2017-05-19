@@ -176,7 +176,8 @@ define(function (require) {
              * @returns {String} All commands and descriptions for G.
              */
             help: function () {
-                return GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/pages/geppetto/G.js", GEPPETTO.G, "G");
+                GEPPETTO.Utility.extractCommandsFromFile("geppetto/js/pages/geppetto/G.js", GEPPETTO.G, "G");
+                return this;
             },
 
             /**

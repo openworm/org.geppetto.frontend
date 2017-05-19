@@ -48,11 +48,11 @@ define(function(require) {
 
         messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {
             GEPPETTO.SimulationHandler.loadProject(payload);
-            GEPPETTO.ViewController.resolveViews();
         };
 
         messageHandler[messageTypes.MODEL_LOADED] = function(payload) {
             GEPPETTO.SimulationHandler.loadModel(payload);
+            GEPPETTO.ViewController.resolveViews();
         };
 
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {

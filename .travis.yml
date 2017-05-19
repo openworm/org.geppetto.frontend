@@ -1,9 +1,13 @@
 language: java
 install:
-- ./travis-install.sh
+- nvm install 6
 script:
-- mvn install
-- mvn clean install -P master
+- cd src/main/webapp
+- npm install
+- npm run build-dev -- --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/
+- npm --version
+- node --version
+
 env:
   global:
     secure: EvqtUrZj3GsqzAkjZIVf2ZIze6ec72G8Dnkc0J3lKxwDTK6+KgIYgRWUWWO6tzL5Mn3Y+kkiHvyAkrHNPb2QZVBAdOdE3O308WRi64FF71nurd46zE43K/sSxcX/zCoBtxsz49oRcluPWl+nGDi/iKEysgcnQCvz23VWEYHAsOk=

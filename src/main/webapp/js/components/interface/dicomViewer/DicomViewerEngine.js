@@ -13,6 +13,7 @@ module.exports = {
 
         // Setup renderer
         var container = component.getContainer().getElementsByClassName('dicomViewer')[0];
+        container.innerHTML = '';
         var renderer = new THREE.WebGLRenderer({
             antialias: true,
         });
@@ -271,10 +272,9 @@ module.exports = {
         let clipPlane3 = new THREE.Plane(new THREE.Vector3(0, 0, 0), 0);
 
         function initRenderer3D(renderObj) {
-            console.log(component)
             // renderer
-            //renderObj.domElement = document.getElementById(renderObj.domId);
             renderObj.domElement = component.getContainer().getElementsByClassName(renderObj.domClass)[0];
+            renderObj.domElement.innerHTML = '';
 
             renderObj.renderer = new THREE.WebGLRenderer({
                 antialias: true,
@@ -314,8 +314,8 @@ module.exports = {
 
         function initRenderer2D(rendererObj) {
             // renderer
-            //rendererObj.domElement = document.getElementById(rendererObj.domId);
             rendererObj.domElement = component.getContainer().getElementsByClassName(rendererObj.domClass)[0];
+            rendererObj.domElement.innerHTML = '';
             rendererObj.renderer = new THREE.WebGLRenderer({
                 antialias: true,
             });

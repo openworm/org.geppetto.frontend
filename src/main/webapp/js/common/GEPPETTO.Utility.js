@@ -4,6 +4,8 @@
 define(function (require) {
     return function (GEPPETTO) {
         var $ = require('jquery');
+        var JSZip = require("jszip");
+	    var FileSaver = require('file-saver');
 
         GEPPETTO.Utility = {
 
@@ -187,7 +189,25 @@ define(function (require) {
                 return message;
             },
 
-            saveData: undefined
+            saveData: undefined,
+
+            createZipFromRemoteFiles: function(files, zipName){
+                var zip = new JSZip();
+
+                var calls = [];
+                $.each(files, function (i, filePath) {
+                    calls.push($.get(filePath, function (data) {
+                        zip.file(filePath.split('/').pop(), data);
+                    }));
+                });
+
+                $.when(...calls).done(function () {
+                    zip.generateAsync({ type: "blob" })
+                        .then(function (blob) {
+                            FileSaver.saveAs(blob, zipName);
+                        });
+                });
+            }
         };
 
         // inject saveData into utility, need to do it this way because it's adding things to the DOM

@@ -584,10 +584,6 @@ define(function (require) {
                 this.container = this.$el.children().get(0);
                 var dialogParent = this.$el.parent();
 
-                this.modal = $("<div class='modal-region'></div>");
-                this.modal.appendTo(this.$el);
-                this.spinner = GEPPETTO.ComponentFactory.renderComponent(React.createFactory(spinner)(), this.modal.get(0));
-
                 //add history
                 this.showHistoryIcon(true);
 

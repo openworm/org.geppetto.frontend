@@ -5,7 +5,7 @@ define(function (require) {
     return function (GEPPETTO) {
         var $ = require('jquery');
         var JSZip = require("jszip");
-	    var FileSaver = require('file-saver');
+        var FileSaver = require('file-saver');
 
         GEPPETTO.Utility = {
 
@@ -189,45 +189,37 @@ define(function (require) {
                 return message;
             },
 
-            saveData: undefined,
+            createZipFromRemoteFiles: function (files, zipName) {
 
-            createZipFromRemoteFiles: function(files, zipName){
+                // Convert url to promise, returning uint8 array
+                function urlToPromise(url) {
+                    return new Promise(function (resolve, reject) {
+                        var oReq = new XMLHttpRequest();
+                        oReq.open("GET", url, true);
+                        oReq.responseType = "arraybuffer";
+
+                        oReq.onload = function (oEvent) {
+                            var arrayBuffer = oReq.response;
+                            resolve(new Uint8Array(arrayBuffer));
+                        };
+
+                        oReq.send();
+                    });
+                }
+
+                // Add an entry to zip per file
                 var zip = new JSZip();
-
-                var calls = [];
                 $.each(files, function (i, filePath) {
-                    calls.push($.get(filePath, function (data) {
-                        zip.file(filePath.split('/').pop(), data);
-                    }));
+                    zip.file(filePath.split('/').pop(), urlToPromise(filePath), { binary: true });
                 });
 
-                $.when(...calls).done(function () {
-                    zip.generateAsync({ type: "blob" })
-                        .then(function (blob) {
-                            FileSaver.saveAs(blob, zipName);
-                        });
-                });
+                // Send File
+                zip.generateAsync({ type: "blob" })
+                    .then(function (blob) {
+                        FileSaver.saveAs(blob, zipName);
+                    });
             }
         };
-
-        // inject saveData into utility, need to do it this way because it's adding things to the DOM
-        // and returning the function with closure on the DOM elements
-        GEPPETTO.Utility.saveData = (function () {
-            var a = document.createElement("a");
-            document.body.appendChild(a);
-            a.style = "display: none";
-            return function (blob, fileName) {
-                var url = window.URL.createObjectURL(blob);
-                a.href = url;
-                a.download = fileName;
-                a.click();
-
-                // add timeout to give firefox time to trigger donwload before removing resource
-                setTimeout(function () {
-                    window.URL.revokeObjectURL(url);
-                }, 100);
-            };
-        }());
 
         /**
          * Adding method to javascript string class to test if beginning of string matches another string being passed.

@@ -28,6 +28,7 @@ define(function (require) {
 
 			this.changeMode = this.changeMode.bind(this);
 			this.changeOrientation = this.changeOrientation.bind(this);
+			this.download = this.download.bind(this);
 		}
 
 		loadSingleView() {
@@ -75,16 +76,11 @@ define(function (require) {
 
 			$("#" + this.props.id).on("dialogresizestop", function (event, ui) {
 				camera.canvas = {
-					// width: ui.size.width - 260 - 30,
-					// height: ui.size.height - 30,
 					width: container.offsetWidth,
 					height: container.offsetHeight,
 				};
 				camera.fitBox(2);
-
-				// renderer.setSize(ui.size.width - 260 - 30, ui.size.height - 30);
 				renderer.setSize(container.offsetWidth, container.offsetHeight);
-
 			});
 
 			/**
@@ -920,6 +916,10 @@ define(function (require) {
 			this.stackHelper.index = Math.floor(this.stackHelper.orientationMaxIndex/2);
 		}
 
+		download(){
+			window.location = this.props.files;
+		}
+		
 		render() {
 			var dicomViewerContent;
 			if (this.state.mode == "single_view") {

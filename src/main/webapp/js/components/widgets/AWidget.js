@@ -434,6 +434,13 @@ define(function (require) {
                 }));
             }
 
+            addDownloadButton(downloadFunction){
+                var that = this;
+                this.addButtonToTitleBar($("<div class='fa fa-chevron-down' title='Download data'></div>").click(function () {
+                    that.download();
+                }));
+            }
+
             /**
              * Makes the widget draggable or not
              *
@@ -577,6 +584,9 @@ define(function (require) {
                 this.container = this.$el.children().get(0);
                 var dialogParent = this.$el.parent();
 
+                this.modal = $("<div class='modal-region'></div>");
+                this.modal.appendTo(this.$el);
+                this.spinner = GEPPETTO.ComponentFactory.renderComponent(React.createFactory(spinner)(), this.modal.get(0));
 
                 //add history
                 this.showHistoryIcon(true);
@@ -591,6 +601,11 @@ define(function (require) {
 
                 //add help button
                 this.addHelpButton();
+
+                //add download button
+                if (super.download) {
+                    this.addDownloadButton(super.download);
+                }
 
                 // initialize content
                 this.size = this.state.defaultSize;
@@ -641,10 +656,6 @@ define(function (require) {
                     return el.id === event
                 });
             }
-
-            // setController(controller) {
-            //     this.controller = controller;
-            // }
 
             showHistoryIcon(show) {
                 var that = this;

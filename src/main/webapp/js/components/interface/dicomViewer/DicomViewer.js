@@ -27,10 +27,19 @@ define(function (require) {
 			this.download = this.download.bind(this);
 		}
 
-		setData(files) {
-			this.setState({ files: files });
+		setData(data) {
+			if (data.getMetaType == undefined){
+				this.setState({ files: files });
+			}
+			else if (data.getMetaType() == "Instance"){
+				if (data.getVariable().getInitialValues()[0].value.format == "NIFTI"){
+					this.setState({ files: [data.getVariable().getInitialValues()[0].value.data] });
+				}
+				else if (data.getVariable().getInitialValues()[0].value.format == "DCM"){
+					// WHAT do we do here?
+				}
+			}
 		}
-
 
 		loadView() {
 			if (this.state.mode == "single_view") {

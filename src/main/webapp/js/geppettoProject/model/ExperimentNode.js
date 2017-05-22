@@ -200,9 +200,7 @@ define(['backbone'], function(require) {
         run: function(callback) {
             var activeExperimentId = window.Project.getActiveExperiment().getId();
             if (this.writePermission && this.getParent().persisted && this.login && this.runPermission && !this.getParent().isReadOnly()) {
-                if ((this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||
-                        this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) &&
-                    activeExperimentId == this.id) {
+                if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||  this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
 
                     this.setStatus(GEPPETTO.Resources.ExperimentStatus.RUNNING);
                     GEPPETTO.trigger(GEPPETTO.Events.Experiment_running);

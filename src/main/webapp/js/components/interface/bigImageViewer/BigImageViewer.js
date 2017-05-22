@@ -13,14 +13,14 @@ define(function (require) {
 
 			var settings = {
 				id: this.props.id + "_component",
-				// FIXME: I have copied the images inside the images component folder. More info https://github.com/openseadragon/openseadragon/issues/792
-				prefixUrl: "geppetto/js/components/interface/bigImageViewer/images/",
-				toolbar: "toolbarDiv",
+				zoomInButton: "zoom-in",
+				zoomOutButton: "zoom-out",
+				homeButton: "home",
+				fullPageButton: "full-page"
 			};
 
 			this.state = {
 				settings: $.extend(settings, this.props.settings),
-				showNavigator: this.props.showNavigator,
 				file: this.props.file
 			};
 
@@ -33,7 +33,7 @@ define(function (require) {
 
 			this.viewer = OpenSeadragon(this.state.settings);
 		}
-		
+
 		download() {
 			//What do we do here?
 		}
@@ -49,7 +49,31 @@ define(function (require) {
 		render() {
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="bigImageViewer">
-					<div id="toolbarDiv" style={{ position: 'absolute', top: -1, left: -1, zIndex: 999 }}>
+					<div id="displayArea" style={{ position: 'absolute', top: 0, left: 0, width: '20px', margin: '6px' }}>
+						<button style={{
+							padding: 0,
+							zIndex: 999,
+							border: 0,
+							background: 'transparent'
+						}} className='btn fa fa-home' id='home' title={'Center Stack'} />
+						<button style={{
+							padding: 0,
+							zIndex: 999,
+							border: 0,
+							background: 'transparent'
+						}} className='btn fa fa-search-plus' id='zoom-in' title={'Zoom In'} />
+						<button style={{
+							padding: 0,
+							zIndex: 999,
+							border: 0,
+							background: 'transparent'
+						}} className='btn fa fa-search-minus' id='zoom-out' title={'Zoom Out'} />
+						<button style={{
+							padding: 0,
+							zIndex: 999,
+							border: 0,
+							background: 'transparent'
+						}} className='btn fa fa-arrows-alt' id='full-page' title={'Full Page'} />
 					</div>
 				</div>
 			)

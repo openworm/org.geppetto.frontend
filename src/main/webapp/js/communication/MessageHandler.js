@@ -149,27 +149,23 @@ define(function(require) {
 
                 //changing status in matched experiment
                 for (var e in experiments) {
-                    if (experiments[e].getId() == experimentID) {
-                        if (experiments[e].getStatus() != status) {
-                            if (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
-                                if (window.Project.getActiveExperiment().getId() == experimentID) {
-                                    if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING &&
-                                        status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                                        experiments[e].setDetails("");
-                                        experiments[e].setStatus(status);
-                                        GEPPETTO.trigger(GEPPETTO.Events.Experiment_completed, experimentID);
-                                    } else if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                                        experiments[e].setStatus(status);
-                                        GEPPETTO.trigger(GEPPETTO.Events.Experiment_failed, experimentID);
-                                    } else if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN &&
-                                        status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                                        experiments[e].setStatus(status);
-                                        GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                	if (experiments[e].getId() == experimentID) {
+                		if (experiments[e].getStatus() != status) {
+                			if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING &&
+                					status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                				experiments[e].setDetails("");
+                				experiments[e].setStatus(status);
+                				GEPPETTO.trigger(GEPPETTO.Events.Experiment_completed, experimentID);
+                			} else if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
+                				experiments[e].setStatus(status);
+                				GEPPETTO.trigger(GEPPETTO.Events.Experiment_failed, experimentID);
+                			} else if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN &&
+                					status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
+                				experiments[e].setStatus(status);
+                				GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
+                			}
+                		}
+                	}
                 }
             }
             GEPPETTO.trigger(GEPPETTO.Events.Experiment_status_check);

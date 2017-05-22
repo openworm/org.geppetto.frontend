@@ -10,21 +10,40 @@ define(function (require) {
 
 		constructor(props) {
 			super(props);
-		}
 
-		shouldComponentUpdate() {
-			return false;
-		}
-
-		componentDidMount() {
-			var viewer = OpenSeadragon({
+			var settings = {
 				id: this.props.id + "_component",
 				// FIXME: I have copied the images inside the images component folder. More info https://github.com/openseadragon/openseadragon/issues/792
 				prefixUrl: "geppetto/js/components/interface/bigImageViewer/images/",
-				tileSources: this.props.file,
 				toolbar: "toolbarDiv",
-				showNavigator: this.props.showNavigator
-			})
+			};
+
+			this.state = {
+				settings: $.extend(settings, this.props.settings),
+				showNavigator: this.props.showNavigator,
+				file: this.props.file
+			};
+
+			this.download = this.download.bind(this);
+		}
+
+		loadViewer() {
+			this.state.settings.tileSources = this.state.file;
+			this.state.settings.showNavigator = this.state.showNavigator;
+
+			this.viewer = OpenSeadragon(this.state.settings);
+		}
+		
+		download() {
+			//What do we do here?
+		}
+
+		componentDidUpdate() {
+			this.loadViewer();
+		}
+
+		componentDidMount() {
+			this.loadViewer();
 		}
 
 		render() {

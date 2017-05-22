@@ -20,6 +20,16 @@ define(function (require) {
             	settings: $.extend(settings, this.props.settings),
             	files: this.props.files
             };
+
+			this.download = this.download.bind(this);
+		}
+
+		setData(files) {
+			this.setState({ files: files });
+		}
+
+		download() {
+			GEPPETTO.Utility.createZipFromRemoteFiles(this.state.files, "data.zip");
 		}
 
 		render () {

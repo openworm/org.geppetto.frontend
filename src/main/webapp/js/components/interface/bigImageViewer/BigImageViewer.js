@@ -21,7 +21,7 @@ define(function (require) {
 
 			this.state = {
 				settings: $.extend(settings, this.props.settings),
-				file: this.props.file
+				file: this.extractFilePath(this.props.file)
 			};
 
 			this.download = this.download.bind(this);
@@ -29,13 +29,30 @@ define(function (require) {
 
 		loadViewer() {
 			this.state.settings.tileSources = this.state.file;
-			this.state.settings.showNavigator = this.state.showNavigator;
-
 			this.viewer = OpenSeadragon(this.state.settings);
 		}
 
 		download() {
 			//What do we do here?
+			console.log("Downloading data...");
+		}
+
+		extractFilePath(data) {
+			if (data === undefined){
+				return undefined;
+			}
+			else if (data.getMetaType == undefined) {
+				return data;
+			}
+			else if (data.getMetaType() == "Instance") {
+				if (data.getVariable().getInitialValues()[0].value.format == "DZI") {
+					return data.getVariable().getInitialValues()[0].value.data;
+				}
+			}
+		}
+
+		setData(data) {
+			this.setState({ file: this.extractFilePath(data) });
 		}
 
 		componentDidUpdate() {

@@ -190,7 +190,7 @@ define(function (require) {
 					// add to list
 					referencedTypes.push(typeObj);
 				}else{
-					console.log("Error: refStr(" + refStr + ") resolved to undefined");
+					console.log("Error: refStr(" + refStr + ") resolved to undefined. Refenced by " + types[i]);
 				}    
                             }
                         }

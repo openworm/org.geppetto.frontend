@@ -13,12 +13,12 @@ define(function (require) {
 		constructor(props) {
 			super(props);
 
-			if (this.props.mode === undefined){
+			if (this.props.mode === undefined) {
 				this.props.mode = "quad_view";
 			}
 
 			this.state = {
-				files: this.props.files,
+				files: this.extractFilesPath(this.props.files),
 				mode: this.props.mode
 			};
 
@@ -28,14 +28,21 @@ define(function (require) {
 		}
 
 		setData(data) {
-			if (data.getMetaType == undefined){
-				this.setState({ files: files });
+			this.setState({ files: this.extractFilesPath(data) });
+		}
+
+		extractFilesPath(data) {
+			if (data === undefined){
+				return undefined;
 			}
-			else if (data.getMetaType() == "Instance"){
-				if (data.getVariable().getInitialValues()[0].value.format == "NIFTI"){
-					this.setState({ files: [data.getVariable().getInitialValues()[0].value.data] });
+			else if (data.getMetaType == undefined) {
+				return data;
+			}
+			else if (data.getMetaType() == "Instance") {
+				if (data.getVariable().getInitialValues()[0].value.format == "NIFTI") {
+					return data.getVariable().getInitialValues()[0].value.data;
 				}
-				else if (data.getVariable().getInitialValues()[0].value.format == "DCM"){
+				else if (data.getVariable().getInitialValues()[0].value.format == "DCM") {
 					// WHAT do we do here?
 				}
 			}
@@ -68,25 +75,25 @@ define(function (require) {
 		}
 
 		changeOrientation() {
-			if (this.camera.orientation == "coronal"){
+			if (this.camera.orientation == "coronal") {
 				this.camera.orientation = "sagittal";
 			}
-			else if (this.camera.orientation == "sagittal"){
+			else if (this.camera.orientation == "sagittal") {
 				this.camera.orientation = "axial";
 			}
-			else if (this.camera.orientation == "axial"){
+			else if (this.camera.orientation == "axial") {
 				this.camera.orientation = "coronal";
 			}
 			this.camera.update()
 			this.camera.fitBox(2)
 			this.stackHelper.orientation = this.camera.stackOrientation;
-			this.stackHelper.index = Math.floor(this.stackHelper.orientationMaxIndex/2);
+			this.stackHelper.index = Math.floor(this.stackHelper.orientationMaxIndex / 2);
 		}
 
 		download() {
 			GEPPETTO.Utility.createZipFromRemoteFiles(this.state.files, "data.zip");
 		}
-		
+
 		render() {
 			var dicomViewerContent;
 			if (this.state.mode == "single_view") {

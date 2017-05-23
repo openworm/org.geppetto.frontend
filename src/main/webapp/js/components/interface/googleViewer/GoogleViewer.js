@@ -1,11 +1,6 @@
 define(function (require) {
 
-	var link = document.createElement("link");
-	link.type = "text/css";
-	link.rel = "stylesheet";
-	link.href = "geppetto/js/components/interface/googleViewer/GoogleViewer.css";
-	document.getElementsByTagName("head")[0].appendChild(link);
-
+	require('./GoogleViewer.less');
 	var React = require('react');
 	var GoogleMapsLoader = require('google-maps');
 	var AbstractComponent = require('../../AComponent');
@@ -96,6 +91,11 @@ define(function (require) {
 			GoogleMapsLoader.onLoad(function (google) {
 				//console.log('I just loaded google maps api');
 			});
+		}
+
+		download() {
+			//What do we do here?
+			console.log("Downloading data...");
 		}
 
 		render () {

@@ -145,6 +145,7 @@ module.exports = {
     },
 
     module: {
+    	noParse: [/node_modules\/plotly.js\/dist\/plotly.js/, /js\/components\/interface\/dicomViewer\/ami.min.js/],
         loaders: [
             {
                 test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/], loader: ['babel-loader'],

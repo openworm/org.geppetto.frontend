@@ -243,7 +243,18 @@ define(function(require) {
 
         //Updates the legend for a given instance, and updates it in widget
         updateLegend: function(widget, instance, projectId, experimentId) {
-            var legend = this.getLegendName(projectId,experimentId,instance,false);
+            var legend = null;
+            if(window.Project.getId() == projectId){
+                if(window.Project.getActiveExperiment()!= null && window.Project.getActiveExperiment() != undefined){
+                    //variable belongs to same project,but different experiment
+                    if(window.Project.getActiveExperiment().getId()!= experimentId){
+                        legend = this.getLegendName(projectId, experimentId, instance, true);
+                    }
+                }
+            }else{
+                //variable belongs to different project and different experiment
+                legend = this.getLegendName(projectId,experimentId,instance,false);
+            }
 
             //set legend if it needs to be updated, only null if variable belong to active experiment
             if (legend != null) {

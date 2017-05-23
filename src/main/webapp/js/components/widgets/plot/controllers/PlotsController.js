@@ -226,6 +226,7 @@ define(function(require) {
                     } else {
                     	var plot = G.addWidget(0);
                         plot.plotXYData(i, t).setName(path);
+                        self.updateLegend(plot, i, projectId, experimentId);
                     }
                 };
 

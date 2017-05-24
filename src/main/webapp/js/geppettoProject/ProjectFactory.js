@@ -57,7 +57,7 @@ define(function (require) {
                         lastModified: node.lastModified,
                         status: node.status,
                         script: node.script,
-                        view: (node.view != undefined) ? node.view: undefined,
+                        view: (node.view != undefined) ? node.view.viewStates: undefined,
                         _metaType: GEPPETTO.Resources.EXPERIMENT_NODE,
                     });
 

@@ -485,9 +485,7 @@ define(['backbone'], function(require) {
             var views = undefined;
 
             if(viewObject != undefined){
-            	if(viewObject.viewStates!=undefined){
-            			views = JSON.parse(viewObject.viewStates);
-            	}
+                views = JSON.parse(viewObject);
             }
 
             return views;

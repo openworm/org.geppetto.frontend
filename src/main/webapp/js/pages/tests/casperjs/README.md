@@ -1,23 +1,27 @@
-##Run with
-
-`casperjs test LiveTests.js --engine=slimerjs`
-
-to test that Casper is properly installed.
-
-Run `casperjs test UITests.js --engine=slimerjs` to run Geppetto UI Tests.
-
-Run `casperjs test --includes=CoreTestsUtility.js CoreTests.js --engine=slimerjs` to run Core projects Tests
-
-##Prereqs
+## Prereqs
 
 * node.js
 * npm
 
-##Install with:
+## Install with:
 
-`npm install -g phantomjs npm install -g casperjs npm install -g slimerjs`
+`npm install -g phantomjs casperjs slimerjs`
 
-##documentation
+## Run with
+
+To test that Casper is properly installed:
+
+`casperjs test LiveTests.js --engine=slimerjs` 
+
+To run Geppetto UI Tests:
+
+`casperjs test UITests.js --engine=slimerjs` 
+
+To run Core projects Tests:
+
+`casperjs test --includes=CoreTestsUtility.js CoreTests.js --engine=slimerjs`
+
+## documentation
 
 * [CasperJS Test API documentation](http://docs.casperjs.org/en/latest/modules/tester.html) - assert API
 * [CasperJS Core API documentation](http://docs.casperjs.org/en/latest/modules/casper.html) - actions like clicks.

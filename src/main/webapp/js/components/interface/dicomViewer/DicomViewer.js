@@ -18,7 +18,7 @@ define(function (require) {
 			}
 
 			this.state = {
-				files: this.extractFilesPath(this.props.files),
+				files: this.extractFilesPath(this.props.data),
 				mode: this.props.mode
 			};
 
@@ -32,20 +32,21 @@ define(function (require) {
 		}
 
 		extractFilesPath(data) {
-			if (data === undefined){
-				return undefined;
-			}
-			else if (data.getMetaType == undefined) {
-				return data;
-			}
-			else if (data.getMetaType() == "Instance") {
-				if (data.getVariable().getInitialValues()[0].value.format == "NIFTI") {
-					return data.getVariable().getInitialValues()[0].value.data;
+			var files;
+			if (data != undefined){
+				if (data.getMetaType == undefined) {
+					files = data;
 				}
-				else if (data.getVariable().getInitialValues()[0].value.format == "DCM") {
-					// WHAT do we do here?
+				else if (data.getMetaType() == "Instance") {
+					if (data.getVariable().getInitialValues()[0].value.format == "NIFTI") {
+						files = data.getVariable().getInitialValues()[0].value.data;
+					}
+					else if (data.getVariable().getInitialValues()[0].value.format == "DCM") {
+						// WHAT do we do here?
+					}
 				}
 			}
+			return files;
 		}
 
 		loadView() {

@@ -140,6 +140,9 @@ define(function (require) {
                 parameters["projectId"] = experiment.getParent().getId();
                 
 	            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
+                // before wiping widgets stop view monitoring otherwise we may wipe the experiment view
+                GEPPETTO.ViewController.clearViewMonitor();
+                // wipe widgets
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 				GEPPETTO.MessageSocket.send("load_experiment", parameters);
             },

@@ -1668,6 +1668,18 @@ define(function (require) {
             GEPPETTO.ControlPanel = this;
         },
 
+        setTab: function(filterTabOption){
+            // only do something if builtin filters are being used
+            if (this.props.useBuiltInFilters === true) {
+                // default goes to visual instances
+                if (filterTabOption == undefined) {
+                    filterTabOption = this.filterOptions.VISUAL_INSTANCES;
+                }
+
+                this.setState({filterOption: filterTabOption});
+            }
+        },
+
         openWithFilter: function(filterTabOption, filterText) {
             if (filterTabOption == undefined) {
                 filterTabOption = this.filterOptions.VISUAL_INSTANCES;

@@ -1481,8 +1481,7 @@ define(function (require) {
         filterOptions: controlPanelFilterOptions,
 
         refresh: function () {
-            var self = this;
-            self.forceUpdate();
+            this.forceUpdate();
         },
         
         refreshData: function () {

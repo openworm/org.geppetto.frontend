@@ -21,7 +21,7 @@ define(function (require) {
 
 			this.state = {
 				settings: $.extend(settings, this.props.settings),
-				file: this.extractFilePath(this.props.file)
+				file: this.extractFilePath(this.props.data)
 			};
 
 			this.download = this.download.bind(this);
@@ -38,17 +38,16 @@ define(function (require) {
 		}
 
 		extractFilePath(data) {
-			if (data === undefined){
-				return undefined;
-			}
-			else if (data.getMetaType == undefined) {
-				return data;
-			}
-			else if (data.getMetaType() == "Instance") {
-				if (data.getVariable().getInitialValues()[0].value.format == "DZI") {
-					return data.getVariable().getInitialValues()[0].value.data;
+			var file;
+			if (data != undefined){
+				if (data.getMetaType == undefined) {
+					file = data;
+				}
+				else if (data.getMetaType() == "Instance" && data.getVariable().getInitialValues()[0].value.format == "DZI") {
+						file = data.getVariable().getInitialValues()[0].value.data;
 				}
 			}
+			return file;
 		}
 
 		setData(data) {

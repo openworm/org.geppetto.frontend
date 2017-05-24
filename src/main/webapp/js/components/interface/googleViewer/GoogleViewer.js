@@ -18,6 +18,7 @@ define(function (require) {
 				mapTypeControl: false
 			}
 
+			var path = this.extractFilesPath(this.props.data);
 			var imageMapTypeSettings = {
 				getTileUrl: function (coord, zoom) {
 					var normalizedCoord = _this.getNormalizedCoord(coord, zoom);
@@ -32,20 +33,38 @@ define(function (require) {
 				isPng: false,
 				maxZoom: 11,
 				minZoom: 0,
-				radius: 1738000
+				radius: 1738000,
+				path: path
 			}
+
+
 
 			this.state = {
 				mapSettings: $.extend(mapSettings, this.props.mapSettings),
 				imageMapTypeSettings: $.extend(imageMapTypeSettings, this.props.imageMapTypeSettings),
 				tileWidth: (this.props.tileWidth != undefined)?this.props.tileWidth:256 ,
 				tileHeight: (this.props.tileHeight != undefined)?this.props.tileHeight:256,
-				path: this.props.path
+				path: path
 			};
 		}
 
-		shouldComponentUpdate() {
-			return false;
+		extractFilesPath(data) {
+			var path;
+			if (data != undefined){
+				if (data.getMetaType == undefined) {
+					path = data;
+				}
+				else if (data.getMetaType() == "Instance") {
+					if (data.getVariable().getInitialValues()[0].value.format == "GOOGLE_MAP") {
+						path = data.getVariable().getInitialValues()[0].value.data;
+					}
+				}
+			}
+			return path;
+		}
+
+		setData(data) {
+			this.setState({ path: this.extractFilesPath(data) });
 		}
 
 		// Normalizes the coords that tiles repeat across the x axis (horizontally)
@@ -73,7 +92,7 @@ define(function (require) {
 
 		componentDidMount () {
 			var _this = this;
-			GoogleMapsLoader.KEY = this.props.googleKey;
+			GoogleMapsLoader.KEY = 'AIzaSyAtAf8S4uU54ZogtLqbzc8pvQI6phGDL1Q';
 			GoogleMapsLoader.load(function (google) {
 				var container = document.getElementById(_this.props.id + "_component");
 

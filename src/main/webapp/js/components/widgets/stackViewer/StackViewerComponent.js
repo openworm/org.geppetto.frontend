@@ -359,11 +359,8 @@ define(function (require) {
                                                             if (shift) {
                                                                 console.log('Adding ' + that.props.templateDomainNames[index]);
                                                                 that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
-                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
-                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
-                                                                    setTermInfo(instance, instance.getParent().getId());
-                                                                    resolve3D(that.props.templateDomainIds[index]);
-                                                                });
+                                                                var varriableId = that.props.templateDomainIds[index];
+                                                                stackViewerRequest(varriableId); // window.stackViewerRequest must be configured in init script
                                                                 break;
                                                             } else {
                                                                 that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');

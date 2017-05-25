@@ -285,7 +285,8 @@ define(function(require) {
                     window.Project.getActiveExperiment().id = parseInt(activeExperimentID);
                 }
                 window.Project.persisted = true;
-
+                window.Project.readOnly = false;
+                
                 GEPPETTO.trigger(GEPPETTO.Events.Project_persisted);
                 GEPPETTO.Console.log("The project has been persisted  [id=" + projectID + "].");
             },

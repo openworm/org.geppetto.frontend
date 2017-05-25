@@ -210,48 +210,6 @@ define(function (require) {
                 "arguments": ["svg"],
             });
 		},
-
-        /**
-         * Sets the legend for a variable in the plotly widget
-         *
-         * @command setLegend(variable, legend)
-         * @param {Object} instance - variable to change display label in legends
-         * @param {String} legend - new legend name
-         */
-		setLegend: function (instance, legend) {
-			//Check if it is a string or a geppetto object
-			var instancePath = instance;
-			if ((typeof instance) != "string") {
-				instancePath = instance.getInstancePath();
-			}
-
-			for(var i =0; i< this.datasets.length; i++){
-				if(this.datasets[i].name == instancePath){
-					this.datasets[i].name = legend;
-				}
-			}
-
-			Plotly.relayout(this.plotDiv, this.plotOptions);
-			this.labelsMap[instancePath] = legend;
-
-			return this;
-		},
-		
-		updateLegends : function(legendExtension){
-			if(!this.updateLegendsState){
-				for(var i =0; i< this.datasets.length; i++){
-					var oldLegendName = this.datasets[i].name;
-					var variable = this.variables[this.getLegendInstancePath(oldLegendName)];
-					var newLegend = oldLegendName+ legendExtension;
-					this.variables[newLegend] = variable; 
-					this.datasets[i].name  = newLegend;
-					this.labelsMap[variable.getInstancePath()] = oldLegendName;
-				}
-
-				Plotly.relayout(this.plotDiv, this.plotOptions);
-				this.updateLegendsState = true;
-			}
-		},
 		
 		getVariables : function(){
 			return this.variables;
@@ -300,14 +258,6 @@ define(function (require) {
 				return "Can't plot undefined variable";
 			}
 
-			//Check if variable has been already added
-			for (var datasetIndex in this.datasets) {
-				if (this.datasets[datasetIndex].name == validVariable.getInstancePath()) {
-					return "Variable already in Plot";
-				}
-			}
-			
-			var that = this;
 			if (!$.isArray(data)) {
 				data = [data];
 			}
@@ -326,13 +276,7 @@ define(function (require) {
 			var plotable = true;
 			for (var i = 0; i < data.length; i++) {
 				instance = data[i];
-				if (instance != null && instance != undefined){                	
-					for (var key = 0; key < this.datasets.length; key++) {
-						if (instance.getInstancePath() == this.datasets[key].label) {
-							continue;
-						}
-					}
-					
+				if (instance != null && instance != undefined){
 					//We stored the variable objects in its own array, using the instance path
 					//as index. Can't be put on this.datasets since plotly will reject it
 					this.variables[instance.getInstancePath()] = instance;
@@ -347,13 +291,16 @@ define(function (require) {
 							timeSeriesData["x"].push([i]);
 						}
 					}
-					
-					var label = instance.getInstancePath();
-					var shortLabel = label;
-	                if (this.labelsMap[label] != undefined && this.labelsMap[label] != label) {
-	                    //a legend was set
-	                    shortLabel = this.labelsMap[label];
-	                }
+
+					var legendName = instance.getInstancePath();
+					if(instance instanceof ExternalInstance){
+						legendName = this.controller.getLegendName(
+							instance.projectId,
+							instance.experimentId,
+							instance,
+							window.Project.getId() == instance.projectId
+						);
+					}
 	                
 					/*
 					 * Create object with x, y data, and graph information. 
@@ -363,7 +310,8 @@ define(function (require) {
 							x : timeSeriesData["x"],
 							y : timeSeriesData["y"],
 							mode : "lines",
-							name: shortLabel,
+							path: instance.getInstancePath(),
+							name: legendName,
 							line: {
 								dash: 'solid',
 								width: 2
@@ -1082,13 +1030,6 @@ define(function (require) {
 		},
 
 		plotXYData: function (dataY, dataX, options) {
-			//Check if variable has been already added
-			for (var datasetIndex in this.datasets) {
-				if (this.datasets[datasetIndex].name == dataY.getInstancePath()) {
-					return "Variable already in Plot";
-				}
-			}
-
 			// set flags
 			this.hasXYData = true;
 			this.isFunctionNode = false;
@@ -1103,11 +1044,21 @@ define(function (require) {
 
 			var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
 
+			var legendName = dataY.getInstancePath();
+			if(dataY instanceof ExternalInstance){
+				legendName = this.controller.getLegendName(
+					dataY.projectId,
+					dataY.experimentId,
+					dataY,
+					window.Project.getId() == dataY.projectId
+				);
+			}
 			var newLine = {
 					x : timeSeriesData["x"],
 					y : timeSeriesData["y"],
 					mode : "lines",
-					name: dataY.getInstancePath(),
+					path: dataY.getInstancePath(),
+					name: legendName,
 					line: {
 						dash: 'solid',
 						width: 2

@@ -105,6 +105,7 @@ define(function (require) {
                     instance.setWatched(true, false);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
                         instance.setTimeSeries(recordedVariable.value.value);
+                        instance.setUnit(recordedVariable.value.unit.unit);
                     }
                     this.externalExperiments[experimentState.projectId][experimentState.experimentId][instancePath]=instance;
                 }
@@ -140,6 +141,9 @@ define(function (require) {
                 parameters["projectId"] = experiment.getParent().getId();
                 
 	            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
+                // before wiping widgets stop view monitoring otherwise we may wipe the experiment view
+                GEPPETTO.ViewController.clearViewMonitor();
+                // wipe widgets
 				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
 				GEPPETTO.MessageSocket.send("load_experiment", parameters);
             },

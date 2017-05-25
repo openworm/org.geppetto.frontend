@@ -226,6 +226,7 @@ define(function(require) {
                     } else {
                     	var plot = G.addWidget(0);
                         plot.plotXYData(i, t).setName(path);
+                        self.updateLegend(plot, i, projectId, experimentId);
                     }
                 };
 
@@ -243,18 +244,16 @@ define(function(require) {
         //Updates the legend for a given instance, and updates it in widget
         updateLegend: function(widget, instance, projectId, experimentId) {
             var legend = null;
-            var experimentName, projectName;
             if(window.Project.getId() == projectId){
-            	if(window.Project.getActiveExperiment()!= null && window.Project.getActiveExperiment() != undefined){
-            		//variable belongs to same project,but different experiment
-            		if(window.Project.getActiveExperiment().getId()!= experimentId){
-            			legend = this.getLegendName(projectId, experimentId, instance, true);
-            		}
-            	}
+                if(window.Project.getActiveExperiment()!= null && window.Project.getActiveExperiment() != undefined){
+                    //variable belongs to same project,but different experiment
+                    if(window.Project.getActiveExperiment().getId()!= experimentId){
+                        legend = this.getLegendName(projectId, experimentId, instance, true);
+                    }
+                }
             }else{
-            	//variable belongs to different project and different experiment
-            	var experimentPath = projectName + " - " + experimentName;
-    			legend = this.getLegendName(projectId,experimentId,instance,false);
+                //variable belongs to different project and different experiment
+                legend = this.getLegendName(projectId,experimentId,instance,false);
             }
 
             //set legend if it needs to be updated, only null if variable belong to active experiment

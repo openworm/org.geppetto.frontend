@@ -152,6 +152,7 @@ define(function (require) {
 			this.variables = [];
 			this.xyData = [];
 			this.plotOptions = this.defaultOptions();
+			this.labelsMap = {};
 			//Merge passed options into existing defaultOptions object
 			$.extend( this.plotOptions, options);
 			this.render();
@@ -1126,8 +1127,10 @@ define(function (require) {
                 for (var i = 0; i < this.datasets.length; i++) {
                 	legend = this.getLegendInstancePath(this.datasets[i].name);
                     if (i == 0) {
-                        refUnit = this.variables[legend].getUnit();
-                    } else if (refUnit != this.variables[legend].getUnit()) {
+						if(this.variables[legend]!= undefined){
+							refUnit = this.variables[legend].getUnit();
+						}
+                    } else if (this.variables[legend] == undefined || refUnit != this.variables[legend].getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
                         break;

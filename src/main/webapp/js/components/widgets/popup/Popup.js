@@ -153,7 +153,7 @@ define(function (require) {
 		setData: function (anyInstance, filter) {
 			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance, filter], this.getId());
 
-			this.data = anyInstance.getInstancePath();
+			this.data = anyInstance.getPath();
 
 			this.setMessage(this.getHTML(anyInstance, "", filter));
 			var changeIcon=function(chevron){

@@ -52,7 +52,9 @@ define(function(require) {
 
         messageHandler[messageTypes.MODEL_LOADED] = function(payload) {
             GEPPETTO.SimulationHandler.loadModel(payload);
-            GEPPETTO.ViewController.resolveViews();
+            if(Project.getActiveExperiment()=="" || Project.getActiveExperiment()==null || Project.getActiveExperiment()==undefined){
+            	GEPPETTO.ViewController.resolveViews();	
+            }
         };
 
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {

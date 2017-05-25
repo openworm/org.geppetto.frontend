@@ -83,8 +83,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	// the geppetto project active for this connection
 	private IGeppettoProject geppettoProject;
 
-	private String urlBase = "";
-
 	/**
 	 * @param websocketConnection
 	 * @param geppettoManager
@@ -116,7 +114,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			}
 			else
 			{
-				loadGeppettoProject(requestID, geppettoProject, experimentId, this.urlBase);
+				loadGeppettoProject(requestID, geppettoProject, experimentId);
 			}
 		}
 		catch(NumberFormatException e)
@@ -132,7 +130,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void loadProjectFromContent(String requestID, String projectContent)
 	{
 		IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), projectContent);
-		loadGeppettoProject(requestID, geppettoProject, -1l, this.urlBase);
+		loadGeppettoProject(requestID, geppettoProject, -1l);
 	}
 
 	/**
@@ -146,11 +144,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			url = URLReader.getURL(urlString);
 			int index = url.toString().lastIndexOf('/');
-			String urlBase = url.toString().substring(0, index);
+			String baseURL = url.toString().substring(0, index);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
-			this.urlBase = urlBase;
-			loadGeppettoProject(requestID, geppettoProject, -1l, this.urlBase);
+			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader, baseURL);
+			loadGeppettoProject(requestID, geppettoProject, -1l);
 		}
 		catch(IOException e)
 		{
@@ -162,11 +159,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param geppettoProject
 	 */
-	public void loadGeppettoProject(String requestID, IGeppettoProject geppettoProject, long experimentId, String urlBase)
+	public void loadGeppettoProject(String requestID, IGeppettoProject geppettoProject, long experimentId)
 	{
 		try
 		{
-			geppettoManager.loadProject(requestID, geppettoProject, urlBase);
+			geppettoManager.loadProject(requestID, geppettoProject);
 			boolean readOnly = true;
 			if(geppettoProject.isVolatile())
 			{
@@ -704,22 +701,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	/**
 	 * @param requestID
+	 * @param projectId 
 	 * @param urlString
 	 * @param visitor
 	 */
-	public void sendScriptData(String requestID, String urlString, WebsocketConnection visitor)
+	public void sendScriptData(String requestID, Long projectId, String urlString, WebsocketConnection visitor)
 	{
 		try
 		{
 			String line = null;
 			StringBuilder sb = new StringBuilder();
 
-			String urlPath = urlString;
-			if(!urlPath.startsWith("http"))
-			{
-				urlPath = urlBase + urlString;
-			}
-			URL url = URLReader.getURL(urlPath);
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+			URL url = URLReader.getURL(urlString,geppettoProject.getBaseURL());
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 

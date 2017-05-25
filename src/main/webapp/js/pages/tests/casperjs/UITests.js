@@ -26,7 +26,7 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
         }
     });
 
-    casper.start(TARGET_URL + ":8080/org.geppetto.frontend", function () {
+    casper.start(TARGET_URL + ":8081/org.geppetto.frontend", function () {
         this.waitForSelector('div#logo', function () {
             this.echo("I waited for the logo to load.");
             test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
@@ -34,14 +34,14 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
         }, null, 30000);
     });
 
-    casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/login?username=guest1&password=guest", function () {
+    casper.thenOpen(TARGET_URL + ":8081/org.geppetto.frontend/login?username=guest1&password=guest", function () {
         /*this.waitForSelector('div#page', function() {
          this.echo("I've waited for the splash screen to come up.");
          test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
          }, null, 30000);*/
     });
 
-    casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/", function () {
+    casper.thenOpen(TARGET_URL + ":8081/org.geppetto.frontend/", function () {
         this.waitForSelector('div[project-id="2"]', function () {
             this.echo("I've waited for the projects to load.");
             test.assertExists('div#logo', "logo is found");
@@ -51,17 +51,17 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
     });
 
     casper.then(function () {
-        testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
+        testProject(test, TARGET_URL + ":8081/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
             false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true);
     });
 
     casper.then(function () {
-        testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
+        testProject(test, TARGET_URL + ":8081/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
             false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false);
     });
 
     casper.then(function () {
-        testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
+        testProject(test, TARGET_URL + ":8081/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
             false, '', '', false);
     });
 
@@ -95,7 +95,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         casper.then(function () {
             this.waitForSelector('tr.experimentsTableColumn:nth-child(1)', function () {
                 test.assertExists('tr.experimentsTableColumn:nth-child(1)', "At least one experiment row exists");
-            }, null, 6000);
+            }, null, 30000);
         });
 
         //do checks on the state of the project if it is not persisted
@@ -192,7 +192,7 @@ function closeErrorMesage(test) {
         this.waitWhileVisible('h3.text-center', function () {
             test.assertNotVisible('h3.text-center', "Correctly closed error message");
         }, null, 30000);
-    }, null, 10000);
+    }, null, 20000);
 }
 
 function doExperimentTableTest(test) {
@@ -212,7 +212,7 @@ function doExperimentTableTest(test) {
 
         this.waitUntilVisible('div#experiments', function () {
             test.assertVisible('div#experiments', "The experiment panel is correctly open.");
-        }, null, 5000);
+        }, null, 15000);
     });
 }
 

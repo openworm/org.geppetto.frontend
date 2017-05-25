@@ -105,6 +105,7 @@ define(function (require) {
                     instance.setWatched(true, false);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
                         instance.setTimeSeries(recordedVariable.value.value);
+                        instance.setUnit(recordedVariable.value.unit.unit);
                     }
                     this.externalExperiments[experimentState.projectId][experimentState.experimentId][instancePath]=instance;
                 }

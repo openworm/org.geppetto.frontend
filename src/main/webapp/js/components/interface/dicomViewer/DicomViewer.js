@@ -95,6 +95,29 @@ define(function (require) {
 			GEPPETTO.Utility.createZipFromRemoteFiles(this.state.files, "data.zip");
 		}
 
+				/**
+         *
+         * @returns {{widgetType, isWidget}|{size: {height: *, width: *}, position: {left: *, top: *}}}
+         */
+        getView() {
+            // add data-type and data field + any other custom fields in the component-specific attribute
+            var baseView = super.getView();
+            baseView.data = this.props.data;
+            return baseView;
+        }
+
+		/**
+         *
+         * @param view
+         */
+        setView(view) {
+            // set base properties
+            super.setView(view)
+			if (view.data != undefined){
+				this.setData(view.data);
+			}
+		}
+
 		render() {
 			var dicomViewerContent;
 			if (this.state.mode == "single_view") {

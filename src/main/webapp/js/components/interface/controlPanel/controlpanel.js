@@ -1739,6 +1739,8 @@ define(function (require) {
         },
 
         filterOptionsHandler: function (value) {
+            // set like this to avoid triggering an extra refresh
+            this.state.filterOption = value;
             switch (value) {
                 case this.filterOptions.VISUAL_INSTANCES:
                     // displays actual instances

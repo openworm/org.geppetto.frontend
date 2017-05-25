@@ -30,6 +30,7 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
             test.assertExists('div[project-id="16"]', "Project width id 16 from core bundle are present");
             test.assertExists('div[project-id="18"]', "Project width id 18 from core bundle are present");
             test.assertExists('div[project-id="58"]', "Project width id 58 from core bundle are present");
+            test.assertExists('div[project-id="82"]', "Project width id 10 from core bundle are present");
         }, null, 3000);
     });
 
@@ -87,6 +88,12 @@ casper.test.begin('Geppetto basic tests', 52, function suite(test) {
 	/**Tests cElegansPVDR project**/
 	casper.thenOpen(urlBase+baseFollowUp+cElegansPVDR,function() {
 		casper.then(function(){launchTest(test,"cElegansPVDR",180000);});
+	});
+
+	/**Tests patientHM project**/
+	casper.thenOpen(urlBase+baseFollowUp+patientHM,function() {
+		casper.then(function(){launchTest(test,"patientHM",180000);});
+		casper.then(function(){patientHMTest(test);});
 	});
 	
 	casper.run(function() {
@@ -461,10 +468,24 @@ function c302Connectome(test){
 	}, null, 30000);
 }
 
-
 function c302PVDR(test){
 	casper.echo("------------STARTING C302 Muscle Model TEST--------------");
 	casper.waitForSelector('div[id="Popup1"]', function() {
 		this.echo("I've waited for Popup1 to load.");
 	}, null, 30000);
+}
+
+function patientHMTest(test){
+	casper.echo("------------STARTING Patient HM TEST--------------");
+	
+	// casper.waitForSelector('div[id="DicomViewer1"]', function() {
+	// 	this.echo("I've waited for DicomViewer1 to load.");
+	// 	testDicomWidget(test, "DicomViewer1");
+	// }, null, 5000);
+
+	// casper.waitForSelector('div[id="DicomViewer1"]', function() {
+	// 	this.echo("I've waited for DicomViewer1 to load.");
+	// 	testDicomWidget(test, "DicomViewer1");
+	// }, null, 5000);
+
 }

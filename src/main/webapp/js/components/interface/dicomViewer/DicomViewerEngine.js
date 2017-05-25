@@ -635,10 +635,11 @@ module.exports = {
                     const canvas = event.srcElement.parentElement;
                     const id = event.target.id;
                     const mouse = {
-                        x: ((event.clientX - canvas.offsetLeft) / canvas.clientWidth) * 2 - 1,
-                        y: - ((event.clientY - canvas.offsetTop) / canvas.clientHeight) * 2 + 1,
+                        x: ((event.clientX - $(canvas).offset().left) / canvas.clientWidth) * 2 - 1,
+                        y: - ((event.clientY - $(canvas).offset().top) / canvas.clientHeight) * 2 + 1,
                     };
-                    //
+
+
                     let camera = null;
                     let stackHelper = null;
                     let scene = null;

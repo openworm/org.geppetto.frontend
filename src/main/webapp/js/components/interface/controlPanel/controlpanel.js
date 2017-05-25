@@ -150,19 +150,10 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-
-            var that = this;
-
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
-            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
-                that.refresh();
-            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
         },
 
         componentWillUnmount: function () {
@@ -326,7 +317,7 @@ define(function (require) {
                 coloPickerElement.colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
 
                 if (defColor != undefined) {
-                    var setColor = ""
+                    var setColor = "";
                     if ($.isArray(defColor)) {
                         setColor = "0xfc6320";
                     }
@@ -345,15 +336,9 @@ define(function (require) {
             }
 
             // listen to experiment status change and trigger a re-render to update controls
-            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
-                that.refresh();
-            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
         },
 
         componentWillUnmount: function () {

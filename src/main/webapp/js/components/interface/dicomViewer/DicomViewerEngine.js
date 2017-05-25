@@ -692,7 +692,7 @@ module.exports = {
                 r3.domElement.addEventListener('dblclick', onDoubleClick);
 
                 function onScroll(event) {
-                    const id = event.target.domElement.id;
+                    const id = $(event.target.domElement).data("id");
                     let stackHelper = null;
                     switch (id) {
                         case 'r1':

@@ -129,10 +129,10 @@ define(function (require) {
 			else if (this.state.mode == "quad_view") {
 				dicomViewerContent = (
 					<div className="dicomViewer">
-						<div className="renderer r0"></div>
-						<div className="renderer r1"></div>
-						<div className="renderer r2"></div>
-						<div className="renderer r3"></div>
+						<div data-id="r0" className="renderer r0"></div>
+						<div data-id="r1" className="renderer r1"></div>
+						<div data-id="r2" className="renderer r2"></div>
+						<div data-id="r3" className="renderer r3"></div>
 					</div>
 				)
 			}

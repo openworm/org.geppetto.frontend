@@ -374,7 +374,6 @@ define(function (require) {
 
 				var dialog = this.dialog.parent();
 				dialog.find(".ui-dialog-title").html(step.title);
-				this.dialog.addClass("tutorial");
 				var iconClass = "";
 				if (step.icon != null && step.icon != undefined && step.icon != "") {
 					iconClass = step.icon + " fa-3x";

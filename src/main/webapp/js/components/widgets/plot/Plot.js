@@ -429,8 +429,8 @@ define(function (require) {
 			this.plotOptions.legend.font.family = 'Helvetica Neue';
 			this.plotOptions.legend.font.color = "rgb(0,0,0)";
 			this.plotOptions.legend.bgcolor = "rgb(255,255,255)";
+			var oldMarginRight = this.plotOptions.margin.r;
 			this.plotOptions.margin.r= 40;
-			
 			var oldMarginLeft = this.plotOptions.margin.l;
 			this.plotOptions.margin.l= 70;
 			Plotly.relayout(this.plotDiv,this.plotOptions);
@@ -468,8 +468,8 @@ define(function (require) {
                 self.plotOptions.legend.font.size =  defaultOptions.legend.font.size;
                 self.plotOptions.legend.font.color =  defaultOptions.legend.font.color;
                 self.plotOptions.legend.bgcolor =  defaultOptions.legend.bgcolor;
-                self.plotOptions.margin.l=  oldMarginLeft;
-                self.plotOptions.margin.r=defaultOptions.margin.r;
+                self.plotOptions.margin.l =  oldMarginLeft;
+                self.plotOptions.margin.r = oldMarginRight;
                 Plotly.relayout(self.plotDiv,self.plotOptions);
             };
 			setTimeout(reset, 10);

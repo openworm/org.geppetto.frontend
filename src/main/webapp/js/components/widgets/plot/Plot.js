@@ -48,6 +48,7 @@ define(function (require) {
         xVariable : null,
         firstStep : 0,
         updateLegendsState : false,
+		legendVisible : true,
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -153,6 +154,7 @@ define(function (require) {
 			this.xyData = [];
 			this.plotOptions = this.defaultOptions();
 			this.labelsMap = {};
+			this.legendVisible = true;
 			//Merge passed options into existing defaultOptions object
 			$.extend( this.plotOptions, options);
 			this.render();
@@ -170,6 +172,11 @@ define(function (require) {
 			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Save as image'></div>").on('click', function(event) {
 				that.showImageMenu(event);
                 event.stopPropagation();
+			}));
+
+			this.addButtonToTitleBar($("<div class='fa fa-list' title='Toggle legend'></div>").on('click', function(event) {
+				that.showLegend(!that.legendVisible);
+				event.stopPropagation();
 			}));
 			
 			//adding functionality icon buttons on the left of the widget
@@ -367,6 +374,19 @@ define(function (require) {
 				//resizes plot right after creation, needed for d3 to resize to parent's width and height
 				Plotly.relayout(this.plotDiv,this.plotOptions);
 			}
+		},
+
+		showLegend: function(show){
+			this.legendVisible = (show === true);
+			Plotly.update(this.plotDiv, {showlegend: (show === true)},
+				{
+					margin: {
+						l: this.plotOptions.margin.l,
+						r: (show === true) ? this.plotOptions.margin.r - 12 : this.plotOptions.margin.r + 12,
+						b: this.plotOptions.margin.b,
+						t: this.plotOptions.margin.t,
+					}
+				});
 		},
 		
 		showImageMenu: function (event) {

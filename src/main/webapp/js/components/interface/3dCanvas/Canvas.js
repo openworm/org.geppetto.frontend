@@ -354,10 +354,6 @@ define(function (require) {
          */
         addColorFunction(instances, colorfn) {
             this.engine.colorController.addColorFunction(instances, colorfn);
-            for (var i = 0; i < instances.length; i++) {
-                this.viewState.custom.colorFunctionMap[instances[i].getInstancePath()] = colorfn.name;
-            }
-            this.setDirty(true);
             return this;
         }
 

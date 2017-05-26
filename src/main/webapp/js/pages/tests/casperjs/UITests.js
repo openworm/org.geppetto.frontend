@@ -96,7 +96,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         casper.then(function () {
             this.waitForSelector('tr.experimentsTableColumn:nth-child(1)', function () {
                 test.assertExists('tr.experimentsTableColumn:nth-child(1)', "At least one experiment row exists");
-            }, null, 30000);
+            }, null, 60000);
         });
 
         //do checks on the state of the project if it is not persisted
@@ -170,7 +170,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                 //roll over the experiments row
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 doPostPersistenceExperimentsTableButtonCheck(test);
-            }, null, 20000);
+            }, null, 300000);
         });
         casper.then(function () {
             doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);

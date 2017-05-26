@@ -202,7 +202,7 @@ define(['backbone'], function(require) {
             if (this.writePermission && this.getParent().persisted && this.login && this.runPermission && !this.getParent().isReadOnly()) {
                 if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||  this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
 
-                    this.setStatus(GEPPETTO.Resources.ExperimentStatus.RUNNING);
+                    this.setStatus(GEPPETTO.Resources.ExperimentStatus.QUEUED);
                     GEPPETTO.trigger(GEPPETTO.Events.Experiment_running);
                     var parameters = {};
                     parameters["experimentId"] = this.id;

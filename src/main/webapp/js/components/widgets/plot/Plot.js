@@ -277,10 +277,6 @@ define(function (require) {
 			for (var i = 0; i < data.length; i++) {
 				instance = data[i];
 				if (instance != null && instance != undefined){
-					//We stored the variable objects in its own array, using the instance path
-					//as index. Can't be put on this.datasets since plotly will reject it
-					this.variables[instance.getInstancePath()] = instance;
-					
 					if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
 						timeSeriesData = this.getTimeSeriesData(instance,window.time);
 					}
@@ -301,6 +297,10 @@ define(function (require) {
 							window.Project.getId() == instance.projectId
 						);
 					}
+
+					//We stored the variable objects in its own array, using the instance path
+					//as index. Can't be put on this.datasets since plotly will reject it
+					this.variables[legendName] = instance;
 	                
 					/*
 					 * Create object with x, y data, and graph information. 
@@ -1066,7 +1066,7 @@ define(function (require) {
 					hoverinfo : 'all'
 			};
 
-			this.variables[this.getLegendInstancePath(dataY.getInstancePath())] = dataY;
+			this.variables[legendName] = dataY;
 			this.variables[this.getLegendInstancePath(dataX.getInstancePath())] = dataX;
 
 			this.datasets.push(newLine);

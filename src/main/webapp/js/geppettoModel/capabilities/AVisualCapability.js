@@ -72,8 +72,7 @@ define(function (require) {
             }
 
             if (this instanceof Instance || this instanceof ArrayInstance) {
-
-
+            	GEPPETTO.SceneController.showInstance(this.getInstancePath());
                 this.visible = true;
 
                 if (nested === true && typeof this.getChildren === "function") {

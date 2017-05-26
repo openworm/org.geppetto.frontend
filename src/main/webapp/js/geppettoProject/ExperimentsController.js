@@ -30,6 +30,7 @@ define(function (require) {
             step : 0,
             playTimerStep: 5, // timer step in milliseconds
             playLoop: false,
+            suppressDeleteExperimentConfirmation: false,
 
             isPlayExperimentReady: function(){
             	return this.playExperimentReady;

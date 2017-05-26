@@ -406,12 +406,12 @@ define(['backbone'], function(require) {
             }
         },
 
-        deleteExperiment: function() {
+        deleteExperiment: function(callback) {
             if (this.writePermission && this.getParent().persisted && this.login) {
                 var parameters = {};
                 parameters["experimentId"] = this.id;
                 parameters["projectId"] = this.getParent().getId();
-                GEPPETTO.MessageSocket.send("delete_experiment", parameters);
+                GEPPETTO.MessageSocket.send("delete_experiment", parameters, callback);
 
                 return this;
             } else {

@@ -750,7 +750,6 @@ define(function (require) {
 		 * Retrieves X and Y axis labels from the variables being plotted
 		 */
 		updateAxis: function (key) {
-			var update = {};
 			if (!this.labelsUpdated) {
 				var unit = this.variables[this.getLegendInstancePath(key)].getUnit();
 				if (unit != null) {
@@ -1092,7 +1091,7 @@ define(function (require) {
 			this.plotOptions.xaxis.autorange = true;
 			this.xaxisAutoRange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
-            this.updateAxis(dataY.getInstancePath());
+            this.updateAxis(legendName);
             this.resize();
 
 			// track change in state of the widget

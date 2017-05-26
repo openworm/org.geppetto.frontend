@@ -6,7 +6,6 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,11 +228,11 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			case MAKE_PROJECT_PUBLIC:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-						{
-						}.getType());
+				{
+				}.getType());
 				projectId = Long.parseLong(parameters.get("projectId"));
 				boolean isPublic = Boolean.parseBoolean(parameters.get("isPublic"));
-				connectionHandler.makeProjectPublic(requestID, projectId,isPublic);
+				connectionHandler.makeProjectPublic(requestID, projectId, isPublic);
 				break;
 			}
 			case DOWNLOAD_PROJECT:
@@ -269,8 +268,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 			}
 			case GET_SCRIPT:
 			{
-				String urlString = gmsg.data;
-				connectionHandler.sendScriptData(requestID, urlString, this);
+				GetScript receivedObject = new Gson().fromJson(gmsg.data, GetScript.class);
+				connectionHandler.sendScriptData(requestID, receivedObject.projectId, receivedObject.scriptURL, this);
 				break;
 			}
 			case GET_DATA_SOURCE_RESULTS:
@@ -516,13 +515,19 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		Map<String, String> properties;
 		String view;
 	}
-	
+
+	class GetScript
+	{
+		Long projectId;
+		String scriptURL;
+	}
+
 	class BatchExperiment
 	{
 		Long projectId;
 		List<NewExperiment> experiments;
 	}
-	
+
 	class NewExperiment
 	{
 		String name;

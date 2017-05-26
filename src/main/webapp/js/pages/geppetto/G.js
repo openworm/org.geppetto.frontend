@@ -223,8 +223,10 @@ define(function (require) {
              * @param {URL} scriptURL - URL of script to execute
              */
             runScript: function (scriptURL) {
-
-                GEPPETTO.MessageSocket.send("get_script", scriptURL);
+            	var parameters={};
+            	parameters.scriptURL=scriptURL;
+            	parameters.projectId=Project.getId();
+                GEPPETTO.MessageSocket.send("get_script", parameters);
 
                 return GEPPETTO.Resources.RUNNING_SCRIPT;
             },

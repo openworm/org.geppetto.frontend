@@ -86,7 +86,7 @@ public class GeppettoProjectsController
 			Collection<? extends IGeppettoProject> projects = dataManager.getGeppettoProjectsForUser(geppettoManager.getUser().getLogin());
 			for(IGeppettoProject project : projects)
 			{
-				GeppettoModel geppettoModel = GeppettoModelReader.readGeppettoModel(URLReader.getURL(project.getGeppettoModel().getUrl()));
+				GeppettoModel geppettoModel = GeppettoModelReader.readGeppettoModel(URLReader.getURL(project.getGeppettoModel().getUrl(), project.getBaseURL()));
 				PopulateModelReferencesVisitor populateModelReferencesVisitor = new PopulateModelReferencesVisitor();
 				GeppettoModelTraversal.apply(geppettoModel, populateModelReferencesVisitor);
 				if(populateModelReferencesVisitor.getModelReferences().contains(reference))

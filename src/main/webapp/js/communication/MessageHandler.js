@@ -165,6 +165,12 @@ define(function(require) {
                 					status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
                 				experiments[e].setStatus(status);
                 				GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
+                			}else if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED &&
+                					status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
+                				experiments[e].setStatus(status);
+                				GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
+                			}else{
+                				experiments[e].setStatus(status);
                 			}
                 		}
                 	}

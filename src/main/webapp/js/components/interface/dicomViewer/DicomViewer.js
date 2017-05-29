@@ -2,18 +2,17 @@ define(function (require) {
 
 	var React = require('react');
 	window.THREE = require('three');
-
-	require('./DicomViewer.less');
-	var DicomViewerUtils = require('./DicomViewerUtils');
-
-	var AbstractComponent = require('../../AComponent');
-
 	var AMI = require('./ami.min.js');
 	var LoadersVolume = AMI.default.Loaders.Volume;
 	var HelpersStack = AMI.default.Helpers.Stack;
 	var HelpersBoundingBox = AMI.default.Helpers.BoundingBox;
 	var ModelsStack = AMI.default.Models.Stack;
 	var HelpersLocalizer = AMI.default.Helpers.Localizer;
+
+	require('./DicomViewer.less');
+	var DicomViewerUtils = require('./DicomViewerUtils');
+	var WidgetButtonBar = require('../../controls/widgetButtonBar/WidgetButtonBar');
+	var AbstractComponent = require('../../AComponent');
 
 	return class DicomViewer extends AbstractComponent {
 
@@ -330,7 +329,7 @@ define(function (require) {
 				}
 			}
 
-			function goToSingleView(event){
+			function goToSingleView(event) {
 				const id = event.target.id;
 				let orientation = null;
 				switch (id) {
@@ -344,15 +343,18 @@ define(function (require) {
 						orientation = "coronal";
 						break;
 				}
-				_this.setState({ mode: "single_view", orientation: orientation });
+
+				if (orientation != null) {
+					_this.setState({ mode: "single_view", orientation: orientation });
+				}
 			}
 
 			function onClick(event) {
-				
-				if (event.ctrlKey){
+
+				if (event.ctrlKey) {
 					goToSingleView(event);
 				}
-				else{
+				else {
 					goToPoint(event);
 				}
 			}
@@ -407,10 +409,10 @@ define(function (require) {
 			this.r3.controls.addEventListener('OnScroll', onScroll);
 
 
-			window.addEventListener('resize', this.setLayout, false);
+			window.addEventListener('resize', function(){_this.setLayout();}, false);
 
-			$(this.getContainer()).parent().on("dialogresizestop", function (event, ui) {
-				this.setLayout()
+			$(this.getContainer()).parent().on("resizeEnd", function (event, ui) {
+				_this.setLayout()
 			});
 		}
 
@@ -500,25 +502,10 @@ define(function (require) {
 
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} style={{ width: '100%', height: '100%' }}>
-					<button style={{
-						position: 'absolute',
-						right: -2.5,
-						top: 2.5,
-						padding: 0,
-						border: 0,
-						background: 'transparent'
-					}} className="btn fa fa-home" onClick={this.changeMode} title={'Change Mode'} />
-
-					{(this.state.mode == "single_view") ? (
-						<button style={{
-							position: 'absolute',
-							right: -2.5,
-							top: 22.5,
-							padding: 0,
-							border: 0,
-							background: 'transparent'
-						}} className="btn fa fa-chevron-down" onClick={this.changeOrientation} title={'Change Orientation'} />
-					) : null}
+					<WidgetButtonBar>
+						<button className={this.state.mode == 'single_view' ? 'btn fa fa-th-large':'btn fa fa-square'} onClick={this.changeMode} title={'Change Mode'} />
+						{(this.state.mode == "single_view") ? (<button className="btn fa fa-repeat" onClick={this.changeOrientation} title={'Change Orientation'} />) : null}
+					</WidgetButtonBar>
 
 					<div className="dicomViewer">
 						<div data-id="r0" className="renderer r0" style={{ display: this.state.mode == 'single_view' ? 'none' : '' }}></div>

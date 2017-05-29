@@ -1,11 +1,8 @@
 var AMI = require('./ami.min.js');
-// var LoadersVolume = AMI.default.Loaders.Volume;
 var CamerasOrthographic = AMI.default.Cameras.Orthographic;
 var ControlsOrthographic = AMI.default.Controls.TrackballOrtho;
 var HelpersStack = AMI.default.Helpers.Stack;
 var ControlsTrackball = AMI.default.Controls.Trackball;
-// var HelpersBoundingBox = AMI.default.Helpers.BoundingBox;
-// var ModelsStack = AMI.default.Models.Stack;
 var HelpersLocalizer = AMI.default.Helpers.Localizer;
 
 module.exports = {

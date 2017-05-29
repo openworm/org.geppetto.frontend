@@ -436,7 +436,7 @@ define(function (require) {
 
             addDownloadButton(downloadFunction){
                 var that = this;
-                this.addButtonToTitleBar($("<div class='fa fa-chevron-down' title='Download data'></div>").click(function () {
+                this.addButtonToTitleBar($("<div class='fa fa-download' title='Download data'></div>").click(function () {
                     that.download();
                 }));
             }

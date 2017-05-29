@@ -4,6 +4,7 @@ define(function (require) {
 
 	var React = require('react');
 	var OpenSeaDragon = require('openseadragon');
+	var WidgetButtonBar = require('../../controls/widgetButtonBar/WidgetButtonBar');
 	var AbstractComponent = require('../../AComponent');
 
 	return class BigImageViewer extends AbstractComponent {
@@ -65,32 +66,12 @@ define(function (require) {
 		render() {
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="bigImageViewer">
-					<div id="displayArea" style={{ position: 'absolute', top: 0, left: 0, width: '20px', margin: '6px' }}>
-						<button style={{
-							padding: 0,
-							zIndex: 999,
-							border: 0,
-							background: 'transparent'
-						}} className='btn fa fa-home' id='home' title={'Center Stack'} />
-						<button style={{
-							padding: 0,
-							zIndex: 999,
-							border: 0,
-							background: 'transparent'
-						}} className='btn fa fa-search-plus' id='zoom-in' title={'Zoom In'} />
-						<button style={{
-							padding: 0,
-							zIndex: 999,
-							border: 0,
-							background: 'transparent'
-						}} className='btn fa fa-search-minus' id='zoom-out' title={'Zoom Out'} />
-						<button style={{
-							padding: 0,
-							zIndex: 999,
-							border: 0,
-							background: 'transparent'
-						}} className='btn fa fa-arrows-alt' id='full-page' title={'Full Page'} />
-					</div>
+					<WidgetButtonBar>
+						<button className='btn fa fa-home' id='home' title={'Center Stack'} />
+						<button className='btn fa fa-search-plus' id='zoom-in' title={'Zoom In'} />
+						<button className='btn fa fa-search-minus' id='zoom-out' title={'Zoom Out'} />
+						<button className='btn fa fa-arrows-alt' id='full-page' title={'Full Page'} />
+					</WidgetButtonBar>
 				</div>
 			)
 		}

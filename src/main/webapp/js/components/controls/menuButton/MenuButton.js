@@ -96,13 +96,22 @@ define(function (require) {
             var iconState = this.getIconState();
             this.state.icon = iconState;
 
+            var outerClass = "menuBtnListItem";
+            var innerClass = "";
+            if(this.props.parentDisabled && this.props.item.disabled){
+                outerClass += " menuBtnListItemDisabled";
+                innerClass += " menuBtnListItemDisabled";
+            }
+
             return (
-                <tr className="menuBtnListItem" onClick={this.select}>
+                <tr className={outerClass} onClick={this.select}>
                     <td className="selectedStatus">
                         <i className={"iconSelectionStatus " + this.state.icon}/></td>
-                    <td className="dropDownLabel"><label>
-                        <span>{this.props.item.label}</span>
-                    </label></td>
+                    <td className="dropDownLabel">
+                        <label className={innerClass}>
+                            <span>{this.props.item.label}</span>
+                        </label>
+                    </td>
                 </tr>
             )
         }
@@ -144,9 +153,9 @@ define(function (require) {
                     var item = this.props.configuration.menuItems[i];
                     if (item.radio) {
                         // include a ref for every radio item so we can call their select method from other items
-                        items.push(<ListItem key={i} item={item} ref={item.value} handleSelect={this.handleSelect} />);
+                        items.push(<ListItem key={i} item={item} ref={item.value} handleSelect={this.handleSelect} parentDisabled={this.props.configuration.buttonDisabled} />);
                     } else {
-                        items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect} />);
+                        items.push(<ListItem key={i} item={item} handleSelect={this.handleSelect} parentDisabled={this.props.configuration.buttonDisabled} />);
                     }
                 }
             }
@@ -371,12 +380,13 @@ define(function (require) {
             return (
                 <div id={this.props.configuration.id + "-container"} className="menuButtonContainer">
                     <button className={this.props.configuration.id + " btn " + this.props.configuration.buttonClassName} type="button" title=''
-                        id={this.props.configuration.id} onClick={this.toggleMenu} disabled={this.props.configuration.buttonDisabled} ref="menuButton">
+                        id={this.props.configuration.id} onClick={this.toggleMenu}
+                        disabled={this.props.configuration.buttonDisabled && this.props.configuration.disableable} ref="menuButton">
                         <i className={this.state.icon + " menuButtonIcon"}></i>
                         {this.props.configuration.label}
                     </button>
                     <div id={this.props.configuration.id + "-dropDown"} className="menuListContainer">
-                        <DropDownControlComp handleSelect={this.selectionChanged} ref="dropDown" configuration={this.props.configuration} /></div>
+                        <DropDownControlComp handleSelect={this.selectionChanged} ref="dropDown" configuration={this.props.configuration} parentDisabled={this.props.configuration.buttonDisabled} /></div>
                 </div>
             );
         }

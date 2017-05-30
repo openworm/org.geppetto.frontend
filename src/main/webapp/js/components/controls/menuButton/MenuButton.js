@@ -96,13 +96,15 @@ define(function (require) {
             var iconState = this.getIconState();
             this.state.icon = iconState;
 
-            return <tr className="menuBtnListItem" onClick={this.select}>
-                <td className="selectedStatus">
-                    <i className={"iconSelectionStatus " + this.state.icon} /></td>
-                <td className="dropDownLabel"><label>
-                    <span>{this.props.item.label}</span>
-                </label></td>
-            </tr>
+            return (
+                <tr className="menuBtnListItem" onClick={this.select}>
+                    <td className="selectedStatus">
+                        <i className={"iconSelectionStatus " + this.state.icon}/></td>
+                    <td className="dropDownLabel"><label>
+                        <span>{this.props.item.label}</span>
+                    </label></td>
+                </tr>
+            )
         }
     });
 
@@ -312,7 +314,9 @@ define(function (require) {
         selectionChanged: function (value) {
             if (this.props.configuration.closeOnClick) {
                 this.toggleMenu();
-                this.onClickHandler(value);
+                if(this.onClickHandler != undefined && this.onClickHandler!= null){
+                    this.onClickHandler(value);
+                }
             }
         },
 
@@ -355,8 +359,6 @@ define(function (require) {
 
         //toggles visibility of drop down menu
         toggleMenu: function () {
-            var showIcon;
-
             if (this.state.open) {
                 this.hideMenu();
             } else {

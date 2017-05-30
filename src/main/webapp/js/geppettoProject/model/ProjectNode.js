@@ -400,8 +400,7 @@ define(['backbone'], function (require) {
         	parameters["projectId"] = this.getId();
         	GEPPETTO.MessageSocket.send("download_project", parameters);
 
-        	var formatMessage = (format=="")?"default format":format;
-        	return GEPPETTO.Resources.DOWNLOADING_PROJECT + formatMessage;
+        	return GEPPETTO.Resources.DOWNLOADING_PROJECT;
         },
         
         /**

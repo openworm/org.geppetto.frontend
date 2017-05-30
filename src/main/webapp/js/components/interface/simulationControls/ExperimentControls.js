@@ -7,6 +7,7 @@ define(function (require) {
     var PauseButton = require('./buttons/PauseButton');
     var StopButton = require('./buttons/StopButton');
     var HelpButton = require('./buttons/HelpButton');
+    var MenuButton = require('../../controls/menuButton/MenuButton');
 
     var GEPPETTO = require('geppetto');
 
@@ -151,12 +152,23 @@ define(function (require) {
         },
 
         render: function () {
-            return React.DOM.div({className: 'simulation-controls'},
-                React.createFactory(HelpButton)({disabled: false, hidden: this.props.hideHelp}),
-                React.createFactory(StopButton)({disabled: this.state.disableStop, hidden: this.props.hideStop}),
-                React.createFactory(PauseButton)({disabled: this.state.disablePause, hidden: this.props.hidePause}),
-                React.createFactory(PlayButton)({disabled: this.state.disablePlay, hidden: this.props.hidePlay}),
-                React.createFactory(RunButton)({disabled: this.state.disableRun, hidden: this.props.hideRun})
+
+            var runButton = "";
+            if(this.props.runConfiguration != undefined){
+                this.props.runConfiguration.buttonDisabled = this.state.disableRun;
+                runButton = <MenuButton configuration={this.props.runConfiguration} />
+            } else {
+                runButton = <RunButton disabled={this.state.disableRun} hidden={this.props.hideRun}/>
+            }
+
+            return (
+                <div className="simulation-controls">
+                    <HelpButton disabled={false} hidden={this.props.hideHelp}/>
+                    <StopButton disabled={this.state.disableStop} hidden={this.props.hideStop}/>
+                    <PauseButton disabled={this.state.disablePause} hidden={this.props.hidePause}/>
+                    <PlayButton disabled={this.state.disablePlay} hidden={this.props.hidePlay}/>
+                    {runButton}
+                </div>
             );
         }
 

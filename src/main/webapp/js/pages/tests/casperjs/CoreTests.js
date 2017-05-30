@@ -1,4 +1,4 @@
-casper.test.begin('Geppetto basic tests', 52, function suite(test) {
+casper.test.begin('Geppetto basic tests', 226, function suite(test) {
 	casper.options.viewportSize = {
 			width: 1340,
 			height: 768
@@ -203,7 +203,7 @@ function acnetTest(test){
 	});
 	casper.then(function () {
 		casper.echo("-------Testing Original Color--------");
-		test3DMeshColor(test,defaultColor,"acnet2.pyramidals_48[0]");
+		test3DMeshColor(test,[0.796078431372549,0,0],"acnet2.pyramidals_48[0]");
 		this.echo("Opening controls panel");
 		buttonClick("#controlPanelBtn");
 	});

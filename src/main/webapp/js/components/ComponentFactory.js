@@ -158,7 +158,7 @@ define(function (require) {
 				}
 				else{
 					var isStateless = false;
-					if (properties !== undefined && isStateless in properties){
+					if (properties !== undefined && "isStateless" in properties){
 						isStateless = properties["isStateless"];
 					}
 					var widget = GEPPETTO.WidgetFactory.addWidget(componentType, isStateless);

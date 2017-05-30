@@ -96,13 +96,15 @@ define(function (require) {
             var iconState = this.getIconState();
             this.state.icon = iconState;
 
-            return <tr className="menuBtnListItem" onClick={this.select}>
-                <td className="selectedStatus">
-                    <i className={"iconSelectionStatus " + this.state.icon} /></td>
-                <td className="dropDownLabel"><label>
-                    <span>{this.props.item.label}</span>
-                </label></td>
-            </tr>
+            return (
+                <tr className="menuBtnListItem" onClick={this.select}>
+                    <td className="selectedStatus">
+                        <i className={"iconSelectionStatus " + this.state.icon}/></td>
+                    <td className="dropDownLabel"><label>
+                        <span>{this.props.item.label}</span>
+                    </label></td>
+                </tr>
+            )
         }
     });
 
@@ -299,7 +301,6 @@ define(function (require) {
 
             var showIcon = this.props.configuration.iconOn;
             this.setState({ open: true, icon: showIcon });
-            return false;
         },
 
         hideMenu: function () {
@@ -312,7 +313,9 @@ define(function (require) {
         selectionChanged: function (value) {
             if (this.props.configuration.closeOnClick) {
                 this.toggleMenu();
-                this.onClickHandler(value);
+                if(this.onClickHandler != undefined && this.onClickHandler!= null){
+                    this.onClickHandler(value);
+                }
             }
         },
 
@@ -339,8 +342,10 @@ define(function (require) {
             //attach external handler for clicking events
             self.addExternalLoadHandler();
             if (this.props.configuration.closeOnClick) {
+                var container = $('#' + this.props.configuration.id + "-container");
                 $('body').click(function (e) {
-                    if (!$(e.target).closest(".btn").length) {
+                    // if the target of the click isn't the container nor a descendant of the container
+                    if (!container.is(e.target) && container.has(e.target).length === 0) {
                         if (self.props.configuration.closeOnClick) {
                             if (self.state.open) {
                                 if (self.isMounted()) {
@@ -355,8 +360,6 @@ define(function (require) {
 
         //toggles visibility of drop down menu
         toggleMenu: function () {
-            var showIcon;
-
             if (this.state.open) {
                 this.hideMenu();
             } else {
@@ -366,7 +369,7 @@ define(function (require) {
 
         render: function () {
             return (
-                <div className="menuButtonContainer">
+                <div id={this.props.configuration.id + "-container"} className="menuButtonContainer">
                     <button className={this.props.configuration.id + " btn " + this.props.configuration.buttonClassName} type="button" title=''
                         id={this.props.configuration.id} onClick={this.toggleMenu} disabled={this.props.configuration.buttonDisabled} ref="menuButton">
                         <i className={this.state.icon + " menuButtonIcon"}></i>

@@ -48,6 +48,7 @@ define(function (require) {
         xVariable : null,
         firstStep : 0,
         updateLegendsState : false,
+		legendVisible : true,
         
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -152,6 +153,8 @@ define(function (require) {
 			this.variables = [];
 			this.xyData = [];
 			this.plotOptions = this.defaultOptions();
+			this.labelsMap = {};
+			this.legendVisible = true;
 			//Merge passed options into existing defaultOptions object
 			$.extend( this.plotOptions, options);
 			this.render();
@@ -169,6 +172,11 @@ define(function (require) {
 			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Save as image'></div>").on('click', function(event) {
 				that.showImageMenu(event);
                 event.stopPropagation();
+			}));
+
+			this.addButtonToTitleBar($("<div class='fa fa-list' title='Toggle legend'></div>").on('click', function(event) {
+				that.showLegend(!that.legendVisible);
+				event.stopPropagation();
 			}));
 			
 			//adding functionality icon buttons on the left of the widget
@@ -208,48 +216,6 @@ define(function (require) {
                 "method": "downloadImage",
                 "arguments": ["svg"],
             });
-		},
-
-        /**
-         * Sets the legend for a variable in the plotly widget
-         *
-         * @command setLegend(variable, legend)
-         * @param {Object} instance - variable to change display label in legends
-         * @param {String} legend - new legend name
-         */
-		setLegend: function (instance, legend) {
-			//Check if it is a string or a geppetto object
-			var instancePath = instance;
-			if ((typeof instance) != "string") {
-				instancePath = instance.getInstancePath();
-			}
-
-			for(var i =0; i< this.datasets.length; i++){
-				if(this.datasets[i].name == instancePath){
-					this.datasets[i].name = legend;
-				}
-			}
-
-			Plotly.relayout(this.plotDiv, this.plotOptions);
-			this.labelsMap[instancePath] = legend;
-
-			return this;
-		},
-		
-		updateLegends : function(legendExtension){
-			if(!this.updateLegendsState){
-				for(var i =0; i< this.datasets.length; i++){
-					var oldLegendName = this.datasets[i].name;
-					var variable = this.variables[this.getLegendInstancePath(oldLegendName)];
-					var newLegend = oldLegendName+ legendExtension;
-					this.variables[newLegend] = variable; 
-					this.datasets[i].name  = newLegend;
-					this.labelsMap[variable.getInstancePath()] = oldLegendName;
-				}
-
-				Plotly.relayout(this.plotDiv, this.plotOptions);
-				this.updateLegendsState = true;
-			}
 		},
 		
 		getVariables : function(){
@@ -299,14 +265,6 @@ define(function (require) {
 				return "Can't plot undefined variable";
 			}
 
-			//Check if variable has been already added
-			for (var datasetIndex in this.datasets) {
-				if (this.datasets[datasetIndex].name == validVariable.getInstancePath()) {
-					return "Variable already in Plot";
-				}
-			}
-			
-			var that = this;
 			if (!$.isArray(data)) {
 				data = [data];
 			}
@@ -325,17 +283,7 @@ define(function (require) {
 			var plotable = true;
 			for (var i = 0; i < data.length; i++) {
 				instance = data[i];
-				if (instance != null && instance != undefined){                	
-					for (var key = 0; key < this.datasets.length; key++) {
-						if (instance.getInstancePath() == this.datasets[key].label) {
-							continue;
-						}
-					}
-					
-					//We stored the variable objects in its own array, using the instance path
-					//as index. Can't be put on this.datasets since plotly will reject it
-					this.variables[instance.getInstancePath()] = instance;
-					
+				if (instance != null && instance != undefined){
 					if (instance.getTimeSeries() != null && instance.getTimeSeries() != undefined) {
 						timeSeriesData = this.getTimeSeriesData(instance,window.time);
 					}
@@ -346,13 +294,20 @@ define(function (require) {
 							timeSeriesData["x"].push([i]);
 						}
 					}
-					
-					var label = instance.getInstancePath();
-					var shortLabel = label;
-	                if (this.labelsMap[label] != undefined && this.labelsMap[label] != label) {
-	                    //a legend was set
-	                    shortLabel = this.labelsMap[label];
-	                }
+
+					var legendName = instance.getInstancePath();
+					if(instance instanceof ExternalInstance){
+						legendName = this.controller.getLegendName(
+							instance.projectId,
+							instance.experimentId,
+							instance,
+							window.Project.getId() == instance.projectId
+						);
+					}
+
+					//We stored the variable objects in its own array, using the instance path
+					//as index. Can't be put on this.datasets since plotly will reject it
+					this.variables[legendName] = instance;
 	                
 					/*
 					 * Create object with x, y data, and graph information. 
@@ -362,7 +317,8 @@ define(function (require) {
 							x : timeSeriesData["x"],
 							y : timeSeriesData["y"],
 							mode : "lines",
-							name: shortLabel,
+							path: instance.getInstancePath(),
+							name: legendName,
 							line: {
 								dash: 'solid',
 								width: 2
@@ -419,6 +375,19 @@ define(function (require) {
 				Plotly.relayout(this.plotDiv,this.plotOptions);
 			}
 		},
+
+		showLegend: function(show){
+			this.legendVisible = (show === true);
+			Plotly.update(this.plotDiv, {showlegend: (show === true)},
+				{
+					margin: {
+						l: this.plotOptions.margin.l,
+						r: (show === true) ? this.plotOptions.margin.r - 12 : this.plotOptions.margin.r + 12,
+						b: this.plotOptions.margin.b,
+						t: this.plotOptions.margin.t,
+					}
+				});
+		},
 		
 		showImageMenu: function (event) {
             var that = this;
@@ -460,8 +429,8 @@ define(function (require) {
 			this.plotOptions.legend.font.family = 'Helvetica Neue';
 			this.plotOptions.legend.font.color = "rgb(0,0,0)";
 			this.plotOptions.legend.bgcolor = "rgb(255,255,255)";
+			var oldMarginRight = this.plotOptions.margin.r;
 			this.plotOptions.margin.r= 40;
-			
 			var oldMarginLeft = this.plotOptions.margin.l;
 			this.plotOptions.margin.l= 70;
 			Plotly.relayout(this.plotDiv,this.plotOptions);
@@ -499,8 +468,8 @@ define(function (require) {
                 self.plotOptions.legend.font.size =  defaultOptions.legend.font.size;
                 self.plotOptions.legend.font.color =  defaultOptions.legend.font.color;
                 self.plotOptions.legend.bgcolor =  defaultOptions.legend.bgcolor;
-                self.plotOptions.margin.l=  oldMarginLeft;
-                self.plotOptions.margin.r=defaultOptions.margin.r;
+                self.plotOptions.margin.l =  oldMarginLeft;
+                self.plotOptions.margin.r = oldMarginRight;
                 Plotly.relayout(self.plotDiv,self.plotOptions);
             };
 			setTimeout(reset, 10);
@@ -801,7 +770,6 @@ define(function (require) {
 		 * Retrieves X and Y axis labels from the variables being plotted
 		 */
 		updateAxis: function (key) {
-			var update = {};
 			if (!this.labelsUpdated) {
 				var unit = this.variables[this.getLegendInstancePath(key)].getUnit();
 				if (unit != null) {
@@ -1081,13 +1049,6 @@ define(function (require) {
 		},
 
 		plotXYData: function (dataY, dataX, options) {
-			//Check if variable has been already added
-			for (var datasetIndex in this.datasets) {
-				if (this.datasets[datasetIndex].name == dataY.getInstancePath()) {
-					return "Variable already in Plot";
-				}
-			}
-
 			// set flags
 			this.hasXYData = true;
 			this.isFunctionNode = false;
@@ -1102,11 +1063,21 @@ define(function (require) {
 
 			var timeSeriesData = this.getTimeSeriesData(dataY, dataX);
 
+			var legendName = dataY.getInstancePath();
+			if(dataY instanceof ExternalInstance){
+				legendName = this.controller.getLegendName(
+					dataY.projectId,
+					dataY.experimentId,
+					dataY,
+					window.Project.getId() == dataY.projectId
+				);
+			}
 			var newLine = {
 					x : timeSeriesData["x"],
 					y : timeSeriesData["y"],
 					mode : "lines",
-					name: dataY.getInstancePath(),
+					path: dataY.getInstancePath(),
+					name: legendName,
 					line: {
 						dash: 'solid',
 						width: 2
@@ -1114,7 +1085,7 @@ define(function (require) {
 					hoverinfo : 'all'
 			};
 
-			this.variables[this.getLegendInstancePath(dataY.getInstancePath())] = dataY;
+			this.variables[legendName] = dataY;
 			this.variables[this.getLegendInstancePath(dataX.getInstancePath())] = dataX;
 
 			this.datasets.push(newLine);
@@ -1126,8 +1097,10 @@ define(function (require) {
                 for (var i = 0; i < this.datasets.length; i++) {
                 	legend = this.getLegendInstancePath(this.datasets[i].name);
                     if (i == 0) {
-                        refUnit = this.variables[legend].getUnit();
-                    } else if (refUnit != this.variables[legend].getUnit()) {
+						if(this.variables[legend]!= undefined){
+							refUnit = this.variables[legend].getUnit();
+						}
+                    } else if (this.variables[legend] == undefined || refUnit != this.variables[legend].getUnit()) {
                         this.inhomogeneousUnits = true;
                         this.labelsUpdated = false;
                         break;
@@ -1138,7 +1111,7 @@ define(function (require) {
 			this.plotOptions.xaxis.autorange = true;
 			this.xaxisAutoRange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
-            this.updateAxis(dataY.getInstancePath());
+            this.updateAxis(legendName);
             this.resize();
 
 			// track change in state of the widget

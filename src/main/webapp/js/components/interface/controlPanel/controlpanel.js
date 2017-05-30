@@ -150,19 +150,10 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-
-            var that = this;
-
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
-            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
-                that.refresh();
-            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
         },
 
         componentWillUnmount: function () {
@@ -326,7 +317,7 @@ define(function (require) {
                 coloPickerElement.colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
 
                 if (defColor != undefined) {
-                    var setColor = ""
+                    var setColor = "";
                     if ($.isArray(defColor)) {
                         setColor = "0xfc6320";
                     }
@@ -345,15 +336,9 @@ define(function (require) {
             }
 
             // listen to experiment status change and trigger a re-render to update controls
-            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
-                that.refresh();
-            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
         },
 
         componentWillUnmount: function () {
@@ -1481,8 +1466,7 @@ define(function (require) {
         filterOptions: controlPanelFilterOptions,
 
         refresh: function () {
-            var self = this;
-            self.forceUpdate();
+            this.forceUpdate();
         },
         
         refreshData: function () {
@@ -1669,6 +1653,18 @@ define(function (require) {
             GEPPETTO.ControlPanel = this;
         },
 
+        setTab: function(filterTabOption){
+            // only do something if builtin filters are being used
+            if (this.props.useBuiltInFilters === true) {
+                // default goes to visual instances
+                if (filterTabOption == undefined) {
+                    filterTabOption = this.filterOptions.VISUAL_INSTANCES;
+                }
+
+                this.setState({filterOption: filterTabOption});
+            }
+        },
+
         openWithFilter: function(filterTabOption, filterText) {
             if (filterTabOption == undefined) {
                 filterTabOption = this.filterOptions.VISUAL_INSTANCES;
@@ -1728,6 +1724,8 @@ define(function (require) {
         },
 
         filterOptionsHandler: function (value) {
+            // set like this to avoid triggering an extra refresh
+            this.state.filterOption = value;
             switch (value) {
                 case this.filterOptions.VISUAL_INSTANCES:
                     // displays actual instances

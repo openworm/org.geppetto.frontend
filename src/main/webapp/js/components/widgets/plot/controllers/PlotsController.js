@@ -186,14 +186,11 @@ define(function(require) {
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data
                     if (plotWidget != undefined) {
-                    	//plotWidget.updateLegends(" [" + window.Project.getActiveExperiment().name + "]");
                         plotWidget.plotData(inst);
-                        this.updateLegend(plotWidget, inst, projectId, experimentId);
                         plotWidget.updateAxis(inst.getInstancePath());
                     } else {
                         var widget = G.addWidget(0);
                         widget.plotData(inst).setName(path);
-                        this.updateLegend(widget, inst, projectId, experimentId);
                         widget.updateAxis(path);
                     }
                 } else {
@@ -201,7 +198,6 @@ define(function(require) {
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
                     		plotWidget.plotData(i);
-                    		self.updateLegend(plotWidget, i, projectId, experimentId);
                     		plotWidget.updateAxis(i.getInstancePath());
                     	} else {
                     		var plot = G.addWidget(0);
@@ -213,7 +209,6 @@ define(function(require) {
                     GEPPETTO.ExperimentsController.getExperimentState(projectId, experimentId, [path], cb);
                 }
             } else {
-                var self = this;
                 // we are dealing with external instances, define re-usable callback for plotting external instances
                 var plotExternalCallback = function() {
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
@@ -222,7 +217,6 @@ define(function(require) {
                     var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, xPath);
                     if (plotWidget != undefined) {
                         plotWidget.plotXYData(i, t);
-                        self.updateLegend(plotWidget, i, projectId, experimentId);
                     } else {
                     	var plot = G.addWidget(0);
                         plot.plotXYData(i, t).setName(path);
@@ -237,29 +231,6 @@ define(function(require) {
                     // if undefined trigger get experiment state
                     GEPPETTO.ExperimentsController.getExperimentState(projectId, experimentId, [path], plotExternalCallback);
                 }
-            }
-        },
-
-        //Updates the legend for a given instance, and updates it in widget
-        updateLegend: function(widget, instance, projectId, experimentId) {
-            var legend = null;
-            var experimentName, projectName;
-            if(window.Project.getId() == projectId){
-            	if(window.Project.getActiveExperiment()!= null && window.Project.getActiveExperiment() != undefined){
-            		//variable belongs to same project,but different experiment
-            		if(window.Project.getActiveExperiment().getId()!= experimentId){
-            			legend = this.getLegendName(projectId, experimentId, instance, true);
-            		}
-            	}
-            }else{
-            	//variable belongs to different project and different experiment
-            	var experimentPath = projectName + " - " + experimentName;
-    			legend = this.getLegendName(projectId,experimentId,instance,false);
-            }
-
-            //set legend if it needs to be updated, only null if variable belong to active experiment
-            if (legend != null) {
-                widget.setLegend(instance, legend);
             }
         },
 

@@ -234,11 +234,11 @@ define(function (require) {
                                       GEPPETTO.ModelFactory.getAllInstancesOf(acnet2.baskets_12[0].getVariable())[0].getMetaType() == "ArrayInstance",
                                       'getAllInstanceOf returning instances as expected for Variable and Variable path.');
                             // check AllPotentialInstances
-                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 7612 &&
+                            assert.ok(GEPPETTO.ModelFactory.allPathsIndexing.length == 9714 &&
                                       GEPPETTO.ModelFactory.allPathsIndexing[0].path == 'acnet2' &&
                                       GEPPETTO.ModelFactory.allPathsIndexing[0].metaType == 'CompositeType' &&
-                                      GEPPETTO.ModelFactory.allPathsIndexing[7612 - 1].path == 'time' &&
-                                      GEPPETTO.ModelFactory.allPathsIndexing[7612 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
+                                      GEPPETTO.ModelFactory.allPathsIndexing[9714 - 1].path == 'time' &&
+                                      GEPPETTO.ModelFactory.allPathsIndexing[9714 - 1].metaType == 'StateVariableType', 'All potential instance paths exploded as expected');
                             // check getAllPotentialInstancesEndingWith
                             assert.ok(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v').length == 456 &&
                                       GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v')[0] == 'acnet2.pyramidals_48[0].soma_0.v' &&
@@ -249,7 +249,7 @@ define(function (require) {
                             assert.ok(window.Instances.getInstance('acnet2.baskets_12[3]').getInstancePath() == 'acnet2.baskets_12[3]', 'Instances.getInstance fetches existing instance as expected');
                             assert.ok(window.Instances.getInstance('acnet2.baskets_12[3].soma_0.v').getInstancePath() == 'acnet2.baskets_12[3].soma_0.v', 'Instances.getInstance creates and fetches instance as expected');
                             // try to get instance that doesn't exist in the model
-                            assert.throws(function() { window.Instances.getInstance('acnet2.baskets_12[3].sticaxxi'); }, 'Trying to fetch something that does not exist in the model throws exception');
+                            assert.ok(window.Instances.getInstance('acnet2.baskets_12[3].sticaxxi')==undefined, 'Trying to fetch something that does not exist in the model throws exception');
 
                             done();
                             resetConnection();

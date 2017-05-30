@@ -27,7 +27,6 @@ define(function (require) {
                     cameraPosition: {x: undefined, y: undefined, z: undefined},
                     cameraRotation: {rx: undefined, ry: undefined, rz: undefined, radius: undefined},
                     colorMap: {},
-                    colorFunctionMap: {},
                     opacityMap: {},
                     geometryTypeMap: {},
                     backgroundColor: "0x101010"
@@ -355,10 +354,6 @@ define(function (require) {
          */
         addColorFunction(instances, colorfn) {
             this.engine.colorController.addColorFunction(instances, colorfn);
-            for (var i = 0; i < instances.length; i++) {
-                this.viewState.custom.colorFunctionMap[instances[i].getInstancePath()] = colorfn.toString();
-            }
-            this.setDirty(true);
             return this;
         }
 
@@ -369,12 +364,6 @@ define(function (require) {
          * @return {Canvas}
          */
         removeColorFunction(instances) {
-            for (var i = 0; i < instances.length; i++) {
-                if (this.colorFunctionMap[instances[i].getInstancePath()] != undefined) {
-                    delete this.viewState.custom.colorFunctionMap[instances[i].getInstancePath()];
-                }
-            }
-            this.setDirty(true);
             this.engine.colorController.removeColorFunction(instances);
             return this;
         }
@@ -542,11 +531,6 @@ define(function (require) {
                         this.setGeometryType(eval(path),
                             view.componentSpecific.geometryTypeMap[path].type,
                             view.componentSpecific.geometryTypeMap[path].thickness);
-                    }
-                }
-                if (view.componentSpecific.colorFunctionMap != undefined) {
-                    for (var path in view.componentSpecific.colorFunctionMap) {
-                        this.addColorFunction([eval(path)], eval("(" + view.componentSpecific.colorFunctionMap[path] + ")"));
                     }
                 }
                 if (view.componentSpecific.backgroundColor != undefined) {

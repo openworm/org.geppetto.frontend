@@ -40,9 +40,7 @@ define(function(require)
              */
             applyView: function(projectView, experimentView){
                 // stop monitor timer loop if there is already one active
-                if(this.monitorInterval != undefined){
-                    clearInterval(this.monitorInterval);
-                }
+                this.clearViewMonitor();
 
                 // if we have an experiment view for the active experiment with something, apply that and ignore the project view
                 if(experimentView != undefined && experimentView.views != undefined && Object.keys(experimentView.views).length > 0) {
@@ -137,6 +135,13 @@ define(function(require)
                 ){
                     window.Project.setView(viewState);
                     this.anyComponentsDestroyed = false;
+                }
+            },
+
+            clearViewMonitor: function(){
+                // stop monitor timer loop if there is already one active
+                if(this.monitorInterval != undefined){
+                    clearInterval(this.monitorInterval);
                 }
             }
         };

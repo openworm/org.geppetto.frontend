@@ -238,7 +238,7 @@ define(function (require) {
 				closeButton.click(this.close.bind(this));
 				dialog.find("div.ui-dialog-titlebar").prepend(button);
 				$(button).addClass("widget-title-bar-button");
-				this.dialog.css("overflow", "scroll");
+				this.dialog.css("overflow", "auto");
 			}
 
 

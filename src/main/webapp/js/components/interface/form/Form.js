@@ -18,20 +18,24 @@ define(function (require) {
 		shouldComponentUpdate() {
 			return false;
 		},
+		
+		componentDidMount(){
+			$("#"+this.props.id).parent().addClass("formDialog");
+		},
 
 		render: function(){
-		     return (
-		    		 <Form id={this.props.id} 
-		    		 	className="geppettoForm"
-		    		 	schema={this.props.schema}
-		    		    formData={this.props.formData}
-		    		 	uiSchema={uiSchema}
-		    		 	onChange={this.props.changeHandler}
-		    		    onSubmit={this.props.submitHandler}
-		    		    onError={this.props.errorHandler} />
-		     		);
-		 	}
-		});
+			return (
+					<Form id={this.props.id} 
+					className="geppettoForm"
+						schema={this.props.schema}
+					formData={this.props.formData}
+					uiSchema={uiSchema}
+					onChange={this.props.changeHandler}
+					onSubmit={this.props.submitHandler}
+					onError={this.props.errorHandler} />
+			);
+		}
+	});
 	
 	return formComponent;
 });

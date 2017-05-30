@@ -4,7 +4,7 @@ var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.c
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json";
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
 
-casper.test.begin('Geppetto basic tests', 106, function suite(test) {
+casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     casper.options.viewportSize = {
         width: 1340,
         height: 768
@@ -55,15 +55,27 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
         testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
             false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true);
     });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend","Hodgkin-Huxley Neuron  Double-click to open project");
+    });
 
     casper.then(function () {
         testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
             false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false);
     });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend","c302_A_Pharyngeal  Double-click to open project");
+    });
 
     casper.then(function () {
         testProject(test, TARGET_URL  +port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
             false, '', '', false);
+    });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend","Balanced_240cells_36926conns.net - net  Double-click to open project");
     });
 
     //TODO: log back in as other users. Check more things
@@ -74,6 +86,32 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
     });
 });
 
+function deleteProject(test, url,title){
+	casper.thenOpen(url, function () {
+		this.echo("Loading an external model that is not persisted at " + url);
+
+		casper.then(function () {
+			this.waitForSelector("div.project-preview", function () {
+				this.echo("Dashboard loaded")
+			}, null, 10000);
+		});
+
+		casper.then(function () {
+			this.mouse.doubleclick('div[title=\"'+title+'\"]');
+		});
+		
+		casper.then(function () {
+			this.waitForSelector('a[title=\"Delete project\"]', function () {
+				this.echo("Waited for delete icon to delete project");
+				this.mouse.doubleclick("i.fa-trash-o");
+			}, null, 10000);
+			
+			this.waitWhileVisible('a[title=\"Open project\"]', function () {
+	            test.assertNotVisible('a[title=\"Open project\"]', "Correctly deleted project " + title);
+	        }, null, 30000);
+		});
+	});
+}
 
 function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter, testConsole) {
 
@@ -109,7 +147,6 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
                 //roll over the experiments row
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-                doPrePersistenceExperimentsTableButtonsCheck(test);
             });
 
             casper.then(function () {
@@ -122,6 +159,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                         doExperimentsTableRowTests(test);
                     }, null, 10000);
                 }
+                doPrePersistenceExperimentsTableButtonsCheck(test);
             });
 
             casper.then(function () {

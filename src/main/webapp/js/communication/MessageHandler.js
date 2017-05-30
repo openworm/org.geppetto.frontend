@@ -169,9 +169,13 @@ define(function(require) {
                 					status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
                 				experiments[e].setStatus(status);
                 				GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
-                			}else{
-                				experiments[e].setStatus(status);
-                			}
+                			}else if (status == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
+                    			experiments[e].setStatus(status);
+                    			GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
+                    		}else if (status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
+                    			experiments[e].setStatus(status);
+                    			GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
+                    		} 
                 		}
                 	}
                 }

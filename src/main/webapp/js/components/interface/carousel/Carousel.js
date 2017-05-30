@@ -7,7 +7,7 @@ define(function (require) {
 	return class Carousel extends AbstractComponent {
 
 		constructor(props) {
-            super(props);
+			super(props);
 
 			var settings = {
 				infinite: true,
@@ -15,11 +15,11 @@ define(function (require) {
 				slidesToShow: 1,
 				slidesToScroll: 1
 			};
-			
+
 			this.state = {
-            	settings: $.extend(settings, this.props.settings),
-            	files: this.props.files
-            };
+				settings: $.extend(settings, this.props.settings),
+				files: this.props.files
+			};
 
 			this.download = this.download.bind(this);
 		}
@@ -32,16 +32,19 @@ define(function (require) {
 			GEPPETTO.Utility.createZipFromRemoteFiles(this.state.files, "data.zip");
 		}
 
-		render () {
-			var items = this.state.files.map(function (path) {		            			 
-    			 return (<div><img src={path} /></div>);
-    		 });
+		render() {
 
-			return (
-				<Slider {...this.state.settings}>
-					{items}
-				</Slider>
-			)
+			if (this.state.files != undefined) {
+				var items = this.state.files.map(function (path) {
+					return (<div><img src={path} /></div>);
+				});
+
+				return (
+					<Slider {...this.state.settings}>
+						{items}
+					</Slider>
+				)
+			}
 		}
 	};
 });

@@ -171,7 +171,7 @@ function hhcellTest(test,name){
 			Plot1.setPosition(0,300);
 			GEPPETTO.ComponentFactory.addWidget('MOVIEPLAYER', {
 				name : "Movie Player Demo",
-				videoURL: "https://www.youtube.com/watch?v=Ejf6FwIibkE",
+				videoURL: "https://www.youtube.com/watch?v=6AJYusGcF5M",
 				controls : {
 				playAtStart : true,
 				volume : 1

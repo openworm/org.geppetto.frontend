@@ -70,7 +70,9 @@ define(function (require) {
                     }
             });
             
-
+            $(document).tooltip({
+                items: ".tooltip:not(:focus)"
+            });
         },
         
        
@@ -330,6 +332,7 @@ define(function (require) {
                 content: function () {
                     return $(this).attr("data-custom-title");
                 },
+                relative : true
             });
         },
 

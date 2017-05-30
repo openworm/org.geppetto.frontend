@@ -301,7 +301,6 @@ define(function (require) {
 
             var showIcon = this.props.configuration.iconOn;
             this.setState({ open: true, icon: showIcon });
-            return false;
         },
 
         hideMenu: function () {
@@ -343,8 +342,10 @@ define(function (require) {
             //attach external handler for clicking events
             self.addExternalLoadHandler();
             if (this.props.configuration.closeOnClick) {
+                var container = $('#' + this.props.configuration.id + "-container");
                 $('body').click(function (e) {
-                    if (!$(e.target).closest(".btn").length) {
+                    // if the target of the click isn't the container nor a descendant of the container
+                    if (!container.is(e.target) && container.has(e.target).length === 0) {
                         if (self.props.configuration.closeOnClick) {
                             if (self.state.open) {
                                 if (self.isMounted()) {
@@ -368,7 +369,7 @@ define(function (require) {
 
         render: function () {
             return (
-                <div className="menuButtonContainer">
+                <div id={this.props.configuration.id + "-container"} className="menuButtonContainer">
                     <button className={this.props.configuration.id + " btn " + this.props.configuration.buttonClassName} type="button" title=''
                         id={this.props.configuration.id} onClick={this.toggleMenu} disabled={this.props.configuration.buttonDisabled} ref="menuButton">
                         <i className={this.state.icon + " menuButtonIcon"}></i>

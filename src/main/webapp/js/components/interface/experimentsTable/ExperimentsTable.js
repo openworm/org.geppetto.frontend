@@ -69,10 +69,6 @@ define(function (require) {
                         GEPPETTO.Console.executeImplicitCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
                     }
             });
-            
-            $(document).tooltip({
-                items: ".tooltip:not(:focus)"
-            });
         },
         
        

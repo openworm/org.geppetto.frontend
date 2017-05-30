@@ -11,7 +11,7 @@ module.exports = {
   },
   rules: {
     // Comma at the end of a dictionary
-    'comma-dangle': ['error', 'always-multiline'],
+    // 'comma-dangle': ['error', 'always-multiline'],
     // Indent must be four space
     indent: ['error', 4],
     // Not sure what this does...

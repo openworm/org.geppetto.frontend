@@ -33,7 +33,8 @@ define(function (require) {
 		 * Stores cookie to avoid showing tutorial next time at startup
 		 */
 		dontShowAtStartup(val) {
-			$.cookie('ignore_tutorial', true);
+			var value =$('#ignoreTurialCheck').prop('checked');
+			$.cookie('ignore_tutorial', value);
 		}
 
 		/**
@@ -133,12 +134,28 @@ define(function (require) {
 					p.width(width + "px");
 					self.dialog.css("width", width + "px");
 				}
+				
+				
+				var ignoreTutorial = $.cookie('ignore_tutorial');
+				if(ignoreTutorial== 'true'){
+					$('#ignoreTurialCheck').prop('checked', true);
+				}
 			};
 
 			if (!started) {
 				p.effect("shake", { distance: 5, times: 3 }, 500, callback);
-			}
+			}else{
+				//wait before ticking box, needed for dialog to appear and render
+				setTimeout(
+						function() 
+						{
+							var ignoreTutorial = $.cookie('ignore_tutorial');
+							if(ignoreTutorial == 'true'){
+								$('#ignoreTurialCheck').prop('checked', true);
+							}
+						}, 100);
 
+			}
 		}
 
 		setTutorial(tutorialURL) {
@@ -368,24 +385,24 @@ define(function (require) {
 		
 		updatePosition(position){
 			var left,top;
+			var screenWidth = $(window).width();
+			var screenHeight = $(window).height();
+			
 			if(position.left!=undefined && position.top!=undefined){
 				left = position.left;
 				top = position.top;
 			}else{
-				var screenWidth = $(window).width();
-				var screenHeight = $(window).height();
-
 				left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
 				top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
 			}
 
 			if(typeof top === 'string' && typeof left === 'string'){
-				this.dialog.parent().css("top", top);
-				this.dialog.parent().css("left", left);
-			}else{
-				this.dialog.parent().css("top", top + "px");
-				this.dialog.parent().css("left", left + "px");
+				left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
+				top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
 			}
+			
+			this.dialog.parent().css("top", top + "px");
+			this.dialog.parent().css("left", left + "px");
 		}
 
 		render() {
@@ -436,7 +453,7 @@ define(function (require) {
 								<span>{lastStepLabel}   <i className={lastStep ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
 							</button>
 						</div>
-						<label className={cookieClass} id="ignoreTutorial"><input type="checkbox" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
+						<label className={cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTurialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
 					</div>
 
 				</div>

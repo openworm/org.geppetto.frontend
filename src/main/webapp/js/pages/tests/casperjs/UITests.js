@@ -3,6 +3,7 @@ var port = ":8080";
 var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json";
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json";
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
+var projectID;
 
 casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     casper.options.viewportSize = {
@@ -57,7 +58,13 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     });
     
     casper.then(function () {
-        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend","Hodgkin-Huxley Neuron  Double-click to open project");
+    	projectID = this.evaluate(function() {
+           return Project.getId();
+        });
+    });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
     casper.then(function () {
@@ -66,7 +73,13 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     });
     
     casper.then(function () {
-        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend","c302_A_Pharyngeal  Double-click to open project");
+    	projectID = this.evaluate(function() {
+           return Project.getId();
+        });
+    });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
     casper.then(function () {
@@ -75,7 +88,13 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     });
     
     casper.then(function () {
-        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend","Balanced_240cells_36926conns.net - net  Double-click to open project");
+    	projectID = this.evaluate(function() {
+           return Project.getId();
+        });
+    });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
     //TODO: log back in as other users. Check more things
@@ -86,7 +105,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     });
 });
 
-function deleteProject(test, url,title){
+function deleteProject(test, url,id){
 	casper.thenOpen(url, function () {
 		this.echo("Loading an external model that is not persisted at " + url);
 
@@ -97,7 +116,7 @@ function deleteProject(test, url,title){
 		});
 
 		casper.then(function () {
-			this.mouse.doubleclick('div[title=\"'+title+'\"]');
+			this.mouse.doubleclick('div[project-id=\"'+id+'\"]');
 		});
 		
 		casper.then(function () {
@@ -107,7 +126,7 @@ function deleteProject(test, url,title){
 			}, null, 10000);
 			
 			this.waitWhileVisible('a[title=\"Open project\"]', function () {
-	            test.assertNotVisible('a[title=\"Open project\"]', "Correctly deleted project " + title);
+	            test.assertNotVisible('a[title=\"Open project\"]', "Correctly deleted project " + id);
 	        }, null, 30000);
 		});
 	});

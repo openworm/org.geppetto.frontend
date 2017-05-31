@@ -331,6 +331,18 @@ define(function (require) {
 
 			return baseView;
 		}
+		
+		setComponentSpecificView(componentSpecific){
+			if (componentSpecific != undefined) {
+				if (componentSpecific.activeTutorial != undefined) {
+					this.goToChapter(componentSpecific.activeTutorial);
+				}
+
+				if (componentSpecific.currentStep != undefined) {
+					this.gotToStep(componentSpecific.currentStep);
+				}
+			}
+		}
 
 		setView(view) {
 			// set base properties
@@ -338,24 +350,22 @@ define(function (require) {
 			var self = this;
 			var callback = function(tutorial){
 				if(view.componentSpecific.activeTutorial==tutorial){
-					// set component specific stuff, only custom handlers for popup widget
-					if (view.componentSpecific != undefined) {
-						if (view.componentSpecific.activeTutorial != undefined) {
-							self.goToChapter(view.componentSpecific.activeTutorial);
-						}
-
-						if (view.componentSpecific.currentStep != undefined) {
-							self.gotToStep(view.componentSpecific.currentStep);
-						}
-					}
+					self.setComponentSpecificView(view.componentSpecific);
 				}
 			};
 			
 			// set data
 			if (view.data != undefined) {
 				if (view.dataType == 'array') {
-					for (var i = 0; i < view.data.length; i++) {
-						this.addTutorial(view.data[i],callback);
+					if(view.data.length > 0){
+						for (var i = 0; i < view.data.length; i++) {
+							this.addTutorial(view.data[i],callback);
+						}
+					}else{
+						if(view.position!=undefined){
+							this.updatePosition(view.position);
+						}
+						this.setComponentSpecificView(view.componentSpecific);
 					}
 				}
 			}
@@ -363,15 +373,26 @@ define(function (require) {
 			this.setDirty(false);
 		}
 		
-		centerPosition(){
-			var screenWidth = $(window).width();
-			var screenHeight = $(window).height();
+		updatePosition(position){
+			var left,top;
+			if(position.left!=undefined && position.top!=undefined){
+				left = position.left;
+				top = position.top;
+			}else{
+				var screenWidth = $(window).width();
+				var screenHeight = $(window).height();
 
-			var left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
-			var top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
+				left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
+				top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
+			}
 
-			this.dialog.parent().css("top", top + "px");
-			this.dialog.parent().css("left", left + "px");
+			if(typeof top === 'string' && typeof left === 'string'){
+				this.dialog.parent().css("top", top);
+				this.dialog.parent().css("left", left);
+			}else{
+				this.dialog.parent().css("top", top + "px");
+				this.dialog.parent().css("left", left + "px");
+			}
 		}
 
 		render() {

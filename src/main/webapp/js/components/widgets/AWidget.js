@@ -128,12 +128,7 @@ define(function (require) {
                 this.position.left = left;
                 this.position.top = top;
 
-                this.$el.dialog(
-                    'option', 'position', {
-                        my: "left+" + this.position.left + " top+" + this.position.top,
-                        at: "left top",
-                        of: $(window)
-                    }).dialogExtend();
+                this.$el.dialog().dialogExtend();
 
                 // set flag to indicate something changed
                 this.dirtyView = true;

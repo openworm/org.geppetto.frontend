@@ -88,7 +88,13 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     });
     
     casper.then(function () {
-        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend","Balanced_240cells_36926conns.net - net  Double-click to open project");
+    	projectID = this.evaluate(function() {
+           return Project.getId();
+        });
+    });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
     //TODO: log back in as other users. Check more things

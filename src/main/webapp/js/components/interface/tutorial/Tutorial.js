@@ -84,10 +84,12 @@ define(function (require) {
 
 		gotToStep(currentStep) {
 			this.state.currentStep = currentStep;
-			if (this.state.currentStep <= this.getActiveTutorial().steps.length - 1) {
-				this.updateTutorialWindow();
-			} else {
-				this.start();
+			if(this.getActiveTutorial()!=undefined){
+				if (this.state.currentStep <= this.getActiveTutorial().steps.length - 1) {
+					this.updateTutorialWindow();
+				} else {
+					this.start();
+				}
 			}
 
 			this.setDirty(true);
@@ -242,17 +244,6 @@ define(function (require) {
 				$(button).addClass("widget-title-bar-button");
 				this.dialog.css("overflow", "auto");
 			}
-
-
-			//centers the tutorials
-			var screenWidth = $(window).width();
-			var screenHeight = $(window).height();
-
-			var left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
-			var top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
-
-			this.dialog.parent().css("top", top + "px");
-			this.dialog.parent().css("left", left + "px");
 		}
 
 		componentDidMount() {
@@ -362,10 +353,12 @@ define(function (require) {
 							this.addTutorial(view.data[i],callback);
 						}
 					}else{
-						if(view.position!=undefined){
-							this.updatePosition(view.position);
+						if(!jQuery.isEmptyObject(this.tutorialsMap)){
+							this.setComponentSpecificView(view.componentSpecific);
+							if(view.position!=undefined){
+								this.updatePosition(view.position);
+							}
 						}
-						this.setComponentSpecificView(view.componentSpecific);
 					}
 				}
 			}
@@ -427,6 +420,7 @@ define(function (require) {
 					dialog.width(width + "px");
 					this.dialog.css("width", width + "px");
 				}
+				
 
 				return <div>
 					<div className="tutorial-message">

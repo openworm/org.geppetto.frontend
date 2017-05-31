@@ -169,16 +169,6 @@ function hhcellTest(test,name){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:1});
 			Plot1.setPosition(0,300);
-			GEPPETTO.ComponentFactory.addWidget('MOVIEPLAYER', {
-				name : "Movie Player Demo",
-				videoURL: "https://www.youtube.com/watch?v=6AJYusGcF5M",
-				controls : {
-				playAtStart : true,
-				volume : 1
-				}
-				},function () {
-				this.setName('Movie Player Demo');
-			});
 		});
 		
 		var mesh = casper.evaluate(function(){
@@ -186,9 +176,6 @@ function hhcellTest(test,name){
 			return mesh;
 		});
 		test.assertEquals(mesh, 1, "Canvas widget has hhcell");
-
-		casper.echo("-------Testing Movie Player Widget--------");
-		testMoviePlayerWidget(test, "Movieplayer1");
 
 		casper.echo("-------Testing Camera Controls--------");
 		testCameraControlsWithCanvasWidget(test, [0,0,30.90193733102435]);

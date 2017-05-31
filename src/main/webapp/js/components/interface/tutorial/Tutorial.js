@@ -52,30 +52,32 @@ define(function (require) {
 
 		updateTutorialWindow() {
 			var self = this;
-			var step = this.getActiveTutorial().steps[this.state.currentStep];
+			if (this.getActiveTutorial() != undefined) {
+				var step = this.getActiveTutorial().steps[this.state.currentStep];
 
-			if (step.content_url != undefined) {
-				$.ajax({
-					type: 'GET',
-					dataType: 'html',
-					url: step.content_url,
-					success(responseData, textStatus, jqXHR) {
-						step.message = responseData;
-						self.forceUpdate();
-					},
-					error(responseData, textStatus, errorThrown) {
-						throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
+				if (step.content_url != undefined) {
+					$.ajax({
+						type: 'GET',
+						dataType: 'html',
+						url: step.content_url,
+						success(responseData, textStatus, jqXHR) {
+							step.message = responseData;
+							self.forceUpdate();
+						},
+						error(responseData, textStatus, errorThrown) {
+							throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
+						}
+					});
+				}
+				else {
+					this.forceUpdate();
+				}
+
+				//execute action associated with message
+				if (step.action != undefined) {
+					if (step.action != "") {
+						eval(step.action);
 					}
-				});
-			}
-			else {
-				this.forceUpdate();
-			}
-
-			//execute action associated with message
-			if (step.action != undefined) {
-				if (step.action != "") {
-					eval(step.action);
 				}
 			}
 		}
@@ -285,9 +287,7 @@ define(function (require) {
 							self.setTutorial("/org.geppetto.frontend/geppetto/js/components/interface/tutorial/configuration/experiment_loaded_tutorial.json", "Geppetto tutorial");
 						}
 						else {
-							if (!this.getCookie()) {
-								this.start();
-							}
+							self.start();
 						}
 					}
 				}
@@ -361,6 +361,17 @@ define(function (require) {
 			}
 
 			this.setDirty(false);
+		}
+		
+		updatePosition(){
+			var screenWidth = $(window).width();
+			var screenHeight = $(window).height();
+
+			var left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
+			var top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
+
+			this.dialog.parent().css("top", top + "px");
+			this.dialog.parent().css("left", left + "px");
 		}
 
 		render() {

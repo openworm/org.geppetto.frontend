@@ -137,13 +137,24 @@ define(function (require) {
 				
 				
 				var ignoreTutorial = $.cookie('ignore_tutorial');
-				if(ignoreTutorial){
+				if(ignoreTutorial== 'true'){
 					$('#ignoreTurialCheck').prop('checked', true);
 				}
 			};
 
 			if (!started) {
 				p.effect("shake", { distance: 5, times: 3 }, 500, callback);
+			}else{
+				//wait before ticking box, needed for dialog to appear and render
+				setTimeout(
+						function() 
+						{
+							var ignoreTutorial = $.cookie('ignore_tutorial');
+							if(ignoreTutorial == 'true'){
+								$('#ignoreTurialCheck').prop('checked', true);
+							}
+						}, 100);
+
 			}
 		}
 

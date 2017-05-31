@@ -609,22 +609,27 @@ define(function (require) {
             this.forceUpdate();
         },
 
+        refreshToggleState: function(){
+            // when control panel is open check if we have filter coming down from props
+            if(this.props.filterOption != undefined){
+                // retrieve items to toggle
+                var buttonsToToggle = this.optionsMap[this.props.filterOption];
+                if(buttonsToToggle != undefined){
+                    for(var i=0; i<buttonsToToggle.length; i++){
+                        this.computeResult(buttonsToToggle[i]);
+                    }
+                }
+            } else if (!this.state.stateVarsFilterToggled && !this.state.paramsFilterToggled) {
+                // if no other main component is toggled show visual instances
+                // same logic as if viz instances filter was clicked
+                this.computeResult('visualInstancesFilterBtn');
+            }
+        },
+
         componentDidMount: function () {
             var that = this;
             GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function () {
-                // when control panel is open check if we have filter coming down from props
-                if(that.props.filterOption != undefined){
-                    var buttonsToToggle = that.optionsMap[that.props.filterOption];
-                    if(buttonsToToggle != undefined){
-                        for(var i=0; i<buttonsToToggle.length; i++){
-                            that.computeResult(buttonsToToggle[i]);
-                        }
-                    }
-                } else if (!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled) {
-                    // if no other main component is toggled show visual instances
-                    // same logic as if viz instances filter was clicked
-                    that.computeResult('visualInstancesFilterBtn');
-                }
+                that.refreshToggleState();
             });
             GEPPETTO.on("control_panel_refresh", function () {
                 // when control panel is open and we are using the filter component
@@ -1662,6 +1667,7 @@ define(function (require) {
                 }
 
                 this.setState({filterOption: filterTabOption});
+                this.refs.filterComponent.refreshToggleState();
             }
         },
 
@@ -2032,7 +2038,7 @@ define(function (require) {
             var filterMarkup = '';
             if (this.props.useBuiltInFilters === true) {
                 filterMarkup = (
-                    <FilterComponent id="controlPanelBuiltInFilter" filterOption={this.state.filterOption} filterHandler={this.filterOptionsHandler}/>
+                    <FilterComponent id="controlPanelBuiltInFilter" ref="filterComponent" filterOption={this.state.filterOption} filterHandler={this.filterOptionsHandler}/>
                 );
             }
 

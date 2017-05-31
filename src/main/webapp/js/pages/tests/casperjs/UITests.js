@@ -61,6 +61,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     	projectID = this.evaluate(function() {
            return Project.getId();
         });
+    	this.echo("Project id to delete : "+projectID);
     });
     
     casper.then(function () {
@@ -76,6 +77,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     	projectID = this.evaluate(function() {
            return Project.getId();
         });
+    	this.echo("Project id to delete : "+projectID);
     });
     
     casper.then(function () {
@@ -91,6 +93,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     	projectID = this.evaluate(function() {
            return Project.getId();
         });
+    	this.echo("Project id to delete : "+projectID);
     });
     
     casper.then(function () {
@@ -109,14 +112,24 @@ function deleteProject(test, url,id){
 	casper.thenOpen(url, function () {
 		this.echo("Loading an external model that is not persisted at " + url);
 
+
 		casper.then(function () {
 			this.waitForSelector("div.project-preview", function () {
 				this.echo("Dashboard loaded")
 			}, null, 10000);
 		});
 
+		casper.then(function(){
+			casper.evaluate(function() {
+				$("div").scrollTop(1000);
+			});
+		});
+		
 		casper.then(function () {
-			this.mouse.doubleclick('div[project-id=\"'+id+'\"]');
+			this.waitForSelector('div[project-id=\"'+id+'\"]', function (id) {
+				this.echo("Waited for scrolldown projects to appear");
+				this.mouse.doubleclick('div[project-id=\"'+id+'\"]');
+			}, id, 2000);
 		});
 		
 		casper.then(function () {

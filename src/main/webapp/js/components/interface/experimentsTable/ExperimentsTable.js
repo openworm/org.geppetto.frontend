@@ -69,8 +69,6 @@ define(function (require) {
                         GEPPETTO.Console.executeImplicitCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
                     }
             });
-            
-
         },
         
        
@@ -330,6 +328,7 @@ define(function (require) {
                 content: function () {
                     return $(this).attr("data-custom-title");
                 },
+                relative : true
             });
         },
 

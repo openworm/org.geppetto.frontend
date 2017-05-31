@@ -258,7 +258,7 @@ function testSpotlight(test, variableName,plotName,expectButton,testSelect, sele
 								testSelection(test, selectionName,selectColorVarName);
 							}
 						});
-					}, null, 8000);
+					}, null, 5000);
 				}else{
 					casper.wait(1000, function () {
 						casper.then(function () {
@@ -379,4 +379,9 @@ function testingConnectionLines(test, expectedLines){
 		
 		test.assertEquals(expectedLines, connectionLines, "The control panel opened with right amount of rows");
 	});
+}
+
+function testMoviePlayerWidget(test,id){
+	test.assertExists('div[id="'+id+'"]', "Movie player exists");
+	test.assertExists("iframe[id=\"widget6\"]", "Movie player iframe exists");
 }

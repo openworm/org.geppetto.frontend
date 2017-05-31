@@ -186,14 +186,13 @@ define(function (require) {
 				url: tutorialURL,
 				success: function (responseData, textStatus, jqXHR) {
 					// on success add to tutorials utl list for view-state
-					self.tutorialsMap[tutorialURL]=responseData.name;
+					self.tutorialsMap[responseData.name]=tutorialURL;
 					self.tutorials.push(tutorialURL);
 					self.setDirty(true);
+					self.loadTutorial(responseData,false);
 					// load tutorial
 					if(callback!=undefined){
 						callback(responseData.name);
-					}else{
-						self.loadTutorial(responseData,false);
 					}
 				},
 				error: function (responseData, textStatus, errorThrown) {

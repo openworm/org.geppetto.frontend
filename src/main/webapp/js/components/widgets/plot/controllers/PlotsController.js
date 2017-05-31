@@ -176,7 +176,11 @@ define(function(require) {
         plotStateVariable: function(projectId, experimentId, path, plotWidget, xPath){
             var self = this;
             
-            if(window.Project.getId() == projectId && window.Project.getActiveExperiment().getId() == experimentId){    
+            if(
+                window.Project.getId() == projectId &&
+                window.Project.getActiveExperiment() != undefined &&
+                window.Project.getActiveExperiment().getId() == experimentId
+            ){
                 var inst = undefined;
                 try {
                     inst = window.Instances.getInstance(path);

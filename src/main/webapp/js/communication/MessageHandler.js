@@ -130,7 +130,10 @@ define(function(require) {
             var experimentState = JSON.parse(payload.update);
             var experiment = window.Project.getActiveExperiment();
 
-            if (experimentState.projectId == window.Project.getId() && experimentState.experimentId == experiment.getId()) {
+            if (
+                experimentState.projectId == window.Project.getId() &&
+                experiment != undefined &&
+                experimentState.experimentId == experiment.getId()) {
                 //if we fetched data for the current project/experiment 
                 GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);
             } else {

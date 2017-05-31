@@ -1667,7 +1667,10 @@ define(function (require) {
                 }
 
                 this.setState({filterOption: filterTabOption});
-                this.refs.filterComponent.refreshToggleState();
+                var that = this;
+                setTimeout(function () {
+                    that.refs.filterComponent.refreshToggleState();
+                }, 25);
             }
         },
 
@@ -1686,9 +1689,6 @@ define(function (require) {
             // show control panel
             this.open();
             var that = this;
-            setTimeout(function () {
-                that.setFilter(filterText);
-            }, 25);
         },
 
         open: function () {

@@ -363,7 +363,7 @@ define(function (require) {
 			this.setDirty(false);
 		}
 		
-		updatePosition(){
+		centerPosition(){
 			var screenWidth = $(window).width();
 			var screenHeight = $(window).height();
 

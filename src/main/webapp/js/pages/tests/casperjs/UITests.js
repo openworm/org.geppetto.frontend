@@ -1,5 +1,5 @@
 var TARGET_URL = "http://127.0.0.1";
-var port = ":8080";
+var port = ":8081";
 var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json";
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json";
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
@@ -121,22 +121,22 @@ function deleteProject(test, url,id){
 
 		casper.then(function(){
 			casper.evaluate(function() {
-				$("div").scrollTop(1000);
+				$("#projects").scrollTop($("#projects")[0].scrollHeight+1000);
 			});
 		});
 		
 		casper.then(function () {
 			this.waitForSelector('div[project-id=\"'+id+'\"]', function (id) {
 				this.echo("Waited for scrolldown projects to appear");
-				this.mouse.doubleclick('div[project-id=\"'+id+'\"]');
-			}, id, 2000);
+				this.mouse.click('div[project-id=\"'+id+'\"]');
+			}, id, 4000);
 		});
 		
 		casper.then(function () {
 			this.waitForSelector('a[title=\"Delete project\"]', function () {
 				this.echo("Waited for delete icon to delete project");
-				this.mouse.doubleclick("i.fa-trash-o");
-			}, null, 10000);
+				this.mouse.click("i.fa-trash-o");
+			}, null, 15000);
 			
 			this.waitWhileVisible('a[title=\"Open project\"]', function () {
 	            test.assertNotVisible('a[title=\"Open project\"]', "Correctly deleted project " + id);

@@ -365,7 +365,7 @@ define(['jquery'], function () {
         getColorFunctionInstances: function () {
             var instances=[];
             for (var i = 0; i < this.canvasComponents.length; i++) {
-                instances.concat(this.canvasComponents[i].getColorFunctionInstances());
+                instances = instances.concat(this.canvasComponents[i].getColorFunctionInstances());
             }
             return instances;
         },

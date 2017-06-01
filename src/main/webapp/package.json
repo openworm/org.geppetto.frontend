@@ -61,12 +61,13 @@
     "pako": "^1.0.3",
     "pixi.js": "4.2.3",
     "plotly.js": "^1.20.5",
+    "pre-commit": "^1.2.2",
     "qunitjs": "^2.1.1",
     "raw-loader": "^0.5.1",
     "react": "15.4.1",
     "react-dom": "15.4.1",
     "react-jsonschema-form": "^0.48.0",
-    "react-player" : "^0.18.0",
+    "react-player": "^0.18.0",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "react-simpletabs": "^0.7.0",
@@ -91,5 +92,8 @@
         "node_modules"
       ]
     }
-  }
+  },
+  "pre-commit": [
+    "lint:js"
+  ]
 }

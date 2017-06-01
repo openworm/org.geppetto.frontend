@@ -154,7 +154,7 @@ define(function (require) {
            if (node.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && node.getWrappedObj().getVisualType() != undefined) {
                 var entity = [{
                     label: "Select Visual Component",
-                    action: ["G.unSelectAll();", node.getPath() + ".select()"],
+                    action: ["GEPPETTO.SceneController.deselectAll();", node.getPath() + ".select()"],
                 }];
 
                 groups.push(entity);
@@ -163,7 +163,7 @@ define(function (require) {
            if (node.getMetaType() == GEPPETTO.Resources.VISUAL_GROUP_NODE){
         	   var visualGroup = [{
                    label: "Show Visual Groups",
-                   action: ["G.unSelectAll();", node.getPath() + ".show(true)"]
+                   action: ["GEPPETTO.SceneController.deselectAll();", node.getPath() + ".show(true)"]
                }];
         	   
         	   groups.push(visualGroup);
@@ -178,7 +178,7 @@ define(function (require) {
                for (var visualGroupIndex in node.getWrappedObj().getVisualGroups()) {
                    subgroups1Add = subgroups1Add.concat([{
                        label: "Show " + node.getWrappedObj().getVisualGroups()[visualGroupIndex].getName(),
-                       action: ["G.unSelectAll();", node.getPath() + ".applyVisualGroup(" + node.getPath() + ".getVisualGroups()[" + visualGroupIndex + "], true)"],
+                       action: ["GEPPETTO.SceneController.deselectAll();", node.getPath() + ".applyVisualGroup(" + node.getPath() + ".getVisualGroups()[" + visualGroupIndex + "], true)"],
                        position: visualGroupIndex
                    }]);
                }

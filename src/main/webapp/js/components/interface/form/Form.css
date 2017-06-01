@@ -30,9 +30,14 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+.formDialog{
+	z-index : 1000 !important;
+}
+
 .geppettoForm label  {
 	width: 50%;
 	color: white;
+	float:left;
 }
 
 .geppettoForm input,

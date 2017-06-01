@@ -41,7 +41,8 @@ define(function (require) {
 				'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
 				'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
 				'CAROUSEL': 'interface/carousel/Carousel',
-				'CANVAS': 'interface/3dCanvas/Canvas'
+				'CANVAS': 'interface/3dCanvas/Canvas',
+				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},
@@ -158,7 +159,7 @@ define(function (require) {
 				}
 				else{
 					var isStateless = false;
-					if (properties !== undefined && isStateless in properties){
+					if (properties !== undefined && "isStateless" in properties){
 						isStateless = properties["isStateless"];
 					}
 					var widget = GEPPETTO.WidgetFactory.addWidget(componentType, isStateless);

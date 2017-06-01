@@ -69,8 +69,6 @@ define(function (require) {
                         GEPPETTO.Console.executeImplicitCommand("Project.getExperimentById(" + expID + ")." + setterStr + "('" + val + "')");
                     }
             });
-            
-
         },
         
        
@@ -330,6 +328,7 @@ define(function (require) {
                 content: function () {
                     return $(this).attr("data-custom-title");
                 },
+                relative : true
             });
         },
 
@@ -548,7 +547,9 @@ define(function (require) {
 
             GEPPETTO.on(GEPPETTO.Events.Experiment_deleted, function (experiment) {
                 self.deleteExperiment(experiment);
-                GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
+                if(!GEPPETTO.ExperimentsController.suppressDeleteExperimentConfirmation) {
+                    GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.EXPERIMENT_DELETED, "Experiment " + experiment.name + " with id " + experiment.id + " was deleted successfully");
+                }
             });
             
 

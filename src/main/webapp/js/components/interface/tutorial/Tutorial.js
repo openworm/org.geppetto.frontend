@@ -33,7 +33,8 @@ define(function (require) {
 		 * Stores cookie to avoid showing tutorial next time at startup
 		 */
 		dontShowAtStartup(val) {
-			$.cookie('ignore_tutorial', true);
+			var value =$('#ignoreTurialCheck').prop('checked');
+			$.cookie('ignore_tutorial', value);
 		}
 
 		/**
@@ -52,40 +53,44 @@ define(function (require) {
 
 		updateTutorialWindow() {
 			var self = this;
-			var step = this.getActiveTutorial().steps[this.state.currentStep];
+			if (this.getActiveTutorial() != undefined) {
+				var step = this.getActiveTutorial().steps[this.state.currentStep];
 
-			if (step.content_url != undefined) {
-				$.ajax({
-					type: 'GET',
-					dataType: 'html',
-					url: step.content_url,
-					success(responseData, textStatus, jqXHR) {
-						step.message = responseData;
-						self.forceUpdate();
-					},
-					error(responseData, textStatus, errorThrown) {
-						throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
+				if (step.content_url != undefined) {
+					$.ajax({
+						type: 'GET',
+						dataType: 'html',
+						url: step.content_url,
+						success(responseData, textStatus, jqXHR) {
+							step.message = responseData;
+							self.forceUpdate();
+						},
+						error(responseData, textStatus, errorThrown) {
+							throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
+						}
+					});
+				}
+				else {
+					this.forceUpdate();
+				}
+
+				//execute action associated with message
+				if (step.action != undefined) {
+					if (step.action != "") {
+						eval(step.action);
 					}
-				});
-			}
-			else {
-				this.forceUpdate();
-			}
-
-			//execute action associated with message
-			if (step.action != undefined) {
-				if (step.action != "") {
-					eval(step.action);
 				}
 			}
 		}
 
 		gotToStep(currentStep) {
 			this.state.currentStep = currentStep;
-			if (this.state.currentStep <= this.getActiveTutorial().steps.length - 1) {
-				this.updateTutorialWindow();
-			} else {
-				this.start();
+			if(this.getActiveTutorial()!=undefined){
+				if (this.state.currentStep <= this.getActiveTutorial().steps.length - 1) {
+					this.updateTutorialWindow();
+				} else {
+					this.start();
+				}
 			}
 
 			this.setDirty(true);
@@ -129,12 +134,28 @@ define(function (require) {
 					p.width(width + "px");
 					self.dialog.css("width", width + "px");
 				}
+				
+				
+				var ignoreTutorial = $.cookie('ignore_tutorial');
+				if(ignoreTutorial== 'true'){
+					$('#ignoreTurialCheck').prop('checked', true);
+				}
 			};
 
 			if (!started) {
 				p.effect("shake", { distance: 5, times: 3 }, 500, callback);
-			}
+			}else{
+				//wait before ticking box, needed for dialog to appear and render
+				setTimeout(
+						function() 
+						{
+							var ignoreTutorial = $.cookie('ignore_tutorial');
+							if(ignoreTutorial == 'true'){
+								$('#ignoreTurialCheck').prop('checked', true);
+							}
+						}, 100);
 
+			}
 		}
 
 		setTutorial(tutorialURL) {
@@ -165,14 +186,13 @@ define(function (require) {
 				url: tutorialURL,
 				success: function (responseData, textStatus, jqXHR) {
 					// on success add to tutorials utl list for view-state
-					self.tutorialsMap[tutorialURL]=responseData.name;
+					self.tutorialsMap[responseData.name]=tutorialURL;
 					self.tutorials.push(tutorialURL);
 					self.setDirty(true);
+					self.loadTutorial(responseData,false);
 					// load tutorial
 					if(callback!=undefined){
 						callback(responseData.name);
-					}else{
-						self.loadTutorial(responseData,false);
 					}
 				},
 				error: function (responseData, textStatus, errorThrown) {
@@ -238,19 +258,8 @@ define(function (require) {
 				closeButton.click(this.close.bind(this));
 				dialog.find("div.ui-dialog-titlebar").prepend(button);
 				$(button).addClass("widget-title-bar-button");
-				this.dialog.css("overflow", "scroll");
+				this.dialog.css("overflow", "auto");
 			}
-
-
-			//centers the tutorials
-			var screenWidth = $(window).width();
-			var screenHeight = $(window).height();
-
-			var left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
-			var top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
-
-			this.dialog.parent().css("top", top + "px");
-			this.dialog.parent().css("left", left + "px");
 		}
 
 		componentDidMount() {
@@ -285,9 +294,7 @@ define(function (require) {
 							self.setTutorial("/org.geppetto.frontend/geppetto/js/components/interface/tutorial/configuration/experiment_loaded_tutorial.json", "Geppetto tutorial");
 						}
 						else {
-							if (!this.getCookie()) {
-								this.start();
-							}
+							self.start();
 						}
 					}
 				}
@@ -331,6 +338,18 @@ define(function (require) {
 
 			return baseView;
 		}
+		
+		setComponentSpecificView(componentSpecific){
+			if (componentSpecific != undefined) {
+				if (componentSpecific.activeTutorial != undefined) {
+					this.goToChapter(componentSpecific.activeTutorial);
+				}
+
+				if (componentSpecific.currentStep != undefined) {
+					this.gotToStep(componentSpecific.currentStep);
+				}
+			}
+		}
 
 		setView(view) {
 			// set base properties
@@ -338,29 +357,51 @@ define(function (require) {
 			var self = this;
 			var callback = function(tutorial){
 				if(view.componentSpecific.activeTutorial==tutorial){
-					// set component specific stuff, only custom handlers for popup widget
-					if (view.componentSpecific != undefined) {
-						if (view.componentSpecific.activeTutorial != undefined) {
-							self.goToChapter(view.componentSpecific.activeTutorial);
-						}
-
-						if (view.componentSpecific.currentStep != undefined) {
-							self.gotToStep(view.componentSpecific.currentStep);
-						}
-					}
+					self.setComponentSpecificView(view.componentSpecific);
 				}
 			};
 			
 			// set data
 			if (view.data != undefined) {
 				if (view.dataType == 'array') {
-					for (var i = 0; i < view.data.length; i++) {
-						this.addTutorial(view.data[i],callback);
+					if(view.data.length > 0){
+						for (var i = 0; i < view.data.length; i++) {
+							this.addTutorial(view.data[i],callback);
+						}
+					}else{
+						if(!jQuery.isEmptyObject(this.tutorialsMap)){
+							this.setComponentSpecificView(view.componentSpecific);
+							if(view.position!=undefined){
+								this.updatePosition(view.position);
+							}
+						}
 					}
 				}
 			}
 
 			this.setDirty(false);
+		}
+		
+		updatePosition(position){
+			var left,top;
+			var screenWidth = $(window).width();
+			var screenHeight = $(window).height();
+			
+			if(position.left!=undefined && position.top!=undefined){
+				left = position.left;
+				top = position.top;
+			}else{
+				left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
+				top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
+			}
+
+			if(typeof top === 'string' && typeof left === 'string'){
+				left = (screenWidth / 2) - (this.dialog.parent().width() / 2);
+				top = (screenHeight / 2) - (this.dialog.parent().height() / 2);
+			}
+			
+			this.dialog.parent().css("top", top + "px");
+			this.dialog.parent().css("left", left + "px");
 		}
 
 		render() {
@@ -395,6 +436,7 @@ define(function (require) {
 					dialog.width(width + "px");
 					this.dialog.css("width", width + "px");
 				}
+				
 
 				return <div>
 					<div className="tutorial-message">
@@ -410,7 +452,7 @@ define(function (require) {
 								<span>{lastStepLabel}   <i className={lastStep ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
 							</button>
 						</div>
-						<label className={cookieClass} id="ignoreTutorial"><input type="checkbox" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
+						<label className={cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTurialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
 					</div>
 
 				</div>

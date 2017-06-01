@@ -150,19 +150,10 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-
-            var that = this;
-
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
-            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
-                that.refresh();
-            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
         },
 
         componentWillUnmount: function () {
@@ -326,7 +317,7 @@ define(function (require) {
                 coloPickerElement.colorpicker({format: 'hex', customClass: 'controlpanel-colorpicker'});
 
                 if (defColor != undefined) {
-                    var setColor = ""
+                    var setColor = "";
                     if ($.isArray(defColor)) {
                         setColor = "0xfc6320";
                     }
@@ -345,15 +336,9 @@ define(function (require) {
             }
 
             // listen to experiment status change and trigger a re-render to update controls
-            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
-                that.refresh();
-            });
-            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
-                that.refresh();
-            });
+            GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
+            GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
         },
 
         componentWillUnmount: function () {
@@ -624,22 +609,27 @@ define(function (require) {
             this.forceUpdate();
         },
 
+        refreshToggleState: function(){
+            // when control panel is open check if we have filter coming down from props
+            if(this.props.filterOption != undefined){
+                // retrieve items to toggle
+                var buttonsToToggle = this.optionsMap[this.props.filterOption];
+                if(buttonsToToggle != undefined){
+                    for(var i=0; i<buttonsToToggle.length; i++){
+                        this.computeResult(buttonsToToggle[i]);
+                    }
+                }
+            } else if (!this.state.stateVarsFilterToggled && !this.state.paramsFilterToggled) {
+                // if no other main component is toggled show visual instances
+                // same logic as if viz instances filter was clicked
+                this.computeResult('visualInstancesFilterBtn');
+            }
+        },
+
         componentDidMount: function () {
             var that = this;
             GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function () {
-                // when control panel is open check if we have filter coming down from props
-                if(that.props.filterOption != undefined){
-                    var buttonsToToggle = that.optionsMap[that.props.filterOption];
-                    if(buttonsToToggle != undefined){
-                        for(var i=0; i<buttonsToToggle.length; i++){
-                            that.computeResult(buttonsToToggle[i]);
-                        }
-                    }
-                } else if (!that.state.stateVarsFilterToggled && !that.state.paramsFilterToggled) {
-                    // if no other main component is toggled show visual instances
-                    // same logic as if viz instances filter was clicked
-                    that.computeResult('visualInstancesFilterBtn');
-                }
+                that.refreshToggleState();
             });
             GEPPETTO.on("control_panel_refresh", function () {
                 // when control panel is open and we are using the filter component
@@ -1481,8 +1471,7 @@ define(function (require) {
         filterOptions: controlPanelFilterOptions,
 
         refresh: function () {
-            var self = this;
-            self.forceUpdate();
+            this.forceUpdate();
         },
         
         refreshData: function () {
@@ -1669,6 +1658,22 @@ define(function (require) {
             GEPPETTO.ControlPanel = this;
         },
 
+        setTab: function(filterTabOption){
+            // only do something if builtin filters are being used
+            if (this.props.useBuiltInFilters === true) {
+                // default goes to visual instances
+                if (filterTabOption == undefined) {
+                    filterTabOption = this.filterOptions.VISUAL_INSTANCES;
+                }
+
+                this.setState({filterOption: filterTabOption});
+                var that = this;
+                setTimeout(function () {
+                    that.refs.filterComponent.refreshToggleState();
+                }, 25);
+            }
+        },
+
         openWithFilter: function(filterTabOption, filterText) {
             if (filterTabOption == undefined) {
                 filterTabOption = this.filterOptions.VISUAL_INSTANCES;
@@ -1684,9 +1689,6 @@ define(function (require) {
             // show control panel
             this.open();
             var that = this;
-            setTimeout(function () {
-                that.setFilter(filterText);
-            }, 25);
         },
 
         open: function () {
@@ -1728,6 +1730,8 @@ define(function (require) {
         },
 
         filterOptionsHandler: function (value) {
+            // set like this to avoid triggering an extra refresh
+            this.state.filterOption = value;
             switch (value) {
                 case this.filterOptions.VISUAL_INSTANCES:
                     // displays actual instances
@@ -2034,7 +2038,7 @@ define(function (require) {
             var filterMarkup = '';
             if (this.props.useBuiltInFilters === true) {
                 filterMarkup = (
-                    <FilterComponent id="controlPanelBuiltInFilter" filterOption={this.state.filterOption} filterHandler={this.filterOptionsHandler}/>
+                    <FilterComponent id="controlPanelBuiltInFilter" ref="filterComponent" filterOption={this.state.filterOption} filterHandler={this.filterOptionsHandler}/>
                 );
             }
 

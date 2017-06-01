@@ -12,6 +12,7 @@ define(['jquery'], function (require) {
         capabilityId: 'StateVariableCapability',
         watched: false,
         timeSeries: null,
+        unit: null,
 
         /**
          * Get value of quantity
@@ -58,24 +59,22 @@ define(['jquery'], function (require) {
         },
 
         /**
+         * Set unit value
+         *
+         * @param unit
+         */
+        setUnit: function(unit){
+          this.unit = unit;
+        },
+
+        /**
          * Get the type of tree this is
          *
          * @command Variable.getUnit()
          * @returns {String} Unit for quantity
          */
         getUnit: function () {
-        	if (!this.timeSeries) {
-        		return this.extractUnit();
-        	}
-        	else {
-        		if(this.timeSeries.unit== null || this.timeSeries.unit== undefined){
-        			if(this.getVariable()!= undefined || this.getVariable()!=null){	
-        		        return this.extractUnit();
-        			}
-        		}else{
-        			return this.timeSeries.unit;
-        		}
-        	}
+        	return (this.unit == null) ? this.extractUnit() : this.unit;
         },
         
         extractUnit : function(){

@@ -198,11 +198,10 @@ define(['backbone'], function(require) {
          * @command ExperimentNode.run()
          */
         run: function(callback) {
-            var activeExperimentId = window.Project.getActiveExperiment().getId();
             if (this.writePermission && this.getParent().persisted && this.login && this.runPermission && !this.getParent().isReadOnly()) {
                 if (this.status == GEPPETTO.Resources.ExperimentStatus.DESIGN ||  this.status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
 
-                    this.setStatus(GEPPETTO.Resources.ExperimentStatus.RUNNING);
+                    this.setStatus(GEPPETTO.Resources.ExperimentStatus.QUEUED);
                     GEPPETTO.trigger(GEPPETTO.Events.Experiment_running);
                     var parameters = {};
                     parameters["experimentId"] = this.id;
@@ -406,12 +405,12 @@ define(['backbone'], function(require) {
             }
         },
 
-        deleteExperiment: function() {
+        deleteExperiment: function(callback) {
             if (this.writePermission && this.getParent().persisted && this.login) {
                 var parameters = {};
                 parameters["experimentId"] = this.id;
                 parameters["projectId"] = this.getParent().getId();
-                GEPPETTO.MessageSocket.send("delete_experiment", parameters);
+                GEPPETTO.MessageSocket.send("delete_experiment", parameters, callback);
 
                 return this;
             } else {
@@ -485,9 +484,7 @@ define(['backbone'], function(require) {
             var views = undefined;
 
             if(viewObject != undefined){
-            	if(viewObject.viewStates!=undefined){
-            			views = JSON.parse(viewObject.viewStates);
-            	}
+                views = JSON.parse(viewObject);
             }
 
             return views;

@@ -82,7 +82,7 @@
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
     
-    <% if (htmlWebpackPlugin.options.embedded === true && htmlWebpackPlugin.options.embedderURL !== "/") { %>
+    <% if ((htmlWebpackPlugin.options.embedded == "true") && (htmlWebpackPlugin.options.embedderURL != "/")) { %>
     <filter>
 	  <filter-name>CorsFilter</filter-name>
 	  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
@@ -98,7 +98,7 @@
 	<% } %>
 
    
-    <% if (htmlWebpackPlugin.options.useSsl === true) { %>
+    <% if (htmlWebpackPlugin.options.useSsl == "true") { %>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>securedapp</web-resource-name>

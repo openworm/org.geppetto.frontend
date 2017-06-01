@@ -1,9 +1,11 @@
 var TARGET_URL = "http://127.0.0.1";
+var port = ":8081";
 var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json";
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json";
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
+var projectID;
 
-casper.test.begin('Geppetto basic tests', 106, function suite(test) {
+casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     casper.options.viewportSize = {
         width: 1340,
         height: 768
@@ -26,7 +28,7 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
         }
     });
 
-    casper.start(TARGET_URL + ":8080/org.geppetto.frontend", function () {
+    casper.start(TARGET_URL + port+"/org.geppetto.frontend", function () {
         this.waitForSelector('div#logo', function () {
             this.echo("I waited for the logo to load.");
             test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
@@ -34,14 +36,14 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
         }, null, 30000);
     });
 
-    casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/login?username=guest1&password=guest", function () {
+    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/login?username=guest1&password=guest", function () {
         /*this.waitForSelector('div#page', function() {
          this.echo("I've waited for the splash screen to come up.");
          test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
          }, null, 30000);*/
     });
 
-    casper.thenOpen(TARGET_URL + ":8080/org.geppetto.frontend/", function () {
+    casper.thenOpen(TARGET_URL+  port+"/org.geppetto.frontend/", function () {
         this.waitForSelector('div[project-id="2"]', function () {
             this.echo("I've waited for the projects to load.");
             test.assertExists('div#logo', "logo is found");
@@ -51,18 +53,51 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
     });
 
     casper.then(function () {
-        testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
+        testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
             false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true);
     });
-
+    
     casper.then(function () {
-        testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
-            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false);
+    	projectID = this.evaluate(function() {
+           return Project.getId();
+        });
+    	this.echo("Project id to delete : "+projectID);
+    });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
     casper.then(function () {
-        testProject(test, TARGET_URL + ":8080/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
+        testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
+            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false);
+    });
+    
+    casper.then(function () {
+    	projectID = this.evaluate(function() {
+           return Project.getId();
+        });
+    	this.echo("Project id to delete : "+projectID);
+    });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
+    });
+
+    casper.then(function () {
+        testProject(test, TARGET_URL  +port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
             false, '', '', false);
+    });
+    
+    casper.then(function () {
+    	projectID = this.evaluate(function() {
+           return Project.getId();
+        });
+    	this.echo("Project id to delete : "+projectID);
+    });
+    
+    casper.then(function () {
+        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
     //TODO: log back in as other users. Check more things
@@ -73,6 +108,42 @@ casper.test.begin('Geppetto basic tests', 106, function suite(test) {
     });
 });
 
+function deleteProject(test, url,id){
+	casper.thenOpen(url, function () {
+		this.echo("Loading an external model that is not persisted at " + url);
+
+
+		casper.then(function () {
+			this.waitForSelector("div.project-preview", function () {
+				this.echo("Dashboard loaded")
+			}, null, 10000);
+		});
+
+		casper.then(function(){
+			casper.evaluate(function() {
+				$("#projects").scrollTop($("#projects")[0].scrollHeight+1000);
+			});
+		});
+		
+		casper.then(function () {
+			this.waitForSelector('div[project-id=\"'+id+'\"]', function (id) {
+				this.echo("Waited for scrolldown projects to appear");
+				this.mouse.click('div[project-id=\"'+id+'\"]');
+			}, id, 4000);
+		});
+		
+		casper.then(function () {
+			this.waitForSelector('a[title=\"Delete project\"]', function () {
+				this.echo("Waited for delete icon to delete project");
+				this.mouse.click("i.fa-trash-o");
+			}, null, 15000);
+			
+			this.waitWhileVisible('a[title=\"Open project\"]', function () {
+	            test.assertNotVisible('a[title=\"Open project\"]', "Correctly deleted project " + id);
+	        }, null, 30000);
+		});
+	});
+}
 
 function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter, testConsole) {
 
@@ -95,7 +166,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         casper.then(function () {
             this.waitForSelector('tr.experimentsTableColumn:nth-child(1)', function () {
                 test.assertExists('tr.experimentsTableColumn:nth-child(1)', "At least one experiment row exists");
-            }, null, 6000);
+            }, null, 60000);
         });
 
         //do checks on the state of the project if it is not persisted
@@ -108,7 +179,6 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
                 //roll over the experiments row
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-                doPrePersistenceExperimentsTableButtonsCheck(test);
             });
 
             casper.then(function () {
@@ -121,6 +191,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                         doExperimentsTableRowTests(test);
                     }, null, 10000);
                 }
+                doPrePersistenceExperimentsTableButtonsCheck(test);
             });
 
             casper.then(function () {
@@ -169,7 +240,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                 //roll over the experiments row
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 doPostPersistenceExperimentsTableButtonCheck(test);
-            }, null, 20000);
+            }, null, 300000);
         });
         casper.then(function () {
             doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
@@ -192,7 +263,7 @@ function closeErrorMesage(test) {
         this.waitWhileVisible('h3.text-center', function () {
             test.assertNotVisible('h3.text-center', "Correctly closed error message");
         }, null, 30000);
-    }, null, 10000);
+    }, null, 20000);
 }
 
 function doExperimentTableTest(test) {
@@ -212,7 +283,7 @@ function doExperimentTableTest(test) {
 
         this.waitUntilVisible('div#experiments', function () {
             test.assertVisible('div#experiments', "The experiment panel is correctly open.");
-        }, null, 5000);
+        }, null, 15000);
     });
 }
 

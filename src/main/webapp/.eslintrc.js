@@ -30,7 +30,7 @@ module.exports = {
     // Allow to use console
     'no-console': 0,
   },
-
+// If any of this variables if found lint won't complain about variable undefined
   globals: {
     "G": true,
     "GEPPETTO": true,

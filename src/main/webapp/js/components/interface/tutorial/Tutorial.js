@@ -430,7 +430,8 @@ define(function (require) {
 
 				if (height != undefined) {
 					dialog.height(height + "px");
-					this.dialog.css("height", height + "px");
+					//some padding on the bottom
+					this.dialog.css("height", height-15 + "px");
 				}
 				if (width != undefined) {
 					dialog.width(width + "px");

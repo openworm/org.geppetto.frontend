@@ -74,7 +74,7 @@
 				<contextPath>org.geppetto.frontend</contextPath>
 				<useSsl>false</useSsl>
 				<embedded>false</embedded>
-				<embedderURL>none</embedderURL>
+				<embedderURL>/</embedderURL>
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -115,7 +115,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build-dev  -- --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/</arguments>
+									<arguments>run build-dev  -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
 								</configuration>
 							</execution>
 						</executions>

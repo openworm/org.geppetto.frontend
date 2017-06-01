@@ -348,7 +348,7 @@ define(function (require) {
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.DOWNLOAD_RESULTS:
-                            assert.ok("Model Downloaded", "Results Donwloaded Okay!");
+                            assert.ok("Model Downloaded", "Results Downloaded Okay!");
 
                             done();
                             resetConnection();

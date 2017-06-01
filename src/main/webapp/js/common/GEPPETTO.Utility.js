@@ -202,7 +202,7 @@ define(function (require) {
                 a.download = fileName;
                 a.click();
 
-                // add timeout to give firefox time to trigger donwload before removing resource
+                // add timeout to give firefox time to trigger download before removing resource
                 setTimeout(function () {
                     window.URL.revokeObjectURL(url);
                 }, 100);

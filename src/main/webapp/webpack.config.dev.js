@@ -1,4 +1,3 @@
-var webpack = require('webpack');
 var webpackBaseConfig = require('./webpack.config.js');
 
 webpackBaseConfig.devServer = {

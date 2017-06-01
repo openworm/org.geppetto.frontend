@@ -33,6 +33,7 @@ module.exports = {
 
   globals: {
     "G": true,
-    "GEPPETTO": true
+    "GEPPETTO": true,
+    "casper": true
   }
 };

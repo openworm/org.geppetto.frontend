@@ -17,7 +17,6 @@ define(function (require) {
 			super(props);
 
 			this.tutorials = [];
-			this.tutorialsMap = {};
 
 			this.state = {
 				tutorialData: {},
@@ -42,7 +41,6 @@ define(function (require) {
 		 */
 		start() {
 			this.state.currentStep = 0;
-			this.open(true);
 			this.updateTutorialWindow();
 			this.started = true;
 		}
@@ -143,18 +141,16 @@ define(function (require) {
 			};
 
 			if (!started) {
-				p.effect("shake", { distance: 5, times: 3 }, 500, callback);
-			}else{
+				p.effect("shake", {distance: 5, times: 3}, 500, callback);
+			} else {
 				//wait before ticking box, needed for dialog to appear and render
 				setTimeout(
-						function() 
-						{
-							var ignoreTutorial = $.cookie('ignore_tutorial');
-							if(ignoreTutorial == 'true'){
-								$('#ignoreTurialCheck').prop('checked', true);
-							}
-						}, 100);
-
+					function () {
+						var ignoreTutorial = $.cookie('ignore_tutorial');
+						if (ignoreTutorial == 'true') {
+							$('#ignoreTurialCheck').prop('checked', true);
+						}
+					}, 100);
 			}
 		}
 
@@ -170,11 +166,12 @@ define(function (require) {
 			this.setDirty(true);
 		}
 
-		addTutorial(tutorialURL,callback) {
+		addTutorial(tutorialURL, callback) {
 			// do not add if the same url was already successfully added
 			if (this.tutorials.includes(tutorialURL)) {
-				var name = this.tutorialsMap[tutorialURL]
-				callback(name);
+				if(callback!=undefined) {
+					callback(this.tutorials);
+				}
 				return;
 			}
 
@@ -185,14 +182,12 @@ define(function (require) {
 				dataType: 'json',
 				url: tutorialURL,
 				success: function (responseData, textStatus, jqXHR) {
-					// on success add to tutorials utl list for view-state
-					self.tutorialsMap[responseData.name]=tutorialURL;
 					self.tutorials.push(tutorialURL);
 					self.setDirty(true);
 					self.loadTutorial(responseData,false);
 					// load tutorial
 					if(callback!=undefined){
-						callback(responseData.name);
+						callback(self.tutorials);
 					}
 				},
 				error: function (responseData, textStatus, errorThrown) {
@@ -203,12 +198,17 @@ define(function (require) {
 
 		loadTutorial(tutorialData, start) {
 			this.state.tutorialData[tutorialData.name] = tutorialData;
-			this.state.activeTutorial = tutorialData.name;
-			this.state.currentStep = 0;
-			if (!this.getCookie()) {
+
+            if(start) {
+                this.state.activeTutorial = tutorialData.name;
+                this.state.currentStep = 0;
+            }
+
+			if (!this.getIgnoreTutorialCookie()) {
 				if (start) {
 					this.start();
-					this.forceUpdate();
+                    this.forceUpdate();
+                    this.open(true);
 				}
 			}
 		}
@@ -270,10 +270,10 @@ define(function (require) {
 			GEPPETTO.on(GEPPETTO.Events.Model_loaded, function () {
 				if (!self.dontShowTutorial) {
 					//default tutorial when user doesn't specify one for this event
-					if (self.props.tutorialURL) {
+					if (self.props.tutorialURL != undefined) {
 						self.addTutorial(self.props.tutorialURL);
 					}
-					else if (self.props.tutorialData) {
+					else if (self.props.tutorialData != undefined) {
 						self.loadTutorial(self.props.tutorialData, true);
 					}
 					self.dontShowTutorial = true;
@@ -312,7 +312,7 @@ define(function (require) {
 			}
 		}
 
-		getCookie() {
+		getIgnoreTutorialCookie() {
 			var ignoreTutorial = $.cookie('ignore_tutorial');
 			if (ignoreTutorial == undefined) {
 				//sets to string instead of boolean since $.cookie returns string even when storing as boolean
@@ -333,7 +333,7 @@ define(function (require) {
 			baseView.data = this.tutorials;
 			baseView.componentSpecific = {
 				activeTutorial: this.state.activeTutorial,
-				currentStep: this.state.currentStep,
+				currentStep: this.state.currentStep
 			};
 
 			return baseView;
@@ -355,8 +355,9 @@ define(function (require) {
 			// set base properties
 			super.setView(view);
 			var self = this;
-			var callback = function(tutorial){
-				if(view.componentSpecific.activeTutorial==tutorial){
+			var cb = function(tutorials){
+				// only restore chapter and step once all the tutorials are loaded
+				if(tutorials.length == view.data.length) {
 					self.setComponentSpecificView(view.componentSpecific);
 				}
 			};
@@ -364,16 +365,14 @@ define(function (require) {
 			// set data
 			if (view.data != undefined) {
 				if (view.dataType == 'array') {
-					if(view.data.length > 0){
-						for (var i = 0; i < view.data.length; i++) {
-							this.addTutorial(view.data[i],callback);
+					if(view.data.length == this.tutorials.length){
+						this.setComponentSpecificView(view.componentSpecific);
+						if(view.position!=undefined){
+							this.updatePosition(view.position);
 						}
-					}else{
-						if(!jQuery.isEmptyObject(this.tutorialsMap)){
-							this.setComponentSpecificView(view.componentSpecific);
-							if(view.position!=undefined){
-								this.updatePosition(view.position);
-							}
+					}else if (view.data.length > 0){
+						for (var i = 0; i < view.data.length; i++) {
+							this.addTutorial(view.data[i], cb);
 						}
 					}
 				}
@@ -406,7 +405,7 @@ define(function (require) {
 
 		render() {
 
-			var ignoreTutorial = this.getCookie();
+			var ignoreTutorial = this.getIgnoreTutorialCookie();
 			var activeTutorial = this.getActiveTutorial();
 			if (activeTutorial != undefined) {
 
@@ -430,7 +429,8 @@ define(function (require) {
 
 				if (height != undefined) {
 					dialog.height(height + "px");
-					this.dialog.css("height", height + "px");
+					//some padding on the bottom
+					this.dialog.css("height", height-15 + "px");
 				}
 				if (width != undefined) {
 					dialog.width(width + "px");

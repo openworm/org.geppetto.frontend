@@ -5,7 +5,10 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: 'eslint:recommended',
+  extends: ['eslint:recommended', "plugin:react/recommended"],
+  plugins: [
+    "react"
+  ],
   parserOptions: {
     sourceType: 'module',
   },
@@ -29,13 +32,13 @@ module.exports = {
     //"max-len": [1, 120, 4, {"ignoreComments": true, "ignoreUrls": true, "ignorePattern": "^\\s*var\\s.+=\\s*require\\s*\\("}],
     //"complexity": [1, 5], // Cyclomatic complexity
 
-    // React Rules
-    "react/jsx-indent-props": [2, 4], // Use 4 spaces for props indentation
-    "react/prefer-es6-class": [1, "always"], // Prefer ES6 classes but don't hard require them yet
-    "react/jsx-no-bind": [1, {
-      "ignoreRefs": false,
-      "allowArrowFunctions": false,
-      "allowBind": false
-    }]
+    // // React Rules
+    // "react/jsx-indent-props": [2, 4], // Use 4 spaces for props indentation
+    // "react/prefer-es6-class": [1, "always"], // Prefer ES6 classes but don't hard require them yet
+    // "react/jsx-no-bind": [1, {
+    //   "ignoreRefs": false,
+    //   "allowArrowFunctions": false,
+    //   "allowBind": false
+    // }]
   },
 };

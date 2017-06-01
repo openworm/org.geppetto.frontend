@@ -677,11 +677,20 @@ define(function (require) {
             	});
             }
         },
+        
+        isInView : function(elem){
+        	var docViewTop =  $('#experimentsTable').scrollTop();
+            var docViewBottom = docViewTop + $('#experimentsTable').height();
+            var elemTop = $(elem).offset().top;
+            var elemBottom = elemTop + $(elem).height();
+            return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+        },
 
         /**
          * Update experiment status of those in table
          */
         updateExperimentsTableStatus: function () {
+        	var self = this;
             // loop through each row of experiments table
             $('#experimentsTable tbody tr').each(function () {
                 var experiments = window.Project.getExperiments();
@@ -698,7 +707,7 @@ define(function (require) {
                             tdStatus.attr("data-status", experiment.getStatus());
                             tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.Descriptions[experiment.getStatus()]);
 
-                            if($('#experimentsOutput').is(':visible')) {
+                            if(self.isInView($(this))) {
                                 // make the tooltip pop-out for a bit to attract attention
                                 tdStatus.mouseover().delay(2000).queue(function () {
                                     $(this).mouseout().dequeue();

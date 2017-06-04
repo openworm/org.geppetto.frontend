@@ -702,7 +702,7 @@ define(function (require) {
         createStatusText: function () {
             if (!this.state.buffer[-1]) {
                 var style = {
-                    font: '9px Helvetica',
+                    font: '12px Helvetica',
                     fill: '#ffffff',
                     stroke: '#000000',
                     strokeThickness: 2,

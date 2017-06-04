@@ -354,8 +354,8 @@ define(function (require) {
                                                             that.setStatusText(that.props.templateDomainNames[index] + ' selected');
                                                             break;
                                                         } catch (ignore) {
-                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
+                                                            console.log(that.props.templateDomainNames[index] + ' requested');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requested');
                                                             if (shift) {
                                                                 console.log('Adding ' + that.props.templateDomainNames[index]);
                                                                 that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
@@ -364,6 +364,8 @@ define(function (require) {
                                                                 break;
                                                             } else {
                                                                 that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
+//                                                                var varriableId = that.props.templateDomainIds[index]; //TODO Select type for domain
+//                                                                stackViewerSelect(varriableId);
                                                                 break;
                                                             }
                                                         }

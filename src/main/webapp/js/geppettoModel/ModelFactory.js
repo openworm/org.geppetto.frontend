@@ -186,7 +186,8 @@ define(function (require) {
 					refStr = types[i].$ref;
 					console.log("corrected to: refStr(" + refStr + ") for " + node.wrappedObj.id);
 					typeObj = this.resolve(refStr);
-				}else{
+				}
+				if (typeObj != undefined) {
 					// track if we have pointer type
 					if (typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE) {
 					    hasPointerType = true;

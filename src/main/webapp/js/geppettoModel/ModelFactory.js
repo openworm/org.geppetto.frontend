@@ -180,8 +180,14 @@ define(function (require) {
                                 // go grab correct type from Geppetto Model
                                 var typeObj = this.resolve(refStr);
 				
-				if (typeObj != undefined) {
-				    
+				if (typeObj = undefined) {
+					console.log("Error: refStr(" + refStr + ") resolved to undefined. Refenced for " + node.wrappedObj.id);
+					types[i].$ref = refStr.split('.')[0] + '.' + refStr.split('.')[1] + '.' + (parseInt(refStr.split('.')[2]) - 1).toString();
+					refStr = types[i].$ref;
+					console.log("corrected to: refStr(" + refStr + ") for " + node.wrappedObj.id);
+					typeObj = this.resolve(refStr);
+				}
+				if (typeObj = undefined) {    
 					// track if we have pointer type
 					if (typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE) {
 					    hasPointerType = true;
@@ -190,7 +196,7 @@ define(function (require) {
 					// add to list
 					referencedTypes.push(typeObj);
 				}else{
-					console.log("Error: refStr(" + refStr + ") resolved to undefined. Refenced by " + types[i]);
+					console.log("Error: refStr(" + refStr + ") resolved to undefined. Refence for " + node.wrappedObj.id);
 				}    
                             }
                         }

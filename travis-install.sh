@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export main_repo_branch=$TRAVIS_BRANCH
-if [[ ${main_repo_branch} != "master" && ${main_repo_branch} != "development" ]]; then main_repo_branch=development ; fi
 
 git clone https://github.com/openworm/org.geppetto.model.git -b $main_repo_branch
 
@@ -14,7 +13,7 @@ else
   echo $main_repo_branch
   echo "... it probably doesn't exist"
   echo "Cloning master branch instead"
-  git clone https://github.com/openworm/org.geppetto.model.git -b master
+  git clone https://github.com/openworm/org.geppetto.model.git -b development
 fi
 
 cd org.geppetto.model
@@ -32,7 +31,7 @@ else
   echo $main_repo_branch
   echo "... it probably doesn't exist"
   echo "Cloning master branch instead"
-  git clone https://github.com/openworm/org.geppetto.core.git -b master
+  git clone https://github.com/openworm/org.geppetto.core.git -b development
 fi
 
 cd org.geppetto.core
@@ -50,7 +49,7 @@ else
   echo $main_repo_branch
   echo "... it probably doesn't exist"
   echo "Cloning master branch instead"
-  git clone https://github.com/openworm/org.geppetto.simulation.git -b master
+  git clone https://github.com/openworm/org.geppetto.simulation.git -b development
 fi
 
 cd org.geppetto.simulation

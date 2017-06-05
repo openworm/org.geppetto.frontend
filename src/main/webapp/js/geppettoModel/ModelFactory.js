@@ -1787,28 +1787,26 @@ define(function (require) {
                     xpath = (parentPath == '') ? node.getId() : (parentPath + '.' + node.getId());
                 }
 
-                if (node.types.length > 0){
-	                // build entry for path storing and indexing
-	                var entry = {path: xpath, metaType: node.getType().getMetaType(), type: node.getType().getPath(), static: isStaticVar};
-	
-	                // if this is a static node check if we already added entry for the exact same path
-	                // NOTE: can't do it always for instances as it would slow things down A LOT
-	                var staticVarAlreadyAdded = false;
-	                if(isStaticVar){
-	                    staticVarAlreadyAdded = (this.allStaticVarsPaths[entry.path] != undefined);
-	                    if(!staticVarAlreadyAdded){
-	                        this.allStaticVarsPaths[entry.path] = entry;
-	                    }
-	                }
-	
-	                // always add if not a static var, otherwise check that it wasnt already added
-	                if(!isStaticVar || (isStaticVar && !staticVarAlreadyAdded)){
-	                    allPotentialPaths.push(entry);
-	                    // only add to indexing if it's not a connection or nested in a composite type
-	                    if (this.includePotentialInstance(node, xpath)) {
-	                        allPotentialPathsForIndexing.push(entry);
-	                    }
-	                }
+                // build entry for path storing and indexing
+                var entry = {path: xpath, metaType: node.getType().getMetaType(), type: node.getType().getPath(), static: isStaticVar};
+
+                // if this is a static node check if we already added entry for the exact same path
+                // NOTE: can't do it always for instances as it would slow things down A LOT
+                var staticVarAlreadyAdded = false;
+                if(isStaticVar){
+                    staticVarAlreadyAdded = (this.allStaticVarsPaths[entry.path] != undefined);
+                    if(!staticVarAlreadyAdded){
+                        this.allStaticVarsPaths[entry.path] = entry;
+                    }
+                }
+
+                // always add if not a static var, otherwise check that it wasnt already added
+                if(!isStaticVar || (isStaticVar && !staticVarAlreadyAdded)){
+                    allPotentialPaths.push(entry);
+                    // only add to indexing if it's not a connection or nested in a composite type
+                    if (this.includePotentialInstance(node, xpath)) {
+                        allPotentialPathsForIndexing.push(entry);
+                    }
                 }
 
                 var potentialParentPaths = [];

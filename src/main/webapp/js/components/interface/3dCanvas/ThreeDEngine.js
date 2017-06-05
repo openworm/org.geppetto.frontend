@@ -498,6 +498,31 @@ define(['jquery'], function () {
             return raycaster.intersectObjects(visibleChildren);
         },
 
+        getDefaultGeometryType: function() {
+            // Unless it's being forced we use a threshold to decide whether to use lines or cylinders
+            if (!this.aboveLinesThreshold) {
+                //Unless we are already above the threshold...
+                this.aboveLinesThreshold = this.complexity > this.linesThreshold;
+
+                if (this.aboveLinesThreshold) {
+
+                    if (this.linesUserInput && this.linesUserPreference == undefined) {
+
+                        //we need to ask the user
+                        this.linesUserPreference = confirm("The model you are loading has a complex morphology, would you like to render it using lines instead of 3D shapes? Be careful, choosing to use 3D shapes might crash your browser!");
+                    }
+                }
+            }
+
+            if (this.aboveLinesThreshold && this.linesUserInput) {
+                geometry = this.linesUserPreference ? 'lines' : 'cylinders';
+            }
+            else {
+                geometry = this.aboveLinesThreshold ? 'lines' : 'cylinders';
+            }
+
+            return geometry;
+        },
 
         /**
          *
@@ -505,6 +530,7 @@ define(['jquery'], function () {
          */
         updateSceneWithNewInstances: function (instances) {
             this.traverseInstances(instances);
+            this.setAllGeometriesType(this.getDefaultGeometryType());
             this.scene.updateMatrixWorld(true);
             this.resetCamera();
         },
@@ -777,36 +803,7 @@ define(['jquery'], function () {
             var threeObject = null;
 
             if (lines === undefined) {
-                // Unless it's being forced we use a threshold to decide whether to use lines or cylinders
-                if (!this.aboveLinesThreshold) {
-                    //Unless we are already above the threshold...
-                    this.aboveLinesThreshold = this.complexity > this.linesThreshold;
-
-                    if (this.aboveLinesThreshold) {
-
-                        if (this.linesUserInput && this.linesUserPreference == undefined) {
-
-                            //we need to ask the user
-                            this.linesUserPreference = confirm("The model you are loading has a complex morphology, would you like to render it using lines instead of 3D shapes? Be careful, choosing to use 3D shapes might crash your browser!");
-
-                            if (this.linesUserPreference) {
-                                this.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
-                            }
-                            else {
-                            }
-                        }
-                        else {
-                            this.setAllGeometriesType(GEPPETTO.Resources.GeometryTypes.LINES);
-                        }
-                    }
-                }
-
-                if (this.aboveLinesThreshold && this.linesUserInput) {
-                    lines = this.linesUserPreference;
-                }
-                else {
-                    lines = this.aboveLinesThreshold;
-                }
+                lines = this.getDefaultGeometryType() == 'lines' ? true : false;
             }
 
             var material = lines ? materials["line"] : materials["mesh"];

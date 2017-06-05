@@ -191,6 +191,22 @@ define(function (require) {
 					referencedTypes.push(typeObj);
 				}else{
 					console.log("Error: refStr(" + refStr + ") resolved to undefined. Refenced by " + node.wrappedObj.id);
+					types[i].$ref = refStr.split('.')[0] + '.' + refStr.split('.')[1] + '.' + (parseInt(refStr.split('.')[2]) - 1).toString();
+					refStr = types[i].$ref;
+					console.log("corrected to: refStr(" + refStr + ") for " + node.wrappedObj.id);
+					typeObj = this.resolve(refStr);
+					
+					if (typeObj != undefined) {
+					    
+						// track if we have pointer type
+						if (typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE) {
+						    hasPointerType = true;
+						}
+
+						// add to list
+						referencedTypes.push(typeObj);
+					}
+					
 				}    
                             }
                         }

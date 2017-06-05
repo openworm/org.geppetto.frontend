@@ -1,4 +1,4 @@
-casper.test.begin('Geppetto basic tests', 226, function suite(test) {
+casper.test.begin('Geppetto basic tests', 219, function suite(test) {
 	casper.options.viewportSize = {
 			width: 1340,
 			height: 768
@@ -108,10 +108,6 @@ function hhcellTest(test,name){
 		testCameraControls(test, [0,0,30.90193733102435]);
 	});
 	casper.then(function () {
-		casper.echo("-------Testing Original Color--------");
-		test3DMeshColor(test,defaultColor,"hhcell.hhpop[0]");
-	});
-	casper.then(function () {
 		casper.echo("Opening controls panel");
 		buttonClick("#controlPanelBtn");
 	});
@@ -157,7 +153,7 @@ function hhcellTest(test,name){
 	
 	casper.then(function(){
 		casper.echo("-------Testing Spotlight--------");
-		testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,true,"hhcell","hhcell.hhpop[0]");
+		testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,false,"hhcell","hhcell.hhpop[0]");
 	});
 	
 	casper.then(function(){

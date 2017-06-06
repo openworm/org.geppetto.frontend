@@ -10,29 +10,34 @@ define(function(require)
             anyComponentsDestroyed: false,
 
             resolveViews: function(){
-                // apply persisted views if any for both project and experiment
-                var projectView = window.Project.getView();
-                var experimentView = null;
-                if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined){
-                    experimentView = window.Project.getActiveExperiment().getView();
-                }
-                this.applyView(projectView, experimentView);
-
-                // local storage views
                 var useLocalStorage = GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined");
+                var projectView = null;
+                var experimentView = null;
+                
                 if (
                     (!Project.persisted && GEPPETTO.UserController.persistence && useLocalStorage) ||
                     (!GEPPETTO.UserController.persistence && useLocalStorage)
-                ) {
+                ){
                     // get project and experiment view from local storage if project is not persisted
-                    var localProjectView = JSON.parse(localStorage.getItem("{0}_view".format(Project.getId())));
-                    var localExperimentView = null;
+                    projectView = JSON.parse(localStorage.getItem("{0}_view".format(Project.getId())));
                     if (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
-                        localExperimentView = JSON.parse(localStorage.getItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId())));
+                        experimentView = JSON.parse(localStorage.getItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId())));
                     }
-                    // apply local experiment view
-                    this.applyView(localProjectView, localExperimentView);
-                }
+                 }
+
+                 if(projectView == undefined || projectView == null){
+                	 //We have nothing in the local storage for the project
+                	 projectView = window.Project.getView();
+                 }
+                 
+                 if(experimentView == undefined || experimentView == null){
+                	 //We have nothing in the local storage for the experiment
+                     if(window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined){
+                         experimentView = window.Project.getActiveExperiment().getView();
+                     }
+                 }
+
+                this.applyView(projectView, experimentView);
             },
 
             /**

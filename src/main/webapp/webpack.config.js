@@ -7,16 +7,16 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 console.log("\nThe arguments passed to webpack are:\n");
 console.log(process.argv);
 
-var getCLIParameter=function(param){
-	for(var i=0;i<process.argv.length;i++){
-		var arg=process.argv[i];
-		if(arg.startsWith(param)){
-			var value=arg.substring(arg.indexOf("=")+1).trim();
-			console.log(param +":" + value);
-			return value;
-		}
-	}
-	return "";
+var getCLIParameter = function (param) {
+    for (var i = 0; i < process.argv.length; i++) {
+        var arg = process.argv[i];
+        if (arg.startsWith(param)) {
+            var value = arg.substring(arg.indexOf("=") + 1).trim();
+            console.log(param + ":" + value);
+            return value;
+        }
+    }
+    return "";
 };
 
 console.log("\nThe arguments passed to HtmlWebpackPlugin are:\n");
@@ -29,8 +29,8 @@ var embedded = getCLIParameter("--embedded");
 var embedderURL = getCLIParameter("--embedderURL");
 
 
-var publicPath = ((contextPath == '/') ? contextPath : "/"+ contextPath +"/") + "geppetto/build/" ;
-console.log("\nThe public path (used by the main bundle when including split bundles) is: "+publicPath+"\n");
+var publicPath = ((contextPath == '/') ? contextPath : "/" + contextPath + "/") + "geppetto/build/";
+console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath + "\n");
 
 
 var entries = {
@@ -48,16 +48,16 @@ console.log(entries);
 
 var extensionConfiguration = require('./extensions/extensionsConfiguration.json');
 var availableExtensions = [];
-for (var extension in extensionConfiguration){
-	if (extensionConfiguration[extension]){
-		availableExtensions.push({from: 'extensions/' + extension.split("/")[0] + "/static/*", to: 'static', flatten: true});
-	}
+for (var extension in extensionConfiguration) {
+    if (extensionConfiguration[extension]) {
+        availableExtensions.push({ from: 'extensions/' + extension.split("/")[0] + "/static/*", to: 'static', flatten: true });
+    }
 }
 console.log("Static pages coming from extensions are:\n");
 console.log(availableExtensions);
 
 var isProduction = process.argv.indexOf('-p') >= 0;
-console.log("\n Building for a " + ((isProduction)?"production":"development") + " environment")
+console.log("\n Building for a " + ((isProduction) ? "production" : "development") + " environment")
 
 module.exports = {
 
@@ -137,15 +137,15 @@ module.exports = {
 
     resolve: {
         alias: {
-        	geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js'),
-        	handlebars : 'handlebars/dist/handlebars.js'
-        	    
+            geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js'),
+            handlebars: 'handlebars/dist/handlebars.js'
+
         },
         extensions: ['', '.js', '.json'],
     },
 
     module: {
-    	noParse: [/node_modules\/plotly.js\/dist\/plotly.js/, /js\/components\/interface\/dicomViewer\/ami.min.js/],
+        noParse: [/node_modules\/plotly.js\/dist\/plotly.js/, /js\/components\/interface\/dicomViewer\/ami.min.js/],
         loaders: [
             {
                 test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], loader: ['babel-loader'],
@@ -163,11 +163,16 @@ module.exports = {
                 loader: 'ignore-loader'
             },
             {
-                test: /\.(py|png|jpeg|svg|gif|css|jpg|md|hbs|dcm|gz|xmi|dzi|sh|obj)$/,
+                test: /\.(py|jpeg|svg|gif|css|jpg|md|hbs|dcm|gz|xmi|dzi|sh|obj)$/,
                 loader: 'ignore-loader'
             },
-            {   test: /\.css$/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader") 
+            {
+                test: /\.(png)$/,
+                loader: 'url-loader?limit=100000'
+            },
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader")
             },
             {
                 test: /\.less$/,
@@ -180,7 +185,7 @@ module.exports = {
             {
                 test: /\.html$/,
                 loader: 'raw-loader'
-             }
+            }
         ]
     },
     node: {

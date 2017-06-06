@@ -1790,7 +1790,23 @@ define(function (require) {
                     var recordedStateVars = [];
                     if (window.Project.getActiveExperiment() != undefined) {
                         // show all state variable instances (means they are recorded)
-                        recordedStateVars = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY, window.Instances).map(
+                        // if experiment is completed, need to check that they have been watched
+
+                        recordedStateVars = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY, window.Instances)
+                            .filter(
+                                function(instance) {
+                                    if (window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                                        if (instance.getPath() != "time") {
+                                            return GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal(window.Project.id, window.Project.activeExperiment.id, instance.getPath());
+                                        } else {
+                                            return true;
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                            )
+                            .map(
                             function (item) {
                                 return {
                                     path: item.getPath(),

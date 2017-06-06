@@ -190,6 +190,9 @@ define(function (require) {
             },
 
             createZipFromRemoteFiles: function (files, zipName) {
+                if (!(files instanceof Array)){
+                    files = [files];
+                }
 
                 // Convert url to promise, returning uint8 array
                 function urlToPromise(url) {

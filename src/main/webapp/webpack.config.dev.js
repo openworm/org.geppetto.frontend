@@ -1,5 +1,4 @@
 var webpackBaseConfig = require('./webpack.config.js');
-
 webpackBaseConfig.devServer = {
     progress: true,
     colors: true,
@@ -10,8 +9,8 @@ webpackBaseConfig.devServer = {
 		{ path: '/geppetto', target: 'http://localhost:8080/org.geppetto.frontend'},
 		{ path: '/org.geppetto.frontend', target: 'ws://localhost:8080', ws: true},
     ],
-};
 
-webpackBaseConfig.devtool = 'source-map';
+    devtool: 'source-map'
+};
 
 module.exports = webpackBaseConfig;

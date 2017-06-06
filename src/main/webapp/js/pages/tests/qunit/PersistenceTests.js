@@ -1,7 +1,7 @@
 
 define(function (require) {
     var QUnit = require("qunitjs");
-
+    require('../../../components/ComponentFactory')(GEPPETTO);
     /**
      * Calls "start()" from QUnit to start qunit tests, closes socket and clears
      * handlers. Method is called from each test.
@@ -348,7 +348,7 @@ define(function (require) {
 
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.DOWNLOAD_RESULTS:
-                            assert.ok("Model Downloaded", "Results Donwloaded Okay!");
+                            assert.ok("Model Downloaded", "Results Downloaded Okay!");
 
                             done();
                             resetConnection();
@@ -1069,13 +1069,8 @@ define(function (require) {
 
                             assert.equal(window.Project.getExperiments().length, newLength, "Experiment deleted succesfully");
 
-                            this.runTimes++;
-                            if(this.runTimes>5){
-                            	done();
-                            	resetConnection();
-                            }else{
-                            	window.Project.getExperiments()[0].clone();
-                            }
+                            done();
+                        	resetConnection();
 
                             break;
                         case GEPPETTO.GlobalHandler.MESSAGE_TYPE.INFO_MESSAGE:

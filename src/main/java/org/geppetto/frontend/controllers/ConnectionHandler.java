@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.beans.PathConfiguration;
@@ -37,6 +38,8 @@ import org.geppetto.core.simulation.IGeppettoManagerCallbackListener;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.core.utilities.Zipper;
 import org.geppetto.frontend.Resources;
+import org.geppetto.frontend.controllers.WebsocketConnection.BatchExperiment;
+import org.geppetto.frontend.controllers.WebsocketConnection.NewExperiment;
 import org.geppetto.frontend.messages.OutboundMessages;
 import org.geppetto.model.ExperimentState;
 import org.geppetto.model.GeppettoModel;
@@ -87,8 +90,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager)
 	{
 		this.websocketConnection = websocketConnection;
-		// FIXME This is extremely ugly, a session based geppetto manager is autowired in the websocketconnection
-		// but a session bean cannot travel outside a conenction thread so a new one is instantiated and initialised
+		// FIXME This is extremely ugly, a session based geppetto manager is
+		// autowired in the websocketconnection
+		// but a session bean cannot travel outside a conenction thread so a new
+		// one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
 		this.geppettoManager.setSimulationListener(this);
 	}
@@ -138,8 +143,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		try
 		{
 			url = URLReader.getURL(urlString);
+			int index = url.toString().lastIndexOf('/');
+			String baseURL = url.toString().substring(0, index);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader);
+			IGeppettoProject geppettoProject = DataManagerHelper.getDataManager().getProjectFromJson(getGson(), reader, baseURL);
 			loadGeppettoProject(requestID, geppettoProject, -1l);
 		}
 		catch(IOException e)
@@ -158,23 +165,27 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			geppettoManager.loadProject(requestID, geppettoProject);
 			boolean readOnly = true;
-			if(geppettoProject.isVolatile()){
+			if(geppettoProject.isVolatile())
+			{
 				readOnly = false;
-			}else{
+			}
+			else
+			{
 				List<? extends IGeppettoProject> userProjects = geppettoManager.getUser().getGeppettoProjects();
-				for(IGeppettoProject p : userProjects){
-					if(p.getId() == geppettoProject.getId()){
+				for(IGeppettoProject p : userProjects)
+				{
+					if(p.getId() == geppettoProject.getId())
+					{
 						readOnly = false;
 					}
 				}
 			}
-			
-			
+
 			// serialize project prior to sending it to client
 			Gson gson = new Gson();
 			String projectJSON = gson.toJson(geppettoProject);
 			boolean persisted = geppettoProject.isVolatile();
-			String update = "{\"persisted\":" + !persisted + ",\"project\":" + projectJSON + ",\"isReadOnly\":" + readOnly +"}";
+			String update = "{\"persisted\":" + !persisted + ",\"project\":" + projectJSON + ",\"isReadOnly\":" + readOnly + "}";
 
 			setConnectionProject(geppettoProject);
 			websocketConnection.sendMessage(requestID, OutboundMessages.PROJECT_LOADED, update);
@@ -218,6 +229,63 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Error creating a new experiment");
+		}
+
+	}
+
+	/**
+	 * Creates new experiments in a batch
+	 * 
+	 * @param requestID
+	 * @param projectId
+	 * @param batchSize
+	 *            - how many experiments we need to create
+	 * @param names
+	 *            - experiment names
+	 */
+	public void newExperimentBatch(String requestID, long projectId, BatchExperiment batchExperiment)
+	{
+		IGeppettoProject project = retrieveGeppettoProject(projectId);
+		Gson gson = new Gson();
+		List<IExperiment> experiments = new ArrayList<IExperiment>();
+		try
+		{
+			for(NewExperiment e : batchExperiment.experiments)
+			{
+				IExperiment experiment = geppettoManager.newExperiment(requestID, project);
+				experiment.setName(e.name);
+				// set watched variables
+				geppettoManager.setWatchedVariables(e.watchedVariables, experiment, project, true);
+				
+				// set model paramerers
+				for (Map.Entry<String, String> entry : e.modelParameters.entrySet()) {
+				    String key = entry.getKey();
+				    String value = entry.getValue();
+				    Map<String, String> modelParam = new HashMap<String, String>();
+				    modelParam.put(key, value);
+				    geppettoManager.setModelParameters(modelParam, experiment, project);
+				}
+				IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+				// set simulator parameters
+				for(IAspectConfiguration aspectConfiguration : experiment.getAspectConfigurations())
+				{
+					if(aspectConfiguration.getInstance().equals(e.aspectPath))
+					{
+						aspectConfiguration.getSimulatorConfiguration().setTimestep(e.timeStep);
+						aspectConfiguration.getSimulatorConfiguration().setLength(e.duration);
+						aspectConfiguration.getSimulatorConfiguration().setSimulatorId(e.simulator);
+						aspectConfiguration.getSimulatorConfiguration().getParameters().putAll(e.simulatorParameters);
+						dataManager.saveEntity(aspectConfiguration.getSimulatorConfiguration());
+					}
+				}
+				experiments.add(experiment);
+			}
+
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_BATCH_CREATED, gson.toJson(experiments));
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error creating batch experiments");
 		}
 
 	}
@@ -305,8 +373,10 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				// run the matched experiment
 				if(experiment != null)
 				{
-					// TODO: If experiment is in ERROR state, user won't be able to run again.
-					// We reset it to DESIGN to allow user to run it for second time
+					// TODO: If experiment is in ERROR state, user won't be able
+					// to run again.
+					// We reset it to DESIGN to allow user to run it for second
+					// time
 					if(experiment.getStatus() == ExperimentStatus.ERROR)
 					{
 						experiment.setStatus(ExperimentStatus.DESIGN);
@@ -390,7 +460,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	}
 
-	
 	/**
 	 * @param requestID
 	 * @param projectId
@@ -455,9 +524,9 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			error(e, "Error importing value " + path);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Adds watch lists with variables to be watched
 	 * 
@@ -528,7 +597,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param experimentId
 	 * @param projectId
-	 * @param variables 
+	 * @param variables
 	 */
 	public void getExperimentState(String requestID, long experimentId, long projectId, List<String> variables)
 	{
@@ -574,8 +643,11 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 			if(modelFormat == null && format != null)
 			{
-				// FIXME There is a method called ERROR for sending errors to the GUI, also the error code and the outbound message are different
-				// things, there's no need to have a separate message for each error
+				// FIXME There is a method called ERROR for sending errors to
+				// the GUI, also the error code and the outbound message are
+				// different
+				// things, there's no need to have a separate message for each
+				// error
 				websocketConnection.sendMessage(requestID, OutboundMessages.ERROR_DOWNLOADING_MODEL, "");
 			}
 			else
@@ -629,15 +701,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	/**
 	 * @param requestID
-	 * @param url
+	 * @param projectId 
+	 * @param urlString
 	 * @param visitor
 	 */
-	public void sendScriptData(String requestID, URL url, WebsocketConnection visitor)
+	public void sendScriptData(String requestID, Long projectId, String urlString, WebsocketConnection visitor)
 	{
 		try
 		{
 			String line = null;
 			StringBuilder sb = new StringBuilder();
+
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+			URL url = URLReader.getURL(urlString,geppettoProject.getBaseURL());
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -651,7 +727,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(IOException e)
 		{
-			error(e, "Error while reading the script at " + url);
+			error(e, "Error while reading the script at " + urlString);
 		}
 	}
 
@@ -717,6 +793,27 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				error(e, "There was an error setting parameters");
 			}
+		}
+	}
+
+	/**
+	 * @param requestID
+	 * @param view
+	 * @param projectId
+	 * @param experimentID
+	 */
+	public void setExperimentView(String requestID, String view, long projectId, long experimentID)
+	{
+
+		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+		try
+		{
+			geppettoManager.setExperimentView(view, experiment, geppettoProject);
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "There was an error setting experiment view");
 		}
 	}
 
@@ -809,7 +906,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		{
 			exceptionMessage = exception.getCause() == null ? exception.getMessage() : exception.toString();
 		}
-		Error error = new Error(GeppettoErrorCodes.EXCEPTION, errorMessage, exceptionMessage,0);
+		Error error = new Error(GeppettoErrorCodes.EXCEPTION, errorMessage, exceptionMessage, 0);
 		logger.error(errorMessage, exception);
 		websocketConnection.sendMessage(null, OutboundMessages.ERROR, getGson().toJson(error));
 
@@ -834,7 +931,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			this.error_code = errorCode.toString();
 			message = errorMessage;
 			exception = jsonExceptionMsg;
-			this.id =  id;
+			this.id = id;
 		}
 
 		String error_code;
@@ -909,12 +1006,12 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 
 	}
-	
+
 	/**
 	 * @param requestID
 	 * @param projectId
 	 */
-	public void makeProjectPublic(String requestID, long projectId,boolean isPublic)
+	public void makeProjectPublic(String requestID, long projectId, boolean isPublic)
 	{
 
 		try
@@ -939,7 +1036,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 
 	}
-	
+
 	/**
 	 * @param requestID
 	 * @param projectId
@@ -1282,7 +1379,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 					}
 				}
 			}
-			// send back id of experiment saved, and if the experiment modified was in ERROR state change
+			// send back id of experiment saved, and if the experiment modified
+			// was in ERROR state change
 			// it back to DESIGN to allow re-running
 			ExperimentStatus status = experiment.getStatus();
 			if(status == ExperimentStatus.ERROR)
@@ -1324,8 +1422,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		this.geppettoProject = geppettoProject;
 	}
-
-
 
 	/**
 	 * Sends to the client login user privileges
@@ -1376,22 +1472,50 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	@Override
 	public void experimentError(String titleMessage, String logMessage, Exception exception, IExperiment experiment)
-	{	
+	{
 		Error error = new Error(GeppettoErrorCodes.EXCEPTION, titleMessage, logMessage, experiment.getId());
 		logger.error(logMessage, exception);
-		
+
 		String jsonError = this.getGson().toJson(error);
-	
+
 		if(!geppettoProject.isVolatile())
 		{
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-			//stores only first 2000 characters of error message
-			if(jsonError.length() < 10000){
+			// stores only first 2000 characters of error message
+			if(jsonError.length() < 10000)
+			{
 				experiment.setDetails(jsonError);
 				dataManager.saveEntity(experiment);
 			}
 		}
-				
+
 		websocketConnection.sendMessage(null, OutboundMessages.ERROR_RUNNING_EXPERIMENT, jsonError);
+	}
+
+	public void downloadProject(String requestID, long projectId)
+	{
+		try
+		{
+
+			Path zipPath = this.geppettoManager.downloadProject(geppettoProject);
+
+			if(zipPath != null)
+			{
+				// Send zip file to the client
+				websocketConnection.sendBinaryMessage(requestID, zipPath);
+				websocketConnection.sendMessage(requestID, OutboundMessages.DOWNLOAD_PROJECT, null);
+
+				// clean temporary directory where files where written
+				FileUtils.cleanDirectory(zipPath.toFile().getParentFile());
+			}
+			else
+			{
+				error(null, "Error downloading project");
+			}
+		}
+		catch(Exception e)
+		{
+			error(e, "Error downloading project");
+		}
 	}
 }

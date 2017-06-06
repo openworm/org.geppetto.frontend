@@ -8,9 +8,12 @@ define(['./extensionsConfiguration.json', 'geppetto','../js/components/Component
 	}
 
 	//Require your extension in extensionConfiguration.json
+	var availableExtensions = [];
 	for (var extension in extensionConfiguration){
 		if (extensionConfiguration[extension]){
+			availableExtensions.push(extension.split("/")[0]);
 			loadExtension(extension);
 		}
 	}
+   
 });

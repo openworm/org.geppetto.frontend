@@ -27,7 +27,7 @@ define(function (require) {
     return Widget.View.extend({
 
         dataset: {},
-
+        connectivityOptions: {},
         defaultConnectivityOptions: {
             width: 660,
             height: 500,
@@ -103,13 +103,14 @@ define(function (require) {
             	this.createLayout();	
             }
 
+            // track change in state of the widget
+            this.dirtyView = true;
 
             return this;
         },
 
         createDataFromConnections: function () {
-        	
-            //TODO: Hardcoded NeuroML stuff
+            //TODO: remove Hardcoded NeuroML stuff
             if(Model.neuroml.connection){
             	
             	var connectionVariables = Model.neuroml.connection.getVariableReferences();
@@ -269,7 +270,6 @@ define(function (require) {
 
         },
 
-
         createNode: function (id, type) {
            if (!(id in this.mapping)) {
                 var nodeItem = {
@@ -301,6 +301,9 @@ define(function (require) {
          * @param {Object} options - options to modify the plot widget
          */
         setOptions: function (options) {
+
+            this.connectivityOptions = options;
+
             function strToFunc(body){
                 return new Function('x', 'return ' + body + ';');
             }
@@ -314,55 +317,12 @@ define(function (require) {
                 $.extend(this.options, options);
             }
         },
-
-        /* TODO: Replace spread until jsdocs supports it
-        getHelp: function(){
-            function dedent(callSite, ...args) {
-                function format(str) {
-                    let size = -1;
-                    return str.replace(/\n(\s+)/g, (m, m1) => {
-                        if (size < 0)
-                            size = m1.replace(/\t/g, "    ").length;
-                        return "\n" + m1.slice(Math.min(m1.length, size));
-                    });
-                }
-                if (typeof callSite === "string")
-                    return format(callSite);
-                if (typeof callSite === "function")
-                    return (...args) => format(callSite(...args));
-                let output = callSite
-                    .slice(0, args.length + 1)
-                    .map((text, i) => (i === 0 ? "" : args[i - 1]) + text)
-                    .join("");
-                return format(output);
-            }
-            var help = {
-                'matrix':dedent(`
-                    ### Adjacency matrix
-                `),
-                'chord': dedent(`
-                    ### Chord Diagram
-                    Hover over populations ("slices") to highlight incoming / outgoing connections.
-                    - Control-hover: outgoing connections
-                    - Shift-hover: incoming connections
-                `),
-                'hive':dedent(`
-                        ### Hive Plot
-                `),
-                'force':dedent(`
-                        ### Force Directed Graph Drawing
-                `),
-            }
-
-            return '## Connectivity Widget\n' + help[this.options.layout];
-        },
-        */
         
         createLayoutSelector: function() {
 
             function imgPath(path){
                 return 'geppetto/js/components/widgets/connectivity/images/' + path;
-            };
+            }
 
             var layoutOptions = [
                  {id: "matrix", label: 'Adjacency matrix', description:
@@ -418,7 +378,7 @@ define(function (require) {
             var modalContent=$('<div class="modal fade" id="connectivity-config-modal"></div>')
                                 .append(this.createLayoutSelector()[0].outerHTML).modal();
             function handleFirstClick(event) {
-                //TODO: Hardcoded NeuroML stuff
+                //TODO: remove Hardcoded NeuroML stuff
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
                 function synapseFromConnection(conn) {
@@ -430,7 +390,7 @@ define(function (require) {
                 	else{
                 		return "Gap junction";
                 	}
-                };
+                }
                 that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
                 firstClick=true;
             }
@@ -446,8 +406,58 @@ define(function (require) {
             	}
             }
 
-
             modalContent.find('.card').on('click', clickHandler);
+        },
+
+        getView: function(){
+            var baseView = Widget.View.prototype.getView.call(this);
+
+            // add connectivity specific options - contains logic, iterate and serialize
+            var serializedOptions = {};
+            for(var item in this.connectivityOptions){
+                var serializedItem = {};
+                if (typeof this.connectivityOptions[item] === "function") {
+                    serializedItem.value = this.connectivityOptions[item].toString();
+                    serializedItem.type = 'function';
+                } else {
+                    serializedItem.value = this.connectivityOptions[item];
+                    serializedItem.type = 'primitive';
+                }
+                serializedOptions[item] = serializedItem;
+            }
+            baseView.options = serializedOptions;
+
+            // add data
+            baseView.dataType = 'object';
+            baseView.data = this.dataset["root"].getPath();
+
+            return baseView;
+        },
+
+        setView: function(view){
+            // set base properties
+            Widget.View.prototype.setView.call(this, view);
+
+            if(view.dataType == 'object' && view.data != undefined && view.data != ''){
+                var obj = eval(view.data);
+                var deserializedOptions = {};
+                for(var item in view.options){
+                    if(view.options[item].type == "function"){
+                        deserializedOptions[item] = eval('(' + view.options[item].value + ')');
+                    } else {
+                        deserializedOptions[item] = view.options[item].value;
+                    }
+                }
+
+                var that = this;
+                // resolve connections and pass the line below as a callback
+                Model.neuroml.resolveAllImportTypes(function(){
+                    that.setData(obj, deserializedOptions);
+                });
+            }
+
+            // after setting view through setView, reset dirty flag
+            this.dirtyView = false;
         }
     });
 });

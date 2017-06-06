@@ -52,11 +52,18 @@ define(function (require) {
         /**
          * Creates new variable visualiser widget
          */
-        addVariableVisualiserWidget: function () {
+        addVariableVisualiserWidget: function (isStateless) {
+            if(isStateless == undefined){
+                isStateless = false;
+            }
+
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("VarVis", this.widgets);
             var name = id;
-            var vv = window[name] = new VarVis({id: id, name: name, visible: true});
+            var vv = window[name] = new VarVis({
+                id: id, name: name, visible: true,
+                widgetType: GEPPETTO.Widgets.VARIABLEVISUALISER, stateless: isStateless
+            });
             vv.help = function () {
                 return GEPPETTO.Console.getObjectCommands(id);
             };

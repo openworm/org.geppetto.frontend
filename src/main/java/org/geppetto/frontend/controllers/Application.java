@@ -2,8 +2,10 @@ package org.geppetto.frontend.controllers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Scanner;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -39,9 +41,8 @@ public class Application
 
 	private static Log logger = LogFactory.getLog(Application.class);
 
-	@RequestMapping(value = "/geppetto", method = RequestMethod.GET)
-	public String geppetto(HttpServletRequest req)
-	{
+
+	private String getGeppetto(HttpServletRequest req, String page){
 		try
 		{
 			IAuthService authService = AuthServiceCreator.getService();
@@ -99,9 +100,26 @@ public class Application
 		{
 			logger.error("Error while retrieving an authentication service", e);
 		}
-		return "redirect:http://geppetto.org";
+		return "redirect:http://geppetto.org"; 
 	}
 
+	@RequestMapping(value = "/geppetto", method = RequestMethod.GET)
+	public String geppetto(HttpServletRequest req, Model model)
+	{
+		return getGeppetto(req, "");
+	}
+
+	@RequestMapping(value = "/**", method = RequestMethod.GET)
+	public String geppettoExtension(HttpServletRequest req, Model model)
+	{
+		String path = "/build/static" + req.getServletPath() + ".html";
+		if (Application.class.getResource(path) != null){
+			InputStream content = Application.class.getResourceAsStream(path);
+			model.addAttribute("content", new String(new Scanner(content, "UTF-8").useDelimiter("\\A").next()));
+		}
+		return getGeppetto(req, "");
+	}
+	
 	@RequestMapping(value = "/geppettotestingprojects", method = RequestMethod.GET)
 	public @ResponseBody Test getTestingProjects(@RequestParam String url) throws IOException
 	{
@@ -149,5 +167,7 @@ public class Application
 	{
 		return "dashboard";
 	}
+	
+	
 
 }

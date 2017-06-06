@@ -176,7 +176,7 @@ define(function (require) {
 						return c(d.z);
 					})
 					.on("click", function (d) {
-						G.unSelectAll();
+						GEPPETTO.SceneController.deselectAll();
 						//Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.
 						eval(root.getId() + "." + nodes[d.x].id).select();
 						eval(root.getId() + "." + nodes[d.x].id).showConnectionLines(false);

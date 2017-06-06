@@ -23,18 +23,20 @@ define(function (require) {
         /**
          * Adds a new TreeVisualizerDAT Widget to Geppetto
          */
-        addTreeVisualiserDATWidget: function () {
+        addTreeVisualiserDATWidget: function (isStateless) {
+            if(isStateless == undefined){
+                // stateless by default
+                isStateless = true;
+            }
+
             //look for a name and id for the new widget
             var id = this.getAvailableWidgetId("TreeVisualiserDAT", this.widgets);
             var name = id;
 
             // create tree visualiser widget
             var tvdat = window[name] = new TreeVisualiserDAT({
-                id: id,
-                name: name,
-                visible: true,
-                width: 260,
-                height: 350
+                id: id, name: name, visible: true, width: 260, height: 350,
+                widgetType: GEPPETTO.Widgets.TREEVISUALISERDAT, stateless: isStateless
             });
             // create help command for plot
             tvdat.help = function () {
@@ -152,7 +154,7 @@ define(function (require) {
            if (node.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE && node.getWrappedObj().getVisualType() != undefined) {
                 var entity = [{
                     label: "Select Visual Component",
-                    action: ["G.unSelectAll();", node.getPath() + ".select()"],
+                    action: ["GEPPETTO.SceneController.deselectAll();", node.getPath() + ".select()"],
                 }];
 
                 groups.push(entity);
@@ -161,7 +163,7 @@ define(function (require) {
            if (node.getMetaType() == GEPPETTO.Resources.VISUAL_GROUP_NODE){
         	   var visualGroup = [{
                    label: "Show Visual Groups",
-                   action: ["G.unSelectAll();", node.getPath() + ".show(true)"]
+                   action: ["GEPPETTO.SceneController.deselectAll();", node.getPath() + ".show(true)"]
                }];
         	   
         	   groups.push(visualGroup);
@@ -176,7 +178,7 @@ define(function (require) {
                for (var visualGroupIndex in node.getWrappedObj().getVisualGroups()) {
                    subgroups1Add = subgroups1Add.concat([{
                        label: "Show " + node.getWrappedObj().getVisualGroups()[visualGroupIndex].getName(),
-                       action: ["G.unSelectAll();", node.getPath() + ".applyVisualGroup(" + node.getPath() + ".getVisualGroups()[" + visualGroupIndex + "], true)"],
+                       action: ["GEPPETTO.SceneController.deselectAll();", node.getPath() + ".applyVisualGroup(" + node.getPath() + ".getVisualGroups()[" + visualGroupIndex + "], true)"],
                        position: visualGroupIndex
                    }]);
                }

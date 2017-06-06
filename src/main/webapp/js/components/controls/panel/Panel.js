@@ -1,16 +1,7 @@
 define(function (require) {
 
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = "geppetto/js/components/controls/panel/Panel.css";
-    document.getElementsByTagName("head")[0].appendChild(link);
-	
 	var React = require('react');
-	
-	//http://blog.krawaller.se/posts/a-react-app-demonstrating-css3-flexbox/
-	//http://jaketrent.com/post/send-props-to-children-react/
-	
+	require("./Panel.less")
 	var defaultChildStyle = {'alignSelf': 'auto', 'flexGrow': 0, 'order': 0};
 	
 	var panelComponent = React.createClass({

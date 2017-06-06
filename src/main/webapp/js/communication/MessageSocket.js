@@ -75,9 +75,6 @@ define(function (require) {
                 }
 
                 GEPPETTO.MessageSocket.socket.onopen = function () {
-                    //enable load simulation button, and welcome message buttons
-                    GEPPETTO.FE.postSocketConnection();
-
                     GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_OPENED);
 
                     //attach the handlers once socket is opened
@@ -118,7 +115,7 @@ define(function (require) {
                         GEPPETTO.MessageSocket.failsafe = true;
                         GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
                     } else {
-                        GEPPETTO.FE.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
+                        GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
                     }
                 };
             },

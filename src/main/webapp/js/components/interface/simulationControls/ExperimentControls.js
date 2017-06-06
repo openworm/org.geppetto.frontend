@@ -1,35 +1,3 @@
-/*******************************************************************************
- *
- * Copyright (c) 2011, 2016 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
 define(function (require) {
 
     var React = require('react');
@@ -39,8 +7,11 @@ define(function (require) {
     var PauseButton = require('./buttons/PauseButton');
     var StopButton = require('./buttons/StopButton');
     var HelpButton = require('./buttons/HelpButton');
+    var MenuButton = require('../../controls/menuButton/MenuButton');
 
     var GEPPETTO = require('geppetto');
+
+    require('./SimulationControls.less');
 
     var SimulationControls = React.createClass({
 
@@ -181,12 +152,23 @@ define(function (require) {
         },
 
         render: function () {
-            return React.DOM.div({className: 'simulation-controls'},
-                React.createFactory(HelpButton)({disabled: false, hidden: this.props.hideHelp}),
-                React.createFactory(StopButton)({disabled: this.state.disableStop, hidden: this.props.hideStop}),
-                React.createFactory(PauseButton)({disabled: this.state.disablePause, hidden: this.props.hidePause}),
-                React.createFactory(PlayButton)({disabled: this.state.disablePlay, hidden: this.props.hidePlay}),
-                React.createFactory(RunButton)({disabled: this.state.disableRun, hidden: this.props.hideRun})
+
+            var runButton = "";
+            if(this.props.runConfiguration != undefined){
+                this.props.runConfiguration.buttonDisabled = this.state.disableRun;
+                runButton = <MenuButton configuration={this.props.runConfiguration} />
+            } else {
+                runButton = <RunButton disabled={this.state.disableRun} hidden={this.props.hideRun}/>
+            }
+
+            return (
+                <div className="simulation-controls">
+                    <HelpButton disabled={false} hidden={this.props.hideHelp}/>
+                    <StopButton disabled={this.state.disableStop} hidden={this.props.hideStop}/>
+                    <PauseButton disabled={this.state.disablePause} hidden={this.props.hidePause}/>
+                    <PlayButton disabled={this.state.disablePlay} hidden={this.props.hidePlay}/>
+                    {runButton}
+                </div>
             );
         }
 

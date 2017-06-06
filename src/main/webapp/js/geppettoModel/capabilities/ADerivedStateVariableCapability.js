@@ -74,7 +74,6 @@ define(['jquery'], function (require) {
          * @returns {Object} The initial value of the state variable
          */
         getInitialValue: function () {
-
             return this.getVariable().getWrappedObj().initialValues;
         },
 

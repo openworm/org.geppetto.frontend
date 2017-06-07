@@ -192,7 +192,7 @@ define(function (require) {
 				}else{
 					console.log("Error: refStr(" + refStr + ") resolved to undefined. Refenced by " + node.wrappedObj.id);
 					var j = 1;
-					while (parseInt(refStr.split('.')[2]) > 0 && (Model.getLibraries()[parseInt(refStr.split('.')[1])].getTypes()[parseInt(refStr.split('.')[2])] == undefined || Model.getLibraries()[parseInt(refStr.split('.')[1])].getTypes()[parseInt(refStr.split('.')[2])].wrappedObj.id != node.wrappedObj.id)) {
+					while (parseInt(refStr.split('.')[2]) > 0 && Model.getLibraries()[parseInt(refStr.split('.')[1].replace("/@types",""))].getTypes()[parseInt(refStr.split('.')[2])] == undefined) {
 						types[i].$ref = refStr.split('.')[0] + '.' + refStr.split('.')[1] + '.' + (parseInt(refStr.split('.')[2]) - j).toString();
 						refStr = types[i].$ref;
 						j++;

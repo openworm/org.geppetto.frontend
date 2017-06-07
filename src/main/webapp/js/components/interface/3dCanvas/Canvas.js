@@ -283,6 +283,16 @@ define(function (require) {
         }
 
         /**
+         * Change radius of a sphere
+         * @param instancePath The instance to change
+         * @param radius Desired radius
+         */
+        setRadius(instancePath, radius) {
+            var mesh = this.engine.getRealMeshesForInstancePath(instancePath)[0];
+            this.engine.modify3DSphere(mesh, mesh.position.x, mesh.position.y, mesh.position.z, radius, mesh.material);
+        }
+
+        /**
          * Set the threshold (number of 3D primitives on the scene) above which we switch the visualization to lines
          * @param threshold
          * @return {Canvas}
@@ -535,6 +545,11 @@ define(function (require) {
                 }
                 if (view.componentSpecific.backgroundColor != undefined) {
                     this.setBackgroundColor(view.componentSpecific.backgroundColor);
+                }
+                if (view.componentSpecific.radiusMap != undefined) {
+                    for (var path in view.componentSpecific.radiusMap) {
+                        this.setRadius(path, view.componentSpecific.radiusMap[path]);
+                    }
                 }
             }
         }

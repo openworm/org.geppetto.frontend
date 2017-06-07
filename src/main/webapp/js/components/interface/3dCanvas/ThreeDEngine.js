@@ -993,11 +993,11 @@ define(['jquery'], function () {
          * Modify the origin and radius of a sphere
          * @returns {THREE.Mesh}
          */
-        modify3DSphere: function (object, x, y, z, radius) {
+        modify3DSphere: function (object, x, y, z, radius, material) {
             // Impossible to change the radius of a Sphere.
             // Removing old object and creating a new one
             this.scene.remove(object);
-            return this.add3DSphere(x, y, z, radius);
+            return this.add3DSphere(x, y, z, radius, material);
         },
 
         /**
@@ -1005,16 +1005,18 @@ define(['jquery'], function () {
          * It could be any geometry really.
          * @returns {THREE.Mesh}
          */
-        add3DSphere: function (x, y, z, radius) {
+        add3DSphere: function (x, y, z, radius, material) {
             if (this.aboveLinesThreshold) {
                 radius = 1;
             }
 
-            var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
-            material.nowireframe = true;
-            material.opacity = 0.6;
-            material.transparent = true;
-            material.color.setHex("0xff0000");
+            if (typeof material == 'undefined') {
+                var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
+                material.nowireframe = true;
+                material.opacity = 0.6;
+                material.transparent = true;
+                material.color.setHex("0xff0000");
+            }
 
             var sphereNode = {radius: radius, position: {x: x, y: y, z: z}}
             var mesh = this.create3DSphereFromNode(sphereNode, material)

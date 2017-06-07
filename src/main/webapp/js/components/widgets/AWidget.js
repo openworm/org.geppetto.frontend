@@ -115,7 +115,7 @@ define(function (require) {
 
                 // set flag to indicate something changed
                 this.dirtyView = true;
-                
+
                 return this;
             }
 
@@ -668,7 +668,7 @@ define(function (require) {
 
             getView() {
                 var view = super.getView();
-                
+
                 // get default stuff such as id, position and size
                 return  $.extend(view, {
                     name: this.name,
@@ -727,14 +727,14 @@ define(function (require) {
             render() {
                 /*return (
                     <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}>
-                        <WrappedComponent 
+                        <WrappedComponent
                             setName= {this.setName}
                             {...this.props}
                             {...this.state}
                             ref={(c) => this._component = c}/>
                     </div>
                 )*/
-                return <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}> {super.render()} </div>
+                return <div key={this.props.id} id={this.props.id} className={'dialog ' + this.props.componentType.toLowerCase() + "-widget"} title={this.props.title}> {super.render()} </div>
             }
         };
     }

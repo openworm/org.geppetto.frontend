@@ -255,7 +255,7 @@ define(function (require) {
             if (recursion === undefined) {
                 recursion = false;
             }
-            var entity = eval(path);
+            var entity = eval(instancePath);
             if (entity.hasCapability("VisualCapability")) {
                 if (entity instanceof Instance || entity instanceof ArrayInstance) {
                     this.engine.setOpacity(instancePath, opacity);

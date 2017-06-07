@@ -191,32 +191,31 @@ define(function (require) {
 					referencedTypes.push(typeObj);
 				}else{
 					console.log("Error: refStr(" + refStr + ") resolved to undefined. Refenced by " + node.wrappedObj.id);
-					types[i].$ref = refStr.split('.')[0] + '.' + refStr.split('.')[1] + '.' + (parseInt(refStr.split('.')[2]) - 1).toString();
-					refStr = types[i].$ref;
+					var j = 1;
+					while (parseInt(refStr.split('.')[2]) > 0 && Model.getLibraries()[parseInt(refStr.split('.')[1])].getTypes()[parseInt(refStr.split('.')[2])].wrappedObj.id != node.wrappedObj.id) {
+						types[i].$ref = refStr.split('.')[0] + '.' + refStr.split('.')[1] + '.' + (parseInt(refStr.split('.')[2]) - j).toString();
+						refStr = types[i].$ref;
+						j++;
+					}
 					console.log("corrected to: refStr(" + refStr + ") for " + node.wrappedObj.id);
 					typeObj = this.resolve(refStr);
 					
 					if (typeObj != undefined) {
-					    
 						// track if we have pointer type
 						if (typeObj.getMetaType() == GEPPETTO.Resources.POINTER_TYPE) {
 						    hasPointerType = true;
 						}
-
 						// add to list
 						referencedTypes.push(typeObj);
 					}
-					
-				}    
+				}
                             }
                         }
-
                         if (swapTypes) {
                             // set types to actual object references using backbone setter
                             node.setTypes(referencedTypes);
                         }
                     }
-
                     // check if pointer type
                     if (hasPointerType) {
                         var initialValues = node.getInitialValues();

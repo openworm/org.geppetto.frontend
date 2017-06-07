@@ -9,8 +9,7 @@
     "build-dev": "webpack --devtool eval",
     "build-dev-noTest": "webpack --devtool eval --noTest",
     "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/",
-    "lint:js": "eslint js/ extensions/ webpack.*.js --cache",
-    "precommit": "npm run lint:js"
+    "lint:js": "eslint js/ extensions/ webpack.*.js --cache"
   },
   "devDependencies": {
     "anchorme": "^0.7.1",

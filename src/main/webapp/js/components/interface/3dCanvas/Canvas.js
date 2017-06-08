@@ -548,7 +548,7 @@ define(function (require) {
                 }
                 if (view.componentSpecific.radiusMap != undefined) {
                     for (var path in view.componentSpecific.radiusMap) {
-                        this.setRadius(path, view.componentSpecific.radiusMap[path]);
+                        this.setRadius(path, parseFloat(view.componentSpecific.radiusMap[path]));
                     }
                 }
             }

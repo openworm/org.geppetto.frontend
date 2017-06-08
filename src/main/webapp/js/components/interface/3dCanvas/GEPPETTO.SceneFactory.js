@@ -86,7 +86,14 @@ define(function (require) {
                 var previous3DObject = GEPPETTO.getVARS().meshes[instance.getInstancePath()];
                 var color = undefined;
                 if (previous3DObject) {
-                    color=previous3DObject.material.defaultColor;
+                	if (previous3DObject.material){
+                		color=previous3DObject.material.defaultColor;
+                	}else{ // handling material under child.
+                		if (previous3DObject.children && previous3DObject.children.length > 0 && previous3DObject.children[0].material){
+                			color=previous3DObject.children[0].material.defaultColor
+                			
+                		}
+                	}
                     // if an object already exists for this aspect we remove it. This could happen in case we are changing how an aspect
                     // is visualized, e.g. lines over tubes representation
                     GEPPETTO.getVARS().scene.remove(previous3DObject);

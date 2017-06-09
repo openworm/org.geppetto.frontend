@@ -294,13 +294,23 @@ define(function (require) {
                                         child.material.opacity = child.material.defaultOpacity;
                                     }
                                 });
-                                mesh.selected = false;
                             }
                         } else {
-                        	GEPPETTO.SceneController.setThreeColor(mesh.material.color, mesh.material.defaultColor);
-                            mesh.material.opacity = mesh.material.defaultOpacity;
-                            mesh.selected = false;
+                        	if (mesh instanceof THREE.Object3D) {
+                                mesh.traverse(function (child) {
+                                    if (child.hasOwnProperty("material")) {
+                                        GEPPETTO.SceneController.setThreeColor(child.material.color, child.material.defaultColor);
+                                        child.material.opacity = child.material.defaultOpacity;
+                                    }
+                                });
+                            }else{
+                            	if (child.hasOwnProperty("material")) {
+                            		GEPPETTO.SceneController.setThreeColor(mesh.material.color, mesh.material.defaultColor);
+                            		mesh.material.opacity = mesh.material.defaultOpacity;
+                            	}
+                            }
                         }
+                        mesh.selected = false;
                     }
                     return true;
                 }

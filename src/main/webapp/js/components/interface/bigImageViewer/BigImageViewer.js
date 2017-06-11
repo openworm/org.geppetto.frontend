@@ -70,7 +70,7 @@ define(function (require) {
 						<button className='btn fa fa-home' id='home' title={'Center Stack'} />
 						<button className='btn fa fa-search-plus' id='zoom-in' title={'Zoom In'} />
 						<button className='btn fa fa-search-minus' id='zoom-out' title={'Zoom Out'} />
-						<button className='btn fa fa-arrows-alt' id='full-page' title={'Full Page'} />
+						{/*<button className='btn fa fa-arrows-alt' id='full-page' title={'Full Page'} />*/}
 					</WidgetButtonBar>
 				</div>
 			)

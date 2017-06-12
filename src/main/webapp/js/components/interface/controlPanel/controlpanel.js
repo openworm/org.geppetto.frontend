@@ -625,29 +625,15 @@ define(function (require) {
                 this.computeResult('visualInstancesFilterBtn');
             }
         },
-
+        
         componentDidMount: function () {
-            var that = this;
-            GEPPETTO.on(GEPPETTO.Events.Control_panel_open, function () {
-                that.refreshToggleState();
-            });
-            GEPPETTO.on("control_panel_refresh", function () {
-                // when control panel is open and we are using the filter component
-                // if no other main component is toggled show visual instances
-                if (that.state.stateVarsFilterToggled) {
-                    // same logic as if viz instances filter was clicked
-                    that.computeResult('stateVariablesFilterBtn');
-                }
-                else if (that.state.paramsFilterToggled) {
-                    // same logic as if viz instances filter was clicked
-                    that.computeResult('parametersFilterBtn');
-                } else if (that.state.visualFilterToggled) {
-                    // same logic as if viz instances filter was clicked
-                    that.computeResult('visualInstancesFilterBtn');
-                }
-            });
+            GEPPETTO.on(GEPPETTO.Events.Control_panel_open, this.refreshToggleState, this);
         },
 
+        componentWillUnmount: function () {
+            GEPPETTO.off(GEPPETTO.Events.Control_panel_open, this.refreshToggleState, this);
+        },
+        
         computeResult: function (controlId) {
             // logic for disable/enable stuff here
             switch (controlId) {
@@ -1804,7 +1790,23 @@ define(function (require) {
                     var recordedStateVars = [];
                     if (window.Project.getActiveExperiment() != undefined) {
                         // show all state variable instances (means they are recorded)
-                        recordedStateVars = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY, window.Instances).map(
+                        // if experiment is completed, need to check that they have been watched
+
+                        recordedStateVars = GEPPETTO.ModelFactory.getAllInstancesWithCapability(GEPPETTO.Resources.STATE_VARIABLE_CAPABILITY, window.Instances)
+                            .filter(
+                                function(instance) {
+                                    if (window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
+                                        if (instance.getPath() != "time") {
+                                            return GEPPETTO.ExperimentsController.isLocalWatchedInstanceOrExternal(window.Project.id, window.Project.activeExperiment.id, instance.getPath());
+                                        } else {
+                                            return true;
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                            )
+                            .map(
                             function (item) {
                                 return {
                                     path: item.getPath(),

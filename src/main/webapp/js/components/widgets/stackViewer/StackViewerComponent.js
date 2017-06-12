@@ -1009,7 +1009,7 @@ define(function (require) {
                 id: [],
                 plane: null,
                 initalised: false,
-                slice: true
+                slice: false
             };
         },
 

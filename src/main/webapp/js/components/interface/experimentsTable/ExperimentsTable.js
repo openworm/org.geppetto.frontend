@@ -678,8 +678,9 @@ define(function (require) {
             }
         },
         
+        //Determines if an element inside the experiments table is in view
         isInView : function(elem){
-        	var docViewTop =  $('#experimentsTable').scrollTop();
+        	var docViewTop =  $('#experimentsTable').offset().top;
             var docViewBottom = docViewTop + $('#experimentsTable').height();
             var elemTop = $(elem).offset().top;
             var elemBottom = elemTop + $(elem).height();
@@ -707,7 +708,7 @@ define(function (require) {
                             tdStatus.attr("data-status", experiment.getStatus());
                             tdStatus.attr("data-custom-title", GEPPETTO.Resources.ExperimentStatus.Descriptions[experiment.getStatus()]);
 
-                            if(self.isInView($(this))) {
+                            if(self.isInView(tdStatus)) {
                                 // make the tooltip pop-out for a bit to attract attention
                                 tdStatus.mouseover().delay(2000).queue(function () {
                                     $(this).mouseout().dequeue();

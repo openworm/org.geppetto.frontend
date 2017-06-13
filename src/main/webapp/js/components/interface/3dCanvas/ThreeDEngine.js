@@ -1155,7 +1155,7 @@ define(['jquery'], function () {
                 color = GEPPETTO.Resources.COLORS.DEFAULT;
             }
             var material = new THREE.LineBasicMaterial(options);
-            material.color.setHex(color);
+            this.setThreeColor(material.color, color);
             material.defaultColor = color;
             material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             return material;
@@ -1177,7 +1177,7 @@ define(['jquery'], function () {
                     shading: THREE.SmoothShading
                 });
 
-            material.color.setHex(color);
+            this.setThreeColor(material.color, color);
             material.defaultColor = color;
             material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             return material;

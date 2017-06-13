@@ -7,16 +7,24 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 console.log("\nThe arguments passed to webpack are:\n");
 console.log(process.argv);
 
+var defaultValues = {
+    '--contextPath': 'org.geppetto.frontend',
+    '--useSsl': false,
+    '--embedded': false,
+    '--embedderURL': '/'
+    };
+
 var getCLIParameter=function(param){
-	for(var i=0;i<process.argv.length;i++){
+	var value = defaultValues[param];
+    for(var i=0;i<process.argv.length;i++){
 		var arg=process.argv[i];
 		if(arg.startsWith(param)){
-			var value=arg.substring(arg.indexOf("=")+1).trim();
-			console.log(param +":" + value);
-			return value;
+			value = arg.substring(arg.indexOf("=")+1).trim();
+			break;
 		}
 	}
-	return "";
+	console.log(param +":" + value);
+	return value;
 };
 
 console.log("\nThe arguments passed to HtmlWebpackPlugin are:\n");

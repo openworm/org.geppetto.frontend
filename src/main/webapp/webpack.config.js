@@ -156,7 +156,7 @@ module.exports = {
     	noParse: [/node_modules\/plotly.js\/dist\/plotly.js/, /js\/components\/interface\/dicomViewer\/ami.min.js/],
         loaders: [
             {
-                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/], loader: ['babel-loader'],
+                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], loader: ['babel-loader'],
                 query: {
                     presets: ['react', 'es2015']
                 }

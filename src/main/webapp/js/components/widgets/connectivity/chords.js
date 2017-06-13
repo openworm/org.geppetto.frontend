@@ -7,8 +7,6 @@ define(function (require) {
 
     return {
         settings: {
-            //cmap : d3.scale.category20()
-            cmap: d3.scaleOrdinal(d3.schemeCategory20)
         },
 
         createChordLayout: function (context) {
@@ -17,7 +15,7 @@ define(function (require) {
             var innerRadius = Math.min(context.options.innerWidth, context.options.innerHeight) * .41,
                 outerRadius = innerRadius * 1.05;
 
-            var fill = this.settings.cmap
+            var fill = context.nodeColormap
                 .domain(context.dataset.nodeTypes);
 
             var svg = context.svg.append("g")
@@ -194,7 +192,7 @@ define(function (require) {
         },
 
         createLegend: function (context) {
-            var nodeTypeScale = this.settings.cmap
+            var nodeTypeScale = context.nodeColormap
                 .domain(context.dataset.nodeTypes);
             var legendPosition = { x: 0.77 * context.options.innerWidth, y: 0 };
 

@@ -28,6 +28,7 @@ define(function (require) {
 
         dataset: {},
         connectivityOptions: {},
+        nodeColormap: {},
         defaultConnectivityOptions: {
             width: 660,
             height: 500,
@@ -47,9 +48,24 @@ define(function (require) {
             }
         },
 
-
+ 
         initialize: function (options) {
             this.options = options;
+
+            this.nodeColormap = function(){
+                var pops = GEPPETTO.ModelFactory.getAllInstancesOf(
+                    GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)[0])[0].getChildren();
+                var domain = [];
+                var range = [];
+                for (var i=0; i<pops.length; ++i) {
+                    domain.push(pops[i].getPath());
+                    range.push(pops[i].getColor());
+                }
+                var scale = d3.scaleOrdinal(range);
+                scale.domain(domain);
+                return scale;
+            }();
+            
 
             Widget.View.prototype.initialize.call(this, options);
             this.setOptions(this.defaultConnectivityOptions);

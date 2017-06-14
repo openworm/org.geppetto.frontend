@@ -141,7 +141,7 @@ define(function (require) {
 
 					var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
 
-					var renderedComponent = window[properties.id] = this.renderComponent(component, container, callback);
+					var renderedComponent = window[properties.id] = that.renderComponent(component, container, callback);
 
 					// Register widget/controller for events, etc
 					if (isWidget){

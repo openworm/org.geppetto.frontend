@@ -12,13 +12,10 @@ define(function (require) {
 			super(props);
 
 			var defaultParentStyle = { 'flexDirection': 'column', 'justifyContent': 'flex-start', 'alignItems': 'flex-start', 'flexWrap': 'nowrap', 'alignContent': 'flex-start', 'display': 'flex' };
-
 			this.state = {
 				parentStyle: $.extend(defaultParentStyle, this.props.parentStyle),
 				items: this.props.items
 			};
-
-
 		}
 
 		addChildren(items) {

@@ -227,7 +227,8 @@ define(function (require, exports, module) {
 				for (var i = 0; i < this.get('geometries').length; i++) {
 					elements[this.get('geometries')[i].id] = "";
 				}
-				GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
+				//GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
+				Canvas1.engine.splitGroups(window.Instances[0], elements);
 			}
 		},
 

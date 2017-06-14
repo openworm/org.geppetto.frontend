@@ -113,8 +113,8 @@ define(function (require, exports, module) {
 			var comp = this.getComponent();
 			//this.set('component', GEPPETTO.ComponentFactory._addComponent(comp, "PANEL", { items: this.getChildren(), parentStyle: this.get('parentStyle') },
 			//	 document.getElementById('widgetContainer'), undefined, true));
-			GEPPETTO.ComponentFactory._renderComponent(comp, "PANEL", this.getParameters({ items: this.getChildren(), parentStyle: this.get('parentStyle') }),
-				 document.getElementById('widgetContainer'), undefined, true);
+			this.set('component', GEPPETTO.ComponentFactory._renderComponent(comp, "PANEL", this.getParameters({ items: this.getChildren(), parentStyle: this.get('parentStyle') }),
+				 document.getElementById('widgetContainer'), undefined, true));
 
 			// On close send a message to python to remove objects
 			var that = this;

@@ -129,6 +129,18 @@ define(function (require) {
 						type = addWidget(componentToAdd);
 					}
 					var component = React.createFactory(type)(properties);
+					
+					return component;
+
+			},
+
+			_createComponent: function(componentType, properties, container, callback, isWidget){
+				var that=this;
+
+				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
+
+					var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
+
 					var renderedComponent = window[properties.id] = this.renderComponent(component, container, callback);
 
 					// Register widget/controller for events, etc
@@ -140,18 +152,6 @@ define(function (require) {
 						GEPPETTO.Console.updateTags(componentType, renderedComponent);
 						renderedComponent.container = container;
 					}
-					
-					return renderedComponent;
-
-			},
-
-			_createComponent: function(componentType, properties, container, callback, isWidget){
-				var that=this;
-
-				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
-
-					var renderedComponent = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
-
 					// Register in component map
 					if (!(componentType in that.componentsMap)){
 						that.componentsMap[componentType] = []

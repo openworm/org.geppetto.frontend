@@ -27,8 +27,8 @@ define(function (require) {
     return Widget.View.extend({
 
         dataset: {},
-        connectivityOptions: {},
         nodeColormap: {},
+        connectivityOptions: {},
         defaultConnectivityOptions: {
             width: 660,
             height: 500,
@@ -47,25 +47,11 @@ define(function (require) {
                 return 1;
             }
         },
-
  
         initialize: function (options) {
             this.options = options;
 
-            this.nodeColormap = function(){
-                var pops = GEPPETTO.ModelFactory.getAllInstancesOf(
-                    GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)[0])[0].getChildren();
-                var domain = [];
-                var range = [];
-                for (var i=0; i<pops.length; ++i) {
-                    domain.push(pops[i].getPath());
-                    range.push(pops[i].getColor());
-                }
-                var scale = d3.scaleOrdinal(range);
-                scale.domain(domain);
-                return scale;
-            }();
-            
+            this.nodeColormap = this.getNodeColormap();
 
             Widget.View.prototype.initialize.call(this, options);
             this.setOptions(this.defaultConnectivityOptions);
@@ -92,6 +78,23 @@ define(function (require) {
 
                 window[that.id].setPosition(left, top);
             });
+        },
+
+        getNodeColormap: function () {
+            var cells = GEPPETTO.ModelFactory.getAllInstancesOf(
+                GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)[0])[0].getChildren();
+            var domain = [];
+            var range = [];
+            for (var i=0; i<cells.length; ++i) {
+                if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
+                    domain.push(cells[i].getChildren()[0].getType().getId());
+                else
+                    domain.push(cells[i].getPath());
+                range.push(cells[i].getColor());
+            }
+            var scale = d3.scaleOrdinal(range);
+            scale.domain(domain);
+            return scale;
         },
 
         setSize: function (h, w) {
@@ -395,7 +398,7 @@ define(function (require) {
                                 .append(this.createLayoutSelector()[0].outerHTML).modal();
             function handleFirstClick(event) {
                 //TODO: remove Hardcoded NeuroML stuff
-                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
+                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network);
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
                 function synapseFromConnection(conn) {
                 	

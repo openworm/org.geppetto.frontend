@@ -41,15 +41,20 @@ define(function (require, exports, module) {
 			model.send({ event: 'blur', data: value });
 		},
 
-		getComponent: function (componentItem, parameters, container, isWidget) {
+		getParameters: function(parameters){
 			parameters['id'] = this.get('widget_id');
 			parameters['name'] = this.get('widget_name');
 			parameters['sync_value'] = this.get('sync_value');
 			parameters['handleChange'] = this.handleChange.bind(null, this);
 			parameters['handleBlur'] = this.handleBlur.bind(null, this);
+			return parameters;
+		},
 
-			this.set('component', GEPPETTO.ComponentFactory._addComponent(componentItem, this.componentType, parameters,
-				 container, undefined, isWidget));
+		getComponent: function (componentItem, parameters, container) {
+			
+			var component = GEPPETTO.ComponentFactory._addComponent(componentItem, this.componentType, this.getParameters(parameters),
+				 container, undefined, (this.get("embedded") == false));
+			this.set('component', component);
 
 			return component;
 		}
@@ -82,7 +87,7 @@ define(function (require, exports, module) {
 
 		getComponent: function () {
 			var parameters = { items: this.getChildren(), parentStyle: this.get('parentStyle') };
-			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters, null, true]);
+			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters, null]);
 		},
 
 		forceRender: function () {
@@ -106,8 +111,10 @@ define(function (require, exports, module) {
 
 		display: function () {
 			var comp = this.getComponent();
-			this.set('component', GEPPETTO.ComponentFactory._addComponent(comp, "PANEL", { items: this.getChildren(), parentStyle: this.get('parentStyle') },
-				 document.getElementById('widgetContainer'), undefined, true));
+			//this.set('component', GEPPETTO.ComponentFactory._addComponent(comp, "PANEL", { items: this.getChildren(), parentStyle: this.get('parentStyle') },
+			//	 document.getElementById('widgetContainer'), undefined, true));
+			GEPPETTO.ComponentFactory._renderComponent(comp, "PANEL", this.getParameters({ items: this.getChildren(), parentStyle: this.get('parentStyle') }),
+				 document.getElementById('widgetContainer'), undefined, true);
 
 			// On close send a message to python to remove objects
 			var that = this;
@@ -225,7 +232,7 @@ define(function (require, exports, module) {
 		},
 		getComponent: function () {
 			var parameters = { handleClick: this.handleClick.bind(null, this) };
-			return ButtonSync.__super__.getComponent.apply(this, [RaisedButtonComp, parameters, null, false]);
+			return ButtonSync.__super__.getComponent.apply(this, [RaisedButtonComp, parameters, null]);
 		},
 
 		handleClick: function (model) {

@@ -13,7 +13,7 @@ define(function (require, exports, module) {
 	var jupyter_widgets = require('jupyter-js-widgets');
 	var GEPPETTO = require('geppetto');
 
-	var $ = require('jquery');
+	var $ = require('jquery'); 
 	var _ = require('underscore');
 
 	var ComponentSync = jupyter_widgets.WidgetModel.extend({
@@ -41,15 +41,16 @@ define(function (require, exports, module) {
 			model.send({ event: 'blur', data: value });
 		},
 
-		getComponent: function (componentItem, parameters) {
+		getComponent: function (componentItem, parameters, container, isWidget) {
 			parameters['id'] = this.get('widget_id');
 			parameters['name'] = this.get('widget_name');
 			parameters['sync_value'] = this.get('sync_value');
 			parameters['handleChange'] = this.handleChange.bind(null, this);
 			parameters['handleBlur'] = this.handleBlur.bind(null, this);
 
-			var component = React.createFactory(componentItem)(parameters);
-			this.set('component', component);
+			this.set('component', GEPPETTO.ComponentFactory._addComponent(componentItem, this.componentType, parameters,
+				 container, undefined, isWidget));
+
 			return component;
 		}
 	});
@@ -61,6 +62,7 @@ define(function (require, exports, module) {
 			position_y: null,
 			width: null,
 			height: null,
+			componentType: "PANEL",
 			properties: {},
 			triggerClose: true
 		}),
@@ -80,7 +82,7 @@ define(function (require, exports, module) {
 
 		getComponent: function () {
 			var parameters = { items: this.getChildren(), parentStyle: this.get('parentStyle') };
-			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters]);
+			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters, null, true]);
 		},
 
 		forceRender: function () {
@@ -213,14 +215,15 @@ define(function (require, exports, module) {
 	var ButtonSync = ComponentSync.extend({
 
 		defaults: _.extend({}, ComponentSync.prototype.defaults, {
-
+			componentType: "RAISEDBUTTON"
 		}),
+
 		initialize: function (options) {
 			ButtonSync.__super__.initialize.apply(this, arguments);
 		},
 		getComponent: function () {
 			var parameters = { handleClick: this.handleClick.bind(null, this) };
-			return ButtonSync.__super__.getComponent.apply(this, [RaisedButtonComp, parameters]);
+			return ButtonSync.__super__.getComponent.apply(this, [RaisedButtonComp, parameters, null, false]);
 		},
 
 		handleClick: function (model) {

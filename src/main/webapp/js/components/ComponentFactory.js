@@ -104,35 +104,32 @@ define(function (require) {
 				return this.camelize(id);
 			},
 
-			_createComponent: function(componentType, properties, container, callback, isWidget){
-				var that=this;
-				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
+			_addComponent: function(componentToAdd, componentType, properties, container, callback, isWidget){
 					// Prepare properties
 					if (properties === undefined){
 						properties = {};
 					}
 					properties.componentType = componentType;
 					if (!("id" in properties)){
-						properties["id"] = that.getAvailableComponentId(componentType);
+						properties["id"] = this.getAvailableComponentId(componentType);
 					}
 					if (!("isStateless" in properties)){
 						properties["isStateless"] = false;
 					}
+
+					if(container==null && isWidget){ 
+						//FIXME Redundant, see addWidget
+						container=document.getElementById('widgetContainer');
+					}
 					properties["parentContainer"] = container;
 					
 					// Create component/widget
-					var type = loadedModule;
+					var type = componentToAdd;
 					if (isWidget){
-						type = addWidget(loadedModule);
+						type = addWidget(componentToAdd);
 					}
 					var component = React.createFactory(type)(properties);
-					var renderedComponent = window[properties.id] = that.renderComponent(component, container, callback);
-					
-					// Register in component map
-					if (!(componentType in that.componentsMap)){
-						that.componentsMap[componentType] = []
-					}
-					that.componentsMap[componentType].push(renderedComponent);
+					var renderedComponent = window[properties.id] = this.renderComponent(component, container, callback);
 
 					// Register widget/controller for events, etc
 					if (isWidget){
@@ -143,6 +140,23 @@ define(function (require) {
 						GEPPETTO.Console.updateTags(componentType, renderedComponent);
 						renderedComponent.container = container;
 					}
+					
+					return renderedComponent;
+
+			},
+
+			_createComponent: function(componentType, properties, container, callback, isWidget){
+				var that=this;
+
+				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function(loadedModule){
+
+					var renderedComponent = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
+
+					// Register in component map
+					if (!(componentType in that.componentsMap)){
+						that.componentsMap[componentType] = []
+					}
+					that.componentsMap[componentType].push(renderedComponent);
 					
 					return renderedComponent;
 				});

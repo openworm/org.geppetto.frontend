@@ -117,10 +117,9 @@ define(function (require) {
         },
 
         createDataFromConnections: function () {
-            //TODO: remove Hardcoded NeuroML stuff
-            if(Model.neuroml.connection){
+            if(this.options.library.connection){
             	
-            	var connectionVariables = Model.neuroml.connection.getVariableReferences();
+                var connectionVariables = this.options.library.connection.getVariableReferences();
             	if(connectionVariables.length>0) {
 
 		            if (this.dataset["root"].getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
@@ -385,12 +384,11 @@ define(function (require) {
             var modalContent=$('<div class="modal fade" id="connectivity-config-modal"></div>')
                                 .append(this.createLayoutSelector()[0].outerHTML).modal();
             function handleFirstClick(event) {
-                //TODO: remove Hardcoded NeuroML stuff
-                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network);
-                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
+                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(that.options.library.network);
+                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}))
                 function synapseFromConnection(conn) {
                 	
-                	var synapses=GEPPETTO.ModelFactory.getAllVariablesOfType(conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse);
+                    var synapses=GEPPETTO.ModelFactory.getAllVariablesOfType(conn.getParent(), that.options.library.synapse);
                 	if(synapses.length>0){
                 		return synapses[0].getId();
                 	}

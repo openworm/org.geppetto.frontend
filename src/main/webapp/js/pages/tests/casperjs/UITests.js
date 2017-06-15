@@ -5,7 +5,7 @@ var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
 var projectID;
 
-casper.test.begin('Geppetto basic tests', 127, function suite(test) {
+casper.test.begin('Geppetto basic tests', 133, function suite(test) {
     casper.options.viewportSize = {
         width: 1340,
         height: 768
@@ -54,7 +54,7 @@ casper.test.begin('Geppetto basic tests', 127, function suite(test) {
 
     casper.then(function () {
         testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
-            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true);
+            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true,"hhcell");
     });
     
     casper.then(function () {
@@ -65,7 +65,7 @@ casper.test.begin('Geppetto basic tests', 127, function suite(test) {
     });
     
     casper.then(function () {
-        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID);
+        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
     });
     
     casper.then(function () {
@@ -74,7 +74,7 @@ casper.test.begin('Geppetto basic tests', 127, function suite(test) {
 
     casper.then(function () {
         testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
-            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false);
+            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false,"c302_A_Pharyngeal");
     });
     
     casper.then(function () {
@@ -94,7 +94,7 @@ casper.test.begin('Geppetto basic tests', 127, function suite(test) {
 
     casper.then(function () {
         testProject(test, TARGET_URL  +port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-            false, '', '', false);
+            false, '', '', false,"Balanced_240cells_36926conns");
     });
     
     casper.then(function () {
@@ -197,12 +197,20 @@ function reloadProjectTest(test, url, customHandlers,widgetCanvasObject){
 				
 				test.assertEquals(popUpCustomHandler.length, customHandlers, "Popup1 custom handlers restored correctly");
 				test.assertEquals(popUpCustomHandler[0]["event"], "click", "Popup2 custom handlers event restored correctly");
+				
+				var meshInCanvas2Exists = casper.evaluate(function() {
+					var mesh = $.isEmptyObject(Canvas1.engine.meshes);
+					
+					return mesh;
+				});
+				
+				test.assertEquals(meshInCanvas2Exists, false, "Canvas2 has mesh set correctly");
 			});
 		},null,300000);
 	});
 }
 
-function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter, testConsole) {
+function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter, testConsole,widgetCanvasObject) {
 
     casper.thenOpen(url, function () {
         this.echo("Loading an external model that is not persisted at " + url);
@@ -241,14 +249,22 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             casper.then(function () {
             	casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
         		casper.evaluate(function(widgetCanvasObject) {
+        			var canvasObject = null;
+        			if(widgetCanvasObject=="hhcell"){
+        				canvasObject = hhcell;
+        			}else if(widgetCanvasObject=="c302_A_Pharyngeal"){
+        				canvasObject = c302_A_Pharyngeal;
+        			}else if(widgetCanvasObject=="Balanced_240cells_36926conns"){
+        				canvasObject = Balanced_240cells_36926conns;
+        			}
         			G.addWidget(6);
-        			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();});
+        			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([canvasObject])});
         			G.addWidget(1).setMessage("Hhcell popup");
         			var customHandler = function(node, path, widget) {};
         			Popup1.addCustomNodeHandler(customHandler,'click');
         			$(".nextBtn").click();
         			$(".nextBtn").click();
-        		});
+        		},widgetCanvasObject);
                 this.echo("Checking content of experiment row");
                 // test or wait for control panel stuff to be there
                 if(this.exists('a[href="#experiments"]')){

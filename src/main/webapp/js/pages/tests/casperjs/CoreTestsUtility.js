@@ -60,7 +60,7 @@ function removeAllPlots(){
 function removeAllDialogs(){
 	casper.then(function(){
 		casper.evaluate(function() {
-			$("div.ui-widget").remove();
+			$("div.dialog").remove();
 		});
 	});
 }

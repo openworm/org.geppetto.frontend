@@ -165,7 +165,13 @@ function hhcellTest(test,name){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:1});
 			Plot1.setPosition(0,300);
+			G.addWidget(1).setMessage("Hhcell popup");
+			G.addWidget(1).setData(hhcell);
+			var customHandler = function(node, path, widget) {};
+	        Popup2.addCustomNodeHandler(customHandler,'click');
 		});
+		
+		casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
 		
 		var mesh = casper.evaluate(function(){
 			var mesh = Canvas2.engine.getRealMeshesForInstancePath("hhcell.hhpop[0]").length;
@@ -173,6 +179,11 @@ function hhcellTest(test,name){
 		});
 		test.assertEquals(mesh, 1, "Canvas widget has hhcell");
 
+		casper.evaluate(function(){
+			 $(".nextBtn").click();
+			 $(".nextBtn").click();
+		});
+		
 		casper.echo("-------Testing Camera Controls--------");
 		testCameraControlsWithCanvasWidget(test, [0,0,30.90193733102435]);
 		casper.wait(1000, function(){
@@ -182,7 +193,48 @@ function hhcellTest(test,name){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");
 		})
-	})
+	});
+	
+	casper.then(function(){launchTest(test,"Hhcell",30000);});
+	
+	casper.then(function(){
+		test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
+		test.assertVisible('div#Plot1', "Plot1 is correctly open on reload");
+		test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
+		test.assertVisible('div#Popup2', "Popup2 is correctly open on reload");
+		test.assertVisible('div#Tutorial1', "Tutorial1 is correctly open on reload");
+		
+		var tutorialStep = casper.evaluate(function() {
+			return Tutorial1.state.currentStep;
+		});
+		
+		test.assertEquals(tutorialStep, 2, "Tutorial1 step restored correctly");
+		
+		var popUpMessage = casper.evaluate(function() {
+			return $("#Popup1").html();
+		});
+
+		test.assertEquals(popUpMessage, "Hhcell popup", "Popup1 message restored correctly");
+		
+		var popUpCustomHandler = casper.evaluate(function() {
+			return Popup2.customHandlers;
+		});
+		
+		test.assertEquals(popUpCustomHandler.length, 1, "Popup2 custom handlers restored correctly");
+		test.assertEquals(popUpCustomHandler[0]["event"], "click", "Popup2 custom handlers event restored correctly");
+		
+		var meshInCanvas2Exists = casper.evaluate(function() {
+			var mesh = Canvas1.engine.meshes["hhcell.hhpop[0]"];
+			
+			if(mesh!=null && mesh!=undefined){
+				return true;
+			}
+			
+			return false;
+		});
+		
+		test.assertEquals(meshInCanvas2Exists, true, "Canvas2 hhcell set correctly");
+	});	
 };
 
 /**
@@ -191,7 +243,7 @@ function hhcellTest(test,name){
 function acnetTest(test){
 	casper.echo("------------STARTING ACNET TEST--------------");
 	casper.then(function(){
-		removeAllDialogs();
+		removeAllPlots();
 	});
 	casper.then(function(){
 		casper.echo("-------Testing Camera Controls--------");
@@ -287,6 +339,51 @@ function acnetTest(test){
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
 		
+		casper.evaluate(function(){
+			acnet2.pyramidals_48[0].setGeometryType("cylinders")
+		});
+		
+		//test mesh set geometry
+		var meshType = casper.evaluate(function(){
+			return Canvas1.engine.getRealMeshesForInstancePath("acnet2.pyramidals_48[0]")[0].type;
+		});
+		test.assertEquals(meshType, "Mesh", "Correctly set mesh to cylinders");
+		
+		var meshTotal = casper.evaluate(function(){
+			return Object.keys(Canvas1.engine.meshes).length;
+		});
+		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
+		
+		casper.evaluate(function(){
+			acnet2.pyramidals_48[0].setGeometryType("lines")
+		});
+		
+		//test mesh set geometry
+		meshType = casper.evaluate(function(){
+			return Canvas1.engine.getRealMeshesForInstancePath("acnet2.pyramidals_48[0]")[0].type;
+		});
+		test.assertEquals(meshType, "LineSegments", "Correctly set mesh to lines");
+		
+		var meshTotal = casper.evaluate(function(){
+			return Object.keys(Canvas1.engine.meshes).length;
+		});
+		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
+		
+		casper.evaluate(function(){
+			acnet2.pyramidals_48[0].setGeometryType("cylinders")
+		});
+		
+		//test mesh set geometry
+		var meshType = casper.evaluate(function(){
+			return Canvas1.engine.getRealMeshesForInstancePath("acnet2.pyramidals_48[0]")[0].type;
+		});
+		test.assertEquals(meshType, "Mesh", "Correctly set mesh to cylinders");
+		
+		var meshTotal = casper.evaluate(function(){
+			return Object.keys(Canvas1.engine.meshes).length;
+		});
+		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
+		
 		//test color function
 		casper.wait(2000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
@@ -312,7 +409,7 @@ function c302Test(test){
 	});
 	
 	casper.then(function(){
-		removeAllDialogs();
+		removeAllPlots();
 	});
 	
 	casper.then(function(){

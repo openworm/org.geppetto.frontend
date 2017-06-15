@@ -51,8 +51,6 @@ define(function (require) {
         initialize: function (options) {
             this.options = options;
 
-            this.nodeColormap = this.getNodeColormap();
-
             Widget.View.prototype.initialize.call(this, options);
             this.setOptions(this.defaultConnectivityOptions);
 
@@ -80,23 +78,6 @@ define(function (require) {
             });
         },
 
-        getNodeColormap: function () {
-            var cells = GEPPETTO.ModelFactory.getAllInstancesOf(
-                GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)[0])[0].getChildren();
-            var domain = [];
-            var range = [];
-            for (var i=0; i<cells.length; ++i) {
-                if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
-                    domain.push(cells[i].getChildren()[0].getType().getId());
-                else
-                    domain.push(cells[i].getPath());
-                range.push(cells[i].getColor());
-            }
-            var scale = d3.scaleOrdinal(range);
-            scale.domain(domain);
-            return scale;
-        },
-
         setSize: function (h, w) {
             Widget.View.prototype.setSize.call(this, h, w);
             if (this.svg != null) {
@@ -110,8 +91,15 @@ define(function (require) {
             }
         },
 
-        setData: function (root, options) {
+        setNodeColormap: function(nodeColormap) {
+            if (typeof nodeColormap != 'undefined')
+                this.nodeColormap = d3.scaleOrdinal(nodeColormap.range)
+                .domain(nodeColormap.domain);
+        },
+
+        setData: function (root, options, nodeColormap) {
             this.setOptions(options);
+            this.setNodeColormap(nodeColormap);
             this.dataset = {};
             this.mapping = {};
             this.mappingSize = 0;

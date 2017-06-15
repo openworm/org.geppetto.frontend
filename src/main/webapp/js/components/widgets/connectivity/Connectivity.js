@@ -92,9 +92,14 @@ define(function (require) {
         },
 
         setNodeColormap: function(nodeColormap) {
-            if (typeof nodeColormap != 'undefined')
-                this.nodeColormap = d3.scaleOrdinal(nodeColormap.range)
-                .domain(nodeColormap.domain);
+            if (typeof nodeColormap != 'undefined') {
+                if (typeof nodeColormap.range == 'undefined')
+                    this.nodeColormap = d3.scaleOrdinal(d3.schemeCategory20)
+                    .domain(nodeColormap.domain);
+                else
+                    this.nodeColormap = d3.scaleOrdinal(nodeColormap.range)
+                    .domain(nodeColormap.domain);
+            }
         },
 
         setData: function (root, options, nodeColormap) {

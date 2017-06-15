@@ -15,8 +15,9 @@ define(function (require) {
             var innerRadius = Math.min(context.options.innerWidth, context.options.innerHeight) * .41,
                 outerRadius = innerRadius * 1.05;
 
-            var fill = context.nodeColormap
-                .domain(context.dataset.nodeTypes);
+            // if no custom colors set then use d3 provided color scheme
+            var fill = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
+            fill.domain(context.dataset.nodeTypes);
 
             var svg = context.svg.append("g")
                 .attr("transform", "translate(" + context.options.innerWidth / 2 + "," + context.options.innerHeight / 2 + ")");

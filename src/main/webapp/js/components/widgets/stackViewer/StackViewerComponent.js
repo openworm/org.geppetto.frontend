@@ -1117,14 +1117,14 @@ define(function (require) {
                             ids.push([instances[instance].parent.getId()]);
                         }
                         labels.push(instances[instance].parent.getName());
-                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
+                        if (GEPPETTO.G.getSelection().length > 0 && GEPPETTO.G.getSelection()[0].parent.getId() == instances[instance].parent.getId()){
                             colors.push('0Xffcc00'); // selected
                         } else {
                             colors.push(instances[instance].parent.getColor());
                         }
                     }
                     catch (ignore) {
-                        console.log('Error handling ' + instance.data);
+                        console.log('Error handling ' + instances[instance].getId());
                     }
                 }
                 if (server != this.props.config.serverUrl && server != null) {
@@ -1398,6 +1398,7 @@ define(function (require) {
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
                                 templateId={this.props.config.templateId}
                                 templateDomainIds={this.props.config.templateDomainIds}
+                        		templateDomainTypeIds={this.props.config.templateDomainTypeIds}
                                 templateDomainNames={this.props.config.templateDomainNames}
                                 slice={this.state.slice}/>
                     </div>

@@ -153,6 +153,18 @@ function test3DMeshColor(test,testColor,variableName,index){
 	test.assertEquals(color[2],testColor[2],"Black default color is correct for " +variableName);
 }
 
+function getMeshColor(test,variableName,index){
+	if(index==undefined){
+		index=0;
+	}
+	var color = casper.evaluate(function(variableName,index) {
+		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[index].material.color;
+		return [color.r, color.g, color.b];
+	},variableName,index);
+	
+	return color;
+}
+
 function test3DMeshOpacity(test,opactityExpected,variableName,index){
 	if(index==undefined){
 		index=0;

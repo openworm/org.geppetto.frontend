@@ -159,6 +159,7 @@ function hhcellTest(test,name){
 	casper.then(function(){
 		closeSpotlight();
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
+		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
 			hhcell.deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([hhcell])});
@@ -171,14 +172,19 @@ function hhcellTest(test,name){
 	        Popup2.addCustomNodeHandler(customHandler,'click');
 		});
 		
-		casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
-		
+		//toggle tutorial if tutorial button exists
+		if(casper.exists('#tutorialBtn')){
+			casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
+		}
+
+		//tests widget canvas has mesh
 		var mesh = casper.evaluate(function(){
 			var mesh = Canvas2.engine.getRealMeshesForInstancePath("hhcell.hhpop[0]").length;
 			return mesh;
 		});
 		test.assertEquals(mesh, 1, "Canvas widget has hhcell");
 
+		//click on next step for Tutorial
 		casper.evaluate(function(){
 			 $(".nextBtn").click();
 			 $(".nextBtn").click();
@@ -195,44 +201,45 @@ function hhcellTest(test,name){
 		})
 	});
 	
+	//reload test, needed for testing view comes up
 	casper.then(function(){launchTest(test,"Hhcell",30000);});
 	
+	//testing widgets stored in View state come up
 	casper.then(function(){
 		test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
 		test.assertVisible('div#Plot1', "Plot1 is correctly open on reload");
 		test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
 		test.assertVisible('div#Popup2', "Popup2 is correctly open on reload");
-		test.assertVisible('div#Tutorial1', "Tutorial1 is correctly open on reload");
 		
-		var tutorialStep = casper.evaluate(function() {
-			return Tutorial1.state.currentStep;
-		});
-		
-		test.assertEquals(tutorialStep, 2, "Tutorial1 step restored correctly");
-		
+		//if tutorial button exists, tests existence of Tutorial
+		if(casper.exists('#tutorialBtn')){
+			test.assertVisible('div#Tutorial1', "Tutorial1 is correctly open on reload");
+			var tutorialStep = casper.evaluate(function() {
+				return Tutorial1.state.currentStep;
+			});
+			test.assertEquals(tutorialStep, 2, "Tutorial1 step restored correctly");
+		}
+		//Tests content of Popup1 
 		var popUpMessage = casper.evaluate(function() {
 			return $("#Popup1").html();
 		});
-
 		test.assertEquals(popUpMessage, "Hhcell popup", "Popup1 message restored correctly");
 		
+		//Tests popup has custom handlers
 		var popUpCustomHandler = casper.evaluate(function() {
 			return Popup2.customHandlers;
 		});
-		
 		test.assertEquals(popUpCustomHandler.length, 1, "Popup2 custom handlers restored correctly");
 		test.assertEquals(popUpCustomHandler[0]["event"], "click", "Popup2 custom handlers event restored correctly");
 		
+		//Test canvas widget has mesh 
 		var meshInCanvas2Exists = casper.evaluate(function() {
 			var mesh = Canvas1.engine.meshes["hhcell.hhpop[0]"];
-			
 			if(mesh!=null && mesh!=undefined){
 				return true;
 			}
-			
 			return false;
 		});
-		
 		test.assertEquals(meshInCanvas2Exists, true, "Canvas2 hhcell set correctly");
 	});	
 };
@@ -320,6 +327,8 @@ function acnetTest(test){
 	casper.then(function(){
 		closeSpotlight(); //close spotlight before continuing
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
+		
+		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
 			acnet2.pyramidals_48[0].deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
@@ -329,8 +338,10 @@ function acnetTest(test){
 			acnet2.baskets_12[4].getVisualGroups()[0].show(true);
 		});
 		
+		//tests camera controls are working by checking camera has moved
 		testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
 		
+		//applies visual group to instance and tests colors
 		testVisualGroup(test,"acnet2.baskets_12[0]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
 		
 		testVisualGroup(test,"acnet2.baskets_12[5]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
@@ -339,6 +350,8 @@ function acnetTest(test){
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
 		
+		casper.echo("Testing setGeometry");
+		
 		casper.evaluate(function(){
 			acnet2.pyramidals_48[0].setGeometryType("cylinders")
 		});
@@ -354,9 +367,14 @@ function acnetTest(test){
 		});
 		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
 		
+		//retrieve original color pre setGeomtry
+		var color = getMeshColor(test,"acnet2.pyramidals_48[0]");
 		casper.evaluate(function(){
 			acnet2.pyramidals_48[0].setGeometryType("lines")
 		});
+		
+		casper.echo("Testing color post setGeometryType");
+		test3DMeshColor(test,color,"acnet2.pyramidals_48[0]");
 		
 		//test mesh set geometry
 		meshType = casper.evaluate(function(){
@@ -364,21 +382,27 @@ function acnetTest(test){
 		});
 		test.assertEquals(meshType, "LineSegments", "Correctly set mesh to lines");
 		
+		//testsing same amount of meshes exists after changing a mesh to lines
 		var meshTotal = casper.evaluate(function(){
 			return Object.keys(Canvas1.engine.meshes).length;
 		});
 		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
 		
+		//Set geometry type to cylinders
 		casper.evaluate(function(){
 			acnet2.pyramidals_48[0].setGeometryType("cylinders")
 		});
 		
-		//test mesh set geometry
+		//test  set geometry type in a mesh
 		var meshType = casper.evaluate(function(){
 			return Canvas1.engine.getRealMeshesForInstancePath("acnet2.pyramidals_48[0]")[0].type;
 		});
 		test.assertEquals(meshType, "Mesh", "Correctly set mesh to cylinders");
 		
+		casper.echo("Testing color post setGeometryType to cylinders");
+		test3DMeshColor(test,color,"acnet2.pyramidals_48[0]");
+		
+		//testing same amount of meshes exists after changing a mesh to cylinders
 		var meshTotal = casper.evaluate(function(){
 			return Object.keys(Canvas1.engine.meshes).length;
 		});

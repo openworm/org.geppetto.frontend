@@ -182,14 +182,17 @@ function reloadProjectTest(test, url, customHandlers,widgetCanvasObject){
 				casper.wait(2000, function () {});
 				test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
 				test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
-				test.assertVisible('div#Tutorial1', "Tutorial1 is correctly open on reload");
 				test.assertVisible('div#Connectivity1', "Connectivity1 is correctly open on reload");
 				
-				var tutorialStep = casper.evaluate(function() {
-					return Tutorial1.state.currentStep;
-				});
-				
-				test.assertEquals(tutorialStep, 2, "Tutorial1 step restored correctly");
+				if(casper.exists('#tutorialBtn')){
+					test.assertVisible('div#Tutorial1', "Tutorial1 is correctly open on reload");
+
+					var tutorialStep = casper.evaluate(function() {
+						return Tutorial1.state.currentStep;
+					});
+					
+					test.assertEquals(tutorialStep, 2, "Tutorial1 step restored correctly");
+				}
 				
 				var popUpCustomHandler = casper.evaluate(function() {
 					return Popup1.customHandlers;
@@ -247,7 +250,9 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             });
 
             casper.then(function () {
-            	casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
+            	if(casper.exists('#tutorialBtn')){
+        			casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
+        		}
         		casper.evaluate(function(widgetCanvasObject) {
         			var canvasObject = null;
         			if(widgetCanvasObject=="hhcell"){
@@ -265,6 +270,8 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         			$(".nextBtn").click();
         			$(".nextBtn").click();
         		},widgetCanvasObject);
+        		
+        		 casper.wait(2000, function () {});
                 this.echo("Checking content of experiment row");
                 // test or wait for control panel stuff to be there
                 if(this.exists('a[href="#experiments"]')){

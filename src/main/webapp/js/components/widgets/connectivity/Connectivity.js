@@ -401,7 +401,7 @@ define(function (require) {
                 		return "Gap junction";
                 	}
                 }
-                that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
+                that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection, library: that.connectivityOptions.library}); //TODO: add option to select what to plot if #netInstance>1?
                 firstClick=true;
             }
             
@@ -429,6 +429,9 @@ define(function (require) {
                 if (typeof this.connectivityOptions[item] === "function") {
                     serializedItem.value = this.connectivityOptions[item].toString();
                     serializedItem.type = 'function';
+                } else if (item === "library") {
+                    serializedItem.value = this.connectivityOptions[item].getPath();
+                    serializedItem.type = 'library';
                 } else {
                     serializedItem.value = this.connectivityOptions[item];
                     serializedItem.type = 'primitive';
@@ -454,7 +457,7 @@ define(function (require) {
                 var obj = eval(view.data);
                 var deserializedOptions = {};
                 for(var item in view.options){
-                    if(view.options[item].type == "function"){
+                    if(view.options[item].type == "function" || view.options[item].type == "library"){
                         deserializedOptions[item] = eval('(' + view.options[item].value + ')');
                     } else {
                         deserializedOptions[item] = view.options[item].value;

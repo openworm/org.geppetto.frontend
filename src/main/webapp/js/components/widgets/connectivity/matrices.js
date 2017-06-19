@@ -7,7 +7,7 @@ define(function (require) {
 		createMatrixLayout: function (context) {
 			var d3 = require("d3");
 
-			var margin = { top: 30, right: 10, bottom: 10, left: 0 };
+			var margin = { top: 45, right: 10, bottom: 10, left: 15 };
 			var legendWidth = 120;
 
 			var matrixDim = (context.options.innerHeight < (context.options.innerWidth - legendWidth)) ? (context.options.innerHeight) : (context.options.innerWidth - legendWidth);
@@ -18,7 +18,7 @@ define(function (require) {
 				// Colors
 				c = d3.scaleOrdinal(d3.schemeCategory10);
 
-			var labelTop = margin.top - 10;
+			var labelTop = margin.top - 25;
 			var tooltip = context.svg
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + labelTop + ")")
@@ -80,8 +80,44 @@ define(function (require) {
 			var rect = container
 				.append("rect")
 				.attr("class", "background")
-				.attr("width", matrixDim - margin.left)
+				.attr("width", matrixDim - margin.left - 30)
 				.attr("height", matrixDim - margin.top);
+
+                    var types = nodes.map(function(x) { return x.id; });
+
+                    var popIndicator = function(pos) {
+                        return function(d,i) {
+                        d3.select(this).selectAll(".cell")
+                            .data(d)
+			    .enter().append("circle")
+			    .attr("class", "cell")
+			    .attr(pos, function (d, i) {
+				return x(i);
+			    })
+			    .attr("r", x.bandwidth()/2)
+			    .attr("title", function (d) {
+				return d.id;
+			    })
+			    .style("fill", function (d) {
+				return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(d)[0]).getColor();
+			    })
+                        };
+                    };
+
+                    var prePop = container.selectAll(".prePop")
+                        .data([types])
+                        .enter()
+                        .append("g")
+                        .attr("class", "prePop")
+                        .attr("transform", "translate(4,-10)")
+                        .each(popIndicator("cx"));
+                    var postPop = container.selectAll(".postPop")
+                        .data([types])
+                        .enter()
+                        .append("g")
+                        .attr("class", "postPop")
+                        .attr("transform", "translate(-10,4)")
+                        .each(popIndicator("cy"));
 
 			var row = container.selectAll(".row")
 				.data(matrix)

@@ -85,7 +85,7 @@ casper.test.begin('Geppetto basic tests', 133, function suite(test) {
     });
     
     casper.then(function () {
-        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,2);
+        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
     });
     
     casper.then(function () {
@@ -179,7 +179,7 @@ function reloadProjectTest(test, url, customHandlers,widgetCanvasObject){
 			this.echo("I've waited for "+url+" project to load.");
 			
 			casper.then(function () {
-				casper.wait(2000, function () {});
+				casper.wait(5000, function () {});
 				test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
 				test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
 				test.assertVisible('div#Connectivity1', "Connectivity1 is correctly open on reload");
@@ -271,7 +271,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         			$(".nextBtn").click();
         		},widgetCanvasObject);
         		
-        		 casper.wait(2000, function () {});
+        		 casper.wait(5000, function () {});
                 this.echo("Checking content of experiment row");
                 // test or wait for control panel stuff to be there
                 if(this.exists('a[href="#experiments"]')){

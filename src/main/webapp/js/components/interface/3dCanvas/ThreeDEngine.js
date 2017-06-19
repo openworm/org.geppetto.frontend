@@ -1465,7 +1465,7 @@ define(['jquery'], function () {
             var instance = eval(instancePath);
 
             // Behaviour: help exploration of networks by ghosting and not highlighting non connected or selected
-            if (instance.getConnections().length > 0) {
+            if (instance !== undefined && instance.getConnections().length > 0) {
                 // allOtherMeshes will contain a list of all the non connected entities in the scene
                 var allOtherMeshes = $.extend({}, this.meshes);
                 // look on the simulation selection options and perform necessary operations

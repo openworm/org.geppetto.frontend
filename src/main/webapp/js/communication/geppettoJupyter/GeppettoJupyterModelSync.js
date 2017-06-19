@@ -227,8 +227,7 @@ define(function (require, exports, module) {
 				for (var i = 0; i < this.get('geometries').length; i++) {
 					elements[this.get('geometries')[i].id] = "";
 				}
-				//GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
-				Canvas1.engine.splitGroups(window.Instances[0], elements);
+				GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
 			}
 		},
 
@@ -382,11 +381,11 @@ define(function (require, exports, module) {
 			else if (msg.type === 'draw_sphere') {
 				var content = msg.content;
 				if (this.point_process_sphere) {
-					this.point_process_sphere = GEPPETTO.SceneFactory.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
+					this.point_process_sphere = Canvas1.engine.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
 					this.point_process_sphere.visible = true;
 				}
 				else {
-					this.point_process_sphere = GEPPETTO.SceneFactory.add3DSphere(content.x, content.y, content.z, content.radius);
+					this.point_process_sphere = Canvas1.engine.add3DSphere(content.x, content.y, content.z, content.radius);
 				}
 			}
 			else if (msg.type === 'remove_sphere') {

@@ -262,7 +262,7 @@ define(function (require) {
                 if (experiment.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                     // playExperimentReady true even if some variables
                     // do not have value, so if playAll then we get state here
-                    if (!this.playExperimentReady || this.playOptions.playAll) {
+                    if (!this.playExperimentReady) {
                     	this.getExperimentState(experiment.getParent().getId(), experiment.id, null);
                         return "Play Experiment";
                     } else {

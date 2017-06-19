@@ -185,9 +185,10 @@ function hhcellTest(test,name){
 		test.assertEquals(mesh, 1, "Canvas widget has hhcell");
 
 		//click on next step for Tutorial
-		casper.evaluate(function(){
-			 $(".nextBtn").click();
-			 $(".nextBtn").click();
+		casper.evaluate(function () {
+			var nextBtnSelector = $(".nextBtn");
+			nextBtnSelector.click();
+			nextBtnSelector.click();
 		});
 		
 		casper.echo("-------Testing Camera Controls--------");

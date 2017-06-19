@@ -364,8 +364,7 @@ define(function (require) {
                                                                 break;
                                                             } else {
                                                                 that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
-//                                                                var varriableId = that.props.templateDomainIds[index]; //TODO Select type for domain
-//                                                                stackViewerSelect(varriableId);
+                                                                stackViewerSelect(that.props.templateDomainTypeIds[index]);
                                                                 break;
                                                             }
                                                         }

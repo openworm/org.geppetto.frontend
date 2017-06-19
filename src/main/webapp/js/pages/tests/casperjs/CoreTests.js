@@ -114,11 +114,11 @@ function hhcellTest(test,name){
 	casper.then(function(){
 		casper.echo("-------Testing Control Panel--------");
 		testInitialControlPanelValues(test,3);
-	})
+	});
 	casper.then(function(){
 		casper.echo("-------Testing Mesh Visibility--------");
 		testVisibility(test,"hhcell.hhpop[0]","#hhcell_hhpop_0__visibility_ctrlPanel_btn");
-	})
+	});
 	casper.then(function () {
 		casper.echo("-------Testing Plotting from Control Panel--------");
 		buttonClick("#stateVariablesFilterBtn");
@@ -242,7 +242,7 @@ function hhcellTest(test,name){
 		});
 		test.assertEquals(meshInCanvas2Exists, true, "Canvas2 hhcell set correctly");
 	});	
-};
+}
 
 /**
  * Main method for testing ACNet
@@ -270,7 +270,7 @@ function acnetTest(test){
 	casper.then(function(){
 		casper.echo("-------Testing Mesh Visibility--------");
 		testVisibility(test,"acnet2.pyramidals_48[0]","#acnet2_pyramidals_48_0__visibility_ctrlPanel_btn");
-	})
+	});
 	casper.then(function () {
 		casper.echo("-------Testing Plotting from Control Panel--------");
 		buttonClick("#stateVariablesFilterBtn");
@@ -458,7 +458,7 @@ function c302Test(test){
 		this.waitUntilVisible('button[id="c302_ADAL_0__v_plot_ctrlPanel_btn"]', function () {
 			buttonClick("#c302_ADAL_0__v_plot_ctrlPanel_btn");
 		});
-	})
+	});
 
 	casper.then(function(){
 		this.waitUntilVisible('div[id="Plot1"]', function () {
@@ -477,12 +477,12 @@ function c302Test(test){
 				testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot2"]',true,false);
 			});
 		});
-	})
+	});
 
 	casper.then(function(){
 		casper.echo("-------Testing Spotlight--------");
 		testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot2"]',true,false);
-	})
+	});
 
 	casper.then(function(){
 		closeSpotlight(); //close spotlight before continuing
@@ -504,8 +504,8 @@ function c302Test(test){
 			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
 			casper.echo("Done Playing, now exiting");
-		})
-	})
+		});
+	});
 }
 
 function ca1Test(test){
@@ -528,7 +528,7 @@ function ca1Test(test){
 		this.evaluate(function(){
 			$("#anyProjectFilterBtn").click();
 		});
-	})
+	});
 
 	casper.then(function(){
 		casper.evaluate(function() {
@@ -552,7 +552,7 @@ function pharyngealTest(test){
 	casper.then(function(){
 		testInitialControlPanelValues(test,10);
 	});
-};
+}
 
 function nwbSampleTest(test){
 	casper.waitForSelector('div[id="Popup1"]', function() {

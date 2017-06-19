@@ -33,7 +33,7 @@ function resetCameraTestWithCanvasWidget(test,expectedCameraPosition){
 	buttonClick("#panHomeBtn");
 	casper.evaluate(function(){
 		$("#Canvas2_component").find(".position-toolbar").find(".pan-home").click();
-	})
+	});
 	testCameraPosition(test,expectedCameraPosition);
 }
 
@@ -297,7 +297,7 @@ function testSpotlight(test, variableName,plotName,expectButton,testSelect, sele
  */
 function testCameraControls(test, expectedCameraPosition){
 	casper.then(function(){
-		casper.echo("------Zoom-------")
+		casper.echo("------Zoom-------");
 		casper.repeat(zoomClicks, function() {
 			this.thenClick("button#zoomInBtn", function() {});
 		});
@@ -334,7 +334,7 @@ function testCameraControls(test, expectedCameraPosition){
 function testCameraControlsWithCanvasWidget(test, expectedCameraPosition){
 	casper.echo("-------Testing Camera Controls while playing experiment--------");
 	casper.then(function(){
-		casper.echo("------Zoom-------")
+		casper.echo("------Zoom-------");
 		casper.repeat(zoomClicks*2, function() {
 			this.thenClick("button#zoomInBtn", function() {});
 			this.thenClick("#Canvas2 button#zoomInBtn", function() {});

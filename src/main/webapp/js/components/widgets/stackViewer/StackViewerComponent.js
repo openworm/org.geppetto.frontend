@@ -991,21 +991,24 @@ define(function (require) {
                 stackY: -10000,
                 imageX: 1024,
                 imageY: 1024,
-                fxp: this.props.config.subDomains[4][0] || [511, 255, 108],
+                fxp: [511, 255, 108],
                 pit: 0,
                 yaw: 0,
                 rol: 0,
                 scl: 1.0,
-                voxelX: Number(this.props.config.subDomains[0][0] || 0.622088),
-                voxelY: Number(this.props.config.subDomains[0][1] || 0.622088),
-                voxelZ: Number(this.props.config.subDomains[0][2] || 0.622088),
+                voxelX: 0.622088,
+                voxelY: 0.622088,
+                voxelZ: 0.622088,
                 minDst: -100,
                 maxDst: 100,
                 orth: 0,
                 color: [],
                 stack: [],
-                label: this.props.config.subDomains[2] || [],
-                id: this.props.config.subDomains[1] || [],
+                label: [],
+                id: [],
+                tempId: [],
+                tempName: [],
+                tempType: [],
                 plane: null,
                 initalised: false,
                 slice: false
@@ -1090,6 +1093,28 @@ define(function (require) {
                 }
                 if (nextProps.data.width && nextProps.data.width != null) {
                     this.setState({width: nextProps.data.width});
+                }
+                if (nextProps.config && nextProps.config != null && nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length && nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
+                    this.setState({voxelX: Number(this.props.config.subDomains[0][0] || 0.622088),
+                        voxelY: Number(this.props.config.subDomains[0][1] || 0.622088),
+                        voxelZ: Number(this.props.config.subDomains[0][2] || 0.622088),});
+                }
+                if (nextProps.config && nextProps.config != null){
+                	if (nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length){
+                		if (nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
+                			this.setState({voxelX: Number(this.props.config.subDomains[0][0] || 0.622088),
+	                        voxelY: Number(this.props.config.subDomains[0][1] || 0.622088),
+	                        voxelZ: Number(this.props.config.subDomains[0][2] || 0.622088),});
+                		}
+                		if (nextProps.config.subDomains.length > 4 && nextProps.config.subDomains[1] != null){
+                			this.setState({tempName: this.props.config.subDomains[2],
+                            tempId: this.props.config.subDomains[1],
+                            tempType: this.props.config.subDomains[3]});
+                			if (nextProps.config.subDomains[4] && nextProps.config.subDomains[4].length && nextProps.config.subDomains[4].length > 0){
+                				this.setState({fxp:this.props.config.subDomains[4][0]});
+                			}
+                		}
+                	}
                 }
             }
         },
@@ -1396,9 +1421,9 @@ define(function (require) {
                                 width={this.props.data.width} voxelX={this.state.voxelX}
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
                                 templateId={this.props.config.templateId}
-                                templateDomainIds={this.props.config.templateDomainIds}
-                        		templateDomainTypeIds={this.props.config.templateDomainTypeIds}
-                                templateDomainNames={this.props.config.templateDomainNames}
+                                templateDomainIds={this.state.tempId}
+                        		templateDomainTypeIds={this.state.tempType}
+                                templateDomainNames={this.stage.tempName}
                                 slice={this.state.slice}/>
                     </div>
                 );

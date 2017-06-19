@@ -66,6 +66,7 @@ define(function (require) {
         defWidth: 600,
         data: { id: this.id, height: this.defHeight, width: this.defWidth, instances: [], selected: [] },
         config: {},
+        voxelSize: {x:0.622088, y:0.622088, z:0.622088},
 
         /**
          * Initialises button bar
@@ -103,6 +104,13 @@ define(function (require) {
             this.data.width = w;
 
             this.addBorders();
+            this.updateScene();
+        },
+        
+        setVoxel: function (x, y, z) {
+            this.voxelSize.x = x;
+            this.voxelSize.y = y;
+            this.voxelSize.z = z;
             this.updateScene();
         },
         
@@ -208,7 +216,7 @@ define(function (require) {
 
         updateScene: function(){
             ReactDOM.render(
-                React.createElement(StackViewerComponent, {data: this.data, config: this.config}),
+                React.createElement(StackViewerComponent, {data: this.data, config: this.config, voxel: this.voxelSize}),
                 document.getElementById('stack-container' + this.id)
             );
         },

@@ -346,6 +346,16 @@ define(function (require) {
         }
 
         /**
+         * Split merged mesh into individual meshes
+         * @param instances
+         * @param groupElements
+         */
+        splitGroups(instance, groupElements){
+            this.engine.splitGroups(instance, groupElements);
+            return this;
+        }
+
+        /**
          * Associate a color function to a group of instances
          *
          * @param instances - The instances we want to change the color of
@@ -382,8 +392,8 @@ define(function (require) {
          * @param instance
          * @returns {Canvas}
          */
-        showVisualGroupsForInstance(instance) {
-            this.engine.showVisualGroupsForInstance(instance);
+        showVisualGroupsForInstance(instance, visualGroupElement) {
+            this.engine.showVisualGroupsForInstance(instance, visualGroupElement);
             return this;
         }
 

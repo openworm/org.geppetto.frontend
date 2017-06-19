@@ -2391,8 +2391,7 @@ define(['jquery'], function () {
                     this.setThreeColor(groupMesh.material.color, splitHighlightedGroups[groupName].color.getHex());
                 }
             }
-        }
-        ,
+        },
 
         /**
          * Split merged mesh into individual meshes
@@ -2614,7 +2613,7 @@ define(['jquery'], function () {
          * @param instance
          * @param meshesContainer
          */
-        showVisualGroupsForInstance: function (instance) {
+        showVisualGroupsForInstance: function (instance, visualGroupElement) {
             if (!this.hasInstance(instance)) {
                 return;
             }
@@ -2634,8 +2633,8 @@ define(['jquery'], function () {
                     var groupElementsReference = object.getInitialValue().value.groupElements;
                     for (var i = 0; i < groupElementsReference.length; i++) {
                         var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
-                        if (objectGroup == this.getId()) {
-                            elements[object.getId()] = {'color': this.getColor()}
+                        if (objectGroup == visualGroupElement.getId()) {
+                            elements[object.getId()] = {'color': visualGroupElement.getColor()}
                         }
                     }
                 }

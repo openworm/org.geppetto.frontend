@@ -85,9 +85,9 @@ define(function (require) {
 
                     var types = nodes.map(function(x) { return x.id; });
 
-                    var popIndicator = function(pos) {
+                    var popIndicator = function(pos, colormap) {
                         return function(d,i) {
-                        d3.select(this).selectAll(".cell")
+                            d3.select(this).selectAll(".cell")
                             .data(d)
 			    .enter().append("circle")
 			    .attr("class", "cell")
@@ -99,7 +99,9 @@ define(function (require) {
 				return d.id;
 			    })
 			    .style("fill", function (d) {
-				return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(d)[0]).getColor();
+				return colormap(
+                                    eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(d)[0])
+                                        .getType().getId());
 			    })
                         };
                     };
@@ -109,15 +111,15 @@ define(function (require) {
                         .enter()
                         .append("g")
                         .attr("class", "prePop")
-                        .attr("transform", "translate(4,-10)")
-                        .each(popIndicator("cx"));
+                        .attr("transform", "translate(3,-10)")
+                        .each(popIndicator("cx", context.nodeColormap));
                     var postPop = container.selectAll(".postPop")
                         .data([types])
                         .enter()
                         .append("g")
                         .attr("class", "postPop")
                         .attr("transform", "translate(-10,4)")
-                        .each(popIndicator("cy"));
+                        .each(popIndicator("cy", context.nodeColormap));
 
 			var row = container.selectAll(".row")
 				.data(matrix)

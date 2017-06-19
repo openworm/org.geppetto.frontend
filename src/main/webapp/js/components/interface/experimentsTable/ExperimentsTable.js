@@ -679,12 +679,20 @@ define(function (require) {
         },
         
         //Determines if an element inside the experiments table is in view
-        isInView : function(elem){
-        	var docViewTop =  $('#experimentsTable').offset().top;
-            var docViewBottom = docViewTop + $('#experimentsTable').height();
-            var elemTop = $(elem).offset().top;
-            var elemBottom = elemTop + $(elem).height();
-            return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+        isInView : function(el){
+            // grab vanilla dom element from jquery element
+        	el = el[0];
+            var rect = el.getBoundingClientRect(), top = rect.top, height = rect.height,
+                el = el.parentNode;
+            do {
+                rect = el.getBoundingClientRect();
+                if (top <= rect.bottom === false) return false;
+                // Check if the element is out of view due to a container scrolling
+                if ((top + height) <= rect.top) return false;
+                el = el.parentNode;
+            } while (el != document.body);
+            // Check its within the document viewport
+            return top <= document.documentElement.clientHeight;
         },
 
         /**

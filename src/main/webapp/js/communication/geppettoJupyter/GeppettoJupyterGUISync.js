@@ -141,7 +141,7 @@ define(function (require, exports, module) {
 			this.get("component").setPosition(this.get('position_x'), this.get('position_y'));
 			this.get("component").setSize(this.get('height'), this.get('width'));
 			this.get("component").showHistoryIcon(false);
-
+			this.get("component").setName(this.get("widget_name"));
 		},
 
 		handle_custom_messages: function (msg) {

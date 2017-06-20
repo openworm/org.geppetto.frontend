@@ -83,41 +83,67 @@ define(function (require) {
 				.attr("width", matrixDim - margin.left - 30)
 				.attr("height", matrixDim - margin.top);
 
-                    var types = nodes.map(function(x) { return x.id; });
+                    // we store the 'conn' key in case we want to
+                    // eg. conditionally colour the indicator if there
+                    // are actually connections in that row/column
+                    var pre = nodes.map(function(x,i) { return {id: x.id, conn: (matrix[i].filter((d)=>d.z).length > 0) ? true : false }});
+                    var matrixT = matrix[0].map(function(col, i) {
+                        return matrix.map(function(row) {
+                            return row[i];
+                        })
+                    });
+                    var post = nodes.map(function(x,i) { return {id: x.id, conn: (matrixT[i].filter((d)=>d.z).length > 0) ? true : false }});
+
+                    var typeIdFromId = function(id) {
+                        return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(id)[0]).getType().getId();
+                    };
+
+                    var showTooltip = function(msg) {
+			d3.select(this.parentNode.appendChild(this)).transition().duration(100).
+			    style('stroke-opacity', 1).style('stroke', 'white').style('stroke-width', 2);
+			d3.select("body").style('cursor', 'pointer');
+			return tooltip.transition().duration(100).text(msg);
+                    }
+
+                    var hideTooltip = function() {
+			d3.select(this).transition().duration(100).style('stroke-opacity', 0).style('stroke', 'white');
+			d3.select("body").style('cursor', 'default');
+			return tooltip.text("");
+		    };
 
                     var popIndicator = function(pos, colormap) {
                         return function(d,i) {
                             d3.select(this).selectAll(".cell")
-                            .data(d)
-			    .enter().append("circle")
-			    .attr("class", "cell")
-			    .attr(pos, function (d, i) {
-				return x(i);
-			    })
-			    .attr("r", x.bandwidth()/2)
-			    .attr("title", function (d) {
-				return d.id;
-			    })
-			    .style("fill", function (d) {
-				return colormap(
-                                    eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(d)[0])
-                                        .getType().getId());
-			    })
+                                .data(d)
+			        .enter().append("circle")
+			        .attr("class", "cell")
+			        .attr(pos, function (d, i) {
+				    return x(i);
+			        })
+			        .attr("r", x.bandwidth()/2)
+			        .attr("title", function (d) {
+				    return d.id;
+			        })
+			        .style("fill", function (d) {
+                                    return colormap(typeIdFromId(d.id));
+			        })
+                                .on("mouseover", function(d){ $.proxy(showTooltip, this)(typeIdFromId(d.id)) })
+			        .on("mouseout", $.proxy(hideTooltip))
                         };
                     };
 
-                    var prePop = container.selectAll(".prePop")
-                        .data([types])
-                        .enter()
-                        .append("g")
-                        .attr("class", "prePop")
-                        .attr("transform", "translate(3,-10)")
-                        .each(popIndicator("cx", context.nodeColormap));
                     var postPop = container.selectAll(".postPop")
-                        .data([types])
+                        .data([post])
                         .enter()
                         .append("g")
                         .attr("class", "postPop")
+                        .attr("transform", "translate(3,-10)")
+                        .each(popIndicator("cx", context.nodeColormap));
+                    var prePop = container.selectAll(".prePop")
+                        .data([pre])
+                        .enter()
+                        .append("g")
+                        .attr("class", "prePop")
                         .attr("transform", "translate(-10,4)")
                         .each(popIndicator("cy", context.nodeColormap));
 
@@ -221,17 +247,8 @@ define(function (require) {
 						eval(root.getId() + "." + nodes[d.y].id).select();
 						eval(root.getId() + "." + nodes[d.y].id).showConnectionLines(false);
 					})
-					.on("mouseover", function (d) {
-						d3.select(this.parentNode.appendChild(this)).transition().duration(100).
-							style('stroke-opacity', 1).style('stroke', 'white').style('stroke-width', 2);
-						d3.select("body").style('cursor', 'pointer');
-						return tooltip.transition().duration(100).text(nodes[d.y].id + " is connected to " + nodes[d.x].id);
-					})
-					.on("mouseout", function () {
-						d3.select(this).transition().duration(100).style('stroke-opacity', 0).style('stroke', 'white');
-						d3.select("body").style('cursor', 'default');
-						return tooltip.text("");
-					});
+				    .on("mouseover", function (d) { $.proxy(showTooltip, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id); })
+				    .on("mouseout", $.proxy(hideTooltip));
 			}
 		}
 	}

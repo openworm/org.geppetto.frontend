@@ -87,13 +87,13 @@ define(function (require) {
             // we store the 'conn' key in case we want to
             // eg. conditionally colour the indicator if there
             // are actually connections in that row/column
-            var pre = nodes.map(function(x,i) { return {id: x.id, conn: (matrix[i].filter((d)=>d.z).length > 0) ? true : false }});
+            var pre = nodes.map(function(x,i) { return {id: x.id, conn: matrix[i].filter(function(d) { return d.z; }).length > 0}});
             var matrixT = matrix[0].map(function(col, i) {
                 return matrix.map(function(row) {
                     return row[i];
                 })
             });
-            var post = nodes.map(function(x,i) { return {id: x.id, conn: (matrixT[i].filter((d)=>d.z).length > 0) ? true : false }});
+            var post = nodes.map(function(x,i) { return {id: x.id, conn: matrixT[i].filter(function(d) { return d.z; }).length > 0}});
 
             var typeIdFromId = function(id) {
                 return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(id)[0]).getType().getId();

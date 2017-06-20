@@ -1351,11 +1351,6 @@ define(function (require) {
             var startOffset = 2.5;
             var displayArea = this.props.data.id + 'displayArea';
             
-            if (this.state.tempId == []){
-            	// force update on initial load
-            	this.componentWillReceiveProps(this.props);
-            }
-
             var markup = '';
             if (this.state.stack.length > 0) {
                 markup = (

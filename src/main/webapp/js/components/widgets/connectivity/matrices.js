@@ -18,13 +18,14 @@ define(function (require) {
 				// Colors
 				c = d3.scaleOrdinal(d3.schemeCategory10);
 
-			var labelTop = margin.top - 25;
+		    var labelTop = margin.top - 25;
+                    var defaultTooltipText = "Hover the squares to see the connections.";
 			var tooltip = context.svg
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + labelTop + ")")
 				.append("text")
 				.attr('class', 'connectionlabel')
-				.text("Hover the squares to see the connections.");
+			    .text(defaultTooltipText);
 
 			var container = context.svg
 				.append("g")
@@ -98,17 +99,17 @@ define(function (require) {
                         return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(id)[0]).getType().getId();
                     };
 
-                    var showTooltip = function(msg) {
+                    var mouseoverCell = function(msg) {
 			d3.select(this.parentNode.appendChild(this)).transition().duration(100).
 			    style('stroke-opacity', 1).style('stroke', 'white').style('stroke-width', 2);
 			d3.select("body").style('cursor', 'pointer');
 			return tooltip.transition().duration(100).text(msg);
                     }
 
-                    var hideTooltip = function() {
+                    var mouseoutCell = function() {
 			d3.select(this).transition().duration(100).style('stroke-opacity', 0).style('stroke', 'white');
 			d3.select("body").style('cursor', 'default');
-			return tooltip.text("");
+			return tooltip.text(defaultTooltipText);
 		    };
 
                     var popIndicator = function(pos, colormap) {
@@ -127,8 +128,8 @@ define(function (require) {
 			        .style("fill", function (d) {
                                     return colormap(typeIdFromId(d.id));
 			        })
-                                .on("mouseover", function(d){ $.proxy(showTooltip, this)(typeIdFromId(d.id)) })
-			        .on("mouseout", $.proxy(hideTooltip))
+                                .on("mouseover", function(d){ $.proxy(mouseoverCell, this)(typeIdFromId(d.id)) })
+			        .on("mouseout", $.proxy(mouseoutCell))
                         };
                     };
 
@@ -170,7 +171,7 @@ define(function (require) {
 			column.append("line")
 				.attr("x1", -context.options.innerWidth);
 
-			context.createLegend('legend', c, { x: matrixDim, y: 0 });
+			context.createLegend('legend', context.nodeColormap, { x: matrixDim, y: 0 });
 
 			//Sorting matrix entries by criteria specified via combobox
 			var orderContainer = $('<div/>', {
@@ -263,8 +264,8 @@ define(function (require) {
 						eval(root.getId() + "." + nodes[d.y].id).select();
 						eval(root.getId() + "." + nodes[d.y].id).showConnectionLines(false);
 					})
-				    .on("mouseover", function (d) { $.proxy(showTooltip, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id); })
-				    .on("mouseout", $.proxy(hideTooltip));
+				    .on("mouseover", function (d) { $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id); })
+				    .on("mouseout", $.proxy(mouseoutCell));
 			}
 		}
 	}

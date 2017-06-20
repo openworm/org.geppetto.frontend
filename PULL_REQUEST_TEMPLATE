@@ -1,0 +1,3 @@
+- [ ] Run [CoreTests.js Casper Tests](https://github.com/openworm/org.geppetto.frontend/blob/master/src/main/webapp/js/pages/tests/casperjs/README.md), make sure they all pass, attach screenshot
+- [ ] Run [UITests.js Casper Tests](https://github.com/openworm/org.geppetto.frontend/blob/master/src/main/webapp/js/pages/tests/casperjs/README.md), make sure they all pass, attach screenshot
+- [ ] Add coverage for whatever new functionality, to a JUnit test if it's backend, to a Casper Test if it's frontend

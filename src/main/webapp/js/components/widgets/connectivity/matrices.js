@@ -205,9 +205,25 @@ define(function (require) {
 						.delay(function (d) {
 							return x(d.x) * 4;
 						})
-						.attr("x", function (d) {
+					.attr("x", function (d) {
 							return x(d.x);
 						});
+
+                                    t.selectAll(".postPop .cell")
+					.delay(function (d, i) {
+					    return x(i) * 4;
+					})
+					.attr("cx", function (d, i) {
+					    return x(i);
+					});
+
+                                    t.selectAll(".prePop .cell")
+					.delay(function (d, i) {
+					    return x(i) * 4;
+					})
+					.attr("cy", function (d, i) {
+					    return x(i);
+					});
 
 					t.selectAll(".column")
 						.delay(function (d, i) {

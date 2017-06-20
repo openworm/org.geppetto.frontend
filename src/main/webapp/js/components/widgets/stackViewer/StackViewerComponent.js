@@ -1423,7 +1423,7 @@ define(function (require) {
                                 templateId={this.props.config.templateId}
                                 templateDomainIds={this.state.tempId}
                         		templateDomainTypeIds={this.state.tempType}
-                                templateDomainNames={this.stage.tempName}
+                                templateDomainNames={this.state.tempName}
                                 slice={this.state.slice}/>
                     </div>
                 );

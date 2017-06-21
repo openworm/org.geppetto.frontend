@@ -1144,7 +1144,7 @@ define(function (require) {
                             ids.push([instances[instance].parent.getId()]);
                         }
                         labels.push(instances[instance].parent.getName());
-                        if (GEPPETTO.G.getSelection().length > 0 && GEPPETTO.G.getSelection()[0].parent.getId() == instances[instance].parent.getId()){
+                        if (GEPPETTO.G.getSelection().length > 0 && (GEPPETTO.G.getSelection()[0].getId() == instances[instance].parent.getId() || GEPPETTO.G.getSelection()[0].parent != undefined && GEPPETTO.G.getSelection()[0].getId() == instances[instance].parent.getId())) {
                             colors.push('0Xffcc00'); // selected
                         } else {
                             colors.push(instances[instance].parent.getColor());

@@ -100,6 +100,7 @@ define(function (require) {
                     this.nodeColormap = d3.scaleOrdinal(nodeColormap.range)
                     .domain(nodeColormap.domain);
             }
+            return this.nodeColormap;
         },
 
         setData: function (root, options, nodeColormap) {
@@ -239,6 +240,7 @@ define(function (require) {
                 var legendItem = this.svg.selectAll(id)
                     .data(colorScale.domain())
                     .enter().append('g')
+                    .attr('class', 'legend-item')
                     .attr('transform', function (d, i) {
                         var height = colorBox.size + colorBox.labelSpace;
                         horz = colorBox.size + position.x + padding.x;
@@ -277,8 +279,16 @@ define(function (require) {
                 ret = {x: horz, y: vert};
             }
 
+            this.legendPosition = position;
+            this.legendTitle = title;
             return ret;
 
+        },
+
+        updateLegend: function(id, colorScale) {
+            // FIXME: would be more efficient to update only what has changed
+            this.svg.selectAll('.legend-item').remove();
+            this.createLegend(id, colorScale, this.legendPosition, this.legendTitle);
         },
 
         createNode: function (id, type) {
@@ -327,6 +337,13 @@ define(function (require) {
                     options.linkWeight = strToFunc(options.linkWeight);
                 $.extend(this.options, options);
             }
+
+            var that = this;
+            if (typeof this.options.colorMapFunction !== 'undefined')
+                GEPPETTO.on(GEPPETTO.Events.Color_set, function() {
+                    var nodeColormap = that.setNodeColormap(that.options.colorMapFunction());
+                    that.updateLegend('legend', nodeColormap);
+                });
         },
         
         createLayoutSelector: function() {

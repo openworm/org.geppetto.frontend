@@ -1742,6 +1742,8 @@ define(['jquery'], function () {
             if (!this.hasInstance(instancePath)) {
                 return;
             }
+            if (typeof color === 'string')
+                color = color.replace(/0X/i, "#");
             var meshes = this.getRealMeshesForInstancePath(instancePath);
             if (meshes.length > 0) {
                 for (var i = 0; i < meshes.length; i++) {
@@ -1815,7 +1817,7 @@ define(['jquery'], function () {
 
             var getRandomColor = function () {
                 var letters = '0123456789ABCDEF';
-                var color = '0x';
+                var color = '#';
                 for (var i = 0; i < 6; i++) {
                     color += letters[Math.floor(Math.random() * 16)];
                 }

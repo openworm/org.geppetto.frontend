@@ -128,7 +128,7 @@ define(function (require) {
          */
         setConfig: function(config){
             this.config = config;
-
+            this.updateScene();
             // return this for chaining
             return this;
         },

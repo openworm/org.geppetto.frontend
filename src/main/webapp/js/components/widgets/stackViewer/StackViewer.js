@@ -111,6 +111,11 @@ define(function (require) {
             this.voxelSize.x = x;
             this.voxelSize.y = y;
             this.voxelSize.z = z;
+            if (this.config.subDomains && this.config.subDomains.length >0 && this.config.subDomains[0].length > 2){
+            	this.voxelSize.x = Number(this.config.subDomains[0][0]);
+                this.voxelSize.y = Number(this.config.subDomains[0][1]);
+                this.voxelSize.z = Number(this.config.subDomains[0][2]);
+            }
             this.updateScene();
         },
         
@@ -128,6 +133,11 @@ define(function (require) {
          */
         setConfig: function(config){
             this.config = config;
+            if (this.config.subDomains && this.config.subDomains.length >0 && this.config.subDomains[0].length > 2){
+            	this.config.subDomains[0][0] = this.voxelSize.x.toString();
+            	this.config.subDomains[0][1] = this.voxelSize.y.toString();
+            	this.config.subDomains[0][2] = this.voxelSize.z.toString();
+            }
             this.updateScene();
             // return this for chaining
             return this;

@@ -1853,8 +1853,7 @@ define(['jquery'], function () {
                     }
                 }
             }
-
-
+            GEPPETTO.trigger(GEPPETTO.Events.Color_set, {instance: instance, color: randomColor});
         }
 
         ,

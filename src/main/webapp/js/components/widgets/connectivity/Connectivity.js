@@ -285,12 +285,6 @@ define(function (require) {
 
         },
 
-        updateLegend: function(id, colorScale) {
-            // FIXME: would be more efficient to update only what has changed
-            this.svg.selectAll('.legend-item').remove();
-            this.createLegend(id, colorScale, this.legendPosition, this.legendTitle);
-        },
-
         createNode: function (id, type) {
            if (!(id in this.mapping)) {
                 var nodeItem = {
@@ -342,7 +336,10 @@ define(function (require) {
             if (typeof this.options.colorMapFunction !== 'undefined')
                 GEPPETTO.on(GEPPETTO.Events.Color_set, function() {
                     var nodeColormap = that.setNodeColormap(that.options.colorMapFunction());
-                    that.updateLegend('legend', nodeColormap);
+                    // FIXME: would be more efficient to update only what has
+                    // changed, though this depends on the layout
+                    that.svg.selectAll("*").remove();
+                    that.createLayout();
                 });
         },
         

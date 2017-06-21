@@ -1116,6 +1116,9 @@ define(function (require) {
                 		}
                 	}
                 }
+                if (nextProps.voxel && nextProps.voxel != null) {
+                    this.setState({voxelX: nextProps.voxel.x, voxelY: nextProps.voxel.y, voxelZ: nextProps.voxel.z});
+                }
             }
         },
 

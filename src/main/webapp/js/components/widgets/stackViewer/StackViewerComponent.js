@@ -1095,23 +1095,23 @@ define(function (require) {
                     this.setState({width: nextProps.data.width});
                 }
                 if (nextProps.config && nextProps.config != null && nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length && nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
-                    this.setState({voxelX: Number(this.props.config.subDomains[0][0] || 0.622088),
-                        voxelY: Number(this.props.config.subDomains[0][1] || 0.622088),
-                        voxelZ: Number(this.props.config.subDomains[0][2] || 0.622088),});
+                    this.setState({voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
+                        voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
+                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),});
                 }
                 if (nextProps.config && nextProps.config != null){
                 	if (nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length){
                 		if (nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
-                			this.setState({voxelX: Number(this.props.config.subDomains[0][0] || 0.622088),
-	                        voxelY: Number(this.props.config.subDomains[0][1] || 0.622088),
-	                        voxelZ: Number(this.props.config.subDomains[0][2] || 0.622088),});
+                			this.setState({voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
+	                        voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
+	                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),});
                 		}
                 		if (nextProps.config.subDomains.length > 4 && nextProps.config.subDomains[1] != null){
-                			this.setState({tempName: this.props.config.subDomains[2],
-                            tempId: this.props.config.subDomains[1],
-                            tempType: this.props.config.subDomains[3]});
+                			this.setState({tempName: nextProps.config.subDomains[2],
+                            tempId: nextProps.config.subDomains[1],
+                            tempType: nextProps.config.subDomains[3]});
                 			if (nextProps.config.subDomains[4] && nextProps.config.subDomains[4].length && nextProps.config.subDomains[4].length > 0){
-                				this.setState({fxp:this.props.config.subDomains[4][0]});
+                				this.setState({fxp:nextProps.config.subDomains[4][0]});
                 			}
                 		}
                 	}

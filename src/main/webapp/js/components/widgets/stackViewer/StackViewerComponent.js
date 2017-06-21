@@ -364,7 +364,7 @@ define(function (require) {
                                                                 break;
                                                             } else {
                                                                 that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
-                                                                stackViewerSelect(that.props.templateDomainTypeIds[index]);
+                                                                stackViewerRequest(that.props.templateDomainTypeIds[index]);
                                                                 break;
                                                             }
                                                         }

@@ -1111,7 +1111,7 @@ define(function (require) {
                             tempId: nextProps.config.subDomains[1],
                             tempType: nextProps.config.subDomains[3]});
                 			if (nextProps.config.subDomains[4] && nextProps.config.subDomains[4].length && nextProps.config.subDomains[4].length > 0){
-                				this.setState({fxp:nextProps.config.subDomains[4][0]});
+                				this.setState({fxp:JSON.parse(nextProps.config.subDomains[4][0])});
                 			}
                 		}
                 	}

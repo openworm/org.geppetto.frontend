@@ -103,6 +103,16 @@ define(function (require) {
             return this.nodeColormap;
         },
 
+        onColorChange: function(ctx){
+            return function(){
+                var nodeColormap = ctx.setNodeColormap(ctx.options.colorMapFunction());
+                // FIXME: would be more efficient to update only what has
+                // changed, though this depends on the type of layout
+                ctx.svg.selectAll("*").remove();
+                ctx.createLayout();
+            }
+        },
+
         setData: function (root, options, nodeColormap) {
             this.setOptions(options);
             this.setNodeColormap(nodeColormap);
@@ -118,6 +128,11 @@ define(function (require) {
 
             // track change in state of the widget
             this.dirtyView = true;
+
+            if (typeof this.options.colorMapFunction !== 'undefined') {
+                GEPPETTO.off(GEPPETTO.Events.Color_set, this.onColorChange(this));
+                GEPPETTO.on(GEPPETTO.Events.Color_set, this.onColorChange(this));
+            }
 
             return this;
         },
@@ -331,16 +346,6 @@ define(function (require) {
                     options.linkWeight = strToFunc(options.linkWeight);
                 $.extend(this.options, options);
             }
-
-            var that = this;
-            if (typeof this.options.colorMapFunction !== 'undefined')
-                GEPPETTO.on(GEPPETTO.Events.Color_set, function() {
-                    var nodeColormap = that.setNodeColormap(that.options.colorMapFunction());
-                    // FIXME: would be more efficient to update only what has
-                    // changed, though this depends on the layout
-                    that.svg.selectAll("*").remove();
-                    that.createLayout();
-                });
         },
         
         createLayoutSelector: function() {

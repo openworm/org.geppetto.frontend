@@ -405,8 +405,8 @@ define(function (require) {
         configViaGUI : function() {
             var that = this;
             var firstClick=false;
-            var modalContent=$('<div class="modal fade" id="connectivity-config-modal"></div>')
-                                .append(this.createLayoutSelector()[0].outerHTML).modal();
+            var modalContent=$('<div class="modal fade" id="connectivity-config-modal" tabindex="-1"></div>')
+                .append(this.createLayoutSelector()[0].outerHTML).modal({keyboard: true});
             function handleFirstClick(event) {
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(that.options.library.network);
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}))

@@ -92,23 +92,17 @@ define(function (require) {
         },
 
         setNodeColormap: function(nodeColormap) {
-            if (typeof nodeColormap != 'undefined') {
-                if (typeof nodeColormap.range == 'undefined')
-                    this.nodeColormap = d3.scaleOrdinal(d3.schemeCategory20)
-                    .domain(nodeColormap.domain);
-                else
-                    this.nodeColormap = d3.scaleOrdinal(nodeColormap.range)
-                    .domain(nodeColormap.domain);
-            }
+            if (typeof nodeColormap !== 'undefined')
+                this.nodeColormap = nodeColormap;
             return this.nodeColormap;
         },
 
         onColorChange: function(ctx){
             return function(){
                 var colorMap = ctx.options.colorMapFunction();
-                for (var i=0; i<colorMap.domain.length; ++i) {
+                for (var i=0; i<colorMap.domain().length; ++i) {
                     // only update if there is a change
-                    if (ctx.nodeColormap(colorMap.domain[i]) !== colorMap.range[i]) {
+                    if (ctx.nodeColormap(colorMap.domain()[i]) !== colorMap(colorMap.domain()[i])) {
                         ctx.setNodeColormap(colorMap);
                         // FIXME: would be more efficient to update only what has
                         // changed, though this depends on the type of layout
@@ -496,7 +490,9 @@ define(function (require) {
                 var that = this;
                 // resolve connections and pass the line below as a callback
                 Model.neuroml.resolveAllImportTypes(function(){
-                    that.setData(obj, deserializedOptions, view.nodeColormap);
+                    that.setData(obj, deserializedOptions,
+                                 d3.scaleOrdinal(view.nodeColormap.range)
+                                 .domain(view.nodeColormap.domain));
                 });
             }
 

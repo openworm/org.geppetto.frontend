@@ -105,11 +105,18 @@ define(function (require) {
 
         onColorChange: function(ctx){
             return function(){
-                var nodeColormap = ctx.setNodeColormap(ctx.options.colorMapFunction());
-                // FIXME: would be more efficient to update only what has
-                // changed, though this depends on the type of layout
-                ctx.svg.selectAll("*").remove();
-                ctx.createLayout();
+                var colorMap = ctx.options.colorMapFunction();
+                for (var i=0; i<colorMap.domain.length; ++i) {
+                    // only update if there is a change
+                    if (ctx.nodeColormap(colorMap.domain[i]) !== colorMap.range[i]) {
+                        ctx.setNodeColormap(colorMap);
+                        // FIXME: would be more efficient to update only what has
+                        // changed, though this depends on the type of layout
+                        ctx.svg.selectAll("*").remove();
+                        ctx.createLayout();
+                        break;
+                    }
+                }
             }
         },
 
@@ -129,10 +136,8 @@ define(function (require) {
             // track change in state of the widget
             this.dirtyView = true;
 
-            if (typeof this.options.colorMapFunction !== 'undefined') {
-                GEPPETTO.off(GEPPETTO.Events.Color_set, this.onColorChange(this));
+            if (typeof this.options.colorMapFunction !== 'undefined')
                 GEPPETTO.on(GEPPETTO.Events.Color_set, this.onColorChange(this));
-            }
 
             return this;
         },
@@ -344,6 +349,8 @@ define(function (require) {
                     options.nodeType = strToFunc(options.nodeType);
                 if(typeof options.linkWeight === 'string')
                     options.linkWeight = strToFunc(options.linkWeight);
+                if(typeof options.colorMapFunction === 'string')
+                    options.colorMapFunction = strToFunc(options.colorMapFunction);
                 $.extend(this.options, options);
             }
         },
@@ -420,7 +427,10 @@ define(function (require) {
                 		return "Gap junction";
                 	}
                 }
-                that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection, library: that.connectivityOptions.library}); //TODO: add option to select what to plot if #netInstance>1?
+                that.setData(netInstances[0], {layout: event.currentTarget.id,
+                                               linkType: synapseFromConnection,
+                                               library: that.connectivityOptions.library,
+                                               colorMapFunction: that.connectivityOptions.colorMapFunction}); //TODO: add option to select what to plot if #netInstance>1?
                 firstClick=true;
             }
             

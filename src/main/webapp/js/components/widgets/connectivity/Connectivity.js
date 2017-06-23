@@ -466,8 +466,10 @@ define(function (require) {
             // add data
             baseView.dataType = 'object';
             baseView.data = this.dataset["root"].getPath();
-            baseView.nodeColormap = {domain: this.nodeColormap.domain(),
-                                     range: this.nodeColormap.range()};
+
+            if (typeof this.nodeColormap.domain === 'function')
+                baseView.nodeColormap = {domain: this.nodeColormap.domain(),
+                                         range: this.nodeColormap.range()};
 
             return baseView;
         },
@@ -487,12 +489,14 @@ define(function (require) {
                     }
                 }
 
+                var colorScale;
+                if (typeof view.nodeColormap !== 'undefined')
+                    colorScale = d3.scaleOrdinal(view.nodeColormap.range).domain(view.nodeColormap.domain);
+
                 var that = this;
                 // resolve connections and pass the line below as a callback
                 Model.neuroml.resolveAllImportTypes(function(){
-                    that.setData(obj, deserializedOptions,
-                                 d3.scaleOrdinal(view.nodeColormap.range)
-                                 .domain(view.nodeColormap.domain));
+                    that.setData(obj, deserializedOptions, colorScale);
                 });
             }
 

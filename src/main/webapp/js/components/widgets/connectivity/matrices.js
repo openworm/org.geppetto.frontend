@@ -121,7 +121,7 @@ define(function (require) {
 			.attr(pos, function (d, i) {
 			    return x(i);
 			})
-			.attr("r", x.bandwidth()/2)
+			.attr("r", 2)
 			.attr("title", function (d) {
 			    return d.id;
 			})

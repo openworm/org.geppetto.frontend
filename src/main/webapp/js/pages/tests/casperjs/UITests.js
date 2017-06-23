@@ -44,10 +44,9 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     });
 
     casper.thenOpen(TARGET_URL+  port+"/org.geppetto.frontend/", function () {
-        this.waitForSelector('div[project-id="2"]', function () {
+        this.waitForSelector('div.project-preview', function () {
             this.echo("I've waited for the projects to load.");
             test.assertExists('div#logo', "logo is found");
-            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
             test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
         }, null, 30000);
     });
@@ -98,6 +97,10 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     
     casper.then(function () {
         deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
+    });
+
+    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, function () {
+        doConnectivityWidgetsTest(test);
     });
 
     //TODO: log back in as other users. Check more things
@@ -489,4 +492,30 @@ function doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_search
 
 function doPostPersistenceSpotlightCheckSetParameters(test, spotlight_search) {
     doSpotlightCheck(test, spotlight_search, true, false);
+}
+
+function doConnectivityWidgetsTest(test) {
+    casper.waitForSelector('button#Connectivity', function () {
+        this.echo("Waited for connectivity button");
+        casper.then(function() {
+            this.mouse.click('button#Connectivity');
+            casper.waitForSelector('div#Connectivity1', function () {
+                this.echo("Waited for connectivity widget");
+                casper.waitWhileVisible("div#loading-spinner", function() {
+                    this.echo("Waited for spinner to finish");
+                    casper.mouseEvent('click', 'div#connectivity-config-modal', "closing connectivity modal");
+                })}, null, 15000);
+        });
+
+        casper.then(function() {
+            this.mouse.click('button#Connectivity');
+            casper.waitForSelector('div#Connectivity2', function() {
+                this.echo("Waited for connectivity widget");
+                casper.waitWhileVisible("div#loading-spinner", function() {
+                    this.echo("Waited for spinner to finish");
+                    casper.mouseEvent('click', 'div#chord', "choosing chord diagram");
+                    casper.mouseEvent('click', 'div#connectivity-config-modal', "closing connectivity modal");
+                })}, null, 15000);
+        });
+    }, null, 30000);
 }

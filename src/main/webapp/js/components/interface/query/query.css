@@ -182,8 +182,8 @@
 	margin-right: auto;
 	left: 0;
 	right: 0;
-	width: 88%;
-	top: 7%;
+	width: 100%;
+	top: 0;
 }
 
 #add-query-btn {

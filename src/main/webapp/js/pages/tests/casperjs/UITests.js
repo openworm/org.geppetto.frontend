@@ -100,6 +100,9 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
         deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
+    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto" + "?load_project_from_id=301", function () {
+        doRunExperimentTest(test);
+    });
     //TODO: log back in as other users. Check more things
     //TODO: exercise the run loop, check the changing experiment status, try to make experiment fail
 
@@ -221,6 +224,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
             });
 
+            // ** See doRunExperimentTest method **
             //TODO: make this work
             //this.mouseEvent('click', 'button[data-reactid=".9.4"]', "Running an experiment");
 
@@ -489,4 +493,61 @@ function doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_search
 
 function doPostPersistenceSpotlightCheckSetParameters(test, spotlight_search) {
     doSpotlightCheck(test, spotlight_search, true, false);
+}
+
+function doRunExperimentTest(test) {
+    casper.waitForSelector('a[aria-controls="experiments"]', function () {
+        doExperimentTableTest(test);
+    });
+
+    casper.waitWhileVisible('div#loading-spinner', function() {
+        this.echo("Waited for spinner to finish");
+        this.mouse.move('tr.experimentsTableColumn');
+        casper.click('.cloneIcon');
+        this.echo('Cloning experiment.');
+    }, null, 20000);
+
+    casper.waitWhileVisible('div#loading-spinner', function() {
+        this.echo('Waited for experiment to clone.');
+        casper.click('button#runMenuButton');
+        casper.clickLabel('Run active experiment');
+        casper.clickLabel('Submit');
+        this.echo('Submitted experiment.');
+    });
+
+    casper.waitForSelector('.statusIcon > .QUEUED', function() {
+        this.echo('Experiment is queued, waiting for run.');
+    }, null, 10000);
+
+    casper.waitForSelector('.statusIcon > .RUNNING', function() {
+        this.echo('Waited for experiment to start running.');
+    }, null, 20000);
+
+    casper.waitWhileSelector('.statusIcon > .RUNNING', function() {
+        test.assertExists('.statusIcon > .COMPLETED', 'Waited for experiment to complete.');
+        casper.click('button#controlsMenuButton');
+        casper.clickLabel('Plot all recorded variables');
+        this.waitForSelector('div#Plot1', function() {
+            this.waitWhileSelector('#geppettologo.fa-spin', function() {
+                this.echo('Waited for plot to load.');
+                test.assertEval(function() {
+                    return $('g.trace').length == Project.getActiveExperiment().getWatchedVariables().length;
+                }, 'Checked plot traces exist.');
+            }, null, 20000);
+        });
+    }, null, 60000);
+
+    casper.then(function() {
+        this.mouse.move('tr.experimentsTableColumn');
+        casper.click('.deleteIcon');
+        this.waitForSelector('.modal-footer > .btn', function(){
+            casper.clickLabel('Yes');
+        });
+        this.waitForSelector('button#infomodal-btn', function(){
+            casper.clickLabel('Ok');
+        });
+        casper.wait(5000, function() {
+            this.echo('Deleted experiment.');
+        });
+    });
 }

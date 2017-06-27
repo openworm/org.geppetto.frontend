@@ -736,11 +736,11 @@ define(function (require) {
         componentWillReceiveProps: function (nextProps) {
             var updDst = false;
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl || this.state.id !== nextProps.id) {
-                this.state.stack = nextProps.stack;
-                this.state.color = nextProps.color;
-                this.state.label = nextProps.label;
-                this.state.id = nextProps.id;
-                this.state.serverUrl = nextProps.serverUrl;
+            	this.setState({stack:nextProps.stack,
+                color:nextProps.color,
+                label:nextProps.label,
+                id:nextProps.id,
+                serverUrl:nextProps.serverUrl});
                 this.createImages();
                 this.updateImages(nextProps);
             }

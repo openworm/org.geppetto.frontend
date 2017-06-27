@@ -99,7 +99,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
         deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
-    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, function () {
+    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+getProjectIdByName("HippocampalNet"), function () {
         doConnectivityWidgetsTest(test);
     });
 
@@ -110,6 +110,16 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
         test.done();
     });
 });
+
+function getProjectIdByName(name){
+    var id;
+    casper.waitForSelector('.project-preview[title^="'+name+'"]', function(){
+        id = casper.evaluate(function(name){
+            return $('.project-preview[title*="'+name+'"]').attr('project-id');
+        }, {name: name});
+    });
+    return id;
+}
 
 function deleteProject(test, url,id){
 	casper.thenOpen(url, function () {
@@ -495,27 +505,55 @@ function doPostPersistenceSpotlightCheckSetParameters(test, spotlight_search) {
 }
 
 function doConnectivityWidgetsTest(test) {
+    casper.waitForSelector('a[aria-controls="experiments"]', function () {
+        doExperimentTableTest(test);
+    });
+
+    casper.waitWhileVisible('div#loading-spinner', function() {
+        this.echo("Waited for spinner to finish");
+        this.mouse.move('tr.experimentsTableColumn');
+        casper.click('.activeIcon');
+        this.echo('Activating experiment.');
+    }, null, 80000);
+
     casper.waitForSelector('button#Connectivity', function () {
         this.echo("Waited for connectivity button");
-        casper.then(function() {
-            this.mouse.click('button#Connectivity');
-            casper.waitForSelector('div#Connectivity1', function () {
-                this.echo("Waited for connectivity widget");
-                casper.waitWhileVisible("div#loading-spinner", function() {
-                    this.echo("Waited for spinner to finish");
-                    casper.mouseEvent('click', 'div#connectivity-config-modal', "closing connectivity modal");
-                })}, null, 15000);
-        });
-
-        casper.then(function() {
-            this.mouse.click('button#Connectivity');
-            casper.waitForSelector('div#Connectivity2', function() {
-                this.echo("Waited for connectivity widget");
-                casper.waitWhileVisible("div#loading-spinner", function() {
-                    this.echo("Waited for spinner to finish");
-                    casper.mouseEvent('click', 'div#chord', "choosing chord diagram");
-                    casper.mouseEvent('click', 'div#connectivity-config-modal', "closing connectivity modal");
-                })}, null, 15000);
-        });
     }, null, 30000);
+
+    casper.then(function() {
+        this.mouse.click('button#Connectivity');
+        casper.waitForSelector('div#Connectivity1', function () {
+            this.echo("Waited for connectivity widget");
+            casper.waitWhileVisible("div#loading-spinner", function() {
+                this.echo("Waited for spinner to finish");
+                casper.mouseEvent('click', 'div#connectivity-config-modal', "closing connectivity modal");
+            }, null, 80000);
+        }, null, 45000);
+    });
+
+    casper.then(function() {
+        this.echo('Opening control panel.');
+        casper.click('button#controlPanelBtn');
+        casper.waitForSelector('button#HippocampalNet_pop_ngf_randomcolor_ctrlPanel_btn', function() {
+            this.echo('Changing ngf population color.');
+            casper.click('button#HippocampalNet_pop_ngf_randomcolor_ctrlPanel_btn');
+            var popColor = casper.evaluate(function() {
+                return $('#HippocampalNet_pop_ngf_color_ctrlPanel_btn').css('color');
+            });
+            this.echo('Closing control panel.')
+            casper.sendKeys('input[name="filter"]', casper.page.event.key.Escape, {keepFocus: true});
+            test.assertEvalEquals(function() {
+                return $("text:contains(ngfcell)").prev().css('fill');
+            }, popColor, 'Legend has updated to show new population color.');
+        });
+    });
+
+    casper.then(function() {
+        this.echo('Closing connectivity widget.');
+        casper.evaluate(function() {
+            Connectivity1.remove();
+        });
+        // allow to persist
+        casper.wait(3000, function () {});
+    });
 }

@@ -121,7 +121,7 @@ define(function (require) {
 			.attr(pos, function (d, i) {
 			    return x(i);
 			})
-			.attr("r", 2)
+			.attr("r", 3)
 			.attr("title", function (d) {
 			    return d.id;
 			})

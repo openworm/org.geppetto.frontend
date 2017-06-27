@@ -93,7 +93,7 @@
 }
 
 #querybuilder .query-item-option {
-	width: 550px !important;
+	width: 83vw !important;
 	height: 40px !important;
 	padding: 8px 12px !important;
 	font-size: 22px !important;
@@ -283,7 +283,7 @@
 }
 
 #querybuilder .tt-menu {
-	width: 550px;
+	width: 83vw;
 	margin: 12px 0;
 	padding: 8px 0;
 	background-color: #fff;

@@ -12,12 +12,10 @@
     <link rel="stylesheet" href="./geppetto/js/pages/dashboard/css/styles.css">
     <link rel="stylesheet" href="./geppetto/style/css/font-awesome.min.css"/>
 
-
     <script>
-        window.EMBEDDED = <%=htmlWebpackPlugin.options.embedded%>;
-        window.EMBEDDEDURL = "<%=htmlWebpackPlugin.options.embedderURL%>".split(",");
+        window.EMBEDDED = <%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.embedded%>;
+        window.EMBEDDERURL = "<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.embedderURL%>".split(",");
     </script>
-
 
     <script data-main="geppetto/js/pages/dashboard/js/main" src="./geppetto/js/pages/dashboard/js/libs/require/require.js"></script>
 </head>

@@ -64,7 +64,7 @@ define([ 'jquery', 'underscore', 'backbone',
             }
             
             // Change link from blank to self for embedded environments
-            if(window.EMBEDDED) {
+            if(EMBEDDED) {
 				$(".embeddedLinks").attr('target','_self');
 			}
             

@@ -100,7 +100,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
         deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
-    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto" + "?load_project_from_id=301", function () {
+    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+getProjectIdByName("Hodgkin-Huxley"), function () {
         doRunExperimentTest(test);
     });
     //TODO: log back in as other users. Check more things
@@ -110,6 +110,16 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
         test.done();
     });
 });
+
+function getProjectIdByName(name){
+    var id;
+    casper.waitForSelector('.project-preview[title^="'+name+'"]', function(){
+        id = casper.evaluate(function(name){
+            return $('.project-preview[title^="'+name+'"]').attr('project-id');
+        }, {name: name});
+    });
+    return id;                                                                                                                                                                                                                                 
+}
 
 function deleteProject(test, url,id){
 	casper.thenOpen(url, function () {

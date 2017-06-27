@@ -4,32 +4,29 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-console.log("\nThe arguments passed to webpack are:\n");
-console.log(process.argv);
-
-var getCLIParameter = function (param) {
-    for (var i = 0; i < process.argv.length; i++) {
-        var arg = process.argv[i];
-        if (arg.startsWith(param)) {
-            var value = arg.substring(arg.indexOf("=") + 1).trim();
-            console.log(param + ":" + value);
-            return value;
-        }
-    }
-    return "";
-};
-
-console.log("\nThe arguments passed to HtmlWebpackPlugin are:\n");
+var geppettoConfig;
+try {
+    geppettoConfig = require('./GeppettoConfiguration.json');
+    // geppettoConfig.contextPath = JSON.stringify(geppettoConfig.contextPath)
+    console.log('\nLoaded Geppetto config:');
+} catch (e) {
+    // Failed to load config file
+    console.error('\nFailed to load Geppetto Configuration')
+}
 
 //We read the command line arguments, these are passed from maven through npm to webpack
-var generateTestsBundle = process.argv.indexOf('--noTest') == -1;
-var contextPath = getCLIParameter("--contextPath");
-var useSsl = getCLIParameter("--useSsl");
-var embedded = getCLIParameter("--embedded");
-var embedderURL = getCLIParameter("--embedderURL");
+for (var i = 0; i < process.argv.length; i++) {
+    var arg = process.argv[i].replace("--", "");
+    if (arg in geppettoConfig) {
+        var value = arg.substring(arg.indexOf("=") + 1).trim();
+        geppettoConfig[arg] = value;
+    }
+}
 
+console.log("\nGeppetto Config:\n");
+console.log(JSON.stringify(geppettoConfig, null, 2), '\n');
 
-var publicPath = ((contextPath == '/') ? contextPath : "/" + contextPath + "/") + "geppetto/build/";
+var publicPath = ((geppettoConfig.contextPath == '/') ? geppettoConfig.contextPath : "/" + geppettoConfig.contextPath + "/") + "geppetto/build/";
 console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath + "\n");
 
 
@@ -38,23 +35,32 @@ var entries = {
     admin: "./js/pages/admin/admin.js",
 
 };
-if (generateTestsBundle) {
+if (!geppettoConfig.noTest) {
     entries['tests'] = "./js/pages/tests/qunit/QUnitTests.js";
 }
 
 console.log("The Webpack entries are:\n");
 console.log(entries);
 
-
-var extensionConfiguration = require('./extensions/extensionsConfiguration.json');
+// Get available extensions in order to copy static pages
 var availableExtensions = [];
-for (var extension in extensionConfiguration) {
-    if (extensionConfiguration[extension]) {
+for (var extension in geppettoConfig.extensions) {
+    if (geppettoConfig.extensions[extension]) {
         availableExtensions.push({ from: 'extensions/' + extension.split("/")[0] + "/static/*", to: 'static', flatten: true });
     }
 }
 console.log("Static pages coming from extensions are:\n");
 console.log(availableExtensions);
+
+// Get available theme
+var availableTheme = "";
+for (var theme in geppettoConfig.themes) {
+    if (geppettoConfig.themes[theme]) {
+        availableTheme = theme;
+    }
+}
+console.log("Enable theme:\n");
+console.log(availableTheme);
 
 var isProduction = process.argv.indexOf('-p') >= 0;
 console.log("\n Building for a " + ((isProduction) ? "production" : "development") + " environment")
@@ -67,64 +73,42 @@ module.exports = {
         filename: '[name].bundle.js',
         publicPath: publicPath
     },
-
     plugins: [
         new CopyWebpackPlugin(availableExtensions),
         new HtmlWebpackPlugin({
             filename: 'geppetto.vm',
             template: './js/pages/geppetto/geppetto.ejs',
-            contextPath: contextPath,
-            embedded: embedded,
-            useSsl: useSsl,
-            embedderURL: embedderURL,
+            GEPPETTO_CONFIGURATION: geppettoConfig,
             //chunks: ['main'] Not specifying the chunk since its not possible yet (need to go to Webpack2) to specify UTF-8 as charset without which we have errors
             chunks: []
         }),
         new HtmlWebpackPlugin({
             filename: 'admin.vm',
             template: './js/pages/admin/admin.ejs',
-            contextPath: contextPath,
-            embedded: embedded,
-            useSsl: useSsl,
-            embedderURL: embedderURL,
             //chunks: ['admin'] Not specifying the chunk since its not possible yet (need to go to Webpack2) to specify UTF-8 as charset without which we have errors
             chunks: []
         }),
         new HtmlWebpackPlugin({
             filename: 'dashboard.vm',
             template: './js/pages/dashboard/dashboard.ejs',
-            contextPath: contextPath,
-            embedded: embedded,
-            useSsl: useSsl,
-            embedderURL: embedderURL,
+            GEPPETTO_CONFIGURATION: geppettoConfig,
             chunks: []
         }),
         new HtmlWebpackPlugin({
             filename: 'tests.vm',
             template: './js/pages/tests/tests.ejs',
-            contextPath: contextPath,
-            embedded: embedded,
-            useSsl: useSsl,
-            embedderURL: embedderURL,
             chunks: []
         }),
         new HtmlWebpackPlugin({
             filename: 'qunitTest.vm',
             template: './js/pages/tests/qunitTest.ejs',
-            contextPath: contextPath,
-            embedded: embedded,
-            useSsl: useSsl,
-            embedderURL: embedderURL,
             //chunks: ['tests'] Not specifying the chunk since its not possible yet (need to go to Webpack2) to specify UTF-8 as charset without which we have errors
             chunks: []
         }),
         new HtmlWebpackPlugin({
             filename: '../WEB-INF/web.xml',
             template: './WEB-INF/web.ejs',
-            contextPath: contextPath,
-            embedded: embedded,
-            useSsl: useSsl,
-            embedderURL: embedderURL,
+            GEPPETTO_CONFIGURATION: geppettoConfig,
             chunks: []
         }),
         new webpack.DefinePlugin({
@@ -176,7 +160,7 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                loader: 'style!css!less'
+                loader: 'style!css!less?{"modifyVars":{"url":"\'../../../extensions/' + availableTheme + '\'"}}'
             },
             {
                 test: /\.(eot|svg|ttf|woff|woff2)$/,

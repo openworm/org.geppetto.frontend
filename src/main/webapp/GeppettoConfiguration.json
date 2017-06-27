@@ -1,0 +1,18 @@
+{
+    "contextPath": "org.geppetto.frontend",
+    "useSsl": false,
+    "embedded": false,
+    "embedderURL": ["/"],
+    "noTest": false,
+    "extensions": {
+        "geppetto-default/ComponentsInitialization": true,
+        "geppetto-osb/ComponentsInitialization": false,
+        "geppetto-vfb/ComponentsInitialization": false,
+        "geppetto-neuron/ComponentsInitialization": false,
+        "geppetto-hm/ComponentsInitialization": false
+    },
+    "themes": {
+        "geppetto-default/colors": true,
+        "geppetto-hm/pages/styles/colors": false
+    }
+}

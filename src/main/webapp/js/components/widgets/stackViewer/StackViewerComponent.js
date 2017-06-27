@@ -1155,8 +1155,10 @@ define(function (require) {
                             colors.push(instances[instance].parent.getColor());
                         }
                     }
-                    catch (ignore) {
+                    catch (err) {
                         console.log('Error handling ' + instances[instance].getId());
+                        console.log(err.message);
+                        console.log(err.stack);
                     }
                 }
                 if (server != this.props.config.serverUrl && server != null) {

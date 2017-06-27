@@ -96,7 +96,7 @@
 	width: 83vw !important;
 	height: 40px !important;
 	padding: 8px 12px !important;
-	font-size: 22px !important;
+	font-size: 18px !important;
 	line-height: 30px !important;
 	border: 2px solid #fd6808 !important;
 	-webkit-border-radius: 0px;
@@ -110,7 +110,7 @@
 	width: 100%;
 	height: 40px !important;
 	padding: 8px 12px !important;
-	font-size: 22px !important;
+	font-size: 18px !important;
 	line-height: 30px !important;
 	border: 2px solid #fd6808 !important;
 	-webkit-border-radius: 0px;
@@ -250,7 +250,7 @@
 	width: 83vw !important;
 	height: 40px !important;
 	padding: 8px 12px !important;
-	font-size: 22px !important;
+	font-size: 18px !important;
 	line-height: 30px !important;
 	border: 2px solid #fd6808 !important;
 	-webkit-border-radius: 0px;
@@ -349,7 +349,7 @@
 #querybuilder .griddle .griddle-filter .form-control {
 	color: #808080;;
 	background-color: rgb(255, 255, 255);
-	font-size: 22px !important;
+	font-size: 18px !important;
 	line-height: 30px !important;
 	border: 2px solid #fd6808 !important;
 }

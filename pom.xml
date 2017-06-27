@@ -14,12 +14,6 @@
 	<profiles>
 		<profile>
 			<id>master</id>
-			<properties>
-				<contextPath>/</contextPath>
-				<useSsl>true</useSsl>
-				<embedded>false</embedded>
-				<embedderURL>/</embedderURL>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -59,7 +53,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
+									<arguments>run build</arguments>
 									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
@@ -70,12 +64,6 @@
 		</profile>
 		<profile>
 			<id>development</id>
-			<properties>
-				<contextPath>org.geppetto.frontend</contextPath>
-				<useSsl>false</useSsl>
-				<embedded>false</embedded>
-				<embedderURL>/</embedderURL>
-			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -115,7 +103,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build-dev  -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
+									<arguments>run build-dev</arguments>
 								</configuration>
 							</execution>
 						</executions>

@@ -1,8 +1,9 @@
-@color_1: #fc6320;
-@color_2: #fc401a;
+@import "../../../../style/less/components/colors";
+
+@color_2: @secondary_color;
 @color_3: #fc2320;
-@color_4: #fd6808;
-@background_color_1: transparent;
+@color_4: @primary_color;
+@background_primary_color: transparent;
 
 .tutorial{
 	overflow : auto
@@ -24,10 +25,10 @@
 	maxheight: none;
 	height: 80%;
 	width: 100%;
-	color: @color_1;
+	color: @primary_color;
 	overflow: hidden;
 	a {
-		color: @color_1;
+		color: @primary_color;
 		cursor: pointer;
 		text-decoration: none;
 		&:hover {
@@ -38,7 +39,7 @@
 #ignoreTutorial {
 	width: auto;
 	margin-top: 15px;
-	color: @color_1;
+	color: @primary_color;
 }
 .tutorial-buttons {
 	width: 100%;
@@ -46,11 +47,11 @@
 }
 .prevBtn {
 	border: 0;
-	background-color: @background_color_1 !important;
+	background-color: @background_primary_color !important;
 }
 .nextBtn {
 	border: 0;
-	background-color: @background_color_1 !important;
+	background-color: @background_primary_color !important;
 }
 #tutorialIcon {
 	color: @color_3;

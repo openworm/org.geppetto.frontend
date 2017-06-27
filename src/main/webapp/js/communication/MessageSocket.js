@@ -15,7 +15,7 @@ define(function (require) {
         var connectionInterval = 300;
         var pako = require("pako");
         var FileSaver = require('file-saver');
-        
+
         var callbackHandler = {};
 
         /**
@@ -25,7 +25,7 @@ define(function (require) {
             socket: null,
 
             //sets protocol to use for connection
-            protocol: window.USE_SSL ? "wss://" : "ws://",
+            protocol: GEPPETTO_CONFIGURATION.useSsl ? "wss://" : "ws://",
 
             //flag used to connect using ws protocol if wss failed
             failsafe: false,
@@ -82,7 +82,7 @@ define(function (require) {
                     if (GEPPETTO.MessageSocket.failsafe) {
                         GEPPETTO.MessageSocket.protocol = "ws://";
                         GEPPETTO.MessageSocket.failsafe = true;
-                        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+                        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet');
                     } else {
                         GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
                     }
@@ -101,12 +101,12 @@ define(function (require) {
                 }
 
                 this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
-                
+
                 // add callback with request id if any
                 if (callback != undefined) {
                     callbackHandler[requestID] = callback;
                 }
-                
+
                 return requestID;
             },
 
@@ -210,7 +210,7 @@ define(function (require) {
                     handler.onMessage(parsedServerMessage);
                 }
             }
-            
+
             // run callback if any
             if(parsedServerMessage.requestID != undefined){
                 if (callbackHandler[parsedServerMessage.requestID] != undefined) {
@@ -218,7 +218,7 @@ define(function (require) {
                     delete callbackHandler[parsedServerMessage.requestID];
                 }
             }
-            
+
         }
 
         function processBinaryMessage(message) {

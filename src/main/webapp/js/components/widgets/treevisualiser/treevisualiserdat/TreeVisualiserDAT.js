@@ -9,16 +9,15 @@
 define(function (require) {
 
     var TreeVisualiser = require('../TreeVisualiser');
-    var widgetUtility = require("../../WidgetUtility");
-    widgetUtility.loadCss("geppetto/js/components/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.css");
+    require("./TreeVisualiserDAT.less");
     var dat = require("./vendor/dat.gui.min");
     var $ = require('jquery');
-    
+
     // Icons to display on hover
     var aIcons = $("<a id='tvIcons'><icon class='fa fa-sign-in'/></a>");
     // div to verify if textfield should be change to textarea
     var testingSizeElement = $('<div></div>').css({'position': 'absolute','float': 'left','white-space': 'nowrap','visibility': 'hidden'}).appendTo($('body'));
-    
+
     return TreeVisualiser.TreeVisualiser.extend({
 
         /**
@@ -59,18 +58,18 @@ define(function (require) {
             'mouseleave .title': 'manageUnhover',
             'mouseleave .cr.string': 'manageUnhover',
             'mouseleave .cr.number': 'manageUnhover'
-            	
+
         },
 
         getTriggeredElement: function(event){
         	if ($(event.target).is('li')){
-        		return $(event.target); 
+        		return $(event.target);
         	}
         	else{
         		return $(event.target).closest('li');
         	}
         },
-        
+
         manageHover: function(event){
         	var liElement = this.getTriggeredElement(event);
         	var nodeInstancePath = liElement.data("instancepath");
@@ -81,13 +80,13 @@ define(function (require) {
             	liElement.prepend(aIcons);
             }
         },
-        
+
         manageUnhover: function(event){
         	var liElement = this.getTriggeredElement(event);
         	var nodeInstancePath = liElement.data("instancepath");
         	aIcons.remove();
         },
-        
+
         /**
          * Register right click event with widget
          *
@@ -96,10 +95,10 @@ define(function (require) {
         manageLeftClickEvent: function (event) {
         	var liElement = this.getTriggeredElement(event);
         	var nodeInstancePath = liElement.data("instancepath");
-        	
+
             if (nodeInstancePath != null || undefined) {
                 //Read node from instancepath data property attached to dom element
-                
+
                 var node = this.dataset.valueDict[nodeInstancePath]["model"];
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
                 	GEPPETTO.Console.executeCommand("G.addWidget(Widgets.TREEVISUALISERDAT).setData(" + node.getPath() + ")");
@@ -111,20 +110,20 @@ define(function (require) {
         	            for (var childIndex in node.getChildren()){
         	            	var nodeChild = node.getChildren()[childIndex];
         	            	if (nodeChild.getChildren().length > 0){
-        	            		nodeChild.set({"_children": nodeChild.getChildren()});	
+        	            		nodeChild.set({"_children": nodeChild.getChildren()});
         	            	}
         	            	nodeChild.set({"children": []});
         	            	this.prepareTree(this.dataset.valueDict[nodeInstancePath]["folder"], nodeChild, 0);
         	            }
-        	        
+
         	            this.customiseLayout(this.dataset.valueDict[nodeInstancePath]["folder"].domElement);
         	        }
                 	this.dataset.isDisplayed = true;
                 }
-                
+
             }
         },
-        
+
         /**
          * Register right click event with widget
          *
@@ -135,7 +134,7 @@ define(function (require) {
         	var nodeInstancePath = liElement.data("instancepath");
             if (nodeInstancePath != null || undefined) {
             	var node = this.dataset.valueDict[nodeInstancePath]["model"];
-            	
+
                 //Read node from instancepath data property attached to dom element
                 this.showContextMenu(event, node);
             }
@@ -163,28 +162,28 @@ define(function (require) {
             else{
 	            //Call setData for parent class (TreeVisualiser)
 	            var currentDataset = TreeVisualiser.TreeVisualiser.prototype.setData.call(this, state, options);
-	            
+
 	            //Initialise nodes
 	            this.initialiseGUIElements(currentDataset);
         	}
 
             return this;
         },
-        
+
         initialiseGUIElements: function(currentDataset){
         	//Add to data variable
         	this.dataset.data.push(currentDataset);
-        	
+
         	//Generate DAT nodes
             this.dataset.isDisplayed = false;
             this.prepareTree(this.gui, currentDataset, 0);
             this.dataset.isDisplayed = true;
-            
+
             // Customise layout: make text field non-editable, convert text field into text area...
             this.customiseLayout($(this.dialog));
-            
+
         },
-        
+
         customiseLayout: function(folder){
         	//Disable input elements
             $(folder).find("input").prop('disabled', true);
@@ -200,7 +199,7 @@ define(function (require) {
                 }
             });
         },
-        
+
         /**
          * Prepares the tree for painting it on the widget
          *
@@ -208,14 +207,14 @@ define(function (require) {
          * @param {Array} data - Data to paint
          */
         prepareTree: function (parent, data, step) {
-        	
+
             if ('labelName' in this.options) {
                 // We need to verify if this is working
                 label = data.getWrappedObj().get(this.options.labelName);
             } else {
                 label = data.getName();
             }
-            
+
             var children = data.getChildren();
             var _children = data.getHiddenChildren();
 
@@ -234,11 +233,11 @@ define(function (require) {
             		}
                 }
             	labelsInTV[data.getPath()] = label;
-            	
+
                 if (children.length > 0 || _children.length > 0) {
                 	this.dataset.valueDict[data.getPath()] = new function () {};
                 	this.dataset.valueDict[data.getPath()]["folder"] = parent.addFolder(labelsInTV[data.getPath()]);
-                	
+
                     //Add class to dom element depending on node metatype
                     $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
@@ -250,7 +249,7 @@ define(function (require) {
                             this.prepareTree(parentFolderTmp, children[childIndex], step);
                         }
                     }
-                    
+
                     if (data.getBackgroundColors().length > 0){
                     	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").append($('<a id="backgroundSections">').css({"z-index":1, "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
 	                    for (var index in data.getBackgroundColors()){
@@ -258,7 +257,7 @@ define(function (require) {
 	                    	 $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").find('#backgroundSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "background-color": color, "height": "90%"}).html("&nbsp"));
 	                    }
                     }
-                    
+
                     if (data.getValue().length > 0){
                     	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").css({"position": "relative"});
                     	$(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").append($('<a id="contentSections">').css({"z-index":2, "text-align": "center", "float": "right", "width": "60%", "height": "90%", "color": "black", "position":"absolute", "top": 0, "right": 0}));
@@ -266,7 +265,7 @@ define(function (require) {
 	                    	 $(this.dataset.valueDict[data.getPath()]["folder"].domElement).find("li").find('#contentSections').append($('<span>').css({"float":"left","width": 100/data.getBackgroundColors().length + "%", "height": "90%"}).html(data.getValue()[index]));
 	                    }
                     }
-                    
+
                 }
                 else {
                 	this.dataset.valueDict[data.getPath()] = new function () {};
@@ -277,7 +276,7 @@ define(function (require) {
                     $(this.dataset.valueDict[data.getPath()]["controller"].__li).addClass(data.getStyle());
                     //Add instancepath as data attribute. This attribute will be used in the event framework
                     $(this.dataset.valueDict[data.getPath()]["controller"].__li).data("instancepath", data.getPath());
-                    
+
                     // Execute set value if it is a parameter specification
                     if(data.getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE)
 					{
@@ -285,16 +284,16 @@ define(function (require) {
 							GEPPETTO.Console.executeCommand(data.getPath() + ".setValue(" + $(this).val().split(" ")[0] + ")");
 						});
 					}
-                    
-                    
+
+
                     if (data.getBackgroundColors().length > 0){
 	                    var color = data.getBackgroundColors()[0].replace("0X","#");
 	                    $(this.dataset.valueDict[data.getPath()]["controller"].__li).find(".c").css({"background-color": color, "height": "90%"});
                     }
-                    
-                    
+
+
                 }
-                
+
                 if (this.options.expandNodes){
                 	parent.open();
 				}
@@ -313,7 +312,7 @@ define(function (require) {
 	                }
                 }
             }
-            
+
         },
 
         /**

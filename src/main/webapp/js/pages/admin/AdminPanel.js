@@ -1,10 +1,6 @@
 define(function (require) {
 
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = "geppetto/js/pages/admin/AdminPanel.css";
-    document.getElementsByTagName("head")[0].appendChild(link);
+    require('./AdminPanel.less');
 
     var React = require('react');
     var Griddle = require('griddle-react');

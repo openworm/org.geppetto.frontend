@@ -1,17 +1,11 @@
 define(function (require) {
 
-	var link = document.createElement("link");
-	link.type = "text/css";
-	link.rel = "stylesheet";
-	link.href = "geppetto/js/components/interface/moviePlayer/MoviePlayer.css";
-	document.getElementsByTagName("head")[0].appendChild(link);
-
 	var React = require('react');
 	var ReactPlayer = require('react-player');
 	var AbstractComponent = require('../../AComponent');
 
 	/**
-	 * Creates a component using react-player 
+	 * Creates a component using react-player
 	 */
 	return class MoviePlayer extends AbstractComponent {
 
@@ -25,36 +19,36 @@ define(function (require) {
 					playbackRate : 1 //playback rate any decimal
 			};
 		}
-		
+
 		play(){
 			this.setState({play:true});
 			this.forceUpdate();
 		}
-		
+
 		pause(){
 			this.setState({play:false});
 			this.forceUpdate();
 		}
-		
+
 		stop(){
 			this.setState({play:false});
 			this.forceUpdate();
 		}
-		
+
 		load(url){
 			this.setState({videoURL : url});
 			this.forceUpdate();
 		}
 
-		componentDidMount() {			
+		componentDidMount() {
 			if(this.props.controls!= null || this.props.controls!=undefined){
 				var play = (this.props.controls.playAtStart!=undefined)? this.props.controls.playAtStart : this.state.play;
 				var loop = (this.props.controls.loop!=undefined)? this.props.controls.loop : this.state.loop;
 				var volume = (this.props.controls.volume!=undefined)? this.props.controls.volume : this.state.volume;
-				var playbackRate = (this.props.controls.playbackRate!=undefined)? 
+				var playbackRate = (this.props.controls.playbackRate!=undefined)?
 						this.props.controls.playbackRate : this.state.playbackRate;
 
-				this.setState({play : play,loop : loop, volume : volume, 
+				this.setState({play : play,loop : loop, volume : volume,
 					playbackRate : playbackRate, videoURL : this.props.videoURL});
 			}else{
 				this.setState({videoURL : this.props.videoURL});

@@ -1,7 +1,8 @@
 @import "../../../../style/less/components/colors";
 
 #geppetto-share {
-    background: rgba(66, 59, 59, 0.50);
+    background: @background_color_widget;
+    opacity: 0.5;
     position: absolute;
     bottom: 0px;
     right: 280px;
@@ -13,7 +14,7 @@
     width : 65px;
     text-align:center;
     z-index : 999 !important;
-    
+
     p {
         margin: 1em 0em;
     }
@@ -32,10 +33,11 @@
 #share {
     box-shadow: none;
     text-shadow: none;
-	background: rgba(66, 59, 59, 0.8);
+	  background: @background_color_widget;
+    opacity: 0.8;
     border-radius: 0px;
-    color: @orange;
+    color: @primary_color;
     width : 65px;
     height:32px;
     border : 0px;
-}    
+}

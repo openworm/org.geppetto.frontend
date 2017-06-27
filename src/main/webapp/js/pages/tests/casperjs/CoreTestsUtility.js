@@ -33,7 +33,7 @@ function resetCameraTestWithCanvasWidget(test,expectedCameraPosition){
 	buttonClick("#panHomeBtn");
 	casper.evaluate(function(){
 		$("#Canvas2_component").find(".position-toolbar").find(".pan-home").click();
-	})
+	});
 	testCameraPosition(test,expectedCameraPosition);
 }
 
@@ -60,7 +60,7 @@ function removeAllPlots(){
 function removeAllDialogs(){
 	casper.then(function(){
 		casper.evaluate(function() {
-			$("div.ui-widget").remove();
+			$("div.dialog").remove();
 		});
 	});
 }
@@ -151,6 +151,18 @@ function test3DMeshColor(test,testColor,variableName,index){
 	test.assertEquals(color[0],testColor[0], "Red default color is correct for "+ variableName);
 	test.assertEquals(color[1],testColor[1],"Green default color is correct for " + variableName);
 	test.assertEquals(color[2],testColor[2],"Black default color is correct for " +variableName);
+}
+
+function getMeshColor(test,variableName,index){
+	if(index==undefined){
+		index=0;
+	}
+	var color = casper.evaluate(function(variableName,index) {
+		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[index].material.color;
+		return [color.r, color.g, color.b];
+	},variableName,index);
+	
+	return color;
 }
 
 function test3DMeshOpacity(test,opactityExpected,variableName,index){
@@ -285,7 +297,7 @@ function testSpotlight(test, variableName,plotName,expectButton,testSelect, sele
  */
 function testCameraControls(test, expectedCameraPosition){
 	casper.then(function(){
-		casper.echo("------Zoom-------")
+		casper.echo("------Zoom-------");
 		casper.repeat(zoomClicks, function() {
 			this.thenClick("button#zoomInBtn", function() {});
 		});
@@ -322,7 +334,7 @@ function testCameraControls(test, expectedCameraPosition){
 function testCameraControlsWithCanvasWidget(test, expectedCameraPosition){
 	casper.echo("-------Testing Camera Controls while playing experiment--------");
 	casper.then(function(){
-		casper.echo("------Zoom-------")
+		casper.echo("------Zoom-------");
 		casper.repeat(zoomClicks*2, function() {
 			this.thenClick("button#zoomInBtn", function() {});
 			this.thenClick("#Canvas2 button#zoomInBtn", function() {});

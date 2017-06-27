@@ -429,7 +429,9 @@ define(function (require) {
 
             // add data
             baseView.dataType = 'object';
-            baseView.data = this.dataset["root"].getPath();
+            if(this.dataset["root"]!=undefined){
+            	baseView.data = this.dataset["root"].getPath();
+            }
 
             return baseView;
         },

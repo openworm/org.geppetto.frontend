@@ -750,7 +750,7 @@ define(function (require) {
                 this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
                 this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
             }
-            if (nextProps.fxp !== this.props.fxp) {
+            if (nextProps.fxp[0] !== this.props.fxp[0] || nextProps.fxp[1] !== this.props.fxp[1] || nextProps.fxp[2] !== this.props.fxp[2]) {
                 this.state.dst = nextProps.dst;
                 updDst = true;
             }

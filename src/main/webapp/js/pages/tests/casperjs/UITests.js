@@ -5,7 +5,7 @@ var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
 var projectID;
 
-casper.test.begin('Geppetto basic tests', 109, function suite(test) {
+casper.test.begin('Geppetto basic tests', 133, function suite(test) {
     casper.options.viewportSize = {
         width: 1340,
         height: 768
@@ -54,7 +54,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
 
     casper.then(function () {
         testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
-            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true);
+            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true,"hhcell");
     });
     
     casper.then(function () {
@@ -62,6 +62,10 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
            return Project.getId();
         });
     	this.echo("Project id to delete : "+projectID);
+    });
+    
+    casper.then(function () {
+        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
     });
     
     casper.then(function () {
@@ -70,7 +74,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
 
     casper.then(function () {
         testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
-            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false);
+            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false,"c302_A_Pharyngeal");
     });
     
     casper.then(function () {
@@ -78,6 +82,10 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
            return Project.getId();
         });
     	this.echo("Project id to delete : "+projectID);
+    });
+    
+    casper.then(function () {
+        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
     });
     
     casper.then(function () {
@@ -86,7 +94,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
 
     casper.then(function () {
         testProject(test, TARGET_URL  +port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-            false, '', '', false);
+            false, '', '', false,"Balanced_240cells_36926conns");
     });
     
     casper.then(function () {
@@ -94,6 +102,10 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
            return Project.getId();
         });
     	this.echo("Project id to delete : "+projectID);
+    });
+    
+    casper.then(function () {
+        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
     });
     
     casper.then(function () {
@@ -103,6 +115,19 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
     //TODO: log back in as other users. Check more things
     //TODO: exercise the run loop, check the changing experiment status, try to make experiment fail
 
+    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/logout", function () {
+    });
+    
+    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/login?username=admin&password=admin", function () {
+    });
+
+    casper.thenOpen(TARGET_URL+  port+"/org.geppetto.frontend/admin", function () {
+        this.waitForSelector('div[class="griddle"]', function () {
+            this.echo("I've waited for the admin panel to load.");
+        }, null, 30000);
+    });
+    
+    
     casper.run(function () {
         test.done();
     });
@@ -110,7 +135,7 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
 
 function deleteProject(test, url,id){
 	casper.thenOpen(url, function () {
-		this.echo("Loading an external model that is not persisted at " + url);
+		this.echo("Loading an external model that is persisted at " + url);
 
 
 		casper.then(function () {
@@ -145,7 +170,50 @@ function deleteProject(test, url,id){
 	});
 }
 
-function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter, testConsole) {
+
+function reloadProjectTest(test, url, customHandlers,widgetCanvasObject){
+	casper.thenOpen(url, function () {
+		this.echo("Reloading persisted project at " + url);
+
+		casper.waitWhileVisible('div[id="loading-spinner"]', function () {
+			this.echo("I've waited for "+url+" project to load.");
+			
+			casper.then(function () {
+				casper.wait(5000, function () {});
+				test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
+				test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
+				test.assertVisible('div#Connectivity1', "Connectivity1 is correctly open on reload");
+				
+				if(casper.exists('#tutorialBtn')){
+					test.assertVisible('div#Tutorial1', "Tutorial1 is correctly open on reload");
+
+					var tutorialStep = casper.evaluate(function() {
+						return Tutorial1.state.currentStep;
+					});
+					
+					test.assertEquals(tutorialStep, 2, "Tutorial1 step restored correctly");
+				}
+				
+				var popUpCustomHandler = casper.evaluate(function() {
+					return Popup1.customHandlers;
+				});
+				
+				test.assertEquals(popUpCustomHandler.length, customHandlers, "Popup1 custom handlers restored correctly");
+				test.assertEquals(popUpCustomHandler[0]["event"], "click", "Popup2 custom handlers event restored correctly");
+				
+				var meshInCanvas2Exists = casper.evaluate(function() {
+					var mesh = $.isEmptyObject(Canvas1.engine.meshes);
+					
+					return mesh;
+				});
+				
+				test.assertEquals(meshInCanvas2Exists, false, "Canvas2 has mesh set correctly");
+			});
+		},null,300000);
+	});
+}
+
+function testProject(test, url, expect_error, persisted, spotlight_record_variable, spotlight_set_parameter, testConsole,widgetCanvasObject) {
 
     casper.thenOpen(url, function () {
         this.echo("Loading an external model that is not persisted at " + url);
@@ -171,7 +239,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
         //do checks on the state of the project if it is not persisted
         if (persisted == false) {
-            casper.then(function () {
+        	casper.then(function () {
                 // make sure experiment panel is open
                 this.evaluate(function() {
                     $('a[href=experiments]').click();
@@ -182,6 +250,28 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             });
 
             casper.then(function () {
+            	if(casper.exists('#tutorialBtn')){
+        			casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
+        		}
+        		casper.evaluate(function(widgetCanvasObject) {
+        			var canvasObject = null;
+        			if(widgetCanvasObject=="hhcell"){
+        				canvasObject = hhcell;
+        			}else if(widgetCanvasObject=="c302_A_Pharyngeal"){
+        				canvasObject = c302_A_Pharyngeal;
+        			}else if(widgetCanvasObject=="Balanced_240cells_36926conns"){
+        				canvasObject = Balanced_240cells_36926conns;
+        			}
+        			G.addWidget(6);
+        			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([canvasObject])});
+        			G.addWidget(1).setMessage("Hhcell popup");
+        			var customHandler = function(node, path, widget) {};
+        			Popup1.addCustomNodeHandler(customHandler,'click');
+        			$(".nextBtn").click();
+        			$(".nextBtn").click();
+        		},widgetCanvasObject);
+        		
+        		 casper.wait(5000, function () {});
                 this.echo("Checking content of experiment row");
                 // test or wait for control panel stuff to be there
                 if(this.exists('a[href="#experiments"]')){
@@ -206,7 +296,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             });
 
             casper.then(function () {
-
+        		
                 this.waitForSelector('button.btn.SaveButton', function () {
                     test.assertVisible('button.btn.SaveButton', "Persist button is present");
                 });

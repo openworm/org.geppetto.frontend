@@ -16,10 +16,9 @@ try {
 
 //We read the command line arguments, these are passed from maven through npm to webpack
 for (var i = 0; i < process.argv.length; i++) {
-    var arg = process.argv[i].replace("--", "");
+    var [arg,value] = process.argv[i].replace("--", "").split("=");
     if (arg in geppettoConfig) {
-        var value = arg.substring(arg.indexOf("=") + 1).trim();
-        geppettoConfig[arg] = value;
+        geppettoConfig[arg] = (value == "true" || value =="false")?JSON.parse(value):value;
     }
 }
 

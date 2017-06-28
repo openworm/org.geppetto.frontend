@@ -92,7 +92,7 @@ define(function (require) {
 
 		componentDidMount () {
 			var _this = this;
-			GoogleMapsLoader.KEY = 'AIzaSyAtAf8S4uU54ZogtLqbzc8pvQI6phGDL1Q';
+			GoogleMapsLoader.KEY = this.props.googleKey;
 			GoogleMapsLoader.load(function (google) {
 				var container = document.getElementById(_this.props.id + "_component");
 

@@ -7,7 +7,7 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var geppettoConfig;
 try {
     geppettoConfig = require('./GeppettoConfiguration.json');
-    console.log('\nLoaded Geppetto config:');
+    console.log('\nLoaded Geppetto config from file');
 } catch (e) {
     // Failed to load config file
     console.error('\nFailed to load Geppetto Configuration')

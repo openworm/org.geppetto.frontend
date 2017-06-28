@@ -743,6 +743,7 @@ define(function (require) {
                 serverUrl:nextProps.serverUrl});
                 this.createImages();
                 this.updateImages(nextProps);
+                this.checkStack();
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);

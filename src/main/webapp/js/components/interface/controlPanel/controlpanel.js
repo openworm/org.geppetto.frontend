@@ -448,7 +448,7 @@ define(function (require) {
 
                                 var colorVal = ""
                                 if ($.isArray(color)) {
-                                    colorVal = "primary_color";
+                                    colorVal = "#fc6320";
                                 }
                                 else {
                                     colorVal = String(color.replace(/0X/i, "#") + "0000").slice(0, 7);

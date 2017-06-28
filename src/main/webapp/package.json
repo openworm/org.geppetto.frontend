@@ -9,7 +9,8 @@
     "build-dev": "webpack --devtool eval",
     "build-dev-noTest": "webpack --devtool eval --noTest=true",
     "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js",
-    "lint:js": "eslint js/ extensions/ webpack.*.js --cache"
+    "lint:js": "eslint js/ extensions/ webpack.*.js --cache",
+    "precommit": "npm run lint:js"
   },
   "devDependencies": {
     "anchorme": "^0.7.1",

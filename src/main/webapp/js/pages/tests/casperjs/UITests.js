@@ -5,7 +5,7 @@ var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
 var projectID;
 
-casper.test.begin('Geppetto basic tests', 109, function suite(test) {
+casper.test.begin('Geppetto basic tests', 113, function suite(test) {
     casper.options.viewportSize = {
         width: 1340,
         height: 768
@@ -99,8 +99,10 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
         deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
     });
 
-    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+getProjectIdByName("HippocampalNet"), function () {
-        doConnectivityWidgetsTest(test);
+    casper.waitForSelector('.project-preview[title^="HippocampalNet"]', function(){
+        casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+getProjectIdByName("HippocampalNet"), function () {
+            doConnectivityWidgetsTest(test);
+        });
     });
 
     //TODO: log back in as other users. Check more things
@@ -112,12 +114,9 @@ casper.test.begin('Geppetto basic tests', 109, function suite(test) {
 });
 
 function getProjectIdByName(name){
-    var id;
-    casper.waitForSelector('.project-preview[title^="'+name+'"]', function(){
-        id = casper.evaluate(function(name){
-            return $('.project-preview[title*="'+name+'"]').attr('project-id');
-        }, {name: name});
-    });
+    var id = casper.evaluate(function(name){
+        return $('.project-preview[title^="'+name+'"]').attr('project-id');
+    }, {name: name});
     return id;
 }
 

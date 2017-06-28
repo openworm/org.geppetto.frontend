@@ -16,7 +16,7 @@ define(function (require) {
                 icon: 'fa fa-home',
                 onClick: function() {
                     var targetWindow = '_blank';
-                    if(EMBEDDED) {
+                    if(GEPPETTO_CONFIGURATION.embedded) {
                         targetWindow = '_self';
                     }
                     var win = window.open("./", targetWindow);

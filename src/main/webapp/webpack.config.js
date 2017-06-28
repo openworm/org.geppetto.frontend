@@ -7,7 +7,6 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var geppettoConfig;
 try {
     geppettoConfig = require('./GeppettoConfiguration.json');
-    // geppettoConfig.contextPath = JSON.stringify(geppettoConfig.contextPath)
     console.log('\nLoaded Geppetto config:');
 } catch (e) {
     // Failed to load config file
@@ -15,18 +14,21 @@ try {
 }
 
 //We read the command line arguments, these are passed from maven through npm to webpack
+console.log('\nReading Geppetto Parameters from Command line:');
 for (var i = 0; i < process.argv.length; i++) {
-    var [arg,value] = process.argv[i].replace("--", "").split("=");
-    if (arg in geppettoConfig) {
-        geppettoConfig[arg] = (value == "true" || value =="false")?JSON.parse(value):value;
+    var argValue = process.argv[i].replace("--", "").split("=");
+    if (argValue[0] in geppettoConfig && argValue[1]!="") {
+        var value = argValue[1];
+        console.log('Set ' + argValue[0] + ' to ' +  value);
+        geppettoConfig[argValue[0]] = (value == "true" || value =="false")?JSON.parse(value):value;
     }
 }
 
-console.log("\nGeppetto Config:\n");
+console.log("\nGeppetto Config:");
 console.log(JSON.stringify(geppettoConfig, null, 2), '\n');
 
 var publicPath = ((geppettoConfig.contextPath == '/') ? geppettoConfig.contextPath : "/" + geppettoConfig.contextPath + "/") + "geppetto/build/";
-console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath + "\n");
+console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath);
 
 
 var entries = {
@@ -38,7 +40,7 @@ if (!geppettoConfig.noTest) {
     entries['tests'] = "./js/pages/tests/qunit/QUnitTests.js";
 }
 
-console.log("The Webpack entries are:\n");
+console.log("\nThe Webpack entries are:");
 console.log(entries);
 
 // Get available extensions in order to copy static pages
@@ -48,7 +50,7 @@ for (var extension in geppettoConfig.extensions) {
         availableExtensions.push({ from: 'extensions/' + extension.split("/")[0] + "/static/*", to: 'static', flatten: true });
     }
 }
-console.log("Static pages coming from extensions are:\n");
+console.log("\nStatic pages coming from extensions are:");
 console.log(availableExtensions);
 
 // Get available theme
@@ -58,7 +60,7 @@ for (var theme in geppettoConfig.themes) {
         availableTheme = theme;
     }
 }
-console.log("Enable theme:\n");
+console.log("\nEnable theme:");
 console.log(availableTheme);
 
 var isProduction = process.argv.indexOf('-p') >= 0;

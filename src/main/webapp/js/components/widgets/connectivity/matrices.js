@@ -133,19 +133,21 @@ define(function (require) {
                 };
             };
 
+            var postMargin = 0.5*parseInt(rect.attr("width"))/pre.length;
+            var preMargin = 0.5*parseInt(rect.attr("height"))/post.length;
             var postPop = container.selectAll(".postPop")
                 .data([post])
                 .enter()
                 .append("g")
                 .attr("class", "postPop")
-                .attr("transform", "translate(3,-10)")
+                .attr("transform", "translate("+postMargin+",-10)")
                 .each(popIndicator("cx", context.nodeColormap));
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
                 .append("g")
                 .attr("class", "prePop")
-                .attr("transform", "translate(-10,4)")
+                .attr("transform", "translate(-10,"+preMargin+")")
                 .each(popIndicator("cy", context.nodeColormap));
 
 	    var row = container.selectAll(".row")

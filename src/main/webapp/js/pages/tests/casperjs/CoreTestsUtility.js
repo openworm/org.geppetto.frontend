@@ -11,7 +11,6 @@ var cElegansPVDR = "load_project_from_id=8";
 var eyeWire = "load_project_from_id=9";
 var nwbSample = "load_project_from_id=18";
 var Pharyngeal = "load_project_from_id=58";
-var patientHM = "load_project_from_id=82";
 var defaultColor = [0.00392156862745098,0.6,0.9098039215686274];
 var zoomClicks = 50, panClicks=10, rotateClicks=20;
 
@@ -397,13 +396,4 @@ function testingConnectionLines(test, expectedLines){
 function testMoviePlayerWidget(test,id){
 	test.assertExists('div[id="'+id+'"]', "Movie player exists");
 	test.assertExists("iframe[id=\"widget6\"]", "Movie player iframe exists");
-}
-
-function testBaseWidget(test, id){
-	test.assertExists('div[id="'+id+'"]', id + " exists");
-}
-
-function testDicomWidget(test, id){
-	testBaseWidget(test, id);
- 	
-} 		 
+}		 

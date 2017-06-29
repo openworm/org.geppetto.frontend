@@ -44,7 +44,7 @@ function testInitialControlPanelValues(test, values){
 			var rows = $(".standard-row").length;
 			return rows;
 		});
-		test.assertEquals(rows, values, "The control panel opened with right amount of rows");
+		test.assertEquals(rows, values, "The control panel opened with right amount of rows. Expecting: " + values);
 	});
 }
 
@@ -389,7 +389,7 @@ function testingConnectionLines(test, expectedLines){
 			return connectionLines;
 		});
 		
-		test.assertEquals(expectedLines, connectionLines, "The control panel opened with right amount of rows");
+		test.assertEquals(expectedLines, connectionLines, "Right amount of connections line. Expecting:" + connectionLines);
 	});
 }
 

@@ -14,12 +14,6 @@
 	<profiles>
 		<profile>
 			<id>master</id>
-			<properties>		
- 				<contextPath></contextPath>		
- 				<useSsl></useSsl>		
- 				<embedded></embedded>		
- 				<embedderURL></embedderURL>		
- 			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -70,12 +64,6 @@
 		</profile>
 		<profile>
 			<id>development</id>
-			<properties>		
- 				<contextPath></contextPath>		
- 				<useSsl></useSsl>		
- 				<embedded></embedded>		
- 				<embedderURL></embedderURL>		
- 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>

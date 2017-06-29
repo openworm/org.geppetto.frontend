@@ -53,7 +53,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build</arguments>
+									<arguments>run build  -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
 									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
@@ -103,7 +103,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build-dev</arguments>
+									<arguments>run build-dev -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
 								</configuration>
 							</execution>
 						</executions>

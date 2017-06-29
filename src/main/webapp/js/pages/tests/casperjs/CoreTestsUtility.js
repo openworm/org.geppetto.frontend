@@ -11,7 +11,6 @@ var cElegansPVDR = "load_project_from_id=8";
 var eyeWire = "load_project_from_id=9";
 var nwbSample = "load_project_from_id=18";
 var Pharyngeal = "load_project_from_id=58";
-var patientHM = "load_project_from_id=82";
 var defaultColor = [0.00392156862745098,0.6,0.9098039215686274];
 var zoomClicks = 50, panClicks=10, rotateClicks=20;
 
@@ -45,7 +44,7 @@ function testInitialControlPanelValues(test, values){
 			var rows = $(".standard-row").length;
 			return rows;
 		});
-		test.assertEquals(rows, values, "The control panel opened with right amount of rows");
+		test.assertEquals(rows, values, "The control panel opened with right amount of rows. Expecting: " + values);
 	});
 }
 
@@ -390,20 +389,11 @@ function testingConnectionLines(test, expectedLines){
 			return connectionLines;
 		});
 		
-		test.assertEquals(expectedLines, connectionLines, "The control panel opened with right amount of rows");
+		test.assertEquals(expectedLines, connectionLines, "Right amount of connections line. Expecting:" + connectionLines);
 	});
 }
 
 function testMoviePlayerWidget(test,id){
 	test.assertExists('div[id="'+id+'"]', "Movie player exists");
 	test.assertExists("iframe[id=\"widget6\"]", "Movie player iframe exists");
-}
-
-function testBaseWidget(test, id){
-	test.assertExists('div[id="'+id+'"]', id + " exists");
-}
-
-function testDicomWidget(test, id){
-	testBaseWidget(test, id);
- 	
-} 		 
+}		 

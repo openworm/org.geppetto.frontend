@@ -615,6 +615,16 @@ define(function (require) {
                     that.checkStack();
                 }, 1000);
             }
+            
+            if ( Object.keys(this.state.images).length > (this.state.stack.length * this.state.visibleTiles.length ) ){
+            	for (i in Object.keys(this.state.images)){
+            		var id = i.split(",")[0];
+            		if (id>(this.state.stack.length-1)){
+            			delete this.state.images[i];
+            		}
+            	}
+            }
+            
         },
 
         generateColor: function () {

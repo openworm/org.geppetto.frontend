@@ -618,9 +618,9 @@ define(function (require) {
             
             if ( Object.keys(this.state.images).length > (this.state.stack.length * this.state.visibleTiles.length ) ){
             	for (i in Object.keys(this.state.images)){
-            		var id = i.split(",")[0];
+            		var id = Object.keys(this.state.images)[i].split(",")[0];
             		if (id>(this.state.stack.length-1)){
-            			delete this.state.images[i];
+            			delete this.state.images[Object.keys(this.state.images)[i]];
             		}
             	}
             }

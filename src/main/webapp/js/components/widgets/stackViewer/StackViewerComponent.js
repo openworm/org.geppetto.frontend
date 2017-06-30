@@ -621,6 +621,11 @@ define(function (require) {
             		var id = Object.keys(this.state.images)[i].split(",")[0];
             		if (id>(this.state.stack.length-1)){
             			delete this.state.images[Object.keys(this.state.images)[i]];
+            			try{
+            				this.stack.removeChildAt(i);
+            			}catch (ignore){
+            				//ignore if it doesn't exist
+            			}
             		}
             	}
             }

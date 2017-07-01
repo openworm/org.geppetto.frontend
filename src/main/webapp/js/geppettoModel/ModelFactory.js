@@ -2444,7 +2444,7 @@ define(function (require) {
                     var libraryTypes = libraries[i].getTypes();
                     for (var j = 0; j < libraryTypes.length; j++) {
                         // add if its metatype matches
-                        if (libraryTypes[j].getMetaType() == metaType) {
+                        if (libraryTypes[j] != undefined && libraryTypes[j].getMetaType() == metaType) {
                             types.push(libraryTypes[j]);
                         }
                     }

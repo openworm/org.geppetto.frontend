@@ -16,8 +16,8 @@ define(function (require) {
 				id: this.props.id + "_component",
 				zoomInButton: "zoom-in",
 				zoomOutButton: "zoom-out",
-				homeButton: "home",
-				fullPageButton: "full-page"
+				homeButton: "home"
+				// fullPageButton: "full-page"
 			};
 
 			this.state = {

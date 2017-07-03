@@ -529,10 +529,12 @@ define(['jquery'], function () {
          * @param instances
          */
         updateSceneWithNewInstances: function (instances) {
-            this.traverseInstances(instances);
-            this.setAllGeometriesType(this.getDefaultGeometryType());
-            this.scene.updateMatrixWorld(true);
-            this.resetCamera();
+            var traversedInstances = this.traverseInstances(instances);
+            if (traversedInstances.length > 0){
+                this.setAllGeometriesType(this.getDefaultGeometryType());
+                this.scene.updateMatrixWorld(true);
+                this.resetCamera();
+            }
         },
 
         /**
@@ -542,9 +544,11 @@ define(['jquery'], function () {
          *            skeleton with instances and visual entities
          */
         traverseInstances: function (instances, lines, thickness) {
+            
             for (var j = 0; j < instances.length; j++) {
-                this.checkVisualInstance(instances[j], lines, thickness);
+                var traversedInstances = this.checkVisualInstance(instances[j], lines, thickness);
             }
+            return traversedInstances
         },
 
         /**
@@ -554,6 +558,7 @@ define(['jquery'], function () {
          *            skeleton with instances and visual entities
          */
         checkVisualInstance: function (instance, lines, thickness) {
+            var traversedInstances = [];
             if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                 //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
                 if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
@@ -565,7 +570,9 @@ define(['jquery'], function () {
                 } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                     this.traverseInstances(instance, lines, thickness);
                 }
+                traversedInstances.push(instance);
             }
+            return traversedInstances;
         },
 
 

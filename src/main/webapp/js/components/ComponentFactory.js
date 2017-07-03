@@ -43,7 +43,7 @@ define(function (require) {
 				'CAROUSEL': 'interface/carousel/Carousel',
 				'CANVAS': 'interface/3dCanvas/Canvas',
 				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer',
-				'GITHUBLOGO': 'interface/githubLogo/GithubLogo'
+				'LINKBUTTON': 'interface/linkButton/LinkButton'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},

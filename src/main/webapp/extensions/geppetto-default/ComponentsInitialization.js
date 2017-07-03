@@ -27,7 +27,7 @@ define(function (require) {
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
 
 		//Logo initialization
-		GEPPETTO.ComponentFactory.addComponent('GITHUBLOGO', { left: 41, top: 390}, document.getElementById("github-logo"));
+		GEPPETTO.ComponentFactory.addComponent('LINKBUTTON', { left: 41, top: 390, icon: 'fa-github', url: 'https://github.com/openworm/org.geppetto'}, document.getElementById("github-logo"));
 
         //Control panel initialization
         GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {

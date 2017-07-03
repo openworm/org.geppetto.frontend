@@ -42,7 +42,8 @@ define(function (require) {
 				'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
 				'CAROUSEL': 'interface/carousel/Carousel',
 				'CANVAS': 'interface/3dCanvas/Canvas',
-				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer'
+				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer',
+				'GITHUBLOGO': 'interface/githubLogo/GithubLogo'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},

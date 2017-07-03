@@ -26,6 +26,9 @@ define(function (require) {
 		//Logo initialization
 		GEPPETTO.ComponentFactory.addComponent('LOGO', {logo: 'gpt-gpt_logo'}, document.getElementById("geppettologo"));
 
+		//Logo initialization
+		GEPPETTO.ComponentFactory.addComponent('GITHUBLOGO', { left: 41, top: 390}, document.getElementById("github-logo"));
+
         //Control panel initialization
         GEPPETTO.ComponentFactory.addComponent('CONTROLPANEL', {
                 useBuiltInFilters: true,

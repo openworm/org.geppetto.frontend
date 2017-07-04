@@ -137,6 +137,8 @@ define(function (require) {
         },
 
         createDataFromConnections: function () {
+            if (typeof this.options.library === 'undefined')
+                this.options.library = GEPPETTO.ModelFactory.geppettoModel.neuroml;
             if(this.options.library.connection){
             	
                 var connectionVariables = this.options.library.connection.getVariableReferences();
@@ -409,6 +411,8 @@ define(function (require) {
             var modalContent=$('<div class="modal fade" id="connectivity-config-modal" tabindex="-1"></div>')
                 .append(this.createLayoutSelector()[0].outerHTML).modal({keyboard: true});
             function handleFirstClick(event) {
+                if (typeof that.options.library === 'undefined')
+                    that.options.library = GEPPETTO.ModelFactory.geppettoModel.neuroml;
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(that.options.library.network);
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}))
                 function synapseFromConnection(conn) {
@@ -465,7 +469,9 @@ define(function (require) {
 
             // add data
             baseView.dataType = 'object';
-            baseView.data = this.dataset["root"].getPath();
+            if(this.dataset["root"]!=undefined){
+                baseView.data = this.dataset["root"].getPath();
+            }
 
             if (typeof this.nodeColormap.domain === 'function')
                 baseView.nodeColormap = {domain: this.nodeColormap.domain(),

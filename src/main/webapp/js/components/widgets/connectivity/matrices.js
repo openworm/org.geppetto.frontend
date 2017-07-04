@@ -133,6 +133,7 @@ define(function (require) {
                 };
             };
 
+            var colormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
             var postMargin = 0.5*parseInt(rect.attr("width"))/pre.length;
             var preMargin = 0.5*parseInt(rect.attr("height"))/post.length;
             var postPop = container.selectAll(".postPop")
@@ -141,14 +142,14 @@ define(function (require) {
                 .append("g")
                 .attr("class", "postPop")
                 .attr("transform", "translate("+postMargin+",-10)")
-                .each(popIndicator("cx", context.nodeColormap));
+                .each(popIndicator("cx", colormap));
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
                 .append("g")
                 .attr("class", "prePop")
                 .attr("transform", "translate(-10,"+preMargin+")")
-                .each(popIndicator("cy", context.nodeColormap));
+                .each(popIndicator("cy", colormap));
 
 	    var row = container.selectAll(".row")
 		.data(matrix)
@@ -173,7 +174,7 @@ define(function (require) {
 	    column.append("line")
 		.attr("x1", -context.options.innerWidth);
 
-	    context.createLegend('legend', context.nodeColormap, { x: matrixDim, y: 0 });
+	    context.createLegend('legend', colormap, { x: matrixDim, y: 0 });
 
 	    //Sorting matrix entries by criteria specified via combobox
 	    var orderContainer = $('<div/>', {

@@ -1,4 +1,4 @@
-var urlBase = "http://127.0.0.1:8081/";
+var urlBase = "http://127.0.0.1:8080/";
 var baseFollowUp = "org.geppetto.frontend/geppetto?";
 
 var hhcellProject = "load_project_from_id=1";

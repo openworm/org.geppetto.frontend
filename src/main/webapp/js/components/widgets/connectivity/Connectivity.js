@@ -45,7 +45,8 @@ define(function (require) {
             },
             linkType: function (conn) {
                 return 1;
-            }
+            },
+            library: "GEPPETTO.ModelFactory.geppettoModel.common"
         },
  
         initialize: function (options) {
@@ -137,11 +138,7 @@ define(function (require) {
         },
 
         createDataFromConnections: function () {
-            if (typeof this.options.library === 'undefined')
-                this.options.library = GEPPETTO.ModelFactory.geppettoModel.neuroml;
-            if(this.options.library.connection){
-            	
-                var connectionVariables = this.options.library.connection.getVariableReferences();
+            var connectionVariables = GEPPETTO.ModelFactory.getAllTypesOfType(this.options.library.connection)[0].getVariableReferences();
             	if(connectionVariables.length>0) {
 
 		            if (this.dataset["root"].getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
@@ -177,8 +174,6 @@ define(function (require) {
 		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
 		            return true;
                 }
-            
-            }
             
             return false;
 
@@ -347,6 +342,8 @@ define(function (require) {
                     options.linkWeight = strToFunc(options.linkWeight);
                 if(typeof options.colorMapFunction === 'string')
                     options.colorMapFunction = strToFunc(options.colorMapFunction);
+                if(typeof options.library === 'string')
+                    options.library = eval(options.library);
                 $.extend(this.options, options);
             }
         },
@@ -411,8 +408,6 @@ define(function (require) {
             var modalContent=$('<div class="modal fade" id="connectivity-config-modal" tabindex="-1"></div>')
                 .append(this.createLayoutSelector()[0].outerHTML).modal({keyboard: true});
             function handleFirstClick(event) {
-                if (typeof that.options.library === 'undefined')
-                    that.options.library = GEPPETTO.ModelFactory.geppettoModel.neuroml;
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(that.options.library.network);
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}))
                 function synapseFromConnection(conn) {

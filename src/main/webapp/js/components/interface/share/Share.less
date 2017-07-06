@@ -1,8 +1,7 @@
 @import "../../../../style/less/components/colors";
 
 #geppetto-share {
-    background: @background_color_widget;
-    opacity: 0.5;
+    background-color: fade(@background_color_widget, 50%);
     position: absolute;
     bottom: 0px;
     right: 280px;
@@ -33,8 +32,7 @@
 #share {
     box-shadow: none;
     text-shadow: none;
-	  background: @background_color_widget;
-    opacity: 0.8;
+    background-color: fade(@background_color_widget, 80%);
     border-radius: 0px;
     color: @primary_color;
     width : 65px;

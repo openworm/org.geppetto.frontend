@@ -1,35 +1,3 @@
-/*******************************************************************************
- * The MIT License (MIT)
- *
- * Copyright (c) 2011, 2014 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
 /**
  *
  * @module Widgets/stackViewer
@@ -43,10 +11,6 @@ define(function (require) {
     var ReactDOM = require('react-dom');
     var StackViewerComponent = require('./StackViewerComponent');
 
-    var widgetUtility = require("../WidgetUtility");
-    widgetUtility.loadCss("geppetto/js/components/widgets/stackViewer/stackViewer.css");
-    
-    
     function arrayUnique(array) {
         var a = array.concat();
         for(var i=0; i<a.length; ++i) {
@@ -91,7 +55,7 @@ define(function (require) {
 			this.stackElement.bind('resizeEnd', function() {
 				that.resize();
 			});
-			
+
 			window.addEventListener('resize', function(event){
 				that.stackElement.find(".fa-home").click();
             });
@@ -105,7 +69,7 @@ define(function (require) {
             this.addBorders();
             this.updateScene();
         },
-        
+
         resize : function(){
         	this.data.height = this.stackElement.parent().outerHeight();
         	this.data.width = this.stackElement.parent().outerWidth();

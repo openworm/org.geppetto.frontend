@@ -1,3 +1,4 @@
+@import "./colors";
 #console {
     width: 100%;
     z-index: 9;
@@ -7,7 +8,7 @@
     margin: 0 auto;
     margin-bottom:26px;
     position: relative;
-    color: @orange;
+    color: @primary_color;
     bottom: -26px;
     border-color: #2e2828;
     border-width: 0;
@@ -26,7 +27,7 @@
     margin: 0 auto;
     margin-bottom:26px;
     position: relative;
-    color: @orange;
+    color: @primary_color;
     border-color: #2e2828;
     border-width: 0;
     cursor:pointer!important;
@@ -60,7 +61,7 @@
 }
 
 #fullscreen:hover {
-    color: #fd6808;
+    color: @primary_color;
 }
 
 #javascriptFullscreen {
@@ -75,7 +76,7 @@
 }
 
 #javascriptFullscreen:hover {
-    color: @orange;
+    color: @primary_color;
 }
 
 .CodeMirror-fullscreen {
@@ -86,7 +87,7 @@
     width: 100%!important;
     height: 100%!important;
     z-index: 9999!important;
-    -webkit-backface-visibility: hidden; 
+    -webkit-backface-visibility: hidden;
     -webkit-transform: translateZ(0);
 }
 
@@ -99,14 +100,14 @@
 }
 
 .nav-tabs > li > a{
-	color: @orange;
+	color: @primary_color;
 	height : 100%;
 	background: rgba(66,59,59,0.50);
 	cursor : pointer;
 }
 
 .nav-tabs > li.active > a{
-	color: @orange;
+	color: @primary_color;
   	border: 0px;
     background: rgba(66,59,59,0.80);
     cursor : pointer;
@@ -115,19 +116,19 @@
 .nav-tabs > li.active > a:hover{
 	color: white!important;
   	border: 0px;
-  	background-color: @orange!important;
+  	background-color: @primary_color!important;
   	cursor : pointer;
 }
 
 .nav-tabs > li > a:hover{
 	color: white;
   	border: 0px;
-  	background-color: @orange;
+  	background-color: @primary_color;
   	cursor:pointer
 }
 
 .nav-tabs > li.active > a:focus {
-	color: @orange;
+	color: @primary_color;
   	border: 0px;
     background: rgba(66,59,59,0.80);
 }

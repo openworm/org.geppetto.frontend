@@ -4,26 +4,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>geppetto</title>
 
-	<% if (htmlWebpackPlugin.options.contextPath != "/") { %>
-    	<base href="/<%=htmlWebpackPlugin.options.contextPath%>/" />
+	<% if (htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath != "/") { %>
+    	<base href="/<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>/" />
 	<% } %>
-		 
+
     <!-- CSS -->
     <link rel="stylesheet" href="geppetto/style/css/custom-theme/jquery-ui-1.10.0.custom.css"/>
     <link rel="stylesheet" href="geppetto/style/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="geppetto/style/css/codemirror.css"/>
     <link rel="stylesheet" href="geppetto/style/css/lesser-dark.css"/>
-    <link rel="stylesheet" href="geppetto/style/css/jsConsole.css"/>
     <link rel="stylesheet" href="geppetto/style/css/gpt-icons.css"/>
 
     <link rel="stylesheet" href="geppetto/build/main.css"/>
-
-    <script>
-        window.BUNDLE_CONTEXT_PATH = "<%=htmlWebpackPlugin.options.contextPath%>";
-        window.USE_SSL = <%=htmlWebpackPlugin.options.useSsl%>;
-        window.EMBEDDED = <%=htmlWebpackPlugin.options.embedded%>;
-        window.EMBEDDEDURL = "<%=htmlWebpackPlugin.options.embedderURL%>".split(",");
-    </script>
 
     <link rel="icon" type="image/png" href="geppetto/style/favicon.png"/>
 </head>

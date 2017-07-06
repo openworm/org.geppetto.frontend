@@ -23,24 +23,24 @@ define([ 'jquery', 'underscore', 'backbone',
 			// fixes loss of context for 'this' within methods
 			_.bindAll(this, 'render', 'remove', 'renderProjects',
 					'appendProjects', 'onError', 'filter', 'showProject',
-					'openProject'); 
+					'openProject');
 			this.subviews = [];
-			
+
             // Change link from blank to self for embedded environments
-            if(window.EMBEDDED && window.EMBEDDEDURL !== "/") {
+            if(EMBEDDED && EMBEDDERURL !== "/") {
             	handleRequest = function(e) {
-            	  if(window.EMBEDDEDURL.indexOf(e.origin) != -1) {
+            	  if(EMBEDDERURL.indexOf(e.origin) != -1) {
             		  // This is where we have to create the API
             		  eval(e.data.command);
             	  };
             	};
             	// we have to listen for 'message'
             	window.addEventListener('message', handleRequest, false);
-                if($.isArray(window.EMBEDDEDURL)){
-            		window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL[0]);	
+                if($.isArray(EMBEDDERURL)){
+            		window.parent.postMessage({"command": "ready"}, EMBEDDERURL[0]);
                 }
                 else{
-                	window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                	window.parent.postMessage({"command": "ready"}, EMBEDDERURL);
                 }
             }
 		},
@@ -55,19 +55,19 @@ define([ 'jquery', 'underscore', 'backbone',
 				success : this.renderProjects,
 				error : this.onError
 			});
-			
+
 			// notifies we have rendered to trigger after-render
 			this.trigger('render');
-			
+
 			return this;
 		},
-		
+
 		afterRender: function () {
 			// add click handlers for keeping track of expanded experiments
 			$( "#project-details" ).on("click", "a[data-parent='#accordion']", function() {
 				var expID = $(this).attr( "aria-controls" );
 				var expanded = $("#" + expID).attr( "aria-expanded" );
-				
+
 				// add to global list if not expanded (means the click is meant to expand)
 				// also add if attribute is undefined or bool false (first time it's not there yet)
 				// NOTE: if the attr is not there it can be undefined or bool false depending on browser
@@ -81,7 +81,7 @@ define([ 'jquery', 'underscore', 'backbone',
 						window.openExperiments.splice(index, 1);
 					}
 				}
-				
+
 				// return true to cascade to next default bootstrap handler
 				return true;
 			});
@@ -135,21 +135,21 @@ define([ 'jquery', 'underscore', 'backbone',
 			if (id === undefined) {
 				id = $(event.target).parents(".project-preview").attr("project-id");
 			}
-			
+
 			// clear global variable with list of open experiments
 			window.openExperiments = [];
-			
+
 			// clear interval from showing previous project
 			if(this.projectRefreshInterval != undefined){
 				clearInterval(this.projectRefreshInterval);
 			}
-			
+
 			var projectDetailsView = new ProjectDetailsView({
 				id : id,
 				el : this.$el.find("#project-details")
 			});
 			projectDetailsView.render();
-			
+
 			// update project every 5 secs and store a reference to timer
 			this.projectRefreshInterval = setInterval(projectDetailsView.refreshModel, 5000);
 		},
@@ -167,7 +167,7 @@ define([ 'jquery', 'underscore', 'backbone',
 			}
 
 			var targetWindow = '_blank';
-            if(window.EMBEDDED) {
+            if(EMBEDDED) {
             	targetWindow = '_self';
             }
             window.open(url + 'geppetto?load_project_from_id=' + id, targetWindow);

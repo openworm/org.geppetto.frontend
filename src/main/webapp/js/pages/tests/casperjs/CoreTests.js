@@ -88,7 +88,7 @@ casper.test.begin('Geppetto basic tests', 219, function suite(test) {
 	casper.thenOpen(urlBase+baseFollowUp+cElegansPVDR,function() {
 		casper.then(function(){launchTest(test,"cElegansPVDR",180000);});
 	});
-	
+
 	casper.run(function() {
 		test.done();
 	});
@@ -578,7 +578,6 @@ function c302Connectome(test){
 		this.echo("I've waited for Popup1 to load.");
 	}, null, 30000);
 }
-
 
 function c302PVDR(test){
 	casper.echo("------------STARTING C302 Muscle Model TEST--------------");

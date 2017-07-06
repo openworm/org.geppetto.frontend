@@ -9,8 +9,7 @@
     }
 
 	.modal-content {
-		background: @background_color_widget;
-    opacity: 0.8;
+		background: fade(@background_color_widget, 80%);
 		border-radius:0px!important;
 		color:@primary_color;
 	}
@@ -30,11 +29,3 @@
     }
 
 }
-
-
-
-// @import "modal/help-modal";
-// @import "modal/loading-modal";
-// @import "modal/loading-spinner";
-// @import "modal/info-modal";
-// @import "modal/error-modal";

@@ -44,8 +44,7 @@
 	color: #FFFFFF;
 	min-height: 1px;
 	margin-bottom: 10px;
-	background: @background_color_widget;
-  opacity: 0.7;
+	background-color: fade(@background_color_widget, 70%);
 }
 
 #controlpanel .griddle .griddle-filter .form-control {
@@ -89,8 +88,7 @@
 }
 
 #controlpanel .griddle th {
-	background: @background_color_widget;
-  opacity: 0.7;
+	background-color: fade(@background_color_widget, 70%);
 	border: 0px;
 	color: @primary_color;
 	padding: 5px;
@@ -99,8 +97,7 @@
 
 #controlpanel .griddle td {
 	padding: 5px;
-	background: @background_color_widget;
-  opacity: 0.7;
+	background-color: fade(@background_color_widget, 70%);
 	color: #FFF;
 	border-bottom: 1px dashed;
 	border-color: rgba(255, 255, 255, 0.2);
@@ -274,8 +271,7 @@
 .tooltip-container {
 	padding: 0px;
 	border-radius: 0;
-	background: @background_color_widget !important;
-  opacity: 0.7 !important;
+  	background-color: fade(@background_color_widget, 70%) !important;
 	border: 1px solid rgba(255, 255, 255, 0.25) !important;
 	box-shadow: none;
 	opacity: 1;
@@ -286,8 +282,7 @@
 }
 
 .controlpanel-colorpicker {
-	background: @background_color_widget;
-  opacity: 0.7;
+  	background-color: fade(@background_color_widget, 70%);
 	border: 1px solid rgba(255, 255, 255, 0.25) !important;
 	border-radius: 0px !important;
 }

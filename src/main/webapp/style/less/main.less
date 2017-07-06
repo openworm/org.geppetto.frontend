@@ -74,8 +74,7 @@ body {
 }
 
 .btn:not(ul):not(.btn-warning):not([disabled]) {
-  background-color: @background_color_widget;
-  opacity: 0.8;
+  background-color: fade(@background_color_widget, 80%);
   color: @primary_color;
 }
 

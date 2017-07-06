@@ -1,77 +1,76 @@
 define(function (require) {
 
-	require("./BigImageViewer.less")
+	require("./Tree.less")
 
 	var React = require('react');
-	var OpenSeaDragon = require('openseadragon');
-	var WidgetButtonBar = require('../../controls/widgetButtonBar/WidgetButtonBar');
+	var SortableTree = require('react-sortable-tree').default;
 	var AbstractComponent = require('../../AComponent');
 
-	return class BigImageViewer extends AbstractComponent {
+	return class Tree extends AbstractComponent {
 
 		constructor(props) {
 			super(props);
 
-			var settings = {
-				id: this.props.id + "_component",
-				zoomInButton: "zoom-in",
-				zoomOutButton: "zoom-out",
-				homeButton: "home"
-				// fullPageButton: "full-page"
-			};
-
+			this.handleClick = this.handleClick.bind(this);
+			this.updateTreeData = this.updateTreeData.bind(this);
+			this.expandAll = this.expandAll.bind(this);
+			this.collapseAll = this.collapseAll.bind(this);
 			this.state = {
-				settings: $.extend(settings, this.props.settings),
-				file: this.extractFilePath(this.props.data)
+				treeData: this.props.data,
 			};
-
-			this.download = this.download.bind(this);
 		}
 
-		loadViewer() {
-			this.state.settings.tileSources = this.state.file;
-			this.viewer = OpenSeadragon(this.state.settings);
+		updateTreeData(treeData) {
+			this.setState({ treeData });
 		}
 
-		download() {
-			//What do we do here?
-			console.log("Downloading data...");
+		// download() {
+		// 	//What do we do here?
+		// 	console.log("Downloading data...");
+		// }
+
+		expand(expanded) {
+			this.setState({
+				treeData: toggleExpandedForAll({
+					treeData: this.state.treeData,
+					expanded,
+				}),
+			});
 		}
 
-		extractFilePath(data) {
-			var file;
-			if (data != undefined){
-				if (data.getMetaType == undefined) {
-					file = data;
-				}
-				else if (data.getMetaType() == "Instance" && data.getVariable().getInitialValues()[0].value.format == "DZI") {
-						file = data.getVariable().getInitialValues()[0].value.data;
-				}
+		expandAll() {
+			this.expand(true);
+		}
+
+		collapseAll() {
+			this.expand(false);
+		}
+
+		handleClick(rowInfo) {
+			console.log('taka');
+			console.log(rowInfo);
+		}
+		getButtons(rowInfo) {
+			var buttons = [];
+			if (rowInfo.node.children == undefined || rowInfo.node.children.length == 0){
+				buttons.push(<i className="fa fa-eye" aria-hidden="true" onClick={() => this.handleClick(rowInfo)}></i>);
 			}
-			return file;
-		}
-
-		setData(data) {
-			this.setState({ file: this.extractFilePath(data) });
-		}
-
-		componentDidUpdate() {
-			this.loadViewer();
-		}
-
-		componentDidMount() {
-			this.loadViewer();
+			return buttons;
 		}
 
 		render() {
 			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="bigImageViewer">
-					<WidgetButtonBar>
-						<button className='btn fa fa-home' id='home' title={'Center Stack'} />
-						<button className='btn fa fa-search-plus' id='zoom-in' title={'Zoom In'} />
-						<button className='btn fa fa-search-minus' id='zoom-out' title={'Zoom Out'} />
-						{/*<button className='btn fa fa-arrows-alt' id='full-page' title={'Full Page'} />*/}
-					</WidgetButtonBar>
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="treeViewer">
+					<SortableTree
+						treeData={this.state.treeData}
+						canDrag={false}
+						generateNodeProps={rowInfo => ({
+
+							onClick: () => this.handleClick(rowInfo),
+							buttons: this.getButtons(rowInfo),
+						})}
+						onChange={treeData => this.setState({ treeData })}
+					/>
 				</div>
 			)
 		}

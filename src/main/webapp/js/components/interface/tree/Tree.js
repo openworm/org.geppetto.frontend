@@ -11,7 +11,6 @@ define(function (require) {
 		constructor(props) {
 			super(props);
 
-			this.handleClick = this.handleClick.bind(this);
 			this.updateTreeData = this.updateTreeData.bind(this);
 			this.expandAll = this.expandAll.bind(this);
 			this.collapseAll = this.collapseAll.bind(this);
@@ -23,11 +22,6 @@ define(function (require) {
 		updateTreeData(treeData) {
 			this.setState({ treeData });
 		}
-
-		// download() {
-		// 	//What do we do here?
-		// 	console.log("Downloading data...");
-		// }
 
 		expand(expanded) {
 			this.setState({
@@ -46,29 +40,27 @@ define(function (require) {
 			this.expand(false);
 		}
 
-		handleClick(rowInfo) {
-			console.log('taka');
-			console.log(rowInfo);
-		}
-		getButtons(rowInfo) {
-			var buttons = [];
-			if (rowInfo.node.children == undefined || rowInfo.node.children.length == 0){
-				buttons.push(<i className="fa fa-eye" aria-hidden="true" onClick={() => this.handleClick(rowInfo)}></i>);
+		getNodeProps(rowInfo) {
+			var nodeProps = {};
+			if (this.props.handleClick != undefined) {
+				nodeProps['onClick'] = () => this.props.handleClick(rowInfo);
 			}
-			return buttons;
+			if (this.props.getButtons != undefined) {
+				nodeProps['buttons'] = this.props.getButtons(rowInfo);
+			}
+			return nodeProps;
 		}
 
 		render() {
+
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="treeViewer">
 					<SortableTree
 						treeData={this.state.treeData}
 						canDrag={false}
-						generateNodeProps={rowInfo => ({
-
-							onClick: () => this.handleClick(rowInfo),
-							buttons: this.getButtons(rowInfo),
-						})}
+						rowHeight={40}
+						scaffoldBlockPxWidth={22}
+						generateNodeProps={rowInfo => (this.getNodeProps(rowInfo))}
 						onChange={treeData => this.setState({ treeData })}
 					/>
 				</div>

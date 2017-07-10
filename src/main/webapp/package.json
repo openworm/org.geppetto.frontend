@@ -68,6 +68,7 @@
     "react-router-dom": "^4.1.1",
     "react-simpletabs": "^0.7.0",
     "react-slick": "^0.14.8",
+    "react-sortable-tree": "^0.1.19",
     "remarkable": "^1.7.1",
     "slick-carousel": "^1.6.0",
     "stats.js": "^0.17.0",

@@ -5,6 +5,6 @@ do
   docker ps;
   curl -Is "http://localhost:28081/org.geppetto.frontend"
   curl -Is "http://localhost:28081/org.geppetto.frontend"
-  sleep 1
+  sleep 5
 done
-echo "$(date) - connected successfully" && curl -Is "http://localhost:28081/org.geppetto.frontend"
+echo "$(date) - connected successfully" && curl -Is "http://localhost:28081"

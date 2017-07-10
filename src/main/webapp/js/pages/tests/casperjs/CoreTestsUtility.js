@@ -1,4 +1,7 @@
 var urlBase = casper.cli.get('host');
+if(urlBase==null || urlBase==undefined){
+	urlBase = "http://127.0.0.1:8080/";
+}
 var baseFollowUp = "org.geppetto.frontend/geppetto?";
 
 var hhcellProject = "load_project_from_id=1";

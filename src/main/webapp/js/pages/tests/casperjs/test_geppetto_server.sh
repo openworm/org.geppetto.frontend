@@ -2,9 +2,6 @@
 while ! curl http://localhost:28081/org.geppetto.frontend
 do
   echo "Waiting for docker to finish building.";
-  docker ps;
-  curl -Is "http://localhost:28081/org.geppetto.frontend"
-  curl -Is "http://localhost:28081/org.geppetto.frontend"
-  sleep 5
+  sleep 60
 done
-echo "$(date) - connected successfully" && curl -Is "http://localhost:28081"
+echo "$(date) - connected successfully" && curl -Is "http://localhost:28081/org.geppetto.frontend"

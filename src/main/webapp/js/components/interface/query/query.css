@@ -465,6 +465,7 @@
 	margin: 0 auto;
 	text-align: center;
 	color: white;
+	font-size: smaller;
 }
 
 #querybuilder .query-results-image {

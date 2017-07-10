@@ -491,3 +491,8 @@
 #querybuilder .standard-row {
 	height: 130px;
 }
+
+#querybuilder .query-results-images-column img {
+	max-height: 130px;
+}
+

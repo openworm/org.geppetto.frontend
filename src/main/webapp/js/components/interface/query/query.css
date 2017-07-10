@@ -468,6 +468,10 @@
 	font-size: smaller;
 }
 
+#querybuilder .query-results-description-column {
+	font-size: smaller;
+}
+
 #querybuilder .query-results-image {
 	margin: 0 auto;
 	text-align: center;

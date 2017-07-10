@@ -150,11 +150,11 @@ function deleteProject(test, url,id){
 			});
 		});
 		
-		casper.then(function () {
-			this.waitForSelector('div[project-id=\"'+id+'\"]', function (id) {
-				this.echo("Waited for scrolldown projects to appear");
-				this.mouse.click('div[project-id=\"'+id+'\"]');
-			}, id, 4000);
+	        casper.then(function () {
+		    this.waitForSelector('div[project-id=\"'+id+'\"]', function () {
+		        this.echo("Waited for scrolldown projects to appear");
+		        this.mouse.click('div[project-id=\"'+id+'\"]');
+		    }, 4000);
 		});
 		
 		casper.then(function () {

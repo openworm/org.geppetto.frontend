@@ -1,7 +1,7 @@
 
 /**
  * Plot Widget class using plotly javascript library
- * 
+ *
  * @module Widgets/Plot
  * @author Jesus R. Martinez (jesus@metacell.us)
  * @author Adrian Quintana (adrian.perez@ucl.ac.uk)
@@ -16,8 +16,7 @@ define(function (require) {
 	var pako = require('pako');
 	var JSZip = require("jszip");
 
-	var widgetUtility = require("../WidgetUtility");
-    widgetUtility.loadCss("geppetto/js/components/widgets/plot/Plot.css");
+	require("./Plot.less");
 
 	var ExternalInstance = require('../../../geppettoModel/model/ExternalInstance');
 
@@ -49,12 +48,12 @@ define(function (require) {
         firstStep : 0,
         updateLegendsState : false,
 		legendVisible : true,
-        
+
 		/**
 		 * Default options for plotly widget, used if none specified when plot
-		 * is created. 
+		 * is created.
 		 */
-		defaultOptions : function(){	
+		defaultOptions : function(){
 			return {
 				autosize : true,
 				width : '100%',
@@ -123,7 +122,9 @@ define(function (require) {
 						color : '#fff'
 					},
 					x : 1,
-					bgcolor : 'rgba(66, 59, 59, 0.90)'
+
+					//bgcolor : 'rgba(66, 59, 59, 0.90)'
+                    //bgcolor : 'rgba(0, 0, 0, 0)'
 				},
 				transition: {
 				      duration: 0
@@ -132,7 +133,9 @@ define(function (require) {
 				      duration: 0,
 				      redraw: false
 				},
-				paper_bgcolor: 'rgba(66, 59, 59, 0.90)',
+				//paper_bgcolor: 'rgba(66, 59, 59, 0.90)',
+                //paper_bgcolor: 'rgba(0, 0, 0, 0)',
+                //opacity:0.9,
 				plot_bgcolor: 'transparent',
 				playAll : false,
 				hovermode : 'none'
@@ -158,17 +161,17 @@ define(function (require) {
 			//Merge passed options into existing defaultOptions object
 			$.extend( this.plotOptions, options);
 			this.render();
-			this.dialog.append("<div id='" + this.id + "'></div>");			
+			this.dialog.append("<div id='" + this.id + "'></div>");
 			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
 			this.plotOptions.xaxis.range =[0,this.limit];
-			
+
 			var that = this;
 
 			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download plot data'></div>").on('click', function(event) {
 				that.downloadPlotData();
 			}));
-			
+
 			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Save as image'></div>").on('click', function(event) {
 				that.showImageMenu(event);
                 event.stopPropagation();
@@ -178,46 +181,46 @@ define(function (require) {
 				that.showLegend(!that.legendVisible);
 				event.stopPropagation();
 			}));
-			
+
 			//adding functionality icon buttons on the left of the widget
 			this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset plot zoom'></div>").on('click', function(event) {
 				that.resetAxes();
 			}));
 
 			this.plotElement = $("#"+this.id);
-			
+
 			//resize handlers
 			this.plotElement.dialog({
-				resize: function(event, ui) { 
-					that.resize(true); 
+				resize: function(event, ui) {
+					that.resize(true);
 				}
 			});
-			
+
 			this.plotElement.bind('resizeEnd', function() {
 				that.resize();
 			});
-			
+
 			this.imageTypeMenu = new GEPPETTO.ContextMenuView();
-            
+
             this.imageTypes.unshift({
                 "label": "Save as PNG",
                 "method": "downloadImage",
                 "arguments": ["png"],
             });
-            
+
             this.imageTypes.unshift({
                 "label": "Save as JPEG",
                 "method": "downloadImage",
                 "arguments": ["jpeg"],
             });
-            
+
             this.imageTypes.unshift({
                 "label": "Save as SVG",
                 "method": "downloadImage",
                 "arguments": ["svg"],
             });
 		},
-		
+
 		getVariables : function(){
 			return this.variables;
 		},
@@ -268,13 +271,13 @@ define(function (require) {
 			if (!$.isArray(data)) {
 				data = [data];
 			}
-			
+
         	for (var i = 0; i < data.length; i++) {
         		this.controller.addToHistory("Plot "+data[i].getInstancePath(),"plotData",[data[i]],this.getId());
         	}
-        	
+
 			// If no options specify by user, use default options
-			if (options != null) {	
+			if (options != null) {
 				// Merge object2 into object1
 				$.extend( this.plotOptions, options );
 			}
@@ -308,9 +311,9 @@ define(function (require) {
 					//We stored the variable objects in its own array, using the instance path
 					//as index. Can't be put on this.datasets since plotly will reject it
 					this.variables[legendName] = instance;
-	                
+
 					/*
-					 * Create object with x, y data, and graph information. 
+					 * Create object with x, y data, and graph information.
 					 * Object is used to plot on plotly library
 					 */
 					var newLine = {
@@ -348,7 +351,7 @@ define(function (require) {
                     }
                 }
             }
-			
+
 			this.xVariable = window.time;
 			if(plotable){
 			    this.plotGeneric();
@@ -356,7 +359,7 @@ define(function (require) {
 
 			// track change in state of the widget
 			this.dirtyView = true;
-			
+
 			return this;
 		},
 
@@ -388,7 +391,7 @@ define(function (require) {
 					}
 				});
 		},
-		
+
 		showImageMenu: function (event) {
             var that = this;
             if (this.imageTypes.length > 0) {
@@ -412,7 +415,7 @@ define(function (require) {
 		 */
 		downloadImage: function (imageType) {
 			var self = this;
-			
+
 			// play around with settings to make background temporarily white and margins wider
 			this.plotOptions.paper_bgcolor = "rgb(255,255,255)";
 			this.plotOptions.xaxis.linecolor = "rgb(0,0,0)";
@@ -434,16 +437,16 @@ define(function (require) {
 			var oldMarginLeft = this.plotOptions.margin.l;
 			this.plotOptions.margin.l= 70;
 			Plotly.relayout(this.plotDiv,this.plotOptions);
-			
+
 			var height =  this.getSize().height;
 			var width = this.getSize().width;
-			
+
 			//double the size if the width and height is very small
 			if(height <500 || width <500){
 				height =  height*2;
 				width = width *2;
 			}
-			
+
 			Plotly.downloadImage(
 					this.plotDiv, {
 						format: imageType,
@@ -474,7 +477,7 @@ define(function (require) {
             };
 			setTimeout(reset, 10);
 		},
-		
+
 		/**
 		 * Downloads a zip with the plotting data
 		 */
@@ -482,7 +485,7 @@ define(function (require) {
 			if(!this.isFunctionNode){
 				var data = new Array();
 				var xCopied = false;
-				
+
 				//stores path of file name containing data results for plot and names of variables
 				var text = this.xVariable.getInstancePath();
 				for (var key=0; key<this.datasets.length; key++) {
@@ -537,7 +540,7 @@ define(function (require) {
 				});
 			}
 		},
-		
+
 		/**
 		 * Resets the axes of the graphs to defaults
 		 */
@@ -552,7 +555,7 @@ define(function (require) {
 			}
 			Plotly.relayout(this.plotDiv, this.plotOptions);
 		},
-		
+
 		/**
 		 * Retrieve the x and y arrays for the time series
 		 */
@@ -569,14 +572,14 @@ define(function (require) {
 					yData.push(timeSeriesY[step]);
 				}
 			}
-			
+
 			timeSeriesData["x"] = xData;
 			timeSeriesData["y"] = yData;
-			
+
 			this.updateYAxisRange(timeSeriesX,timeSeriesY);
 			return timeSeriesData;
 		},
-		
+
             updateXAxisRange : function(timeSeriesX) {
                 var localxmin = Math.min.apply(null, timeSeriesX);
 	        var localxmax = Math.max.apply(null, timeSeriesX);
@@ -597,7 +600,7 @@ define(function (require) {
 	        this.plotOptions.xaxis.range = [this.plotOptions.xaxis.min, this.plotOptions.xaxis.max];
             },
 
-		
+
 		updateYAxisRange : function(timeSeriesX, timeSeriesY){
 			var localxmin = Math.min.apply(null, timeSeriesX);
 			var localymin = Math.min.apply(null, timeSeriesY);
@@ -615,7 +618,7 @@ define(function (require) {
 		},
 
 		/**
-		 * Removes the data set from the plot. 
+		 * Removes the data set from the plot.
 		 *
 		 * @command removeDataSet(state)
 		 * @param {Object} state -Data set to be removed from the plot
@@ -648,7 +651,7 @@ define(function (require) {
 		 */
 		updateDataSet: function (step, playAll) {
 			if(!this.isFunctionNode){
-				/*Clears the data of the plot widget if the initialized flag 
+				/*Clears the data of the plot widget if the initialized flag
 				 *has not be set to true, which means arrays are populated but not yet plot*/
 				if(!this.initialized){
 					this.clean(playAll);
@@ -734,7 +737,7 @@ define(function (require) {
 						this.plotOptions.xaxis.range = [0, this.limit];
 						this.plotOptions.xaxis.autorange = false;
 					}
-					
+
 					//animate graph if it requires an update that is not play all
 					if(this.plotOptions.playAll){
 						//redraws graph for play all mode
@@ -747,10 +750,10 @@ define(function (require) {
 						}
 						Plotly.animate(this.plotDiv, {
 							data: this.datasets
-						},this.plotOptions);	
+						},this.plotOptions);
 					}
 				}
-				
+
 				if(this.firstStep==0){
 					for(var key =0; key<this.datasets.length;key++){
 						this.updateYAxisRange(window.time,this.variables[this.getLegendInstancePath(this.datasets[key].name)].getTimeSeries());
@@ -759,10 +762,10 @@ define(function (require) {
 					//redraws graph for play all mode
 					this.resize();
 				}
-				
+
 				this.firstStep++;
 				this.reIndexUpdate = this.reIndexUpdate + 1;
-				
+
 			}
 		},
 
@@ -778,14 +781,14 @@ define(function (require) {
 					this.labelsUpdated = true;
 					this.plotOptions.yaxis.title = labelY;
 					this.plotOptions.xaxis.title = labelX;
-					
+
 					if(labelY == null || labelY == ""){
 						this.plotOptions.margin.l = 30;
 					}
 					//update the axia labels for the plot
 					Plotly.relayout(this.plotDiv, this.plotOptions);
 				}
-			}            
+			}
 		},
 
 		/**
@@ -812,7 +815,7 @@ define(function (require) {
 					formattedUnitName = (mathUnit.units.length > 0) ? mathUnit.units[0].unit.base.key : "";
 					(mathUnit.units.length > 1) ? formattedUnitName += " OVER " + mathUnit.units[1].unit.base.key : "";
 				}
-				
+
 				if (formattedUnitName != "") {
 					formattedUnitName = formattedUnitName.replace(/_/g, " ");
 					formattedUnitName = formattedUnitName.charAt(0).toUpperCase() + formattedUnitName.slice(1).toLowerCase();
@@ -841,7 +844,7 @@ define(function (require) {
 				Plotly.newPlot(this.id, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});
 				this.resize();
 			}
-			
+
 			return this;
 		},
 
@@ -933,7 +936,7 @@ define(function (require) {
 				var plotTitle = plotMetadata["title"];
 				var XAxisLabel = plotMetadata["xAxisLabel"];
 				var YAxisLabel = plotMetadata["yAxisLabel"];
-				
+
 				//Generate options from metadata information
 				var options = {
 						xaxis: {min: initialValue, max: finalValue, show: true, axisLabel: XAxisLabel},
@@ -1025,7 +1028,7 @@ define(function (require) {
 			};
 
 			this.datasets.push(newLine);
-			
+
 			//Creates new plot using datasets and default options
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
 			this.initialized = true;
@@ -1036,7 +1039,7 @@ define(function (require) {
 
 			return this;
 		},
-		
+
 		getLegendInstancePath : function(legend){
 			var originalInstancePath = legend;
 			for(var key in this.labelsMap){
@@ -1044,7 +1047,7 @@ define(function (require) {
     				originalInstancePath = key;
     			}
     		}
-			
+
 			return originalInstancePath;
 		},
 
@@ -1107,7 +1110,7 @@ define(function (require) {
                     }
                 }
             }
-			
+
 			this.plotOptions.xaxis.autorange = true;
 			this.xaxisAutoRange = true;
 			this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false,doubleClick : false});

@@ -1,4 +1,3 @@
-
 /**
  * Connectivity Widget
  *
@@ -13,16 +12,15 @@ define(function (require) {
     var _ = require('underscore');
     var Instance = require('../../../geppettoModel/model/Instance');
     require('../../controls/mixins/bootstrap/modal.js')
-    
+
     var d3 = require("d3");
 
 	var chords = require('./chords');
 	var hives = require('./hives');
 	var matrices = require('./matrices');
 	var forces = require('./forces');
-    
-    var widgetUtility = require("../WidgetUtility");
-    widgetUtility.loadCss("geppetto/js/components/widgets/connectivity/Connectivity.css");
+
+    require("./Connectivity.less");
 
     return Widget.View.extend({
 
@@ -100,7 +98,7 @@ define(function (require) {
             this.widgetMargin = 20;
 
             if(this.createDataFromConnections()){
-            	this.createLayout();	
+            	this.createLayout();
             }
 
             // track change in state of the widget
@@ -112,7 +110,7 @@ define(function (require) {
         createDataFromConnections: function () {
             //TODO: remove Hardcoded NeuroML stuff
             if(Model.neuroml.connection){
-            	
+
             	var connectionVariables = Model.neuroml.connection.getVariableReferences();
             	if(connectionVariables.length>0) {
 
@@ -120,7 +118,7 @@ define(function (require) {
 		                var subInstances = this.dataset["root"].getChildren();
 		                this.dataset["nodes"] = [];
 		                this.dataset["links"] = [];
-		
+
 		                for (var k = 0; k < subInstances.length; k++) {
 		                    var subInstance = subInstances[k];
 		                    if (subInstance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
@@ -129,29 +127,29 @@ define(function (require) {
 		                            var populationChild = populationChildren[l];
 		                            this.createNode(populationChild.getId(), this.options.nodeType(populationChild));
 		                        }
-		
+
 		                    }
 		                }
 
 		                for(var x=0; x<connectionVariables.length; x++){
 	                        var connectionVariable = connectionVariables[x];
-	
+
 	                        var source = connectionVariable.getA();
 	                        var target = connectionVariable.getB();
 	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
 	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
-	
+
 	                        this.createLink(sourceId, targetId, this.options.linkType(connectionVariable), this.options.linkWeight(connectionVariable));
 		                }
 		            }
-                	
+
 		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
 		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
 		            return true;
                 }
-            
+
             }
-            
+
             return false;
 
         },
@@ -317,7 +315,7 @@ define(function (require) {
                 $.extend(this.options, options);
             }
         },
-        
+
         createLayoutSelector: function() {
 
             function imgPath(path){
@@ -382,7 +380,7 @@ define(function (require) {
                 var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
                 var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
                 function synapseFromConnection(conn) {
-                	
+
                 	var synapses=GEPPETTO.ModelFactory.getAllVariablesOfType(conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse);
                 	if(synapses.length>0){
                 		return synapses[0].getId();
@@ -394,7 +392,7 @@ define(function (require) {
                 that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
                 firstClick=true;
             }
-            
+
             function clickHandler(event) {
             	if(!firstClick){
             		handleFirstClick(event);

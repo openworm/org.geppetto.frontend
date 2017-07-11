@@ -1,0 +1,193 @@
+@import "../../../../style/less/components/colors";
+
+#spotlight {
+    position: absolute !important;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    z-index: 999;
+    height: 100%;
+    width: 100%;
+}
+
+#spotlight .typeahead,
+#spotlight .tt-query,
+#spotlight .tt-hint {
+    width: 800px !important;
+    height: 40px !important;
+    padding: 8px 12px !important;
+    font-size: 22px !important;
+    line-height: 30px !important;
+    border: 2px solid @primary_color !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    outline: none;
+}
+
+#spotlight .typeaheadWrapper {
+    position: absolute !important;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 800px;
+    top: 30%;
+}
+
+#spotlight .typeahead {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+#spotlight .typeahead:focus {
+    border: 2px solid @primary_color;
+}
+
+#spotlight .tt-query {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+#spotlight .tt-hint {
+    color: #999
+}
+
+#spotlight .tt-menu {
+    width: 800px;
+    margin: 12px 0;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+#spotlight .tt-suggestion {
+    padding: 3px 20px;
+    font-size: 13px;
+    line-height: 24px;
+}
+
+#spotlight .tt-suggestion:hover {
+    cursor: pointer;
+    color: #fff;
+    background-color: #aaaaaa;
+}
+
+#spotlight .tt-suggestion.tt-cursor {
+    color: #fff;
+    background-color: #aaaaaa;
+
+}
+
+#spotlight .tt-suggestion p {
+    margin: 0;
+}
+
+.gist {
+    font-size: 14px;
+}
+
+.spotlight-input {
+    border: 0;
+    font-size: 24px;
+    color: white;
+    background-color: transparent;
+    float:left;
+    margin-right:5px;
+}
+
+.spotlight-input-label{
+    color:@primary_color;
+    font-size: 24px;
+    background-color: transparent;
+    float:left;
+}
+
+.spotlight-input-label-info{
+    color: #D8D8D8;
+    font-size: 14px;
+    background-color: transparent;
+    float: left;
+    bottom: -45px;
+    position: absolute;
+    width: 350px;
+    text-align: center;
+}
+
+.code{
+    font-family: courier, monospace;
+    color:#AB81FF;
+}
+
+#parameterInput{
+    width: 350px;
+    height: 50px;
+    margin: 0 auto;
+    position: relative;
+}
+
+#ParameterCapability{
+    width: 500px;
+    margin: 0 auto;
+}
+
+.spotlight-input:focus {
+    outline:0px !important;
+    -webkit-appearance:none;
+}
+
+.spotlight-toolbar {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 750px;
+    top: 40%;
+}
+
+.spotlight-button-label {
+    font-size: 15px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.spotlight-button {
+    height: 60px;
+    width: 120px;
+    margin: 25px;
+    background: none !important;
+    color: white !important;
+    font-size: 35px !important;
+    border: 0 !important;
+}
+
+.spotlight-button:hover {
+    font-size: 55px !important;
+    background: none !important;
+    color: @primary_color !important;
+}
+
+.spotlight-button:focus {
+    font-size: 55px !important;
+    background: none !important;
+    color: @primary_color !important;
+}
+
+.spotlight-button-hover {
+    font-size: 55px !important;
+    background: none !important;
+    color: @primary_color !important;
+}
+
+.spotlight-suggestion {
+    background-color: @primary_color;
+    color: white;
+}

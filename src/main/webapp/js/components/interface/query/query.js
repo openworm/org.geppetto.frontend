@@ -1,47 +1,7 @@
-/*******************************************************************************
- *
- * Copyright (c) 2011, 2016 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
 define(function (require) {
 
-    function loadCss(url) {
-        var link = document.createElement("link");
-        link.type = "text/css";
-        link.rel = "stylesheet";
-        link.href = url;
-        document.getElementsByTagName("head")[0].appendChild(link);
-    }
-
-    loadCss("geppetto/js/components/interface/query/query.css");
-    loadCss("geppetto/js/components/interface/query/react-simpletabs.css");
+    require("./query.less");
+    require("./react-simpletabs.less");
 
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
@@ -230,7 +190,7 @@ define(function (require) {
 
             return action;
         },
-        
+
         getInitialState: function () {
             return {
                 carouselFullyLoaded : false,
@@ -243,7 +203,7 @@ define(function (require) {
                 var slickDivElement = $('#' + this.imageContainerId + '.slickdiv');
                 slickDivElement.slick();
                 var that = this;
-                
+
                 //reload slick carousel if it's first time clicking on arrow in any direction
                 slickDivElement.find(".slick-arrow").on("click", function(){
                 	if(!that.fullyLoaded){
@@ -253,16 +213,16 @@ define(function (require) {
                 });
             }
         },
-        
+
         componentDidUpdate : function() {
         	//on component refresh, update slick carousel
             $('#' + this.imageContainerId + '.slickdiv').slick('unslick').slick();
         },
-        
+
         buildCarousel : function(){
             var jsonImageVariable = JSON.parse(this.props.data);
             var imgElement = "";
-            
+
             if (jsonImageVariable.initialValues[0] != undefined) {
                 var imageContainerId = this.props.rowData.id + '-image-container';
                 this.imageContainerId = imageContainerId;
@@ -274,7 +234,7 @@ define(function (require) {
                     if(this.state.carouselFullyLoaded){
                     	imagesToLoad = value.elements.length;
                     }
-                     
+
                     //set flag to fully loaded if total length of images to render is less or equal to 2
                     if(value.elements.length<=2){
                     	this.fullyLoaded = true;
@@ -293,7 +253,7 @@ define(function (require) {
                     		</div>
                     	}
                     });
-                    
+
                     elements = elements.slice(0,imagesToLoad);
 
                     imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
@@ -312,10 +272,10 @@ define(function (require) {
                     </div>
                 }
             }
-            
+
             return imgElement;
         },
-        
+
 
         render: function () {
             var imgElement = "";
@@ -629,7 +589,7 @@ define(function (require) {
         				}
         			}, 150);
         		});
-        		
+
         		//fire key event on paste
                 queryTypeAheadElem.off("paste");
                 queryTypeAheadElem.on("paste", function(){
@@ -1299,7 +1259,7 @@ define(function (require) {
         				id : "queryResultsButton",
         				openByDefault : false,
         				closeOnClick : true,
-        				label: "", 
+        				label: "",
         				iconOn : 'fa fa-history fa-2x' ,
         				iconOff : 'fa fa-history fa-2x',
         				menuPosition : null,
@@ -1310,15 +1270,15 @@ define(function (require) {
                         onLoadHandler : loadHandler,
         				menuItems : []
         		};
-        		
+
         		var menuItems = this.props.model.results.map(function (resultItem) {
         			return {label : resultItem.verboseLabelPLain, value : resultItem.id, icon: "fa-cogs"};
                 });
-                
+
         		configuration["menuItems"] = menuItems;
-        		
+
         		this.initTypeAheadCreated = false;
-        		
+
                 markup = (
                     <div id="query-results-container" className="center-content">
                         <MenuButton configuration={configuration}/>

@@ -1,11 +1,6 @@
 define(function (require) {
 
-	var link = document.createElement("link");
-	link.type = "text/css";
-	link.rel = "stylesheet";
-	link.href = "geppetto/js/components/interface/googleViewer/GoogleViewer.css";
-	document.getElementsByTagName("head")[0].appendChild(link);
-
+	require('./GoogleViewer.less');
 	var React = require('react');
 	var GoogleMapsLoader = require('google-maps');
 	var AbstractComponent = require('../../AComponent');
@@ -23,6 +18,7 @@ define(function (require) {
 				mapTypeControl: false
 			}
 
+			var path = this.extractFilesPath(this.props.data);
 			var imageMapTypeSettings = {
 				getTileUrl: function (coord, zoom) {
 					var normalizedCoord = _this.getNormalizedCoord(coord, zoom);
@@ -37,20 +33,38 @@ define(function (require) {
 				isPng: false,
 				maxZoom: 11,
 				minZoom: 0,
-				radius: 1738000
+				radius: 1738000,
+				path: path
 			}
+
+
 
 			this.state = {
 				mapSettings: $.extend(mapSettings, this.props.mapSettings),
 				imageMapTypeSettings: $.extend(imageMapTypeSettings, this.props.imageMapTypeSettings),
 				tileWidth: (this.props.tileWidth != undefined)?this.props.tileWidth:256 ,
 				tileHeight: (this.props.tileHeight != undefined)?this.props.tileHeight:256,
-				path: this.props.path
+				path: path
 			};
 		}
 
-		shouldComponentUpdate() {
-			return false;
+		extractFilesPath(data) {
+			var path;
+			if (data != undefined){
+				if (data.getMetaType == undefined) {
+					path = data;
+				}
+				else if (data.getMetaType() == "Instance") {
+					if (data.getVariable().getInitialValues()[0].value.format == "GOOGLE_MAP") {
+						path = data.getVariable().getInitialValues()[0].value.data;
+					}
+				}
+			}
+			return path;
+		}
+
+		setData(data) {
+			this.setState({ path: this.extractFilesPath(data) });
 		}
 
 		// Normalizes the coords that tiles repeat across the x axis (horizontally)
@@ -96,6 +110,11 @@ define(function (require) {
 			GoogleMapsLoader.onLoad(function (google) {
 				//console.log('I just loaded google maps api');
 			});
+		}
+
+		download() {
+			//What do we do here?
+			console.log("Downloading data...");
 		}
 
 		render () {

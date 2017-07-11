@@ -1,41 +1,9 @@
-/*******************************************************************************
- * The MIT License (MIT)
- *
- * Copyright (c) 2011, 2013 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- ******************************************************************************
+/*
  *
  * WebSocket class use for communication between client and server
  *
  * @author  Jesus R. Martinez (jesus@metacell.us)
  */
-
 
 define(function (require) {
 
@@ -46,7 +14,8 @@ define(function (require) {
         var nextID = 0;
         var connectionInterval = 300;
         var pako = require("pako");
-        
+        var FileSaver = require('file-saver');
+
         var callbackHandler = {};
 
         /**
@@ -56,7 +25,7 @@ define(function (require) {
             socket: null,
 
             //sets protocol to use for connection
-            protocol: window.USE_SSL ? "wss://" : "ws://",
+            protocol: GEPPETTO_CONFIGURATION.useSsl ? "wss://" : "ws://",
 
             //flag used to connect using ws protocol if wss failed
             failsafe: false,
@@ -113,7 +82,7 @@ define(function (require) {
                     if (GEPPETTO.MessageSocket.failsafe) {
                         GEPPETTO.MessageSocket.protocol = "ws://";
                         GEPPETTO.MessageSocket.failsafe = true;
-                        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+                        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet');
                     } else {
                         GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.WEBSOCKET_CONNECTION_ERROR, message);
                     }
@@ -132,12 +101,12 @@ define(function (require) {
                 }
 
                 this.waitForConnection(messageTemplate(requestID, command, parameter), connectionInterval);
-                
+
                 // add callback with request id if any
                 if (callback != undefined) {
                     callbackHandler[requestID] = callback;
                 }
-                
+
                 return requestID;
             },
 
@@ -241,7 +210,7 @@ define(function (require) {
                     handler.onMessage(parsedServerMessage);
                 }
             }
-            
+
             // run callback if any
             if(parsedServerMessage.requestID != undefined){
                 if (callbackHandler[parsedServerMessage.requestID] != undefined) {
@@ -249,7 +218,7 @@ define(function (require) {
                     delete callbackHandler[parsedServerMessage.requestID];
                 }
             }
-            
+
         }
 
         function processBinaryMessage(message) {
@@ -266,7 +235,7 @@ define(function (require) {
                 var fileNameLength = messageBytes[1];
                 var fileName = String.fromCharCode.apply(null, messageBytes.subarray(2, 2 + fileNameLength));
                 var blob = new Blob([message]);
-                GEPPETTO.Utility.saveData(blob.slice(2 + fileNameLength), fileName);
+                FileSaver.saveAs(blob.slice(2 + fileNameLength), fileName);
             }
         }
     }

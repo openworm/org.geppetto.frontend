@@ -899,7 +899,7 @@ define(['jquery'], function () {
 
             scene.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
-                    child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+                    this.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.DEFAULT);
                     child.material.wireframe = this.wireframe;
                     child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                     child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -1155,7 +1155,7 @@ define(['jquery'], function () {
                 color = GEPPETTO.Resources.COLORS.DEFAULT;
             }
             var material = new THREE.LineBasicMaterial(options);
-            this.setThreeColor(material.color, color);
+            this.setThreeColor(material.color, color); 
             material.defaultColor = color;
             material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             return material;
@@ -1197,7 +1197,7 @@ define(['jquery'], function () {
                     depthTest: false,
                     transparent: true
                 });
-            pMaterial.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+            this.setThreeColor(pMaterial.color, GEPPETTO.Resources.COLORS.DEFAULT);
             pMaterial.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
             pMaterial.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             pMaterial.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -1742,6 +1742,8 @@ define(['jquery'], function () {
             if (!this.hasInstance(instancePath)) {
                 return;
             }
+            if (typeof color === 'string')
+                color = color.replace(/0X/i, "#");
             var meshes = this.getRealMeshesForInstancePath(instancePath);
             if (meshes.length > 0) {
                 for (var i = 0; i < meshes.length; i++) {
@@ -1815,7 +1817,7 @@ define(['jquery'], function () {
 
             var getRandomColor = function () {
                 var letters = '0123456789ABCDEF';
-                var color = '0x';
+                var color = '#';
                 for (var i = 0; i < 6; i++) {
                     color += letters[Math.floor(Math.random() * 16)];
                 }
@@ -1851,8 +1853,7 @@ define(['jquery'], function () {
                     }
                 }
             }
-
-
+            GEPPETTO.trigger(GEPPETTO.Events.Color_set, {instance: instance, color: randomColor});
         }
 
         ,
@@ -2263,7 +2264,7 @@ define(['jquery'], function () {
                 }
 
                 var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1});
-                material.color.setHex(colour);
+                this.setThreeColor(material.color, colour);
 
                 var line = new THREE.LineSegments(geometry, material);
                 line.updateMatrixWorld(true);

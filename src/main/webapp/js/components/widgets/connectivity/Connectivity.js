@@ -25,6 +25,7 @@ define(function (require) {
     return Widget.View.extend({
 
         dataset: {},
+        nodeColormap: {},
         connectivityOptions: {},
         defaultConnectivityOptions: {
             width: 660,
@@ -42,10 +43,10 @@ define(function (require) {
             },
             linkType: function (conn) {
                 return 1;
-            }
+            },
+            library: "GEPPETTO.ModelFactory.geppettoModel.common"
         },
-
-
+ 
         initialize: function (options) {
             this.options = options;
 
@@ -89,8 +90,32 @@ define(function (require) {
             }
         },
 
-        setData: function (root, options) {
+        setNodeColormap: function(nodeColormap) {
+            if (typeof nodeColormap !== 'undefined')
+                this.nodeColormap = nodeColormap;
+            return this.nodeColormap;
+        },
+
+        onColorChange: function(ctx){
+            return function(){
+                var colorMap = ctx.options.colorMapFunction();
+                for (var i=0; i<colorMap.domain().length; ++i) {
+                    // only update if there is a change
+                    if (ctx.nodeColormap(colorMap.domain()[i]) !== colorMap(colorMap.domain()[i])) {
+                        ctx.setNodeColormap(colorMap);
+                        // FIXME: would be more efficient to update only what has
+                        // changed, though this depends on the type of layout
+                        ctx.svg.selectAll("*").remove();
+                        ctx.createLayout();
+                        break;
+                    }
+                }
+            }
+        },
+
+        setData: function (root, options, nodeColormap) {
             this.setOptions(options);
+            this.setNodeColormap(nodeColormap);
             this.dataset = {};
             this.mapping = {};
             this.mappingSize = 0;
@@ -104,14 +129,14 @@ define(function (require) {
             // track change in state of the widget
             this.dirtyView = true;
 
+            if (typeof this.options.colorMapFunction !== 'undefined')
+                GEPPETTO.on(GEPPETTO.Events.Color_set, this.onColorChange(this));
+
             return this;
         },
 
         createDataFromConnections: function () {
-            //TODO: remove Hardcoded NeuroML stuff
-            if(Model.neuroml.connection){
-
-            	var connectionVariables = Model.neuroml.connection.getVariableReferences();
+            var connectionVariables = GEPPETTO.ModelFactory.getAllTypesOfType(this.options.library.connection)[0].getVariableReferences();
             	if(connectionVariables.length>0) {
 
 		            if (this.dataset["root"].getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
@@ -147,8 +172,6 @@ define(function (require) {
 		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
 		            return true;
                 }
-
-            }
 
             return false;
 
@@ -226,6 +249,7 @@ define(function (require) {
                 var legendItem = this.svg.selectAll(id)
                     .data(colorScale.domain())
                     .enter().append('g')
+                    .attr('class', 'legend-item')
                     .attr('transform', function (d, i) {
                         var height = colorBox.size + colorBox.labelSpace;
                         horz = colorBox.size + position.x + padding.x;
@@ -264,6 +288,8 @@ define(function (require) {
                 ret = {x: horz, y: vert};
             }
 
+            this.legendPosition = position;
+            this.legendTitle = title;
             return ret;
 
         },
@@ -312,6 +338,10 @@ define(function (require) {
                     options.nodeType = strToFunc(options.nodeType);
                 if(typeof options.linkWeight === 'string')
                     options.linkWeight = strToFunc(options.linkWeight);
+                if(typeof options.colorMapFunction === 'string')
+                    options.colorMapFunction = strToFunc(options.colorMapFunction);
+                if(typeof options.library === 'string')
+                    options.library = eval(options.library);
                 $.extend(this.options, options);
             }
         },
@@ -373,15 +403,14 @@ define(function (require) {
         configViaGUI : function() {
             var that = this;
             var firstClick=false;
-            var modalContent=$('<div class="modal fade" id="connectivity-config-modal"></div>')
-                                .append(this.createLayoutSelector()[0].outerHTML).modal();
+            var modalContent=$('<div class="modal fade" id="connectivity-config-modal" tabindex="-1"></div>')
+                .append(this.createLayoutSelector()[0].outerHTML).modal({keyboard: true});
             function handleFirstClick(event) {
-                //TODO: remove Hardcoded NeuroML stuff
-                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(GEPPETTO.ModelFactory.geppettoModel.neuroml.network)
-                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}));
+                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(that.options.library.network);
+                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}))
                 function synapseFromConnection(conn) {
 
-                	var synapses=GEPPETTO.ModelFactory.getAllVariablesOfType(conn.getParent(),GEPPETTO.ModelFactory.geppettoModel.neuroml.synapse);
+                    var synapses=GEPPETTO.ModelFactory.getAllVariablesOfType(conn.getParent(), that.options.library.synapse);
                 	if(synapses.length>0){
                 		return synapses[0].getId();
                 	}
@@ -389,7 +418,10 @@ define(function (require) {
                 		return "Gap junction";
                 	}
                 }
-                that.setData(netInstances[0], {layout: event.currentTarget.id, linkType: synapseFromConnection}); //TODO: add option to select what to plot if #netInstance>1?
+                that.setData(netInstances[0], {layout: event.currentTarget.id,
+                                               linkType: synapseFromConnection,
+                                               library: that.connectivityOptions.library,
+                                               colorMapFunction: that.connectivityOptions.colorMapFunction}); //TODO: add option to select what to plot if #netInstance>1?
                 firstClick=true;
             }
 
@@ -417,6 +449,9 @@ define(function (require) {
                 if (typeof this.connectivityOptions[item] === "function") {
                     serializedItem.value = this.connectivityOptions[item].toString();
                     serializedItem.type = 'function';
+                } else if (item === "library") {
+                    serializedItem.value = this.connectivityOptions[item].getPath();
+                    serializedItem.type = 'library';
                 } else {
                     serializedItem.value = this.connectivityOptions[item];
                     serializedItem.type = 'primitive';
@@ -428,8 +463,12 @@ define(function (require) {
             // add data
             baseView.dataType = 'object';
             if(this.dataset["root"]!=undefined){
-            	baseView.data = this.dataset["root"].getPath();
+                baseView.data = this.dataset["root"].getPath();
             }
+
+            if (typeof this.nodeColormap.domain === 'function')
+                baseView.nodeColormap = {domain: this.nodeColormap.domain(),
+                                         range: this.nodeColormap.range()};
 
             return baseView;
         },
@@ -442,17 +481,21 @@ define(function (require) {
                 var obj = eval(view.data);
                 var deserializedOptions = {};
                 for(var item in view.options){
-                    if(view.options[item].type == "function"){
+                    if(view.options[item].type == "function" || view.options[item].type == "library"){
                         deserializedOptions[item] = eval('(' + view.options[item].value + ')');
                     } else {
                         deserializedOptions[item] = view.options[item].value;
                     }
                 }
 
+                var colorScale;
+                if (typeof view.nodeColormap !== 'undefined')
+                    colorScale = d3.scaleOrdinal(view.nodeColormap.range).domain(view.nodeColormap.domain);
+
                 var that = this;
                 // resolve connections and pass the line below as a callback
                 Model.neuroml.resolveAllImportTypes(function(){
-                    that.setData(obj, deserializedOptions);
+                    that.setData(obj, deserializedOptions, colorScale);
                 });
             }
 

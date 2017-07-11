@@ -12,8 +12,7 @@ define(function (require) {
             //TODO: 10/20 categories hardcoded in color scales
             var linkTypeScale = d3.scaleOrdinal(d3.schemeCategory10)
                 .domain(context.dataset.linkTypes);
-            var nodeTypeScale = d3.scaleOrdinal(d3.schemeCategory20)
-                .domain(context.dataset.nodeTypes);
+            var nodeTypeScale = context.nodeColormap;
             var weightScale = d3.scaleLinear()
                 .domain(d3.extent(_.pluck(context.dataset.links, 'weight').map(parseFloat)))
                 //TODO: think about weight = 0 (do we draw a line?)

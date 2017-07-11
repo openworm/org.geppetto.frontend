@@ -1,4 +1,4 @@
-casper.test.begin('Geppetto basic tests', 219, function suite(test) {
+casper.test.begin('Geppetto basic tests', 243, function suite(test) {
 	casper.options.viewportSize = {
 			width: 1340,
 			height: 768

@@ -265,7 +265,7 @@ define(function (require) {
             if (recursion === undefined) {
                 recursion = false;
             }
-            var entity = eval(path);
+            var entity = eval(instancePath);
             if (entity.hasCapability("VisualCapability")) {
                 if (entity instanceof Instance || entity instanceof ArrayInstance) {
                     this.engine.setOpacity(instancePath, opacity);
@@ -290,6 +290,16 @@ define(function (require) {
             }
 
             return this;
+        }
+
+        /**
+         * Change radius of a sphere
+         * @param instancePath The instance to change
+         * @param radius Desired radius
+         */
+        setRadius(instancePath, radius) {
+            var mesh = this.engine.getRealMeshesForInstancePath(instancePath)[0];
+            this.engine.modify3DSphere(mesh, mesh.position.x, mesh.position.y, mesh.position.z, radius, mesh.material);
         }
 
         /**
@@ -545,6 +555,11 @@ define(function (require) {
                 }
                 if (view.componentSpecific.backgroundColor != undefined) {
                     this.setBackgroundColor(view.componentSpecific.backgroundColor);
+                }
+                if (view.componentSpecific.radiusMap != undefined) {
+                    for (var path in view.componentSpecific.radiusMap) {
+                        this.setRadius(path, parseFloat(view.componentSpecific.radiusMap[path]));
+                    }
                 }
             }
         }

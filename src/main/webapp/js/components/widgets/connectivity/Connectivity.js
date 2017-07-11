@@ -97,11 +97,10 @@ define(function (require) {
             var domain = [];
             var range = [];
             for (var i=0; i<cells.length; ++i) {
-                if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
+                if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                     domain.push(cells[i].getChildren()[0].getType().getId());
-                else
-                    domain.push(cells[i].getPath());
-                range.push(cells[i].getColor());
+                    range.push(cells[i].getColor());
+                }
             }
             // if everything is default color, use a d3 provided palette as range
             if (range.filter(function(x) { return x!==GEPPETTO.Resources.COLORS.DEFAULT; }).length == 0)

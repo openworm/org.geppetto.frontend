@@ -277,10 +277,15 @@ define(function (require) {
         setGeometryType: function (type, thickness) {
             GEPPETTO.SceneController.setGeometryType(this, type, thickness)
             return this;
+        },
+
+        /**
+         * Show connection lines for instances.
+           @param {boolean} mode - Show or hide connection lines
+         */
+        showConnectionLines: function(mode) {
+            GEPPETTO.SceneController.showConnectionLines(this.getInstancePath(), mode);
+            return this;
         }
-
-
-        
-
     }
 });

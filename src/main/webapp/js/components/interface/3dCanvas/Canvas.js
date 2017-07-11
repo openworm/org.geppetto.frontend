@@ -151,6 +151,16 @@ define(function (require) {
         }
 
         /**
+         * Show connection lines for instances.
+           @param instances
+           @param {boolean} mode - Show or hide connection lines
+        */
+        showConnectionLines(instancePath, mode) {
+            this.engine.showConnectionLines(instancePath, mode);
+            return this;
+        }
+
+        /**
          * Show an instance
          *
          * @param instancePath Instance path of the instance to make visible

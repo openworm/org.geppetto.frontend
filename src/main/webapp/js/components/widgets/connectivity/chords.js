@@ -193,8 +193,7 @@ define(function (require) {
         },
 
         createLegend: function (context) {
-            var nodeTypeScale = context.nodeColormap
-                .domain(context.dataset.nodeTypes);
+            var nodeTypeScale = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
             var legendPosition = { x: 0.77 * context.options.innerWidth, y: 0 };
 
             //Nodes

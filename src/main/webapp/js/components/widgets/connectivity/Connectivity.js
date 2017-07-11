@@ -120,7 +120,7 @@ define(function (require) {
 
         onColorChange: function(ctx){
             return function(){
-                var colorMap = ctx.options.colorMapFunction();
+                var colorMap = ctx.options.colorMapFunction ? ctx.options.colorMapFunction() : ctx.defaultColorMapFunction();
                 for (var i=0; i<colorMap.domain().length; ++i) {
                     // only update if there is a change
                     if (ctx.nodeColormap(colorMap.domain()[i]) !== colorMap(colorMap.domain()[i])) {
@@ -151,8 +151,7 @@ define(function (require) {
             // track change in state of the widget
             this.dirtyView = true;
 
-            if (typeof this.options.colorMapFunction !== 'undefined')
-                GEPPETTO.on(GEPPETTO.Events.Color_set, this.onColorChange(this));
+            GEPPETTO.on(GEPPETTO.Events.Color_set, this.onColorChange(this));
 
             return this;
         },

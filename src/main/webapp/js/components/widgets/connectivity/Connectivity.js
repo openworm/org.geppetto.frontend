@@ -95,11 +95,10 @@ define(function (require) {
             var domain = [];
             var range = [];
             for (var i=0; i<cells.length; ++i) {
-                if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
+                if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                     domain.push(cells[i].getChildren()[0].getType().getId());
-                else
-                    domain.push(cells[i].getPath());
-                range.push(cells[i].getColor());
+                    range.push(cells[i].getColor());
+                }
             }
             // if everything is default color, use a d3 provided palette as range
             if (range.filter(function(x) { return x!==GEPPETTO.Resources.COLORS.DEFAULT; }).length == 0)
@@ -118,7 +117,7 @@ define(function (require) {
 
         onColorChange: function(ctx){
             return function(){
-                var colorMap = ctx.options.colorMapFunction();
+                var colorMap = ctx.options.colorMapFunction ? ctx.options.colorMapFunction() : ctx.defaultColorMapFunction();
                 for (var i=0; i<colorMap.domain().length; ++i) {
                     // only update if there is a change
                     if (ctx.nodeColormap(colorMap.domain()[i]) !== colorMap(colorMap.domain()[i])) {
@@ -149,8 +148,7 @@ define(function (require) {
             // track change in state of the widget
             this.dirtyView = true;
 
-            if (typeof this.options.colorMapFunction !== 'undefined')
-                GEPPETTO.on(GEPPETTO.Events.Color_set, this.onColorChange(this));
+            GEPPETTO.on(GEPPETTO.Events.Color_set, this.onColorChange(this));
 
             return this;
         },

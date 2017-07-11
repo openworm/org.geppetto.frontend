@@ -90,9 +90,29 @@ define(function (require) {
             }
         },
 
+        defaultColorMapFunction: function() {
+            var cells = this.dataset["root"].getChildren();
+            var domain = [];
+            var range = [];
+            for (var i=0; i<cells.length; ++i) {
+                if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE)
+                    domain.push(cells[i].getChildren()[0].getType().getId());
+                else
+                    domain.push(cells[i].getPath());
+                range.push(cells[i].getColor());
+            }
+            // if everything is default color, use a d3 provided palette as range
+            if (range.filter(function(x) { return x!==GEPPETTO.Resources.COLORS.DEFAULT; }).length == 0)
+                return d3.scaleOrdinal(d3.schemeCategory20).domain(domain);
+            else
+                return d3.scaleOrdinal(range).domain(domain);
+        },
+
         setNodeColormap: function(nodeColormap) {
             if (typeof nodeColormap !== 'undefined')
                 this.nodeColormap = nodeColormap;
+            else
+                this.nodeColormap = this.defaultColorMapFunction();
             return this.nodeColormap;
         },
 
@@ -115,11 +135,11 @@ define(function (require) {
 
         setData: function (root, options, nodeColormap) {
             this.setOptions(options);
-            this.setNodeColormap(nodeColormap);
             this.dataset = {};
             this.mapping = {};
             this.mappingSize = 0;
             this.dataset["root"] = root;
+            this.setNodeColormap(nodeColormap);
             this.widgetMargin = 20;
 
             if(this.createDataFromConnections()){
@@ -406,22 +426,11 @@ define(function (require) {
             var modalContent=$('<div class="modal fade" id="connectivity-config-modal" tabindex="-1"></div>')
                 .append(this.createLayoutSelector()[0].outerHTML).modal({keyboard: true});
             function handleFirstClick(event) {
-                var netTypes = GEPPETTO.ModelFactory.getAllTypesOfType(that.options.library.network);
-                var netInstances = _.flatten(_.map(netTypes, function(x){return GEPPETTO.ModelFactory.getAllInstancesOf(x)}))
-                function synapseFromConnection(conn) {
-
-                    var synapses=GEPPETTO.ModelFactory.getAllVariablesOfType(conn.getParent(), that.options.library.synapse);
-                	if(synapses.length>0){
-                		return synapses[0].getId();
-                	}
-                	else{
-                		return "Gap junction";
-                	}
-                }
-                that.setData(netInstances[0], {layout: event.currentTarget.id,
-                                               linkType: synapseFromConnection,
-                                               library: that.connectivityOptions.library,
-                                               colorMapFunction: that.connectivityOptions.colorMapFunction}); //TODO: add option to select what to plot if #netInstance>1?
+                var options = {layout: event.currentTarget.id};
+                if (typeof that.connectivityOptions !== 'undefined')
+                    $.extend(options, {library: that.connectivityOptions.library,
+                                       colorMapFunction: that.connectivityOptions.colorMapFunction});
+                that.setData(that.dataset["root"], options);
                 firstClick=true;
             }
 

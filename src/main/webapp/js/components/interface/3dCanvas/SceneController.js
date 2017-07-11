@@ -370,6 +370,17 @@ define(['jquery'], function () {
             return instances;
         },
 
+        /**
+         * Show connection lines for instances.
+           @param instances
+           @param {boolean} mode - Show or hide connection lines
+         */
+        showConnectionLines: function(instancePath, mode) {
+            for (var i = 0; i < this.canvasComponents.length; i++) {
+                this.canvasComponents[i].showConnectionLines(instancePath, mode)
+            }
+        }
+
     };
 
     return SceneController;

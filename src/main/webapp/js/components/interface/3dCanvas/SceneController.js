@@ -313,9 +313,9 @@ define(['jquery'], function () {
          *
          * @param instance
          */
-        showVisualGroupsForInstance: function (instance) {
+        showVisualGroupsForInstance: function (instance, visualGroupElement) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
-                this.canvasComponents[i].showVisualGroupsForInstance(instance);
+                this.canvasComponents[i].showVisualGroupsForInstance(instance, visualGroupElement);
             }
         },
 
@@ -328,6 +328,18 @@ define(['jquery'], function () {
         showVisualGroups: function (visualGroup, mode, instances) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
                 this.canvasComponents[i].showVisualGroups(visualGroup, mode, instances);
+            }
+        },
+
+
+        /**
+         * Split merged mesh into individual meshes
+         * @param instances
+         * @param groupElements
+         */
+        splitGroups: function (instance, groupElements) {
+            for (var i = 0; i < this.canvasComponents.length; i++) {
+                this.canvasComponents[i].splitGroups(instance, groupElements);
             }
         },
 

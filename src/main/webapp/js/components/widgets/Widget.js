@@ -10,7 +10,7 @@ define(function (require) {
     var Backbone = require('backbone');
     var $ = require('jquery');
     require("./jquery.dialogextend.min");
-    
+
     return {
 
         /**
@@ -30,20 +30,20 @@ define(function (require) {
             size: {},
             position: {},
             registeredEvents: null,
-            executedAction : 0,
-            title : null,
-            previousMaxTransparency : false,
-            previousMaxSize : {},
-            maximize : false,
-            collapsed : false,
+            executedAction: 0,
+            title: null,
+            previousMaxTransparency: false,
+            previousMaxSize: {},
+            maximize: false,
+            collapsed: false,
             widgetType: null,
             stateless: false,
             showTitleBar: true,
             transparentBackground: false,
             dirtyView: false,
 
-            defaultSize : function(){return {height: 300, width: 350}},
-            defaultPosition : function(){return {left: "50%", top: "50%"}},
+            defaultSize: function () { return { height: 300, width: 350 } },
+            defaultPosition: function () { return { left: "50%", top: "50%" } },
             /**
              * Initializes the widget
              *
@@ -63,24 +63,24 @@ define(function (require) {
                 this.stateless = (options.stateless != undefined) ? options.stateless : false;
                 this.registeredEvents = [];
                 this.dirtyView = false;
-                
+
                 var self = this;
                 $(self.historyMenu.el).on('click', function (event) {
-                	var itemId = $(event.target).attr('id');
-                	var registeredItem = self.historyMenu.getClickedItem(itemId);
-                	if(registeredItem != null || registeredItem!=undefined){
-                		var label = registeredItem["label"];
-                		self.title = label;
-                		$("#"+self.id).parent().find(".ui-dialog-title").html(self.title);
-                	}
+                    var itemId = $(event.target).attr('id');
+                    var registeredItem = self.historyMenu.getClickedItem(itemId);
+                    if (registeredItem != null || registeredItem != undefined) {
+                        var label = registeredItem["label"];
+                        self.title = label;
+                        $("#" + self.id).parent().find(".ui-dialog-title").html(self.title);
+                    }
                 });
-                window.addEventListener('resize', function(event){
-                	if(self.maximize){
-                		self.maximize = false;
-                		self.setSize(window.innerHeight,window.innerWidth);
-                		self.$el.trigger('resizeEnd', ["maximize"]);
-                		self.maximize = true;
-                	}
+                window.addEventListener('resize', function (event) {
+                    if (self.maximize) {
+                        self.maximize = false;
+                        self.setSize(window.innerHeight, window.innerWidth);
+                        self.$el.trigger('resizeEnd', ["maximize"]);
+                        self.maximize = true;
+                    }
                 });
             },
 
@@ -131,7 +131,7 @@ define(function (require) {
              *
              * @returns {int}
              */
-            getComponentType: function(){
+            getComponentType: function () {
                 return this.widgetType;
             },
 
@@ -168,20 +168,24 @@ define(function (require) {
              * @param {Integer} top - Top position of the widget
              */
             setPosition: function (left, top) {
-            	this.position.left = left;
-            	this.position.top = top;
+                if (left != null && left != undefined) {
+                    this.position.left = left;
+                }
+                if (top != null && top != undefined) {
+                    this.position.top = top;
+                }
 
-            	this.$el.dialog(
-            			'option', 'position', {
-            				my: "left+" + this.position.left + " top+" + this.position.top,
-            				at: "left top",
-            				of: $(window)
-            			}).dialogExtend();
+                this.$el.dialog(
+                    'option', 'position', {
+                        my: "left+" + this.position.left + " top+" + this.position.top,
+                        at: "left top",
+                        of: $(window)
+                    }).dialogExtend();
 
                 // set flag to indicate something changed
                 this.dirtyView = true;
 
-            	return this;
+                return this;
             },
 
             /**
@@ -191,15 +195,21 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize: function (h, w) {
-            	this.size.height = h;
-            	this.size.width = w;
-            	this.$el.dialog({height: this.size.height, width: this.size.width}).dialogExtend();
-            	this.$el.trigger('resizeEnd');
+                if (h != null && h != undefined && h!=-1) {
+                    this.size.height = h;
+                }
+                if (w != null && w != undefined && w!=-1) {
+                    this.size.width = w;
+                }
+                this.$el.dialog({ height: this.size.height, width: this.size.width }).dialogExtend();
+
+                this.$el.trigger('resizeEnd');
+
 
                 // set flag to indicate something changed
                 this.dirtyView = true;
 
-            	return this;
+                return this;
             },
 
             /**
@@ -236,7 +246,7 @@ define(function (require) {
              * @param {Boolean} true|false - enables / disables resizability
              */
             setResizable: function (resize) {
-               this.$el.dialog('option', 'resizable', resize).dialogExtend();
+                this.$el.dialog('option', 'resizable', resize).dialogExtend();
                 return this;
             },
 
@@ -244,7 +254,7 @@ define(function (require) {
              * @command setAutoWidth()
              */
             setAutoWidth: function () {
-               this.$el.dialog('option', 'width', 'auto').dialogExtend();
+                this.$el.dialog('option', 'width', 'auto').dialogExtend();
                 return this;
             },
 
@@ -252,7 +262,7 @@ define(function (require) {
              * @command setAutoHeigth()
              */
             setAutoHeight: function () {
-               this.$el.dialog('option', 'height', 'auto').dialogExtend();
+                this.$el.dialog('option', 'height', 'auto').dialogExtend();
                 return this;
             },
 
@@ -357,7 +367,7 @@ define(function (require) {
             getItems: function (history, name) {
                 var data = [];
                 for (var i = 0; i < history.length; i++) {
-                    var action = this.getId() + "[" + this.getId() + "."+name+"[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + "."+name+"[" + i + "].arguments)";
+                    var action = this.getId() + "[" + this.getId() + "." + name + "[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + "." + name + "[" + i + "].arguments)";
                     data.push({
                         "label": history[i].label,
                         "action": [action],
@@ -418,9 +428,9 @@ define(function (require) {
                 this.showTitleBar = show;
 
                 if (show) {
-                   this.$el.parent().find(".ui-dialog-titlebar").show();
+                    this.$el.parent().find(".ui-dialog-titlebar").show();
                 } else {
-                   this.$el.parent().find(".ui-dialog-titlebar").hide();
+                    this.$el.parent().find(".ui-dialog-titlebar").hide();
                 }
 
                 // set flag to indicate something changed
@@ -428,59 +438,59 @@ define(function (require) {
 
                 return this;
             },
-            
-            updateNavigationHistoryBar : function(){
-            	var disabled = "arrow-disabled";
-    			if(this.getItems(this.controller.history, "controller.history").length<=1){
-    				if(!$("#"+this.id + "-left-nav").hasClass(disabled)){
-    					$("#"+this.id + "-left-nav").addClass(disabled);
-    					$("#"+this.id + "-right-nav").addClass(disabled);
-    				}
-    			}else{
-    				if($("#"+this.id + "-left-nav").hasClass(disabled)){
-    					$("#"+this.id + "-left-nav").removeClass(disabled);
-    					$("#"+this.id + "-right-nav").removeClass(disabled);
-    				}
-    			}
+
+            updateNavigationHistoryBar: function () {
+                var disabled = "arrow-disabled";
+                if (this.getItems(this.controller.history, "controller.history").length <= 1) {
+                    if (!$("#" + this.id + "-left-nav").hasClass(disabled)) {
+                        $("#" + this.id + "-left-nav").addClass(disabled);
+                        $("#" + this.id + "-right-nav").addClass(disabled);
+                    }
+                } else {
+                    if ($("#" + this.id + "-left-nav").hasClass(disabled)) {
+                        $("#" + this.id + "-left-nav").removeClass(disabled);
+                        $("#" + this.id + "-right-nav").removeClass(disabled);
+                    }
+                }
             },
-            
-            showHistoryNavigationBar : function(show){
-            	var leftNav = $("#"+this.id + "-left-nav");
-            	var rightNav = $("#"+this.id + "-right-nav");
-            	
-            	if (show) {
-            		if((leftNav.length ==0) && (rightNav.length == 0)){
-            			
-            			var disabled = "";
-            			if(this.getItems(this.controller.history, "controller.history").length<=1){
-            				disabled = "arrow-disabled ";
-            			}
-            			
-            			var that = this;
-            			var button = $("<div id='" + this.id + "-left-nav' class='"+ disabled +"fa fa-arrow-left'></div>"+
-            			"<div id='"+ this.id + "-right-nav' class='"+disabled+"fa fa-arrow-right'></div>").click(function (event) {
-            				var historyItems = that.getItems(that.controller.history, "controller.history");
-            				var item;
-            				if(event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")){
-            					that.executedAction = historyItems.length-1;
-            				}
-    						item = historyItems[that.executedAction].action[0];
-    						GEPPETTO.Console.executeImplicitCommand(item);
-            				$("#"+that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
-            				event.stopPropagation();
-            			});
-            			
-            			var dialogParent = this.$el.parent();
-            			button.insertBefore(dialogParent.find("span.ui-dialog-title"));
-            			$(button).addClass("widget-title-bar-button");
-            		}
-            	} else {
-            		if(leftNav.is(":visible") && rightNav.is(":visible")){
-            			leftNav.remove();
-            			rightNav.remove();
-            			this.executedAction =0;
-            		}
-            	}
+
+            showHistoryNavigationBar: function (show) {
+                var leftNav = $("#" + this.id + "-left-nav");
+                var rightNav = $("#" + this.id + "-right-nav");
+
+                if (show) {
+                    if ((leftNav.length == 0) && (rightNav.length == 0)) {
+
+                        var disabled = "";
+                        if (this.getItems(this.controller.history, "controller.history").length <= 1) {
+                            disabled = "arrow-disabled ";
+                        }
+
+                        var that = this;
+                        var button = $("<div id='" + this.id + "-left-nav' class='" + disabled + "fa fa-arrow-left'></div>" +
+                            "<div id='" + this.id + "-right-nav' class='" + disabled + "fa fa-arrow-right'></div>").click(function (event) {
+                                var historyItems = that.getItems(that.controller.history, "controller.history");
+                                var item;
+                                if (event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")) {
+                                    that.executedAction = historyItems.length - 1;
+                                }
+                                item = historyItems[that.executedAction].action[0];
+                                GEPPETTO.Console.executeImplicitCommand(item);
+                                $("#" + that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
+                                event.stopPropagation();
+                            });
+
+                        var dialogParent = this.$el.parent();
+                        button.insertBefore(dialogParent.find("span.ui-dialog-title"));
+                        $(button).addClass("widget-title-bar-button");
+                    }
+                } else {
+                    if (leftNav.is(":visible") && rightNav.is(":visible")) {
+                        leftNav.remove();
+                        rightNav.remove();
+                        this.executedAction = 0;
+                    }
+                }
             },
 
             /**
@@ -488,23 +498,23 @@ define(function (require) {
              */
             showCloseButton: function (show) {
                 if (show) {
-                   this.$el.parent().find(".ui-dialog-titlebar-close").show();
+                    this.$el.parent().find(".ui-dialog-titlebar-close").show();
                 } else {
-                   this.$el.parent().find(".ui-dialog-titlebar-close").hide();
+                    this.$el.parent().find(".ui-dialog-titlebar-close").hide();
                 }
             },
 
-            addButtonToTitleBar: function(button){
-            	var dialogParent = this.$el.parent();
-            	dialogParent.find("div.ui-dialog-titlebar").prepend(button);
-            	$(button).addClass("widget-title-bar-button");
+            addButtonToTitleBar: function (button) {
+                var dialogParent = this.$el.parent();
+                dialogParent.find("div.ui-dialog-titlebar").prepend(button);
+                $(button).addClass("widget-title-bar-button");
             },
-            
+
             addHelpButton: function () {
-            	var that=this;
+                var that = this;
                 this.addButtonToTitleBar($("<div class='fa fa-question' title='Widget Help'></div>").click(function () {
                     GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
-                        title: that.id.slice(0,-1) + ' help',
+                        title: that.id.slice(0, -1) + ' help',
                         content: that.getHelp(),
                         show: true
                     }, document.getElementById("modal-region"));
@@ -518,11 +528,11 @@ define(function (require) {
              */
             setDraggable: function (draggable) {
                 if (draggable) {
-                   this.$el.parent().draggable({disabled: false});
+                    this.$el.parent().draggable({ disabled: false });
                     // NOTE: this will wipe any class applied to the widget...
                     this.setClass('');
                 } else {
-                   this.$el.parent().draggable({disabled: true});
+                    this.$el.parent().draggable({ disabled: true });
                     this.setClass('noStyleDisableDrag');
                 }
             },
@@ -532,14 +542,14 @@ define(function (require) {
              *
              * @param isTransparent
              */
-            setTrasparentBackground: function(isTransparent) {
+            setTrasparentBackground: function (isTransparent) {
                 this.transparentBackground = isTransparent;
 
-                if(isTransparent){
-                   this.$el.parent().addClass('transparent-back');
-                   this.previousMaxTransparency = true;
+                if (isTransparent) {
+                    this.$el.parent().addClass('transparent-back');
+                    this.previousMaxTransparency = true;
                 } else {
-                   this.$el.parent().removeClass('transparent-back');
+                    this.$el.parent().removeClass('transparent-back');
                 }
                 return this;
             },
@@ -548,27 +558,27 @@ define(function (require) {
              * Inject CSS for custom behaviour
              */
             setClass: function (className) {
-               this.$el.dialog({dialogClass: className}).dialogExtend();
+                this.$el.dialog({ dialogClass: className }).dialogExtend();
             },
 
             /**
              * Perform a jquery ui effect to the widget
              */
-            perfomEffect: function (effect, options, speed){
+            perfomEffect: function (effect, options, speed) {
                 this.$el.parent().effect(effect, options, speed);
             },
 
             /**
              * Perform a shake effect to the widget
              */
-            shake: function (options, speed){
-                if (options === undefined){
-                    options = {distance:5, times: 3}
+            shake: function (options, speed) {
+                if (options === undefined) {
+                    options = { distance: 5, times: 3 }
                 }
-                if (speed === undefined){
+                if (speed === undefined) {
                     speed = 500
                 }
-                
+
                 this.$el.parent().effect('shake', options, speed)
             },
 
@@ -576,8 +586,8 @@ define(function (require) {
              * Renders the widget dialog window
              */
             render: function () {
-            	
-            	var that = this;
+
+                var that = this;
 
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
@@ -593,64 +603,65 @@ define(function (require) {
                                 that.destroy();
                             }
                         }
-                    }).dialogExtend({"closable" : true,
-                        "maximizable" : true,
-                        "minimizable" : true,
-                        "collapsable" : true,
-                        "restore" : true,
+                    }).dialogExtend({
+                        "closable": true,
+                        "maximizable": true,
+                        "minimizable": true,
+                        "collapsable": true,
+                        "restore": true,
                         "minimizeLocation": "right",
-                        "icons" : {
-                            "maximize" : "fa fa-window-maximize",
-                            "minimize" : "fa fa-window-minimize",
-                            "collapse" : "fa  fa-chevron-circle-up",
-                            "restore" : "fa fa-window-restore",
-                          },
-                         "load" : function(evt, dlg){ 
-                        	 var icons = $("#"+that.id).parent().find(".ui-icon"); 
-                        	 for(var i =0 ; i<icons.length; i++){
-                        		 //remove text from span added by vendor library
-                        		 $(icons[i]).text("");
-                        	 }
-                          },
-                          "beforeMinimize" : function(evt, dlg){
-                        	  var label = that.name;
-                        	  label = label.substring(0, 6);
-                        	  that.$el.dialog({ title: label});
-                           },
-                           "beforeMaximize" :function(evt,dlg){
-                        	   var divheight =that.size.height;  
-                        	   var divwidth =that.size.width;    
-                        	   that.previousMaxSize = {width: divwidth, height: divheight};
-                           },
-                           "minimize" : function(evt, dlg){
-                        	   that.$el.dialog({ title: that.name});
-                            },
-                            "maximize" : function(evt,dlg){
-                            	that.setTrasparentBackground(false);
-                    			$(this).trigger('resizeEnd');
-                    			var divheight =$(window).height();  
-                    			var divwidth =$(window).width();  
-                    			that.$el.dialog({ height: divheight,width: divwidth});
-                    			that.maximize = true;
-                    		},
-                    		"restore" : function(evt,dlg){
-                    			if(that.maximize){
-                    				that.setSize(that.previousMaxSize.height,that.previousMaxSize.width);
-                    				$(this).trigger('restored',[that.id]);
-                    			}
-                    			that.setTrasparentBackground(that.previousMaxTransparency);
-                    			$(this).trigger('resizeEnd');
-                    			that.maximize = false;
-                    			that.collapsed = false;
-                    		},
-                    		"collapse":function(evt,dlg){
-                    			that.collapsed = true;
-                    		}
-                        });
+                        "icons": {
+                            "maximize": "fa fa-window-maximize",
+                            "minimize": "fa fa-window-minimize",
+                            "collapse": "fa  fa-chevron-circle-up",
+                            "restore": "fa fa-window-restore",
+                        },
+                        "load": function (evt, dlg) {
+                            var icons = $("#" + that.id).parent().find(".ui-icon");
+                            for (var i = 0; i < icons.length; i++) {
+                                //remove text from span added by vendor library
+                                $(icons[i]).text("");
+                            }
+                        },
+                        "beforeMinimize": function (evt, dlg) {
+                            var label = that.name;
+                            label = label.substring(0, 6);
+                            that.$el.dialog({ title: label });
+                        },
+                        "beforeMaximize": function (evt, dlg) {
+                            var divheight = that.size.height;
+                            var divwidth = that.size.width;
+                            that.previousMaxSize = { width: divwidth, height: divheight };
+                        },
+                        "minimize": function (evt, dlg) {
+                            that.$el.dialog({ title: that.name });
+                        },
+                        "maximize": function (evt, dlg) {
+                            that.setTrasparentBackground(false);
+                            $(this).trigger('resizeEnd');
+                            var divheight = $(window).height();
+                            var divwidth = $(window).width();
+                            that.$el.dialog({ height: divheight, width: divwidth });
+                            that.maximize = true;
+                        },
+                        "restore": function (evt, dlg) {
+                            if (that.maximize) {
+                                that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
+                                $(this).trigger('restored', [that.id]);
+                            }
+                            that.setTrasparentBackground(that.previousMaxTransparency);
+                            $(this).trigger('resizeEnd');
+                            that.maximize = false;
+                            that.collapsed = false;
+                        },
+                        "collapse": function (evt, dlg) {
+                            that.collapsed = true;
+                        }
+                    });
 
                 this.$el = $("#" + this.id);
                 var dialogParent = this.$el.parent();
-                
+
 
                 //add history
                 this.showHistoryIcon(true);
@@ -673,7 +684,7 @@ define(function (require) {
              * @command registerEvent(event)
              */
             registerEvent: function (event, callback) {
-                this.registeredEvents.push({id: event, callback: callback});
+                this.registeredEvents.push({ id: event, callback: callback });
             },
 
             /**
@@ -687,26 +698,26 @@ define(function (require) {
                 });
             },
 
-            getHelp: function(){
+            getHelp: function () {
                 return '### Inline help not yet available for this widget! \n\n' +
-                'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
+                    'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
             },
-            
-            setController : function(controller){
-            	this.controller = controller;
+
+            setController: function (controller) {
+                this.controller = controller;
             },
-            
-            showHistoryIcon: function(show){
-            	var that=this;
-            	if(show && this.$el.parent().find(".history-icon").length==0){
+
+            showHistoryIcon: function (show) {
+                var that = this;
+                if (show && this.$el.parent().find(".history-icon").length == 0) {
                     this.addButtonToTitleBar($("<div class='fa fa-history history-icon' title='Show Navigation History'></div>").click(function (event) {
                         that.showHistoryMenu(event);
                         event.stopPropagation();
                     }));
-            	}
-            	else{
-            		this.$el.parent().find(".history-icon").remove();
-            	}
+                }
+                else {
+                    this.$el.parent().find(".history-icon").remove();
+                }
             },
 
             /**
@@ -714,11 +725,11 @@ define(function (require) {
              *
              * @returns {{size: {height: *, width: *}, position: {left: *, top: *}}}
              */
-            getView: function(){
+            getView: function () {
                 // get default stuff such as id, position and size
                 return {
                     widgetType: this.widgetType,
-                    isWidget: this.isWidget(),   
+                    isWidget: this.isWidget(),
                     showTitleBar: this.showTitleBar,
                     transparentBackground: this.transparentBackground,
                     name: this.name,
@@ -738,9 +749,9 @@ define(function (require) {
              *
              * @param view
              */
-            setView: function(view){
+            setView: function (view) {
                 // set default stuff such as position and size
-                if(view.size != undefined && view.size.height != 0 && view.size.width != 0){
+                if (view.size != undefined && view.size.height != 0 && view.size.width != 0) {
                     this.setSize(view.size.height, view.size.width);
                 } else {
                     // trigger auto size if we have no size info
@@ -748,19 +759,19 @@ define(function (require) {
                     this.setAutoHeight();
                 }
 
-                if(view.position != undefined){
+                if (view.position != undefined) {
                     this.setPosition(view.position.left, view.position.top);
                 }
 
-                if(view.name != undefined){
+                if (view.name != undefined) {
                     this.setName(view.name);
                 }
 
-                if(view.showTitleBar != undefined){
+                if (view.showTitleBar != undefined) {
                     this.showTitleBar(view.showTitleBar);
                 }
 
-                if(view.transparentBackground != undefined){
+                if (view.transparentBackground != undefined) {
                     this.setTrasparentBackground(view.transparentBackground);
                 }
 
@@ -768,11 +779,11 @@ define(function (require) {
                 this.dirtyView = false;
             },
 
-            isStateLess(){
+            isStateLess() {
                 return this.stateless;
             },
 
-            isWidget (){
+            isWidget() {
                 return true;
             }
         })

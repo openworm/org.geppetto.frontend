@@ -76,7 +76,7 @@ define(function (require) {
         }
         
         for (var i = 0; i < instances.length; i++) {
-            GEPPETTO.SceneController.showVisualGroup(instances[i]);
+            GEPPETTO.SceneController.showVisualGroupsForInstance(instances[i], this);
 
         }
     };

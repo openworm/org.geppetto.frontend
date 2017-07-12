@@ -150,7 +150,7 @@ function test3DMeshColor(test,testColor,variableName,index){
 	
 	test.assertEquals(color[0],testColor[0], "Red default color is correct for "+ variableName);
 	test.assertEquals(color[1],testColor[1],"Green default color is correct for " + variableName);
-	test.assertEquals(color[2],testColor[2],"Black default color is correct for " +variableName);
+	test.assertEquals(color[2],testColor[2],"Blue default color is correct for " +variableName);
 }
 
 function getMeshColor(test,variableName,index){
@@ -195,7 +195,7 @@ function test3DMeshColorNotEquals(test,testColor,variableName,index){
 	
 	test.assertNotEquals(testColor[0], color[0], "Red default color is correctly different for "+ variableName);
 	test.assertNotEquals(testColor[1], color[1], "Green default color is correctly different for " + variableName);
-	test.assertNotEquals(testColor[2], color[2], "Black default color is correctly different for " +variableName);
+	test.assertNotEquals(testColor[2], color[2], "Blue default color is correctly different for " +variableName);
 }
 
 /**

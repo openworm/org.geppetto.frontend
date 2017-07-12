@@ -259,7 +259,10 @@ function acnetTest(test){
 	});
 	casper.then(function () {
 		casper.echo("-------Testing Original Color--------");
-		test3DMeshColor(test,[0.796078431372549,0,0],"acnet2.pyramidals_48[0]");
+	        test3DMeshColor(test,[0.796078431372549,0,0],"acnet2.pyramidals_48[0]");
+                test3DMeshColor(test,[0.796078431372549,0,0],"acnet2.pyramidals_48[47]");
+                test3DMeshColor(test,[0,0.2,0.596078431372549],"acnet2.baskets_12[0]");
+                test3DMeshColor(test,[0,0.2,0.596078431372549],"acnet2.baskets_12[11]");
 		this.echo("Opening controls panel");
 		buttonClick("#controlPanelBtn");
 	});

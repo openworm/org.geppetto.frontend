@@ -12,7 +12,7 @@ define(function (require) {
         //clear message handlers, all tests within module should have performed by time method it's called
         GEPPETTO.MessageSocket.clearHandlers();
         //connect to socket again for next test
-        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' +  + '/GeppettoServlet');
     }
 
     var run = function () {
@@ -91,10 +91,10 @@ define(function (require) {
 
                             break;
                          case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
-                         	
+                            var payload = JSON.parse(parsedServerMessage.data);
+
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -152,7 +152,7 @@ define(function (require) {
                                 done();
                                 resetConnection();
                             }
-                        	
+
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.RESULTS_UPLOADED:
                             assert.ok("Results Uploaded", "Results Uploaded Okay!");
@@ -182,9 +182,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -241,7 +241,7 @@ define(function (require) {
                                 done();
                                 resetConnection();
                             }
-                        	
+
                             break;
                         case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_UPLOADED:
                             assert.ok(true, "Model Uploaded Okay!");
@@ -273,9 +273,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -377,9 +377,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -424,7 +424,7 @@ define(function (require) {
                             GEPPETTO.SimulationHandler.loadExperiment(payload);
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Active experiment id of loaded project checked");
-                            
+
                             var login = GEPPETTO.UserController.isLoggedIn();
                         	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
                         	var projectPersisted = window.Project.persisted;
@@ -468,9 +468,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -483,7 +483,7 @@ define(function (require) {
             window.Project.loadFromID("1", "1");
         });
 
-        
+
         QUnit.test("Test Persist Project (requires aws.credentials)", function ( assert ) {
 
             var done = assert.async();
@@ -529,9 +529,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -543,7 +543,7 @@ define(function (require) {
             GEPPETTO.MessageSocket.addHandler(handler);
             Project.loadFromURL("https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json");
         });
-        
+
         QUnit.test("Test Save Project Properties", function ( assert ) {
 
             var done = assert.async();
@@ -592,9 +592,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -606,7 +606,7 @@ define(function (require) {
             GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("1");
         });
-        
+
         QUnit.test("Test Save Experiment Properties", function ( assert ) {
 
             var done = assert.async();
@@ -683,9 +683,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -766,9 +766,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -835,9 +835,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -849,7 +849,7 @@ define(function (require) {
             GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("1");
         });
-        
+
         QUnit.test("Test Clone experiment", function ( assert ) {
 
             var done = assert.async();
@@ -889,7 +889,7 @@ define(function (require) {
                             	Project.getExperiments()[0].simulatorConfigurations["hhcell"].simulatorId;
                             var cloneSimId =
                             	Project.getExperiments()[newLength-1].simulatorConfigurations["hhcell"].simulatorId;
-                            
+
                             assert.equal(oldSimLength, cloneSimLength, "Clone Experiment - Simulator Configuration duration checked");
                             assert.equal(oldSimStep, cloneSimStep, "Clone Experiment - Simulator Configuration time step checked");
                             assert.equal(oldSimId, cloneSimId, "Clone Experiment - Simulator Configuration service id checked");
@@ -921,9 +921,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -935,7 +935,7 @@ define(function (require) {
             GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("1");
         });
-        
+
         QUnit.test("Test Create and Delete multiple experiments", function ( assert ) {
 
         	var done = assert.async();
@@ -1011,9 +1011,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;
@@ -1025,7 +1025,7 @@ define(function (require) {
             GEPPETTO.MessageSocket.addHandler(handler);
             window.Project.loadFromID("1");
         });
-        
+
         QUnit.test("Test Cloning and Delete multiple experiments", function ( assert ) {
 
         	var done = assert.async();
@@ -1096,9 +1096,9 @@ define(function (require) {
 
                             break;
                         case "error_loading_project":
-                            var payload = JSON.parse(parsedServerMessage.data);	
+                            var payload = JSON.parse(parsedServerMessage.data);
 	                        assert.ok(false, payload.message);
-	
+
 	                        done();
 	                        resetConnection();
                         	break;

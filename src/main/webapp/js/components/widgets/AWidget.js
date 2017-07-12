@@ -115,7 +115,7 @@ define(function (require) {
 
                 // set flag to indicate something changed
                 this.dirtyView = true;
-                
+
                 return this;
             }
 
@@ -446,6 +446,13 @@ define(function (require) {
                 }));
             }
 
+            addDownloadButton(downloadFunction){
+                var that = this;
+                this.addButtonToTitleBar($("<div class='fa fa-download' title='Download data'></div>").click(function () {
+                    that.download();
+                }));
+            }
+
             /**
              * Makes the widget draggable or not
              *
@@ -589,7 +596,6 @@ define(function (require) {
                 this.container = this.$el.children().get(0);
                 var dialogParent = this.$el.parent();
 
-
                 //add history
                 this.showHistoryIcon(true);
 
@@ -603,6 +609,11 @@ define(function (require) {
 
                 //add help button
                 this.addHelpButton();
+
+                //add download button
+                if (super.download) {
+                    this.addDownloadButton(super.download);
+                }
 
                 // initialize content
                 this.size = this.state.defaultSize;
@@ -654,10 +665,6 @@ define(function (require) {
                 });
             }
 
-            // setController(controller) {
-            //     this.controller = controller;
-            // }
-
             showHistoryIcon(show) {
                 var that = this;
                 if (show && this.$el.parent().find(".history-icon").length == 0) {
@@ -673,7 +680,7 @@ define(function (require) {
 
             getView() {
                 var view = super.getView();
-                
+
                 // get default stuff such as id, position and size
                 return  $.extend(view, {
                     name: this.name,
@@ -732,14 +739,14 @@ define(function (require) {
             render() {
                 /*return (
                     <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}>
-                        <WrappedComponent 
+                        <WrappedComponent
                             setName= {this.setName}
                             {...this.props}
                             {...this.state}
                             ref={(c) => this._component = c}/>
                     </div>
                 )*/
-                return <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}> {super.render()} </div>
+                return <div key={this.props.id} id={this.props.id} className={'dialog ' + this.props.componentType.toLowerCase() + "-widget"} title={this.props.title}> {super.render()} </div>
             }
         };
     }

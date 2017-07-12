@@ -906,7 +906,7 @@ define(['jquery'], function () {
 
             scene.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
-                    child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+                    this.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.DEFAULT);
                     child.material.wireframe = this.wireframe;
                     child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                     child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -1000,11 +1000,11 @@ define(['jquery'], function () {
          * Modify the origin and radius of a sphere
          * @returns {THREE.Mesh}
          */
-        modify3DSphere: function (object, x, y, z, radius) {
+        modify3DSphere: function (object, x, y, z, radius, material) {
             // Impossible to change the radius of a Sphere.
             // Removing old object and creating a new one
             this.scene.remove(object);
-            return this.add3DSphere(x, y, z, radius);
+            return this.add3DSphere(x, y, z, radius, material);
         },
 
         /**
@@ -1012,16 +1012,18 @@ define(['jquery'], function () {
          * It could be any geometry really.
          * @returns {THREE.Mesh}
          */
-        add3DSphere: function (x, y, z, radius) {
+        add3DSphere: function (x, y, z, radius, material) {
             if (this.aboveLinesThreshold) {
                 radius = 1;
             }
 
-            var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
-            material.nowireframe = true;
-            material.opacity = 0.6;
-            material.transparent = true;
-            material.color.setHex("0xff0000");
+            if (typeof material == 'undefined') {
+                var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
+                material.nowireframe = true;
+                material.opacity = 0.6;
+                material.transparent = true;
+                material.color.setHex("0xff0000");
+            }
 
             var sphereNode = {radius: radius, position: {x: x, y: y, z: z}}
             var mesh = this.create3DSphereFromNode(sphereNode, material)
@@ -1162,7 +1164,7 @@ define(['jquery'], function () {
                 color = GEPPETTO.Resources.COLORS.DEFAULT;
             }
             var material = new THREE.LineBasicMaterial(options);
-            this.setThreeColor(material.color, color);
+            this.setThreeColor(material.color, color); 
             material.defaultColor = color;
             material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             return material;
@@ -1204,7 +1206,7 @@ define(['jquery'], function () {
                     depthTest: false,
                     transparent: true
                 });
-            pMaterial.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+            this.setThreeColor(pMaterial.color, GEPPETTO.Resources.COLORS.DEFAULT);
             pMaterial.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
             pMaterial.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             pMaterial.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -1749,6 +1751,8 @@ define(['jquery'], function () {
             if (!this.hasInstance(instancePath)) {
                 return;
             }
+            if (typeof color === 'string')
+                color = color.replace(/0X/i, "#");
             var meshes = this.getRealMeshesForInstancePath(instancePath);
             if (meshes.length > 0) {
                 for (var i = 0; i < meshes.length; i++) {
@@ -1822,7 +1826,7 @@ define(['jquery'], function () {
 
             var getRandomColor = function () {
                 var letters = '0123456789ABCDEF';
-                var color = '0x';
+                var color = '#';
                 for (var i = 0; i < 6; i++) {
                     color += letters[Math.floor(Math.random() * 16)];
                 }
@@ -1858,8 +1862,7 @@ define(['jquery'], function () {
                     }
                 }
             }
-
-
+            GEPPETTO.trigger(GEPPETTO.Events.Color_set, {instance: instance, color: randomColor});
         }
 
         ,
@@ -2270,7 +2273,7 @@ define(['jquery'], function () {
                 }
 
                 var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1});
-                material.color.setHex(colour);
+                this.setThreeColor(material.color, colour);
 
                 var line = new THREE.LineSegments(geometry, material);
                 line.updateMatrixWorld(true);

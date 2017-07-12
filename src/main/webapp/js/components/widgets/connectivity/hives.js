@@ -16,7 +16,7 @@ define(function(require){
 	           quali_angle = d3.scaleBand().domain(context.dataset.nodeTypes).range([0, 2 * Math.PI]);
 	       radius = d3.scaleLinear().range([innerRadius, outerRadius]),
 	           linkTypeScale = d3.scaleOrdinal(d3.schemeCategory10).domain(context.dataset.linkTypes);
-	       nodeTypeScale = d3.scaleOrdinal(d3.schemeCategory20).domain(context.dataset.nodeTypes);
+	       nodeTypeScale = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
 	
 	       var nodes = context.dataset.nodes,
 	           links = [];

@@ -6,6 +6,7 @@
  * @author Adrian Quintana (adrian@metacell.us)
  */
 global.jQuery = require("jquery");
+global.GEPPETTO_CONFIGURATION = require('../../../GeppettoConfiguration.json');
 
 //Styling
 require('../../../style/less/main.less');
@@ -53,5 +54,9 @@ jQuery(function () {
     }
 
     //load extensions
-    require('../../../extensions/extensions');
+    for (var extension in GEPPETTO_CONFIGURATION.extensions) {
+        if (GEPPETTO_CONFIGURATION.extensions[extension]) {
+            require('../../../extensions/'  + extension)(GEPPETTO);
+        }
+    }
 });

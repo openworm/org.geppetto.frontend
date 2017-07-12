@@ -1,11 +1,5 @@
 @import "../../../../style/less/components/colors";
 
-@color_1: @orange;
-@color_2: #fd6808;
-@color_3: white;
-@background_color_1: rgba(66, 59, 59, 0.90);
-@background_color_2: #fd6808;
-
 .menuButtonIcon {
 	padding-right: 5px;
 }
@@ -15,16 +9,16 @@
 .dropDownButtonContainer {
 	&:disabled {
 		background: 0;
-		color: @color_1;
+		color: @primary_color;
 	}
 	position: fixed;
 	z-index: 99;
 	height: auto;
 	width: auto;
-	background-color: @background_color_1;
+	background-color: @background_color_widget;
 }
 .dropDownTable {
-	color: @color_2;
+	color: @primary_color;
 	float: left;
 	padding-right: 10px;
 	white-space: nowrap;
@@ -42,21 +36,21 @@
 		cursor: pointer;
 		font-size: 14px;
 		&:hover {
-			color: @color_3;
+			color: white;
 		}
 	}
 	tr {
 		&:not(:hover) {
 			label {
-				color: @color_2;
+				color: @primary_color;
 			}
 		}
 		cursor: pointer;
 		&:hover {
-			background-color: @background_color_2;
-			color: @color_3;
+			background-color: @primary_color;
+			color: white;
 			label {
-				color: @color_3;
+				color: white;
 			}
 		}
 	}

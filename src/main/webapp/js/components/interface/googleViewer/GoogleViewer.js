@@ -16,7 +16,7 @@ define(function (require) {
 				zoom: 1,
 				streetViewControl: false,
 				mapTypeControl: false
-			}
+			};
 
 			var path = this.extractFilesPath(this.props.data);
 			var imageMapTypeSettings = {

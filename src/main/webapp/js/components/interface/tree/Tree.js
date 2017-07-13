@@ -1,6 +1,6 @@
 define(function (require) {
 
-	require("./Tree.less")
+	require("./Tree.less");
 
 	var React = require('react');
 	var SortableTree = require('react-sortable-tree').default;

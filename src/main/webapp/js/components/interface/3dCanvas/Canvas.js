@@ -14,11 +14,10 @@ define(function (require) {
 
     return class Canvas extends AbstractComponent {
 
-
         constructor(props) {
             super(props);
 
-            this.engine = null
+            this.engine = null;
             // this.container = null
 
             //State

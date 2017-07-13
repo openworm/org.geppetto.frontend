@@ -53,7 +53,7 @@ define(function (require, exports, module) {
 
 		getComponent: function (componentItem, parameters, container) {
 			
-			var component = GEPPETTO.ComponentFactory._addComponent(componentItem, this.componentType, this.getParameters(parameters),
+			var component = GEPPETTO.ComponentFactory._addComponent(componentItem, this.get('componentType'), this.getParameters(parameters),
 				 container, undefined, (this.get("embedded") == false));
 			this.set('component', component);
 
@@ -68,8 +68,8 @@ define(function (require, exports, module) {
 			position_y: null,
 			width: null,
 			height: null,
-			componentType: "PANEL",
 			properties: {},
+			componentType: "PANEL",
 			triggerClose: true
 		}),
 
@@ -88,7 +88,7 @@ define(function (require, exports, module) {
 		},
 
 		getComponent: function () {
-			var parameters = { items: this.getChildren(), parentStyle: this.get('parentStyle') };
+			var parameters = { items: this.getChildren(), parentStyle: this.get('parentStyle')};
 			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters, null]);
 		},
 
@@ -218,7 +218,6 @@ define(function (require, exports, module) {
 	var ButtonSync = ComponentSync.extend({
 
 		defaults: _.extend({}, ComponentSync.prototype.defaults, {
-			componentType: "RAISEDBUTTON"
 		}),
 
 		initialize: function (options) {

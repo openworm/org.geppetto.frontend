@@ -332,7 +332,11 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                 //roll over the experiments row
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 doPostPersistenceExperimentsTableButtonCheck(test);
-            }, null, 300000);
+            }, null, 1000000);
+            
+            casper.on("page.error", function(msg, trace) {
+                this.echo("Error: " + msg, "ERROR");
+           });
         });
         casper.then(function () {
             doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);

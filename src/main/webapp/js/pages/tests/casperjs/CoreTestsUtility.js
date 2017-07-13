@@ -392,6 +392,8 @@ function testingConnectionLines(test, expectedLines){
 			return connectionLines;
 		});
 		
+		casper.echo("ExpectedLines "+ expectedLines);
+		casper.echo("ConnectionLines "+ connectionLines);
 		test.assertEquals(expectedLines, connectionLines, "Right amount of connections line");
 	});
 }

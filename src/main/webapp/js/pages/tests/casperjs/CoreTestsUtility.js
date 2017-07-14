@@ -398,13 +398,17 @@ function testingConnectionLines(test, expectedLines){
 		});
 		
 		var traverse = casper.evaluate(function() {
+			var al = new Array(); 
 			for (var prop in Canvas1.engine.connectionLines) {
-				this.echo("ConnLne "+ prop);
+				al.push(prop);
 			}
-			return Object.keys(Canvas1.engine.connectionLines).length;
+			return al;
 		});
 		
 		casper.echo("SelectLength: "+ selectLength);
+		for (var a=0; a<traverse.length;a++) {
+			casper.echo("Traverse lnes: "+ traverse[a]);
+		}
 		casper.echo("traverse: "+ traverse);
 		test.assertEquals(expectedLines, connectionLines, "Right amount of connections line");
 	});

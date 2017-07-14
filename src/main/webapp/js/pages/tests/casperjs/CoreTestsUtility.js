@@ -218,9 +218,11 @@ function testSelection(test,variableName,selectColorVarName){
     		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});
     		casper.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
     		casper.waitUntilVisible('button#buttonOne', function () {
+    			casper.echo("Select button pressed");
     			test.assertVisible('button#buttonOne', "Select button correctly visible");
     			buttonClick("#buttonOne");
     			this.wait(500, function () {
+    				casper.echo("Select button pressed: "+variableName);
     				var selectColor = [1,0.8,0];
     				test3DMeshColor(test,selectColor,selectColorVarName,0);
     			});

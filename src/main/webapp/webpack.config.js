@@ -136,7 +136,7 @@ module.exports = {
             {
                 test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], loader: ['babel-loader'],
                 query: {
-                    presets: ['react', 'es2015']
+                    presets: ['react', 'es2015', 'stage-2']
                 }
             },
             {

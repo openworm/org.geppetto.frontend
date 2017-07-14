@@ -279,12 +279,6 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
-		var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection().length;
-			return selectLength;
-		});
-		
-		casper.echo("SelectLength: "+ selectLength);
 		this.waitUntilVisible('button[id="acnet2_pyramidals_48_0__soma_0_v_plot_ctrlPanel_btn"]', function () {
 			buttonClick("#acnet2_pyramidals_48_0__soma_0_v_plot_ctrlPanel_btn");
 		});	
@@ -304,12 +298,6 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
-		var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection().length;
-			return selectLength;
-		});
-		
-		casper.echo("SelectLength: "+ selectLength);
 		casper.echo("-------Testing Spotlight--------");
 		testSpotlight(test, "acnet2.pyramidals_48[1].soma_0.v",'div[id="Plot1"]',true,true,"acnet2.pyramidals_48[0]","acnet2.pyramidals_48[0]");	
 		this.mouseEvent('click', 'i.fa-search', "attempting to close spotlight");
@@ -317,7 +305,12 @@ function acnetTest(test){
 	
 	casper.then(function () {
 		casper.echo("-------Testing Connected cells to Instance--------");
+		var selectLength = casper.evaluate(function() {
+			var selectLength = GEPPETTO.SceneController.getSelection().length;
+			return selectLength;
+		});
 		
+		casper.echo("SelectLength: "+ selectLength);
 		//testing right amount of connection lines are shown
 		testingConnectionLines(test,23);
 		
@@ -345,6 +338,7 @@ function acnetTest(test){
 		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
 			acnet2.pyramidals_48[0].deselect();
+			acnet2.pyramidals_48[4].deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});

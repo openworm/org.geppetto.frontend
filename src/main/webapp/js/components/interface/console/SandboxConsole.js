@@ -128,6 +128,7 @@ define(function (require) {
                     this.tabCharacter = opts.tabCharacter || "\t";
                     this.placeholder = opts.placeholder || "// type some javascript and hit enter (help() for info)";
                     this.helpText = opts.helpText || "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.";
+                    this.inputCommandAreaEl = opts.inputCommandAreaEl;
 
                     // Bind to the model's change event to update the View
                     this.model.on('update:console', this.updateConsole, this);
@@ -378,8 +379,8 @@ define(function (require) {
 
                         var thisKeypressTime = new Date();
 
-                        // TODO: fix this, we cannot assume it's there, a reference to the element needs to be passed
-                        var input = $('#commandInputArea').val();
+                        // TODO: test this selector is passed as expected
+                        var input = this.inputCommandAreaEl.val();
 
                         //retrieve array of available commands
                         var commands = GEPPETTO.Console.availableSuggestions();

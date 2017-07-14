@@ -86,8 +86,8 @@ define(function (require) {
             var autocompleteOn = true;
             GEPPETTO.Console.populateTags();
             //bind console input area to autocomplete event
-            // TODO: replace this for something just for this component using the component id --> {this.props.id + "_component"}
-            $("#commandInputArea").bind("keydown", function (event) {
+            // TODO: TEST this selector
+            $("#" + this.props.id + "_component #commandInputArea").bind("keydown", function (event) {
                 if (event.keyCode === $.ui.keyCode.TAB &&
                     $(this).data("ui-autocomplete").menu.active) {
                     event.preventDefault();
@@ -190,15 +190,17 @@ define(function (require) {
          * Creates Javascript Console
          */
         createConsole () {
-            // TODO: make sure this applies only to this instance of the console
-            var consoleElement = $("#console");
+            // TODO: test this selector
+            var consoleElement = $("#" + this.props.id + "_component #" +  this.props.id + "_console");
+            var inputCmdEl = $("#" + this.props.id + "_component #commandInputArea");
             // Create the sandbox console:
             this.console = new GEPPETTO.Sandbox.View({
                 el: consoleElement,
                 model: new GEPPETTO.Sandbox.Model(),
                 resultPrefix: "  => ",
                 tabCharacter: "\t",
-                placeholder: "// type a javascript command and hit enter (help() for info)"
+                placeholder: "// type a javascript command and hit enter (help() for info)",
+                inputCommandAreaEl: inputCmdEl
             });
 
 
@@ -222,8 +224,8 @@ define(function (require) {
             this.autoComplete();
 
             //remove drop down menu that comes automatically with autocomplete
-            // TODO: rework to target the right element for this instance of the console
-            $('#commandInputArea').focus(function () {
+            // TODO: test this selector
+            $("#" + this.props.id + "_component #commandInputArea").focus(function () {
                 $('.ui-menu').remove();
             });
 
@@ -546,6 +548,7 @@ define(function (require) {
         render() {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="consoleContainer">
+                    <div id={this.props.id + "_console"}></div>
                 </div>
             )
         }

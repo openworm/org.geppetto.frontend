@@ -392,8 +392,20 @@ function testingConnectionLines(test, expectedLines){
 			return connectionLines;
 		});
 		
-		casper.echo("ExpectedLines "+ expectedLines);
-		casper.echo("ConnectionLines "+ connectionLines);
+		var selectLength = casper.evaluate(function() {
+			var selectLength = GEPPETTO.SceneController.getSelection().length;
+			return selectLength;
+		});
+		
+		var traverse = casper.evaluate(function() {
+			for (var prop in Canvas1.engine.connectionLines) {
+				this.echo("ConnLne "+ prop);
+			}
+			return Object.keys(Canvas1.engine.connectionLines).length;
+		});
+		
+		casper.echo("SelectLength: "+ selectLength);
+		casper.echo("traverse: "+ traverse);
 		test.assertEquals(expectedLines, connectionLines, "Right amount of connections line");
 	});
 }

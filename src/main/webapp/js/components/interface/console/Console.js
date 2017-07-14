@@ -4,6 +4,9 @@ define(function (require) {
     var $ = require('jquery');
     require('jquery-ui-bundle');
 
+    require('./console.less');
+    require('./jsConsole.less');
+
     return class Console extends AbstractComponent {
         constructor(props) {
             super(props);
@@ -82,7 +85,7 @@ define(function (require) {
 
         // Handles autocomplete functionality for the console
         autoComplete() {
-
+            var that = this;
             var autocompleteOn = true;
             GEPPETTO.Console.populateTags();
             //bind console input area to autocomplete event
@@ -99,7 +102,7 @@ define(function (require) {
                 .autocomplete({
                     minLength: 0,
                     delay: 0,
-                    source: matches,
+                    source: that.matches,
                     focus: function () {
                         // prevent value inserted on focus
                         return false;
@@ -526,7 +529,7 @@ define(function (require) {
         }
 
         componentDidUpdate() {
-            // TODO: anything?
+            // NOTE: nothing here for now as we are not using react render flow
         }
 
         componentDidMount() {
@@ -543,12 +546,14 @@ define(function (require) {
                 "selectChildren(entity,apply)", "showChildren(entity,mode)", "getZoomPaths(entity)", "getAspectsPaths(entity)", "toggleUnSelected(entities,mode)",
                 "addOnNodeUpdatedCallback(varnode,callback)", "traverseSelection(entities)", "clearOnNodeUpdateCallback(varnode)", "updateDataSet()",
                 "showAllVisualGroupElements(visualizationTree,elements,mode)", "_all(predicate,matches)"];
+
+            this.createConsole();
         }
 
         render() {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="consoleContainer">
-                    <div id={this.props.id + "_console"}></div>
+                    <div id={this.props.id + "_console"} className="consoleElement"></div>
                 </div>
             )
         }

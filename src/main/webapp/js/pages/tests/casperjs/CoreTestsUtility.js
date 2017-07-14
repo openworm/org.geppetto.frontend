@@ -393,7 +393,12 @@ function testingConnectionLines(test, expectedLines){
 		});
 		
 		var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection().length;
+			var selectLength = GEPPETTO.SceneController.getSelection()[0].id;
+			return selectLength;
+		});
+		
+		var selectLength2 = casper.evaluate(function() {
+			var selectLength = GEPPETTO.SceneController.getSelection()[1].id;
 			return selectLength;
 		});
 		
@@ -406,6 +411,7 @@ function testingConnectionLines(test, expectedLines){
 		});
 		
 		casper.echo("SelectLength: "+ selectLength);
+		casper.echo("SelectLength2: "+ selectLength2);
 		for (var a=0; a<traverse.length;a++) {
 			casper.echo("Traverse lnes: "+ traverse[a]);
 		}

@@ -218,10 +218,19 @@ function testSelection(test,variableName,selectColorVarName){
     		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});
     		casper.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
     		casper.waitUntilVisible('button#buttonOne', function () {
-    			casper.echo("Select button pressed");
+    			var selectLength = casper.evaluate(function() {
+    				var selectLength = GEPPETTO.SceneController.getSelection().length;
+    				return selectLength;
+    			});
+    			casper.echo("Select button to be pressed: "+ selectLength);
     			test.assertVisible('button#buttonOne', "Select button correctly visible");
     			buttonClick("#buttonOne");
     			this.wait(500, function () {
+    				var selectLength = casper.evaluate(function() {
+        				var selectLength = GEPPETTO.SceneController.getSelection().length;
+        				return selectLength;
+        			});
+        			casper.echo("Select button pressed: "+ selectLength);
     				casper.echo("Select button pressed: "+variableName);
     				var selectColor = [1,0.8,0];
     				test3DMeshColor(test,selectColor,selectColorVarName,0);
@@ -272,6 +281,11 @@ function testSpotlight(test, variableName,plotName,expectButton,testSelect, sele
 						this.waitUntilVisible(plotName, function () {
 							this.echo("Plot 2 came up correctly");
 							if(testSelect){
+								var selectLength = casper.evaluate(function() {
+									var selectLength = GEPPETTO.SceneController.getSelection().length;
+									return selectLength;
+								});
+								casper.echo("SelectLength after plot2 came up: "+ selectLength);
 								testSelection(test, selectionName,selectColorVarName);
 							}
 						});

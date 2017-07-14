@@ -305,7 +305,12 @@ function acnetTest(test){
 		
 		casper.echo("SelectLength: "+ selectLength);
 		casper.echo("-------Testing Spotlight--------");
-		testSpotlight(test, "acnet2.pyramidals_48[1].soma_0.v",'div[id="Plot1"]',true,true,"acnet2.pyramidals_48[1]","acnet2.pyramidals_48[1]");	
+		testSpotlight(test, "acnet2.pyramidals_48[1].soma_0.v",'div[id="Plot1"]',true,true,"acnet2.pyramidals_48[0]","acnet2.pyramidals_48[0]");	
+		var selectLength = casper.evaluate(function() {
+			var selectLength = GEPPETTO.SceneController.getSelection().length;
+			return selectLength;
+		});
+		casper.echo("SelectLength after spotl: "+ selectLength);
 		this.mouseEvent('click', 'i.fa-search', "attempting to close spotlight");
 	});
 	

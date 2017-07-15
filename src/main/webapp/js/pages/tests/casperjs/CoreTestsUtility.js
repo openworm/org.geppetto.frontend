@@ -209,14 +209,6 @@ function test3DMeshColorNotEquals(test,testColor,variableName,index){
  * @returns
  */
 function testSelection(test,variableName,selectColorVarName){
-	closeSpotlight();
-    casper.waitWhileVisible('div#spotlight', function () {
-    	casper.echo("Spotlight closed");
-
-    	var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection().length;
-			return selectLength;
-		});
 		casper.echo("Select after spotlght closed: "+ selectLength);
 		buttonClick("#spotlightBtn");
 
@@ -243,7 +235,6 @@ function testSelection(test,variableName,selectColorVarName){
     			});
     		});
     	});
-    }, null, 1000);
 }
 
 function closeSpotlight(){

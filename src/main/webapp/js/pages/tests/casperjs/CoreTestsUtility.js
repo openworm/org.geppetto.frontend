@@ -212,7 +212,13 @@ function testSelection(test,variableName,selectColorVarName){
 	closeSpotlight();
     casper.waitWhileVisible('div#spotlight', function () {
     	casper.echo("Spotlight closed");
-    	casper.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
+
+    	var selectLength = casper.evaluate(function() {
+			var selectLength = GEPPETTO.SceneController.getSelection().length;
+			return selectLength;
+		});
+		casper.echo("Select after spotlght closed: "+ selectLength);
+		buttonClick("#spotlightBtn");
 
     	casper.waitUntilVisible('div#spotlight', function () {
     		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});

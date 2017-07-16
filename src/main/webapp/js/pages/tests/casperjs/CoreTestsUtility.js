@@ -209,6 +209,10 @@ function test3DMeshColorNotEquals(test,testColor,variableName,index){
  * @returns
  */
 function testSelection(test,variableName,selectColorVarName){
+		var selectLength = casper.evaluate(function() {
+			var selectLength = GEPPETTO.SceneController.getSelection().length;
+			return selectLength;
+		});
 		casper.echo("Select after spotlght closed: "+ selectLength);
 		buttonClick("#spotlightBtn");
 

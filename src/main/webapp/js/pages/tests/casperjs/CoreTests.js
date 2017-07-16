@@ -69,11 +69,11 @@ casper.test.begin('Geppetto basic tests', 219, function suite(test) {
 		casper.then(function(){pharyngealTest(test);});
 	});
 	
-	/**Tests NWB project**/
-	casper.thenOpen(urlBase+baseFollowUp+nwbSample,function() {
-		casper.then(function(){launchTest(test,"NWB Sample",45000);});
-		casper.then(function(){nwbSampleTest(test);});
-	});
+//	/**Tests NWB project**/
+//	casper.thenOpen(urlBase+baseFollowUp+nwbSample,function() {
+//		casper.then(function(){launchTest(test,"NWB Sample",45000);});
+//		casper.then(function(){nwbSampleTest(test);});
+//	});
 	
 	/**Tests cElegansConnectome project**/
 	casper.thenOpen(urlBase+baseFollowUp+cElegansConnectome,function() {
@@ -298,30 +298,14 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
-		var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection().length;
-			return selectLength;
-		});
-		
-		casper.echo("SelectLength: "+ selectLength);
 		casper.echo("-------Testing Spotlight--------");
 		testSpotlight(test, "acnet2.pyramidals_48[1].soma_0.v",'div[id="Plot1"]',true,true,"acnet2.pyramidals_48[0]","acnet2.pyramidals_48[0]");	
-		var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection().length;
-			return selectLength;
-		});
-		casper.echo("SelectLength after spotl: "+ selectLength);
 		this.mouseEvent('click', 'i.fa-search', "attempting to close spotlight");
 	});
 	
 	casper.then(function () {
 		casper.echo("-------Testing Connected cells to Instance--------");
-		var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection().length;
-			return selectLength;
-		});
 		
-		casper.echo("SelectLength: "+ selectLength);
 		//testing right amount of connection lines are shown
 		testingConnectionLines(test,23);
 		
@@ -349,7 +333,6 @@ function acnetTest(test){
 		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
 			acnet2.pyramidals_48[0].deselect();
-			acnet2.pyramidals_48[4].deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});

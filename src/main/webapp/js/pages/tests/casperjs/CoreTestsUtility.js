@@ -209,36 +209,19 @@ function test3DMeshColorNotEquals(test,testColor,variableName,index){
  * @returns
  */
 function testSelection(test,variableName,selectColorVarName){
-		var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection().length;
-			return selectLength;
-		});
-		casper.echo("Select after spotlght closed: "+ selectLength);
-		buttonClick("#spotlightBtn");
-
-    	casper.waitUntilVisible('div#spotlight', function () {
-    		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});
-    		casper.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
-    		casper.waitUntilVisible('button#buttonOne', function () {
-    			var selectLength = casper.evaluate(function() {
-    				var selectLength = GEPPETTO.SceneController.getSelection().length;
-    				return selectLength;
-    			});
-    			casper.echo("Select button to be pressed: "+ selectLength);
-    			test.assertVisible('button#buttonOne', "Select button correctly visible");
-    			buttonClick("#buttonOne");
-    			this.wait(500, function () {
-    				var selectLength = casper.evaluate(function() {
-        				var selectLength = GEPPETTO.SceneController.getSelection().length;
-        				return selectLength;
-        			});
-        			casper.echo("Select button pressed: "+ selectLength);
-    				casper.echo("Select button pressed: "+variableName);
-    				var selectColor = [1,0.8,0];
-    				test3DMeshColor(test,selectColor,selectColorVarName,0);
-    			});
-    		});
-    	});
+	buttonClick("#spotlightBtn");
+   	casper.waitUntilVisible('div#spotlight', function () {
+   		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});
+   		casper.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
+   		casper.waitUntilVisible('button#buttonOne', function () {
+   			test.assertVisible('button#buttonOne', "Select button correctly visible");
+   			buttonClick("#buttonOne");
+   			this.wait(500, function () {
+   				var selectColor = [1,0.8,0];
+   				test3DMeshColor(test,selectColor,selectColorVarName,0);
+   			});
+   		});
+   	});
 }
 
 function closeSpotlight(){
@@ -282,11 +265,6 @@ function testSpotlight(test, variableName,plotName,expectButton,testSelect, sele
 						this.waitUntilVisible(plotName, function () {
 							this.echo("Plot 2 came up correctly");
 							if(testSelect){
-								var selectLength = casper.evaluate(function() {
-									var selectLength = GEPPETTO.SceneController.getSelection().length;
-									return selectLength;
-								});
-								casper.echo("SelectLength after plot2 came up: "+ selectLength);
 								testSelection(test, selectionName,selectColorVarName);
 							}
 						});
@@ -408,31 +386,6 @@ function testingConnectionLines(test, expectedLines){
 			var connectionLines = Object.keys(Canvas1.engine.connectionLines).length;
 			return connectionLines;
 		});
-		
-		var selectLength = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection()[0].id;
-			return selectLength;
-		});
-		
-		var selectLength2 = casper.evaluate(function() {
-			var selectLength = GEPPETTO.SceneController.getSelection()[1].id;
-			return selectLength;
-		});
-		
-		var traverse = casper.evaluate(function() {
-			var al = new Array(); 
-			for (var prop in Canvas1.engine.connectionLines) {
-				al.push(prop);
-			}
-			return al;
-		});
-		
-		casper.echo("SelectLength: "+ selectLength);
-		casper.echo("SelectLength2: "+ selectLength2);
-		for (var a=0; a<traverse.length;a++) {
-			casper.echo("Traverse lnes: "+ traverse[a]);
-		}
-		casper.echo("traverse: "+ traverse);
 		test.assertEquals(expectedLines, connectionLines, "Right amount of connections line");
 	});
 }

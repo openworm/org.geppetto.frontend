@@ -326,7 +326,7 @@ function acnetTest(test){
 		testSpotlight(test, "acnet2.pyramidals_48[0].biophys.membraneProperties.Ca_pyr_soma_group.gDensity",'div[id="Plot1"]',false,false,"acnet2.pyramidals_48[0]");	
 	});
 	
-	casper.then(function(){
+	casper.then(function () {
 		closeSpotlight(); //close spotlight before continuing
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
 		
@@ -342,16 +342,22 @@ function acnetTest(test){
 		
 		//tests camera controls are working by checking camera has moved
 		testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
-		
+	});
+	
+	casper.then(function () {
 		//applies visual group to instance and tests colors
 		testVisualGroup(test,"acnet2.baskets_12[0]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
 		
 		testVisualGroup(test,"acnet2.baskets_12[5]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
-		
+	});
+	
+	casper.then(function () {
 		//test these cells are no longer ghosted
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
-		
+	});
+	
+	casper.then(function(){
 		casper.echo("Testing setGeometry");
 		
 		casper.evaluate(function(){

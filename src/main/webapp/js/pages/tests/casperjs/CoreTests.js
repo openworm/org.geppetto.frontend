@@ -1,4 +1,4 @@
-casper.test.begin('Geppetto basic tests', 219, function suite(test) {
+casper.test.begin('Geppetto basic tests', 228, function suite(test) {
 	casper.options.viewportSize = {
 			width: 1340,
 			height: 768
@@ -327,6 +327,7 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
+		closeSpotlight(); //close spotlight before continuing
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
 		
 		//adding few widgets to the project to test View state later

@@ -8,7 +8,7 @@ define(function (require) {
     var Widget = require('../Widget');
     var $ = require('jquery');
 
-    require("./VariableVisualiser");
+    require("./VariableVisualiser.less");
 
     return Widget.View.extend({
         root: null,

@@ -1022,6 +1022,7 @@ define(function (require) {
                                     id: datasourceConfig.resultsFilters.getId(record),
                                     name: datasourceConfig.resultsFilters.getName(record),
                                     description: datasourceConfig.resultsFilters.getDescription(record),
+                                    type: datasourceConfig.resultsFilters.getType(record),
                                     images: datasourceConfig.resultsFilters.getImageData(record),
                                     controls: ''
                                 }
@@ -1206,7 +1207,6 @@ define(function (require) {
                     ctr = 0;
                     keys.forEach(function (key) {
                         if (ctr > 0) result += columnDelimiter;
-
                         result += item[key];
                         ctr++;
                     });

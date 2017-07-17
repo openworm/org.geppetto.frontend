@@ -1,4 +1,4 @@
-casper.test.begin('Geppetto basic tests', 219, function suite(test) {
+casper.test.begin('Geppetto basic tests', 243, function suite(test) {
 	casper.options.viewportSize = {
 			width: 1340,
 			height: 768
@@ -88,7 +88,7 @@ casper.test.begin('Geppetto basic tests', 219, function suite(test) {
 	casper.thenOpen(urlBase+baseFollowUp+cElegansPVDR,function() {
 		casper.then(function(){launchTest(test,"cElegansPVDR",180000);});
 	});
-	
+
 	casper.run(function() {
 		test.done();
 	});
@@ -114,11 +114,11 @@ function hhcellTest(test,name){
 	casper.then(function(){
 		casper.echo("-------Testing Control Panel--------");
 		testInitialControlPanelValues(test,3);
-	})
+	});
 	casper.then(function(){
 		casper.echo("-------Testing Mesh Visibility--------");
 		testVisibility(test,"hhcell.hhpop[0]","#hhcell_hhpop_0__visibility_ctrlPanel_btn");
-	})
+	});
 	casper.then(function () {
 		casper.echo("-------Testing Plotting from Control Panel--------");
 		buttonClick("#stateVariablesFilterBtn");
@@ -159,20 +159,38 @@ function hhcellTest(test,name){
 	casper.then(function(){
 		closeSpotlight();
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
+		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
 			hhcell.deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([hhcell])});
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:1});
 			Plot1.setPosition(0,300);
+			G.addWidget(1).setMessage("Hhcell popup");
+			G.addWidget(1).setData(hhcell);
+			var customHandler = function(node, path, widget) {};
+	        Popup2.addCustomNodeHandler(customHandler,'click');
 		});
 		
+		//toggle tutorial if tutorial button exists
+		if(casper.exists('#tutorialBtn')){
+			casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
+		}
+
+		//tests widget canvas has mesh
 		var mesh = casper.evaluate(function(){
 			var mesh = Canvas2.engine.getRealMeshesForInstancePath("hhcell.hhpop[0]").length;
 			return mesh;
 		});
 		test.assertEquals(mesh, 1, "Canvas widget has hhcell");
 
+		//click on next step for Tutorial
+		casper.evaluate(function () {
+			var nextBtnSelector = $(".nextBtn");
+			nextBtnSelector.click();
+			nextBtnSelector.click();
+		});
+		
 		casper.echo("-------Testing Camera Controls--------");
 		testCameraControlsWithCanvasWidget(test, [0,0,30.90193733102435]);
 		casper.wait(1000, function(){
@@ -182,8 +200,50 @@ function hhcellTest(test,name){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");
 		})
-	})
-};
+	});
+	
+	//reload test, needed for testing view comes up
+	casper.then(function(){launchTest(test,"Hhcell",30000);});
+	
+	//testing widgets stored in View state come up
+	casper.then(function(){
+		test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
+		test.assertVisible('div#Plot1', "Plot1 is correctly open on reload");
+		test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
+		test.assertVisible('div#Popup2', "Popup2 is correctly open on reload");
+		
+		//if tutorial button exists, tests existence of Tutorial
+		if(casper.exists('#tutorialBtn')){
+			test.assertVisible('div#Tutorial1', "Tutorial1 is correctly open on reload");
+			var tutorialStep = casper.evaluate(function() {
+				return Tutorial1.state.currentStep;
+			});
+			test.assertEquals(tutorialStep, 2, "Tutorial1 step restored correctly");
+		}
+		//Tests content of Popup1 
+		var popUpMessage = casper.evaluate(function() {
+			return $("#Popup1").html();
+		});
+		test.assertEquals(popUpMessage, "Hhcell popup", "Popup1 message restored correctly");
+		
+		//Tests popup has custom handlers
+		var popUpCustomHandler = casper.evaluate(function() {
+			return Popup2.customHandlers;
+		});
+		test.assertEquals(popUpCustomHandler.length, 1, "Popup2 custom handlers restored correctly");
+		test.assertEquals(popUpCustomHandler[0]["event"], "click", "Popup2 custom handlers event restored correctly");
+		
+		//Test canvas widget has mesh 
+		var meshInCanvas2Exists = casper.evaluate(function() {
+			var mesh = Canvas1.engine.meshes["hhcell.hhpop[0]"];
+			if(mesh!=null && mesh!=undefined){
+				return true;
+			}
+			return false;
+		});
+		test.assertEquals(meshInCanvas2Exists, true, "Canvas2 hhcell set correctly");
+	});	
+}
 
 /**
  * Main method for testing ACNet
@@ -191,7 +251,7 @@ function hhcellTest(test,name){
 function acnetTest(test){
 	casper.echo("------------STARTING ACNET TEST--------------");
 	casper.then(function(){
-		removeAllDialogs();
+		removeAllPlots();
 	});
 	casper.then(function(){
 		casper.echo("-------Testing Camera Controls--------");
@@ -211,7 +271,7 @@ function acnetTest(test){
 	casper.then(function(){
 		casper.echo("-------Testing Mesh Visibility--------");
 		testVisibility(test,"acnet2.pyramidals_48[0]","#acnet2_pyramidals_48_0__visibility_ctrlPanel_btn");
-	})
+	});
 	casper.then(function () {
 		casper.echo("-------Testing Plotting from Control Panel--------");
 		buttonClick("#stateVariablesFilterBtn");
@@ -268,6 +328,8 @@ function acnetTest(test){
 	casper.then(function(){
 		closeSpotlight(); //close spotlight before continuing
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
+		
+		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
 			acnet2.pyramidals_48[0].deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
@@ -277,8 +339,10 @@ function acnetTest(test){
 			acnet2.baskets_12[4].getVisualGroups()[0].show(true);
 		});
 		
+		//tests camera controls are working by checking camera has moved
 		testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
 		
+		//applies visual group to instance and tests colors
 		testVisualGroup(test,"acnet2.baskets_12[0]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
 		
 		testVisualGroup(test,"acnet2.baskets_12[5]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
@@ -286,6 +350,64 @@ function acnetTest(test){
 		//test these cells are no longer ghosted
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
+		
+		casper.echo("Testing setGeometry");
+		
+		casper.evaluate(function(){
+			acnet2.pyramidals_48[0].setGeometryType("cylinders")
+		});
+		
+		//test mesh set geometry
+		var meshType = casper.evaluate(function(){
+			return Canvas1.engine.getRealMeshesForInstancePath("acnet2.pyramidals_48[0]")[0].type;
+		});
+		test.assertEquals(meshType, "Mesh", "Correctly set mesh to cylinders");
+		
+		var meshTotal = casper.evaluate(function(){
+			return Object.keys(Canvas1.engine.meshes).length;
+		});
+		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
+		
+		//retrieve original color pre setGeomtry
+		var color = getMeshColor(test,"acnet2.pyramidals_48[0]");
+		casper.evaluate(function(){
+			acnet2.pyramidals_48[0].setGeometryType("lines")
+		});
+		
+		casper.echo("Testing color post setGeometryType");
+		test3DMeshColor(test,color,"acnet2.pyramidals_48[0]");
+		
+		//test mesh set geometry
+		meshType = casper.evaluate(function(){
+			return Canvas1.engine.getRealMeshesForInstancePath("acnet2.pyramidals_48[0]")[0].type;
+		});
+		test.assertEquals(meshType, "LineSegments", "Correctly set mesh to lines");
+		
+		//testsing same amount of meshes exists after changing a mesh to lines
+		var meshTotal = casper.evaluate(function(){
+			return Object.keys(Canvas1.engine.meshes).length;
+		});
+		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
+		
+		//Set geometry type to cylinders
+		casper.evaluate(function(){
+			acnet2.pyramidals_48[0].setGeometryType("cylinders")
+		});
+		
+		//test  set geometry type in a mesh
+		var meshType = casper.evaluate(function(){
+			return Canvas1.engine.getRealMeshesForInstancePath("acnet2.pyramidals_48[0]")[0].type;
+		});
+		test.assertEquals(meshType, "Mesh", "Correctly set mesh to cylinders");
+		
+		casper.echo("Testing color post setGeometryType to cylinders");
+		test3DMeshColor(test,color,"acnet2.pyramidals_48[0]");
+		
+		//testing same amount of meshes exists after changing a mesh to cylinders
+		var meshTotal = casper.evaluate(function(){
+			return Object.keys(Canvas1.engine.meshes).length;
+		});
+		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
 		
 		//test color function
 		casper.wait(2000, function(){
@@ -312,7 +434,7 @@ function c302Test(test){
 	});
 	
 	casper.then(function(){
-		removeAllDialogs();
+		removeAllPlots();
 	});
 	
 	casper.then(function(){
@@ -337,7 +459,7 @@ function c302Test(test){
 		this.waitUntilVisible('button[id="c302_ADAL_0__v_plot_ctrlPanel_btn"]', function () {
 			buttonClick("#c302_ADAL_0__v_plot_ctrlPanel_btn");
 		});
-	})
+	});
 
 	casper.then(function(){
 		this.waitUntilVisible('div[id="Plot1"]', function () {
@@ -356,12 +478,12 @@ function c302Test(test){
 				testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot2"]',true,false);
 			});
 		});
-	})
+	});
 
 	casper.then(function(){
 		casper.echo("-------Testing Spotlight--------");
 		testSpotlight(test,  "c302.ADAL[0].v",'div[id="Plot2"]',true,false);
-	})
+	});
 
 	casper.then(function(){
 		closeSpotlight(); //close spotlight before continuing
@@ -383,8 +505,8 @@ function c302Test(test){
 			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
 			casper.echo("Done Playing, now exiting");
-		})
-	})
+		});
+	});
 }
 
 function ca1Test(test){
@@ -407,7 +529,7 @@ function ca1Test(test){
 		this.evaluate(function(){
 			$("#anyProjectFilterBtn").click();
 		});
-	})
+	});
 
 	casper.then(function(){
 		casper.evaluate(function() {
@@ -431,7 +553,7 @@ function pharyngealTest(test){
 	casper.then(function(){
 		testInitialControlPanelValues(test,10);
 	});
-};
+}
 
 function nwbSampleTest(test){
 	casper.waitForSelector('div[id="Popup1"]', function() {
@@ -456,7 +578,6 @@ function c302Connectome(test){
 		this.echo("I've waited for Popup1 to load.");
 	}, null, 30000);
 }
-
 
 function c302PVDR(test){
 	casper.echo("------------STARTING C302 Muscle Model TEST--------------");

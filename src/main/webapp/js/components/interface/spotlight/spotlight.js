@@ -1,42 +1,6 @@
-/*******************************************************************************
- *
- * Copyright (c) 2011, 2016 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
 define(function (require) {
 
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = "geppetto/js/components/interface/spotlight/spotlight.css";
-    document.getElementsByTagName("head")[0].appendChild(link);
+    require('./spotlight.less');
 
     var React = require('react'),
         $ = require('jquery'),
@@ -61,7 +25,7 @@ define(function (require) {
         initialised:false,
         modifiable : true,
         plotController: new PlotController(),
-        
+
         //A sample suggestion, domain specific suggestions should go inside extension
         plotSample: {
             "label": "Plot all recorded variables",
@@ -71,12 +35,12 @@ define(function (require) {
             ],
             "icon": "fa-area-chart"
         },
-        
+
         close : function () {
             $("#spotlight").hide();
             GEPPETTO.trigger(GEPPETTO.Events.Spotlight_closed);
         },
-        
+
         addData : function(instances) {
             if(this.props.indexInstances) {
             this.instances.add(instances);
@@ -100,7 +64,7 @@ define(function (require) {
             GEPPETTO.Spotlight = this;
 
             GEPPETTO.trigger(GEPPETTO.Events.Spotlight_loaded);
-            
+
             this.initTypeahead();
 
             var spotlightContainer = $("#spotlight");
@@ -112,7 +76,7 @@ define(function (require) {
             		that.close();
             	}
             });
-            
+
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == space) {
                     that.open(GEPPETTO.Resources.SEARCH_FLOW, true);
@@ -161,10 +125,10 @@ define(function (require) {
                     that.confirmed(datum.label);
                 }
             });
-           
+
             //fire key event on paste
             typeAhead.on("paste", function(){$(this).trigger("keypress",{ keyCode: 13 });});
-            
+
             GEPPETTO.on(GEPPETTO.Events.Model_loaded, function () {
             	if(that.initialised){
             		that.initialised=false;
@@ -211,7 +175,7 @@ define(function (require) {
             if(GEPPETTO.ForegroundControls != undefined){
                 GEPPETTO.ForegroundControls.refresh();
             }
-            
+
 			GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
@@ -220,33 +184,33 @@ define(function (require) {
 			GEPPETTO.on(GEPPETTO.Events.Project_persisted, function () {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
-			});						
+			});
 			GEPPETTO.on(GEPPETTO.Events.Experiment_completed, function (experimentId) {
 				that.updateToolBarVisibilityState(that.checkHasWritePermission(experimentId));
 			});
-			
+
 			GEPPETTO.on(GEPPETTO.Events.Experiment_running, function () {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});
-			
+
 			GEPPETTO.on(GEPPETTO.Events.Experiment_failed, function () {
 				//Hides or Shows tool bar depending on login user permissions
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});
-			
+
 			GEPPETTO.on(GEPPETTO.Events.Experiment_active, function () {
 				that.updateToolBarVisibilityState(that.checkHasWritePermission());
 			});
-            
+
             GEPPETTO.on(GEPPETTO.Events.Instances_created, function(instances){
         		that.addData(GEPPETTO.ModelFactory.newPathsIndexing);
             });
-            
+
 			this.updateToolBarVisibilityState(this.checkHasWritePermission());
             this.addData(GEPPETTO.ModelFactory.allPathsIndexing);
         },
-        
+
 		/**
 		 * Returns true if user has permission to write and project is persisted
 		 */
@@ -280,7 +244,7 @@ define(function (require) {
 		    	actions = button[false].actions;
 		    	newActions = this.replaceActionHolders(actions, id,label);
 			    button[false].actions = newActions;
-			    
+
 			    actions = button[true].actions;
 		    	newActions = this.replaceActionHolders(actions, id,label);
 			    button[true].actions = newActions;
@@ -290,17 +254,17 @@ define(function (require) {
 			    button.actions = newActions;
 		    }
         },
-        
+
         replaceActionHolders : function(actions, id, label){
         	var newActions = JSON.parse(JSON.stringify(actions));
     		for(var i=0; i < actions.length; i++) {
     			newActions[i] = newActions[i].replace(/\$ID\$/g, id);
     			newActions[i] = newActions[i].replace(/\$LABEL\$/gi,label);
     		}
-    		
+
     		return newActions;
         },
-        
+
         confirmed: function (item) {
             //check suggestions
             var found;
@@ -367,7 +331,7 @@ define(function (require) {
                         }
                     }
                 }
-                
+
                 // no suggestions or datasource hits were found, fall back on instances (default)
                 if (!suggestionFound) {
                 	try{
@@ -382,7 +346,7 @@ define(function (require) {
         handleInstanceSelection: function(item){
             var instanceFound = false;
             var entity = undefined;
-            
+
 			try{
             	entity = eval(item);
             } catch(e){
@@ -412,7 +376,7 @@ define(function (require) {
                 this.suggestions.search(q, sync);
             }
         },
-        
+
         defaultDataSources: function (q, sync) {
             if (q === '') {
                 sync(this.dataSourceResults.index.all());
@@ -540,8 +504,8 @@ define(function (require) {
         },
 
         /**
-         * Requests external data sources. 
-         * 
+         * Requests external data sources.
+         *
          */
         addDataSource : function(sources){
         	try {
@@ -565,9 +529,9 @@ define(function (require) {
         		throw ("Error parsing data sources " + err);
         	}
         },
-        
+
         /**
-         * Figure out if data source of same name is already in there. If it is, 
+         * Figure out if data source of same name is already in there. If it is,
          * create a new key for it.
          */
         generateDataSourceKey : function(key, index){
@@ -576,13 +540,13 @@ define(function (require) {
 		    	key = key.concat(index);
 		    	this.generateDataSourceKey(key, index++);
 		    }
-        	
+
         	return key;
         },
-        
+
         /**
-         * Requests results for an external data source 
-         * 
+         * Requests results for an external data source
+         *
          * @param data_source_name : Name of the Data Source to request results from
          * @param data_source_url : URL used to request data source results
          * @param crossDomain : URL allows cross domain
@@ -624,8 +588,8 @@ define(function (require) {
     		responses.forEach(function(response) {
         		that.formatDataSourceResult(data_source_name, response);
         	});
-    		
-			//If it's an update request to show the drop down menu, this for it to show 
+
+			//If it's an update request to show the drop down menu, this for it to show
 			//updated results
 			if(this.updateResults){
                 var typeAhead = $("#typeahead");
@@ -634,7 +598,7 @@ define(function (require) {
                 typeAhead.typeahead('val', value);
 			}
         },
-        
+
         /**
          * Format incoming data source results into specified format in configuration script
          */
@@ -647,13 +611,13 @@ define(function (require) {
     		var labelFormatting = this.configuration.SpotlightBar.DataSources[data_source_name].label.formatting;
     		var formattedLabel = labelFormatting.replace('$VALUE$', mainLabel);
     		formattedLabel = formattedLabel.replace('$ID$', id);
-    		
+
     		this.createDataSourceResult(data_source_name, response, formattedLabel, id);
-    		
+
     		var explodeFields = this.configuration.SpotlightBar.DataSources[data_source_name].explode_fields;
     		for(var i =0; i<explodeFields.length; i++){
     			//create searchable result using id as label
-    			var idsTerm = explodeFields[i].field;    		
+    			var idsTerm = explodeFields[i].field;
     			var idLabel = response[idsTerm];
     			labelFormatting = explodeFields[i].formatting;
     			formattedLabel = labelFormatting.replace('$VALUE$', idLabel);
@@ -666,7 +630,7 @@ define(function (require) {
     		for(var i =0; i<explodeArrays.length; i++){
     			labelFormatting = explodeArrays[i].formatting;
     			//create searchable results using synonyms as labels
-    			var searchTerm = explodeArrays[i].field;    		
+    			var searchTerm = explodeArrays[i].field;
     			var results = response[searchTerm];
     			if(results!=null || undefined){
     				for(var j =0; j<results.length; j++){
@@ -680,7 +644,7 @@ define(function (require) {
     			}
     		}
         },
-        
+
         /**
          * Creates a searchable result from external data source response
          */
@@ -702,7 +666,7 @@ define(function (require) {
     		}
     		this.dataSourceResults.add(obj);
         },
-        
+
         addSuggestion: function (suggestion, flow) {
             if (flow == undefined) {
                 flow = GEPPETTO.Resources.SEARCH_FLOW;
@@ -966,7 +930,7 @@ define(function (require) {
         updateToolBarVisibilityState : function(visible){
         	this.modifiable = visible;
         },
-        
+
         loadToolbarFor: function (instance) {
             $(".spotlight-toolbar").remove();
         	$('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance, this.modifiable));
@@ -983,7 +947,7 @@ define(function (require) {
         configuration: {
             "SpotlightBar": {
             	"DataSources" : {
-            		
+
             	},
                 "CompositeType": {
                     "type": {

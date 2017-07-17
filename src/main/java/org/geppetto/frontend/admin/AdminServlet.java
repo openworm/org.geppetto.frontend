@@ -396,7 +396,7 @@ public class AdminServlet
 		}
 		else if(formattedSize > 1000000)
 		{
-			formattedSize = formattedSize / 1024 / 104;
+			formattedSize = formattedSize / 1024 / 1024;
 			storageUnit = " GB";
 		}
 

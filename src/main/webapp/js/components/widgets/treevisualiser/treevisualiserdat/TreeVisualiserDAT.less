@@ -1,0 +1,199 @@
+@import "../../../../../style/less/components/colors";
+
+div[id^='TreeVisualiserDAT'] {
+    overflow-y: auto !important;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-weight: 200 !important;
+}
+
+.ui-widget-content .dg.main.taller-than-window .close-button {
+    border-top: 1px solid #ddd;
+}
+
+.ui-widget-content .dg.main .close-button {
+	background: fade(@background_color_widget, 0%);
+}
+
+.ui-widget-content .dg.main .close-button:hover {
+    background: rgba(33, 29, 29, 0.4);
+}
+
+.ui-widget-content .dg {
+    color: #e9e9e9;
+    text-shadow: none !important;
+}
+
+.ui-widget-content .dg.main::-webkit-scrollbar {
+    background: #fafafa;
+}
+
+.ui-widget-content .dg.main::-webkit-scrollbar-thumb {
+    background: #bbb;
+}
+
+.ui-widget-content .dg li:not(.folder) {
+	background: fade(@background_color_widget, 0%);
+}
+
+.ui-widget-content .dg li.save-row .button {
+    text-shadow: none !important;
+}
+
+.ui-widget-content .dg li.title {
+	background: fade(@background_color_widget, 0%) url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;
+
+}
+
+.ui-widget-content .dg .cr.function:hover, .dg .cr.boolean:hover {
+    background: #fff;
+}
+
+.ui-widget-content .dg .c input[type=text],
+.ui-widget-content .dg .c textarea {
+	background: fade(@background_color_widget, 0%);
+    box-shadow: none !important;
+    webkit-box-shadow: none !important;
+}
+
+.ui-widget-content .dg .c input[type=text]:hover,
+.ui-widget-content .dg .c textarea:hover {
+    background: rgba(33, 29, 29, 0.4);
+    cursor: pointer;
+}
+
+.ui-widget-content .dg .c input[type=text]:focus,
+.ui-widget-content .dg .c textarea:focus {
+    background: rgba(33, 29, 29, 0.4);
+    cursor: pointer;
+}
+
+.ui-widget-content .dg .c .slider {
+    background: #e9e9e9;
+}
+
+.ui-widget-content .dg .c .slider:hover {
+    background: #eee;
+}
+
+/*  GENERIC NODE STYLE */
+.ui-widget-content .dg .cr.string {
+    border-left: 3px solid #85ea0e;
+}
+
+.ui-widget-content .dg .cr.string input[type=text],
+.ui-widget-content .dg .cr.string textarea {
+    color: #85ea0e;
+}
+
+.ui-widget-content .dg .cr.string textarea {
+    width: 100%;
+    border: 0px;
+    margin-top: 5px;
+    line-height: 20px;
+    resize: none;
+    height: 60px;
+}
+
+/*  NODE STYLE BY METATYPE*/
+.instancefoldertv {
+	border-left: 3px solid #0499e6;
+	background-color: #231f1f!important;
+}
+
+.arrayinstancetv {
+	border-left: 3px solid #ff5a02;
+	background-color: #231f1f!important;
+}
+
+.arraytypetv {
+    border-left: 3px solid #fe4807;
+    background-color: #fe4807 !important;
+}
+
+.foldertv {
+    border-left: 3px solid #2e2a2a;
+    background-color: #2e2a2a !important;
+}
+
+.dg .cr.string.dynamicstypetv {
+    border-left: 3px solid #00cc66;
+}
+
+.dg .cr.string.dynamicstypetv input[type=text] {
+    color: #00cc66;
+}
+
+.dg .cr.string.functiontypetv {
+    border-left: 3px solid #00cccc;
+}
+
+.dg .cr.string.functiontypetv input[type=text] {
+    color: #00cccc;
+}
+
+.dg .cr.string.parametertypetv {
+    border-left: 3px solid #0066cc;
+}
+
+.dg .cr.string.parametertypetv input[type=text] {
+    color: #0066cc;
+}
+
+.dg .cr.string.statevariabletypetv {
+    border-left: 3px solid #42b6ff;
+}
+
+.dg .cr.string.statevariabletypetv input[type=text] {
+    color: #42b6ff;
+}
+
+.dg .cr.string.texttypetv {
+    border-left: 3px solid #10b7bd;
+}
+
+.dg .cr.string.texttypetv input[type=text],
+.dg .cr.string.texttypetv textarea {
+    color: #10b7bd;
+}
+
+.dg .cr.string.pointertypetv {
+    border-left: 3px solid #10b7bd;
+}
+
+.dg .cr.string.pointertypetv input[type=text],
+.dg .cr.string.pointertypetv textarea {
+    color: #10b7bd;
+}
+
+.ui-widget-content .dg ul:not(.closed) > li.textarea {
+    height: 100%;
+}
+
+.dg .cr.string.stateinstancetv {
+    border-left: 3px solid #cc00cc;
+}
+
+.dg .cr.string.stateinstancetv input[type=text] {
+    color: #cc00cc;
+}
+
+.dg .cr.string.visualgroupelementtv {
+    border-left: 3px solid #FFA500;
+}
+
+.dg .cr.string.visualgroupelementtv input[type=text] {
+    text-align: center;
+}
+
+#tvIcons {
+	z-index: 9999;
+	width:5%;
+	right: 0;
+	margin-right: 10px;
+	margin-top: 7px;
+	position: absolute;
+}
+
+#tvIcons:hover {
+	color: #FF6700;
+}

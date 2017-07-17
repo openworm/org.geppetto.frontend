@@ -3,6 +3,7 @@
 @import "components/console";
 @import "components/footer";
 @import "components/github-logo";
+@import "components/jsConsole";
 
 html {
   height: 100%;
@@ -27,13 +28,13 @@ html {
 }
 
 body {
-  
+
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#141a1e+0,5c6268+50,60666d+73,515359+100 */
-  background: #141a1e; /* Old browsers */
-  background: -moz-linear-gradient(top,  #141a1e 0%, #5c6268 50%, #60666d 73%, #515359 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(top,  #141a1e 0%,#5c6268 50%,#60666d 73%,#515359 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to bottom,  #141a1e 0%,#5c6268 50%,#60666d 73%,#515359 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#141a1e', endColorstr='#515359',GradientType=0 ); /* IE6-9 */
+  background: @background_color_body_0; /* Old browsers */
+  background: -moz-linear-gradient(top,  @background_color_body_0 0%, @background_color_body_50 50%, @background_color_body_73 73%, @background_color_body_100 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  @background_color_body_0 0%,@background_color_body_50 50%,@background_color_body_73 73%,@background_color_body_100 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  @background_color_body_0 0%,@background_color_body_50 50%,@background_color_body_73 73%,@background_color_body_100 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='@background_color_body_0', endColorstr='@background_color_body_100',GradientType=0 ); /* IE6-9 */
 
   margin: 0px;
   overflow: hidden;
@@ -73,17 +74,17 @@ body {
 }
 
 .btn:not(ul):not(.btn-warning):not([disabled]) {
-  background: rgba(66, 59, 59, 0.8);
-  color: @orange;
+  background-color: fade(@background_color_widget, 80%);
+  color: @primary_color;
 }
 
 .btn:hover:not(ul):not(.btn-warning):not([disabled]) {
-  background: @orange;
+  background: @primary_color;
   color: white;
 }
 
 .btn-warning:hover:not(ul):not(.btn-warning):not([disabled]) {
-  background: @orange;
+  background: @primary_color;
   color: white;
 }
 
@@ -92,12 +93,14 @@ body {
 }
 
 #habla_topbar_div {
-  background: rgba(66, 59, 59, 0.8);
+  background-color: @background_color_widget;
+  opacity: 0.8;
   border-radius: 0 !important;
 }
 
 .hbl_pal_title_bg {
-  background-color: rgba(66, 59, 59, 0.8) !important;
+  background-color: @background_color_widget !important;
+  opacity: 0.8 !important;
 }
 
 .btn-info {

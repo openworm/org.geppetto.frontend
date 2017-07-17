@@ -7,8 +7,9 @@
   "scripts": {
     "build": "webpack -p --progress",
     "build-dev": "webpack --devtool eval",
-    "build-dev-noTest": "webpack --devtool eval --noTest",
-    "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js --contextPath=org.geppetto.frontend --useSsl=false --embedded=false --embedderURL=/"
+    "build-dev-noTest": "webpack --devtool eval --noTest=true",
+    "build-dev-noTest:watch": "onchange 'js/**/*.*' 'extensions/**/*.*' 'style/**/*.*' -- npm run build-dev-noTest",
+    "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js"
   },
   "devDependencies": {
     "anchorme": "^0.7.1",
@@ -54,6 +55,7 @@
     "less": "^2.7.2",
     "less-loader": "^2.2.3",
     "mathjs": "^3.5.3",
+    "onchange": "^3.2.1",
     "openseadragon": "^2.2.1",
     "pako": "^1.0.3",
     "pixi.js": "4.2.3",
@@ -63,11 +65,12 @@
     "react": "15.4.1",
     "react-dom": "15.4.1",
     "react-jsonschema-form": "^0.48.0",
-    "react-player" : "^0.18.0",
+    "react-player": "^0.18.0",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "react-simpletabs": "^0.7.0",
     "react-slick": "^0.14.8",
+    "react-sortable-tree": "^0.1.19",
     "remarkable": "^1.7.1",
     "slick-carousel": "^1.6.0",
     "stats.js": "^0.17.0",
@@ -77,6 +80,7 @@
     "three-loaders-collada": "^1.0.1",
     "typeahead.js": "^0.11.1",
     "underscore": "^1.8.3",
+    "url-loader": "^0.5.8",
     "velocity.java": "^1.3.1",
     "webpack": "1.13.2",
     "webpack-dev-server": "^1.16.2"

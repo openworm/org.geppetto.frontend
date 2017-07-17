@@ -1,7 +1,6 @@
 define(function (require) {
 
-	var widgetUtility = require("../WidgetUtility");
-	widgetUtility.loadCss("geppetto/js/components/widgets/popup/ButtonBarComponent.css");
+	require("./ButtonBarComponent.less");
 
 	var React = require('react');
 	var colorpicker = require('./vendor/bootstrap-colorpicker.min');
@@ -18,7 +17,7 @@ define(function (require) {
 
 		componentDidMount: function () {
 			var that = this;
-			
+
 			if(that.props.instance!=null || that.props.instance!=undefined){
 				that.props.resize();
 			}
@@ -52,7 +51,7 @@ define(function (require) {
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
 						}else{
-							if((that.props.instance!=null || that.props.instance!=undefined) 
+							if((that.props.instance!=null || that.props.instance!=undefined)
 									&& (instance.getParent()!=null || instance.getParent()!=undefined)){
 								if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
 									that.forceUpdate();
@@ -66,7 +65,7 @@ define(function (require) {
 						if(instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
 						}else{
-							if((that.props.instance!=null || that.props.instance!=undefined) 
+							if((that.props.instance!=null || that.props.instance!=undefined)
 									&& (instance.getParent()!=null || instance.getParent()!=undefined)){
 								if(that.props.instance.getInstancePath() == instance.getParent().getInstancePath()){
 									that.forceUpdate();
@@ -74,14 +73,14 @@ define(function (require) {
 							}
 						}
 					}
-				});  
+				});
 				this.props.geppetto.on(GEPPETTO.Events.Color_set, function (instance) {
 					if(that.props!=null || that.props!=undefined){
 						if(instance.instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
 						}
 					}
-				});  
+				});
 			}
 		},
 

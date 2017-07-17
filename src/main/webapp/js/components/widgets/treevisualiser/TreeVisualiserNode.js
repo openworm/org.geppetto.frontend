@@ -1,36 +1,3 @@
-/*******************************************************************************
- * The MIT License (MIT)
- *
- * Copyright (c) 2011, 2013 OpenWorm.
- * http://openworm.org
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the MIT License
- * which accompanies this distribution, and is available at
- * http://opensource.org/licenses/MIT
- *
- * Contributors:
- *      OpenWorm - http://openworm.org/people.html
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished t do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-
 /**
  * Base class that provides wrapping functionality for a generic underlying object (with id and name).
  *
@@ -45,7 +12,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         _children: [],
         formattedValue: "",
         style: "",
-        backgroundColors: [], 
+        backgroundColors: [],
 
         /**
          * Initializes this node with passed attributes
@@ -121,7 +88,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         getHiddenChildren: function () {
             return this.get('_children');
         },
-        
+
         /**
          * Get the backgroundColors of the node
          *
@@ -131,7 +98,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         getBackgroundColors: function () {
             return this.get('backgroundColors');
         },
-        
+
         /**
          * Get the wrapped object
          *
@@ -141,7 +108,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         getWrappedObj: function () {
             return this.get('wrappedObj');
         },
-        
+
         /**
          * Get the style of the node
          *
@@ -151,7 +118,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         getStyle: function() {
         	return this.get('style');
         },
-        
+
         /**
          * Get the unique path
          *
@@ -168,7 +135,7 @@ define(['jquery', 'underscore', 'backbone'], function (require) {
         	else{
         		return this.getId();
         	}
-        	
+
         }
 
     });

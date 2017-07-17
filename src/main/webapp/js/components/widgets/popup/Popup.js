@@ -13,15 +13,14 @@ define(function (require) {
 	var React = require('react');
     var ReactDOM = require('react-dom');
     var ButtonBarComponent = require('./ButtonBarComponent');
-	
+
 	var anchorme = require('anchorme');
 	var slick = require('slick-carousel');
-	
-	var widgetUtility = require("../WidgetUtility");
-	widgetUtility.loadCss("geppetto/js/components/widgets/popup/Popup.css");
-	widgetUtility.loadCss("geppetto/js/components/widgets/popup/vendor/slick.css");
-	widgetUtility.loadCss("geppetto/js/components/widgets/popup/vendor/slick-theme.css");
-	
+
+	require("./Popup.less");
+	require("./vendor/slick.css");
+	require("./vendor/slick-theme.less");
+
 	/**
 	 * Private function to hookup custom event handlers
 	 *
@@ -71,7 +70,7 @@ define(function (require) {
 		buttonBarConfig : null,
 		buttonBarControls : null,
 		buttonBar : null,
-		
+
 		/**
 		 * Initialize the popup widget
 		 */
@@ -149,7 +148,7 @@ define(function (require) {
 		 * @command setData(anyInstance)
 		 * @param {Object} anyInstance - An instance of any type
 		 */
-		
+
 		setData: function (anyInstance, filter) {
 			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance, filter], this.getId());
 
@@ -171,11 +170,11 @@ define(function (require) {
 				changeIcon($(e.target));
 			});
 			$("#" + this.getId() + " .slickdiv").slick();
-			
+
 			if(this.buttonBarConfig!=null && this.buttonBarConfig!=undefined){
 				this.renderButtonBar();
 			}
-			
+
 			if(this.collapsed){
 				this.$el.dialogExtend("collapse");
 			}
@@ -210,7 +209,7 @@ define(function (require) {
 				type=anyInstance.getType();
 			}
 			var html = "";
-			
+
 			//let's check the filter
 			if(filter!=undefined && type.getMetaType() != GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
 				if($.inArray(type.getMetaType(), filter)==-1){
@@ -218,11 +217,11 @@ define(function (require) {
 					return html;
 				}
 			}
-			
+
 			if (type.getMetaType() == GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
 				for (var i = 0; i < type.getVariables().length; i++) {
 					var v = type.getVariables()[i];
-					
+
 					if(filter!=undefined){
 						if($.inArray(v.getType().getMetaType(), filter)==-1){
 							//this type is not in the filter!
@@ -301,7 +300,7 @@ define(function (require) {
 
 			return this;
 		},
-		
+
 		renderButtonBar: function(){
 			var that = this;
 			var buttonBarContainer = 'button-bar-container-' + this.id;
@@ -315,7 +314,7 @@ define(function (require) {
 
 			var instance = null;
 			var instancePath = '';
-			
+
 			if(this.buttonBarConfig.filter!=null && this.buttonBarConfig.filter!=undefined){
 				if(this.data!=null && this.data!=undefined){
 					instance = this.buttonBarConfig.filter(this.data);
@@ -329,13 +328,13 @@ define(function (require) {
                 document.getElementById(barDiv)
             );
         },
-        
+
         setButtonBarControls : function(controls){
         	this.buttonBarControls = controls;
 			// track change in state of the widget
 			this.dirtyView = true;
         },
-        
+
         setButtonBarConfiguration : function(configuration){
         	this.buttonBarConfig = configuration;
         	if(this.data!=null || this.data!=undefined){
@@ -357,7 +356,7 @@ define(function (require) {
 			// track change in state of the widget
 			this.dirtyView = true;
         },
-        
+
         destroy: function () {
         	var bar = document.getElementById('bar-div-'+this.id);
         	if(bar!=null || bar!=undefined){

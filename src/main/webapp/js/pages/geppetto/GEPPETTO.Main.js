@@ -28,10 +28,10 @@ define(function (require) {
              *
              */
             createChannel: function () {
-                // Change link from blank to self for embedded environments
-                if (window.EMBEDDED && window.EMBEDDEDURL !== "/" && typeof handleRequest == 'undefined') {
+                // Change link from blank to self for GEPPETTO_CONFIGURATION.embedded environments
+                if (GEPPETTO_CONFIGURATION.embedded && GEPPETTO_CONFIGURATION.embedderURL !== "/" && typeof handleRequest == 'undefined') {
                     handleRequest = function (e) {
-                        if (window.EMBEDDEDURL.indexOf(e.origin) != -1) {
+                        if (GEPPETTO_CONFIGURATION.embedderURL.indexOf(e.origin) != -1) {
                             if (e.data.command == 'loadSimulation') {
                                 if (e.data.projectId) {
                                     GEPPETTO.Console.executeCommand('Project.loadFromID(' + e.data.projectId + ')');
@@ -50,11 +50,11 @@ define(function (require) {
                     };
                     // we have to listen for 'message'
                     window.addEventListener('message', handleRequest, false);
-                    if ($.isArray(window.EMBEDDEDURL)) {
-                        window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL[0]);
+                    if ($.isArray(GEPPETTO_CONFIGURATION.embedderURL)) {
+                        window.parent.postMessage({"command": "ready"}, GEPPETTO_CONFIGURATION.embedderURL[0]);
                     }
                     else {
-                        window.parent.postMessage({"command": "ready"}, window.EMBEDDEDURL);
+                        window.parent.postMessage({"command": "ready"}, GEPPETTO_CONFIGURATION.embedderURL);
                     }
                 }
             },
@@ -103,7 +103,7 @@ define(function (require) {
              * Initialize web socket communication
              */
             init: function () {
-                GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+                GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet');
                 GEPPETTO.Events.listen();
                 this.createChannel();
                 GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);

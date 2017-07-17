@@ -1,5 +1,7 @@
 define(function (require) {
 
+    require('./ControlPanel.less');
+    
     function loadCss(url) {
         var link = document.createElement("link");
         link.type = "text/css";
@@ -8,8 +10,9 @@ define(function (require) {
         document.getElementsByTagName("head")[0].appendChild(link);
     }
 
-    loadCss("geppetto/js/components/interface/controlPanel/controlpanel.css");
     loadCss("geppetto/js/components/interface/controlPanel/vendor/css/bootstrap-colorpicker.min.css");
+    
+    //require('./vendor/css/bootstrap-colorpicker.min.css'); Matteo: This require is not working?!?
 
     var React = require('react'), $ = require('jquery');
     var Griddle = require('griddle-react');
@@ -625,7 +628,7 @@ define(function (require) {
                 this.computeResult('visualInstancesFilterBtn');
             }
         },
-        
+
         componentDidMount: function () {
             GEPPETTO.on(GEPPETTO.Events.Control_panel_open, this.refreshToggleState, this);
         },
@@ -633,7 +636,7 @@ define(function (require) {
         componentWillUnmount: function () {
             GEPPETTO.off(GEPPETTO.Events.Control_panel_open, this.refreshToggleState, this);
         },
-        
+
         computeResult: function (controlId) {
             // logic for disable/enable stuff here
             switch (controlId) {
@@ -1459,7 +1462,7 @@ define(function (require) {
         refresh: function () {
             this.forceUpdate();
         },
-        
+
         refreshData: function () {
             var self = this;
             var callback = function () {
@@ -1977,19 +1980,19 @@ define(function (require) {
             GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
                 that.clearData();
             });
-            
+
             GEPPETTO.on(GEPPETTO.Events.Experiment_properties_saved, function () {
             	if(that.isOpen()){
             		that.refreshData();
             	}
             });
-            
+
             GEPPETTO.on(GEPPETTO.Events.Project_properties_saved, function () {
             	if(that.isOpen()){
             		that.refreshData();
             	}
             });
-            
+
             GEPPETTO.on(GEPPETTO.Events.Parameters_set, function () {
             	if(that.isOpen()){
             		that.refreshData();

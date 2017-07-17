@@ -19,7 +19,7 @@ define(function (require) {
         // require('vendor/backbone-localStorage.min');
         require("backbone.localstorage");
 
-        GEPPETTO.Sandbox = {
+        GEPPETTO.SandboxConsole = {
 
             /**
              * The Sandbox.Model

@@ -4,6 +4,7 @@ define(function (require) {
     var $ = require('jquery');
     require('jquery-ui-bundle');
 
+    require('./SandboxConsole')(GEPPETTO);
     require('./console.less');
     require('./jsConsole.less');
 
@@ -197,9 +198,9 @@ define(function (require) {
             var consoleElement = $("#" + this.props.id + "_component #" +  this.props.id + "_console");
             var inputCmdEl = $("#" + this.props.id + "_component #commandInputArea");
             // Create the sandbox console:
-            this.console = new GEPPETTO.Sandbox.View({
+            this.console = new GEPPETTO.SandboxConsole.View({
                 el: consoleElement,
-                model: new GEPPETTO.Sandbox.Model(),
+                model: new GEPPETTO.SandboxConsole.Model(),
                 resultPrefix: "  => ",
                 tabCharacter: "\t",
                 placeholder: "// type a javascript command and hit enter (help() for info)",

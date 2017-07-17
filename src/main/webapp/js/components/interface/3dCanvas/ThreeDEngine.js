@@ -529,10 +529,12 @@ define(['jquery'], function () {
          * @param instances
          */
         updateSceneWithNewInstances: function (instances) {
-            this.traverseInstances(instances);
-            this.setAllGeometriesType(this.getDefaultGeometryType());
-            this.scene.updateMatrixWorld(true);
-            this.resetCamera();
+            var traversedInstances = this.traverseInstances(instances);
+            if (traversedInstances.length > 0){
+                this.setAllGeometriesType(this.getDefaultGeometryType());
+                this.scene.updateMatrixWorld(true);
+                this.resetCamera();
+            }
         },
 
         /**
@@ -542,9 +544,11 @@ define(['jquery'], function () {
          *            skeleton with instances and visual entities
          */
         traverseInstances: function (instances, lines, thickness) {
+            
             for (var j = 0; j < instances.length; j++) {
-                this.checkVisualInstance(instances[j], lines, thickness);
+                var traversedInstances = this.checkVisualInstance(instances[j], lines, thickness);
             }
+            return traversedInstances
         },
 
         /**
@@ -554,6 +558,7 @@ define(['jquery'], function () {
          *            skeleton with instances and visual entities
          */
         checkVisualInstance: function (instance, lines, thickness) {
+            var traversedInstances = [];
             if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                 //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
                 if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
@@ -565,7 +570,9 @@ define(['jquery'], function () {
                 } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                     this.traverseInstances(instance, lines, thickness);
                 }
+                traversedInstances.push(instance);
             }
+            return traversedInstances;
         },
 
 
@@ -1467,7 +1474,7 @@ define(['jquery'], function () {
             var instance = eval(instancePath);
 
             // Behaviour: help exploration of networks by ghosting and not highlighting non connected or selected
-            if (instance.getConnections().length > 0) {
+            if (instance !== undefined && instance.getConnections().length > 0) {
                 // allOtherMeshes will contain a list of all the non connected entities in the scene
                 var allOtherMeshes = $.extend({}, this.meshes);
                 // look on the simulation selection options and perform necessary operations
@@ -2394,8 +2401,7 @@ define(['jquery'], function () {
                     this.setThreeColor(groupMesh.material.color, splitHighlightedGroups[groupName].color.getHex());
                 }
             }
-        }
-        ,
+        },
 
         /**
          * Split merged mesh into individual meshes
@@ -2617,7 +2623,7 @@ define(['jquery'], function () {
          * @param instance
          * @param meshesContainer
          */
-        showVisualGroupsForInstance: function (instance) {
+        showVisualGroupsForInstance: function (instance, visualGroupElement) {
             if (!this.hasInstance(instance)) {
                 return;
             }
@@ -2637,8 +2643,8 @@ define(['jquery'], function () {
                     var groupElementsReference = object.getInitialValue().value.groupElements;
                     for (var i = 0; i < groupElementsReference.length; i++) {
                         var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
-                        if (objectGroup == this.getId()) {
-                            elements[object.getId()] = {'color': this.getColor()}
+                        if (objectGroup == visualGroupElement.getId()) {
+                            elements[object.getId()] = {'color': visualGroupElement.getColor()}
                         }
                     }
                 }

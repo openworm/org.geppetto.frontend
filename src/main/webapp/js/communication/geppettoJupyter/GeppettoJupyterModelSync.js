@@ -381,11 +381,11 @@ define(function (require, exports, module) {
 			else if (msg.type === 'draw_sphere') {
 				var content = msg.content;
 				if (this.point_process_sphere) {
-					this.point_process_sphere = GEPPETTO.SceneFactory.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
+					this.point_process_sphere = Canvas1.engine.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
 					this.point_process_sphere.visible = true;
 				}
 				else {
-					this.point_process_sphere = GEPPETTO.SceneFactory.add3DSphere(content.x, content.y, content.z, content.radius);
+					this.point_process_sphere = Canvas1.engine.add3DSphere(content.x, content.y, content.z, content.radius);
 				}
 			}
 			else if (msg.type === 'remove_sphere') {

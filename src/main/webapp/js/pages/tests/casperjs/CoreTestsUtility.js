@@ -224,6 +224,9 @@ function testSelection(test,variableName,selectColorVarName){
 }
 
 function closeSpotlight(){
+	casper.evaluate(function() {
+		$("#spotlight").hide();
+	});	
     casper.echo("Clicking to close spotlight");
     casper.sendKeys('input#typeahead', casper.page.event.key.Escape, {keepFocus: true});
     casper.echo("Hitting escape to close spotlight");

@@ -353,8 +353,8 @@ function acnetTest(test){
 	
 	casper.then(function () {
 		//test these cells are no longer ghosted
-		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
+		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
 	});
 	
 	casper.then(function(){

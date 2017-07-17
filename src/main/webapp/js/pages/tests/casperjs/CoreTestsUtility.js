@@ -228,8 +228,6 @@ function closeSpotlight(){
 		$("#spotlight").hide();
 	});	
     casper.echo("Clicking to close spotlight");
-    casper.sendKeys('input#typeahead', casper.page.event.key.Escape, {keepFocus: true});
-    casper.echo("Hitting escape to close spotlight");
 }
 
 /**

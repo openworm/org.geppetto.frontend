@@ -90,7 +90,6 @@ define(function (require) {
             var autocompleteOn = true;
             GEPPETTO.Console.populateTags();
             //bind console input area to autocomplete event
-            // TODO: TEST this selector
             $("#" + this.props.id + "_component #commandInputArea").bind("keydown", function (event) {
                 if (event.keyCode === $.ui.keyCode.TAB &&
                     $(this).data("ui-autocomplete").menu.active) {
@@ -194,7 +193,6 @@ define(function (require) {
          * Creates Javascript Console
          */
         createConsole () {
-            // TODO: test this selector
             var consoleElement = $("#" + this.props.id + "_component #" +  this.props.id + "_console");
             var inputCmdEl = $("#" + this.props.id + "_component #commandInputArea");
             // Create the sandbox console:
@@ -207,28 +205,9 @@ define(function (require) {
                 inputCommandAreaEl: inputCmdEl
             });
 
-
-            //allow console to be resizable
-            consoleElement.resizable({
-                handles: 'n',
-                minHeight: 100,
-                autoHide: true,
-                maxHeight: 400,
-                resize: function (event, ui) {
-                    // TODO: rework resize functionality nothing to do with footer container anymore
-                    /*if (ui.size.height > ($("#footerHeader").height() * .75)) {
-                        $("#console").height($("#footerHeader").height() * .75);
-                        event.preventDefault();
-                    }*/
-                    consoleElement.resize();
-                    consoleElement.get(0).style.top = "0px";
-                }.bind(this)
-            });
-
             this.autoComplete();
 
             //remove drop down menu that comes automatically with autocomplete
-            // TODO: test this selector
             $("#" + this.props.id + "_component #commandInputArea").focus(function () {
                 $('.ui-menu').remove();
             });

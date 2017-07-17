@@ -352,6 +352,31 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
+		
+		var selectLength = casper.evaluate(function() {
+			var selectLength = GEPPETTO.SceneController.getSelection()[0].id;
+			return selectLength;
+		});
+		
+		var selectLength2 = casper.evaluate(function() {
+			var selectLength = GEPPETTO.SceneController.getSelection()[1].id;
+			return selectLength;
+		});
+		
+		var traverse = casper.evaluate(function() {
+			var al = new Array(); 
+			for (var prop in Canvas1.engine.connectionLines) {
+				al.push(prop);
+			}
+			return al;
+		});
+		
+		casper.echo("SelectLength: "+ selectLength);
+		casper.echo("SelectLength2: "+ selectLength2);
+		for (var a=0; a<traverse.length;a++) {
+			casper.echo("Traverse lnes: "+ traverse[a]);
+		}
+		casper.echo("traverse: "+ traverse);
 		//test these cells are no longer ghosted
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");

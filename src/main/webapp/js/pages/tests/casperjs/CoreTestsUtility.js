@@ -164,7 +164,6 @@ function getMeshColor(test,variableName,index){
 		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[index].material.color;
 		return [color.r, color.g, color.b];
 	},variableName,index);
-	
 	return color;
 }
 

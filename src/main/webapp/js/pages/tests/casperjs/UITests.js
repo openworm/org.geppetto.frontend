@@ -31,11 +31,11 @@ casper.test.begin('Geppetto basic tests', 133, function suite(test) {
     });
 
     casper.start(urlBase+"org.geppetto.frontend", function () {
-        this.waitForSelector('div#logo', function () {
-            this.echo("I waited for the logo to load.");
-            test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
-            test.assertExists('div#logo', "logo is found");
-        }, null, 30000);
+//        this.waitForSelector('div#logo', function () {
+//            this.echo("I waited for the logo to load.");
+//            test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
+//            test.assertExists('div#logo', "logo is found");
+//        }, null, 30000);
     });
 
     casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
@@ -45,14 +45,14 @@ casper.test.begin('Geppetto basic tests', 133, function suite(test) {
          }, null, 30000);*/
     });
 
-    casper.thenOpen(urlBase+"org.geppetto.frontend/", function () {
-        this.waitForSelector('div[project-id="2"]', function () {
-            this.echo("I've waited for the projects to load.");
-            test.assertExists('div#logo', "logo is found");
-            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
-            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-        }, null, 30000);
-    });
+//    casper.thenOpen(urlBase+"org.geppetto.frontend/", function () {
+//        this.waitForSelector('div[project-id="2"]', function () {
+//            this.echo("I've waited for the projects to load.");
+//            test.assertExists('div#logo', "logo is found");
+//            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
+//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+//        }, null, 30000);
+//    });
 
     casper.then(function () {
         testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
@@ -283,9 +283,12 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                         doExperimentsTableRowTests(test);
                     }, null, 10000);
                 }
-                doPrePersistenceExperimentsTableButtonsCheck(test);
             });
 
+            casper.then(function () {
+                doPrePersistenceExperimentsTableButtonsCheck(test);
+            });
+            
             casper.then(function () {
                 if(spotlight_record_variable != ''){
                     doPrePersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
@@ -332,7 +335,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                 //roll over the experiments row
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 doPostPersistenceExperimentsTableButtonCheck(test);
-            }, null, 1000000);
+            }, null, 300000);
             
             casper.on("page.error", function(msg, trace) {
                 this.echo("Error: " + msg, "ERROR");

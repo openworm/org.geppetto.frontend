@@ -515,11 +515,16 @@ define(function (require) {
                     {
                         //appendTo: "#widgetContainer",
                         //autoOpen: false,
-                        resizable: (this.props.resizable != undefined) ? this.props.resizable : true,
-                        draggable: (this.props.draggable != undefined) ? this.props.draggable : true,
+                        resizable: this.props.resizable,
+                        draggable: this.props.draggable,
                         top: 10,
                         height: this.props.size.height,
                         width: this.props.size.width,
+                        position: {
+                            my: "left+" + this.props.position.left + " top+" + this.props.position.top,
+                            at: "left top",
+                            of: $(window)
+                        },
                         close(event, ui) {
                             if (event.originalEvent &&
                                 $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
@@ -747,7 +752,7 @@ define(function (require) {
 
         Widget.defaultProps = {
             size: { height: 300, width: 350 },
-            position: { left: '10%', top: '10%' },
+            position: { left: '50%', top: '50%' },
             resizable: true,
             draggable: true
         };

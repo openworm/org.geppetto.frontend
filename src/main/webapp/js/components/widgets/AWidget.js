@@ -17,7 +17,7 @@ define(function (require) {
          * Creates base view for widget
          */
         //https://gist.github.com/aldendaniels/5d94ecdbff89295f4cd6
-        return class Widget extends WrappedComponent {
+        class Widget extends WrappedComponent {
 
             constructor(props) {
                 super(props);
@@ -34,9 +34,6 @@ define(function (require) {
                     previousMaxSize: {},
                     maximize: false,
                     collapsed: false,
-
-                    defaultSize: { height: 300, width: 350 },
-                    defaultPosition: { left: "50%", top: "50%" }
                 });
 
             }
@@ -45,7 +42,7 @@ define(function (require) {
                 return true;
             }
 
-            help () {
+            help() {
                 return GEPPETTO.Console.getObjectCommands(this.props.id);
             }
 
@@ -55,7 +52,7 @@ define(function (require) {
              * @command destroy()
              * @returns {String} - Action Message
              */
-            destroy () {
+            destroy() {
                 this.$el.remove();
                 this.destroyed = true;
                 return this.name + " destroyed";
@@ -119,8 +116,6 @@ define(function (require) {
                 return this;
             }
 
-            
-
             /**
              * @command setPosition(left,top)
              * @param {Integer} left -Left position of the widget
@@ -154,10 +149,10 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize(h, w) {
-                if (h != null && h != undefined && h!=-1) {
+                if (h != null && h != undefined && h != -1) {
                     this.size.height = h;
                 }
-                if (w != null && w != undefined && w!=-1) {
+                if (w != null && w != undefined && w != -1) {
                     this.size.width = w;
                 }
 
@@ -446,7 +441,7 @@ define(function (require) {
                 }));
             }
 
-            addDownloadButton(downloadFunction){
+            addDownloadButton(downloadFunction) {
                 var that = this;
                 this.addButtonToTitleBar($("<div class='fa fa-download' title='Download data'></div>").click(function () {
                     that.download();
@@ -520,11 +515,11 @@ define(function (require) {
                     {
                         //appendTo: "#widgetContainer",
                         //autoOpen: false,
-                        resizable: true,
-                        draggable: true,
+                        resizable: (this.props.resizable != undefined) ? this.props.resizable : true,
+                        draggable: (this.props.draggable != undefined) ? this.props.draggable : true,
                         top: 10,
-                        height: 300,
-                        width: 350,
+                        height: this.props.size.height,
+                        width: this.props.size.width,
                         close(event, ui) {
                             if (event.originalEvent &&
                                 $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
@@ -544,29 +539,29 @@ define(function (require) {
                             "collapse": "fa  fa-chevron-circle-up",
                             "restore": "fa fa-window-restore",
                         },
-                        "load" : function(evt, dlg) {
+                        "load": function (evt, dlg) {
                             var icons = $("#" + that.props.id).parent().find(".ui-icon");
                             for (var i = 0; i < icons.length; i++) {
                                 //remove text from span added by vendor library
                                 $(icons[i]).text("");
                             }
                         },
-                        "beforeMinimize" : function(evt, dlg) {
+                        "beforeMinimize": function (evt, dlg) {
                             var label = that.name;
-                            if(label!=undefined){
+                            if (label != undefined) {
                                 label = label.substring(0, 6);
                             }
                             that.$el.dialog({ title: label });
                         },
-                        "beforeMaximize" : function(evt, dlg) {
+                        "beforeMaximize": function (evt, dlg) {
                             var divheight = that.size.height;
                             var divwidth = that.size.width;
                             that.previousMaxSize = { width: divwidth, height: divheight };
                         },
-                        "minimize" : function(evt, dlg) {
+                        "minimize": function (evt, dlg) {
                             that.$el.dialog({ title: that.name });
                         },
-                        "maximize" : function(evt, dlg) {
+                        "maximize": function (evt, dlg) {
                             that.setTrasparentBackground(false);
                             var divheight = $(window).height();
                             var divwidth = $(window).width();
@@ -574,7 +569,7 @@ define(function (require) {
                             $(this).trigger('resizeEnd');
                             that.maximize = true;
                         },
-                        "restore" : function(evt, dlg) {
+                        "restore": function (evt, dlg) {
                             if (that.maximize) {
                                 that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
                                 $(this).trigger('restored', [that.props.id]);
@@ -584,7 +579,7 @@ define(function (require) {
                             that.maximize = false;
                             that.collapsed = false;
                         },
-                        "collapse" : function(evt, dlg) {
+                        "collapse": function (evt, dlg) {
                             that.collapsed = true;
                         }
                     });
@@ -616,8 +611,8 @@ define(function (require) {
                 }
 
                 // initialize content
-                this.size = this.state.defaultSize;
-                this.position = this.state.defaultPosition;
+                this.size = this.props.size;
+                this.position = this.props.position;
                 this.contextMenu = new GEPPETTO.ContextMenuView();
                 this.historyMenu = new GEPPETTO.ContextMenuView();
                 this.registeredEvents = [];
@@ -682,7 +677,7 @@ define(function (require) {
                 var view = super.getView();
 
                 // get default stuff such as id, position and size
-                return  $.extend(view, {
+                return $.extend(view, {
                     name: this.name,
                     isWidget: this.isWidget(),
                     showTitleBar: this.showTitleBar,
@@ -703,9 +698,9 @@ define(function (require) {
              *
              * @param view
              */
-            setView (view){
+            setView(view) {
                 // set default stuff such as position and size
-                if(view.size != undefined && view.size.height != 0 && view.size.width != 0){
+                if (view.size != undefined && view.size.height != 0 && view.size.width != 0) {
                     this.setSize(view.size.height, view.size.width);
                 } else {
                     // trigger auto size if we have no size info
@@ -713,19 +708,19 @@ define(function (require) {
                     this.setAutoHeight();
                 }
 
-                if(view.position != undefined){
+                if (view.position != undefined) {
                     this.setPosition(view.position.left, view.position.top);
                 }
 
-                if(view.name != undefined){
+                if (view.name != undefined) {
                     this.setName(view.name);
                 }
 
-                if(view.showTitleBar != undefined){
+                if (view.showTitleBar != undefined) {
                     this.showTitleBar(view.showTitleBar);
                 }
 
-                if(view.transparentBackground != undefined){
+                if (view.transparentBackground != undefined) {
                     this.setTrasparentBackground(view.transparentBackground);
                 }
 
@@ -749,5 +744,13 @@ define(function (require) {
                 return <div key={this.props.id} id={this.props.id} className={'dialog ' + this.props.componentType.toLowerCase() + "-widget"} title={this.props.title}> {super.render()} </div>
             }
         };
+
+        Widget.defaultProps = {
+            size: { height: 300, width: 350 },
+            position: { left: '10%', top: '10%' },
+            resizable: true,
+            draggable: true
+        };
+        return Widget;
     }
 })

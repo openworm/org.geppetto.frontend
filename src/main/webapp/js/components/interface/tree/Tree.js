@@ -17,7 +17,7 @@ define(function (require) {
 			this.expandAll = this.expandAll.bind(this);
 			this.collapseAll = this.collapseAll.bind(this);
 			this.state = {
-				treeData: this.props.data,
+				treeData: this.props.treeData,
 			};
 		}
 

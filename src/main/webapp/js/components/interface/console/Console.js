@@ -41,7 +41,7 @@ define(function (require) {
         matches(request, response) {
             var path = request.term.split(".");
             var depth = path.length;
-            var node = GEPPETTO.Console.availableTags();
+            var node = this.availableTags();
             var avail = [];
 
             var nodePath = "";
@@ -88,7 +88,7 @@ define(function (require) {
         autoComplete() {
             var that = this;
             var autocompleteOn = true;
-            GEPPETTO.Console.populateTags();
+            this.populateTags();
             //bind console input area to autocomplete event
             $("#" + this.props.id + "_component #commandInputArea").bind("keydown", function (event) {
                 if (event.keyCode === $.ui.keyCode.TAB &&

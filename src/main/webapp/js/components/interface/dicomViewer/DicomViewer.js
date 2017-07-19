@@ -119,7 +119,7 @@ define(function (require) {
 			return files;
 		}
 
-		componentDidMount() {
+		loadModel(){
 			this.ready = false;
 			var _this = this;
 
@@ -267,9 +267,12 @@ define(function (require) {
 					window.console.log('oops... something went wrong...');
 					window.console.log(error);
 				});
-
-
+		
 		}
+
+		componentDidMount() {
+			this.loadModel();
+			}
 
 		configureEvents() {
 
@@ -467,7 +470,12 @@ define(function (require) {
 		}
 
 		componentDidUpdate(prevProps, prevState) {
-			this.setLayout();
+			if (prevState.files != this.state.files){
+				this.loadModel();
+			}
+			else{
+				this.setLayout();
+			}
 		}
 
 		changeMode() {

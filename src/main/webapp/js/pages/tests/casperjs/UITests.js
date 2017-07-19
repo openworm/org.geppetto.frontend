@@ -491,6 +491,7 @@ function doPrePersistenceExperimentsTableButtonsCheck(test) {
 }
 
 function doPostPersistenceExperimentsTableButtonCheck(test) {
+	casper.mouse.move('tr.experimentsTableColumn:nth-child(1)');
     casper.waitForSelector('button.btn.SaveButton[disabled]', function () {
         //Check presence of experiment console buttons AFTER persistence
         casper.waitForSelector('a.activeIcon', function () {

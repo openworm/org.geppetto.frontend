@@ -20,7 +20,6 @@ define(function (require) {
             this.nonCommands = [];
             this.visible = false;
             this.tags = [];
-            this.objectTags = [];
 
             var settings = {
                 id: this.props.id + "_component"

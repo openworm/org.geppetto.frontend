@@ -337,12 +337,11 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         });
         casper.then(function () {
             this.echo("Waiting for persist star to stop spinning");
-            casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function () {
-                //roll over the experiments row
-                this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-                doPostPersistenceExperimentsTableButtonCheck(test);
-            }, null, 300000);
-            
+            casper.wait(295000, function () {});
+        });
+        casper.then(function () {
+        	this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+            doPostPersistenceExperimentsTableButtonCheck(test);
         });
         casper.then(function () {
             doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);

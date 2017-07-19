@@ -410,7 +410,7 @@ define(function (require) {
                                 var ownLineCommands = [];
                                 for (var i = 0; i < commands.length; i++) {
                                     var tag = commands[i];
-                                    if (tag.indexOf($('#commandInputArea').val()) != -1) {
+                                    if (tag.indexOf(input) != -1) {
                                         if (tag.length <= 80) {
                                             if ((i + 1) % 2 == 0) {
                                                 suggestionsFormatted = suggestionsFormatted + tag + "\n";

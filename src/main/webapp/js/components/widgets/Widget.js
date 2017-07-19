@@ -480,8 +480,7 @@ define(function (require) {
                                 event.stopPropagation();
                             });
 
-                        var dialogParent = this.$el.parent();
-                        button.insertBefore(dialogParent.find("span.ui-dialog-title"));
+                        button.insertBefore(this.dialogParent.find("span.ui-dialog-title"));
                         $(button).addClass("widget-title-bar-button");
                     }
                 } else {
@@ -505,8 +504,7 @@ define(function (require) {
             },
 
             addButtonToTitleBar: function (button) {
-                var dialogParent = this.$el.parent();
-                dialogParent.find("div.ui-dialog-titlebar").prepend(button);
+                this.dialogParent.find("div.ui-dialog-titlebar").prepend(button);
                 $(button).addClass("widget-title-bar-button");
             },
 
@@ -589,6 +587,7 @@ define(function (require) {
 
                 var that = this;
 
+                
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -660,19 +659,19 @@ define(function (require) {
                     });
 
                 this.$el = $("#" + this.id);
-                var dialogParent = this.$el.parent();
+                this.dialogParent = this.$el.parent();
 
 
                 //add history
                 this.showHistoryIcon(true);
 
                 //remove the jQuery UI icon
-                dialogParent.find("button.ui-dialog-titlebar-close").html("");
-                dialogParent.find("button").append("<i class='fa fa-close'></i>");
+                this.dialogParent.find("button.ui-dialog-titlebar-close").html("");
+                this.dialogParent.find("button").append("<i class='fa fa-close'></i>");
 
 
                 //Take focus away from close button
-                dialogParent.find("button.ui-dialog-titlebar-close").blur();
+                this.dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
                 //add help button
                 this.addHelpButton();
@@ -785,6 +784,11 @@ define(function (require) {
 
             isWidget() {
                 return true;
+            },
+
+            fixPosition(container){
+                this.dialogParent.detach().appendTo(container);
+                this.dialogParent.css({ top: this.position.top, left: this.position.left, position: 'absolute'});
             }
         })
     };

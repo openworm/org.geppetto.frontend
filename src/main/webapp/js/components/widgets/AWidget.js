@@ -510,6 +510,7 @@ define(function (require) {
             componentDidMount() {
                 var that = this;
 
+                var originalParentContainer = $("#" + this.props.id).parent();
                 //create the dialog window for the widget
                 this.dialog = $("#" + this.props.id).dialog(
                     {
@@ -630,6 +631,11 @@ define(function (require) {
                         $("#" + that.props.id).parent().find(".ui-dialog-title").html(that.title);
                     }
                 });
+
+                if (this.props.fixPosition){
+                    dialogParent.detach().appendTo(originalParentContainer);
+                    dialogParent.css({ top: this.position.top, left: this.position.left, position: 'absolute'});
+                }
 
                 window.addEventListener('resize', function (event) {
                     if (that.maximize) {

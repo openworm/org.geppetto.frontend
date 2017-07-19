@@ -63,6 +63,9 @@ define(function (require) {
 			if (this.props.getButtons != undefined) {
 				nodeProps['buttons'] = this.props.getButtons(rowInfo);
 			}
+			if (rowInfo.node.instance != undefined) {
+				nodeProps['style'] = {cursor: 'pointer'};
+			}
 			return nodeProps;
 		}
 

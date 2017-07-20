@@ -533,10 +533,10 @@ define(function (require) {
                             }
                         }
                     }).dialogExtend({
-                        "closable": true,
-                        "maximizable": true,
-                        "minimizable": true,
-                        "collapsable": true,
+                        "closable": this.props.closable,
+                        "maximizable": this.props.maximizable,
+                        "minimizable": this.props.minimizable,
+                        "collapsable": this.props.collapsable,
                         "restore": true,
                         "minimizeLocation": "right",
                         "icons": {
@@ -598,7 +598,7 @@ define(function (require) {
                 var dialogParent = this.$el.parent();
 
                 //add history
-                this.showHistoryIcon(true);
+                this.showHistoryIcon(this.props.showHistoryIcon);
 
                 //remove the jQuery UI icon
                 dialogParent.find("button.ui-dialog-titlebar-close").html("");
@@ -632,9 +632,9 @@ define(function (require) {
                     }
                 });
 
-                if (this.props.fixPosition){
+                if (this.props.fixPosition) {
                     dialogParent.detach().appendTo(originalParentContainer);
-                    dialogParent.css({ top: this.position.top, left: this.position.left, position: 'absolute'});
+                    dialogParent.css({ top: this.position.top, left: this.position.left, position: 'absolute' });
                 }
 
                 window.addEventListener('resize', function (event) {
@@ -760,7 +760,12 @@ define(function (require) {
             size: { height: 300, width: 350 },
             position: { left: '50%', top: '50%' },
             resizable: true,
-            draggable: true
+            draggable: true,
+            showHistoryIcon: true,
+            closable: true,
+            maximizable: true,
+            minimizable: true,
+            collapsable: true
         };
         return Widget;
     }

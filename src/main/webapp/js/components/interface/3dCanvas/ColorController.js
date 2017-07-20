@@ -125,7 +125,7 @@ define(['jquery'], function () {
          */
         removeColorFunction: function (instances) {
             while (this.litUpInstances.length > 0) {
-                this.clearColorFunctions(instances[0]);
+                this.clearColorFunctions(instances.pop(0));
             }
 
             // update flag
@@ -180,6 +180,7 @@ define(['jquery'], function () {
 
             //add color listener for map of variables
             for (var index in matchedMap) {
+                this.litUpInstances.push(matchedMap[index]);
                 this.addColorListener(index, matchedMap[index], colorfn);
             }
 
@@ -214,7 +215,7 @@ define(['jquery'], function () {
          */
         colorInstance: function (instance, colorfn, intensity) {
             var threeObject;
-            if (instance in this.engine.meshes) {
+            if (instance in this.engine.meshes && this.engine.meshes[instance].visible) {
                 threeObject = this.engine.meshes[instance];
             }
             else {
@@ -231,7 +232,7 @@ define(['jquery'], function () {
          */
         clearColorFunctions: function (varnode) {
             var i = this.litUpInstances.indexOf(varnode);
-            this.litUpInstances.splice(i, 1);
+            if (i > -1) this.litUpInstances.splice(i, 1);
             GEPPETTO.trigger(GEPPETTO.Events.Lit_entities_changed);
             if (this.litUpInstances.length == 0) {
                 this.colorFunctionSet = false;

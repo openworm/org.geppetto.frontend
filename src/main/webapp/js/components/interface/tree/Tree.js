@@ -7,7 +7,6 @@ define(function (require) {
 	var toggleExpandedForAll = require('react-sortable-tree').toggleExpandedForAll;
 	var changeNodeAtPath = require('react-sortable-tree').changeNodeAtPath;
 	var walk = require('react-sortable-tree').walk;
-	var map = require('react-sortable-tree').map;
 	var AbstractComponent = require('../../AComponent');
 
 	return class Tree extends AbstractComponent {

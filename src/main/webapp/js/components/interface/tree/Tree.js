@@ -42,29 +42,29 @@ define(function (require) {
 			this.expand(false);
 		}
 
-		// By default, on click we expand/collapse the node the node
-		handleClick(rowInfo) {
+		handleClick(event, rowInfo) {
+			// By default, on click we expand/collapse the node the node
 			if (rowInfo.node.children != undefined && rowInfo.node.children.length > 0) {
 				rowInfo.node.expanded = !rowInfo.node.expanded;
 				var newTreeData = changeNodeAtPath({ treeData: this.state.treeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
 				this.updateTreeData(newTreeData);
 			}
+
+			// If there is a callback, we use it
+			if (this.props.handleClick != undefined) {
+				this.props.handleClick(event, rowInfo);
+			}
 		}
 
 		getNodeProps(rowInfo) {
 			var nodeProps = {};
-			if (this.props.handleClick != undefined) {
-				nodeProps['onClick'] = () => this.props.handleClick(rowInfo);
-			}
-			else {
-				nodeProps['onClick'] = () => this.handleClick(rowInfo);
-			}
+			nodeProps['onClick'] = (event) => this.handleClick(event, rowInfo);
 
 			if (this.props.getButtons != undefined) {
 				nodeProps['buttons'] = this.props.getButtons(rowInfo);
 			}
 			if (rowInfo.node.instance != undefined) {
-				nodeProps['style'] = {cursor: 'pointer'};
+				nodeProps['style'] = { cursor: 'pointer' };
 			}
 			return nodeProps;
 		}

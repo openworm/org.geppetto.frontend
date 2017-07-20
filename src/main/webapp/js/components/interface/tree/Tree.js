@@ -4,6 +4,8 @@ define(function (require) {
 
 	var React = require('react');
 	var SortableTree = require('react-sortable-tree').default;
+	var toggleExpandedForAll = require('react-sortable-tree').toggleExpandedForAll;
+	var changeNodeAtPath = require('react-sortable-tree').changeNodeAtPath;
 	var AbstractComponent = require('../../AComponent');
 
 	return class Tree extends AbstractComponent {
@@ -40,11 +42,24 @@ define(function (require) {
 			this.expand(false);
 		}
 
+		// By default, on click we expand/collapse the node the node
+		handleClick(rowInfo) {
+			if (rowInfo.node.children != undefined && rowInfo.node.children.length > 0) {
+				rowInfo.node.expanded = !rowInfo.node.expanded;
+				var newTreeData = changeNodeAtPath({ treeData: this.state.treeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
+				this.updateTreeData(newTreeData);
+			}
+		}
+
 		getNodeProps(rowInfo) {
 			var nodeProps = {};
 			if (this.props.handleClick != undefined) {
 				nodeProps['onClick'] = () => this.props.handleClick(rowInfo);
 			}
+			else {
+				nodeProps['onClick'] = () => this.handleClick(rowInfo);
+			}
+
 			if (this.props.getButtons != undefined) {
 				nodeProps['buttons'] = this.props.getButtons(rowInfo);
 			}
@@ -52,7 +67,6 @@ define(function (require) {
 		}
 
 		render() {
-
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="treeViewer">
 					<SortableTree
@@ -61,7 +75,7 @@ define(function (require) {
 						rowHeight={40}
 						scaffoldBlockPxWidth={22}
 						generateNodeProps={rowInfo => (this.getNodeProps(rowInfo))}
-						onChange={treeData => this.setState({ treeData })}
+						onChange={treeData => this.updateTreeData(treeData)}
 					/>
 				</div>
 			)

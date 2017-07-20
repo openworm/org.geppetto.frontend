@@ -16,7 +16,6 @@ define(function (require) {
         var $ = require('jquery');
         var _ = require('underscore');
 
-        // require('vendor/backbone-localStorage.min');
         require("backbone.localstorage");
 
         GEPPETTO.SandboxConsole = {
@@ -36,7 +35,6 @@ define(function (require) {
                 initialize: function () {
                     // Attempt to fetch the Model from localStorage
                     this.fetch();
-
                 },
 
                 // The Sandbox Model tries to use the localStorage adapter to save the command history
@@ -128,7 +126,7 @@ define(function (require) {
                     this.tabCharacter = opts.tabCharacter || "\t";
                     this.placeholder = opts.placeholder || "// type some javascript and hit enter (help() for info)";
                     this.helpText = opts.helpText || "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.";
-                    this.inputCommandAreaEl = opts.inputCommandAreaEl;
+                    this.inputCommandAreaElSelector = opts.inputCommandAreaElSelector;
 
                     // Bind to the model's change event to update the View
                     this.model.on('update:console', this.updateConsole, this);
@@ -378,9 +376,7 @@ define(function (require) {
                         e.preventDefault();
 
                         var thisKeypressTime = new Date();
-
-                        // TODO: test this selector is passed as expected
-                        var input = this.inputCommandAreaEl.val();
+                        var input = $(this.inputCommandAreaElSelector).val();
 
                         //retrieve array of available commands
                         var commands = GEPPETTO.Console.availableSuggestions();

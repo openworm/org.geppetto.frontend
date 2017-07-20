@@ -31,6 +31,23 @@ define(function (require) {
         }
 
         /**
+         * Gets maps of available tags used for autocompletion
+         */
+        availableTags () {
+            if (jQuery.isEmptyObject(this.tags)) {
+                this.populateTags();
+            }
+            return this.tags;
+        }
+
+        /**
+         * Populates tags map at startup
+         */
+        populateTags () {
+            this.updateTags("G", GEPPETTO.G, true);
+        }
+
+        /**
          * Matches user input in console to terms in tags map, this to retrieve suggestions
          * for autocompletion.
          *
@@ -101,7 +118,7 @@ define(function (require) {
                 .autocomplete({
                     minLength: 0,
                     delay: 0,
-                    source: that.matches,
+                    source: that.matches.bind(that),
                     focus: function () {
                         // prevent value inserted on focus
                         return false;
@@ -193,7 +210,7 @@ define(function (require) {
          */
         createConsole () {
             var consoleElement = $("#" + this.props.id + "_component #" +  this.props.id + "_console");
-            var inputCmdEl = $("#" + this.props.id + "_component #commandInputArea");
+            var inputCmdElSelector = "#" + this.props.id + "_component #commandInputArea";
             // Create the sandbox console:
             this.console = new GEPPETTO.SandboxConsole.View({
                 el: consoleElement,
@@ -201,7 +218,7 @@ define(function (require) {
                 resultPrefix: "  => ",
                 tabCharacter: "\t",
                 placeholder: "// type a javascript command and hit enter (help() for info)",
-                inputCommandAreaEl: inputCmdEl
+                inputCommandAreaElSelector: inputCmdElSelector
             });
 
             this.autoComplete();
@@ -288,23 +305,6 @@ define(function (require) {
                 }
             }
             return this.commands;
-        }
-
-        /**
-         * Gets maps of available tags used for autocompletion
-         */
-        availableTags () {
-            if (jQuery.isEmptyObject(this.tags)) {
-                this.populateTags();
-            }
-            return this.tags;
-        }
-
-        /**
-         * Populates tags map at startup
-         */
-        populateTags () {
-            this.updateTags("G", GEPPETTO.G, true);
         }
 
         /**;

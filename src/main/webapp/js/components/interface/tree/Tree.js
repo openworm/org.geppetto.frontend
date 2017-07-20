@@ -6,6 +6,8 @@ define(function (require) {
 	var SortableTree = require('react-sortable-tree').default;
 	var toggleExpandedForAll = require('react-sortable-tree').toggleExpandedForAll;
 	var changeNodeAtPath = require('react-sortable-tree').changeNodeAtPath;
+	var walk = require('react-sortable-tree').walk;
+	var map = require('react-sortable-tree').map;
 	var AbstractComponent = require('../../AComponent');
 
 	return class Tree extends AbstractComponent {
@@ -43,12 +45,31 @@ define(function (require) {
 		}
 
 		handleClick(event, rowInfo) {
-			// By default, on click we expand/collapse the node the node
+			var currentTreeData = this.state.treeData;
+			// If node has children, we expand/collapse the node
 			if (rowInfo.node.children != undefined && rowInfo.node.children.length > 0) {
 				rowInfo.node.expanded = !rowInfo.node.expanded;
-				var newTreeData = changeNodeAtPath({ treeData: this.state.treeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
-				this.updateTreeData(newTreeData);
+				currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
 			}
+			// If node has no children, we select the node
+			else if (rowInfo.node.children == undefined) {
+				walk({
+					treeData: currentTreeData,
+					getNodeKey: ({ treeIndex }) => treeIndex,
+					ignoreCollapsed: false,
+					callback: (rowInfoIter) => {
+						var isActive = (rowInfoIter.treeIndex == rowInfo.treeIndex);
+						if (isActive != rowInfoIter.node.active){
+							rowInfoIter.node.active = isActive;
+							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
+						}
+					}
+				});
+
+			}
+
+			// Update tree with latest changes
+			this.updateTreeData(currentTreeData)
 
 			// If there is a callback, we use it
 			if (this.props.handleClick != undefined) {
@@ -65,6 +86,9 @@ define(function (require) {
 			}
 			if (rowInfo.node.instance != undefined) {
 				nodeProps['style'] = { cursor: 'pointer' };
+			}
+			if (rowInfo.node.active) {
+				nodeProps['className'] = 'activeNode';
 			}
 			return nodeProps;
 		}

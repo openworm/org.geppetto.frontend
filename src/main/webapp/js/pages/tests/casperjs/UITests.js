@@ -123,21 +123,22 @@ casper.test.begin('Geppetto basic tests', 133, function suite(test) {
 
     //TODO: log back in as other users. Check more things
     //TODO: exercise the run loop, check the changing experiment status, try to make experiment fail
-
+    casper.echo("Waiting to logout");
     casper.thenOpen(urlBase+"org.geppetto.frontend/logout", function () {
     	this.echo("I've waited for user to logout.");
     });
     
+    casper.echo("Waiting for admin to login");
     casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=admin&password=admin", function () {
     	this.echo("I've waited for the admin user to log");
     });
 
+    casper.echo("Waiting for admin panel");
     casper.thenOpen(urlBase+"org.geppetto.frontend/admin", function () {
         this.waitForSelector('div[class="griddle"]', function () {
             this.echo("I've waited for the admin panel to load.");
         }, null, 30000);
-    });
-    
+    });    
     
     casper.run(function () {
         test.done();

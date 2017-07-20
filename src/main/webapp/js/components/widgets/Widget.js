@@ -784,11 +784,6 @@ define(function (require) {
 
             isWidget() {
                 return true;
-            },
-
-            fixPosition(container){
-                this.dialogParent.detach().appendTo(container);
-                this.dialogParent.css({ top: this.position.top, left: this.position.left, position: 'absolute'});
             }
         })
     };

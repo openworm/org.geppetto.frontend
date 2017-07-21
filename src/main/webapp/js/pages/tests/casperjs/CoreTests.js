@@ -202,7 +202,10 @@ function hhcellTest(test,name){
 	});
 	
 	casper.then(function(){	
-		casper.wait(2000, function(){
+		casper.evaluate(function(){
+			hhcell.deselect();
+		});
+		casper.wait(1000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");
 		})

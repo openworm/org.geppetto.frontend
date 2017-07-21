@@ -35,10 +35,10 @@ casper.test.begin('Geppetto basic tests', 239, function suite(test) {
     });
 
 	/**Tests HHCELL project**/
-	casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
-		casper.then(function(){launchTest(test,"Hhcell",30000);});
-		casper.then(function(){hhcellTest(test);});
-	});
+//	casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
+//		casper.then(function(){launchTest(test,"Hhcell",30000);});
+//		casper.then(function(){hhcellTest(test);});
+//	});
 	
 	/**Tests Acnet project**/
 	casper.thenOpen(urlBase+baseFollowUp+acnetProject,function() {

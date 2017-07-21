@@ -94,8 +94,9 @@ define(function (require) {
 
 		render() {
 			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="treeViewer">
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="treeViewer" style={this.props.style}>
 					<SortableTree
+						style={this.props.style}
 						treeData={this.state.treeData}
 						canDrag={false}
 						rowHeight={40}

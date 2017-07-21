@@ -22,7 +22,7 @@ define(function (require) {
 
 		render() {
 			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="htmlViewer">
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="htmlViewer"  style={this.props.style}>
 					<div dangerouslySetInnerHTML={{__html: this.state.content}}></div>
 				</div>
 			)

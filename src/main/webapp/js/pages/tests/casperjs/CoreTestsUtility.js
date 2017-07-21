@@ -209,6 +209,7 @@ function test3DMeshColorNotEquals(test,testColor,variableName,index){
  */
 function testSelection(test,variableName,selectColorVarName){
 	buttonClick("#spotlightBtn");
+	casper.echo("---testSelection----");
    	casper.waitUntilVisible('div#spotlight', function () {
    		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});
    		casper.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
@@ -217,6 +218,7 @@ function testSelection(test,variableName,selectColorVarName){
    			buttonClick("#buttonOne");
    			this.wait(500, function () {
    				var selectColor = [1,0.8,0];
+   				casper.echo("---test3DMeshColor----");
    				test3DMeshColor(test,selectColor,selectColorVarName,0);
    			});
    		});

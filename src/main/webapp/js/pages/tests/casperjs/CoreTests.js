@@ -157,7 +157,7 @@ function hhcellTest(test,name){
 		testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,false,"hhcell","hhcell.hhpop[0]");
 	});
 	
-	casper.then(function(){
+	casper.then(function () {
 		closeSpotlight();
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
 		//adding few widgets to the project to test View state later
@@ -172,31 +172,36 @@ function hhcellTest(test,name){
 			var customHandler = function(node, path, widget) {};
 	        Popup2.addCustomNodeHandler(customHandler,'click');
 		});
-		
+	});
+	
+	casper.then(function () {
 		//toggle tutorial if tutorial button exists
 		if(casper.exists('#tutorialBtn')){
 			casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
+			//click on next step for Tutorial
+			casper.evaluate(function () {
+				var nextBtnSelector = $(".nextBtn");
+				nextBtnSelector.click();
+				nextBtnSelector.click();
+			});
 		}
-
+	});
+	
+	casper.then(function () {
 		//tests widget canvas has mesh
 		var mesh = casper.evaluate(function(){
 			var mesh = Canvas2.engine.getRealMeshesForInstancePath("hhcell.hhpop[0]").length;
 			return mesh;
 		});
 		test.assertEquals(mesh, 1, "Canvas widget has hhcell");
-
-		//click on next step for Tutorial
-		casper.evaluate(function () {
-			var nextBtnSelector = $(".nextBtn");
-			nextBtnSelector.click();
-			nextBtnSelector.click();
-		});
-		
+	});
+	
+	casper.then(function(){	
 		casper.echo("-------Testing Camera Controls--------");
 		testCameraControlsWithCanvasWidget(test, [0,0,30.90193733102435]);
-		casper.wait(1000, function(){
-			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
-		});
+	});
+	
+	casper.then(function(){	
 		casper.wait(2000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");

@@ -154,7 +154,7 @@ function hhcellTest(test,name){
 	
 	casper.then(function(){
 		casper.echo("-------Testing Spotlight--------");
-		testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,false,"hhcell","hhcell.hhpop[0]");
+		testSpotlight(test, "hhcell.hhpop[0].v",'div[id="Plot1"]',true,true,"hhcell","hhcell.hhpop[0]");
 	});
 	
 	casper.then(function () {

@@ -202,7 +202,7 @@ function hhcellTest(test,name){
 	
 	casper.then(function(){	
 		var select = casper.evaluate(function(){
-			hhcell.deselect();
+			hhcell.select();
 			return GEPPETTO.SceneController.getSelection().length;
 		});
 		casper.echo("Select : "+select);

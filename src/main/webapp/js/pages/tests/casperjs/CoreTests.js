@@ -341,6 +341,7 @@ function acnetTest(test){
 		casper.evaluate(function(){
 			acnet2.baskets_12[1].deselect();
 			acnet2.baskets_12[4].deselect();
+			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
 			acnet2.baskets_12[4].getVisualGroups()[0].show(true);
 		});		
 	});

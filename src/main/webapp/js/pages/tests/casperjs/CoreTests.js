@@ -202,9 +202,11 @@ function hhcellTest(test,name){
 	});
 	
 	casper.then(function(){	
-		casper.evaluate(function(){
+		var select = casper.evaluate(function(){
 			hhcell.deselect();
+			return GEPPETTO.SceneController.getSelection().length;
 		});
+		casper.echo("Select : "+select);
 		casper.wait(1000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");

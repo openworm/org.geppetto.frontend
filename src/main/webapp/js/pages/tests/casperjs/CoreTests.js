@@ -201,11 +201,6 @@ function hhcellTest(test,name){
 	});
 	
 	casper.then(function(){	
-		var select = casper.evaluate(function(){
-			hhcell.select();
-			return GEPPETTO.SceneController.getSelection().length;
-		});
-		casper.echo("Select : "+select);
 		casper.wait(1000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");
@@ -341,22 +336,22 @@ function acnetTest(test){
 		
 		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
-			acnet2.pyramidals_48[0].deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
 			Plot1.setPosition(0,300);
 			acnet2.baskets_12[4].getVisualGroups()[0].show(true);
-		});
-		
+		});		
+	});
+	
+	casper.then(function () {
 		//tests camera controls are working by checking camera has moved
 		testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
 	});
 	
 	casper.then(function () {
 		//applies visual group to instance and tests colors
-		testVisualGroup(test,"acnet2.baskets_12[0]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
-		
+		testVisualGroup(test,"acnet2.baskets_12[0]",2,[[],[0,0.4,1],[0.6,0.8,0]]);	
 		testVisualGroup(test,"acnet2.baskets_12[5]",2,[[],[0,0.4,1],[0.6,0.8,0]]);
 	});
 	
@@ -424,17 +419,15 @@ function acnetTest(test){
 			return Object.keys(Canvas1.engine.meshes).length;
 		});
 		test.assertEquals(meshTotal, 60, "Correctly amount of meshes after applying cylinders");
-		
-		//test color function
-		casper.wait(2000, function(){
-			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
-		});
+	})
+	
+	casper.then(function () {
 		casper.wait(1000, function(){
 			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
 			casper.echo("Done Playing, now exiting");
 		})
-	})
+	});
 }
 
 function c302Test(test){

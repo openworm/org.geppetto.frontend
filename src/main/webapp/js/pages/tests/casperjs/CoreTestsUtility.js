@@ -369,7 +369,7 @@ function testVisualGroup(test,variableName, expectedMeshes,expectedColors){
 		casper.echo("-------Testing Highlighted Instance--------");
 		var i=1;
 		casper.repeat(expectedMeshes, function() {
-			casper.echo("variableName "+ variableName);
+			casper.echo("Debug Log: variableName "+ variableName+" and i ="+i);
 			var color = casper.evaluate(function(variableName,i) {
 				var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[i].material.color;
 				return [color.r, color.g, color.b];

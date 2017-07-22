@@ -339,10 +339,8 @@ function acnetTest(test){
 		
 		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
-			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([acnet2])});
-			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
-			Project.getActiveExperiment().play({step:10});
-			Plot1.setPosition(0,300);
+			acnet2.baskets_12[1].deselect();
+			acnet2.baskets_12[4].deselect();
 			acnet2.baskets_12[4].getVisualGroups()[0].show(true);
 		});		
 	});
@@ -362,6 +360,10 @@ function acnetTest(test){
 		//test these cells are no longer ghosted
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
+	});
+	
+	casper.then(function(){
+		casper.wait(1000, function(){})
 	});
 	
 	casper.then(function(){
@@ -512,11 +514,10 @@ function c302Test(test){
 		
 		testCameraControlsWithCanvasWidget(test,[49.25,-0.8000001907348633,733.3303486467378]);
 		
-		//test color function
-		casper.wait(2000, function(){
-			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
-		});
 		casper.wait(1000, function(){
+			var select = casper.evaluate(function(){
+				c302.PVDR[0].select();
+			});
 			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
 			casper.echo("Done Playing, now exiting");

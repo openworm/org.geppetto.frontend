@@ -201,6 +201,9 @@ function hhcellTest(test,name){
 	});
 	
 	casper.then(function(){	
+		var select = casper.evaluate(function(){
+			hhcell.select();
+		});
 		casper.wait(1000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");
@@ -422,6 +425,9 @@ function acnetTest(test){
 	})
 	
 	casper.then(function () {
+		var select = casper.evaluate(function(){
+			acnet2.baskets_12[2].select();
+		});
 		casper.wait(1000, function(){
 			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");

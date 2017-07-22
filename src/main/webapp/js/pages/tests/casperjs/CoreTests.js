@@ -162,7 +162,6 @@ function hhcellTest(test,name){
 		casper.echo("-------Testing Canvas Widget and Color Function--------");
 		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
-			hhcell.deselect();
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([hhcell])});
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:1});

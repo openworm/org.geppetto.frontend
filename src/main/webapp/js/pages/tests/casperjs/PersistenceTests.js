@@ -7,7 +7,7 @@ var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
 var projectID;
 
-casper.test.begin('Geppetto basic tests', 133, function suite(test) {
+casper.test.begin('Geppetto basic tests', function suite(test) {
     casper.options.viewportSize = {
         width: 1340,
         height: 768

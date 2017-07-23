@@ -344,7 +344,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function () {
                 //roll over the experiments row
                 this.echo("Persist star to stopped spinning");
-                doPostPersistenceExperimentsTableButtonCheck(test);
+                //doPostPersistenceExperimentsTableButtonCheck(test);
             }, null, 300000);
         });
         casper.then(function () {

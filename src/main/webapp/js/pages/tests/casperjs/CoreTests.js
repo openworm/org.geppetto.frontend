@@ -203,7 +203,7 @@ function hhcellTest(test,name){
 		//add color Function
 		casper.evaluate(function(){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
-			Project.getActiveExperiment().play({step:1});
+			Project.getActiveExperiment().play({step:10});
 		});
 		casper.wait(2000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
@@ -442,7 +442,6 @@ function acnetTest(test){
 		casper.wait(2000, function(){
 			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
-			casper.echo("Done Playing, now exiting");
 		});
 		
 		casper.wait(1000, function(){

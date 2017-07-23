@@ -7,7 +7,7 @@ define(function (require) {
 		var ReactDOM = require('react-dom');
 		var spinner = require('./interface/loadingSpinner/LoadingSpinner.js');
 
-		var addWidget = require('./widgets/AWidget.js');
+		var WidgetCapability = require('./widgets/WidgetCapability.js');
 
 		GEPPETTO.ComponentFactory = {
 
@@ -127,7 +127,7 @@ define(function (require) {
 				// Create component/widget
 				var type = componentToAdd;
 				if (isWidget) {
-					type = addWidget(componentToAdd);
+					type = WidgetCapability.createWidget(componentToAdd);
 				}
 				var component = React.createFactory(type)(properties);
 

@@ -1,7 +1,7 @@
 define(function (require) {
 
 	var React = require('react');
-	var Slider = require('react-slick');
+	var Slider = require('react-slick').default;
 	var AbstractComponent = require('../../AComponent');
 
 	return class Carousel extends AbstractComponent {
@@ -33,12 +33,11 @@ define(function (require) {
 		}
 
 		render() {
+			var items = this.state.files.map(function (path, index) {
+				return (<div key={index}><img src={path} /></div>);
+			});
 
 			if (this.state.files != undefined) {
-				var items = this.state.files.map(function (path) {
-					return (<div><img src={path} /></div>);
-				});
-
 				return (
 					<Slider {...this.state.settings}>
 						{items}

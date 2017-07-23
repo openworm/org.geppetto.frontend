@@ -95,7 +95,7 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
     });
     
     casper.then(function () {
-        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,2);
     });
     
     casper.then(function () {
@@ -192,7 +192,9 @@ function reloadProjectTest(test, url, customHandlers,widgetCanvasObject){
 			this.echo("I've waited for "+url+" project to load.");
 			
 			casper.then(function () {
-				casper.wait(5000, function () {});
+				casper.wait(10000, function () {});
+			});
+			casper.then(function () {
 				test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
 				test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
 				test.assertVisible('div#Connectivity1', "Connectivity1 is correctly open on reload");
@@ -283,9 +285,9 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
         			$(".nextBtn").click();
         			$(".nextBtn").click();
         		},widgetCanvasObject);
-        		
-        		 casper.wait(5000, function () {});
-                this.echo("Checking content of experiment row");
+            });
+            casper.then(function () {
+            	this.echo("Checking content of experiment row");
                 // test or wait for control panel stuff to be there
                 if(this.exists('a[href="#experiments"]')){
                     doExperimentsTableRowTests(test);
@@ -298,7 +300,6 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                 this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 doPrePersistenceExperimentsTableButtonsCheck(test);
             });
-
             casper.then(function () {
                 if(spotlight_record_variable != ''){
                     doPrePersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
@@ -311,7 +312,6 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             });
 
             casper.then(function () {
-        		
                 this.waitForSelector('button.btn.SaveButton', function () {
                     test.assertVisible('button.btn.SaveButton', "Persist button is present");
                 });

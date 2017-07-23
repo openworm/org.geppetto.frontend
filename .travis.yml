@@ -12,7 +12,7 @@ env:
 install:
 - ./travis-install.sh
 - mvn install
-- mvn --quiet clean install -P change_casperjs_port
+- mvn --quiet clean install -P $TRAVIS_BRANCH
 - npm install --silent -g phantomjs 
 - npm install --silent -g casperjs 
 - npm install --silent -g slimerjs
@@ -42,7 +42,7 @@ script:
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - docker build -t="geppetto_persistence" --build-arg aKey=$accessKey --build-arg sKey=$secretKey https://github.com/openworm/org.geppetto.git#docker-casperjs:utilities/docker/geppetto-persistence/
   - docker run  -t -dit --name=geppetto_persistence_container -h localhost -p 28081:8080 geppetto_persistence
-  - bash $TRAVIS_BUILD_DIR/test_geppetto_server.sh
+  - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/test_geppetto_server.sh
   - xvfb-run -a --server-args="-screen 0 1024x768x24" casperjs test PersistenceTests.js --host=http://localhost:28081/ --engine=slimerjs
   - sudo docker cp geppetto_persistence_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 200

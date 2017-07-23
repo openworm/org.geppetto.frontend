@@ -213,7 +213,7 @@ function hhcellTest(test,name){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
 		});
-		var colorFunctions = casper.evaluate(function(){
+		var colorFunctionInstances = casper.evaluate(function(){
 			return GEPPETTO.SceneController.getColorFunctionInstances().length;
 		});
 		test.assertNotEquals(initialColorFunctions,colorFunctionInstances, "More than one color function instance found");

@@ -343,7 +343,6 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             this.echo("Waiting for persist star to stop spinning");
             casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function () {
                 //roll over the experiments row
-                this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 this.echo("Persist star to stopped spinning");
                 doPostPersistenceExperimentsTableButtonCheck(test);
             }, null, 300000);
@@ -494,7 +493,7 @@ function doPrePersistenceExperimentsTableButtonsCheck(test) {
 
 function doPostPersistenceExperimentsTableButtonCheck(test) {
     casper.waitForSelector('button.btn.SaveButton[disabled]', function () {
-    	this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+    	casper.mouse.move('tr.experimentsTableColumn:nth-child(1)');
         //Check presence of experiment console buttons AFTER persistence
         casper.waitForSelector('a.activeIcon', function () {
             test.assertNotVisible('a.activeIcon', "active button exists and is correctly not enabled");
@@ -504,19 +503,16 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
             test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
         }, null, 5000);
 
-        casper.mouse.move('a.deleteIcon');
-        casper.waitUntilVisible('a.deleteIcon', function () {
-            test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
-        }, null, 5000);
-
-        casper.mouse.move('a.downloadModelsIcon');
         casper.waitUntilVisible('a.downloadModelsIcon', function () {
             test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
         }, null, 5000);
-
-        casper.mouse.move('a.cloneIcon');
+        
         casper.waitUntilVisible('a.cloneIcon', function () {
             test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
+        }, null, 5000);
+        
+        casper.waitUntilVisible('a.deleteIcon', function () {
+            test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
         }, null, 5000);
     });
 }

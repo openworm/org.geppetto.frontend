@@ -123,25 +123,31 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
     casper.then(function () {
         deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
     });
+    
+    casper.then(function () {
+    	//TODO: log back in as other users. Check more things
+        //TODO: exercise the run loop, check the changing experiment status, try to make experiment fail
+        casper.echo("Waiting to logout");
+        casper.thenOpen(urlBase+"org.geppetto.frontend/logout", function () {
+        	this.echo("I've waited for user to logout.");
+        });
+    });
 
-    //TODO: log back in as other users. Check more things
-    //TODO: exercise the run loop, check the changing experiment status, try to make experiment fail
-    casper.echo("Waiting to logout");
-    casper.thenOpen(urlBase+"org.geppetto.frontend/logout", function () {
-    	this.echo("I've waited for user to logout.");
+    casper.then(function () {
+    	casper.echo("Waiting for admin to login");
+        casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=admin&password=admin", function () {
+        	this.echo("I've waited for the admin user to log");
+        });
     });
     
-    casper.echo("Waiting for admin to login");
-    casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=admin&password=admin", function () {
-    	this.echo("I've waited for the admin user to log");
-    });
-
-    casper.echo("Waiting for admin panel");
-    casper.thenOpen(urlBase+"org.geppetto.frontend/admin", function () {
-        this.waitForSelector('div[class="griddle"]', function () {
-            this.echo("I've waited for the admin panel to load.");
-        }, null, 30000);
-    });    
+    casper.then(function () {
+    	casper.echo("Waiting for admin panel");
+        casper.thenOpen(urlBase+"org.geppetto.frontend/admin", function () {
+            this.waitForSelector('div[class="griddle"]', function () {
+                this.echo("I've waited for the admin panel to load.");
+            }, null, 30000);
+        });
+    });  
     
     casper.run(function () {
         test.done();
@@ -357,7 +363,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                 casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function () {
                     //roll over the experiments row
                     this.echo("Persist star to stopped spinning");
-                    doPostPersistenceExperimentsTableButtonCheck(test);
+                    //doPostPersistenceExperimentsTableButtonCheck(test);
                 }, null, defaultLongWaitingTime);
             });
             casper.then(function () {

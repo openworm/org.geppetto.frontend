@@ -205,13 +205,12 @@ function hhcellTest(test,name){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
 		});
-		casper.wait(2000, function(){
-			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
-		})
-		casper.wait(1000, function(){
-			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
-			casper.echo("Done Playing, now exiting");
-		});
+	});
+	
+	//test color Function
+	casper.then(function(){
+		test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
+		casper.echo("Done Playing, now exiting");
 	});
 	
 	//reload test, needed for testing view comes up

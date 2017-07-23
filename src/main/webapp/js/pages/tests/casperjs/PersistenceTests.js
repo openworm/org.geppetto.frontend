@@ -504,12 +504,12 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
             test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
         }, null, 5000);
 
-        //casper.mouse.move('a.deleteIcon');
+        casper.mouse.move('a.deleteIcon');
         casper.waitUntilVisible('a.deleteIcon', function () {
             test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
         }, null, 5000);
 
-        //casper.mouse.move('a.downloadModelsIcon');
+        casper.mouse.move('a.downloadModelsIcon');
         casper.waitUntilVisible('a.downloadModelsIcon', function () {
             test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
         }, null, 5000);

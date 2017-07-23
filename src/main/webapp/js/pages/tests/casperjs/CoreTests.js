@@ -1,4 +1,4 @@
-casper.test.begin('Geppetto basic tests', 239, function suite(test) {
+casper.test.begin('Geppetto basic tests', function suite(test) {
 	casper.options.viewportSize = {
 			width: 1340,
 			height: 768
@@ -560,6 +560,7 @@ function ca1Test(test){
 	casper.then(function () {
 		this.echo("Opening controls panel");
 		buttonClick("#controlPanelBtn");
+		casper.wait(10000, function(){});
 	});
 	
 	casper.then(function(){

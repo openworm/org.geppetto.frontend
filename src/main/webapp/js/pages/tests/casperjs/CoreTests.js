@@ -18,20 +18,20 @@ casper.test.begin('Geppetto basic tests', 239, function suite(test) {
 
 	casper.start(urlBase+"org.geppetto.frontend", function () {
 		this.echo(urlBase+baseFollowUp+hhcellProject);
-//        this.waitForSelector('div[project-id="1"]', function () {
-//            this.echo("I've waited for the projects to load.");
-//            test.assertExists('div#logo', "logo is found");
-//            test.assertExists('div[project-id="1"]', "Project width id 1 from core bundle are present");
-//            test.assertExists('div[project-id="3"]', "Project width id 3 from core bundle are present");
-//            test.assertExists('div[project-id="4"]', "Project width id 4 from core bundle are present");
-//            test.assertExists('div[project-id="5"]', "Project width id 5 from core bundle are present");
-//            test.assertExists('div[project-id="6"]', "Project width id 6 from core bundle are present");
-//            test.assertExists('div[project-id="8"]', "Project width id 8 from core bundle are present");
-//            test.assertExists('div[project-id="9"]', "Project width id 9 from core bundle are present");
-//            test.assertExists('div[project-id="16"]', "Project width id 16 from core bundle are present");
-//            test.assertExists('div[project-id="18"]', "Project width id 18 from core bundle are present");
-//            test.assertExists('div[project-id="58"]', "Project width id 58 from core bundle are present");
-//        }, null, 3000);
+        this.waitForSelector('div[project-id="1"]', function () {
+            this.echo("I've waited for the projects to load.");
+            test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="1"]', "Project width id 1 from core bundle are present");
+            test.assertExists('div[project-id="3"]', "Project width id 3 from core bundle are present");
+            test.assertExists('div[project-id="4"]', "Project width id 4 from core bundle are present");
+            test.assertExists('div[project-id="5"]', "Project width id 5 from core bundle are present");
+            test.assertExists('div[project-id="6"]', "Project width id 6 from core bundle are present");
+            test.assertExists('div[project-id="8"]', "Project width id 8 from core bundle are present");
+            test.assertExists('div[project-id="9"]', "Project width id 9 from core bundle are present");
+            test.assertExists('div[project-id="16"]', "Project width id 16 from core bundle are present");
+            test.assertExists('div[project-id="18"]', "Project width id 18 from core bundle are present");
+            test.assertExists('div[project-id="58"]', "Project width id 58 from core bundle are present");
+        }, null, 3000);
     });
 
 	/**Tests HHCELL project**/
@@ -68,12 +68,6 @@ casper.test.begin('Geppetto basic tests', 239, function suite(test) {
 		casper.then(function(){launchTest(test,"Pharyngeal",45000);});
 		casper.then(function(){pharyngealTest(test);});
 	});
-	
-//	/**Tests NWB project**/
-//	casper.thenOpen(urlBase+baseFollowUp+nwbSample,function() {
-//		casper.then(function(){launchTest(test,"NWB Sample",45000);});
-//		casper.then(function(){nwbSampleTest(test);});
-//	});
 	
 	/**Tests cElegansConnectome project**/
 	casper.thenOpen(urlBase+baseFollowUp+cElegansConnectome,function() {
@@ -438,24 +432,24 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
+		var initialColorFunctions = casper.evaluate(function(){
+			return GEPPETTO.SceneController.getColorFunctionInstances().length;
+		});
 		casper.echo("-------Testing Color Function--------");
-
-		//adding few widgets to the project to test View state later
+		//add color Function
 		casper.evaluate(function(){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
-		});	
-		
-		casper.wait(2000, function(){
-			//test color function
-			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
 		});
-		
-		casper.wait(1000, function(){
-			//test color function
-			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
-			casper.echo("Done Playing, now exiting");
-		})
+		var colorFunctionInstances = casper.evaluate(function(){
+			return GEPPETTO.SceneController.getColorFunctionInstances().length;
+		});
+		test.assertNotEquals(initialColorFunctions,colorFunctionInstances, "More than one color function instance found");
+//		casper.wait(2000, function(){
+//			//test color function
+//			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
+//		});
+		casper.echo("Done Playing, now exiting");
 	});
 }
 
@@ -535,21 +529,24 @@ function c302Test(test){
 	});
 	
 	casper.then(function(){
+		var initialColorFunctions = casper.evaluate(function(){
+			return GEPPETTO.SceneController.getColorFunctionInstances().length;
+		});
 		casper.echo("-------Testing Color Function--------");
+		//add color Function
 		casper.evaluate(function(){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
 		});
-				
-		//test color function
-		casper.wait(2000, function(){
-			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
+		var colorFunctionInstances = casper.evaluate(function(){
+			return GEPPETTO.SceneController.getColorFunctionInstances().length;
 		});
-		casper.wait(1000, function(){
-			//test color function
-			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
-			casper.echo("Done Playing, now exiting");
-		});
+		test.assertNotEquals(initialColorFunctions,colorFunctionInstances, "More than one color function instance found");
+//		//test color function
+//		casper.wait(2000, function(){
+//			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
+//		});
+		casper.echo("Done Playing, now exiting");
 	});
 }
 

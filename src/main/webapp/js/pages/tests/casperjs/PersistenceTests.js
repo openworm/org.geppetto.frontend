@@ -32,36 +32,35 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
 
     casper.start(urlBase+"org.geppetto.frontend", function () {
     	this.echo("Starting geppetto at host "+ urlBase);
-//        this.waitForSelector('div#logo', function () {
-//            this.echo("I waited for the logo to load.");
-//            test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
-//            test.assertExists('div#logo', "logo is found");
-//        }, null, 30000);
+        this.waitForSelector('div#logo', function () {
+            this.echo("I waited for the logo to load.");
+            test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
+            test.assertExists('div#logo', "logo is found");
+        }, null, 30000);
     });
 
     casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
-    	 this.echo("I've waited for the splash screen to come up.");
         /*this.waitForSelector('div#page', function() {
          this.echo("I've waited for the splash screen to come up.");
          test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
          }, null, 30000);*/
     });
 
-//    casper.thenOpen(urlBase+"org.geppetto.frontend/", function () {
-//        this.waitForSelector('div[project-id="2"]', function () {
-//            this.echo("I've waited for the projects to load.");
-//            test.assertExists('div#logo', "logo is found");
-//            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
-//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-//        }, null, 30000);
-//        
-//        this.waitForSelector('div[project-id="1"]', function () {
-//            this.echo("I've waited for the projects to load.");
-//            test.assertExists('div#logo', "logo is found");
-//            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
-//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-//        }, null, 30000);
-//    });
+    casper.thenOpen(urlBase+"org.geppetto.frontend/", function () {
+        this.waitForSelector('div[project-id="2"]', function () {
+            this.echo("I've waited for the projects to load.");
+            test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
+            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+        }, null, 30000);
+        
+        this.waitForSelector('div[project-id="1"]', function () {
+            this.echo("I've waited for the projects to load.");
+            test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
+            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+        }, null, 30000);
+    });
     
     casper.then(function () {
         testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
@@ -345,15 +344,6 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function () {
                 //roll over the experiments row
                 this.echo("Persist star to stopped spinning");
-                if(this.exists('a[href="#experiments"]')){
-                    doExperimentsTableRowTests(test);
-                } else {
-                    this.waitForSelector('a[href="#experiments"]', function(){
-                        doExperimentsTableRowTests(test);
-                    }, null, 10000);
-                }
-              //roll over the experiments row
-                this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
                 doPostPersistenceExperimentsTableButtonCheck(test);
             }, null, 300000);
         });
@@ -502,26 +492,33 @@ function doPrePersistenceExperimentsTableButtonsCheck(test) {
 }
 
 function doPostPersistenceExperimentsTableButtonCheck(test) {
-	//Check presence of experiment console buttons AFTER persistence
-    casper.waitForSelector('a.activeIcon', function () {
-        test.assertNotVisible('a.activeIcon', "active button exists and is correctly not enabled");
-    }, null, 5000);
+    casper.waitForSelector('button.btn.SaveButton[disabled]', function () {
+    	casper.wait(5000, function () {});
+    	if(this.exists('a[href="#experiments"]')){
+           casper.echo("Experiments button exists");
+        }
+    	casper.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+        //Check presence of experiment console buttons AFTER persistence
+        casper.waitForSelector('a.activeIcon', function () {
+            test.assertNotVisible('a.activeIcon', "active button exists and is correctly not enabled");
+        }, null, 5000);
 
-    casper.waitForSelector('a.downloadResultsIcon', function () {
-        test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
-    }, null, 5000);
+        casper.waitForSelector('a.downloadResultsIcon', function () {
+            test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
+        }, null, 5000);
 
-    casper.waitUntilVisible('a.downloadModelsIcon', function () {
-        test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
-    }, null, 5000);
-    
-    casper.waitUntilVisible('a.cloneIcon', function () {
-        test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
-    }, null, 5000);
-    
-    casper.waitUntilVisible('a.deleteIcon', function () {
-        test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
-    }, null, 5000);
+        casper.waitUntilVisible('a.downloadModelsIcon', function () {
+            test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
+        }, null, 5000);
+        
+        casper.waitUntilVisible('a.cloneIcon', function () {
+            test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
+        }, null, 5000);
+        
+        casper.waitUntilVisible('a.deleteIcon', function () {
+            test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
+        }, null, 5000);
+    });
 }
 
 

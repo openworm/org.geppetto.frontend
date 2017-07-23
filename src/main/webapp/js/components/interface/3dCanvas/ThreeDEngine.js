@@ -529,10 +529,12 @@ define(['jquery'], function () {
          * @param instances
          */
         updateSceneWithNewInstances: function (instances) {
-            this.traverseInstances(instances);
-            this.setAllGeometriesType(this.getDefaultGeometryType());
-            this.scene.updateMatrixWorld(true);
-            this.resetCamera();
+            var traversedInstances = this.traverseInstances(instances);
+            if (traversedInstances.length > 0){
+                this.setAllGeometriesType(this.getDefaultGeometryType());
+                this.scene.updateMatrixWorld(true);
+                this.resetCamera();
+            }
         },
 
         /**
@@ -542,9 +544,11 @@ define(['jquery'], function () {
          *            skeleton with instances and visual entities
          */
         traverseInstances: function (instances, lines, thickness) {
+            
             for (var j = 0; j < instances.length; j++) {
-                this.checkVisualInstance(instances[j], lines, thickness);
+                var traversedInstances = this.checkVisualInstance(instances[j], lines, thickness);
             }
+            return traversedInstances
         },
 
         /**
@@ -554,6 +558,7 @@ define(['jquery'], function () {
          *            skeleton with instances and visual entities
          */
         checkVisualInstance: function (instance, lines, thickness) {
+            var traversedInstances = [];
             if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                 //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
                 if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
@@ -565,7 +570,9 @@ define(['jquery'], function () {
                 } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
                     this.traverseInstances(instance, lines, thickness);
                 }
+                traversedInstances.push(instance);
             }
+            return traversedInstances;
         },
 
 
@@ -899,7 +906,7 @@ define(['jquery'], function () {
 
             scene.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
-                    child.material.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+                    this.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.DEFAULT);
                     child.material.wireframe = this.wireframe;
                     child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                     child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -993,11 +1000,11 @@ define(['jquery'], function () {
          * Modify the origin and radius of a sphere
          * @returns {THREE.Mesh}
          */
-        modify3DSphere: function (object, x, y, z, radius) {
+        modify3DSphere: function (object, x, y, z, radius, material) {
             // Impossible to change the radius of a Sphere.
             // Removing old object and creating a new one
             this.scene.remove(object);
-            return this.add3DSphere(x, y, z, radius);
+            return this.add3DSphere(x, y, z, radius, material);
         },
 
         /**
@@ -1005,16 +1012,18 @@ define(['jquery'], function () {
          * It could be any geometry really.
          * @returns {THREE.Mesh}
          */
-        add3DSphere: function (x, y, z, radius) {
+        add3DSphere: function (x, y, z, radius, material) {
             if (this.aboveLinesThreshold) {
                 radius = 1;
             }
 
-            var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
-            material.nowireframe = true;
-            material.opacity = 0.6;
-            material.transparent = true;
-            material.color.setHex("0xff0000");
+            if (typeof material == 'undefined') {
+                var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
+                material.nowireframe = true;
+                material.opacity = 0.6;
+                material.transparent = true;
+                material.color.setHex("0xff0000");
+            }
 
             var sphereNode = {radius: radius, position: {x: x, y: y, z: z}}
             var mesh = this.create3DSphereFromNode(sphereNode, material)
@@ -1155,7 +1164,7 @@ define(['jquery'], function () {
                 color = GEPPETTO.Resources.COLORS.DEFAULT;
             }
             var material = new THREE.LineBasicMaterial(options);
-            this.setThreeColor(material.color, color);
+            this.setThreeColor(material.color, color); 
             material.defaultColor = color;
             material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             return material;
@@ -1197,7 +1206,7 @@ define(['jquery'], function () {
                     depthTest: false,
                     transparent: true
                 });
-            pMaterial.color.setHex(GEPPETTO.Resources.COLORS.DEFAULT);
+            this.setThreeColor(pMaterial.color, GEPPETTO.Resources.COLORS.DEFAULT);
             pMaterial.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
             pMaterial.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             pMaterial.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -1465,7 +1474,7 @@ define(['jquery'], function () {
             var instance = eval(instancePath);
 
             // Behaviour: help exploration of networks by ghosting and not highlighting non connected or selected
-            if (instance.getConnections().length > 0) {
+            if (instance !== undefined && instance.getConnections().length > 0) {
                 // allOtherMeshes will contain a list of all the non connected entities in the scene
                 var allOtherMeshes = $.extend({}, this.meshes);
                 // look on the simulation selection options and perform necessary operations
@@ -1742,6 +1751,8 @@ define(['jquery'], function () {
             if (!this.hasInstance(instancePath)) {
                 return;
             }
+            if (typeof color === 'string')
+                color = color.replace(/0X/i, "#");
             var meshes = this.getRealMeshesForInstancePath(instancePath);
             if (meshes.length > 0) {
                 for (var i = 0; i < meshes.length; i++) {
@@ -1815,7 +1826,7 @@ define(['jquery'], function () {
 
             var getRandomColor = function () {
                 var letters = '0123456789ABCDEF';
-                var color = '0x';
+                var color = '#';
                 for (var i = 0; i < 6; i++) {
                     color += letters[Math.floor(Math.random() * 16)];
                 }
@@ -1851,8 +1862,7 @@ define(['jquery'], function () {
                     }
                 }
             }
-
-
+            GEPPETTO.trigger(GEPPETTO.Events.Color_set, {instance: instance, color: randomColor});
         }
 
         ,
@@ -2263,7 +2273,7 @@ define(['jquery'], function () {
                 }
 
                 var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1});
-                material.color.setHex(colour);
+                this.setThreeColor(material.color, colour);
 
                 var line = new THREE.LineSegments(geometry, material);
                 line.updateMatrixWorld(true);
@@ -2391,8 +2401,7 @@ define(['jquery'], function () {
                     this.setThreeColor(groupMesh.material.color, splitHighlightedGroups[groupName].color.getHex());
                 }
             }
-        }
-        ,
+        },
 
         /**
          * Split merged mesh into individual meshes
@@ -2614,7 +2623,7 @@ define(['jquery'], function () {
          * @param instance
          * @param meshesContainer
          */
-        showVisualGroupsForInstance: function (instance) {
+        showVisualGroupsForInstance: function (instance, visualGroupElement) {
             if (!this.hasInstance(instance)) {
                 return;
             }
@@ -2634,8 +2643,8 @@ define(['jquery'], function () {
                     var groupElementsReference = object.getInitialValue().value.groupElements;
                     for (var i = 0; i < groupElementsReference.length; i++) {
                         var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
-                        if (objectGroup == this.getId()) {
-                            elements[object.getId()] = {'color': this.getColor()}
+                        if (objectGroup == visualGroupElement.getId()) {
+                            elements[object.getId()] = {'color': visualGroupElement.getColor()}
                         }
                     }
                 }

@@ -13,13 +13,14 @@ To test that Casper is properly installed:
 
 `casperjs test LiveTests.js --engine=slimerjs` 
 
-To run Geppetto UI Tests:
-
-`casperjs test UITests.js --engine=slimerjs` 
-
-To run Core projects Tests:
+To run Core projects Tests (Requires NOT having the persistence bundle):
 
 `casperjs test --includes=CoreTestsUtility.js CoreTests.js --engine=slimerjs`
+
+
+To run Persistence Tests (Requires the persistence bundle and a running MySQL server):
+
+`casperjs test PersistenceTests.js --engine=slimerjs` to run Geppetto Persistence Tests.
 
 Tests are executed by default on port 8080. If you would like to execute tests on a different port you can change it [here](https://github.com/openworm/org.geppetto.frontend/blob/downloadData/src/main/webapp/js/pages/tests/casperjs/CoreTestsUtility.js#L1).
 

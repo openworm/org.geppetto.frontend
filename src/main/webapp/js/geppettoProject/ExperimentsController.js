@@ -190,10 +190,10 @@ define(function (require) {
                     // store view in local storage for this project/experiment/user
                     if(!activeExperiment){
                         // no experiment active - save at project level
-                        localStorage.setItem("{0}_view".format(Project.getId()), JSON.stringify(view));
+                        localStorage.setItem("{0}_{1}_view".format(window.location.origin, Project.getId()), JSON.stringify(view));
                     } else {
                         // experiment active - save at experiment level
-                        localStorage.setItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId()), JSON.stringify(view));
+                        localStorage.setItem("{0}_{1}_{2}_view".format(window.location.origin, Project.getId(), window.Project.getActiveExperiment().getId()), JSON.stringify(view));
                     }
                     setView = true;
                 }
@@ -262,7 +262,7 @@ define(function (require) {
                 if (experiment.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                     // playExperimentReady true even if some variables
                     // do not have value, so if playAll then we get state here
-                    if (!this.playExperimentReady || this.playOptions.playAll) {
+                    if (!this.playExperimentReady) {
                     	this.getExperimentState(experiment.getParent().getId(), experiment.id, null);
                         return "Play Experiment";
                     } else {

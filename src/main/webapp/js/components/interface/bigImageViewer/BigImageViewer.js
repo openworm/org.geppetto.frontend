@@ -1,6 +1,6 @@
 define(function (require) {
 
-	require("./BigImageViewer.less")
+	require("./BigImageViewer.less");
 
 	var React = require('react');
 	var OpenSeaDragon = require('openseadragon');

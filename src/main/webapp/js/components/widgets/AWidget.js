@@ -119,15 +119,21 @@ define(function (require) {
                 return this;
             }
 
+            
+
             /**
              * @command setPosition(left,top)
              * @param {Integer} left -Left position of the widget
              * @param {Integer} top - Top position of the widget
              */
             setPosition(left, top) {
-                this.position.left = left;
-                this.position.top = top;
 
+                if (left != null && left != undefined) {
+                    this.position.left = left;
+                }
+                if (top != null && top != undefined) {
+                    this.position.top = top;
+                }
                 this.$el.dialog(
                     'option', 'position', {
                         my: "left+" + this.position.left + " top+" + this.position.top,
@@ -148,7 +154,13 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize(h, w) {
-                this.size = {height: h, width:w};
+                if (h != null && h != undefined && h!=-1) {
+                    this.size.height = h;
+                }
+                if (w != null && w != undefined && w!=-1) {
+                    this.size.width = w;
+                }
+
                 this.$el.dialog({ height: this.size.height, width: this.size.width }).dialogExtend();
                 this.$el.trigger('resizeEnd');
 

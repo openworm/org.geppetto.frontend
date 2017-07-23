@@ -4,6 +4,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
+
 var geppettoConfig;
 try {
     geppettoConfig = require('./GeppettoConfiguration.json');
@@ -134,7 +135,6 @@ module.exports = {
         loaders: [
             {
                 test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], loader: ['babel-loader'],
-
                 query: {
                     presets: ['react', 'es2015']
                 }

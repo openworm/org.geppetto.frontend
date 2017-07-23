@@ -8,6 +8,7 @@
     "build": "webpack -p --progress",
     "build-dev": "webpack --devtool eval",
     "build-dev-noTest": "webpack --devtool eval --noTest=true",
+    "build-dev-noTest:watch": "onchange 'js/**/*.*' 'extensions/**/*.*' 'style/**/*.*' -- npm run build-dev-noTest",
     "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js"
   },
   "devDependencies": {
@@ -54,6 +55,7 @@
     "less": "^2.7.2",
     "less-loader": "^2.2.3",
     "mathjs": "^3.5.3",
+    "onchange": "^3.2.1",
     "openseadragon": "^2.2.1",
     "pako": "^1.0.3",
     "pixi.js": "4.2.3",

@@ -159,7 +159,6 @@ function hhcellTest(test,name){
 	
 	casper.then(function () {
 		closeSpotlight();
-		casper.echo("-------Testing Canvas Widget and Color Function--------");
 		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([hhcell])});
@@ -194,24 +193,25 @@ function hhcellTest(test,name){
 	});
 	
 	casper.then(function(){	
-		casper.echo("-------Testing Camera Controls--------");
+		casper.echo("-------Testing Camera Controls on main Canvas and Canvas widget--------");
 		testCameraControlsWithCanvasWidget(test, [0,0,30.90193733102435]);
 	});
 	
-	casper.then(function () {
+	//test color Function
+	casper.then(function(){
+		casper.echo("-------Testing Color Function--------");
 		//add color Function
 		casper.evaluate(function(){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:1});
 		});
-	});
-	
-	//test color Function
-	casper.then(function(){	
+		casper.wait(2000, function(){
+			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
+		})
 		casper.wait(1000, function(){
 			test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 			casper.echo("Done Playing, now exiting");
-		})
+		});
 	});
 	
 	//reload test, needed for testing view comes up
@@ -338,10 +338,10 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
-		var select = casper.evaluate(function(){
-			acnet2.baskets_12[1].deselect();
-			acnet2.baskets_12[4].deselect();
+		casper.evaluate(function(){
+			acnet2.pyramidals_48[0].deselect();
 		});
+		
 		//test these cells are no longer ghosted
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[1]");
 		test3DMeshOpacity(test,1, "acnet2.baskets_12[4]");
@@ -349,7 +349,7 @@ function acnetTest(test){
 	
 	casper.then(function () {
 		closeSpotlight(); //close spotlight before continuing
-		casper.echo("-------Testing Canvas Widget and Color Function--------");
+		casper.echo("-------Testing Canvas Widget and Camera Controls--------");
 		
 		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
@@ -431,14 +431,20 @@ function acnetTest(test){
 	});
 	
 	casper.then(function () {
+		casper.echo("-------Testing Color Function--------");
+
 		//adding few widgets to the project to test View state later
 		casper.evaluate(function(){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
-		});		
-	});
-	
-	casper.then(function () {
+		});	
+		
+		casper.wait(2000, function(){
+			//test color function
+			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
+			casper.echo("Done Playing, now exiting");
+		});
+		
 		casper.wait(1000, function(){
 			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"acnet2.baskets_12[2].soma_0");
@@ -513,20 +519,27 @@ function c302Test(test){
 
 	casper.then(function(){
 		closeSpotlight(); //close spotlight before continuing
-		casper.echo("-------Testing Canvas Widget and Color Function--------");
+		casper.echo("-------Testing Canvas Widget and Camera Controls for both canvas--------");
 		casper.evaluate(function(){
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([c302])});
-			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
-			Project.getActiveExperiment().play({step:10});
 			Plot1.setPosition(0,300);
 		});
 		
 		testCameraControlsWithCanvasWidget(test,[49.25,-0.8000001907348633,733.3303486467378]);
-		
+	});
+	
+	casper.then(function(){
+		casper.echo("-------Testing Color Function--------");
+		casper.evaluate(function(){
+			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
+			Project.getActiveExperiment().play({step:10});
+		});
+				
+		//test color function
+		casper.wait(2000, function(){
+			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
+		});
 		casper.wait(1000, function(){
-			var select = casper.evaluate(function(){
-				c302.PVDR[0].select();
-			});
 			//test color function
 			test3DMeshColorNotEquals(test,defaultColor,"c302.PVDR[0]");
 			casper.echo("Done Playing, now exiting");

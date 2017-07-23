@@ -199,17 +199,25 @@ function hhcellTest(test,name){
 	
 	//test color Function
 	casper.then(function(){
+		
+	});
+	
+	//test color Function
+	casper.then(function(){
+		var initialColorFunctions = casper.evaluate(function(){
+			return GEPPETTO.SceneController.getColorFunctionInstances().length;
+		});
 		casper.echo("-------Testing Color Function--------");
 		//add color Function
 		casper.evaluate(function(){
 			GEPPETTO.SceneController.addColorFunction(GEPPETTO.ModelFactory.instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith('.v'),false), window.voltage_color);
 			Project.getActiveExperiment().play({step:10});
 		});
-	});
-	
-	//test color Function
-	casper.then(function(){
-		test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
+		var colorFunctions = casper.evaluate(function(){
+			return GEPPETTO.SceneController.getColorFunctionInstances().length;
+		});
+		test.assertNotEquals(initialColorFunctions,colorFunctionInstances, "More than one color function instance found");
+		//test3DMeshColorNotEquals(test,defaultColor,"hhcell.hhpop[0]");
 		casper.echo("Done Playing, now exiting");
 	});
 	

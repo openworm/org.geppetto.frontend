@@ -514,7 +514,7 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
             test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
         }, null, 5000);
 
-        ..casper.mouse.move('a.cloneIcon');
+        casper.mouse.move('a.cloneIcon');
         casper.waitUntilVisible('a.cloneIcon', function () {
             test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
         }, null, 5000);

@@ -8,7 +8,7 @@
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
         <property name="context-root" value="org.geppetto.frontend"/>
-        <property name="java-output-path" value="/org.geppetto.frontend/target/classes"/>
         <property name="component.exclusion.patterns" value="node_modules/**,WEB-INF/classes/lib/*.jar,WEB-INF/lib/*.jar,node/**"/>
+        <property name="java-output-path" value="/org.geppetto.frontend/target/classes"/>
     </wb-module>
 </project-modules>

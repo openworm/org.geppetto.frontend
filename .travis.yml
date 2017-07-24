@@ -53,3 +53,4 @@ script:
   - sleep 60
   - xvfb-run -a --server-args="-screen 0 1024x768x24" casperjs test PersistenceTests.js --host=http://localhost:28081/ --engine=slimerjs
   - sudo docker cp geppetto_persistence_container:/home/developer/virgo/serviceability/logs/log.log /etc
+  - tail /etc/log.log -n 100

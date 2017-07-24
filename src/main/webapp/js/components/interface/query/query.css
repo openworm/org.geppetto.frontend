@@ -404,7 +404,6 @@
 	color: #FFF;
 	border-bottom: 1px dashed;
 	border-color: rgba(255, 255, 255, 0.2);
-	text-align: left;
 }
 
 #querybuilder .griddle .footer-container {
@@ -449,6 +448,7 @@
 
 #querybuilder .query-results-name-column {
 	width: 150px;
+	text-align: centre;
 }
 
 #querybuilder .query-results-controls-column {
@@ -470,10 +470,12 @@
 
 #querybuilder .query-results-description-column {
 	font-size: smaller;
+	text-align: justify;
 }
 
 #querybuilder .query-results-type-column {
 	font-size: smaller;
+	text-align: centre;
 }
 
 #querybuilder .query-results-image {

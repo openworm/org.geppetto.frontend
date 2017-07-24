@@ -25,7 +25,7 @@
 }
 
 #querybuilder .querybuilder-button {
-	height: 50px;
+	/* height: 50px; clipping in safari */
 	width: 66px;
 	margin: 0px;
 	background: none !important;
@@ -121,7 +121,7 @@
 }
 
 #querybuilder .query-item-button {
-	height: 20px;
+	/*height: 20px; clipping in safari */
 	width: 30px;
 	margin: 0px;
 	background: none !important;

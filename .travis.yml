@@ -11,14 +11,10 @@ env:
     secure: dn0FPQ5IG4M/3kdwnyI78ElQ308Vc3QnKAvkWfwMFb8QxDqxQdnTo7AV1qTMtbLrDNkeEWIgi4nc7jmXNtvGTwOfhAULVh6606Qs5B+ezTdwzajbbFMI8SKQx/pnTojOMu8dx7V4lMoR/YWcojR0VC1IWVC62TGbSB1k5BDGgH0=
 install:
 - ./travis-install.sh
-- mvn install
 - mvn --quiet clean install -P $TRAVIS_BRANCH
 - npm install --silent -g phantomjs 
 - npm install --silent -g casperjs 
 - npm install --silent -g slimerjs
-- sudo apt-get install -qq -y libc6 libstdc++6 libgcc1 libgtk2.0-0 libasound2 libxrender1 libdbus-glib-1-2
-- sudo apt-get install -qq -y libgtk-3-dev lshw
-- sudo apt-get install -qq -y build-essential libxi-dev libglu1-mesa-dev libglew-dev
 - npm install --silent -g gl
 
 services:
@@ -47,7 +43,7 @@ script:
   - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=CoreTestsUtility.js CoreTests.js --host=http://localhost:28081/ --engine=slimerjs
   - docker stop $(docker ps -a -q)
   - docker rm $(docker ps -a -q)
-  - docker build -t="geppetto_persistence" --build-arg aKey=$accessKey --build-arg sKey=$secretKey https://github.com/openworm/org.geppetto.git#docker-casperjs:utilities/docker/geppetto-persistence/
+  - docker build -t="geppetto_persistence" --build-arg frontendBranch=$TRAVIS_BRANCH --build-arg aKey=$accessKey --build-arg sKey=$secretKey https://github.com/openworm/org.geppetto.git#docker-casperjs:utilities/docker/geppetto-persistence-frontend/
   - docker run  -t -dit --name=geppetto_persistence_container -h localhost -p 28081:8080 geppetto_persistence
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/test_geppetto_server.sh
   - sleep 60

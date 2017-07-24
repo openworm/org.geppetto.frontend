@@ -105,8 +105,10 @@ define(function (require) {
             var that = this;
             var autocompleteOn = true;
             this.populateTags();
+
+            var commandInputAreaEl = $("#" + this.props.id + "_component #commandInputArea");
             //bind console input area to autocomplete event
-            $("#" + this.props.id + "_component #commandInputArea").bind("keydown", function (event) {
+            commandInputAreaEl.bind("keydown", function (event) {
                 if (event.keyCode === $.ui.keyCode.TAB &&
                     $(this).data("ui-autocomplete").menu.active) {
                     event.preventDefault();
@@ -127,7 +129,7 @@ define(function (require) {
                         if (autocompleteOn) {
                             var suggestions = $(this).data("uiAutocomplete").menu.element[0].children
                                 , firstElement = suggestions[0]
-                                , inpt = $('#commandInputArea')
+                                , inpt = commandInputAreaEl
                                 , original = inpt.val()
                                 , firstElementText = $(firstElement).text()
                                 , suggestionsSize = suggestions.length;

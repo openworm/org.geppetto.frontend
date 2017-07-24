@@ -158,7 +158,7 @@
 }
 
 .spotlight-button {
-    height: 60px;
+    /* height: 60px; clipping in safari */
     width: 120px;
     margin: 25px;
     background: none !important;

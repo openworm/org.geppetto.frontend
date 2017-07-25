@@ -19,34 +19,38 @@ define(function (require, exports, module) {
 	var ComponentSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			sync_value: undefined,
-			parent: null,
-			component: null
+			parent: null
 		}),
 
 		initialize: function (options) {
 			ComponentSync.__super__.initialize.apply(this, arguments);
 			this.on("change:sync_value", function (model, value, options) {
-				model.get('parent').forceRender();
+				if (model.get('parent') != null){
+					model.get('parent').forceRender();
+				}
+				else{
+					this.component.setState({value: value})
+				}
 			});
 			
 		},
 
-		handleChange: function (model, value) {
-			model.send({ event: 'change', data: value });
+		handleChange: function (value) {
+			// this.send({ event: 'change', data: value });
 		},
 
-		handleBlur: function (model, value) {
-			model.set('sync_value', value);
-			model.save_changes();
-			model.send({ event: 'blur', data: value });
+		handleBlur: function (value) {
+			this.set('sync_value', value);
+			this.save_changes();
+			//model.send({ event: 'blur', data: value });
 		},
 
 		getParameters: function(parameters){
 			parameters['id'] = this.get('widget_id');
 			parameters['name'] = this.get('widget_name');
 			parameters['sync_value'] = this.get('sync_value');
-			parameters['handleChange'] = this.handleChange.bind(null, this);
-			parameters['handleBlur'] = this.handleBlur.bind(null, this);
+			parameters['handleChange'] = this.handleChange.bind(this);
+			parameters['handleBlur'] = this.handleBlur;
 			parameters['isStateless'] = true;
 			return parameters;
 		},
@@ -55,7 +59,7 @@ define(function (require, exports, module) {
 			
 			var component = GEPPETTO.ComponentFactory._addComponent(componentItem, this.componentType, this.getParameters(parameters),
 				 container, undefined, (this.get("embedded") == false));
-			this.set('component', component);
+			this.component = component;
 
 			return component;
 		}
@@ -78,7 +82,11 @@ define(function (require, exports, module) {
 			this.on("msg:custom", this.handle_custom_messages, this);
 			this.on("comm:close", this.close_panel, this);
 			this.on("change:widget_name", function (model, value, options) {
-				this.get("component").setName(this.get("widget_name"));
+				this.component.setName(this.get("widget_name"));
+			});
+			this.on("change:items", function (model, value, options) {
+				console.log("taka");
+				this.forceRender();
 			});
 		},
 		
@@ -94,7 +102,7 @@ define(function (require, exports, module) {
 
 		forceRender: function () {
 			if (this.get("embedded") == false) {
-				this.get("component").setChildren(this.getChildren());
+				this.component.setChildren(this.getChildren());
 			}
 			else {
 				this.get("parent").forceRender();
@@ -115,8 +123,8 @@ define(function (require, exports, module) {
 			var comp = this.getComponent();
 			//this.set('component', GEPPETTO.ComponentFactory._addComponent(comp, "PANEL", { items: this.getChildren(), parentStyle: this.get('parentStyle') },
 			//	 document.getElementById('widgetContainer'), undefined, true));
-			this.set('component', GEPPETTO.ComponentFactory._renderComponent(comp, "PANEL", this.getParameters({ items: this.getChildren(), parentStyle: this.get('parentStyle') }),
-				 document.getElementById('widgetContainer'), undefined, true));
+			this.component = GEPPETTO.ComponentFactory._renderComponent(comp, "PANEL", this.getParameters({ items: this.getChildren(), parentStyle: this.get('parentStyle') }),
+				 document.getElementById('widgetContainer'), undefined, true);
 
 			// On close send a message to python to remove objects
 			var that = this;
@@ -134,14 +142,14 @@ define(function (require, exports, module) {
 			// Do not allow close depending on property
 			for (var propertyName in this.get("properties")){
 				if (propertyName == "closable" && this.get("properties")["closable"] == false){
-                    this.get("component").showCloseButton(false);
+                    this.component.showCloseButton(false);
 				}
 			}
 
-			this.get("component").setPosition(this.get('position_x'), this.get('position_y'));
-			this.get("component").setSize(this.get('height'), this.get('width'));
-			this.get("component").showHistoryIcon(false);
-			this.get("component").setName(this.get("widget_name"));
+			this.component.setPosition(this.get('position_x'), this.get('position_y'));
+			this.component.setSize(this.get('height'), this.get('width'));
+			this.component.showHistoryIcon(false);
+			this.component.setName(this.get("widget_name"));
 		},
 
 		handle_custom_messages: function (msg) {
@@ -149,7 +157,7 @@ define(function (require, exports, module) {
 				this.display();
 			}
 			else if (msg.type === 'shake') {
-				this.get("component").shake();
+				this.component.shake();
 			}
 		}
 	}, {
@@ -186,14 +194,31 @@ define(function (require, exports, module) {
 	var TextFieldSync = ComponentSync.extend({
 
 		defaults: _.extend({}, ComponentSync.prototype.defaults, {
-			read_only: false
+			read_only: false,
+			componentType: "TEXTFIELD"
 		}),
 		initialize: function (options) {
 			TextFieldSync.__super__.initialize.apply(this, arguments);
+			this.on("msg:custom", this.handle_custom_messages, this);
 		},
 		getComponent: function () {
 			var parameters = { readOnly: this.get('read_only') };
 			return TextFieldSync.__super__.getComponent.apply(this, [TextFieldComp, parameters]);
+		},
+		handle_custom_messages: function (msg) {
+			if (msg.type === 'sync') {
+				var componentsMap = GEPPETTO.ComponentFactory.getComponents()[this.get('componentType')];
+				var component = undefined;
+				for (var c in componentsMap){
+					if (this.get('widget_id') === componentsMap[c].props.path){
+						component = componentsMap[c];
+						component.setState({handleChange : this.handleChange.bind(this)});
+						component.setState({handleBlur: this.handleBlur.bind(this)});
+						this.component = component;
+						break;
+					}
+				}
+			}
 		}
 	});
 

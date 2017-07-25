@@ -128,7 +128,8 @@ define(function (require, exports, module) {
 			stateVariables: [],
 			derived_state_variables: [],
 			geometries: [],
-			point_process_sphere: null
+			point_process_sphere: null,
+			original_model: ''
 		}),
 
 		getGeometryPayload: function (geometry, visualGroups) {
@@ -417,6 +418,10 @@ define(function (require, exports, module) {
 				if (this.get('derived_state_variables').length > 0){
 					this.mergeModel();
 				}
+			});
+
+			this.on("change:original_model", function (model, value, options) {
+				GEPPETTO.trigger('OriginalModelLoaded', value);
 			});
 		}
 	}, {

@@ -498,7 +498,10 @@
 	height: 130px;
 }
 
-#querybuilder .query-results-images-column img {
-	max-height: 130px;
+#querybuilder .query-results-images-column img{
+	max-height: 110px;
+}
+#querybuilder .query-results-images-column img:hover{
+	max-height: 300px;
 }
 

@@ -48,7 +48,7 @@ script:
   - docker stop $(docker ps -a -q)
   - docker rm $(docker ps -a -q)
   - echo "Current time :$(date +"%T")"
-  - docker build -t="geppetto_persistence" --build-arg frontendBranch=$TRAVIS_BRANCH --build-arg aKey=$accessKey --build-arg sKey=$secretKey https://github.com/openworm/org.geppetto.git#docker-casperjs:utilities/docker/geppetto-persistence-frontend/
+  - docker build -t="geppetto_persistence" --build-arg frontendBranch=development --build-arg aKey=$accessKey --build-arg sKey=$secretKey https://github.com/openworm/org.geppetto.git#docker-casperjs:utilities/docker/geppetto-persistence-frontend/
   - echo "Current time :$(date +"%T")"
   - docker run  -t -dit --name=geppetto_persistence_container -h localhost -p 28081:8080 geppetto_persistence
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/test_geppetto_server.sh

@@ -18,8 +18,8 @@ define(function (require) {
             this.suggestions = [];
             this.helpObjectsMap = {};
             this.nonCommands = [];
-            this.visible = false;
             this.tags = [];
+            this.visible = false;
 
             var settings = {
                 id: this.props.id + "_component"
@@ -90,7 +90,7 @@ define(function (require) {
                 }
 
                 //save suggestions for request term
-                suggestions = avail;
+                this.suggestions = avail;
             }
             catch (e) {
 

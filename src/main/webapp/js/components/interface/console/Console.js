@@ -12,13 +12,16 @@ define(function (require) {
         constructor(props) {
             super(props);
 
-            //keeps track of API commands
+            // variables to keep track of API commands
+            // NOTE: could refactor in the controller as they are the same for all instances of the console
             this.commands = [];
-            // suggestions for auto-complete
-            this.suggestions = [];
             this.helpObjectsMap = {};
             this.nonCommands = [];
             this.tags = [];
+
+            // suggestions for auto-complete
+            this.suggestions = [];
+            // track visibility
             this.visible = false;
 
             var settings = {

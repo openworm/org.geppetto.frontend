@@ -19,15 +19,15 @@ class WidgetController {
 		var that = this;
 		this.widgets.push(widget);
 
-		GEPPETTO.Console.updateHelpCommand(widget, widget.getId(), this.comments);
-		GEPPETTO.Console.updateTags(widget.getId(), widget);
+		GEPPETTO.CommandController.updateHelpCommand(widget, widget.getId(), this.comments);
+		GEPPETTO.CommandController.updateTags(widget.getId(), widget);
 
 		//registers remove handler for widget
 		widget.$el.on("remove", function () {
 
 
 			//remove tags and delete object upon destroying widget
-			GEPPETTO.Console.removeCommands(widget.getId());
+			GEPPETTO.CommandController.removeCommands(widget.getId());
 			var widgetsList = that.widgets;
 			for (var p in widgetsList) {
 				if (widgetsList[p].getId() == this.id) {
@@ -100,7 +100,7 @@ class WidgetController {
 			var widget = this.widgets[i];
 
 			//remove commands
-			GEPPETTO.Console.removeCommands(widget.getId());
+			GEPPETTO.CommandController.removeCommands(widget.getId());
 
 			widget.destroy();
 

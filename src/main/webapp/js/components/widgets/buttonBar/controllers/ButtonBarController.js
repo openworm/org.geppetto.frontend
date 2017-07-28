@@ -33,16 +33,16 @@ define(function (require) {
                 widgetType: GEPPETTO.Widgets.BUTTONBAR, stateless: isStateless
             });
             vv.help = function () {
-                return GEPPETTO.Console.getObjectCommands(id);
+                return GEPPETTO.CommandController.getObjectCommands(id);
             };
             this.widgets.push(vv);
 
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //updates help command options
-            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/buttonBar/ButtonBar.js"));
+            GEPPETTO.CommandController.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/buttonBar/ButtonBar.js"));
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(vv.getId(), vv);
+            GEPPETTO.CommandController.updateTags(vv.getId(), vv);
             return vv;
         },
 

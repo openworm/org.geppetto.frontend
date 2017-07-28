@@ -35,7 +35,7 @@ define(['backbone'], function (require) {
                 delete this.experiments[experiment];
             }
             for (var entity in this.runTimeTree) {
-                GEPPETTO.Console.removeCommands(entity);
+                GEPPETTO.CommandController.removeCommands(entity);
             }
             this.experiments = [];
             this.runTimeTree = {};

@@ -59,7 +59,7 @@ define(function (require) {
                 //registers remove handler for widget
                 widgetSelector.on("remove", function () {
                     //remove tags and delete object upon destroying widget
-                    GEPPETTO.Console.removeCommands(widgetID);
+                    GEPPETTO.CommandController.removeCommands(widgetID);
 
                     var widgets = controller.getWidgets();
                     var componentType = controller.widgets[0].getComponentType()

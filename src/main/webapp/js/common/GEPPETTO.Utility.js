@@ -20,9 +20,6 @@ define(function (require) {
              * @returns - Formmatted commands with descriptions
              */
             extractCommandsFromFile: function (script, Object, objectName) {
-
-
-
                 //retrieve the script to get the comments for all the methods
                 $.ajax({
                     async: true,
@@ -157,7 +154,7 @@ define(function (require) {
             },
 
             getPathStringParameters: function () {
-                var paths = []
+                var paths = [];
                 var locationPaths = location.pathname.split("/");
                 for (var pathIndex in locationPaths) {
                     var locationPath = locationPaths[pathIndex];

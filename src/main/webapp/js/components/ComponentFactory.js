@@ -159,7 +159,7 @@ define(function (require) {
 					widgetController.registerWidget(renderedComponent)
 				}
 				else {
-					GEPPETTO.Console.updateTags(componentType, renderedComponent);
+					GEPPETTO.CommandController.updateTags(componentType, renderedComponent);
 					renderedComponent.container = container;
 				}
 				// Register in component map

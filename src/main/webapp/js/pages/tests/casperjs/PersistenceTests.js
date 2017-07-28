@@ -317,7 +317,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                     }
                   //roll over the experiments row
                     this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-                    doPrePersistenceExperimentsTableButtonsCheck(test);
+                    //doPrePersistenceExperimentsTableButtonsCheck(test);
                 });
                 casper.then(function () {
                     if(spotlight_record_variable != ''){

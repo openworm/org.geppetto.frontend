@@ -112,7 +112,7 @@ define(function (require) {
                         var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
 
                         var functionName = prop + "(" + parameter + ")";
-                        if (GEPPETTO.Console.getNonCommands().indexOf(functionName) <= -1) {
+                        if (GEPPETTO.CommandController.getNonCommands().indexOf(functionName) <= -1) {
                             methods.push(functionName);
                         }
                     }

@@ -69,6 +69,7 @@ define(function (require) {
     require('../../components/interface/jsConsole/SandboxConsole')(GEPPETTO);
     require('../../common/GEPPETTO.Resources')(GEPPETTO);
     require('../../common/GEPPETTO.ViewController')(GEPPETTO);
+    require('../../common/GEPPETTO.CommandController')(GEPPETTO);
     require('./GEPPETTO.Events')(GEPPETTO);
     require('../../common/GEPPETTO.UserController')(GEPPETTO);
     require('./GEPPETTO.Flows')(GEPPETTO);

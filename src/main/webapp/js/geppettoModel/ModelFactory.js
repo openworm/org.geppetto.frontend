@@ -851,31 +851,6 @@ define(function (require) {
                     }            
                 return diffReport;
             },
-
-            createValueInstanceFronDiffReport : function(diffReport){
-            	 // get initial instance count (used to figure out if we added instances at the end)
-                var instanceCount = this.getInstanceCount(window.Instances);
-                var newInstancePaths = [];
-
-                // shortcut function to get potential instance paths given a set types
-                // NOTE: defined as a nested function to avoid polluting the visible API of ModelFactory
-
-                // STEP 1: check new variables to see if any new instances are needed
-            
-                var variableId = diffReport.variables[0].getId();    
-                var variable = eval(variableId);
-                var varTypes = variable.getTypes();
-                
-                // STEP 4: If instances were added, re-populate shortcuts
-                    GEPPETTO.ModelFactory.populateChildrenShortcuts(variableId);
-               
-                for (var k = 0; k < window.Instances.length; k++) {
-                    GEPPETTO.ModelFactory.populateConnections(window.Instances[k]);
-                }
-
-                return newInstances;
-            },
-
              
             /**
              * Updates capabilities of variables and their instances if any

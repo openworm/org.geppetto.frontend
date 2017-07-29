@@ -582,7 +582,7 @@ define(function (require) {
          */
         setView(view) {
             // set base properties
-            super.setView(view)
+            super.setView(view);
 
             // set data
             if (view.data != undefined) {
@@ -652,18 +652,10 @@ define(function (require) {
             return baseView;
         }
 
-        /**
-         *
-         * @returns {boolean}
-         */
         shouldComponentUpdate() {
             return false;
         }
 
-
-        /**
-         *
-         */
         componentDidMount() {
             if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
@@ -689,10 +681,6 @@ define(function (require) {
             }
         }
 
-        /**
-         *
-         * @returns {XML}
-         */
         render() {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">

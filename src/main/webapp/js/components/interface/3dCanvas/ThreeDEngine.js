@@ -918,10 +918,10 @@ define(['jquery'], function () {
             };
             var loader = new THREE.OBJLoader(manager);
             var scene = loader.parse(node.obj);
-
+            var that = this;
             scene.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
-                    this.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.DEFAULT);
+                    that.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.DEFAULT);
                     child.material.wireframe = this.wireframe;
                     child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                     child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -1989,12 +1989,12 @@ define(['jquery'], function () {
                 return;
             }
             this.controls.reset();
-
+            var that = this;
             var zoomParameters = {};
             var mesh = this.meshes[instance.getInstancePath()];
             mesh.traverse(function (object) {
                 if (object.hasOwnProperty("geometry")) {
-                    this.addMeshToZoomParameters(object, zoomParameters);
+                    that.addMeshToZoomParameters(object, zoomParameters);
                 }
             });
 

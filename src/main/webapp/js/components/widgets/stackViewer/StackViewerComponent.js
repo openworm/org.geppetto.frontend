@@ -235,8 +235,18 @@ define(function (require) {
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
+                    if (this.state.orth == 2) {
+                        x = (this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    }
+                    else {
                     x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    }
+                    if (this.state.orth == 1) {
+                        y = (this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    }
+                    else {
                     y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    }
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
                     x = x + (this.renderer.width / this.disp.scale.x);
@@ -262,14 +272,14 @@ define(function (require) {
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[11] = coordinates[3];
                     } else if (this.state.orth == 2) { // sagital
-                        this.state.plane[2] = coordinates[1];
-                        this.state.plane[1] = coordinates[0];
-                        this.state.plane[5] = coordinates[1];
-                        this.state.plane[4] = coordinates[2];
-                        this.state.plane[8] = coordinates[3];
-                        this.state.plane[7] = coordinates[0];
-                        this.state.plane[11] = coordinates[3];
-                        this.state.plane[10] = coordinates[2];
+                        this.state.plane[1] = coordinates[1];
+                        this.state.plane[2] = coordinates[0];
+                        this.state.plane[4] = coordinates[1];
+                        this.state.plane[5] = coordinates[2];
+                        this.state.plane[7] = coordinates[3];
+                        this.state.plane[8] = coordinates[0];
+                        this.state.plane[10] = coordinates[3];
+                        this.state.plane[11] = coordinates[2];
                     }
                 }
                 // Pass Z coordinates
@@ -307,13 +317,11 @@ define(function (require) {
                     this.state.stackViewerPlane.visible = true;
                 }
             }
-
-            if (this.disp.width > 0) {
+            if (this.disp.width > 0 && this.props.slice) {
                 this.state.stackViewerPlane.visible = true;
             } else {
                 this.state.stackViewerPlane.visible = false;
             }
-
             this.state.planeUpdating = false;
         },
 
@@ -325,7 +333,8 @@ define(function (require) {
                 GEPPETTO.SceneController.getSelection()[0].deselect();
             }
             $.each(this.state.stack, function (i, item) {
-                (function (i, that) {
+                (function (i, that, shift) {
+                    var shift = GEPPETTO.isKeyPressed("shift");
                     var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                     //get image size;
                     $.ajax({
@@ -339,10 +348,15 @@ define(function (require) {
                                         if (result[j].trim() !== '') {
                                             var index = Number(result[j]);
                                             if (i !== 0 || index !== 0) { // don't select template
-                                                if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
+                                                if (index == 0 && !shift) {
                                                     console.log(that.state.label[i] + ' clicked');
+                                                    try{
                                                     eval(that.state.id[i][Number(result[j])]).select();
                                                     that.setStatusText(that.state.label[i] + ' selected');
+                                                    }catch (err){
+                                                            console.log("Error selecting: " + that.state.id[i][Number(result[j])]);
+                                                            console.log(err.message);
+                                                    }
                                                     break;
                                                 } else {
                                                     if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
@@ -352,19 +366,17 @@ define(function (require) {
                                                             that.setStatusText(that.props.templateDomainNames[index] + ' selected');
                                                             break;
                                                         } catch (ignore) {
-                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                            if (GEPPETTO.isKeyPressed("shift")) {
+                                                            console.log(that.props.templateDomainNames[index] + ' requested');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requested');
+                                                            if (shift) {
                                                                 console.log('Adding ' + that.props.templateDomainNames[index]);
                                                                 that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
-                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
-                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
-                                                                    setTermInfo(instance, instance.getParent().getId());
-                                                                    resolve3D(that.props.templateDomainIds[index]);
-                                                                });
+                                                                var varriableId = that.props.templateDomainIds[index];
+                                                                stackViewerRequest(varriableId); // window.stackViewerRequest must be configured in init script
                                                                 break;
                                                             } else {
                                                                 that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
+                                                                stackViewerRequest(that.props.templateDomainTypeIds[index]);
                                                                 break;
                                                             }
                                                         }
@@ -396,10 +408,11 @@ define(function (require) {
                 var that = this;
                 var callX = that.state.posX.toFixed(0), callY = that.state.posY.toFixed(0);
                 $.each(this.state.stack, function (i, item) {
-                    (function (i, that) {
+                    (function (i, that, shift) {
                         if (i == 0) {
                             that.state.loadingLabels = true;
                         }
+                        var shift = GEPPETTO.isKeyPressed("shift");
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({
@@ -415,7 +428,7 @@ define(function (require) {
                                                 var index = Number(result[j]);
                                                 if (i !== 0 || index !== 0) { // don't select template
                                                     if (index == 0) {
-                                                        if (!GEPPETTO.isKeyPressed("shift")) {
+                                                        if (!shift) {
                                                             that.state.objects.push(that.state.label[i]);
                                                         }
                                                     } else {
@@ -429,7 +442,7 @@ define(function (require) {
                                         }
                                         var list = $.unique(that.state.objects).sort();
                                         var objects = '';
-                                        if (GEPPETTO.isKeyPressed("shift")) {
+                                        if (shift) {
                                             objects = 'Click to add: ';
                                         }
                                         for (j in list) {
@@ -609,6 +622,21 @@ define(function (require) {
                     that.checkStack();
                 }, 1000);
             }
+            
+            if ( Object.keys(this.state.images).length > (this.state.stack.length * this.state.visibleTiles.length ) ){
+            	for (i in Object.keys(this.state.images)){
+            		var id = Object.keys(this.state.images)[i].split(",")[0];
+            		if (id>(this.state.stack.length-1)){
+            			delete this.state.images[Object.keys(this.state.images)[i]];
+            			try{
+            				this.stack.removeChildAt(i);
+            			}catch (ignore){
+            				//ignore if it doesn't exist
+            			}
+            		}
+            	}
+            }
+            
         },
 
         generateColor: function () {
@@ -700,7 +728,7 @@ define(function (require) {
         createStatusText: function () {
             if (!this.state.buffer[-1]) {
                 var style = {
-                    font: '9px Helvetica',
+                    font: '12px Helvetica',
                     fill: '#ffffff',
                     stroke: '#000000',
                     strokeThickness: 2,
@@ -730,13 +758,14 @@ define(function (require) {
         componentWillReceiveProps: function (nextProps) {
             var updDst = false;
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl || this.state.id !== nextProps.id) {
-                this.state.stack = nextProps.stack;
-                this.state.color = nextProps.color;
-                this.state.label = nextProps.label;
-                this.state.id = nextProps.id;
-                this.state.serverUrl = nextProps.serverUrl;
+            	this.setState({stack:nextProps.stack,
+                color:nextProps.color,
+                label:nextProps.label,
+                id:nextProps.id,
+                serverUrl:nextProps.serverUrl});
                 this.createImages();
                 this.updateImages(nextProps);
+                this.checkStack();
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);
@@ -744,7 +773,7 @@ define(function (require) {
                 this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
                 this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
             }
-            if (nextProps.fxp !== this.props.fxp) {
+            if (nextProps.fxp[0] !== this.props.fxp[0] || nextProps.fxp[1] !== this.props.fxp[1] || nextProps.fxp[2] !== this.props.fxp[2]) {
                 this.state.dst = nextProps.dst;
                 updDst = true;
             }
@@ -900,7 +929,7 @@ define(function (require) {
         },
 
         onDragEnd: function () {
-            if (this.state.data !== null) {
+            if (this.state.data !== null && typeof this.state.data.getLocalPosition === "function") {
                 this.stack.alpha = 1;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = Number(startPosition.x.toFixed(0));
@@ -995,9 +1024,9 @@ define(function (require) {
                 yaw: 0,
                 rol: 0,
                 scl: 1.0,
-                voxelX: 0.622088,
-                voxelY: 0.622088,
-                voxelZ: 0.622088,
+                voxelX: (this.props.voxel.x || 0.622088),
+                voxelY: (this.props.voxel.y || 0.622088),
+                voxelZ: (this.props.voxel.z || 0.622088),
                 minDst: -100,
                 maxDst: 100,
                 orth: 0,
@@ -1005,8 +1034,12 @@ define(function (require) {
                 stack: [],
                 label: [],
                 id: [],
+                tempId: [],
+                tempName: [],
+                tempType: [],
                 plane: null,
-                initalised: false
+                initalised: false,
+                slice: false
             };
         },
 
@@ -1089,6 +1122,31 @@ define(function (require) {
                 if (nextProps.data.width && nextProps.data.width != null) {
                     this.setState({width: nextProps.data.width});
                 }
+                if (nextProps.config && nextProps.config != null && nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length && nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
+                    this.setState({voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
+                        voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
+                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),});
+                }
+                if (nextProps.config && nextProps.config != null){
+                	if (nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length){
+                		if (nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
+                			this.setState({voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
+	                        voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
+	                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),});
+                		}
+                		if (nextProps.config.subDomains.length > 4 && nextProps.config.subDomains[1] != null){
+                			this.setState({tempName: nextProps.config.subDomains[2],
+                            tempId: nextProps.config.subDomains[1],
+                            tempType: nextProps.config.subDomains[3]});
+                			if (nextProps.config.subDomains[4] && nextProps.config.subDomains[4].length && nextProps.config.subDomains[4].length > 0){
+                				this.setState({fxp:JSON.parse(nextProps.config.subDomains[4][0])});
+                			}
+            }
+                	}
+                }
+                if (nextProps.voxel && nextProps.voxel != null) {
+                    this.setState({voxelX: nextProps.voxel.x, voxelY: nextProps.voxel.y, voxelZ: nextProps.voxel.z});
+                }
             }
         },
 
@@ -1120,8 +1178,10 @@ define(function (require) {
                             colors.push(instances[instance].parent.getColor());
                         }
                     }
-                    catch (ignore) {
-                        console.log('Error handling ' + instance.data);
+                    catch (err) {
+                        console.log('Error handling ' + instances[instance].getId());
+                        console.log(err.message);
+                        console.log(err.stack);
                     }
                 }
                 if (server != this.props.config.serverUrl && server != null) {
@@ -1183,13 +1243,21 @@ define(function (require) {
             } else if (orth == 1) {
                 pit = 90;
                 yaw = 90;
-                rol = 90;
+                rol = 270;
             } else if (orth == 2) {
                 pit = 90;
                 yaw = 0;
-                rol = 90;
+                rol = 0;
             }
             this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0, stackX: -10000, stackY: -10000});
+        },
+
+        toggleSlice: function () {
+            if (this.state.slice) {
+                this.setState({slice: false});
+            }else{
+                this.setState({slice: true});
+            }
         },
 
         /**
@@ -1307,6 +1375,12 @@ define(function (require) {
             var stepOutClass = 'btn fa fa-chevron-up';
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
+            var toggleSliceClass = 'btn fa fa-toggle-';
+            if (this.state.slice) {
+                toggleSliceClass += 'on';
+            }else{
+                toggleSliceClass += 'off';
+            }
             var startOffset = 2.5;
             var displayArea = this.props.data.id + 'displayArea';
 
@@ -1362,6 +1436,14 @@ define(function (require) {
                             border: 0,
                             background: 'transparent'
                         }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset + 102,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={toggleSliceClass} onClick={this.toggleSlice} title={'Toggle the 3D slice display'}/>
                         <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
                                 serverUrl={this.props.config.serverUrl}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
@@ -1372,8 +1454,10 @@ define(function (require) {
                                 width={this.props.data.width} voxelX={this.state.voxelX}
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
                                 templateId={this.props.config.templateId}
-                                templateDomainIds={this.props.config.templateDomainIds}
-                                templateDomainNames={this.props.config.templateDomainNames}/>
+                                templateDomainIds={this.state.tempId}
+                        		templateDomainTypeIds={this.state.tempType}
+                                templateDomainNames={this.state.tempName}
+                                slice={this.state.slice}/>
                     </div>
                 );
             } else {

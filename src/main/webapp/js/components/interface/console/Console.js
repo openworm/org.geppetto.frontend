@@ -83,7 +83,7 @@ define(function (require) {
         autoComplete() {
             var that = this;
             var autocompleteOn = true;
-            GEPPETTO.CommandController.populateDefaultTags();
+            GEPPETTO.CommandController.availableTags();
 
             var commandInputAreaEl = $("#" + this.props.id + "_component #commandInputArea");
             //bind console input area to autocomplete event

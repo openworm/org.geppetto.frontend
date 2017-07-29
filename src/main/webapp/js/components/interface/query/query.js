@@ -982,6 +982,7 @@ define(function (require) {
                                     id: datasourceConfig.resultsFilters.getId(record),
                                     name: datasourceConfig.resultsFilters.getName(record),
                                     description: datasourceConfig.resultsFilters.getDescription(record),
+                                    type: datasourceConfig.resultsFilters.getType(record),
                                     images: datasourceConfig.resultsFilters.getImageData(record),
                                     controls: ''
                                 }

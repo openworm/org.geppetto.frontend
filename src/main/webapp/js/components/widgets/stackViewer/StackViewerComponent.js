@@ -315,8 +315,8 @@ define(function (require) {
 
             var i, j, result, id, label;
             var that = this;
-            while (GEPPETTO.G.getSelection()[0] != undefined) {
-                GEPPETTO.G.getSelection()[0].deselect();
+            while (GEPPETTO.SceneController.getSelection()[0] != undefined) {
+                GEPPETTO.SceneController.getSelection()[0].deselect();
             }
             $.each(this.state.stack, function (i, item) {
                 (function (i, that) {
@@ -326,7 +326,7 @@ define(function (require) {
                         url: image + '&prl=-1,' + that.state.posX.toFixed(0) + ',' + that.state.posY.toFixed(0) + '&obj=Wlz-foreground-objects',
                         type: 'POST',
                         success: function (data) {
-                            if (GEPPETTO.G.getSelection()[0] == undefined) { // check nothing already selected
+                            if (GEPPETTO.SceneController.getSelection()[0] == undefined) { // check nothing already selected
                                 result = data.trim().split(':')[1].trim().split(' ');
                                 if (result !== '') {
                                     for (j in result) {

@@ -99,7 +99,7 @@ define(function (require) {
          */
         setData: function (data) {
             // console.log('set Data');
-            var sel = GEPPETTO.G.getSelection();
+            var sel = GEPPETTO.SceneController.getSelection();
             var setSize = false;
             if (data != undefined && data != null) {
                 if (data !== this.data || sel !== this.data.selected) {

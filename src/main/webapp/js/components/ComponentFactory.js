@@ -176,6 +176,9 @@ define(function (require) {
 			addWidget: function (componentType, properties, callback) {
 
 				if (componentType in this.components) {
+					if(properties==undefined){
+						properties={};
+					}
 					this._createComponent(componentType, properties, document.getElementById('widgetContainer'), callback, true);
 				}
 				else {

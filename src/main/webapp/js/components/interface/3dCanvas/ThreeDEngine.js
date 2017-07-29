@@ -538,6 +538,21 @@ define(['jquery'], function () {
         },
 
         /**
+         * Sets whether to use wireframe for the materials of the meshes
+         */
+        setWireframe: function (wireframe) {
+            this.wireframe = wireframe;
+            var that = this;
+            this.scene.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    if(!(child.material.nowireframe==true)){
+                        child.material.wireframe = that.wireframe;
+                    }
+                }
+            });
+        },
+
+        /**
          * Traverse the instances building a visual object when needed
          *
          * @param instances -

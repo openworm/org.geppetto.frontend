@@ -150,6 +150,52 @@ define(function (require) {
         }
 
         /**
+         * Adds a 3D plane to the canvas
+         *
+         * @param x1
+         * @param y1
+         * @param z1
+         * @param x2
+         * @param y2
+         * @param z2
+         * @param x3
+         * @param y3
+         * @param z3
+         * @param x4
+         * @param y4
+         * @param z4
+         * @param textureURL
+         * @returns {Canvas}
+         */
+        add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL) {
+            this.engine.add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL);
+            return this;
+        }
+
+        /**
+         * Modifies plane object
+         *
+         * @param object
+         * @param x1
+         * @param y1
+         * @param z1
+         * @param x2
+         * @param y2
+         * @param z2
+         * @param x3
+         * @param y3
+         * @param z3
+         * @param x4
+         * @param y4
+         * @param z4
+         * @returns {Canvas}
+         */
+        modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
+            this.engine.modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
+            return this;
+        }
+
+        /**
          * Show connection lines for instances.
            @param instances
            @param {boolean} mode - Show or hide connection lines

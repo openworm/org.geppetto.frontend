@@ -497,6 +497,25 @@ define(function (require) {
             return this;
         }
 
+        /**
+         * Flips camera along Y axis
+         *
+         * @returns {Canvas}
+         */
+        flipCameraY() {
+            this.engine.flipCameraY();
+            return this;
+        }
+
+        /**
+         * Flips camera along z axis
+         *
+         * @returns {Canvas}
+         */
+        flipCameraZ() {
+            this.engine.flipCameraZ();
+            return this;
+        }
 
         /**
          * Set container dimensions depending on parent dialog

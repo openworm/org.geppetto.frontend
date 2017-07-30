@@ -137,11 +137,15 @@ define(function (require) {
             this.refs.stackCanvas.removeChild(this.renderer.view);
             this.renderer.destroy(true);
             this.renderer = null;
-            GEPPETTO.getVARS().scene.remove(this.state.stackViewerPlane);
+
+            if(this.props.canvasRef != null && this.props.canvasRef != undefined){
+                this.props.canvasRef.removeObject(this.state.stackViewerPlane);
+            }
+
             PIXI.loader.reset();
 
             // free texture caches
-            var textureUrl
+            var textureUrl;
             for (textureUrl in PIXI.utils.BaseTextureCache) {
                 delete PIXI.utils.BaseTextureCache[textureUrl];
             }
@@ -306,12 +310,12 @@ define(function (require) {
 
         passPlane: function () {
             if (this.state.stackViewerPlane) {
-                if(this.props.config != undefined && this.props.config.canvasRef != undefined){
-                    this.state.stackViewerPlane = this.props.config.canvasRef.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+                if(this.props.canvasRef != undefined && this.props.canvasRef != null){
+                    this.state.stackViewerPlane = this.props.canvasRef.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
                 }
             } else {
-                if(this.props.config != undefined && this.props.config.canvasRef != undefined){
-                    this.state.stackViewerPlane = this.props.config.canvasRef.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/components/widgets/stackViewer/images/glass.jpg");
+                if(this.props.canvasRef != undefined && this.props.canvasRef != null){
+                    this.state.stackViewerPlane = this.props.canvasRef.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/components/widgets/stackViewer/images/glass.jpg");
                 }
                 if (this.state.stackViewerPlane.visible) {
                     this.state.stackViewerPlane.visible = true;
@@ -1445,7 +1449,7 @@ define(function (require) {
                             background: 'transparent'
                         }} className={toggleSliceClass} onClick={this.toggleSlice} title={'Toggle the 3D slice display'}/>
                         <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
-                                serverUrl={this.props.config.serverUrl}
+                                serverUrl={this.props.config.serverUrl} canvasRef={this.props.canvasRef}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                                 stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                                 statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
@@ -1457,7 +1461,7 @@ define(function (require) {
                                 templateDomainIds={this.state.tempId}
                         		templateDomainTypeIds={this.state.tempType}
                                 templateDomainNames={this.state.tempName}
-                                slice={this.state.slice}/>
+                                slice={this.state.slice} />
                     </div>
                 );
             } else {

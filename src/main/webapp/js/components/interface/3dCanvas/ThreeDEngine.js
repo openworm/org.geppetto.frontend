@@ -1152,6 +1152,12 @@ define(['jquery'], function () {
             return object;
         },
 
+        /**
+         * Remove an object from the scene
+         */
+        removeObject: function (object) {
+            this.scene.remove(object);
+        },
 
         /**
          *

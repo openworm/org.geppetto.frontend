@@ -59,15 +59,15 @@ define(function (require) {
          * Remove all the passed instances from this canvas component
          * This method is only able to remove instances that were explicitly added
          * e.g. if acnet2 is added acent2.baskets[3] can't be removed.
-         * @param instances an array of instances
+         * @param instances an array of instance paths (cannot pass instances because they are deleted already)
          * @returns {Canvas}
          */
-        remove(instances) {
+        remove(instancePaths) {
             var removed = false;
-            for (var i = 0; i < instances.length; i++) {
-                if (this.viewState.instances.indexOf(instances[i].getInstancePath()) != -1) {
-                    this.viewState.instances.splice(this.viewState.instances.indexOf(instances[i].getInstancePath()), 1);
-                    this.engine.removeFromScene(instances[i]);
+            for (var i = 0; i < instancePaths.length; i++) {
+                if (this.viewState.instances.indexOf(instancePaths[i]) != -1) {
+                    this.viewState.instances.splice(this.viewState.instances.indexOf(instancePaths[i]), 1);
+                    this.engine.removeFromScene(instancePaths[i]);
                     removed = true;
                 }
             }

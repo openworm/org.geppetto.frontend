@@ -1296,8 +1296,8 @@ define(['jquery'], function () {
          *
          * @param entity
          */
-        removeFromScene: function (entity) {
-            var path = entity.getPath();
+        removeFromScene: function (entityPath) {
+            var path = entityPath;
             var mergedMesh = this.meshes[path];
             if (mergedMesh) {
                 this.scene.remove(mergedMesh);

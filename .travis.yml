@@ -37,8 +37,8 @@ script:
   - echo "Current time :$(date +"%T")"
   - docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/test_geppetto_server.sh
-  - sleep 60
   - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=CoreTestsUtility.js CoreTests.js --host=http://localhost:28081/ --engine=slimerjs  
+  - docker ps -a
   - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 100
   - echo "Current time :$(date +"%T")"
@@ -50,9 +50,9 @@ script:
   - echo "Current time :$(date +"%T")"
   - docker run  -t -dit --name=geppetto_persistence_container -h localhost -p 28081:8080 geppetto_persistence
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/test_geppetto_server.sh
-  - sleep 60
   - echo "Current time :$(date +"%T")"
   - xvfb-run -a --server-args="-screen 0 1024x768x24" casperjs test PersistenceTests.js --host=http://localhost:28081/ --engine=slimerjs
+  - docker ps -a
   - echo "Current time :$(date +"%T")"
   - sudo docker cp geppetto_persistence_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 100

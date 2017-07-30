@@ -7,6 +7,7 @@ Test () {
 			echo "$(date) - connected successfully!"
 		else
 			echo "Waiting for docker to finish building.";
+			docker ps -a
   			sleep 15
   			Test
 		fi

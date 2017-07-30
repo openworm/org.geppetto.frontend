@@ -69,7 +69,7 @@ define(['jquery'], function () {
         this.setupControls();
         this.setupListeners();
         this.animate();
-    };
+    }
 
 
     ThreeDEngine.prototype = {
@@ -550,6 +550,10 @@ define(['jquery'], function () {
                     }
                 }
             });
+        },
+
+        getWireframe: function(){
+            return this.wireframe;
         },
 
         /**

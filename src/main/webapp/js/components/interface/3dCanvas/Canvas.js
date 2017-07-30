@@ -150,6 +150,15 @@ define(function (require) {
         }
 
         /**
+         * Get whether wireframe mode is being used
+         *
+         * @returns {*}
+         */
+        getWireframe() {
+            return this.engine.getWireframe();
+        }
+
+        /**
          * Adds a 3D plane to the canvas
          *
          * @param x1

@@ -62,6 +62,7 @@ define(function (require) {
         defWidth: 600,
         data: { id: this.id, height: this.defHeight, width: this.defWidth, instances: [], selected: [] },
         config: {},
+        canvasRef: null,
         voxelSize: {x:0.622088, y:0.622088, z:0.622088},
 
         /**
@@ -136,6 +137,12 @@ define(function (require) {
             }
             this.updateScene();
             // return this for chaining
+            return this;
+        },
+
+        setCanvasRef: function(ref){
+            this.canvasRef = ref;
+            this.updateScene();
             return this;
         },
 
@@ -222,7 +229,12 @@ define(function (require) {
 
         updateScene: function(){
             ReactDOM.render(
-                React.createElement(StackViewerComponent, {data: this.data, config: this.config, voxel: this.voxelSize}),
+                React.createElement(StackViewerComponent, {
+                    data: this.data,
+                    config: this.config,
+                    voxel: this.voxelSize,
+                    canvasRef: this.canvasRef
+                }),
                 document.getElementById('stack-container' + this.id)
             );
         },
@@ -237,7 +249,7 @@ define(function (require) {
             this.data.height -= 22;
         },
 	    
-	getHelp: function(){
+	    getHelp: function(){
        	    return '### Stack Viewer Help\n\n' +
             'The stack viewer allows you to explore slices through the current stack. \n\n' +
 	    'To move around the slice either click and drag or use a 3 finger drag gesture (when over the image). \n\n' +

@@ -643,7 +643,7 @@ define(function (require) {
             var i;
             for (i in this.state.stack) {
                 if (this.state.stack[i] && this.state.stack[i].trim() !== '' && !this.state.color[i]) {
-                    this.setState({color: this.state.color.concat([Math.random() * 0xFFFFFF])});
+                	this.state.color = this.state.color.concat(['0xFFFFFF']);
                 }
             }
         },
@@ -1175,7 +1175,7 @@ define(function (require) {
                         if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
                             colors.push('0Xffcc00'); // selected
                         } else {
-                            colors.push(instances[instance].parent.getColor());
+                            colors.push(instances[instance].parent.getColor().replace('#','0X'));
                         }
                     }
                     catch (err) {
@@ -1200,7 +1200,7 @@ define(function (require) {
                     this.setState({id: ids});
                     // console.log('updating ids to ' + JSON.stringify(ids));
                 }
-                if (colors != this.state.color && colors != null && colors.length > 0) {
+                if (colors.toString() != this.state.color.toString() && colors != null && colors.length > 0) {
                     this.setState({color: colors});
                     // console.log('updating colours to ' + JSON.stringify(colors));
                 }

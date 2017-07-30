@@ -31,8 +31,6 @@ before_script:
   - export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
     
 script:
-  - docker stop $(docker ps -a -q)
-  - docker rm $(docker ps -a -q)
   - echo "Current time :$(date +"%T")"
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - docker build -t="geppetto" --build-arg frontendBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#development:utilities/docker/geppetto-frontend/

@@ -1220,7 +1220,12 @@ define(function (require) {
          * Event handler for clicking step in. Increments the dst level
          **/
         onStepIn: function () {
-            var newdst = this.state.dst + this.state.voxelZ;
+            var newdst = this.state.dst;
+            if (GEPPETTO.isKeyPressed("shift")){
+                newdst += (this.state.voxelZ * 10); // 10x step on shift
+            }else{
+                newdst += this.state.voxelZ; // single step    
+            }
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {
@@ -1235,7 +1240,12 @@ define(function (require) {
          * Event handler for clicking step out. Decrements the dst level
          **/
         onStepOut: function () {
-            var newdst = this.state.dst - this.state.voxelZ;
+            var newdst = this.state.dst;
+            if (GEPPETTO.isKeyPressed("shift")){
+                newdst -= (this.state.voxelZ * 10); // 10x step on shift
+            }else{
+                newdst -= this.state.voxelZ; // single step    
+            }
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {

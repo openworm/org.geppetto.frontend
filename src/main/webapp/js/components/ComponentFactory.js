@@ -63,6 +63,35 @@ define(function (require) {
 				return this.componentsMap;
 			},
 
+
+			addExistingComponent(componentType, component) {
+				if (!(componentType in this.componentsMap)) {
+					this.componentsMap[componentType] = []
+				}
+				this.componentsMap[componentType].push(component);
+			},
+
+			removeExistingComponent(componentType, component) {
+				if (componentType in this.componentsMap) {
+					var index = this.componentsMap[componentType].indexOf(component);
+					if (index > -1) {
+						this.componentsMap[componentType].splice(index, 1);
+					}
+				}
+			},
+
+			getComponentById(componentType, componentId){
+				var componentsMap = this.componentsMap[componentType];
+				var component = undefined;
+				for (var c in componentsMap){
+					if (componentId === componentsMap[c].id){
+						return componentsMap[c];
+					}
+				}
+				return undefined;
+			},
+
+
 			camelize(str) {
 				return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
 					if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces

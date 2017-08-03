@@ -3,7 +3,6 @@ define(function (require, exports, module) {
 	var React = require('react');
 	var AbstractComponent = require('../AComponent');
 
-	// var TextField = React.createClass({
 
 	return class TextField extends AbstractComponent {
 
@@ -48,18 +47,7 @@ define(function (require, exports, module) {
 			GEPPETTO.ComponentFactory.componentsMap['TEXTFIELD'].push(this);
 
 
-
-			// var _this = this;
-			// GEPPETTO.on('kernel:ready', function (parameters) {
-			// 	_this.sync();
-			// });
-
-
 			this.sync();
-			//  if (IPython.notebook) {
-			// 	this.sync();
-			// }
-			// $([IPython.events]).on("notebook_loaded.Notebook", this.sync());
 		}
 
 		render() {

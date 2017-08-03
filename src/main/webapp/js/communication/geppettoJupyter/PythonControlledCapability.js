@@ -20,7 +20,6 @@ define(function (require) {
                     this.state = $.extend(this.state, {
                         value: undefined
                     });
-                    
                     this.id=this.props.model;
                     this.handleChange = this.handleChange.bind(this);
                 }
@@ -40,7 +39,7 @@ define(function (require) {
                     this.state.value = event.target.value;
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if(this.syncValueWithPython){
-                        this.syncValueWithPython(event.target.value);
+                        this.syncValueWithPython(event.target.value, this.props.requirement);
                     }
                     this.forceUpdate();
                 }

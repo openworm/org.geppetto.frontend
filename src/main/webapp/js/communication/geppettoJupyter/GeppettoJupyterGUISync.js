@@ -31,10 +31,10 @@ define(function (require, exports, module) {
 
 		},
 
-		syncValueWithPython: function (value) {
+		syncValueWithPython: function (value, requirement) {
 			this.set('value', value);
 			this.save_changes();
-			this.send({ event: 'sync_value', data: value });
+			this.send({ event: 'sync_value', value: value, requirement: requirement});
 		},
 
 		getParameters: function (parameters) {
@@ -78,7 +78,7 @@ define(function (require, exports, module) {
 			else if (msg.type === 'disconnect') {
 				this.off("msg:custom", this.handle_custom_messages, this);
 				this.off("change:value", this.handle_value_change, this);
-				component.setSyncValueWithPythonHandler(null);
+				this.component.setSyncValueWithPythonHandler(null);
 				this.component = null;
 			}
 		}

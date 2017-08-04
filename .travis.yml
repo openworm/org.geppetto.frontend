@@ -40,7 +40,7 @@ script:
   - sleep 100
   - http_status="curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'}"
   - echo "$http_status"
-  - if [ "$http_status" == "404" ]; then then
+  - if [ "$http_status" == "404" ]; then
       docker stop $(docker ps -a -q);
       docker rm $(docker ps -a -q);
       docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto;

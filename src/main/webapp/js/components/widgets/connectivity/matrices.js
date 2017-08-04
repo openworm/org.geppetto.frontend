@@ -112,7 +112,7 @@ define(function (require) {
 		return tooltip.text(defaultTooltipText);
 	    };
 
-            var popIndicator = function(pos, colormap) {
+            var popIndicator = function(pos, colormap, r) {
                 return function(d,i) {
                     d3.select(this).selectAll(".cell")
                         .data(d)
@@ -121,7 +121,7 @@ define(function (require) {
 			.attr(pos, function (d, i) {
 			    return x(i);
 			})
-			.attr("r", 3)
+			.attr("r", r)
 			.attr("title", function (d) {
 			    return d.id;
 			})
@@ -142,14 +142,14 @@ define(function (require) {
                 .append("g")
                 .attr("class", "postPop")
                 .attr("transform", "translate("+postMargin+",-10)")
-                .each(popIndicator("cx", colormap));
+                .each(popIndicator("cx", colormap, postMargin));
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
                 .append("g")
                 .attr("class", "prePop")
                 .attr("transform", "translate(-10,"+preMargin+")")
-                .each(popIndicator("cy", colormap));
+                .each(popIndicator("cy", colormap, preMargin));
 
 	    var row = container.selectAll(".row")
 		.data(matrix)

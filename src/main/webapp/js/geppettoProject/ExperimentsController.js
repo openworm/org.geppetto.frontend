@@ -183,7 +183,6 @@ define(function (require) {
                 var activeExperiment = (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined);
                 var setView = false;
 
-                // go to server to persist only if experiment is persisted
                 if(Project.persisted && GEPPETTO.UserController.persistence){
                 	setView = true;
                 } else if(GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){

@@ -81,7 +81,7 @@ define(function (require) {
                         }
 
                         if (isCommand) {
-                            commands[commandsCount] = functionName;
+                            this.commands[commandsCount] = functionName;
                             commandsCount++;
                             //match the function to comment
                             var matchedDescription = "";

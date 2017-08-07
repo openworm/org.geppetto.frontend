@@ -13,7 +13,7 @@ Test () {
 				echo "Waiting for docker to finish building.";
 				iterations=$((iterations+1))
 				echo "iterations $iterations"
-  				sleep 1
+  				sleep 15
   				Test
 			fi
 		fi

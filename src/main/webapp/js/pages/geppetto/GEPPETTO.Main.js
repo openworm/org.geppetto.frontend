@@ -166,6 +166,7 @@ define(function (require) {
 
         $(document).ready(function () {
             // TODO: add console to placeholder
+            // TODO: --> GEPPETTO.ComponentFactory.addWidget('CONSOLE', {}, "console");
             GEPPETTO.Console.createConsole();
             var webWorkersSupported = (typeof (Worker) !== "undefined");
 

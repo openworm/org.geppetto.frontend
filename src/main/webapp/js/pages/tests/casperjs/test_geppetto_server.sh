@@ -8,12 +8,12 @@ Test () {
 			echo "$(date) - connected successfully!"
 		else
 			if [ "$iterations" == "10" ]; then
-				exit 0;
+				exit 0
 			else
 				echo "Waiting for docker to finish building.";
-				iterations=$((iterations+1));
-				echo "iterations $iterations";
-  				sleep 1;
+				iterations=$((iterations+1))
+				echo "iterations $iterations"
+  				sleep 1
   				Test
 			fi
 		fi

@@ -40,6 +40,7 @@ define(function (require) {
                 posY: 0,
                 oldX: 0,
                 oldY: 0,
+                oldEvent: 0,
                 loadingLabels: false,
                 orth: this.props.orth,
                 data: {},
@@ -953,6 +954,7 @@ define(function (require) {
         },
 
         onHoverEvent: function (event, repeat) {
+        	var oldEvent = this.state.oldEvent;
             if (!this.state.loadingLabels && !this.state.dragging) {
                 repeat = typeof repeat !== 'undefined' ? repeat : true;
                 var currentPosition = this.renderer.plugins.interaction.mouse.getLocalPosition(this.stack);
@@ -967,18 +969,21 @@ define(function (require) {
                     this.state.posX = currentPosition.x;
                     this.state.posY = currentPosition.y;
                     if (repeat) {
-                        setTimeout(function (func, event) {
+                    	clearTimeout(oldEvent);
+                    	oldEvent = setTimeout(function (func, event) {
                             func(event, false);
                         }, 1000, this.onHoverEvent, event);
                     }
                 }
             }else if (this.state.loadingLabels){
                 if (repeat) {
-                    setTimeout(function (func, event) {
+                	clearTimeout(oldEvent);
+                	oldEvent = setTimeout(function (func, event) {
                         func(event, false);
                     }, 5000, this.onHoverEvent, event);
                 }
             }
+            this.state.oldEvent = oldEvent;
         },
 
         onDragMove: function (event) {
@@ -1214,8 +1219,8 @@ define(function (require) {
         },
 
         componentWillUnmount: function () {
-            this._isMounted = false;
-
+        	clearTimeout(this.state.oldEvent);
+        	this._isMounted = false;
             return true;
         },
         /**

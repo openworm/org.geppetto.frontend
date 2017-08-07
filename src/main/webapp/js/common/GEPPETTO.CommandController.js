@@ -257,9 +257,43 @@ define(function (require) {
                 this.updateTags("G", GEPPETTO.G, true);
             },
 
-            executeCommand: function () {
-                // TODO: eval
-                // TODO: raise event command_executed passing command as argument
+            /**
+             * Raise log events - any console will have to listen
+             *
+             * @param message
+             * @param debug
+             */
+            log: function(message, debug){
+                if(debug === true){
+                    GEPPETTO.trigger(GEPPETTO.Events.Command_log_debug, message);
+                } else {
+                    GEPPETTO.trigger(GEPPETTO.Events.Command_log, message);
+                }
+            },
+
+            /**
+             * The king of eval wrappers
+             *
+             * @param command
+             * @param implicit
+             */
+            execute: function (command, implicit) {
+                // eval the command (this could be anything)
+                try {
+                    eval(code);
+
+                    // if not implicit log debug else just log
+                    this.log(command, !implicit);
+                } catch (e) {
+                    // in case of error on the eval
+                    if (e instanceof SyntaxError) {
+                        // log in debug mode
+                        this.log('ERROR: ' + e.message, true);
+                    } else {
+                        // do not swallow the generic exception
+                        throw(e);
+                    }
+                }
             },
         }
     };

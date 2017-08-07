@@ -57,8 +57,6 @@ define(function (require) {
             Experiment_properties_saved : "experiment_properties_saved",
             Project_properties_saved : "project_properties_saved",
             Parameters_set : "parameters_set",
-            Command_execute : "command:execute",
-            Command_execute_implicit : "command:execute_implicit",
             Command_log : "command:log",
             Command_log_debug : "command:log_debug",
 

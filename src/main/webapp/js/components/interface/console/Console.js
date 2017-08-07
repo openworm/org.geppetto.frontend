@@ -283,8 +283,18 @@ define(function (require) {
             // NOTE: nothing here for now as we are not using react render flow
         }
 
+        componentWillUnmount()  {
+            // stop listening to log events on unmount
+            GEPPETTO.off(GEPPETTO.Events.Command_log, this.log, this);
+            GEPPETTO.off(GEPPETTO.Events.Command_log_debug, this.debugLog, this);
+        }
+
         componentDidMount() {
             this.createConsole();
+
+            // listen to log events
+            GEPPETTO.on(GEPPETTO.Events.Command_log, this.log, this);
+            GEPPETTO.on(GEPPETTO.Events.Command_log_debug, this.debugLog, this);
         }
 
         render() {

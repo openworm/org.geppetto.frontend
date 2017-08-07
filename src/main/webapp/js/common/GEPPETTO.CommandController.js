@@ -264,6 +264,11 @@ define(function (require) {
              * @param debug
              */
             log: function(message, debug){
+                // default debug param to false
+                if(debug == undefined){
+                    debug = false;
+                }
+
                 if(debug === true){
                     GEPPETTO.trigger(GEPPETTO.Events.Command_log_debug, message);
                 } else {
@@ -278,12 +283,17 @@ define(function (require) {
              * @param implicit
              */
             execute: function (command, implicit) {
+                // default debug param to false
+                if(implicit == undefined){
+                    implicit = false;
+                }
+
                 // eval the command (this could be anything)
                 try {
-                    eval(code);
+                    eval(command);
 
-                    // if not implicit log debug else just log
-                    this.log(command, !implicit);
+                    // log and propagate implicit (implicit command shows up only in debug mode)
+                    this.log(command, implicit);
                 } catch (e) {
                     // in case of error on the eval
                     if (e instanceof SyntaxError) {

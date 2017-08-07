@@ -165,8 +165,9 @@ define(function (require) {
         };
 
         $(document).ready(function () {
+            // TODO: add console to placeholder
             GEPPETTO.Console.createConsole();
-            var webWorkersSupported = (typeof (Worker) !== "undefined") ? true : false;
+            var webWorkersSupported = (typeof (Worker) !== "undefined");
 
             //make sure webgl started correctly
             if (!webWorkersSupported) {

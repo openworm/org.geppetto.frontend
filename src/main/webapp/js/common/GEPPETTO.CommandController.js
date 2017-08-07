@@ -293,7 +293,7 @@ define(function (require) {
                     eval(command);
 
                     // log and propagate implicit (implicit command shows up only in debug mode)
-                    this.log(command, implicit);
+                    this.log('Run: ' + command, implicit);
                 } catch (e) {
                     // in case of error on the eval
                     if (e instanceof SyntaxError) {

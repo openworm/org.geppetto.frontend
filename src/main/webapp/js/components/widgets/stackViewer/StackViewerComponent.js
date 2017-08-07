@@ -961,11 +961,21 @@ define(function (require) {
                 currentPosition.x = Number(currentPosition.x.toFixed(0));
                 currentPosition.y = Number(currentPosition.y.toFixed(0));
                 if (this.state.hoverTime < Date.now() - 1000 && !(this.state.posX == this.state.oldX && this.state.posY == this.state.oldY) && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
-                    this.listObjects();
-                    this.state.hoverTime = Date.now();
+                	this.state.hoverTime = Date.now();
+                	this.listObjects();
                     this.state.oldX = currentPosition.x;
                     this.state.oldY = currentPosition.y;
                 }else{
+                	// Timeout:
+                	if (this.state.hoverTime < Date.now() - 5000){
+                		this.listObjects();
+                	}
+                	// Check valid value:
+                	if (this.state.hoverTime > Date.now()){
+                		this.state.hoverTime = Date.now();
+                		this.listObjects();
+                	}
+                	// update new position:
                     this.state.posX = currentPosition.x;
                     this.state.posY = currentPosition.y;
                     if (repeat) {
@@ -1062,8 +1072,8 @@ define(function (require) {
                 this.onZoomOut();
             } else {
                 // Mac keypad returns values (+/-)1-20 Mouse wheel (+/-)120
-                var step = -1 * e.wheelDelta;
-                // Max step of imposed
+            	var step = -1 * e.wheelDelta;
+            	// Max step of imposed
                 if (step > 0) {
                     if (this.state.orth == 0) {
                         step = this.state.voxelZ;
@@ -1081,7 +1091,11 @@ define(function (require) {
                         step = -this.state.voxelX;
                     }
                 }
-                newdst += step;
+                if (e.shiftKey){
+                    newdst += step * 10;
+            	}else{
+            		newdst += step;
+            	}
 
                 if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                     this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
@@ -1227,7 +1241,12 @@ define(function (require) {
          * Event handler for clicking zoom in. Increments the zoom level
          **/
         onZoomIn: function () {
-            var zoomLevel = Number((this.state.zoomLevel + 0.1).toFixed(1));
+            var zoomLevel = 1;
+            if (GEPPETTO.isKeyPressed("shift")){
+            	zoomLevel = Number((this.state.zoomLevel += 1).toFixed(1));
+            }else{
+            	zoomLevel = Number((this.state.zoomLevel += 0.1).toFixed(1));
+            }
             if (zoomLevel < 10.0) {
                 this.setState({
                     zoomLevel: zoomLevel,
@@ -1273,8 +1292,12 @@ define(function (require) {
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
         onZoomOut: function () {
-            var zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
-
+        	var zoomLevel = 1;
+            if (GEPPETTO.isKeyPressed("shift")){
+            	zoomLevel = Number((this.state.zoomLevel -= 1).toFixed(1));
+            }else{
+            	zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
+            }
             if (zoomLevel > 0.1) {
                 this.setState({
                     zoomLevel: zoomLevel,
@@ -1286,10 +1309,16 @@ define(function (require) {
         },
 
         /**
-         * Event handler for clicking step in. Increments the dst level
+         * Event handler for clicking step in. Increments the dst level - TODO Remove
          **/
         onStepIn: function () {
-            var newdst = this.state.dst + this.state.voxelZ;
+        	var shift = GEPPETTO.isKeyPressed("shift");
+        	var newdst = this.state.dst
+        	if (shift){
+        		newdst += this.state.voxelZ * 10;
+        	}else{
+        		newdst += this.state.voxelZ;
+        	}
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {
@@ -1301,10 +1330,16 @@ define(function (require) {
             }
         },
         /**
-         * Event handler for clicking step out. Decrements the dst level
+         * Event handler for clicking step out. Decrements the dst level - TODO Remove
          **/
         onStepOut: function () {
-            var newdst = this.state.dst - this.state.voxelZ;
+        	var shift = GEPPETTO.isKeyPressed("shift");
+        	var newdst = this.state.dst
+        	if (shift){
+        		newdst -= this.state.voxelZ * 10;
+        	}else{
+        		newdst -= this.state.voxelZ;
+        	}
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {

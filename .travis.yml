@@ -49,6 +49,8 @@ script:
       bash test_geppetto_server.sh;
       sleep 60;
       http_status=$(curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'})];
+      echo "Done restarting";
+      echo "$http_status";
     done;
   - "curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'}"
   - sleep 60;

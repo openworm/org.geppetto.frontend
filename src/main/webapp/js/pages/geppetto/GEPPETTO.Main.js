@@ -207,6 +207,7 @@ define(function (require) {
                         $('#experiments').show();
                         $(this).tab('show');
                         visibleExperiments = true;
+                        embeddedConsoleVisible = false;
                     } else {
                         $('#experiments').hide();
                         visibleExperiments = false;
@@ -221,6 +222,7 @@ define(function (require) {
                         $("#pythonConsole").hide();
                         $(this).tab('show');
                         embeddedConsoleVisible = true;
+                        visibleExperiments = false;
                     } else {
                         $('#console').hide();
                         embeddedConsoleVisible = false;

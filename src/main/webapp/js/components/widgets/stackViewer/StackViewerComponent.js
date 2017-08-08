@@ -40,6 +40,7 @@ define(function (require) {
                 posY: 0,
                 oldX: 0,
                 oldY: 0,
+                oldEvent: 0,
                 loadingLabels: false,
                 orth: this.props.orth,
                 data: {},
@@ -137,11 +138,15 @@ define(function (require) {
             this.refs.stackCanvas.removeChild(this.renderer.view);
             this.renderer.destroy(true);
             this.renderer = null;
-            GEPPETTO.getVARS().scene.remove(this.state.stackViewerPlane);
+
+            if(this.props.canvasRef != null && this.props.canvasRef != undefined){
+                this.props.canvasRef.removeObject(this.state.stackViewerPlane);
+            }
+
             PIXI.loader.reset();
 
             // free texture caches
-            var textureUrl
+            var textureUrl;
             for (textureUrl in PIXI.utils.BaseTextureCache) {
                 delete PIXI.utils.BaseTextureCache[textureUrl];
             }
@@ -235,8 +240,18 @@ define(function (require) {
                     var coordinates = [];
                     var x, y, z;
                     // update widget window extents (X,Y):
+                    if (this.state.orth == 2) {
+                        x = (this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    }
+                    else {
                     x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                    }
+                    if (this.state.orth == 1) {
+                        y = (this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    }
+                    else {
                     y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                    }
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
                     x = x + (this.renderer.width / this.disp.scale.x);
@@ -262,14 +277,14 @@ define(function (require) {
                         this.state.plane[9] = coordinates[2];
                         this.state.plane[11] = coordinates[3];
                     } else if (this.state.orth == 2) { // sagital
-                        this.state.plane[2] = coordinates[1];
-                        this.state.plane[1] = coordinates[0];
-                        this.state.plane[5] = coordinates[1];
-                        this.state.plane[4] = coordinates[2];
-                        this.state.plane[8] = coordinates[3];
-                        this.state.plane[7] = coordinates[0];
-                        this.state.plane[11] = coordinates[3];
-                        this.state.plane[10] = coordinates[2];
+                        this.state.plane[1] = coordinates[1];
+                        this.state.plane[2] = coordinates[0];
+                        this.state.plane[4] = coordinates[1];
+                        this.state.plane[5] = coordinates[2];
+                        this.state.plane[7] = coordinates[3];
+                        this.state.plane[8] = coordinates[0];
+                        this.state.plane[10] = coordinates[3];
+                        this.state.plane[11] = coordinates[2];
                     }
                 }
                 // Pass Z coordinates
@@ -296,24 +311,22 @@ define(function (require) {
 
         passPlane: function () {
             if (this.state.stackViewerPlane) {
-                if(this.props.config != undefined && this.props.config.canvasRef != undefined){
-                    this.state.stackViewerPlane = this.props.config.canvasRef.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
+                if(this.props.canvasRef != undefined && this.props.canvasRef != null){
+                    this.state.stackViewerPlane = this.props.canvasRef.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
                 }
             } else {
-                if(this.props.config != undefined && this.props.config.canvasRef != undefined){
-                    this.state.stackViewerPlane = this.props.config.canvasRef.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/components/widgets/stackViewer/images/glass.jpg");
+                if(this.props.canvasRef != undefined && this.props.canvasRef != null){
+                    this.state.stackViewerPlane = this.props.canvasRef.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/components/widgets/stackViewer/images/glass.jpg");
                 }
                 if (this.state.stackViewerPlane.visible) {
                     this.state.stackViewerPlane.visible = true;
                 }
             }
-
-            if (this.disp.width > 0) {
+            if (this.disp.width > 0 && this.props.slice) {
                 this.state.stackViewerPlane.visible = true;
             } else {
                 this.state.stackViewerPlane.visible = false;
             }
-
             this.state.planeUpdating = false;
         },
 
@@ -325,7 +338,8 @@ define(function (require) {
                 GEPPETTO.SceneController.getSelection()[0].deselect();
             }
             $.each(this.state.stack, function (i, item) {
-                (function (i, that) {
+                (function (i, that, shift) {
+                    var shift = GEPPETTO.isKeyPressed("shift");
                     var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                     //get image size;
                     $.ajax({
@@ -339,10 +353,15 @@ define(function (require) {
                                         if (result[j].trim() !== '') {
                                             var index = Number(result[j]);
                                             if (i !== 0 || index !== 0) { // don't select template
-                                                if (index == 0 && !GEPPETTO.isKeyPressed("shift")) {
+                                                if (index == 0 && !shift) {
                                                     console.log(that.state.label[i] + ' clicked');
+                                                    try{
                                                     eval(that.state.id[i][Number(result[j])]).select();
                                                     that.setStatusText(that.state.label[i] + ' selected');
+                                                    }catch (err){
+                                                            console.log("Error selecting: " + that.state.id[i][Number(result[j])]);
+                                                            console.log(err.message);
+                                                    }
                                                     break;
                                                 } else {
                                                     if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
@@ -352,19 +371,17 @@ define(function (require) {
                                                             that.setStatusText(that.props.templateDomainNames[index] + ' selected');
                                                             break;
                                                         } catch (ignore) {
-                                                            console.log(that.props.templateDomainNames[index] + ' requsted');
-                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requsted');
-                                                            if (GEPPETTO.isKeyPressed("shift")) {
+                                                            console.log(that.props.templateDomainNames[index] + ' requested');
+                                                            that.setStatusText(that.props.templateDomainNames[index] + ' requested');
+                                                            if (shift) {
                                                                 console.log('Adding ' + that.props.templateDomainNames[index]);
                                                                 that.setStatusText('Adding ' + that.props.templateDomainNames[index]);
-                                                                Model.getDatasources()[0].fetchVariable(that.props.templateDomainIds[index], function () {
-                                                                    var instance = Instances.getInstance(that.props.templateDomainIds[index] + '.' + that.props.templateDomainIds[index] + '_meta');
-                                                                    setTermInfo(instance, instance.getParent().getId());
-                                                                    resolve3D(that.props.templateDomainIds[index]);
-                                                                });
+                                                                var varriableId = that.props.templateDomainIds[index];
+                                                                stackViewerRequest(varriableId); // window.stackViewerRequest must be configured in init script
                                                                 break;
                                                             } else {
                                                                 that.setStatusText(that.props.templateDomainNames[index] + ' (⇧click to add)');
+                                                                stackViewerRequest(that.props.templateDomainTypeIds[index]);
                                                                 break;
                                                             }
                                                         }
@@ -396,10 +413,11 @@ define(function (require) {
                 var that = this;
                 var callX = that.state.posX.toFixed(0), callY = that.state.posY.toFixed(0);
                 $.each(this.state.stack, function (i, item) {
-                    (function (i, that) {
+                    (function (i, that, shift) {
                         if (i == 0) {
                             that.state.loadingLabels = true;
                         }
+                        var shift = GEPPETTO.isKeyPressed("shift");
                         var image = that.state.serverUrl.toString() + '?wlz=' + item + '&sel=0,255,255,255&mod=zeta&fxp=' + that.props.fxp.join(',') + '&scl=' + that.props.scl.toFixed(1) + '&dst=' + Number(that.state.dst).toFixed(1) + '&pit=' + Number(that.state.pit).toFixed(0) + '&yaw=' + Number(that.state.yaw).toFixed(0) + '&rol=' + Number(that.state.rol).toFixed(0);
                         //get image size;
                         $.ajax({
@@ -415,7 +433,7 @@ define(function (require) {
                                                 var index = Number(result[j]);
                                                 if (i !== 0 || index !== 0) { // don't select template
                                                     if (index == 0) {
-                                                        if (!GEPPETTO.isKeyPressed("shift")) {
+                                                        if (!shift) {
                                                             that.state.objects.push(that.state.label[i]);
                                                         }
                                                     } else {
@@ -429,7 +447,7 @@ define(function (require) {
                                         }
                                         var list = $.unique(that.state.objects).sort();
                                         var objects = '';
-                                        if (GEPPETTO.isKeyPressed("shift")) {
+                                        if (shift) {
                                             objects = 'Click to add: ';
                                         }
                                         for (j in list) {
@@ -609,13 +627,28 @@ define(function (require) {
                     that.checkStack();
                 }, 1000);
             }
+            
+            if ( Object.keys(this.state.images).length > (this.state.stack.length * this.state.visibleTiles.length ) ){
+            	for (i in Object.keys(this.state.images)){
+            		var id = Object.keys(this.state.images)[i].split(",")[0];
+            		if (id>(this.state.stack.length-1)){
+            			delete this.state.images[Object.keys(this.state.images)[i]];
+            			try{
+            				this.stack.removeChildAt(i);
+            			}catch (ignore){
+            				//ignore if it doesn't exist
+            			}
+            		}
+            	}
+            }
+            
         },
 
         generateColor: function () {
             var i;
             for (i in this.state.stack) {
                 if (this.state.stack[i] && this.state.stack[i].trim() !== '' && !this.state.color[i]) {
-                    this.setState({color: this.state.color.concat([Math.random() * 0xFFFFFF])});
+                	this.state.color = this.state.color.concat(['0xFFFFFF']);
                 }
             }
         },
@@ -700,7 +733,7 @@ define(function (require) {
         createStatusText: function () {
             if (!this.state.buffer[-1]) {
                 var style = {
-                    font: '9px Helvetica',
+                    font: '12px Helvetica',
                     fill: '#ffffff',
                     stroke: '#000000',
                     strokeThickness: 2,
@@ -730,13 +763,14 @@ define(function (require) {
         componentWillReceiveProps: function (nextProps) {
             var updDst = false;
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl || this.state.id !== nextProps.id) {
-                this.state.stack = nextProps.stack;
-                this.state.color = nextProps.color;
-                this.state.label = nextProps.label;
-                this.state.id = nextProps.id;
-                this.state.serverUrl = nextProps.serverUrl;
+            	this.setState({stack:nextProps.stack,
+                color:nextProps.color,
+                label:nextProps.label,
+                id:nextProps.id,
+                serverUrl:nextProps.serverUrl});
                 this.createImages();
                 this.updateImages(nextProps);
+                this.checkStack();
             }
             if (nextProps.zoomLevel !== this.props.zoomLevel) {
                 this.updateZoomLevel(nextProps);
@@ -744,7 +778,7 @@ define(function (require) {
                 this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
                 this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
             }
-            if (nextProps.fxp !== this.props.fxp) {
+            if (nextProps.fxp[0] !== this.props.fxp[0] || nextProps.fxp[1] !== this.props.fxp[1] || nextProps.fxp[2] !== this.props.fxp[2]) {
                 this.state.dst = nextProps.dst;
                 updDst = true;
             }
@@ -900,7 +934,7 @@ define(function (require) {
         },
 
         onDragEnd: function () {
-            if (this.state.data !== null) {
+            if (this.state.data !== null && typeof this.state.data.getLocalPosition === "function") {
                 this.stack.alpha = 1;
                 var startPosition = this.state.data.getLocalPosition(this.stack);
                 var newPosX = Number(startPosition.x.toFixed(0));
@@ -920,32 +954,46 @@ define(function (require) {
         },
 
         onHoverEvent: function (event, repeat) {
+        	var oldEvent = this.state.oldEvent;
             if (!this.state.loadingLabels && !this.state.dragging) {
                 repeat = typeof repeat !== 'undefined' ? repeat : true;
                 var currentPosition = this.renderer.plugins.interaction.mouse.getLocalPosition(this.stack);
                 currentPosition.x = Number(currentPosition.x.toFixed(0));
                 currentPosition.y = Number(currentPosition.y.toFixed(0));
                 if (this.state.hoverTime < Date.now() - 1000 && !(this.state.posX == this.state.oldX && this.state.posY == this.state.oldY) && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
-                    this.listObjects();
-                    this.state.hoverTime = Date.now();
+                	this.state.hoverTime = Date.now();
+                	this.listObjects();
                     this.state.oldX = currentPosition.x;
                     this.state.oldY = currentPosition.y;
                 }else{
+                	// Timeout:
+                	if (this.state.hoverTime < Date.now() - 5000){
+                		this.listObjects();
+                	}
+                	// Check valid value:
+                	if (this.state.hoverTime > Date.now()){
+                		this.state.hoverTime = Date.now();
+                		this.listObjects();
+                	}
+                	// update new position:
                     this.state.posX = currentPosition.x;
                     this.state.posY = currentPosition.y;
                     if (repeat) {
-                        setTimeout(function (func, event) {
+                    	clearTimeout(oldEvent);
+                    	oldEvent = setTimeout(function (func, event) {
                             func(event, false);
                         }, 1000, this.onHoverEvent, event);
                     }
                 }
             }else if (this.state.loadingLabels){
                 if (repeat) {
-                    setTimeout(function (func, event) {
+                	clearTimeout(oldEvent);
+                	oldEvent = setTimeout(function (func, event) {
                         func(event, false);
                     }, 5000, this.onHoverEvent, event);
                 }
             }
+            this.state.oldEvent = oldEvent;
         },
 
         onDragMove: function (event) {
@@ -995,9 +1043,9 @@ define(function (require) {
                 yaw: 0,
                 rol: 0,
                 scl: 1.0,
-                voxelX: 0.622088,
-                voxelY: 0.622088,
-                voxelZ: 0.622088,
+                voxelX: (this.props.voxel.x || 0.622088),
+                voxelY: (this.props.voxel.y || 0.622088),
+                voxelZ: (this.props.voxel.z || 0.622088),
                 minDst: -100,
                 maxDst: 100,
                 orth: 0,
@@ -1005,8 +1053,12 @@ define(function (require) {
                 stack: [],
                 label: [],
                 id: [],
+                tempId: [],
+                tempName: [],
+                tempType: [],
                 plane: null,
-                initalised: false
+                initalised: false,
+                slice: false
             };
         },
 
@@ -1020,8 +1072,8 @@ define(function (require) {
                 this.onZoomOut();
             } else {
                 // Mac keypad returns values (+/-)1-20 Mouse wheel (+/-)120
-                var step = -1 * e.wheelDelta;
-                // Max step of imposed
+            	var step = -1 * e.wheelDelta;
+            	// Max step of imposed
                 if (step > 0) {
                     if (this.state.orth == 0) {
                         step = this.state.voxelZ;
@@ -1039,7 +1091,11 @@ define(function (require) {
                         step = -this.state.voxelX;
                     }
                 }
-                newdst += step;
+                if (e.shiftKey){
+                    newdst += step * 10;
+            	}else{
+            		newdst += step;
+            	}
 
                 if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                     this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
@@ -1089,6 +1145,31 @@ define(function (require) {
                 if (nextProps.data.width && nextProps.data.width != null) {
                     this.setState({width: nextProps.data.width});
                 }
+                if (nextProps.config && nextProps.config != null && nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length && nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
+                    this.setState({voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
+                        voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
+                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),});
+                }
+                if (nextProps.config && nextProps.config != null){
+                	if (nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length){
+                		if (nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
+                			this.setState({voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
+	                        voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
+	                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),});
+                		}
+                		if (nextProps.config.subDomains.length > 4 && nextProps.config.subDomains[1] != null){
+                			this.setState({tempName: nextProps.config.subDomains[2],
+                            tempId: nextProps.config.subDomains[1],
+                            tempType: nextProps.config.subDomains[3]});
+                			if (nextProps.config.subDomains[4] && nextProps.config.subDomains[4].length && nextProps.config.subDomains[4].length > 0){
+                				this.setState({fxp:JSON.parse(nextProps.config.subDomains[4][0])});
+                			}
+            }
+                	}
+                }
+                if (nextProps.voxel && nextProps.voxel != null) {
+                    this.setState({voxelX: nextProps.voxel.x, voxelY: nextProps.voxel.y, voxelZ: nextProps.voxel.z});
+                }
             }
         },
 
@@ -1117,11 +1198,13 @@ define(function (require) {
                         if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
                             colors.push('0Xffcc00'); // selected
                         } else {
-                            colors.push(instances[instance].parent.getColor());
+                            colors.push(instances[instance].parent.getColor().replace('#','0X'));
                         }
                     }
-                    catch (ignore) {
-                        console.log('Error handling ' + instance.data);
+                    catch (err) {
+                        console.log('Error handling ' + instances[instance].getId());
+                        console.log(err.message);
+                        console.log(err.stack);
                     }
                 }
                 if (server != this.props.config.serverUrl && server != null) {
@@ -1140,7 +1223,7 @@ define(function (require) {
                     this.setState({id: ids});
                     // console.log('updating ids to ' + JSON.stringify(ids));
                 }
-                if (colors != this.state.color && colors != null && colors.length > 0) {
+                if (colors.toString() != this.state.color.toString() && colors != null && colors.length > 0) {
                     this.setState({color: colors});
                     // console.log('updating colours to ' + JSON.stringify(colors));
                 }
@@ -1150,15 +1233,20 @@ define(function (require) {
         },
 
         componentWillUnmount: function () {
-            this._isMounted = false;
-
+        	clearTimeout(this.state.oldEvent);
+        	this._isMounted = false;
             return true;
         },
         /**
          * Event handler for clicking zoom in. Increments the zoom level
          **/
         onZoomIn: function () {
-            var zoomLevel = Number((this.state.zoomLevel + 0.1).toFixed(1));
+            var zoomLevel = 1;
+            if (GEPPETTO.isKeyPressed("shift")){
+            	zoomLevel = Number((this.state.zoomLevel += 1).toFixed(1));
+            }else{
+            	zoomLevel = Number((this.state.zoomLevel += 0.1).toFixed(1));
+            }
             if (zoomLevel < 10.0) {
                 this.setState({
                     zoomLevel: zoomLevel,
@@ -1183,21 +1271,33 @@ define(function (require) {
             } else if (orth == 1) {
                 pit = 90;
                 yaw = 90;
-                rol = 90;
+                rol = 270;
             } else if (orth == 2) {
                 pit = 90;
                 yaw = 0;
-                rol = 90;
+                rol = 0;
             }
             this.setState({orth: orth, pit: pit, yaw: yaw, rol: rol, dst: 0, stackX: -10000, stackY: -10000});
+        },
+
+        toggleSlice: function () {
+            if (this.state.slice) {
+                this.setState({slice: false});
+            }else{
+                this.setState({slice: true});
+            }
         },
 
         /**
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
         onZoomOut: function () {
-            var zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
-
+        	var zoomLevel = 1;
+            if (GEPPETTO.isKeyPressed("shift")){
+            	zoomLevel = Number((this.state.zoomLevel -= 1).toFixed(1));
+            }else{
+            	zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
+            }
             if (zoomLevel > 0.1) {
                 this.setState({
                     zoomLevel: zoomLevel,
@@ -1209,10 +1309,16 @@ define(function (require) {
         },
 
         /**
-         * Event handler for clicking step in. Increments the dst level
+         * Event handler for clicking step in. Increments the dst level - TODO Remove
          **/
         onStepIn: function () {
-            var newdst = this.state.dst + this.state.voxelZ;
+        	var shift = GEPPETTO.isKeyPressed("shift");
+        	var newdst = this.state.dst
+        	if (shift){
+        		newdst += this.state.voxelZ * 10;
+        	}else{
+        		newdst += this.state.voxelZ;
+        	}
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {
@@ -1224,10 +1330,16 @@ define(function (require) {
             }
         },
         /**
-         * Event handler for clicking step out. Decrements the dst level
+         * Event handler for clicking step out. Decrements the dst level - TODO Remove
          **/
         onStepOut: function () {
-            var newdst = this.state.dst - this.state.voxelZ;
+        	var shift = GEPPETTO.isKeyPressed("shift");
+        	var newdst = this.state.dst
+        	if (shift){
+        		newdst -= this.state.voxelZ * 10;
+        	}else{
+        		newdst -= this.state.voxelZ;
+        	}
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {
@@ -1307,6 +1419,12 @@ define(function (require) {
             var stepOutClass = 'btn fa fa-chevron-up';
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
+            var toggleSliceClass = 'btn fa fa-toggle-';
+            if (this.state.slice) {
+                toggleSliceClass += 'on';
+            }else{
+                toggleSliceClass += 'off';
+            }
             var startOffset = 2.5;
             var displayArea = this.props.data.id + 'displayArea';
 
@@ -1362,8 +1480,16 @@ define(function (require) {
                             border: 0,
                             background: 'transparent'
                         }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset + 102,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={toggleSliceClass} onClick={this.toggleSlice} title={'Toggle the 3D slice display'}/>
                         <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
-                                serverUrl={this.props.config.serverUrl}
+                                serverUrl={this.props.config.serverUrl} canvasRef={this.props.canvasRef}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                                 stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                                 statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
@@ -1372,8 +1498,10 @@ define(function (require) {
                                 width={this.props.data.width} voxelX={this.state.voxelX}
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
                                 templateId={this.props.config.templateId}
-                                templateDomainIds={this.props.config.templateDomainIds}
-                                templateDomainNames={this.props.config.templateDomainNames}/>
+                                templateDomainIds={this.state.tempId}
+                        		templateDomainTypeIds={this.state.tempType}
+                                templateDomainNames={this.state.tempName}
+                                slice={this.state.slice} />
                     </div>
                 );
             } else {

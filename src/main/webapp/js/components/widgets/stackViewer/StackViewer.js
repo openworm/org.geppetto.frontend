@@ -10,7 +10,7 @@ define(function (require) {
     var React = require('react');
     var ReactDOM = require('react-dom');
     var StackViewerComponent = require('./StackViewerComponent');
-
+    
     function arrayUnique(array) {
         var a = array.concat();
         for(var i=0; i<a.length; ++i) {
@@ -30,6 +30,8 @@ define(function (require) {
         defWidth: 600,
         data: { id: this.id, height: this.defHeight, width: this.defWidth, instances: [], selected: [] },
         config: {},
+        canvasRef: null,
+        voxelSize: {x:0.622088, y:0.622088, z:0.622088},
 
         /**
          * Initialises button bar
@@ -55,7 +57,7 @@ define(function (require) {
 			this.stackElement.bind('resizeEnd', function() {
 				that.resize();
 			});
-
+			
 			window.addEventListener('resize', function(event){
 				that.stackElement.find(".fa-home").click();
             });
@@ -69,7 +71,19 @@ define(function (require) {
             this.addBorders();
             this.updateScene();
         },
-
+        
+        setVoxel: function (x, y, z) {
+            this.voxelSize.x = x;
+            this.voxelSize.y = y;
+            this.voxelSize.z = z;
+            if (this.config.subDomains && this.config.subDomains.length >0 && this.config.subDomains[0].length > 2){
+            	this.config.subDomains[0][0] = this.voxelSize.x.toString();
+            	this.config.subDomains[0][1] = this.voxelSize.y.toString();
+            	this.config.subDomains[0][2] = this.voxelSize.z.toString();
+            }
+            this.updateScene();
+        },
+        
         resize : function(){
         	this.data.height = this.stackElement.parent().outerHeight();
         	this.data.width = this.stackElement.parent().outerWidth();
@@ -84,8 +98,19 @@ define(function (require) {
          */
         setConfig: function(config){
             this.config = config;
-
+            if (this.config.subDomains && this.config.subDomains.length >0 && this.config.subDomains[0].length > 2){
+            	this.voxelSize.x = Number(this.config.subDomains[0][0]);
+                this.voxelSize.y = Number(this.config.subDomains[0][1]);
+                this.voxelSize.z = Number(this.config.subDomains[0][2]);
+            }
+            this.updateScene();
             // return this for chaining
+            return this;
+        },
+
+        setCanvasRef: function(ref){
+            this.canvasRef = ref;
+            this.updateScene();
             return this;
         },
 
@@ -172,7 +197,12 @@ define(function (require) {
 
         updateScene: function(){
             ReactDOM.render(
-                React.createElement(StackViewerComponent, {data: this.data, config: this.config}),
+                React.createElement(StackViewerComponent, {
+                    data: this.data,
+                    config: this.config,
+                    voxel: this.voxelSize,
+                    canvasRef: this.canvasRef
+                }),
                 document.getElementById('stack-container' + this.id)
             );
         },
@@ -185,6 +215,19 @@ define(function (require) {
         addBorders: function(){
             this.data.width -= 4;
             this.data.height -= 22;
+        },
+	    
+	    getHelp: function(){
+       	    return '### Stack Viewer Help\n\n' +
+            'The stack viewer allows you to explore slices through the current stack. \n\n' +
+	    'To move around the slice either click and drag or use a 3 finger drag gesture (when over the image). \n\n' +
+	    'Hovering shows items that can be added by clicking in combination with the shift key. \n\n' +
+	    'Clicking on any item displayed in the stack selects it. \n\n' +
+            'Zoom level is controlled by either 2 finger pinch, ctrl + mouse wheel or the <i class="fa fa-search-plus" aria-hidden="true"></i> / <i class="fa fa-search-minus" aria-hidden="true"></i> icons. \n\n' +
+	    'Stack position is controlled via 2 finger scroll, mouse wheel or the <i class="fa fa-chevron-up" aria-hidden="true"></i> / <i class="fa fa-chevron-down" aria-hidden="true"></i> icons. \n' + 
+	    '<b>Note:</b> Both button and mouse wheel navigation through the stack can be accelerated by pressing the shift key in combination. \n' + 
+            'The orthogonal orientation of the slice is toggled by the <i class="fa fa-refresh" aria-hidden="true"></i> icon. \n' + 
+            'The botton toggle switch controlls the display of the current slice within the 3D window giving your current selection context within the volume';
         },
 
         destroy: function () {

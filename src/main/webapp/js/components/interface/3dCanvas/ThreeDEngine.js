@@ -69,7 +69,7 @@ define(['jquery'], function () {
         this.setupControls();
         this.setupListeners();
         this.animate();
-    };
+    }
 
 
     ThreeDEngine.prototype = {
@@ -552,6 +552,10 @@ define(['jquery'], function () {
             });
         },
 
+        getWireframe: function(){
+            return this.wireframe;
+        },
+
         /**
          * Traverse the instances building a visual object when needed
          *
@@ -883,13 +887,14 @@ define(['jquery'], function () {
             var loader = new THREE.ColladaLoader();
             loader.options.convertUpAxis = true;
             var scene = null;
+            var that = this;
             loader.parse(node.collada, function (collada) {
                 scene = collada.scene;
                 scene.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
                         child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                         child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-                        child.material.wireframe = this.wireframe;
+                        child.material.wireframe = that.wireframe;
                         child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                         child.geometry.computeVertexNormals();
                     }
@@ -897,7 +902,7 @@ define(['jquery'], function () {
                         child.material.skinning = true;
                         child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                         child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-                        child.material.wireframe = this.wireframe;
+                        child.material.wireframe = that.wireframe;
                         child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                         child.geometry.computeVertexNormals();
                     }
@@ -922,7 +927,7 @@ define(['jquery'], function () {
             scene.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
                     that.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.DEFAULT);
-                    child.material.wireframe = this.wireframe;
+                    child.material.wireframe = that.wireframe;
                     child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                     child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                     child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -1147,6 +1152,12 @@ define(['jquery'], function () {
             return object;
         },
 
+        /**
+         * Remove an object from the scene
+         */
+        removeObject: function (object) {
+            this.scene.remove(object);
+        },
 
         /**
          *
@@ -1204,6 +1215,7 @@ define(['jquery'], function () {
             this.setThreeColor(material.color, color);
             material.defaultColor = color;
             material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+            material.nowireframe = true;
             return material;
         },
 

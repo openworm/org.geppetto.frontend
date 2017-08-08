@@ -78,6 +78,14 @@ define(function (require) {
             return this;
         }
 
+        /**
+         * Remove an object from the canvas
+         *
+         * @param object
+         */
+        removeObject(object){
+            this.engine.removeObject(object);
+        }
 
         /**
          * Displays all the instances available in the current model in this canvas
@@ -150,6 +158,15 @@ define(function (require) {
         }
 
         /**
+         * Get whether wireframe mode is being used
+         *
+         * @returns {*}
+         */
+        getWireframe() {
+            return this.engine.getWireframe();
+        }
+
+        /**
          * Adds a 3D plane to the canvas
          *
          * @param x1
@@ -168,8 +185,7 @@ define(function (require) {
          * @returns {Canvas}
          */
         add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL) {
-            this.engine.add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL);
-            return this;
+            return this.engine.add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL);
         }
 
         /**
@@ -191,8 +207,7 @@ define(function (require) {
          * @returns {Canvas}
          */
         modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
-            this.engine.modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
-            return this;
+            return this.engine.modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
         }
 
         /**

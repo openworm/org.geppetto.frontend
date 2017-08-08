@@ -22,20 +22,6 @@ define(function (require) {
 
     var run = function () {
         QUnit.module("Global Scope Test");
-        QUnit.test("Global scope Test", function (assert) {
-            var help = GEPPETTO.Console.help();
-
-            assert.notEqual(help, null, "Global help() command test.");
-
-            assert.equal(G.showHelpWindow(true), GEPPETTO.Resources.SHOW_HELP_WINDOW, "Help Window Visible");
-
-            G.showHelpWindow(false);
-
-            var modalVisible = $('#help-modal').hasClass('in');
-
-            assert.equal(modalVisible, false, "Help Window Hidden");
-        });
-
         QUnit.test("Test Debug Mode", function (assert) {
             G.debug(true);
 
@@ -167,17 +153,6 @@ define(function (require) {
             TREEVISUALISERDAT.destroy();
 
             assert.equal($("#" + TREEVISUALISERDAT.getId()).html(), null, "Test destroy()");
-        });
-
-        QUnit.test("Test Commands", function (assert) {
-            G.showConsole(true);
-
-            assert.equal(GEPPETTO.Console.isConsoleVisible(), true, "Console Visible");
-
-            G.showConsole(false);
-
-            assert.equal(GEPPETTO.Console.isConsoleVisible(), false, "Console hidden");
-
         });
 
         QUnit.module("Test Model Factory");

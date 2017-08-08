@@ -15,7 +15,7 @@ define(function (require) {
                 label: 'Stop',
                 className: 'pull-right',
                 icon:'fa fa-stop',
-                onClick: function(){ GEPPETTO.Console.executeImplicitCommand("Project.getActiveExperiment().stop()"); }
+                onClick: function(){ GEPPETTO.CommandController.execute("Project.getActiveExperiment().stop()", true); }
             }
         }
 

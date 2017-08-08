@@ -279,7 +279,7 @@ define(function (require) {
                         suggestionFound = true;
                         var actions = found[0].actions;
                         actions.forEach(function (action) {
-                            GEPPETTO.Console.executeImplicitCommand(action)
+                            GEPPETTO.CommandController.execute(action, true);
                         });
                         $("#typeahead").typeahead('val', "");
                     }
@@ -324,7 +324,7 @@ define(function (require) {
                             else{
                                 actions = found[0].actions;
                                 actions.forEach(function (action) {
-                                    GEPPETTO.Console.executeImplicitCommand(action)
+                                    GEPPETTO.CommandController.execute(action, true);
                                 });
                                 $("#typeahead").typeahead('val', "");
                             }
@@ -693,7 +693,7 @@ define(function (require) {
                 var that = this;
                 return function () {
                     button.actions.forEach(function (action) {
-                        GEPPETTO.Console.executeImplicitCommand(that.getCommand(action, instance))
+                        GEPPETTO.CommandController.execute(that.getCommand(action, instance), true);
                     });
                     $("#" + name).focus();
                 }
@@ -706,7 +706,7 @@ define(function (require) {
                     var condition = that.execute(button.condition, instance);
                     var actions = button[condition].actions;
                     actions.forEach(function (action) {
-                        GEPPETTO.Console.executeImplicitCommand(that.getCommand(action, instance));
+                        GEPPETTO.CommandController.execute(that.getCommand(action, instance), true);
                     });
                     that.switchStatefulButtonState(button, name, condition);
                 }
@@ -790,7 +790,7 @@ define(function (require) {
                             .attr('value', value)
                             .on('change', function() {
                                 var value=$("#" + name + " .spotlight-input").val();
-                                GEPPETTO.Console.executeImplicitCommand(that.getCommand(element.onChange, instance,value));
+                                GEPPETTO.CommandController.execute(that.getCommand(element.onChange, instance,value), true);
                             })
                             .css("width",((value.length + 1) * 14) + 'px')
                             .on('keyup',function() {

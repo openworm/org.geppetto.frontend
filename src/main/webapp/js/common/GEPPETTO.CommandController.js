@@ -258,6 +258,20 @@ define(function (require) {
             },
 
             /**
+             * Clear commands
+             */
+            clear: function() {
+                GEPPETTO.trigger(GEPPETTO.Events.Command_clear);
+            },
+
+            /**
+             * Toggle implicit commands
+             */
+            toggleImplicit: function() {
+                GEPPETTO.trigger(GEPPETTO.Events.Command_toggle_implicit);
+            },
+
+            /**
              * Raise log events - any console will have to listen
              *
              * @param message

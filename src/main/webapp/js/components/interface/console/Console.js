@@ -225,12 +225,77 @@ define(function (require) {
             return this.getConsole().model.get('history');
         }
 
+        /**
+         * Copies console history to OS clipboard
+         *
+         */
+        copyHistoryToClipboard () {
+
+            var commandsString = "";
+            var commands = this.consoleHistory();
+
+            if (!commands || !commands.length) {
+                return GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY;
+            }
+
+            for (var i = 0; i < commands.length; i++) {
+                var n = commands[i];
+                if (n.command) {
+
+                    var command = n.command.trim();
+                    if (command.indexOf(";") == -1) {
+                        command = command + ";";
+                    }
+
+                    commandsString += command;
+                    if (i != commands.length - 1) {
+                        commandsString += '\n';
+                    }
+                }
+            }
+
+            if (commandsString) {
+                var message = GEPPETTO.Resources.COPY_TO_CLIPBOARD_WINDOWS;
+
+                //different command for copying in macs means different message
+                if (navigator.userAgent.match(/(Mac|iPhone|iPod|iPad)/i)) {
+                    message = GEPPETTO.Resources.COPY_TO_CLIPBOARD_MAC;
+                }
+
+                React.renderComponent(ClipboardModal({
+                    show: true,
+                    keyboard: false,
+                    title: message,
+                }), document.getElementById('modal-region'));
+
+                $('#javascriptEditor').on('shown.bs.modal', function () {
+                    if ($("#javascriptEditor").hasClass("in")) {
+                        GEPPETTO.JSEditor.loadEditor();
+                        GEPPETTO.JSEditor.loadCode(commandsString);
+                    }
+                });
+
+                return GEPPETTO.Resources.COPY_CONSOLE_HISTORY;
+            }
+            else {
+                return '';
+            }
+
+        }
+
         getConsole () {
             return this.console;
         }
 
         isConsoleVisible () {
             return this.visible;
+        }
+
+        /**
+         * Clear console history
+         */
+        clear () {
+            this.getConsole().clear();
         }
 
         /**
@@ -287,6 +352,8 @@ define(function (require) {
             // stop listening to log events on unmount
             GEPPETTO.off(GEPPETTO.Events.Command_log, this.log, this);
             GEPPETTO.off(GEPPETTO.Events.Command_log_debug, this.debugLog, this);
+            GEPPETTO.off(GEPPETTO.Events.Command_clear, this.clear, this);
+            GEPPETTO.off(GEPPETTO.Events.Command_toggle_implicit, this.toggleImplicitCommands, this);
         }
 
         componentDidMount() {
@@ -295,6 +362,8 @@ define(function (require) {
             // listen to log events
             GEPPETTO.on(GEPPETTO.Events.Command_log, this.log, this);
             GEPPETTO.on(GEPPETTO.Events.Command_log_debug, this.debugLog, this);
+            GEPPETTO.on(GEPPETTO.Events.Command_clear, this.clear, this);
+            GEPPETTO.on(GEPPETTO.Events.Command_toggle_implicit, this.toggleImplicitCommands, this);
         }
 
         render() {

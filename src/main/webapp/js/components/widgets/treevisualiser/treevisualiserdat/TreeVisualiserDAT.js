@@ -101,7 +101,7 @@ define(function (require) {
 
                 var node = this.dataset.valueDict[nodeInstancePath]["model"];
                 if (node.getMetaType() == GEPPETTO.Resources.VARIABLE_NODE && node.getWrappedObj().getType().getMetaType() == GEPPETTO.Resources.POINTER_TYPE){
-                	GEPPETTO.Console.executeCommand("G.addWidget(Widgets.TREEVISUALISERDAT).setData(" + node.getPath() + ")");
+                    GEPPETTO.CommandController.execute("G.addWidget(Widgets.TREEVISUALISERDAT).setData(" + node.getPath() + ")");
                 }
                 else{
                 	this.dataset.isDisplayed = false;
@@ -281,7 +281,7 @@ define(function (require) {
                     if(data.getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE)
 					{
 						$(dataset.valueDict[data.getPath()]["controller"].__li).find('div > div > input[type="text"]').change(function(){
-							GEPPETTO.Console.executeCommand(data.getPath() + ".setValue(" + $(this).val().split(" ")[0] + ")");
+                            GEPPETTO.CommandController.execute(data.getPath() + ".setValue(" + $(this).val().split(" ")[0] + ")");
 						});
 					}
 

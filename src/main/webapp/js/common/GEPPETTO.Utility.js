@@ -89,7 +89,7 @@ define(function (require) {
                             }
                         }
 
-                        GEPPETTO.Console.log(commandsFormatted);
+                        GEPPETTO.CommandController.log(commandsFormatted);
                     }
                 });
 

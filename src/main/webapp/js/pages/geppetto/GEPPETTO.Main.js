@@ -34,14 +34,14 @@ define(function (require) {
                         if (GEPPETTO_CONFIGURATION.embedderURL.indexOf(e.origin) != -1) {
                             if (e.data.command == 'loadSimulation') {
                                 if (e.data.projectId) {
-                                    GEPPETTO.Console.executeCommand('Project.loadFromID(' + e.data.projectId + ')');
+                                    GEPPETTO.CommandController.execute('Project.loadFromID(' + e.data.projectId + ')');
                                 }
                                 else if (e.data.url) {
-                                    GEPPETTO.Console.executeCommand('Project.loadFromURL("' + e.data.url + '")');
+                                    GEPPETTO.CommandController.execute('Project.loadFromURL("' + e.data.url + '")');
                                 }
                             }
                             else if (e.data.command == 'removeWidgets') {
-                                GEPPETTO.Console.executeCommand('G.removeWidget()');
+                                GEPPETTO.CommandController.execute('G.removeWidget()');
                             }
                             else {
                                 eval(e.data.command);
@@ -106,7 +106,7 @@ define(function (require) {
                 GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet');
                 GEPPETTO.Events.listen();
                 this.createChannel();
-                GEPPETTO.Console.debugLog(GEPPETTO.Resources.GEPPETTO_INITIALIZED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.GEPPETTO_INITIALIZED, true);
             },
 
             /**
@@ -165,14 +165,15 @@ define(function (require) {
         };
 
         $(document).ready(function () {
-            // TODO: add console to placeholder
-            // TODO: --> GEPPETTO.ComponentFactory.addWidget('CONSOLE', {}, "console");
-            GEPPETTO.Console.createConsole();
+            // add console to placeholder
+            // NOTE: eventually this gets refactored and only extensions that want the console add it
+            GEPPETTO.ComponentFactory.addWidget('CONSOLE', {}, "console");
+
             var webWorkersSupported = (typeof (Worker) !== "undefined");
 
             //make sure webgl started correctly
             if (!webWorkersSupported) {
-                GEPPETTO.Console.debugLog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED, true);
                 GEPPETTO.ModalFactory.infoDialog(GEPPETTO.Resources.WORKERS_NOT_SUPPORTED, GEPPETTO.Resources.WORKERS_NOT_SUPPORTED_MESSAGE);
             } else {
 
@@ -195,7 +196,8 @@ define(function (require) {
 
                 GEPPETTO.Main.init();
 
-                //TODO Matteo: All the code below needs to be removed creating a component for the tabbed UI
+                // TODO: Matteo: All the code below needs to be removed creating a component for the tabbed UI
+                // TODO: Giovanni: good luck with that!
                 var visibleExperiments = false;
                 $('#experimentsButton').click(function (e) {
                     if (!visibleExperiments) {
@@ -204,11 +206,9 @@ define(function (require) {
                         $('#experiments').show();
                         $(this).tab('show');
                         visibleExperiments = true;
-                        GEPPETTO.Console.focusFooter();
                     } else {
                         $('#experiments').hide();
                         visibleExperiments = false;
-                        GEPPETTO.Console.unfocusFooter();
                     }
                 });
 
@@ -229,7 +229,6 @@ define(function (require) {
                 });
 
                 $('.nav-tabs li.active').removeClass('active');
-
             }
         });
     };

@@ -57,7 +57,7 @@ class WidgetController {
 			var height = ui.size.height;
 			var width = ui.size.width;
 
-			GEPPETTO.Console.executeImplicitCommand(widget.getId() + ".setSize(" + height + "," + width + ")");
+			GEPPETTO.CommandController.execute(widget.getId() + ".setSize(" + height + "," + width + ")", true);
 
 			var left = ui.position.left;
 			var top = ui.position.top;
@@ -71,7 +71,7 @@ class WidgetController {
 			var left = ui.position.left;
 			var top = ui.position.top;
 
-			GEPPETTO.Console.executeImplicitCommand(widget.getId() + ".setPosition(" + left + "," + top + ")");
+			GEPPETTO.CommandController.execute(widget.getId() + ".setPosition(" + left + "," + top + ")", true);
 		});
 	}
 

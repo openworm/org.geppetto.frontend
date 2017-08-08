@@ -93,7 +93,7 @@ define(function (require) {
 		setMessage: function (msg) {
 			this.data = msg;
 			$("#" + this.id).html(msg);
-			GEPPETTO.Console.debugLog("Set new Message for " + this.id);
+			GEPPETTO.CommandController.log("Set new Message for " + this.id, true);
 
 			if (this.customHandlers.length > 0) {
 				// msg has changed, set hooked attribute on handlers to false
@@ -103,7 +103,7 @@ define(function (require) {
 
 				// trigger routine that hooks up handlers
 				hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
-				GEPPETTO.Console.debugLog("Hooked up custom handlers for " + this.id);
+				GEPPETTO.CommandController.log("Hooked up custom handlers for " + this.id, true);
 			}
 
 			// track change in state of the widget

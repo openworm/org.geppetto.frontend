@@ -59,6 +59,8 @@ define(function (require) {
             Parameters_set : "parameters_set",
             Command_log : "command:log",
             Command_log_debug : "command:log_debug",
+            Command_clear : "command:clear",
+            Command_toggle_implicit : "command:toggle_implicit",
 
             listen: function () {
                 GEPPETTO.on(this.Select, function () {
@@ -96,7 +98,7 @@ define(function (require) {
                         Project.getActiveExperiment().play({step: 1});
                     }
                     else {
-                        GEPPETTO.Console.log("Experiment " + name + " with " + id + " is over ");
+                        GEPPETTO.CommandController.log("Experiment " + name + " with " + id + " is over ");
                     }
                 });
 

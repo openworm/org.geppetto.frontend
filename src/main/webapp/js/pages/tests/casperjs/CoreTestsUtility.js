@@ -1,4 +1,7 @@
-var urlBase = "http://127.0.0.1:8080/";
+var urlBase = casper.cli.get('host');
+if(urlBase==null || urlBase==undefined){
+	urlBase = "http://127.0.0.1:8080/";
+}
 var baseFollowUp = "org.geppetto.frontend/geppetto?";
 
 var hhcellProject = "load_project_from_id=1";
@@ -161,7 +164,6 @@ function getMeshColor(test,variableName,index){
 		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[index].material.color;
 		return [color.r, color.g, color.b];
 	},variableName,index);
-	
 	return color;
 }
 
@@ -206,31 +208,28 @@ function test3DMeshColorNotEquals(test,testColor,variableName,index){
  * @returns
  */
 function testSelection(test,variableName,selectColorVarName){
-	closeSpotlight();
-    casper.waitWhileVisible('div#spotlight', function () {
-    	casper.echo("Spotlight closed");
-    	casper.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
-
-    	casper.waitUntilVisible('div#spotlight', function () {
-    		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});
-    		casper.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
-    		casper.waitUntilVisible('button#buttonOne', function () {
-    			test.assertVisible('button#buttonOne', "Select button correctly visible");
-    			buttonClick("#buttonOne");
-    			this.wait(500, function () {
-    				var selectColor = [1,0.8,0];
-    				test3DMeshColor(test,selectColor,selectColorVarName,0);
-    			});
-    		});
-    	});
-    }, null, 1000);
+	buttonClick("#spotlightBtn");
+	casper.echo("---testSelection----");
+   	casper.waitUntilVisible('div#spotlight', function () {
+   		casper.sendKeys('input#typeahead', variableName, {keepFocus: true});
+   		casper.sendKeys('input#typeahead', casper.page.event.key.Return, {keepFocus: true});
+   		casper.waitUntilVisible('button#buttonOne', function () {
+   			test.assertVisible('button#buttonOne', "Select button correctly visible");
+   			buttonClick("#buttonOne");
+   			this.wait(500, function () {
+   				var selectColor = [1,0.8,0];
+   				casper.echo("---test3DMeshColor----");
+   				test3DMeshColor(test,selectColor,selectColorVarName,0);
+   			});
+   		});
+   	});
 }
 
 function closeSpotlight(){
-	casper.mouseEvent('click', 'div#spotlight', "attempting to close spotlight");
+	casper.evaluate(function() {
+		$("#spotlight").hide();
+	});	
     casper.echo("Clicking to close spotlight");
-    casper.sendKeys('input#typeahead', casper.page.event.key.Escape, {keepFocus: true});
-    casper.echo("Hitting escape to close spotlight");
 }
 
 /**
@@ -370,7 +369,7 @@ function testVisualGroup(test,variableName, expectedMeshes,expectedColors){
 		casper.echo("-------Testing Highlighted Instance--------");
 		var i=1;
 		casper.repeat(expectedMeshes, function() {
-			casper.echo("variableName "+ variableName);
+			casper.echo("Debug Log: variableName "+ variableName+" and i ="+i);
 			var color = casper.evaluate(function(variableName,i) {
 				var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[i].material.color;
 				return [color.r, color.g, color.b];
@@ -388,7 +387,6 @@ function testingConnectionLines(test, expectedLines){
 			var connectionLines = Object.keys(Canvas1.engine.connectionLines).length;
 			return connectionLines;
 		});
-		
 		test.assertEquals(expectedLines, connectionLines, "Right amount of connections line");
 	});
 }

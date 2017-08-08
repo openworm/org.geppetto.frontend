@@ -349,7 +349,7 @@ define(function (require) {
         }
 
         componentWillUnmount()  {
-            // stop listening to log events on unmount
+            // stop listening to events on unmount
             GEPPETTO.off(GEPPETTO.Events.Command_log, this.log, this);
             GEPPETTO.off(GEPPETTO.Events.Command_log_debug, this.debugLog, this);
             GEPPETTO.off(GEPPETTO.Events.Command_clear, this.clear, this);
@@ -359,7 +359,7 @@ define(function (require) {
         componentDidMount() {
             this.createConsole();
 
-            // listen to log events
+            // listen to events
             GEPPETTO.on(GEPPETTO.Events.Command_log, this.log, this);
             GEPPETTO.on(GEPPETTO.Events.Command_log_debug, this.debugLog, this);
             GEPPETTO.on(GEPPETTO.Events.Command_clear, this.clear, this);

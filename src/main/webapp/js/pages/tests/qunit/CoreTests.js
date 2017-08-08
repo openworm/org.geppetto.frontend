@@ -7,6 +7,7 @@
  */
 define(function (require) {
     var QUnit = require("qunitjs");
+    global.GEPPETTO_CONFIGURATION = require('../../../../GeppettoConfiguration.json');
     require('../../../components/ComponentFactory')(GEPPETTO);
     /**
      * Closes socket and clears handlers. Method is called from each test.
@@ -17,7 +18,7 @@ define(function (require) {
         //clear message handlers, all tests within module should have performed by time method it's called
         GEPPETTO.MessageSocket.clearHandlers();
         //connect to socket again for next test
-        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' +  + '/GeppettoServlet');
+        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet');
     }
 
     var run = function () {

@@ -277,16 +277,25 @@ define(function (require) {
              * @param message
              * @param debug
              */
-            log: function(message, debug){
+            log: function(message, debug, run){
                 // default debug param to false
                 if(debug == undefined){
                     debug = false;
                 }
+                if(run == undefined){
+                    run=false
+                }
 
-                if(debug === true){
+                if(debug === true) {
                     GEPPETTO.trigger(GEPPETTO.Events.Command_log_debug, message);
-                } else {
-                    GEPPETTO.trigger(GEPPETTO.Events.Command_log, message);
+                }
+                else {
+                    if(run){
+                        GEPPETTO.trigger(GEPPETTO.Events.Command_log_run, message);
+                    }
+                    else{
+                        GEPPETTO.trigger(GEPPETTO.Events.Command_log, message);
+                    }
                 }
             },
 
@@ -307,12 +316,12 @@ define(function (require) {
                     eval(command);
 
                     // log and propagate implicit (implicit command shows up only in debug mode)
-                    this.log('Run: ' + command, implicit);
+                    this.log(command, implicit, true);
                 } catch (e) {
                     // in case of error on the eval
                     if (e instanceof SyntaxError) {
                         // log in debug mode
-                        this.log('ERROR: ' + e.message, true);
+                        this.log('ERROR: ' + e.message, true, true);
                     } else {
                         // do not swallow the generic exception
                         throw(e);

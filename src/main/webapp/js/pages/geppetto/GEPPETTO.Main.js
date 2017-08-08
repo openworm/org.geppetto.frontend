@@ -107,6 +107,7 @@ define(function (require) {
                 GEPPETTO.Events.listen();
                 this.createChannel();
                 GEPPETTO.CommandController.log(GEPPETTO.Resources.GEPPETTO_INITIALIZED, true);
+                GEPPETTO.MessageSocket.send("geppetto_version", null);
             },
 
             /**
@@ -167,7 +168,7 @@ define(function (require) {
         $(document).ready(function () {
             // add console to placeholder
             // NOTE: eventually this gets refactored and only extensions that want the console add it
-            GEPPETTO.ComponentFactory.addWidget('CONSOLE', {}, "console");
+            GEPPETTO.ComponentFactory.addComponent('CONSOLE', {}, document.getElementById("console"));
 
             var webWorkersSupported = (typeof (Worker) !== "undefined");
 
@@ -212,12 +213,18 @@ define(function (require) {
                     }
                 });
 
+                var embeddedConsoleVisible = false;
                 $('#consoleButton').click(function (e) {
-                    $('#console').show();
-                    $('#experiments').hide();
-                    $("#pythonConsole").hide();
-                    $(this).tab('show');
-                    visibleExperiments = false;
+                    if(!embeddedConsoleVisible) {
+                        $('#console').show();
+                        $('#experiments').hide();
+                        $("#pythonConsole").hide();
+                        $(this).tab('show');
+                        embeddedConsoleVisible = true;
+                    } else {
+                        $('#console').hide();
+                        embeddedConsoleVisible = false;
+                    }
                 });
 
                 $('#pythonConsoleButton').click(function (e) {

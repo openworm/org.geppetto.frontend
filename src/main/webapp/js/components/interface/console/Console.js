@@ -211,13 +211,6 @@ define(function (require) {
                 $('.ui-menu').remove();
             });
 
-            var sendMessage = setInterval(function () {
-                if (GEPPETTO.MessageSocket.isReady() == 1) {
-                    GEPPETTO.MessageSocket.send("geppetto_version", null);
-                    clearInterval(sendMessage);
-                }
-            }, 100);
-
             return console;
         }
 
@@ -307,6 +300,17 @@ define(function (require) {
             }
         }
 
+
+        /**
+         * Log executed commands to Geppetto's console
+         * @param message the executed command to be logged in the console
+         */
+        logRunCommand (message) {
+            this.getConsole().logRunCommand(message);
+
+        }
+
+
         /**
          * Logs messages to console without need for debug mode to be on
          */
@@ -352,6 +356,7 @@ define(function (require) {
             // stop listening to events on unmount
             GEPPETTO.off(GEPPETTO.Events.Command_log, this.log, this);
             GEPPETTO.off(GEPPETTO.Events.Command_log_debug, this.debugLog, this);
+            GEPPETTO.off(GEPPETTO.Events.Command_log_run, this.logRunCommand, this);
             GEPPETTO.off(GEPPETTO.Events.Command_clear, this.clear, this);
             GEPPETTO.off(GEPPETTO.Events.Command_toggle_implicit, this.toggleImplicitCommands, this);
         }
@@ -362,6 +367,7 @@ define(function (require) {
             // listen to events
             GEPPETTO.on(GEPPETTO.Events.Command_log, this.log, this);
             GEPPETTO.on(GEPPETTO.Events.Command_log_debug, this.debugLog, this);
+            GEPPETTO.on(GEPPETTO.Events.Command_log_run, this.logRunCommand, this);
             GEPPETTO.on(GEPPETTO.Events.Command_clear, this.clear, this);
             GEPPETTO.on(GEPPETTO.Events.Command_toggle_implicit, this.toggleImplicitCommands, this);
         }

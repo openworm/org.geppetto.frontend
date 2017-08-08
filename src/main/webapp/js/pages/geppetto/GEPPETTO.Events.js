@@ -59,6 +59,7 @@ define(function (require) {
             Parameters_set : "parameters_set",
             Command_log : "command:log",
             Command_log_debug : "command:log_debug",
+            Command_log_run : "command:log_run",
             Command_clear : "command:clear",
             Command_toggle_implicit : "command:toggle_implicit",
 

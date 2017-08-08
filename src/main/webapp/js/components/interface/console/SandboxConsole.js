@@ -226,6 +226,13 @@ define(function (require) {
                     });
                 },
 
+                logRunCommand: function (message) {
+                    this.addMessageHistory("runMessage", {
+                        result: message,
+                        _class: "run"
+                    });
+                },
+
                 showCommandsSuggestions: function (message) {
                     this.addMessageHistory("commandsSuggestions", {
                         result: message
@@ -644,13 +651,7 @@ define(function (require) {
                 addMessageHistory: function (message, item) {
                     var history = this.model.get('history');
 
-                    if (message == "debugMessage") {
-                        item._class = "debug";
-                    }
-                    else if (message == "logMessage") {
-                        item._class = "message";
-                    }
-                    else if (message == "commandsSuggestions") {
+                    if (message == "commandsSuggestions") {
                         item._class = "commandsSuggestions";
                     }
                     history.push(item);

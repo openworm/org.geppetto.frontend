@@ -74,7 +74,7 @@ define(function (require) {
                     if (_.find(treeVisualiserDAT.registeredEvents, function (el) {
                             return el.id === event;
                         })) {
-                        var selected = G.getSelection();
+                        var selected = GEPPETTO.SceneController.getSelection();
                         treeVisualiserDAT.reset();
                         //update treevisualiser with new data set
                         treeVisualiserDAT.setData(selected[0]);

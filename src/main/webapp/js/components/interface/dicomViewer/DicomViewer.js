@@ -119,156 +119,162 @@ define(function (require) {
 			return files;
 		}
 
-		componentDidMount() {
-			this.ready = false;
-			var _this = this;
+		loadModel() {
+			if (this.state.files != undefined) {
 
-			/**
-			 * Init the quadview
-			 */
-			function init() {
+				this.ready = false;
+				var _this = this;
+
 				/**
-				 * Called on each animation frame
+				 * Init the quadview
 				 */
-				function animate() {
-					// we are ready when both meshes have been loaded
-					if (_this.ready) {
-						// render
-						_this.r0.controls.update();
-						_this.r1.controls.update();
-						_this.r2.controls.update();
-						_this.r3.controls.update();
+				function init() {
+					/**
+					 * Called on each animation frame
+					 */
+					function animate() {
+						// we are ready when both meshes have been loaded
+						if (_this.ready) {
+							// render
+							_this.r0.controls.update();
+							_this.r1.controls.update();
+							_this.r2.controls.update();
+							_this.r3.controls.update();
 
-						_this.r0.light.position.copy(_this.r0.camera.position);
-						_this.r0.renderer.render(_this.r0.scene, _this.r0.camera);
+							_this.r0.light.position.copy(_this.r0.camera.position);
+							_this.r0.renderer.render(_this.r0.scene, _this.r0.camera);
 
-						// r1
-						_this.r1.renderer.clear();
-						_this.r1.renderer.render(_this.r1.scene, _this.r1.camera);
-						// localizer
-						_this.r1.renderer.clearDepth();
-						_this.r1.renderer.render(_this.r1.localizerScene, _this.r1.camera);
+							// r1
+							_this.r1.renderer.clear();
+							_this.r1.renderer.render(_this.r1.scene, _this.r1.camera);
+							// localizer
+							_this.r1.renderer.clearDepth();
+							_this.r1.renderer.render(_this.r1.localizerScene, _this.r1.camera);
 
-						// r2
-						_this.r2.renderer.clear();
-						_this.r2.renderer.render(_this.r2.scene, _this.r2.camera);
-						// localizer
-						_this.r2.renderer.clearDepth();
-						_this.r2.renderer.render(_this.r2.localizerScene, _this.r2.camera);
+							// r2
+							_this.r2.renderer.clear();
+							_this.r2.renderer.render(_this.r2.scene, _this.r2.camera);
+							// localizer
+							_this.r2.renderer.clearDepth();
+							_this.r2.renderer.render(_this.r2.localizerScene, _this.r2.camera);
 
-						// r3
-						_this.r3.renderer.clear();
-						_this.r3.renderer.render(_this.r3.scene, _this.r3.camera);
-						// localizer
-						_this.r3.renderer.clearDepth();
-						_this.r3.renderer.render(_this.r3.localizerScene, _this.r3.camera);
+							// r3
+							_this.r3.renderer.clear();
+							_this.r3.renderer.render(_this.r3.scene, _this.r3.camera);
+							// localizer
+							_this.r3.renderer.clearDepth();
+							_this.r3.renderer.render(_this.r3.localizerScene, _this.r3.camera);
+						}
+
+						// request new frame
+						requestAnimationFrame(function () {
+							animate();
+						});
 					}
 
-					// request new frame
-					requestAnimationFrame(function () {
-						animate();
-					});
+					// renderers
+					DicomViewerUtils.initRenderer3D(_this.r0, _this.getContainer());
+					DicomViewerUtils.initRenderer2D(_this.r1, _this.getContainer());
+					DicomViewerUtils.initRenderer2D(_this.r2, _this.getContainer());
+					DicomViewerUtils.initRenderer2D(_this.r3, _this.getContainer());
+
+					// start rendering loop
+					animate();
 				}
 
-				// renderers
-				DicomViewerUtils.initRenderer3D(_this.r0, _this.getContainer());
-				DicomViewerUtils.initRenderer2D(_this.r1, _this.getContainer());
-				DicomViewerUtils.initRenderer2D(_this.r2, _this.getContainer());
-				DicomViewerUtils.initRenderer2D(_this.r3, _this.getContainer());
+				// init threeJS
+				init();
 
-				// start rendering loop
-				animate();
+				// load sequence for each file
+				// instantiate the loader
+				// it loads and parses the dicom image
+				let loader = new LoadersVolume();
+				loader.load(this.state.files)
+					.then(function () {
+						let series = loader.data[0].mergeSeries(loader.data)[0];
+						loader.free();
+						loader = null;
+						// get first stack from series
+						let stack = series.stack[0];
+						stack.prepare();
+
+						// center 3d camera/control on the stack
+						let centerLPS = stack.worldCenter();
+						_this.r0.camera.lookAt(centerLPS.x, centerLPS.y, centerLPS.z);
+						_this.r0.camera.updateProjectionMatrix();
+						_this.r0.controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
+
+						// bouding box
+						let boxHelper = new HelpersBoundingBox(stack);
+						_this.r0.scene.add(boxHelper);
+
+						// red slice
+						DicomViewerUtils.initHelpersStack(_this.r1, stack);
+						_this.r0.scene.add(_this.r1.scene);
+
+						// yellow slice
+						DicomViewerUtils.initHelpersStack(_this.r2, stack);
+						_this.r0.scene.add(_this.r2.scene);
+
+						// green slice
+						DicomViewerUtils.initHelpersStack(_this.r3, stack);
+						_this.r0.scene.add(_this.r3.scene);
+
+						// create new mesh with Localizer shaders
+						let plane1 = _this.r1.stackHelper.slice.cartesianEquation();
+						let plane2 = _this.r2.stackHelper.slice.cartesianEquation();
+						let plane3 = _this.r3.stackHelper.slice.cartesianEquation();
+
+						// localizer red slice
+						DicomViewerUtils.initHelpersLocalizer(_this.r1, stack, plane1, [
+							{
+								plane: plane2,
+								color: new THREE.Color(_this.r2.stackHelper.borderColor),
+							},
+							{
+								plane: plane3,
+								color: new THREE.Color(_this.r3.stackHelper.borderColor),
+							},
+						]);
+
+						// localizer yellow slice
+						DicomViewerUtils.initHelpersLocalizer(_this.r2, stack, plane2, [
+							{
+								plane: plane1,
+								color: new THREE.Color(_this.r1.stackHelper.borderColor),
+							},
+							{
+								plane: plane3,
+								color: new THREE.Color(_this.r3.stackHelper.borderColor),
+							},
+						]);
+
+						// localizer green slice
+						DicomViewerUtils.initHelpersLocalizer(_this.r3, stack, plane3, [
+							{
+								plane: plane1,
+								color: new THREE.Color(_this.r1.stackHelper.borderColor),
+							},
+							{
+								plane: plane2,
+								color: new THREE.Color(_this.r2.stackHelper.borderColor),
+							},
+						]);
+
+						_this.configureEvents();
+						_this.ready = true;
+
+					})
+					.catch(function (error) {
+						window.console.log('oops... something went wrong...');
+						window.console.log(error);
+					});
 			}
 
-			// init threeJS
-			init();
+		}
 
-			// load sequence for each file
-			// instantiate the loader
-			// it loads and parses the dicom image
-			let loader = new LoadersVolume();
-			loader.load(this.state.files)
-				.then(function () {
-					let series = loader.data[0].mergeSeries(loader.data)[0];
-					loader.free();
-					loader = null;
-					// get first stack from series
-					let stack = series.stack[0];
-					stack.prepare();
-
-					// center 3d camera/control on the stack
-					let centerLPS = stack.worldCenter();
-					_this.r0.camera.lookAt(centerLPS.x, centerLPS.y, centerLPS.z);
-					_this.r0.camera.updateProjectionMatrix();
-					_this.r0.controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
-
-					// bouding box
-					let boxHelper = new HelpersBoundingBox(stack);
-					_this.r0.scene.add(boxHelper);
-
-					// red slice
-					DicomViewerUtils.initHelpersStack(_this.r1, stack);
-					_this.r0.scene.add(_this.r1.scene);
-
-					// yellow slice
-					DicomViewerUtils.initHelpersStack(_this.r2, stack);
-					_this.r0.scene.add(_this.r2.scene);
-
-					// green slice
-					DicomViewerUtils.initHelpersStack(_this.r3, stack);
-					_this.r0.scene.add(_this.r3.scene);
-
-					// create new mesh with Localizer shaders
-					let plane1 = _this.r1.stackHelper.slice.cartesianEquation();
-					let plane2 = _this.r2.stackHelper.slice.cartesianEquation();
-					let plane3 = _this.r3.stackHelper.slice.cartesianEquation();
-
-					// localizer red slice
-					DicomViewerUtils.initHelpersLocalizer(_this.r1, stack, plane1, [
-						{
-							plane: plane2,
-							color: new THREE.Color(_this.r2.stackHelper.borderColor),
-						},
-						{
-							plane: plane3,
-							color: new THREE.Color(_this.r3.stackHelper.borderColor),
-						},
-					]);
-
-					// localizer yellow slice
-					DicomViewerUtils.initHelpersLocalizer(_this.r2, stack, plane2, [
-						{
-							plane: plane1,
-							color: new THREE.Color(_this.r1.stackHelper.borderColor),
-						},
-						{
-							plane: plane3,
-							color: new THREE.Color(_this.r3.stackHelper.borderColor),
-						},
-					]);
-
-					// localizer green slice
-					DicomViewerUtils.initHelpersLocalizer(_this.r3, stack, plane3, [
-						{
-							plane: plane1,
-							color: new THREE.Color(_this.r1.stackHelper.borderColor),
-						},
-						{
-							plane: plane2,
-							color: new THREE.Color(_this.r2.stackHelper.borderColor),
-						},
-					]);
-
-					_this.configureEvents();
-					_this.ready = true;
-
-				})
-				.catch(function (error) {
-					window.console.log('oops... something went wrong...');
-					window.console.log(error);
-				});
-
-
+		componentDidMount() {
+			this.loadModel();
 		}
 
 		configureEvents() {
@@ -409,7 +415,7 @@ define(function (require) {
 			this.r3.controls.addEventListener('OnScroll', onScroll);
 
 
-			window.addEventListener('resize', function(){_this.setLayout();}, false);
+			window.addEventListener('resize', function () { _this.setLayout(); }, false);
 
 			$(this.getContainer()).parent().on("resizeEnd", function (event, ui) {
 				_this.setLayout()
@@ -467,7 +473,12 @@ define(function (require) {
 		}
 
 		componentDidUpdate(prevProps, prevState) {
-			this.setLayout();
+			if (prevState.files != this.state.files) {
+				this.loadModel();
+			}
+			else {
+				this.setLayout();
+			}
 		}
 
 		changeMode() {
@@ -503,7 +514,7 @@ define(function (require) {
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} style={{ width: '100%', height: '100%' }}>
 					<WidgetButtonBar>
-						<button className={this.state.mode == 'single_view' ? 'btn fa fa-th-large':'btn fa fa-square'} onClick={this.changeMode} title={'Change Mode'} />
+						<button className={this.state.mode == 'single_view' ? 'btn fa fa-th-large' : 'btn fa fa-square'} onClick={this.changeMode} title={'Change Mode'} />
 						{(this.state.mode == "single_view") ? (<button className="btn fa fa-repeat" onClick={this.changeOrientation} title={'Change Orientation'} />) : null}
 					</WidgetButtonBar>
 

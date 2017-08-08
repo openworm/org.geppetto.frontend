@@ -7,7 +7,7 @@ define(function (require) {
 		var ReactDOM = require('react-dom');
 		var spinner = require('./interface/loadingSpinner/LoadingSpinner.js');
 
-		var addWidget = require('./widgets/AWidget.js');
+		var WidgetCapability = require('./widgets/WidgetCapability.js');
 
 		GEPPETTO.ComponentFactory = {
 
@@ -128,7 +128,7 @@ define(function (require) {
 				// Create component/widget
 				var type = componentToAdd;
 				if (isWidget) {
-					type = addWidget(componentToAdd);
+					type = WidgetCapability.createWidget(componentToAdd);
 				}
 				var component = React.createFactory(type)(properties);
 
@@ -177,6 +177,9 @@ define(function (require) {
 			addWidget: function (componentType, properties, callback) {
 
 				if (componentType in this.components) {
+					if(properties==undefined){
+						properties={};
+					}
 					this._createComponent(componentType, properties, document.getElementById('widgetContainer'), callback, true);
 				}
 				else {

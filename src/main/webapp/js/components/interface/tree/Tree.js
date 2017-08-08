@@ -4,6 +4,9 @@ define(function (require) {
 
 	var React = require('react');
 	var SortableTree = require('react-sortable-tree').default;
+	var toggleExpandedForAll = require('react-sortable-tree').toggleExpandedForAll;
+	var changeNodeAtPath = require('react-sortable-tree').changeNodeAtPath;
+	var walk = require('react-sortable-tree').walk;
 	var AbstractComponent = require('../../AComponent');
 
 	return class Tree extends AbstractComponent {
@@ -15,7 +18,7 @@ define(function (require) {
 			this.expandAll = this.expandAll.bind(this);
 			this.collapseAll = this.collapseAll.bind(this);
 			this.state = {
-				treeData: this.props.data,
+				treeData: this.props.treeData,
 			};
 		}
 
@@ -40,28 +43,66 @@ define(function (require) {
 			this.expand(false);
 		}
 
+		handleClick(event, rowInfo) {
+			var currentTreeData = this.state.treeData;
+			// If node has children, we expand/collapse the node
+			if (rowInfo.node.children != undefined && rowInfo.node.children.length > 0) {
+				rowInfo.node.expanded = !rowInfo.node.expanded;
+				currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
+			}
+			// If node has no children, we select the node
+			else if (rowInfo.node.children == undefined) {
+				walk({
+					treeData: currentTreeData,
+					getNodeKey: ({ treeIndex }) => treeIndex,
+					ignoreCollapsed: false,
+					callback: (rowInfoIter) => {
+						var isActive = (rowInfoIter.treeIndex == rowInfo.treeIndex);
+						if (isActive != rowInfoIter.node.active){
+							rowInfoIter.node.active = isActive;
+							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
+						}
+					}
+				});
+
+			}
+
+			// Update tree with latest changes
+			this.updateTreeData(currentTreeData)
+
+			// If there is a callback, we use it
+			if (this.props.handleClick != undefined) {
+				this.props.handleClick(event, rowInfo);
+			}
+		}
+
 		getNodeProps(rowInfo) {
 			var nodeProps = {};
-			if (this.props.handleClick != undefined) {
-				nodeProps['onClick'] = () => this.props.handleClick(rowInfo);
-			}
+			nodeProps['onClick'] = (event) => this.handleClick(event, rowInfo);
+
 			if (this.props.getButtons != undefined) {
 				nodeProps['buttons'] = this.props.getButtons(rowInfo);
+			}
+			if (rowInfo.node.instance != undefined) {
+				nodeProps['style'] = { cursor: 'pointer' };
+			}
+			if (rowInfo.node.active) {
+				nodeProps['className'] = 'activeNode';
 			}
 			return nodeProps;
 		}
 
 		render() {
-
 			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="treeViewer">
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="treeViewer" style={this.props.style}>
 					<SortableTree
+						style={this.props.style}
 						treeData={this.state.treeData}
 						canDrag={false}
 						rowHeight={40}
 						scaffoldBlockPxWidth={22}
 						generateNodeProps={rowInfo => (this.getNodeProps(rowInfo))}
-						onChange={treeData => this.setState({ treeData })}
+						onChange={treeData => this.updateTreeData(treeData)}
 					/>
 				</div>
 			)

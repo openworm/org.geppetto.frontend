@@ -287,7 +287,6 @@ define(function (require) {
                 return this.selectionOptions;
             },
 
-
             /**
              * Sets the timer for updates during play/replay.
              *

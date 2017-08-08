@@ -183,7 +183,6 @@ define(function (require) {
                 var activeExperiment = (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined);
                 var setView = false;
 
-                // go to server to persist only if experiment is persisted
                 if(Project.persisted && GEPPETTO.UserController.persistence){
                 	setView = true;
                 } else if(GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
@@ -198,7 +197,7 @@ define(function (require) {
                     setView = true;
                 }
                 
-                if(setView && GEPPETTO.UserController.persistence){
+                if(setView && GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)){
                     var parameters = {};
                     var experimentId = activeExperiment ? Project.getActiveExperiment().getId() : -1;
                     parameters["experimentId"] = experimentId;

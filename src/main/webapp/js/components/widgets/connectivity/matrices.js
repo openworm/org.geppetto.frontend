@@ -255,7 +255,7 @@ define(function (require) {
 		    .attr("title", function (d) {
 			return d.id;
 		    })
-		//.style("fill-opacity", function(d) { return z(d.z); })
+			//.style("fill-opacity", function(d) { return z(d.z); })
 		    .style("fill", function (d) {
 			return c(d.z);
 		    })

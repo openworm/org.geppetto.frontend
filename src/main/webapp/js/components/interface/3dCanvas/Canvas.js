@@ -59,15 +59,15 @@ define(function (require) {
          * Remove all the passed instances from this canvas component
          * This method is only able to remove instances that were explicitly added
          * e.g. if acnet2 is added acent2.baskets[3] can't be removed.
-         * @param instances an array of instances
+         * @param instances an array of instance paths (cannot pass instances because they are deleted already)
          * @returns {Canvas}
          */
-        remove(instances) {
+        remove(instancePaths) {
             var removed = false;
-            for (var i = 0; i < instances.length; i++) {
-                if (this.viewState.instances.indexOf(instances[i].getInstancePath()) != -1) {
-                    this.viewState.instances.splice(this.viewState.instances.indexOf(instances[i].getInstancePath()), 1);
-                    this.engine.removeFromScene(instances[i]);
+            for (var i = 0; i < instancePaths.length; i++) {
+                if (this.viewState.instances.indexOf(instancePaths[i]) != -1) {
+                    this.viewState.instances.splice(this.viewState.instances.indexOf(instancePaths[i]), 1);
+                    this.engine.removeFromScene(instancePaths[i]);
                     removed = true;
                 }
             }
@@ -78,6 +78,14 @@ define(function (require) {
             return this;
         }
 
+        /**
+         * Remove an object from the canvas
+         *
+         * @param object
+         */
+        removeObject(object){
+            this.engine.removeObject(object);
+        }
 
         /**
          * Displays all the instances available in the current model in this canvas
@@ -147,6 +155,59 @@ define(function (require) {
         setWireframe(wireframe) {
             this.engine.setWireframe(wireframe);
             return this;
+        }
+
+        /**
+         * Get whether wireframe mode is being used
+         *
+         * @returns {*}
+         */
+        getWireframe() {
+            return this.engine.getWireframe();
+        }
+
+        /**
+         * Adds a 3D plane to the canvas
+         *
+         * @param x1
+         * @param y1
+         * @param z1
+         * @param x2
+         * @param y2
+         * @param z2
+         * @param x3
+         * @param y3
+         * @param z3
+         * @param x4
+         * @param y4
+         * @param z4
+         * @param textureURL
+         * @returns {Canvas}
+         */
+        add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL) {
+            return this.engine.add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL);
+        }
+
+        /**
+         * Modifies plane object
+         *
+         * @param object
+         * @param x1
+         * @param y1
+         * @param z1
+         * @param x2
+         * @param y2
+         * @param z2
+         * @param x3
+         * @param y3
+         * @param z3
+         * @param x4
+         * @param y4
+         * @param z4
+         * @returns {Canvas}
+         */
+        modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
+            return this.engine.modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
         }
 
         /**
@@ -497,6 +558,25 @@ define(function (require) {
             return this;
         }
 
+        /**
+         * Flips camera along Y axis
+         *
+         * @returns {Canvas}
+         */
+        flipCameraY() {
+            this.engine.flipCameraY();
+            return this;
+        }
+
+        /**
+         * Flips camera along z axis
+         *
+         * @returns {Canvas}
+         */
+        flipCameraZ() {
+            this.engine.flipCameraZ();
+            return this;
+        }
 
         /**
          * Set container dimensions depending on parent dialog
@@ -517,7 +597,7 @@ define(function (require) {
          */
         setView(view) {
             // set base properties
-            super.setView(view)
+            super.setView(view);
 
             // set data
             if (view.data != undefined) {
@@ -587,18 +667,10 @@ define(function (require) {
             return baseView;
         }
 
-        /**
-         *
-         * @returns {boolean}
-         */
         shouldComponentUpdate() {
             return false;
         }
 
-
-        /**
-         *
-         */
         componentDidMount() {
             if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
@@ -624,10 +696,6 @@ define(function (require) {
             }
         }
 
-        /**
-         *
-         * @returns {XML}
-         */
         render() {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">

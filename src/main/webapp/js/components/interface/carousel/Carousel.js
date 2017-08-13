@@ -12,16 +12,19 @@ define(function (require) {
 			var settings = {
 				infinite: true,
 				speed: 500,
-				slidesToShow: 1,
-				slidesToScroll: 1
+				slidesToShow: 1
 			};
 
 			this.state = {
-				settings: $.extend(settings, this.props.settings),
-				files: this.props.files
+				settings: $.extend(settings, props.settings),
+				files: props.files
 			};
 
 			this.download = this.download.bind(this);
+		}
+
+		componentDidMount(){
+			this.refs.slider.forceUpdate();
 		}
 
 		setData(files) {
@@ -39,7 +42,7 @@ define(function (require) {
 
 			if (this.state.files != undefined) {
 				return (
-					<Slider {...this.state.settings}>
+					<Slider {...this.state.settings} ref='slider'>
 						{items}
 					</Slider>
 				)

@@ -53,7 +53,7 @@ define(function (require) {
 							}
 						}
 					})
-					};
+					}
 				</div>
 
 			)

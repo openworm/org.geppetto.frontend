@@ -2,6 +2,7 @@ define(function (require) {
 
 	var React = require('react');
 	var AbstractComponent = require('../../AComponent');
+	require('./Gallery.less')
 
 	require('lightgallery');
 	require('lg-thumbnail');
@@ -46,9 +47,13 @@ define(function (require) {
 									return <a href={item.original}>
 										<img src={item.thumbnail} />
 									</a>
-								case 'video':
-									return <a href={item.original}>
-										<img src={item.thumbnail} />
+								case 'video-youtube':
+
+									return <a href={'https://www.youtube.com/watch?v=' + item.id}>
+										<img src={
+											(item.thumbnail != undefined) ?
+												item.thumbnail :
+												'https://img.youtube.com/vi/' + item.id + '/0.jpg'} />
 									</a>
 							}
 						}

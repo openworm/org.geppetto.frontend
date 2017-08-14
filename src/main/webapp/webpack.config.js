@@ -152,7 +152,7 @@ module.exports = {
                 loader: 'ignore-loader'
             },
             {
-                test: /\.(png)$/,
+                test: /\.(png|eot|ttf|woff|woff2|svg)(\?[a-z0-9=.]+)?$/,
                 loader: 'url-loader?limit=100000'
             },
             {
@@ -162,10 +162,6 @@ module.exports = {
             {
                 test: /\.less$/,
                 loader: 'style!css!less?{"modifyVars":{"url":"\'../../../extensions/' + availableTheme + '\'"}}'
-            },
-            {
-                test: /\.(eot|svg|ttf|woff|woff2)$/,
-                loader: 'file?name=/fonts/[name].[ext]'
             },
             {
                 test: /\.html$/,

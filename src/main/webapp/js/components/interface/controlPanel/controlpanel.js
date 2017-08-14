@@ -96,7 +96,7 @@ define(function (require) {
                             var actionStr = that.props.metadata.actions.replace(/\$entity\$/gi, actionItem);
 
                             // set action
-                            var onClickActionStr = 'GEPPETTO.Console.executeImplicitCommand("' + actionStr + '")';
+                            var onClickActionStr = 'GEPPETTO.Console.executeImplicitCommand("' + actionStr + '"); return false;';
                             anchorElement.attr('onclick', onClickActionStr);
 
                             // retrieve markup to inject as string

@@ -34,7 +34,7 @@ script:
   - echo "Current time :$(date +"%T")"
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - echo "$TRAVIS_BRANCH"
-  - docker build -t="geppetto" --build-arg frontendBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#development:utilities/docker/geppetto/
+  - docker build -t="geppetto" --build-arg frontendBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#master:utilities/docker/geppetto/
   - echo "Current time :$(date +"%T")"
   - docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/test_geppetto_server.sh

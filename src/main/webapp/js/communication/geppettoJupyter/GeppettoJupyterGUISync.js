@@ -13,7 +13,7 @@ define(function (require, exports, module) {
 	var jupyter_widgets = require('jupyter-js-widgets');
 	var GEPPETTO = require('geppetto');
 
-	var $ = require('jquery');
+	var $ = require('jquery'); 
 	var _ = require('underscore');
 
 	var ComponentSync = jupyter_widgets.WidgetModel.extend({
@@ -41,15 +41,22 @@ define(function (require, exports, module) {
 			model.send({ event: 'blur', data: value });
 		},
 
-		getComponent: function (componentItem, parameters) {
+		getParameters: function(parameters){
 			parameters['id'] = this.get('widget_id');
 			parameters['name'] = this.get('widget_name');
 			parameters['sync_value'] = this.get('sync_value');
 			parameters['handleChange'] = this.handleChange.bind(null, this);
 			parameters['handleBlur'] = this.handleBlur.bind(null, this);
+			parameters['isStateless'] = true;
+			return parameters;
+		},
 
-			var component = React.createFactory(componentItem)(parameters);
+		getComponent: function (componentItem, parameters, container) {
+			
+			var component = GEPPETTO.ComponentFactory._addComponent(componentItem, this.componentType, this.getParameters(parameters),
+				 container, undefined, (this.get("embedded") == false));
 			this.set('component', component);
+
 			return component;
 		}
 	});
@@ -61,6 +68,7 @@ define(function (require, exports, module) {
 			position_y: null,
 			width: null,
 			height: null,
+			componentType: "PANEL",
 			properties: {},
 			triggerClose: true
 		}),
@@ -70,9 +78,10 @@ define(function (require, exports, module) {
 			this.on("msg:custom", this.handle_custom_messages, this);
 			this.on("comm:close", this.close_panel, this);
 			this.on("change:widget_name", function (model, value, options) {
-				$("#" + this.get('widget_id') + "_dialog").dialog('option', 'title', this.get("widget_name"));
+				this.get("component").setName(this.get("widget_name"));
 			});
 		},
+		
 		close_panel: function (msg) {
 			this.set('triggerClose', false);
 			$("." + this.get('widget_id') + "_dialog").find(".ui-dialog-titlebar-close").click();
@@ -80,7 +89,7 @@ define(function (require, exports, module) {
 
 		getComponent: function () {
 			var parameters = { items: this.getChildren(), parentStyle: this.get('parentStyle') };
-			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters]);
+			return PanelSync.__super__.getComponent.apply(this, [PanelComp, parameters, null]);
 		},
 
 		forceRender: function () {
@@ -103,7 +112,11 @@ define(function (require, exports, module) {
 		},
 
 		display: function () {
-			this.set('component', GEPPETTO.ComponentFactory.renderComponent(this.getComponent()));
+			var comp = this.getComponent();
+			//this.set('component', GEPPETTO.ComponentFactory._addComponent(comp, "PANEL", { items: this.getChildren(), parentStyle: this.get('parentStyle') },
+			//	 document.getElementById('widgetContainer'), undefined, true));
+			this.set('component', GEPPETTO.ComponentFactory._renderComponent(comp, "PANEL", this.getParameters({ items: this.getChildren(), parentStyle: this.get('parentStyle') }),
+				 document.getElementById('widgetContainer'), undefined, true));
 
 			// On close send a message to python to remove objects
 			var that = this;
@@ -113,6 +126,7 @@ define(function (require, exports, module) {
 				}
 			});
 
+
 			// Do not allow resizable for parent panel
             var selector = $("." + this.get('widget_id') + "_dialog");
 			selector.resizable('destroy');
@@ -120,23 +134,14 @@ define(function (require, exports, module) {
 			// Do not allow close depending on property
 			for (var propertyName in this.get("properties")){
 				if (propertyName == "closable" && this.get("properties")["closable"] == false){
-                    selector.find(".ui-dialog-titlebar-close").hide();
+                    this.get("component").showCloseButton(false);
 				}
 			}
 
-			// Resize widget dim and pos
-			if (this.get('position_x') > 0) {
-                selector.css({ left: this.get('position_x') });
-			}
-			if (this.get('position_y') > 0) {
-                selector.css({ top: this.get('position_y') });
-			}
-			if (this.get('width') > 0) {
-                selector.css({ width: this.get('width') });
-			}
-			if (this.get('height') > 0) {
-                selector.css({ height: this.get('height') });
-			}
+			this.get("component").setPosition(this.get('position_x'), this.get('position_y'));
+			this.get("component").setSize(this.get('height'), this.get('width'));
+			this.get("component").showHistoryIcon(false);
+			this.get("component").setName(this.get("widget_name"));
 		},
 
 		handle_custom_messages: function (msg) {
@@ -144,7 +149,7 @@ define(function (require, exports, module) {
 				this.display();
 			}
 			else if (msg.type === 'shake') {
-				$('#' + this.get('widget_id') + "_dialog").parent().effect('shake', {distance:5, times: 3}, 500);
+				this.get("component").shake();
 			}
 		}
 	}, {
@@ -213,14 +218,15 @@ define(function (require, exports, module) {
 	var ButtonSync = ComponentSync.extend({
 
 		defaults: _.extend({}, ComponentSync.prototype.defaults, {
-
+			componentType: "RAISEDBUTTON"
 		}),
+
 		initialize: function (options) {
 			ButtonSync.__super__.initialize.apply(this, arguments);
 		},
 		getComponent: function () {
 			var parameters = { handleClick: this.handleClick.bind(null, this) };
-			return ButtonSync.__super__.getComponent.apply(this, [RaisedButtonComp, parameters]);
+			return ButtonSync.__super__.getComponent.apply(this, [RaisedButtonComp, parameters, null]);
 		},
 
 		handleClick: function (model) {

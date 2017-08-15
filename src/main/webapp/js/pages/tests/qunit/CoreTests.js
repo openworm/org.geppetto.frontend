@@ -7,6 +7,7 @@
  */
 define(function (require) {
     var QUnit = require("qunitjs");
+    global.GEPPETTO_CONFIGURATION = require('../../../../GeppettoConfiguration.json');
     require('../../../components/ComponentFactory')(GEPPETTO);
     /**
      * Closes socket and clears handlers. Method is called from each test.
@@ -17,7 +18,7 @@ define(function (require) {
         //clear message handlers, all tests within module should have performed by time method it's called
         GEPPETTO.MessageSocket.clearHandlers();
         //connect to socket again for next test
-        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + window.BUNDLE_CONTEXT_PATH + '/GeppettoServlet');
+        GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet');
     }
 
     var run = function () {
@@ -75,7 +76,7 @@ define(function (require) {
 
             assert.equal($("#" + pop.getId()).html(), null, "Test destroy()");
         });
-        
+
         QUnit.test("Test Plot Widget", function (assert) {
             G.addWidget(Widgets.PLOT);
 
@@ -97,27 +98,27 @@ define(function (require) {
 
             assert.equal($("#" + plot.getId()).html(), null, "Test destroy()");
         });
-        
+
         QUnit.test("Test UnitsControllers", function (assert) {
             G.addWidget(Widgets.PLOT);
 
             assert.equal(GEPPETTO.WidgetFactory.getController(Widgets.PLOT).getWidgets().length, 1, "Plot widget.");
 
             var plot = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets()[0];
-            
+
             assert.equal(plot.isVisible(), true, "Test Default Visibility");
 
             var initialLabel = plot.getUnitLabel("S / m2");
-            
+
             assert.equal(initialLabel,"Electric conductance over surface (S / m<sup>2</sup>)", "Test Math.js unit");
-            
+
             GEPPETTO.UnitsController.addUnit("S/m2","Electric conductance OVER density");
             initialLabel = plot.getUnitLabel("S / m2");
-            
+
             assert.equal(initialLabel,"Electric conductance over density (S / m<sup>2</sup>)", "Test Math.js unit");
-            
+
             initialLabel = plot.getUnitLabel("S/m2");
-            
+
             assert.equal(initialLabel,"Electric conductance over density (S/m<sup>2</sup>)", "Test Math.js unit");
 
             plot.destroy();
@@ -330,12 +331,12 @@ define(function (require) {
                             // test if visual group capability is injected in visual groups
                             assert.ok(window.acnet2.pyramidals_48[0].hasCapability(GEPPETTO.Resources.VISUAL_GROUP_CAPABILITY), "Visual group capability injected to instances of visual types with visual groups");
                             // test if connection capability is injected in connection variables
-                            
+
                             Model.neuroml.resolveAllImportTypes(function(){
                             	assert.ok(GEPPETTO.ModelFactory.getAllVariablesOfMetaType(GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE), 'ConnectionType')[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to variables of ConnectionType");
                                 assert.ok(window.acnet2.pyramidals_48[0].getConnections()[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY), "Connection capability injected to instances of connection types");
                             });
-                            
+
                             done();
                             resetConnection();
 

@@ -19,9 +19,9 @@ define(function(require)
                     (!GEPPETTO.UserController.persistence && useLocalStorage)
                 ){
                     // get project and experiment view from local storage if project is not persisted
-                    projectView = JSON.parse(localStorage.getItem("{0}_view".format(Project.getId())));
+                    projectView = JSON.parse(localStorage.getItem("{0}_{1}_view".format(window.location.origin, Project.getId())));
                     if (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined) {
-                        experimentView = JSON.parse(localStorage.getItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId())));
+                        experimentView = JSON.parse(localStorage.getItem("{0}_{1}_{2}_view".format(window.location.origin, Project.getId(), window.Project.getActiveExperiment().getId())));
                     }
                  }
 

@@ -183,22 +183,21 @@ define(function (require) {
                 var activeExperiment = (window.Project.getActiveExperiment() != null && window.Project.getActiveExperiment() != undefined);
                 var setView = false;
 
-                // go to server to persist only if experiment is persisted
                 if(Project.persisted && GEPPETTO.UserController.persistence){
                 	setView = true;
                 } else if(GEPPETTO.Main.localStorageEnabled && (typeof(Storage) !== "undefined")){
                     // store view in local storage for this project/experiment/user
                     if(!activeExperiment){
                         // no experiment active - save at project level
-                        localStorage.setItem("{0}_view".format(Project.getId()), JSON.stringify(view));
+                        localStorage.setItem("{0}_{1}_view".format(window.location.origin, Project.getId()), JSON.stringify(view));
                     } else {
                         // experiment active - save at experiment level
-                        localStorage.setItem("{0}_{1}_view".format(Project.getId(), window.Project.getActiveExperiment().getId()), JSON.stringify(view));
+                        localStorage.setItem("{0}_{1}_{2}_view".format(window.location.origin, Project.getId(), window.Project.getActiveExperiment().getId()), JSON.stringify(view));
                     }
                     setView = true;
                 }
                 
-                if(setView && GEPPETTO.UserController.persistence){
+                if(setView && GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)){
                     var parameters = {};
                     var experimentId = activeExperiment ? Project.getActiveExperiment().getId() : -1;
                     parameters["experimentId"] = experimentId;
@@ -262,7 +261,7 @@ define(function (require) {
                 if (experiment.status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                     // playExperimentReady true even if some variables
                     // do not have value, so if playAll then we get state here
-                    if (!this.playExperimentReady || this.playOptions.playAll) {
+                    if (!this.playExperimentReady) {
                     	this.getExperimentState(experiment.getParent().getId(), experiment.id, null);
                         return "Play Experiment";
                     } else {

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.3.6</version>
+	<version>0.3.7</version>
 	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
@@ -14,12 +14,6 @@
 	<profiles>
 		<profile>
 			<id>master</id>
-			<properties>
-				<contextPath>/</contextPath>
-				<useSsl>true</useSsl>
-				<embedded>false</embedded>
-				<embedderURL>/</embedderURL>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -43,6 +37,15 @@
 								</configuration>
 							</execution>
 							<execution>
+								<id>npm set registry https://registry.npmjs.org/p</id>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<workingDirectory>src/main/webapp</workingDirectory>
+								</configuration>
+							</execution>
+							<execution>
 								<id>npm install webapp</id>
 								<goals>
 									<goal>npm</goal>
@@ -59,7 +62,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
+									<arguments>run build  -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
 									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
@@ -70,12 +73,6 @@
 		</profile>
 		<profile>
 			<id>development</id>
-			<properties>
-				<contextPath>org.geppetto.frontend</contextPath>
-				<useSsl>false</useSsl>
-				<embedded>false</embedded>
-				<embedderURL>/</embedderURL>
-			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -115,7 +112,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build-dev  -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
+									<arguments>run build-dev -- --contextPath=${contextPath} --useSsl=${useSsl} --embedded=${embedded} --embedderURL=${embedderURL}</arguments>
 								</configuration>
 							</execution>
 						</executions>

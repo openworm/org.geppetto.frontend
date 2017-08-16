@@ -181,7 +181,7 @@ define(function (require) {
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
-                    console.error(this.props.url, status, err.toString());
+                    console.error("Calling Dst Range", status + " - " + xhr.progress().state() , err.toString());
                 }.bind(this)
             });
         },
@@ -204,7 +204,7 @@ define(function (require) {
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
-                    console.error(this.props.url, status, err.toString());
+                	console.error("Calling Tile Size", status + " - " + xhr.progress().state() , err.toString());
                 }.bind(this)
             });
         },
@@ -228,7 +228,7 @@ define(function (require) {
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
-                    console.error(this.props.url, status, err.toString());
+                	console.error("Calling Max Size", status + " - " + xhr.progress().state() , err.toString());
                 }.bind(this)
             });
         },
@@ -399,7 +399,7 @@ define(function (require) {
                             }
                         },
                         error: function (xhr, status, err) {
-                            console.error(that.props.url, status, err.toString());
+                        	console.error("Calling Objects", status + " - " + xhr.progress().state() , err.toString());
                         }.bind(this)
                     });
                 })(i, that);
@@ -470,7 +470,7 @@ define(function (require) {
                             },
                             error: function (xhr, status, err) {
                                 that.state.loadingLabels = false;
-                                console.error(that.props.url, status, err.toString());
+                                console.error("Listing Objects", status + " - " + xhr.progress().state() , err.toString());
                             }.bind(this)
                         });
                     })(i, that);

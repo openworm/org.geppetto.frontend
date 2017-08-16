@@ -11,7 +11,7 @@ define(function (require) {
                 buffer: {},
                 images: {},
                 text: this.props.statusText,
-                serverUrl: this.props.serverUrl,
+                serverUrl: this.props.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol),
                 color: this.props.color,
                 stack: this.props.stack,
                 label: this.props.label,
@@ -762,12 +762,12 @@ define(function (require) {
          **/
         componentWillReceiveProps: function (nextProps) {
             var updDst = false;
-            if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl || this.state.id !== nextProps.id) {
+            if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol) || this.state.id !== nextProps.id) {
             	this.setState({stack:nextProps.stack,
                 color:nextProps.color,
                 label:nextProps.label,
                 id:nextProps.id,
-                serverUrl:nextProps.serverUrl});
+                serverUrl:nextProps.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol)});
                 this.createImages();
                 this.updateImages(nextProps);
                 this.checkStack();
@@ -1181,12 +1181,12 @@ define(function (require) {
                 var colors = [];
                 var labels = [];
                 var ids = [];
-                var server = this.props.config.serverUrl;
+                var server = this.props.config.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol);
                 for (instance in instances) {
                     try {
                         vals = instances[instance].getVariable().getInitialValue().value;
                         data = JSON.parse(vals.data);
-                        server = data.serverUrl;
+                        server = data.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol);
                         files.push(data.fileLocation);
                         // Take multiple ID's for template
                         if (typeof this.props.config.templateId !== 'undefined' && typeof this.props.config.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.config.templateId) {
@@ -1207,7 +1207,7 @@ define(function (require) {
                         console.log(err.stack);
                     }
                 }
-                if (server != this.props.config.serverUrl && server != null) {
+                if (server != this.props.config.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol) && server != null) {
                     this.setState({serverURL: server});
                     // console.log('Changing IIP server to ' + server);
                 }
@@ -1489,7 +1489,7 @@ define(function (require) {
                             background: 'transparent'
                         }} className={toggleSliceClass} onClick={this.toggleSlice} title={'Toggle the 3D slice display'}/>
                         <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
-                                serverUrl={this.props.config.serverUrl} canvasRef={this.props.canvasRef}
+                                serverUrl={this.props.config.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol)} canvasRef={this.props.canvasRef}
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                                 stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                                 statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}

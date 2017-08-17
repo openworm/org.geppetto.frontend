@@ -646,6 +646,52 @@ define(function (require) {
 			return this;
 		},
 
+        genColorscale: function(min, max, n, f) {
+            var colorscale = [];
+            var step = (max-min)/n;
+            var x = min;
+            var rgb = [];
+            for (var i=0; i<n; ++i) {
+                colorscale.push([i/n, f(x)]);
+                colorscale.push([(i+1)/n, f(x)]);
+                x += step;
+            }
+
+            return colorscale;
+        },
+
+        setScale: function(min, max, scalefn, normalize){
+            // Three.js uses float 0-1 RGB values, here we convert to 0-255
+            var scalefn_255 = function(scalefn) {
+                return function(x){
+                    if (normalize) {
+                        x = x/max;
+                        if (x < 0) { x = 0; }
+                        if (x > 1) { x = 1; }
+                    }
+                    var r,g,b;
+                    [r,g,b] = scalefn(x).map(function(y){ return y*255; });
+                    return "rgb(" + r + "," + g + "," + b + ")";
+                }
+            };
+
+            var nbars = 100;
+            var colorscale = this.genColorscale(min, max, nbars, scalefn_255(scalefn));
+
+            var xdata = [];
+            for (var i=0; i<nbars; ++i){
+                xdata.push(min+(i*(max-min)/nbars));
+            }
+            var data = {type: 'heatmap', showscale: false};
+            data.x = xdata;
+            data.z = [[...Array(nbars).keys()]];
+            if (colorscale != undefined) {
+                data.colorscale = colorscale;
+            }
+
+            return data;
+        },
+
 		/**
 		 * Updates the plot widget with new data
 		 */
@@ -1133,7 +1179,7 @@ define(function (require) {
 			} else if (this.controller.isColorbar(this)) {
                             baseView.dataType = 'colorbar';
                             baseView.options = this.plotOptions;
-                            baseView.data = this.datasets[0];
+                            baseView.scalefn = this.scalefn.toString();
                         } else {
 
 				if (this.hasXYData){
@@ -1165,7 +1211,9 @@ define(function (require) {
 				var functionNode = eval(view.data);
 				this.plotFunctionNode(functionNode);
 			} else if (view.dataType == 'colorbar') {
-                            this.plotGeneric(view.data);
+                            this.scalefn = eval('(' + view.scalefn + ')');
+                            var data = this.setScale(view.options.xaxis.min, view.options.xaxis.max, this.scalefn, false);
+                            this.plotGeneric(data);
                             this.setOptions(view.options);
                         } else if (view.dataType == 'object') {
 				// if any xy data loop through it

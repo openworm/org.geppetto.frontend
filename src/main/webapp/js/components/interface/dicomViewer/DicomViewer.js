@@ -123,7 +123,10 @@ define(function (require) {
 			if (this.state.files != undefined) {
 
 				if (this.isWidget()){
-					this.showOverlay();
+					this.showOverlay(<div className="spinner-container">
+			            			<div className={"gpt-gpt_logo fa-spin"}></div>
+			            			<p id="loadingmodaltext" className="orange">Loading MRI files...</p>
+			            		</div>);
 				}
 
 				this.ready = false;

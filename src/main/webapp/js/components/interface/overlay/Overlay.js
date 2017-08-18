@@ -4,32 +4,18 @@ define(function (require) {
     var Modal = require('react-overlays').Modal;
     require('./Overlay.less');
 
-
     class Overlay extends React.Component {
         constructor(props) {
             super(props);
 
             this.state = {
-                modalIsOpen: props.modalIsOpen,
+                show: props.show,
                 items: props.items,
-                shouldCloseOnOverlayClick: props.shouldCloseOnOverlayClick,
-                contentLabel: props.contentLabel
             };
-
-            // this.openModal = this.openModal.bind(this);
-            // this.afterOpenModal = this.afterOpenModal.bind(this);
-            // this.closeModal = this.closeModal.bind(this);
-        }
-
-
-
-        afterOpenModal() {
-            // references are now sync'd and can be accessed.
-
         }
 
         close() {
-            this.setState({ modalIsOpen: false });
+            this.setState({ show: false });
         }
 
         open() {
@@ -37,22 +23,18 @@ define(function (require) {
         }
 
         render() {
-
-
-
             return (
                 <Modal
                     aria-labelledby='modal-label'
-                    style={this.props.modalStyle}
+                    style={this.props.style}
                     backdropStyle={this.props.backdropStyle}
-                    show={this.state.modalIsOpen}
+                    show={this.state.show}
                     onHide={this.close}
                     container={this.props.container}
                     containerClassName={this.props.containerClassName}
                 >
                     {this.state.items}
                 </Modal>
-
             );
         }
     }
@@ -60,7 +42,7 @@ define(function (require) {
     Overlay.defaultProps = {
         modalIsOpen: false,
         container: document.body,
-        modalStyle: {
+        style: {
             position: 'relative',
             zIndex: 1040,
             top: 0, bottom: 0, left: 0, right: 0

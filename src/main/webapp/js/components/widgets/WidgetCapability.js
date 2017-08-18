@@ -743,7 +743,7 @@ define(function (require) {
                 }
 
                 showOverlay(items) {
-                    var state = { modalIsOpen: true }
+                    var state = { show: true }
                     if (items != undefined) {
                         state["items"] = items;
                     }
@@ -751,7 +751,7 @@ define(function (require) {
                 }
 
                 hideOverlay() {
-                    this.refs.overlay.setState({ modalIsOpen: false });
+                    this.refs.overlay.setState({ show: false });
                 }
 
                 /**
@@ -763,10 +763,10 @@ define(function (require) {
 
                             <Overlay
                                 ref="overlay"
-                                modalIsOpen={this.props.modalIsOpen}
+                                show={this.props.modalIsOpen}
                                 container={() => document.querySelector('#' + this.props.id)}
                                 items={this.props.overlayItems}
-                                modalStyle={{
+                                style={{
                                     position: 'absolute',
                                     zIndex: 1040,
                                     top: 0, bottom: 0, left: 0, right: 0,

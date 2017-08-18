@@ -267,7 +267,7 @@ define(function (require) {
 
 						_this.configureEvents();
 						_this.ready = true;
-						if (this.isWidget()){
+						if (_this.isWidget()){
 							_this.hideOverlay();
 						}
 

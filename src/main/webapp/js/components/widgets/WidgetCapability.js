@@ -470,7 +470,7 @@ define(function (require) {
                  *
                  * @param isTransparent
                  */
-                setTrasparentBackground(isTransparent) {
+                setTransparentBackground(isTransparent) {
                     if (isTransparent) {
                         this.$el.parent().addClass('transparent-back');
                         this.previousMaxTransparency = true;
@@ -569,7 +569,7 @@ define(function (require) {
                                 that.$el.dialog({ title: that.name });
                             },
                             "maximize": function (evt, dlg) {
-                                that.setTrasparentBackground(false);
+                                that.setTransparentBackground(false);
                                 var divheight = $(window).height();
                                 var divwidth = $(window).width();
                                 that.$el.dialog({ height: divheight, width: divwidth });
@@ -581,7 +581,7 @@ define(function (require) {
                                     that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
                                     $(this).trigger('restored', [that.props.id]);
                                 }
-                                that.setTrasparentBackground(that.previousMaxTransparency);
+                                that.setTransparentBackground(that.previousMaxTransparency);
                                 $(this).trigger('resizeEnd');
                                 that.maximize = false;
                                 that.collapsed = false;
@@ -733,7 +733,7 @@ define(function (require) {
                     }
 
                     if (view.transparentBackground != undefined) {
-                        this.setTrasparentBackground(view.transparentBackground);
+                        this.setTransparentBackground(view.transparentBackground);
                     }
 
                     super.setView(view);

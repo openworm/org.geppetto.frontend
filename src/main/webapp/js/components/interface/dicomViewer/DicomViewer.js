@@ -122,6 +122,10 @@ define(function (require) {
 		loadModel() {
 			if (this.state.files != undefined) {
 
+				if (this.isWidget()){
+					this.showOverlay();
+				}
+
 				this.ready = false;
 				var _this = this;
 
@@ -263,6 +267,9 @@ define(function (require) {
 
 						_this.configureEvents();
 						_this.ready = true;
+						if (this.isWidget()){
+							_this.hideOverlay();
+						}
 
 					})
 					.catch(function (error) {

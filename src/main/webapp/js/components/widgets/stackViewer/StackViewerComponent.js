@@ -1202,7 +1202,7 @@ define(function (require) {
                         }
                     }
                     catch (err) {
-                        console.log('Error handling ' + instances[instance].getId());
+                        console.log('Error handling ' + instance;
                         console.log(err.message);
                         console.log(err.stack);
                     }

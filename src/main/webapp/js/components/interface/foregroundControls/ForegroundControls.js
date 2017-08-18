@@ -12,6 +12,8 @@ define(function (require) {
     var GEPPETTO = require('geppetto');
 
     var ForegroundControls = React.createClass({
+    	
+    	foregroundControls : true,
 
     	getInitialState: function () {
             return {
@@ -39,7 +41,7 @@ define(function (require) {
 
             var queryBuilderBtn = GEPPETTO.QueryBuilder != undefined ? React.createFactory(QueryBuilderButton)({}) : '';
 
-            var tutorialBtn = GEPPETTO.Tutorial != undefined ? React.createFactory(TutorialButton)({}) : '';
+            var tutorialBtn = GEPPETTO.Tutorial.foregroundControls ? React.createFactory(TutorialButton)({}) : '';
 
 
             return <div className={'foreground-controls'}>

@@ -364,16 +364,6 @@ define(function (require) {
 				}
 			}
 
-			function onClick(event) {
-
-				if (event.ctrlKey) {
-					goToSingleView(event);
-				}
-				else {
-					goToPoint(event);
-				}
-			}
-
 			function onScroll(event) {
 				const id = $(event.target.domElement).data("id");
 				let stackHelper = null;
@@ -406,17 +396,42 @@ define(function (require) {
 				DicomViewerUtils.updateLocalizer(_this.r3, [_this.r1.localizerHelper, _this.r2.localizerHelper]);
 			}
 
-			// event listeners
-			// _this.r0.domElement.addEventListener('dblclick', onDoubleClick);
-			// _this.r1.domElement.addEventListener('dblclick', onDoubleClick);
-			// _this.r2.domElement.addEventListener('dblclick', onDoubleClick);
-			// _this.r3.domElement.addEventListener('dblclick', onDoubleClick);
+			function performEventAction(action, event){
+				// Check if it is a already defined action or a external one
+				if (action == 'goToPoint' || action == 'goToSingleView'){
+					eval(action + '(event)');
+				}
+				else{
+					action(event)
+				}
+			}
+
+			function eventHandling(event) {
+				if (event.type == "click" && _this.props.onClick != undefined) {
+					performEventAction(_this.props.onClick, event)
+				}
+				else if (event.type == "click" && event.ctrlKey && _this.props.onCtrlClick != undefined) {
+					performEventAction(_this.props.onCtrlClick, event);
+				}
+				else if (event.type == "click" && event.shiftKey && _this.props.onShiftClick != undefined) {
+					performEventAction(_this.props.onShiftClick, event);
+				}
+				else if (event.type == "dblclick" && _this.props.onDoubleClick != undefined) {
+					performEventAction(_this.props.onDoubleClick, event);
+				}
+			}
 
 			// event listeners
-			this.r0.domElement.addEventListener('click', onClick);
-			this.r1.domElement.addEventListener('click', onClick);
-			this.r2.domElement.addEventListener('click', onClick);
-			this.r3.domElement.addEventListener('click', onClick);
+			_this.r0.domElement.addEventListener('dblclick', eventHandling);
+			_this.r1.domElement.addEventListener('dblclick', eventHandling);
+			_this.r2.domElement.addEventListener('dblclick', eventHandling);
+			_this.r3.domElement.addEventListener('dblclick', eventHandling);
+
+			// event listeners
+			this.r0.domElement.addEventListener('click', eventHandling);
+			this.r1.domElement.addEventListener('click', eventHandling);
+			this.r2.domElement.addEventListener('click', eventHandling);
+			this.r3.domElement.addEventListener('click', eventHandling);
 
 			// event listeners
 			this.r1.controls.addEventListener('OnScroll', onScroll);

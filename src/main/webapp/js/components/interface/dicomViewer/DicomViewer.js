@@ -179,9 +179,6 @@ define(function (require) {
 						});
 					}
 
-
-
-
 					// renderers
 					DicomViewerUtils.initRenderer3D(_this.r0, _this.getContainer());
 					DicomViewerUtils.initRenderer2D(_this.r1, _this.getContainer());
@@ -287,7 +284,6 @@ define(function (require) {
 		}
 
 		configureEvents() {
-
 			var _this = this;
 			function goToPoint(event) {
 				const canvas = event.srcElement.parentElement;
@@ -348,6 +344,9 @@ define(function (require) {
 				const id = event.target.id;
 				let orientation = null;
 				switch (id) {
+					case '0':
+						orientation = "3d";
+						break;
 					case '1':
 						orientation = "sagittal";
 						break;
@@ -361,6 +360,15 @@ define(function (require) {
 
 				if (orientation != null) {
 					_this.setState({ mode: "single_view", orientation: orientation });
+				}
+			}
+
+			function togglMode(event){
+				if (_this.state.mode == 'single_view') {
+					_this.changeMode();
+				}
+				else {
+					goToSingleView(event);
 				}
 			}
 
@@ -396,13 +404,13 @@ define(function (require) {
 				DicomViewerUtils.updateLocalizer(_this.r3, [_this.r1.localizerHelper, _this.r2.localizerHelper]);
 			}
 
-			function performEventAction(action, event){
+			function performEventAction(action, event) {
 				// Check if it is a already defined action or a external one
-				if (action == 'goToPoint' || action == 'goToSingleView'){
+				if (action == 'goToPoint' || action == 'goToSingleView' || action == 'togglMode') {
 					eval(action + '(event)');
 				}
-				else{
-					action(event)
+				else {
+					action(event, this)
 				}
 			}
 
@@ -447,10 +455,7 @@ define(function (require) {
 
 		setQuadLayout() {
 			// update 3D
-			this.r0.camera.aspect = this.r0.domElement.clientWidth / this.r0.domElement.clientHeight;
-			this.r0.camera.updateProjectionMatrix();
-			this.r0.renderer.setSize(
-				this.r0.domElement.clientWidth, this.r0.domElement.clientHeight);
+			DicomViewerUtils.windowResize3D(this.r0, this.r0.domElement.clientWidth, this.r0.domElement.clientHeight);
 
 			// update 2d
 			DicomViewerUtils.windowResize2D(this.r1);
@@ -461,6 +466,9 @@ define(function (require) {
 		setSingleLayout() {
 			var rendererObj;
 			switch (this.state.orientation) {
+				case '3d':
+					rendererObj = this.r0;
+					break;
 				case 'sagittal':
 					rendererObj = this.r1;
 					break;
@@ -472,18 +480,22 @@ define(function (require) {
 					break;
 			}
 
-
 			var container = this.getContainer();
-			rendererObj.camera.canvas = {
-				width: container.offsetWidth,
-				height: container.offsetHeight,
-			};
-			rendererObj.stackHelper.slice.canvasWidth =
-				container.offsetWidth;
-			rendererObj.stackHelper.slice.canvasHeight =
-				container.offsetHeight + 20;
-			rendererObj.camera.fitBox(2);
-			rendererObj.renderer.setSize(container.offsetWidth, container.offsetHeight);
+			if (this.state.orientation == '3d') {
+				DicomViewerUtils.windowResize3D(rendererObj, container.offsetWidth, container.offsetHeight);
+			}
+			else {
+				rendererObj.camera.canvas = {
+					width: container.offsetWidth,
+					height: container.offsetHeight,
+				};
+				rendererObj.stackHelper.slice.canvasWidth =
+					container.offsetWidth;
+				rendererObj.stackHelper.slice.canvasHeight =
+					container.offsetHeight + 20;
+				rendererObj.camera.fitBox(2);
+				rendererObj.renderer.setSize(container.offsetWidth, container.offsetHeight);
+			}
 		}
 
 		setLayout() {
@@ -540,17 +552,22 @@ define(function (require) {
 		}
 
 		changeOrientation() {
-			var newOrientation;
-			if (this.state.orientation == "coronal") {
-				newOrientation = "sagittal";
+			switch (this.state.orientation) {
+				case "coronal":
+					var newOrientation = "sagittal";
+					break;
+				case "sagittal":
+					var newOrientation = "axial";
+					break;
+				case "axial":
+					var newOrientation = "3d";
+					break;
+				case "3d":
+					var newOrientation = "coronal";
+					break;
+				default:
+					break;
 			}
-			else if (this.state.orientation == "sagittal") {
-				newOrientation = "axial";
-			}
-			else if (this.state.orientation == "axial") {
-				newOrientation = "coronal";
-			}
-
 			this.setState({ orientation: newOrientation });
 		}
 
@@ -573,7 +590,7 @@ define(function (require) {
 					{widgetButtonBar}
 
 					<div className="dicomViewer">
-						<div data-id="r0" className="renderer r0" style={{ display: this.state.mode == 'single_view' ? 'none' : '' }}></div>
+						<div data-id="r0" className="renderer r0" style={{ display: this.state.mode == 'single_view' && this.state.orientation != '3d' ? 'none' : '' }}></div>
 						<div data-id="r1" className="renderer r1" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'sagittal' ? 'none' : '' }}></div>
 						<div data-id="r2" className="renderer r2" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'axial' ? 'none' : '' }}></div>
 						<div data-id="r3" className="renderer r3" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'coronal' ? 'none' : '' }}></div>

@@ -27,6 +27,12 @@ module.exports = {
             rendererObj.domElement.clientHeight;
     },
 
+    windowResize3D: function (rendererObj, width, height) {
+        rendererObj.camera.aspect = width / height;
+        rendererObj.camera.updateProjectionMatrix();
+        rendererObj.renderer.setSize(width, height);
+    },
+
     initHelpersStack: function (rendererObj, stack) {
         rendererObj.stackHelper = new HelpersStack(stack);
         rendererObj.stackHelper.bbox.visible = false;

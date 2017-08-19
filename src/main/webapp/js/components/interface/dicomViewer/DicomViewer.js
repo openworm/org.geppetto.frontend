@@ -122,11 +122,11 @@ define(function (require) {
 		loadModel() {
 			if (this.state.files != undefined) {
 
-				if (this.isWidget()){
+				if (this.isWidget()) {
 					this.showOverlay(<div className="spinner-container">
-			            			<div className={"gpt-gpt_logo fa-spin"}></div>
-			            			<p id="loadingmodaltext" className="orange">Loading MRI files...</p>
-			            		</div>);
+						<div className={"gpt-gpt_logo fa-spin"}></div>
+						<p id="loadingmodaltext" className="orange">Loading MRI files...</p>
+					</div>);
 				}
 
 				this.ready = false;
@@ -178,6 +178,9 @@ define(function (require) {
 							animate();
 						});
 					}
+
+
+
 
 					// renderers
 					DicomViewerUtils.initRenderer3D(_this.r0, _this.getContainer());
@@ -270,7 +273,7 @@ define(function (require) {
 
 						_this.configureEvents();
 						_this.ready = true;
-						if (_this.isWidget()){
+						if (_this.isWidget()) {
 							_this.hideOverlay();
 						}
 
@@ -281,10 +284,6 @@ define(function (require) {
 					});
 			}
 
-		}
-
-		componentDidMount() {
-			this.loadModel();
 		}
 
 		configureEvents() {
@@ -482,12 +481,38 @@ define(function (require) {
 			}
 		}
 
+		getCustomButtons() {
+			var customButtons = [];
+			if (this.state.mode == 'single_view') {
+				customButtons.push({ 'icon': 'fa-th-large', 'title': 'Change Mode', 'action': this.changeMode });
+				customButtons.push({ 'icon': 'fa-repeat', 'title': 'Change Orientation', 'action': this.changeOrientation });
+			}
+			else {
+				customButtons.push({ 'icon': 'fa-square', 'title': 'Change Mode', 'action': this.changeMode });
+			}
+			return customButtons;
+		}
+
+		componentDidMount() {
+			this.loadModel();
+
+			//If it is a widget -> set buttons in the toolbar
+			if (this.isWidget()) {
+				this.setCustomButtons(this.getCustomButtons());
+			}
+		}
+
 		componentDidUpdate(prevProps, prevState) {
 			if (prevState.files != this.state.files) {
 				this.loadModel();
 			}
 			else {
 				this.setLayout();
+			}
+
+			//If it is a widget -> set buttons in the toolbar
+			if (this.isWidget()) {
+				this.setCustomButtons(this.getCustomButtons());
 			}
 		}
 
@@ -520,13 +545,18 @@ define(function (require) {
 		}
 
 		render() {
+			// Add the button bar if it is a component, otherwise add buttons in widget tool bar
+			if (!this.isWidget()) {
+				var widgetButtonBar = <WidgetButtonBar>
+					{this.getCustomButtons().map((customButton) =>
+						<button className={'btn fa ' + customButton.icon} onClick={customButton.action} title={customButton.title} />
+					)}
+				</WidgetButtonBar>
+			}
 
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} style={{ width: '100%', height: '100%' }}>
-					<WidgetButtonBar>
-						<button className={this.state.mode == 'single_view' ? 'btn fa fa-th-large' : 'btn fa fa-square'} onClick={this.changeMode} title={'Change Mode'} />
-						{(this.state.mode == "single_view") ? (<button className="btn fa fa-repeat" onClick={this.changeOrientation} title={'Change Orientation'} />) : null}
-					</WidgetButtonBar>
+					{widgetButtonBar}
 
 					<div className="dicomViewer">
 						<div data-id="r0" className="renderer r0" style={{ display: this.state.mode == 'single_view' ? 'none' : '' }}></div>

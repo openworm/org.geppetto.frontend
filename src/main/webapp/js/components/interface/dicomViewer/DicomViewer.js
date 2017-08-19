@@ -421,26 +421,25 @@ define(function (require) {
 				}
 			}
 
-			// event listeners
+			// event listeners ondoubleclick
 			_this.r0.domElement.addEventListener('dblclick', eventHandling);
 			_this.r1.domElement.addEventListener('dblclick', eventHandling);
 			_this.r2.domElement.addEventListener('dblclick', eventHandling);
 			_this.r3.domElement.addEventListener('dblclick', eventHandling);
 
-			// event listeners
+			// event listeners onclick
 			this.r0.domElement.addEventListener('click', eventHandling);
 			this.r1.domElement.addEventListener('click', eventHandling);
 			this.r2.domElement.addEventListener('click', eventHandling);
 			this.r3.domElement.addEventListener('click', eventHandling);
 
-			// event listeners
+			// event listeners on scrol
 			this.r1.controls.addEventListener('OnScroll', onScroll);
 			this.r2.controls.addEventListener('OnScroll', onScroll);
 			this.r3.controls.addEventListener('OnScroll', onScroll);
 
-
+			// event listeners on resize
 			window.addEventListener('resize', function () { _this.setLayout(); }, false);
-
 			$(this.getContainer()).parent().on("resizeEnd", function (event, ui) {
 				_this.setLayout()
 			});

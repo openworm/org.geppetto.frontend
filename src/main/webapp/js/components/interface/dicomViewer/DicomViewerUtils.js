@@ -147,6 +147,7 @@ module.exports = {
             rendererObj.camera, rendererObj.domElement);
         rendererObj.controls.staticMoving = true;
         rendererObj.controls.noRotate = true;
+        rendererObj.controls.noPan = true;
         rendererObj.camera.controls = rendererObj.controls;
 
         // scene

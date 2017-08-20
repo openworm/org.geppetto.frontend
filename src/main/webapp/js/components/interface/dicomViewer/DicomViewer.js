@@ -429,7 +429,7 @@ define(function (require) {
 				if (event.type == "click" && _this.props.onClick != undefined) {
 					performEventAction(_this.props.onClick, event)
 				}
-				else if (event.type == "click" && (event.ctrlKey || event.keyCode == 17) && _this.props.onCtrlClick != undefined) {
+				else if (event.type == "click" && (event.ctrlKey || event.metaKey) && _this.props.onCtrlClick != undefined) {
 					performEventAction(_this.props.onCtrlClick, event);
 				}
 				else if (event.type == "click" && event.shiftKey && _this.props.onShiftClick != undefined) {

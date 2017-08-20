@@ -10,6 +10,7 @@ define(function (require) {
     var $ = require('jquery');
     require("./jquery.dialogextend.min");
     var React = require('react');
+    var Overlay = require('../../components/interface/overlay/Overlay');
 
     module.exports = {
         createWidget(WrappedComponent) {
@@ -34,7 +35,8 @@ define(function (require) {
                         previousMaxTransparency: false,
                         previousMaxSize: {},
                         maximize: false,
-                        collapsed: false,
+                        collapsed: false
+
                     });
 
                 }
@@ -650,6 +652,7 @@ define(function (require) {
                     if (super.componentDidMount) {
                         super.componentDidMount();
                     }
+
                 }
 
                 /**
@@ -739,21 +742,41 @@ define(function (require) {
                     super.setView(view);
                 }
 
+                showOverlay(items) {
+                    var state = { show: true }
+                    if (items != undefined) {
+                        state["items"] = items;
+                    }
+                    this.refs.overlay.setState(state);
+                }
+
+                hideOverlay() {
+                    this.refs.overlay.setState({ show: false });
+                }
 
                 /**
                  * Renders the widget dialog window
                  */
                 render() {
-                    /*return (
-                        <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}>
-                            <WrappedComponent
-                                setName= {this.setName}
-                                {...this.props}
-                                {...this.state}
-                                ref={(c) => this._component = c}/>
+                    return (
+                        <div key={this.props.id} id={this.props.id} className={'dialog ' + (this.props.componentType != undefined) ? this.props.componentType.toLowerCase() + "-widget" : ''} title={this.props.title}>
+
+                            <Overlay
+                                ref="overlay"
+                                show={this.props.modalIsOpen}
+                                container={() => document.querySelector('#' + this.props.id)}
+                                items={this.props.overlayItems}
+                                style={{
+                                    position: 'absolute',
+                                    zIndex: 1040,
+                                    top: 0, bottom: 0, left: 0, right: 0,
+                                    color: 'white'
+                                }}
+                            />
+
+                            {super.render()}
                         </div>
-                    )*/
-                    return <div key={this.props.id} id={this.props.id} className={'dialog ' + (this.props.componentType!=undefined)?this.props.componentType.toLowerCase()+ "-widget":'' } title={this.props.title}> {super.render()} </div>
+                    )
                 }
             };
 
@@ -766,7 +789,9 @@ define(function (require) {
                 closable: true,
                 maximizable: true,
                 minimizable: true,
-                collapsable: true
+                collapsable: true,
+                modalIsOpen: false,
+                overlayItems: <div style={{ top: '50%', transform: 'translate(0, -50%)', position: 'absolute', fontSize: '4em' }}>Loading widget...</div>
             };
             return Widget;
         }

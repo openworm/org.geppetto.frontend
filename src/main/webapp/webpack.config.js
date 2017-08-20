@@ -148,7 +148,7 @@ module.exports = {
                 loader: 'ignore-loader'
             },
             {
-                test: /\.(py|jpeg|svg|gif|css|jpg|md|hbs|dcm|gz|xmi|dzi|sh|obj|yml)$/,
+                test: /\.(py|jpeg|svg|gif|css|jpg|md|hbs|dcm|gz|xmi|dzi|sh|obj|yml|nii)$/,
                 loader: 'ignore-loader'
             },
             {

@@ -122,6 +122,13 @@ define(function (require) {
 		loadModel() {
 			if (this.state.files != undefined) {
 
+				if (this.isWidget()){
+					this.showOverlay(<div className="spinner-container">
+			            			<div className={"gpt-gpt_logo fa-spin"}></div>
+			            			<p id="loadingmodaltext" className="orange">Loading MRI files...</p>
+			            		</div>);
+				}
+
 				this.ready = false;
 				var _this = this;
 
@@ -263,6 +270,9 @@ define(function (require) {
 
 						_this.configureEvents();
 						_this.ready = true;
+						if (_this.isWidget()){
+							_this.hideOverlay();
+						}
 
 					})
 					.catch(function (error) {

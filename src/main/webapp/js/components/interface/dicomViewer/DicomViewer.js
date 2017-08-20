@@ -124,7 +124,7 @@ define(function (require) {
 
 				if (this.isWidget()) {
 					this.showOverlay(<div className="spinner-container">
-						<div className={"gpt-gpt_logo fa-spin"}></div>
+						<div className={"fa fa-circle-o-notch fa-spin"}></div>
 						<p id="loadingmodaltext" className="orange">Loading MRI files...</p>
 					</div>);
 				}

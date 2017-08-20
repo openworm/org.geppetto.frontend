@@ -142,35 +142,46 @@ define(function (require) {
 					function animate() {
 						// we are ready when both meshes have been loaded
 						if (_this.ready) {
-							// render
-							_this.r0.controls.update();
-							_this.r1.controls.update();
-							_this.r2.controls.update();
-							_this.r3.controls.update();
+							if ((_this.state.mode == "single_view" && _this.state.orientation == "3d") || _this.state.mode == "quad_view") {
+								// render
+								_this.r0.controls.update();
+								_this.r0.light.position.copy(_this.r0.camera.position);
+								_this.r0.renderer.render(_this.r0.scene, _this.r0.camera);
+							}
 
-							_this.r0.light.position.copy(_this.r0.camera.position);
-							_this.r0.renderer.render(_this.r0.scene, _this.r0.camera);
 
-							// r1
-							_this.r1.renderer.clear();
-							_this.r1.renderer.render(_this.r1.scene, _this.r1.camera);
-							// localizer
-							_this.r1.renderer.clearDepth();
-							_this.r1.renderer.render(_this.r1.localizerScene, _this.r1.camera);
+							if ((_this.state.mode == "single_view" && _this.state.orientation == "sagittal") || _this.state.mode == "quad_view") {
+								_this.r1.controls.update();
+								// r1
+								_this.r1.renderer.clear();
+								_this.r1.renderer.render(_this.r1.scene, _this.r1.camera);
 
-							// r2
-							_this.r2.renderer.clear();
-							_this.r2.renderer.render(_this.r2.scene, _this.r2.camera);
-							// localizer
-							_this.r2.renderer.clearDepth();
-							_this.r2.renderer.render(_this.r2.localizerScene, _this.r2.camera);
+								// localizer
+								_this.r1.renderer.clearDepth();
+								_this.r1.renderer.render(_this.r1.localizerScene, _this.r1.camera);
 
-							// r3
-							_this.r3.renderer.clear();
-							_this.r3.renderer.render(_this.r3.scene, _this.r3.camera);
-							// localizer
-							_this.r3.renderer.clearDepth();
-							_this.r3.renderer.render(_this.r3.localizerScene, _this.r3.camera);
+							}
+
+
+							if ((_this.state.mode == "single_view" && _this.state.orientation == "axial") || _this.state.mode == "quad_view") {
+								_this.r2.controls.update();
+								// r2
+								_this.r2.renderer.clear();
+								_this.r2.renderer.render(_this.r2.scene, _this.r2.camera);
+								// localizer
+								_this.r2.renderer.clearDepth();
+								_this.r2.renderer.render(_this.r2.localizerScene, _this.r2.camera);
+							}
+
+							if ((_this.state.mode == "single_view" && _this.state.orientation == "coronal") || _this.state.mode == "quad_view") {
+								_this.r3.controls.update();
+								// r3
+								_this.r3.renderer.clear();
+								_this.r3.renderer.render(_this.r3.scene, _this.r3.camera);
+								// localizer
+								_this.r3.renderer.clearDepth();
+								_this.r3.renderer.render(_this.r3.localizerScene, _this.r3.camera);
+							}
 						}
 
 						// request new frame
@@ -363,7 +374,7 @@ define(function (require) {
 				}
 			}
 
-			function togglMode(event){
+			function togglMode(event) {
 				if (_this.state.mode == 'single_view') {
 					_this.changeMode();
 				}
@@ -455,7 +466,7 @@ define(function (require) {
 
 		setQuadLayout() {
 			// update 3D
-			DicomViewerUtils.windowResize3D(this.r0, this.r0.domElement.clientWidth, this.r0.domElement.clientHeight);
+			DicomViewerUtils.windowResize3D(this.r0);
 
 			// update 2d
 			DicomViewerUtils.windowResize2D(this.r1);
@@ -480,21 +491,11 @@ define(function (require) {
 					break;
 			}
 
-			var container = this.getContainer();
 			if (this.state.orientation == '3d') {
-				DicomViewerUtils.windowResize3D(rendererObj, container.offsetWidth, container.offsetHeight);
+				DicomViewerUtils.windowResize3D(rendererObj);
 			}
 			else {
-				rendererObj.camera.canvas = {
-					width: container.offsetWidth,
-					height: container.offsetHeight,
-				};
-				rendererObj.stackHelper.slice.canvasWidth =
-					container.offsetWidth;
-				rendererObj.stackHelper.slice.canvasHeight =
-					container.offsetHeight + 20;
-				rendererObj.camera.fitBox(2);
-				rendererObj.renderer.setSize(container.offsetWidth, container.offsetHeight);
+				DicomViewerUtils.windowResize2D(rendererObj);
 			}
 		}
 
@@ -590,10 +591,10 @@ define(function (require) {
 					{widgetButtonBar}
 
 					<div className="dicomViewer">
-						<div data-id="r0" className="renderer r0" style={{ display: this.state.mode == 'single_view' && this.state.orientation != '3d' ? 'none' : '' }}></div>
-						<div data-id="r1" className="renderer r1" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'sagittal' ? 'none' : '' }}></div>
-						<div data-id="r2" className="renderer r2" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'axial' ? 'none' : '' }}></div>
-						<div data-id="r3" className="renderer r3" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'coronal' ? 'none' : '' }}></div>
+						<div data-id="r0" className="renderer r0" style={{ display: this.state.mode == 'single_view' && this.state.orientation != '3d' ? 'none' : '', width: this.state.mode == 'single_view' && this.state.orientation == '3d' ? '100%' : '50%', height: this.state.mode == 'single_view' && this.state.orientation == '3d' ? '100%' : '50%' }}></div>
+						<div data-id="r1" className="renderer r1" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'sagittal' ? 'none' : '', width: this.state.mode == 'single_view' && this.state.orientation == 'sagittal' ? '100%' : '50%', height: this.state.mode == 'single_view' && this.state.orientation == 'sagittal' ? '100%' : '50%' }}></div>
+						<div data-id="r2" className="renderer r2" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'axial' ? 'none' : '', width: this.state.mode == 'single_view' && this.state.orientation == 'axial' ? '100%' : '50%', height: this.state.mode == 'single_view' && this.state.orientation == 'axial' ? '100%' : '50%' }}></div>
+						<div data-id="r3" className="renderer r3" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'coronal' ? 'none' : '', width: this.state.mode == 'single_view' && this.state.orientation == 'coronal' ? '100%' : '50%', height: this.state.mode == 'single_view' && this.state.orientation == 'coronal' ? '100%' : '50%' }}></div>
 					</div>
 
 				</div>

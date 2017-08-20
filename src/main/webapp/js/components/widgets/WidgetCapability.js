@@ -427,9 +427,10 @@ define(function (require) {
                     }
                 }
 
-                addButtonToTitleBar(button) {
+                addButtonToTitleBar(button, containerSelector) {
+                    if (containerSelector == undefined){containerSelector="div.ui-dialog-titlebar"}
                     var dialogParent = this.$el.parent();
-                    dialogParent.find("div.ui-dialog-titlebar").prepend(button);
+                    dialogParent.find(containerSelector).prepend(button);
                     $(button).addClass("widget-title-bar-button");
                 }
 
@@ -442,6 +443,19 @@ define(function (require) {
                             show: true
                         }, document.getElementById("modal-region"));
                     }));
+                }
+
+                setCustomButtons(customButtons) {
+                    var dialogParent = this.$el.parent();
+                    dialogParent.find('.customButtons').empty();
+                    this.addCustomButtons(customButtons);
+                }
+
+                addCustomButtons(customButtons) {
+                    var that = this;
+                    customButtons.forEach(function(customButton) {
+                        that.addButtonToTitleBar($("<div class='fa " + customButton.icon + "' title='" + customButton.title + "'></div>").click(customButton.action), '.customButtons');
+                    });
                 }
 
                 addDownloadButton(downloadFunction) {
@@ -593,9 +607,6 @@ define(function (require) {
                             }
                         });
 
-                    //this.dialog.parent('.ui-dialog').prependTo($('#widgetContainer').find('div'));
-                    //this.dialog.dialog('open')
-
                     this.$el = $("#" + this.props.id);
                     this.container = this.$el.children().get(0);
                     var dialogParent = this.$el.parent();
@@ -607,7 +618,6 @@ define(function (require) {
                     dialogParent.find("button.ui-dialog-titlebar-close").html("");
                     dialogParent.find(".ui-dialog-titlebar").find("button").append("<i class='fa fa-close'></i>");
 
-
                     //Take focus away from close button
                     dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
@@ -618,6 +628,10 @@ define(function (require) {
                     if (super.download) {
                         this.addDownloadButton(super.download);
                     }
+
+                    //add custom buttons
+                    dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='customButtons'></div>");
+                    this.addCustomButtons(this.props.customButtons);
 
                     // initialize content
                     this.size = this.props.size;
@@ -652,7 +666,6 @@ define(function (require) {
                     if (super.componentDidMount) {
                         super.componentDidMount();
                     }
-
                 }
 
                 /**
@@ -742,6 +755,11 @@ define(function (require) {
                     super.setView(view);
                 }
 
+                /**
+                 * Show modal layer. items will be any react/html component. Typically it will be used to display a loading spinner but any component should work
+                 * 
+                 * @param {*} items 
+                 */
                 showOverlay(items) {
                     var state = { show: true }
                     if (items != undefined) {
@@ -750,6 +768,10 @@ define(function (require) {
                     this.refs.overlay.setState(state);
                 }
 
+                /**
+                 * Hide modal layer 
+                 * 
+                 */
                 hideOverlay() {
                     this.refs.overlay.setState({ show: false });
                 }
@@ -791,7 +813,8 @@ define(function (require) {
                 minimizable: true,
                 collapsable: true,
                 modalIsOpen: false,
-                overlayItems: <div style={{ top: '50%', transform: 'translate(0, -50%)', position: 'absolute', fontSize: '4em' }}>Loading widget...</div>
+                overlayItems: <div style={{ top: '50%', transform: 'translate(0, -50%)', position: 'absolute', fontSize: '4em' }}>Loading widget...</div>,
+                customButtons: []
             };
             return Widget;
         }

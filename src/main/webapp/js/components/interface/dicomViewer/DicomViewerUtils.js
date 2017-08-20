@@ -7,8 +7,8 @@ var HelpersLocalizer = AMI.default.Helpers.Localizer;
 
 module.exports = {
     windowResize2D: function (rendererObj) {
-        var newWidth = rendererObj.domElement.clientWidth * 1.05;
-        var newHeight = rendererObj.domElement.clientHeight * 1.05;
+        var newWidth = rendererObj.domElement.clientWidth;
+        var newHeight = rendererObj.domElement.clientHeight;
         rendererObj.camera.canvas = {
             width: newWidth,
             height: newHeight,
@@ -24,8 +24,8 @@ module.exports = {
     },
 
     windowResize3D: function (rendererObj) {
-        var newWidth = rendererObj.domElement.clientWidth * 1.05;
-        var newHeight = rendererObj.domElement.clientHeight * 1.05;
+        var newWidth = rendererObj.domElement.clientWidth;
+        var newHeight = rendererObj.domElement.clientHeight;
         rendererObj.camera.aspect = newWidth / newHeight;
         rendererObj.camera.updateProjectionMatrix();
         rendererObj.renderer.setSize(newWidth, newHeight);
@@ -35,8 +35,8 @@ module.exports = {
         rendererObj.stackHelper = new HelpersStack(stack);
         rendererObj.stackHelper.bbox.visible = false;
         rendererObj.stackHelper.borderColor = rendererObj.sliceColor;
-        rendererObj.stackHelper.slice.canvasWidth = rendererObj.domElement.clientWidth * 1.05;
-        rendererObj.stackHelper.slice.canvasHeight = rendererObj.domElement.clientHeight * 1.05;
+        rendererObj.stackHelper.slice.canvasWidth = rendererObj.domElement.clientWidth;
+        rendererObj.stackHelper.slice.canvasHeight = rendererObj.domElement.clientHeight;
 
         // set camera
         let worldbb = stack.worldBoundingBox();
@@ -46,16 +46,15 @@ module.exports = {
             (worldbb[5] - worldbb[4]) / 2
         );
 
-        // box: {halfDimensions, center}
         let box = {
             center: stack.worldCenter().clone(),
-            halfDimensions: new THREE.Vector3(lpsDims.x, lpsDims.y, lpsDims.z),
+            halfDimensions: new THREE.Vector3(lpsDims.x + 10, lpsDims.y + 10, lpsDims.z + 10),
         };
 
         // init and zoom
         let canvas = {
-            width: rendererObj.domElement.clientWidth * 1.05,
-            height: rendererObj.domElement.clientHeight * 1.05,
+            width: rendererObj.domElement.clientWidth,
+            height: rendererObj.domElement.clientHeight,
         };
 
         rendererObj.camera.directions =
@@ -81,8 +80,8 @@ module.exports = {
             rendererObj.localizerHelper['color' + (i + 1)] = localizers[i].color;
         }
 
-        rendererObj.localizerHelper.canvasWidth = rendererObj.domElement.clientWidth * 1.05;
-        rendererObj.localizerHelper.canvasHeight = rendererObj.domElement.clientHeight * 1.05;
+        rendererObj.localizerHelper.canvasWidth = rendererObj.domElement.clientWidth;
+        rendererObj.localizerHelper.canvasHeight = rendererObj.domElement.clientHeight;
 
         rendererObj.localizerScene = new THREE.Scene();
         rendererObj.localizerScene.add(rendererObj.localizerHelper);
@@ -120,7 +119,7 @@ module.exports = {
         });
         rendererObj.renderer.autoClear = false;
         rendererObj.renderer.localClippingEnabled = true;
-        rendererObj.renderer.setSize(rendererObj.domElement.clientWidth * 1.05, rendererObj.domElement.clientHeight *1.05);
+        rendererObj.renderer.setSize(rendererObj.domElement.clientWidth, rendererObj.domElement.clientHeight);
         rendererObj.renderer.setClearColor(0x121212, 1);
         rendererObj.renderer.setPixelRatio(window.devicePixelRatio);
         rendererObj.renderer.domElement.id = rendererObj.targetID;
@@ -128,10 +127,10 @@ module.exports = {
 
         // camera
         rendererObj.camera = new CamerasOrthographic(
-            rendererObj.domElement.clientWidth * 1.05 / -2,
-            rendererObj.domElement.clientWidth * 1.05 / 2,
-            rendererObj.domElement.clientHeight * 1.05 / 2,
-            rendererObj.domElement.clientHeight * 1.05 / -2,
+            rendererObj.domElement.clientWidth / -2,
+            rendererObj.domElement.clientWidth / 2,
+            rendererObj.domElement.clientHeight / 2,
+            rendererObj.domElement.clientHeight / -2,
             1, 1000);
 
         // controls
@@ -154,14 +153,14 @@ module.exports = {
         renderObj.renderer = new THREE.WebGLRenderer({
             antialias: true,
         });
-        renderObj.renderer.setSize(renderObj.domElement.clientWidth * 1.05, renderObj.domElement.clientHeight * 1.05);
+        renderObj.renderer.setSize(renderObj.domElement.clientWidth, renderObj.domElement.clientHeight);
         renderObj.renderer.setClearColor(renderObj.color, 1);
         renderObj.renderer.domElement.id = renderObj.targetID;
         renderObj.domElement.appendChild(renderObj.renderer.domElement);
 
         // camera
         renderObj.camera = new THREE.PerspectiveCamera(
-            45, renderObj.domElement.clientWidth * 1.05/ renderObj.domElement.clientHeight * 1.05,
+            45, renderObj.domElement.clientWidth / renderObj.domElement.clientHeight,
             0.1, 100000);
         renderObj.camera.position.x = 250;
         renderObj.camera.position.y = 250;

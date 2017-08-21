@@ -609,9 +609,6 @@ define(function (require) {
          * @param view
          */
         setView(view) {
-            // set base properties
-            super.setView(view);
-
             // set data
             if (view.data != undefined) {
                 if (view.dataType == 'instances') {
@@ -664,6 +661,10 @@ define(function (require) {
                     }
                 }
             }
+
+            // set dirty view to false
+            // NOTE: this needs to be at the end after the view has actually been set
+            this.setDirty(false);
         }
 
 

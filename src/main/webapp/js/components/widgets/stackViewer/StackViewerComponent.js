@@ -139,7 +139,7 @@ define(function (require) {
             this.renderer.destroy(true);
             this.renderer = null;
 
-            if(this.props.canvasRef != null && this.props.canvasRef != undefined){
+            if (this.props.canvasRef != null && this.props.canvasRef != undefined) {
                 this.props.canvasRef.removeObject(this.state.stackViewerPlane);
             }
 
@@ -181,7 +181,7 @@ define(function (require) {
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
-                    console.error("Calling Dst Range", status + " - " + xhr.progress().state() , err.toString());
+                    console.error("Calling Dst Range", status + " - " + xhr.progress().state(), err.toString());
                 }.bind(this)
             });
         },
@@ -204,7 +204,7 @@ define(function (require) {
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
-                	console.error("Calling Tile Size", status + " - " + xhr.progress().state() , err.toString());
+                    console.error("Calling Tile Size", status + " - " + xhr.progress().state(), err.toString());
                 }.bind(this)
             });
         },
@@ -228,7 +228,7 @@ define(function (require) {
                     this.callPlaneEdges();
                 }.bind(this),
                 error: function (xhr, status, err) {
-                	console.error("Calling Max Size", status + " - " + xhr.progress().state() , err.toString());
+                    console.error("Calling Max Size", status + " - " + xhr.progress().state(), err.toString());
                 }.bind(this)
             });
         },
@@ -244,13 +244,13 @@ define(function (require) {
                         x = (this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
                     }
                     else {
-                    x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
+                        x = (-this.stack.position.x) + (-this.disp.position.x / this.disp.scale.x);
                     }
                     if (this.state.orth == 1) {
                         y = (this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
                     }
                     else {
-                    y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
+                        y = (-this.stack.position.y) + (-this.disp.position.y / this.disp.scale.x);
                     }
                     coordinates[0] = x.toFixed(0);
                     coordinates[1] = y.toFixed(0);
@@ -311,11 +311,11 @@ define(function (require) {
 
         passPlane: function () {
             if (this.state.stackViewerPlane) {
-                if(this.props.canvasRef != undefined && this.props.canvasRef != null){
+                if (this.props.canvasRef != undefined && this.props.canvasRef != null) {
                     this.state.stackViewerPlane = this.props.canvasRef.modify3DPlane(this.state.stackViewerPlane, this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11]);
                 }
             } else {
-                if(this.props.canvasRef != undefined && this.props.canvasRef != null){
+                if (this.props.canvasRef != undefined && this.props.canvasRef != null) {
                     this.state.stackViewerPlane = this.props.canvasRef.add3DPlane(this.state.plane[0], this.state.plane[1], this.state.plane[2], this.state.plane[3], this.state.plane[4], this.state.plane[5], this.state.plane[6], this.state.plane[7], this.state.plane[8], this.state.plane[9], this.state.plane[10], this.state.plane[11], "geppetto/js/components/widgets/stackViewer/images/glass.jpg");
                 }
                 if (this.state.stackViewerPlane.visible) {
@@ -355,12 +355,12 @@ define(function (require) {
                                             if (i !== 0 || index !== 0) { // don't select template
                                                 if (index == 0 && !shift) {
                                                     console.log(that.state.label[i] + ' clicked');
-                                                    try{
-                                                    eval(that.state.id[i][Number(result[j])]).select();
-                                                    that.setStatusText(that.state.label[i] + ' selected');
-                                                    }catch (err){
-                                                            console.log("Error selecting: " + that.state.id[i][Number(result[j])]);
-                                                            console.log(err.message);
+                                                    try {
+                                                        eval(that.state.id[i][Number(result[j])]).select();
+                                                        that.setStatusText(that.state.label[i] + ' selected');
+                                                    } catch (err) {
+                                                        console.log("Error selecting: " + that.state.id[i][Number(result[j])]);
+                                                        console.log(err.message);
                                                     }
                                                     break;
                                                 } else {
@@ -399,7 +399,7 @@ define(function (require) {
                             }
                         },
                         error: function (xhr, status, err) {
-                        	console.error("Calling Objects", status + " - " + xhr.progress().state() , err.toString());
+                            console.error("Calling Objects", status + " - " + xhr.progress().state(), err.toString());
                         }.bind(this)
                     });
                 })(i, that);
@@ -456,7 +456,7 @@ define(function (require) {
                                         if (objects !== '') {
                                             that.setStatusText(objects);
                                         }
-                                    }else if (i == 0) {
+                                    } else if (i == 0) {
                                         that.state.loadingLabels = false;
                                         that.onHoverEvent();
                                     }
@@ -470,7 +470,7 @@ define(function (require) {
                             },
                             error: function (xhr, status, err) {
                                 that.state.loadingLabels = false;
-                                console.error("Listing Objects", status + " - " + xhr.progress().state() , err.toString());
+                                console.error("Listing Objects", status + " - " + xhr.progress().state(), err.toString());
                             }.bind(this)
                         });
                     })(i, that);
@@ -570,6 +570,7 @@ define(function (require) {
                 .on('error', console.log)
                 .on('complete', setup.bind(this))
                 .load();
+
             function loadProgressHandler(loader, resource) {
                 if (loader.progress < 100) {
                     if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
@@ -627,28 +628,28 @@ define(function (require) {
                     that.checkStack();
                 }, 1000);
             }
-            
-            if ( Object.keys(this.state.images).length > (this.state.stack.length * this.state.visibleTiles.length ) ){
-            	for (i in Object.keys(this.state.images)){
-            		var id = Object.keys(this.state.images)[i].split(",")[0];
-            		if (id>(this.state.stack.length-1)){
-            			delete this.state.images[Object.keys(this.state.images)[i]];
-            			try{
-            				this.stack.removeChildAt(i);
-            			}catch (ignore){
-            				//ignore if it doesn't exist
-            			}
-            		}
-            	}
+
+            if (Object.keys(this.state.images).length > (this.state.stack.length * this.state.visibleTiles.length )) {
+                for (i in Object.keys(this.state.images)) {
+                    var id = Object.keys(this.state.images)[i].split(",")[0];
+                    if (id > (this.state.stack.length - 1)) {
+                        delete this.state.images[Object.keys(this.state.images)[i]];
+                        try {
+                            this.stack.removeChildAt(i);
+                        } catch (ignore) {
+                            //ignore if it doesn't exist
+                        }
+                    }
+                }
             }
-            
+
         },
 
         generateColor: function () {
             var i;
             for (i in this.state.stack) {
                 if (this.state.stack[i] && this.state.stack[i].trim() !== '' && !this.state.color[i]) {
-                	this.state.color = this.state.color.concat(['0xFFFFFF']);
+                    this.state.color = this.state.color.concat(['0xFFFFFF']);
                 }
             }
         },
@@ -763,11 +764,13 @@ define(function (require) {
         componentWillReceiveProps: function (nextProps) {
             var updDst = false;
             if (nextProps.stack !== this.state.stack || nextProps.color !== this.state.color || this.state.serverUrl !== nextProps.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol) || this.state.id !== nextProps.id) {
-            	this.setState({stack:nextProps.stack,
-                color:nextProps.color,
-                label:nextProps.label,
-                id:nextProps.id,
-                serverUrl:nextProps.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol)});
+                this.setState({
+                    stack: nextProps.stack,
+                    color: nextProps.color,
+                    label: nextProps.label,
+                    id: nextProps.id,
+                    serverUrl: nextProps.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol)
+                });
                 this.createImages();
                 this.updateImages(nextProps);
                 this.checkStack();
@@ -954,41 +957,41 @@ define(function (require) {
         },
 
         onHoverEvent: function (event, repeat) {
-        	var oldEvent = this.state.oldEvent;
+            var oldEvent = this.state.oldEvent;
             if (!this.state.loadingLabels && !this.state.dragging) {
                 repeat = typeof repeat !== 'undefined' ? repeat : true;
                 var currentPosition = this.renderer.plugins.interaction.mouse.getLocalPosition(this.stack);
                 currentPosition.x = Number(currentPosition.x.toFixed(0));
                 currentPosition.y = Number(currentPosition.y.toFixed(0));
                 if (this.state.hoverTime < Date.now() - 1000 && !(this.state.posX == this.state.oldX && this.state.posY == this.state.oldY) && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
-                	this.state.hoverTime = Date.now();
-                	this.listObjects();
+                    this.state.hoverTime = Date.now();
+                    this.listObjects();
                     this.state.oldX = currentPosition.x;
                     this.state.oldY = currentPosition.y;
-                }else{
-                	// Timeout:
-                	if (this.state.hoverTime < Date.now() - 5000){
-                		this.listObjects();
-                	}
-                	// Check valid value:
-                	if (this.state.hoverTime > Date.now()){
-                		this.state.hoverTime = Date.now();
-                		this.listObjects();
-                	}
-                	// update new position:
+                } else {
+                    // Timeout:
+                    if (this.state.hoverTime < Date.now() - 5000) {
+                        this.listObjects();
+                    }
+                    // Check valid value:
+                    if (this.state.hoverTime > Date.now()) {
+                        this.state.hoverTime = Date.now();
+                        this.listObjects();
+                    }
+                    // update new position:
                     this.state.posX = currentPosition.x;
                     this.state.posY = currentPosition.y;
                     if (repeat) {
-                    	clearTimeout(oldEvent);
-                    	oldEvent = setTimeout(function (func, event) {
+                        clearTimeout(oldEvent);
+                        oldEvent = setTimeout(function (func, event) {
                             func(event, false);
                         }, 1000, this.onHoverEvent, event);
                     }
                 }
-            }else if (this.state.loadingLabels){
+            } else if (this.state.loadingLabels) {
                 if (repeat) {
-                	clearTimeout(oldEvent);
-                	oldEvent = setTimeout(function (func, event) {
+                    clearTimeout(oldEvent);
+                    oldEvent = setTimeout(function (func, event) {
                         func(event, false);
                     }, 5000, this.onHoverEvent, event);
                 }
@@ -999,8 +1002,8 @@ define(function (require) {
         onDragMove: function (event) {
             if (this.state.dragging) {
                 var newPosition = this.state.data.global;
-                var xmove = (newPosition.x - this.state.dragOffset.x)/this.disp.scale.x;
-                var ymove = (newPosition.y - this.state.dragOffset.y)/this.disp.scale.y;
+                var xmove = (newPosition.x - this.state.dragOffset.x) / this.disp.scale.x;
+                var ymove = (newPosition.y - this.state.dragOffset.y) / this.disp.scale.y;
                 this.state.dragOffset.x = newPosition.x;
                 this.state.dragOffset.y = newPosition.y;
                 this.stack.position.x += xmove;
@@ -1019,8 +1022,11 @@ define(function (require) {
          **/
         render: function () {
             return (
-                <div className="stack-canvas-container" ref="stackCanvas"></div>
-            );
+                < div
+            className = "stack-canvas-container"
+            ref = "stackCanvas" > < /div>
+        )
+            ;
         }
     });
 
@@ -1072,8 +1078,8 @@ define(function (require) {
                 this.onZoomOut();
             } else {
                 // Mac keypad returns values (+/-)1-20 Mouse wheel (+/-)120
-            	var step = -1 * e.wheelDelta;
-            	// Max step of imposed
+                var step = -1 * e.wheelDelta;
+                // Max step of imposed
                 if (step > 0) {
                     if (this.state.orth == 0) {
                         step = this.state.voxelZ;
@@ -1091,11 +1097,11 @@ define(function (require) {
                         step = -this.state.voxelX;
                     }
                 }
-                if (e.shiftKey){
+                if (e.shiftKey) {
                     newdst += step * 10;
-            	}else{
-            		newdst += step;
-            	}
+                } else {
+                    newdst += step;
+                }
 
                 if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                     this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
@@ -1146,26 +1152,32 @@ define(function (require) {
                     this.setState({width: nextProps.data.width});
                 }
                 if (nextProps.config && nextProps.config != null && nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length && nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
-                    this.setState({voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
+                    this.setState({
+                        voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
                         voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
-                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),});
+                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),
+                    });
                 }
-                if (nextProps.config && nextProps.config != null){
-                	if (nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length){
-                		if (nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
-                			this.setState({voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
-	                        voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
-	                        voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),});
-                		}
-                		if (nextProps.config.subDomains.length > 4 && nextProps.config.subDomains[1] != null){
-                			this.setState({tempName: nextProps.config.subDomains[2],
-                            tempId: nextProps.config.subDomains[1],
-                            tempType: nextProps.config.subDomains[3]});
-                			if (nextProps.config.subDomains[4] && nextProps.config.subDomains[4].length && nextProps.config.subDomains[4].length > 0){
-                				this.setState({fxp:JSON.parse(nextProps.config.subDomains[4][0])});
-                			}
-            }
-                	}
+                if (nextProps.config && nextProps.config != null) {
+                    if (nextProps.config.subDomains && nextProps.config.subDomains != null && nextProps.config.subDomains.length) {
+                        if (nextProps.config.subDomains.length > 0 && nextProps.config.subDomains[0] && nextProps.config.subDomains[0].length && nextProps.config.subDomains[0].length > 2) {
+                            this.setState({
+                                voxelX: Number(nextProps.config.subDomains[0][0] || 0.622088),
+                                voxelY: Number(nextProps.config.subDomains[0][1] || 0.622088),
+                                voxelZ: Number(nextProps.config.subDomains[0][2] || 0.622088),
+                            });
+                        }
+                        if (nextProps.config.subDomains.length > 4 && nextProps.config.subDomains[1] != null) {
+                            this.setState({
+                                tempName: nextProps.config.subDomains[2],
+                                tempId: nextProps.config.subDomains[1],
+                                tempType: nextProps.config.subDomains[3]
+                            });
+                            if (nextProps.config.subDomains[4] && nextProps.config.subDomains[4].length && nextProps.config.subDomains[4].length > 0) {
+                                this.setState({fxp: JSON.parse(nextProps.config.subDomains[4][0])});
+                            }
+                        }
+                    }
                 }
                 if (nextProps.voxel && nextProps.voxel != null) {
                     this.setState({voxelX: nextProps.voxel.x, voxelY: nextProps.voxel.y, voxelZ: nextProps.voxel.z});
@@ -1198,11 +1210,11 @@ define(function (require) {
                         if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
                             colors.push('0Xffcc00'); // selected
                         } else {
-                            colors.push(instances[instance].parent.getColor().replace('#','0X'));
+                            colors.push(instances[instance].parent.getColor().replace('#', '0X'));
                         }
                     }
                     catch (err) {
-                        console.log('Error handling ' + instance;
+                        console.log('Error handling ' + instance);
                         console.log(err.message);
                         console.log(err.stack);
                     }
@@ -1233,8 +1245,8 @@ define(function (require) {
         },
 
         componentWillUnmount: function () {
-        	clearTimeout(this.state.oldEvent);
-        	this._isMounted = false;
+            clearTimeout(this.state.oldEvent);
+            this._isMounted = false;
             return true;
         },
         /**
@@ -1242,10 +1254,10 @@ define(function (require) {
          **/
         onZoomIn: function () {
             var zoomLevel = 1;
-            if (GEPPETTO.isKeyPressed("shift")){
-            	zoomLevel = Number((this.state.zoomLevel += 1).toFixed(1));
-            }else{
-            	zoomLevel = Number((this.state.zoomLevel += 0.1).toFixed(1));
+            if (GEPPETTO.isKeyPressed("shift")) {
+                zoomLevel = Number((this.state.zoomLevel += 1).toFixed(1));
+            } else {
+                zoomLevel = Number((this.state.zoomLevel += 0.1).toFixed(1));
             }
             if (zoomLevel < 10.0) {
                 this.setState({
@@ -1283,7 +1295,7 @@ define(function (require) {
         toggleSlice: function () {
             if (this.state.slice) {
                 this.setState({slice: false});
-            }else{
+            } else {
                 this.setState({slice: true});
             }
         },
@@ -1292,11 +1304,11 @@ define(function (require) {
          * Event handler for clicking zoom out. Decrements the zoom level
          **/
         onZoomOut: function () {
-        	var zoomLevel = 1;
-            if (GEPPETTO.isKeyPressed("shift")){
-            	zoomLevel = Number((this.state.zoomLevel -= 1).toFixed(1));
-            }else{
-            	zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
+            var zoomLevel = 1;
+            if (GEPPETTO.isKeyPressed("shift")) {
+                zoomLevel = Number((this.state.zoomLevel -= 1).toFixed(1));
+            } else {
+                zoomLevel = Number((this.state.zoomLevel -= .1).toFixed(1));
             }
             if (zoomLevel > 0.1) {
                 this.setState({
@@ -1312,13 +1324,13 @@ define(function (require) {
          * Event handler for clicking step in. Increments the dst level - TODO Remove
          **/
         onStepIn: function () {
-        	var shift = GEPPETTO.isKeyPressed("shift");
-        	var newdst = this.state.dst
-        	if (shift){
-        		newdst += this.state.voxelZ * 10;
-        	}else{
-        		newdst += this.state.voxelZ;
-        	}
+            var shift = GEPPETTO.isKeyPressed("shift");
+            var newdst = this.state.dst
+            if (shift) {
+                newdst += this.state.voxelZ * 10;
+            } else {
+                newdst += this.state.voxelZ;
+            }
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {
@@ -1333,13 +1345,13 @@ define(function (require) {
          * Event handler for clicking step out. Decrements the dst level - TODO Remove
          **/
         onStepOut: function () {
-        	var shift = GEPPETTO.isKeyPressed("shift");
-        	var newdst = this.state.dst
-        	if (shift){
-        		newdst -= this.state.voxelZ * 10;
-        	}else{
-        		newdst -= this.state.voxelZ;
-        	}
+            var shift = GEPPETTO.isKeyPressed("shift");
+            var newdst = this.state.dst
+            if (shift) {
+                newdst -= this.state.voxelZ * 10;
+            } else {
+                newdst -= this.state.voxelZ;
+            }
             if (newdst < this.state.maxDst && newdst > this.state.minDst) {
                 this.setState({dst: newdst, text: 'Slice:' + (newdst - this.state.minDst).toFixed(1)});
             } else if (newdst < this.state.maxDst) {
@@ -1361,7 +1373,7 @@ define(function (require) {
 
         onExtentChange: function (data) {
             this.setState(data);
-            if (!this.state.initalised && JSON.stringify(data).indexOf('imageX')>-1){
+            if (!this.state.initalised && JSON.stringify(data).indexOf('imageX') > -1) {
                 this.state.initalised = true;
                 this.onHome();
             }
@@ -1422,7 +1434,7 @@ define(function (require) {
             var toggleSliceClass = 'btn fa fa-toggle-';
             if (this.state.slice) {
                 toggleSliceClass += 'on';
-            }else{
+            } else {
                 toggleSliceClass += 'off';
             }
             var startOffset = 2.5;
@@ -1431,91 +1443,290 @@ define(function (require) {
             var markup = '';
             if (this.state.stack.length > 0) {
                 markup = (
-                    <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={homeClass} onClick={this.onHome} title={'Center Stack'}/>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 20,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={zoomInClass} onClick={this.onZoomIn} title={'Zoom In'}/>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 35,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={zoomOutClass} onClick={this.onZoomOut} title={'Zoom Out'}/>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 64,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={stepInClass} onClick={this.onStepIn} title={'Step Into Stack'}/>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 52,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={stepOutClass} onClick={this.onStepOut} title={'Step Out Of Stack'}/>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 83,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
-                        <button style={{
-                            position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 102,
-                            padding: 0,
-                            border: 0,
-                            background: 'transparent'
-                        }} className={toggleSliceClass} onClick={this.toggleSlice} title={'Toggle the 3D slice display'}/>
-                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
-                                serverUrl={this.props.config.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol)} canvasRef={this.props.canvasRef}
-                                fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
-                                stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
-                                statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
-                                scl={this.state.scl} orth={this.state.orth}
-                                label={this.state.label} id={this.state.id} height={this.props.data.height}
-                                width={this.props.data.width} voxelX={this.state.voxelX}
-                                voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
-                                templateId={this.props.config.templateId}
-                                templateDomainIds={this.state.tempId}
-                        		templateDomainTypeIds={this.state.tempType}
-                                templateDomainNames={this.state.tempName}
-                                slice={this.state.slice} />
-                    </div>
-                );
+                    < div
+                id = {displayArea}
+                style = {
+                {
+                    position: 'absolute', top
+                :
+                    -1, left
+                :
+                    -1
+                }
+            }>
+            <
+                button
+                style = {
+                {
+                    position: 'absolute',
+                        left
+                :
+                    2.5,
+                        top
+                :
+                    startOffset,
+                        padding
+                :
+                    0,
+                        border
+                :
+                    0,
+                        background
+                :
+                    'transparent'
+                }
+            }
+                className = {homeClass}
+                onClick = {this.onHome
+            }
+                title = {'Center Stack'}
+                />
+                < button
+                style = {
+                {
+                    position: 'absolute',
+                        left
+                :
+                    2.5,
+                        top
+                :
+                    startOffset + 20,
+                        padding
+                :
+                    0,
+                        border
+                :
+                    0,
+                        background
+                :
+                    'transparent'
+                }
+            }
+                className = {zoomInClass}
+                onClick = {this.onZoomIn
+            }
+                title = {'Zoom In'}
+                />
+                < button
+                style = {
+                {
+                    position: 'absolute',
+                        left
+                :
+                    2.5,
+                        top
+                :
+                    startOffset + 35,
+                        padding
+                :
+                    0,
+                        border
+                :
+                    0,
+                        background
+                :
+                    'transparent'
+                }
+            }
+                className = {zoomOutClass}
+                onClick = {this.onZoomOut
+            }
+                title = {'Zoom Out'}
+                />
+                < button
+                style = {
+                {
+                    position: 'absolute',
+                        left
+                :
+                    2.5,
+                        top
+                :
+                    startOffset + 64,
+                        padding
+                :
+                    0,
+                        border
+                :
+                    0,
+                        background
+                :
+                    'transparent'
+                }
+            }
+                className = {stepInClass}
+                onClick = {this.onStepIn
+            }
+                title = {'Step Into Stack'}
+                />
+                < button
+                style = {
+                {
+                    position: 'absolute',
+                        left
+                :
+                    2.5,
+                        top
+                :
+                    startOffset + 52,
+                        padding
+                :
+                    0,
+                        border
+                :
+                    0,
+                        background
+                :
+                    'transparent'
+                }
+            }
+                className = {stepOutClass}
+                onClick = {this.onStepOut
+            }
+                title = {'Step Out Of Stack'}
+                />
+                < button
+                style = {
+                {
+                    position: 'absolute',
+                        left
+                :
+                    2.5,
+                        top
+                :
+                    startOffset + 83,
+                        padding
+                :
+                    0,
+                        border
+                :
+                    0,
+                        background
+                :
+                    'transparent'
+                }
+            }
+                className = {orthClass}
+                onClick = {this.toggleOrth
+            }
+                title = {'Change Slice Plane Through Stack'}
+                />
+                < button
+                style = {
+                {
+                    position: 'absolute',
+                        left
+                :
+                    2.5,
+                        top
+                :
+                    startOffset + 102,
+                        padding
+                :
+                    0,
+                        border
+                :
+                    0,
+                        background
+                :
+                    'transparent'
+                }
+            }
+                className = {toggleSliceClass}
+                onClick = {this.toggleSlice
+            }
+                title = {'Toggle the 3D slice display'}
+                />
+                < Canvas
+                zoomLevel = {this.state.zoomLevel
+            }
+                dst = {this.state.dst
+            }
+                serverUrl = {this.props.config.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol)
+            }
+                canvasRef = {this.props.canvasRef
+            }
+                fxp = {this.state.fxp
+            }
+                pit = {this.state.pit
+            }
+                yaw = {this.state.yaw
+            }
+                rol = {this.state.rol
+            }
+                stack = {this.state.stack
+            }
+                color = {this.state.color
+            }
+                setExtent = {this.onExtentChange
+            }
+                statusText = {this.state.text
+            }
+                stackX = {this.state.stackX
+            }
+                stackY = {this.state.stackY
+            }
+                scl = {this.state.scl
+            }
+                orth = {this.state.orth
+            }
+                label = {this.state.label
+            }
+                id = {this.state.id
+            }
+                height = {this.props.data.height
+            }
+                width = {this.props.data.width
+            }
+                voxelX = {this.state.voxelX
+            }
+                voxelY = {this.state.voxelY
+            }
+                voxelZ = {this.state.voxelZ
+            }
+                displayArea = {displayArea}
+                templateId = {this.props.config.templateId
+            }
+                templateDomainIds = {this.state.tempId
+            }
+                templateDomainTypeIds = {this.state.tempType
+            }
+                templateDomainNames = {this.state.tempName
+            }
+                slice = {this.state.slice
+            }
+                />
+                < /div>
+            )
+                ;
             } else {
                 markup = (
-                    <div id={displayArea} style={{
-                        position: 'absolute',
-                        top: -1,
-                        left: -1,
-                        background: 'black',
-                        width: this.props.data.width,
-                        height: this.props.data.height
-                    }}>
-                    </div>
-                );
+                    < div
+                id = {displayArea}
+                style = {
+                {
+                    position: 'absolute',
+                        top
+                :
+                    -1,
+                        left
+                :
+                    -1,
+                        background
+                :
+                    'black',
+                        width
+                :
+                    this.props.data.width,
+                        height
+                :
+                    this.props.data.height
+                }
+            }>
+            <
+                /div>
+            )
+                ;
             }
 
             return markup;

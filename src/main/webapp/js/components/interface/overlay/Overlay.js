@@ -19,7 +19,16 @@ define(function (require) {
         }
 
         open() {
-            this.setState({ modalIsOpen: true });
+            this.setState({ show: true });
+        }
+
+        componentWillReceiveProps(nextProps) {
+            if (nextProps.show != this.props.show) {
+                this.setState({ show: nextProps.show });
+            }
+            if (nextProps.items != this.props.items) {
+                this.setState({ items: nextProps.items });
+            }
         }
 
         render() {
@@ -40,7 +49,7 @@ define(function (require) {
     }
 
     Overlay.defaultProps = {
-        modalIsOpen: false,
+        show: false,
         container: document.body,
         style: {
             position: 'relative',
@@ -52,8 +61,8 @@ define(function (require) {
             backgroundColor: '#000',
             opacity: 0.5
         },
-        containerClassName:"overlay-outer"
-        
+        containerClassName: "overlay-outer"
+
     };
 
     return Overlay;

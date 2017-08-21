@@ -20,6 +20,12 @@ define(function (require) {
 			this.setState({ content });
 		}
 
+		componentWillReceiveProps(nextProps) {
+            if (nextProps.content != this.props.content) {
+                this.setState({ content: nextProps.content });
+            }
+        }
+
 		render() {
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="htmlViewer"  style={this.props.style} className={this.props.class}>

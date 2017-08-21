@@ -54,6 +54,7 @@
     "jupyter-js-widgets": "^1.2.0",
     "less": "^2.7.2",
     "less-loader": "^2.2.3",
+    "markdown": "^0.5.0",
     "mathjs": "^3.5.3",
     "onchange": "^3.2.1",
     "openseadragon": "^2.2.1",

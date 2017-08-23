@@ -335,7 +335,7 @@ define(function (require) {
 
             this.buttonBar = ReactDOM.render(
                 React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
-                	instancePath : instancePath, instance : instance, geppetto: GEPPETTO, resize : function(){console.log("height " + that.size.height);that.setSize(that.size.height,that.size.width);}}),
+                	instancePath : instancePath, instance : instance, geppetto: GEPPETTO, resize : function(){that.setSize(that.size.height,that.size.width);}}),
                 document.getElementById(barDiv)
             );
         },

@@ -118,6 +118,7 @@ define(function (require) {
 
 		open(started) {
 			var p = this.dialog.parent();
+			var shake = p.is(":visible");
 			p.show();
 
 			var self = this;
@@ -141,9 +142,7 @@ define(function (require) {
 			};
 
 			if (!started) {
-				if (!this.state.visible) {
-					p.effect("shake", {distance: 5, times: 3}, 500, callback);
-				} else{
+				if (shake) {
 					p.effect("shake", {distance: 5, times: 3}, 500, undefined);
 				}
 			} else {
@@ -444,6 +443,10 @@ define(function (require) {
 				}
 				
 
+				var showMemoryCheckbox = this.props.showMemoryCheckbox;
+				if(showMemoryCheckbox==undefined){
+					showMemoryCheckbox = true;
+				}
 				return <div className="mainTutorialContainer">
 					<div className="tutorial-message">
 						<div id="tutorialIcon" className={iconClass}></div>
@@ -458,7 +461,7 @@ define(function (require) {
 								<span>{lastStepLabel}   <i className={lastStep ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
 							</button>
 						</div>
-						<label className={cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTurialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
+						<label className={(showMemoryCheckbox ? "visible " : "hide ")+ cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTurialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
 					</div>
 
 				</div>

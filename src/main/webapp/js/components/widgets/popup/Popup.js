@@ -21,8 +21,6 @@ define(function (require) {
 	require("./vendor/slick.css");
 	require("./vendor/slick-theme.less");
 
-	var resized = false;
-	
 	/**
 	 * Private function to hookup custom event handlers
 	 *
@@ -337,7 +335,7 @@ define(function (require) {
 
             this.buttonBar = ReactDOM.render(
                 React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
-                	instancePath : instancePath, instance : instance, geppetto: GEPPETTO, resize : function(){if(!that.resized){that.setSize(that.size.height-10,that.size.width);that.resized=true;}}}),
+                	instancePath : instancePath, instance : instance, geppetto: GEPPETTO, resize : function(){console.log("height " + that.size.height);that.setSize(that.size.height,that.size.width);}}),
                 document.getElementById(barDiv)
             );
         },

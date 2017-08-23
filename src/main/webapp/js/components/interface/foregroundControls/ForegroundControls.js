@@ -13,8 +13,6 @@ define(function (require) {
 
     var ForegroundControls = React.createClass({
     	
-    	foregroundControls : true,
-
     	getInitialState: function () {
             return {
                 disableSpotlight: false,
@@ -41,7 +39,11 @@ define(function (require) {
 
             var queryBuilderBtn = GEPPETTO.QueryBuilder != undefined ? React.createFactory(QueryBuilderButton)({}) : '';
 
-            var tutorialBtn = GEPPETTO.Tutorial.foregroundControls ? React.createFactory(TutorialButton)({}) : '';
+            var addToForegroundControls = this.props.addToForegroundControls;
+            if(addToForegroundControls==undefined){
+            	addToForegroundControls = true;
+            }
+            var tutorialBtn = addToForegroundControls ? React.createFactory(TutorialButton)({}) : '';
 
 
             return <div className={'foreground-controls'}>

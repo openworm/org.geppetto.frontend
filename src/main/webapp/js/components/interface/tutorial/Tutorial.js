@@ -141,7 +141,11 @@ define(function (require) {
 			};
 
 			if (!started) {
-				p.effect("shake", {distance: 5, times: 3}, 500, callback);
+				if (!this.state.visible) {
+					p.effect("shake", {distance: 5, times: 3}, 500, callback);
+				} else{
+					p.effect("shake", {distance: 5, times: 3}, 500, undefined);
+				}
 			} else {
 				//wait before ticking box, needed for dialog to appear and render
 				setTimeout(
@@ -208,7 +212,9 @@ define(function (require) {
 				if (start) {
 					this.start();
                     this.forceUpdate();
-                    this.open(true);
+                    if(!this.props.closeByDefault){
+                        this.open(true);
+        			}
 				}
 			}
 		}
@@ -438,13 +444,13 @@ define(function (require) {
 				}
 				
 
-				return <div>
+				return <div className="mainTutorialContainer">
 					<div className="tutorial-message">
 						<div id="tutorialIcon" className={iconClass}></div>
 						<div id="message" dangerouslySetInnerHTML={this.getHTML(step.message)}></div>
 					</div>
 					<div className="btn-group tutorial-buttons" role="group">
-						<div className="tutorial-buttons">
+						<div className={(activeTutorial.steps.length>1 ? "visible " : "hide ")+"tutorial-buttons"}>
 							<button className="prevBtn btn btn-default btn-lg" disabled={prevDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous step" data-container="body" onClick={this.prevStep}>
 								<span><i className="fa fa-arrow-left fa-2x" aria-hidden="true"></i></span>
 							</button>

@@ -57,6 +57,7 @@ define(function (require) {
             Experiment_properties_saved : "experiment_properties_saved",
             Project_properties_saved : "project_properties_saved",
             Parameters_set : "parameters_set",
+            Send_Python_Message: "send_python_message",
 
             listen: function () {
                 GEPPETTO.on(this.Select, function () {

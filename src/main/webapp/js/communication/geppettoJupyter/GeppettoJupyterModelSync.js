@@ -28,6 +28,10 @@ define(function (require, exports, module) {
 				_this.send({ event: GEPPETTO.Events.Instances_created, data: instancesIds});
 			});
 
+			GEPPETTO.on(GEPPETTO.Events.Send_Python_Message, function (data) {
+				_this.send({ event: 'Global_message', command: data.command, parameters: data.parameters});
+			});
+
 			this.on("msg:custom", this.handle_customMessage, this);
 		},
 

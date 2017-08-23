@@ -59,7 +59,9 @@ define(function (require) {
 
                 componentDidMount() {
                     GEPPETTO.ComponentFactory.addExistingComponent(this.props.componentType, this);
-                    this.connectToPython(this.props.componentType, this.props.model);
+                    if (this.props.model != undefined){
+                        this.connectToPython(this.props.componentType, this.props.model);
+                    }
                 }
 
 

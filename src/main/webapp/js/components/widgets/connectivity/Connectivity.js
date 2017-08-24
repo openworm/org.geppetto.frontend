@@ -25,6 +25,7 @@ define(function (require) {
     return Widget.View.extend({
 
         dataset: {},
+        linkCache: {},
         nodeColormap: {},
         connectivityOptions: {},
         defaultConnectivityOptions: {
@@ -182,7 +183,7 @@ define(function (require) {
 	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
 	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
-	                        this.createLink(sourceId, targetId, this.options.linkType(connectionVariable), this.options.linkWeight(connectionVariable));
+	                            this.createLink(sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache), this.options.linkWeight(connectionVariable));
 		                }
 		            }
 

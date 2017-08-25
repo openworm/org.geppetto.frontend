@@ -73,6 +73,10 @@ define(function (require) {
 			if ($('#lightgallery').data('lightGallery')) $('#lightgallery').data('lightGallery').destroy(true)
 		}
 
+		setData(items) {
+			this.setState({ items: items });
+		}
+
 		render() {
 			return (
 				<div key="lightgallery" id="lightgallery" style={this.props.style}>

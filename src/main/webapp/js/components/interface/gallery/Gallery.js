@@ -21,8 +21,7 @@ define(function (require) {
 			};
 		}
 
-		componentDidMount() {
-
+		loadGallery() {
 			if (this.state.items != null) {
 				var dynamicEl = [];
 				this.state.items.forEach(function (item) {
@@ -64,16 +63,26 @@ define(function (require) {
 						dynamicEl: dynamicEl,
 						fullScreen: false
 					});
-
-
-
 				});
 			}
 		}
 
-		componentWillUnmount() {
-			console.log("unmounting gallery")
+		componentDidMount() {
+			this.loadGallery();
+		}
+		
+		destroyEvents() {
 			if ($('#lightgallery').data('lightGallery')) $('#lightgallery').data('lightGallery').destroy(true)
+			$(".gallery-item").off("click");
+		}
+
+		componentDidUpdate() {
+			this.destroyEvents();
+			this.loadGallery();
+		}
+
+		componentWillUnmount() {
+			this.destroyEvents();
 		}
 
 		setData(items) {

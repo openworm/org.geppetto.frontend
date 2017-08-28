@@ -120,7 +120,7 @@ define(function (require) {
 		}
 
 		loadModel() {
-			if (this.state.files != undefined) {
+			if (this.state.files != undefined && this.state.files != null) {
 
 				if (this.isWidget()) {
 					this.showOverlay(<div className="spinner-container">
@@ -587,7 +587,7 @@ define(function (require) {
 			}
 
 			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} style={{ width: '100%', height: '100%' }}>
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="dicomViewerContainer" style={this.props.style}>
 					{widgetButtonBar}
 
 					<div className="dicomViewer">

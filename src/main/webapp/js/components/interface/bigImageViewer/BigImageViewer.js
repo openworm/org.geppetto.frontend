@@ -98,8 +98,9 @@ define(function (require) {
 			// }
 
 			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="bigImageViewer">
+				<div className="bigImageViewer">
 					{widgetButtonBar}
+					<div id={this.props.id + "_component"} className="bigImageViewer"/>
 				</div>
 			)
 		}

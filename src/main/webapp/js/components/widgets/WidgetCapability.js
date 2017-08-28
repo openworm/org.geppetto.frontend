@@ -454,7 +454,8 @@ define(function (require) {
                 addCustomButtons(customButtons) {
                     var that = this;
                     customButtons.forEach(function(customButton) {
-                        that.addButtonToTitleBar($("<div class='fa " + customButton.icon + "' title='" + customButton.title + "'></div>").click(customButton.action), '.customButtons');
+                        that.addButtonToTitleBar(
+                            $("<div id='" + customButton.id + "' class='fa " + customButton.icon + "' title='" + customButton.title + "'></div>").click(customButton.action), '.customButtons');
                     });
                 }
 
@@ -630,7 +631,7 @@ define(function (require) {
                     }
 
                     //add custom buttons
-                    dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='customButtons'></div>");
+                    dialogParent.find("div.ui-dialog-titlebar").prepend("<div id='toolbarDiv' class='customButtons'></div>");
                     this.addCustomButtons(this.props.customButtons);
 
                     // initialize content

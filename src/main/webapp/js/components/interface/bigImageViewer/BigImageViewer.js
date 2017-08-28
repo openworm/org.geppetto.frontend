@@ -16,8 +16,8 @@ define(function (require) {
 				id: this.props.id + "_component",
 				zoomInButton: "zoom-in",
 				zoomOutButton: "zoom-out",
-				homeButton: "home"
-				// fullPageButton: "full-page"
+				homeButton: "home",
+				fullPageButton: "full-page"
 			};
 
 			this.state = {
@@ -29,8 +29,13 @@ define(function (require) {
 		}
 
 		loadViewer() {
-			this.state.settings.tileSources = this.state.file;
-			this.viewer = OpenSeadragon(this.state.settings);
+			if (this.state.file != undefined) {
+				if (this.viewer != undefined) {
+					this.viewer.destroy();
+				}
+				this.state.settings.tileSources = this.state.file;
+				this.viewer = OpenSeadragon(this.state.settings);
+			}
 		}
 
 		download() {
@@ -40,12 +45,12 @@ define(function (require) {
 
 		extractFilePath(data) {
 			var file;
-			if (data != undefined){
+			if (data != undefined) {
 				if (data.getMetaType == undefined) {
 					file = data;
 				}
 				else if (data.getMetaType() == "Instance" && data.getVariable().getInitialValues()[0].value.format == "DZI") {
-						file = data.getVariable().getInitialValues()[0].value.data;
+					file = data.getVariable().getInitialValues()[0].value.data;
 				}
 			}
 			return file;
@@ -57,21 +62,44 @@ define(function (require) {
 
 		componentDidUpdate() {
 			this.loadViewer();
+
+			//If it is a widget -> set buttons in the toolbar
+			// if (this.isWidget()) {
+			// 	this.setCustomButtons(this.getCustomButtons());
+			// }
 		}
 
 		componentDidMount() {
 			this.loadViewer();
+
+			//If it is a widget -> set buttons in the toolbar
+			// if (this.isWidget()) {
+			// 	this.setCustomButtons(this.getCustomButtons());
+			// }
+		}
+
+		getCustomButtons() {
+			var customButtons = [];
+			customButtons.push({ 'icon': 'fa-home', 'id':'home', 'title': 'Center Image'});
+			customButtons.push({ 'icon': 'fa-search-plus', 'id':'zoom-in', 'title': 'Zoom In'});
+			customButtons.push({ 'icon': 'fa-search-minus', 'id':'zoom-out', 'title': 'Zoom Out'});
+			customButtons.push({ 'icon': 'fa-arrows-alt', 'id':'full-page', 'title': 'Full Page'});
+			return customButtons;
 		}
 
 		render() {
+			// Add the button bar if it is a component, otherwise add buttons in widget tool bar
+			// if (!this.isWidget()) {
+				var widgetButtonBar = <WidgetButtonBar>
+					{this.getCustomButtons().map((customButton) =>
+						<button className={'btn fa ' + customButton.icon} id={customButton.id} title={customButton.title} />
+					)}
+				</WidgetButtonBar>
+			// }
+
 			return (
 				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="bigImageViewer">
-					<WidgetButtonBar>
-						<button className='btn fa fa-home' id='home' title={'Center Stack'} />
-						<button className='btn fa fa-search-plus' id='zoom-in' title={'Zoom In'} />
-						<button className='btn fa fa-search-minus' id='zoom-out' title={'Zoom Out'} />
-						{/*<button className='btn fa fa-arrows-alt' id='full-page' title={'Full Page'} />*/}
-					</WidgetButtonBar>
+					{widgetButtonBar}
 				</div>
 			)
 		}

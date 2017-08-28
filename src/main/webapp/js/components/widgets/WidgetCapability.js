@@ -631,7 +631,7 @@ define(function (require) {
                     }
 
                     //add custom buttons
-                    dialogParent.find("div.ui-dialog-titlebar").prepend("<div id='toolbarDiv' class='customButtons'></div>");
+                    dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='customButtons'></div>");
                     this.addCustomButtons(this.props.customButtons);
 
                     // initialize content

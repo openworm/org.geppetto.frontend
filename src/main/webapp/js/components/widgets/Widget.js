@@ -31,6 +31,7 @@ define(function (require) {
             position: {},
             registeredEvents: null,
             executedAction: 0,
+            lastExecutedAction: 0,
             title: null,
             previousMaxTransparency: false,
             previousMaxSize: {},
@@ -444,7 +445,7 @@ define(function (require) {
 
             updateNavigationHistoryBar: function () {
                 var disabled = "arrow-disabled";
-                if (this.getItems(this.controller.history, "controller.history").length <= 1) {
+                if (this.getItems(this.controller.staticHistoryMenu, "controller.staticHistoryMenu").length <= 1) {
                     if (!$("#" + this.id + "-left-nav").hasClass(disabled)) {
                         $("#" + this.id + "-left-nav").addClass(disabled);
                         $("#" + this.id + "-right-nav").addClass(disabled);
@@ -465,17 +466,27 @@ define(function (require) {
                     if ((leftNav.length == 0) && (rightNav.length == 0)) {
 
                         var disabled = "";
-                        if (this.getItems(this.controller.history, "controller.history").length <= 1) {
+                        if (this.getItems(this.controller.staticHistoryMenu, "controller.staticHistoryMenu").length <= 1) {
                             disabled = "arrow-disabled ";
                         }
 
                         var that = this;
                         var button = $("<div id='" + this.id + "-left-nav' class='" + disabled + "fa fa-arrow-left'></div>" +
                             "<div id='" + this.id + "-right-nav' class='" + disabled + "fa fa-arrow-right'></div>").click(function (event) {
-                                var historyItems = that.getItems(that.controller.history, "controller.history");
+                                var historyItems = that.getItems(that.controller.staticHistoryMenu, "controller.staticHistoryMenu");
                                 var item;
-                                if (event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")) {
-                                    that.executedAction = historyItems.length - 1;
+                                that.lastExecutedAction = $("#" + that.id).parent().find(".ui-dialog-title").html();
+                                if (event.target.id == (that.id + "-right-nav")) {
+                                    that.executedAction = that.executedAction + 1;
+                                    if (that.executedAction >= historyItems.length) {
+                                        that.executedAction = 0;
+                                    }
+                                }
+                                if (event.target.id == (that.id + "-left-nav")) {
+                                    that.executedAction = that.executedAction - 1;
+                                    if (that.executedAction <= -1) {
+                                        that.executedAction = historyItems.length-1;
+                                    }
                                 }
                                 item = historyItems[that.executedAction].action[0];
                                 GEPPETTO.Console.executeImplicitCommand(item);

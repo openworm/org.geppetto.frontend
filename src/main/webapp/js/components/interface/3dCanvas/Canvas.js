@@ -23,8 +23,8 @@ define(function (require) {
             //State
             this.viewState = {
                 custom: {
-                    cameraPosition: {x: undefined, y: undefined, z: undefined},
-                    cameraRotation: {rx: undefined, ry: undefined, rz: undefined, radius: undefined},
+                    cameraPosition: { x: undefined, y: undefined, z: undefined },
+                    cameraRotation: { rx: undefined, ry: undefined, rz: undefined, radius: undefined },
                     colorMap: {},
                     opacityMap: {},
                     geometryTypeMap: {},
@@ -41,6 +41,13 @@ define(function (require) {
          * @returns {Canvas}
          */
         display(instances) {
+            if (this.isWidget()) {
+                this.showOverlay(<div className="spinner-container">
+                    <div className={"fa fa-circle-o-notch fa-spin"}></div>
+                    <p id="loadingmodaltext" className="orange">Loading Volumes...</p>
+                </div>);
+            }
+
             var added = [];
             for (var i = 0; i < instances.length; i++) {
                 if (this.viewState.instances.indexOf(instances[i].getInstancePath()) == -1) {
@@ -52,6 +59,11 @@ define(function (require) {
                 this.engine.updateSceneWithNewInstances(added);
                 this.setDirty(true);
             }
+
+            if (this.isWidget()) {
+                this.hideOverlay();
+            }
+
             return this;
         }
 
@@ -83,7 +95,7 @@ define(function (require) {
          *
          * @param object
          */
-        removeObject(object){
+        removeObject(object) {
             this.engine.removeObject(object);
         }
 
@@ -404,7 +416,7 @@ define(function (require) {
                     }
                 }
                 if (!recursion) {
-                    this.viewState.custom.geometryTypeMap[instance.getInstancePath()] = {"type": type, "thickness": thickness};
+                    this.viewState.custom.geometryTypeMap[instance.getInstancePath()] = { "type": type, "thickness": thickness };
                     this.setDirty(true);
                 }
             }
@@ -430,7 +442,7 @@ define(function (require) {
          * @param instances
          * @param groupElements
          */
-        splitGroups(instance, groupElements){
+        splitGroups(instance, groupElements) {
             this.engine.splitGroups(instance, groupElements);
             return this;
         }
@@ -699,7 +711,7 @@ define(function (require) {
         render() {
             return (
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <CameraControls viewer={this.props.id}/>
+                    <CameraControls viewer={this.props.id} />
                 </div>
             )
         }

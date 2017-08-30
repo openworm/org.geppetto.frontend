@@ -481,11 +481,53 @@ define(function (require) {
                                     if (that.executedAction >= historyItems.length) {
                                         that.executedAction = 0;
                                     }
+                                    
+                                    var match = that.executedAction;
+                                    for(var i=0; i<historyItems.length; i++){
+                                		var currentItem = historyItems[i];
+                                		if(that.lastExecutedAction == currentItem.label){
+                                			match= i;
+                                		}
+                                	}
+                                    
+                                    if (that.lastExecutedAction == historyItems[that.executedAction].label) {
+                                        that.executedAction = match+1;
+                                    }
+                                    
+                                    if(that.executedAction<=match){
+                                    	that.executedAction = match +1;
+                                    	if (that.executedAction >= historyItems.length) {
+                                            that.executedAction = 0;
+                                        }
+                                    }
                                 }
                                 if (event.target.id == (that.id + "-left-nav")) {
                                     that.executedAction = that.executedAction - 1;
                                     if (that.executedAction <= -1) {
                                         that.executedAction = historyItems.length-1;
+                                    }
+                                    
+                                    var match = that.executedAction;
+                                    for(var i=0; i<historyItems.length; i++){
+                                		var currentItem = historyItems[i];
+                                		if(that.lastExecutedAction == currentItem.label){
+                                			match= i;
+                                		}
+                                	}
+                                    
+                                    if ((that.lastExecutedAction == historyItems[that.executedAction].label)) {
+                                        that.executedAction = match-1;
+                                    }
+                                    
+                                    if (that.executedAction <= -1) {
+                                        that.executedAction = historyItems.length-1;
+                                    }
+                                    
+                                    if(that.executedAction>match){
+                                    	that.executedAction = match-1;
+                                    	if (that.executedAction <= -1) {
+                                            that.executedAction = historyItems.length-1;
+                                        }
                                     }
                                 }
                                 item = historyItems[that.executedAction].action[0];

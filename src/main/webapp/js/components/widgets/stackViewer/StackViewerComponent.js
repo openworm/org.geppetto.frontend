@@ -1196,7 +1196,7 @@ define(function (require) {
                 var server = this.props.config.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol);
                 for (instance in instances) {
                     try {
-                        if (instances[instance].length != undefined && instances[instance].length > 0){
+                        if (instances[instance].id != undefined){
 	                    	vals = instances[instance].getVariable().getInitialValue().value;
 	                        data = JSON.parse(vals.data);
 	                        server = data.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol);

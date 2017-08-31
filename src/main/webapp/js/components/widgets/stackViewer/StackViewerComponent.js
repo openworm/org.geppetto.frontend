@@ -1196,21 +1196,23 @@ define(function (require) {
                 var server = this.props.config.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol);
                 for (instance in instances) {
                     try {
-                        vals = instances[instance].getVariable().getInitialValue().value;
-                        data = JSON.parse(vals.data);
-                        server = data.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol);
-                        files.push(data.fileLocation);
-                        // Take multiple ID's for template
-                        if (typeof this.props.config.templateId !== 'undefined' && typeof this.props.config.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.config.templateId) {
-                            ids.push(this.props.config.templateDomainIds);
-                        } else {
-                            ids.push([instances[instance].parent.getId()]);
-                        }
-                        labels.push(instances[instance].parent.getName());
-                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
-                            colors.push('0Xffcc00'); // selected
-                        } else {
-                            colors.push(instances[instance].parent.getColor().replace('#', '0X'));
+                        if (instances[instance].length != undefined && instances[instance].length > 0){
+	                    	vals = instances[instance].getVariable().getInitialValue().value;
+	                        data = JSON.parse(vals.data);
+	                        server = data.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol);
+	                        files.push(data.fileLocation);
+	                        // Take multiple ID's for template
+	                        if (typeof this.props.config.templateId !== 'undefined' && typeof this.props.config.templateDomainIds !== 'undefined' && instances[instance].parent.getId() == this.props.config.templateId) {
+	                            ids.push(this.props.config.templateDomainIds);
+	                        } else {
+	                            ids.push([instances[instance].parent.getId()]);
+	                        }
+	                        labels.push(instances[instance].parent.getName());
+	                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
+	                            colors.push('0Xffcc00'); // selected
+	                        } else {
+	                            colors.push(instances[instance].parent.getColor().replace('#', '0X'));
+	                        }
                         }
                     }
                     catch (err) {

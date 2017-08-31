@@ -39,31 +39,52 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
  */
 function vfbTest(test,name){
 	casper.echo("------------STARTING VFB TEST--------------");
-	test.assertExists('i.fa-search', "Spotlight button exists")
+	casper.then(function(){
+		test.assertExists('i.fa-search', "Spotlight button exists")
+		
+		casper.then(function(){
+			spotlightTest(test, "VFB_00000001 (fru-M-200266)", "#buttonTwo","#Popup1_VFB_00000001_metadata_el_");
+		});
+	});
+	
+	casper.then(function(){
+		testMeshVisibility(test,true,"VFB_00017894.VFB_00017894_obj");
+	});
+	
+	casper.then(function(){
+		spotlightTest(test, "medulla", "#type","#Popup1_FBbt_00003748_metadata_el_");
+	});
+}
+
+function spotlightTest(test, searchQuery, buttonClick, termInfoData){
 	casper.mouseEvent('click', 'i.fa-search', "attempting to open spotlight");
 
 	casper.waitUntilVisible('div#spotlight', function () {
 		test.assertVisible('div#spotlight', "Spotlight opened");
 
 		//type in the spotlight
-		this.sendKeys('input#typeahead', "VFB_00000001", {keepFocus: true});
+		this.sendKeys('input#typeahead', searchQuery, {keepFocus: true});
 		//press enter
 		this.sendKeys('input#typeahead', this.page.event.key.Return, {keepFocus: true});
 		
 		casper.waitUntilVisible('div#spotlight', function () {
 			casper.then(function () {
-				this.echo("Waiting to see if the Add Scene button becomes visible");
-				casper.waitUntilVisible('button#buttonTwo', function () {
-					test.assertVisible('button#buttonTwo', "Add Scene icon correctly visible");
-					this.echo("Add Scene button became visible correctly");
-					buttonClick("#buttonTwo");
-					this.waitUntilVisible(plotName, function () {
-						this.echo("Plot 2 came up correctly");
-						if(testSelect){
-							testSelection(test, selectionName,selectColorVarName);
-						}
+				this.echo("Waiting to see if the button becomes visible");
+				casper.waitUntilVisible(buttonClick, function () {
+					test.assertVisible(buttonClick, "Show Info correctly visible");
+					this.echo("Show Info button became visible correctly");
+					buttonClick(buttonClick);
+					this.waitUntilVisible(termInfoData+"0" function () {
+						this.echo("Added to scene correctly");
+						test.assertVisible(termInfoData+"1", "Term info property correctly visible");
+						test.assertVisible(termInfoData+"2", "Term info property correctly visible");
+						test.assertVisible(termInfoData+"3", "Term info property correctly visible");
+						test.assertVisible(termInfoData+"4", "Term info property correctly visible");
+						test.assertVisible(termInfoData+"5", "Term info property correctly visible");
+						test.assertVisible(termInfoData+"6", "Term info property correctly visible");
+						test.assertVisible(termInfoData+"7", "Term info property correctly visible");
 					});
-				}, null, 5000);
+				}, null, 295000);
 			});
 		});
 	});

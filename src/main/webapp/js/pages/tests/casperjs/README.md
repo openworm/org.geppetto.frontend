@@ -24,7 +24,7 @@ To run Persistence Tests (Requires the persistence bundle and a running MySQL se
 
 To run VFB Tests use:
 
-`casperjs test VFBTests.js --engine=slimerjs` 
+`casperjs test --includes=CoreTestsUtility.js VFBTests.js --engine=slimerjs` 
 
 
 Tests are executed by default on port 8080. If you would like to execute tests on a different port you can change it [here](https://github.com/openworm/org.geppetto.frontend/blob/downloadData/src/main/webapp/js/pages/tests/casperjs/CoreTestsUtility.js#L1).

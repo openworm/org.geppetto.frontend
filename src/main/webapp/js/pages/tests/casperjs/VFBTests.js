@@ -41,10 +41,10 @@ function vfbTest(test,name){
 	casper.echo("------------STARTING VFB TEST--------------");
 	casper.then(function(){
 		test.assertExists('i.fa-search', "Spotlight button exists")
-		
-		casper.then(function(){
-			spotlightTest(test, "VFB_00000001 (fru-M-200266)", "#buttonTwo","#Popup1_VFB_00000001_metadata_el_");
-		});
+	});
+	
+	casper.then(function(){
+		spotlightTest(test, "VFB_00000001 (fru-M-200266)", "#buttonTwo","#Popup1_VFB_00000001_metadata_el_");
 	});
 	
 	casper.then(function(){
@@ -53,6 +53,16 @@ function vfbTest(test,name){
 	
 	casper.then(function(){
 		spotlightTest(test, "medulla", "#type","#Popup1_FBbt_00003748_metadata_el_");
+	});
+	
+	casper.then(function(){launchTest(test,"VFB",30000);});
+	
+	casper.then(function(){
+		testTermInfoWidget(test, "medulla", "#type","#Popup1_FBbt_00003748_metadata_el_");
+	});
+	
+	casper.then(function(){
+		testStackWidgetViewer(test, "medulla", "#type","#Popup1_FBbt_00003748_metadata_el_");
 	});
 }
 
@@ -88,4 +98,43 @@ function spotlightTest(test, searchQuery, buttonClick, termInfoData){
 			});
 		});
 	});
+}
+
+function testTermInfoWidget(test){
+	casper.then(function(){
+		test.assertVisible("Popup1_VFB_00017894_metadata_el_1", "Term info property correctly visible");
+	});
+	
+	casper.then(function(){
+		casper.evaluate(function("#Popup1_VFB_00017894_metadata_el_1") {
+			$(variableName).find("a").click();
+		},variableName);
+	});
+	
+	casper.then(function(){
+		casper.waitUntilVisible('div#Popup1_FBbt_00003624_metadata_el_0', function () {
+			casper.then(function () {
+				test.assertVisible("Popup1_FBbt_00003624_metadata_el_1", "Term info property correctly visible");
+				test.assertVisible("Popup1_FBbt_00003624_metadata_el_2", "Term info property correctly visible");
+				test.assertVisible("Popup1_FBbt_00003624_metadata_el_3", "Term info property correctly visible");
+				test.assertVisible("Popup1_FBbt_00003624_metadata_el_4", "Term info property correctly visible");
+				test.assertVisible("Popup1_FBbt_00003624_metadata_el_5", "Term info property correctly visible");
+				test.assertVisible("Popup1_FBbt_00003624_metadata_el_6", "Term info property correctly visible");
+				test.assertVisible("Popup1_FBbt_00003624_metadata_el_7", "Term info property correctly visible");
+			});
+		});
+	});
+	
+	casper.then(function(){
+		casper.evaluate(function("#Popup1_FBbt_00003624_metadata_el_4") {
+			$(variableName).find("a")[0].click()
+		},variableName);
+	});
+	
+	casper.then(function(){
+	});
+}
+
+function testStackWidgetViewer(test){
+	
 }

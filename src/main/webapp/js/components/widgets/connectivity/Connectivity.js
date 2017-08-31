@@ -266,7 +266,7 @@ define(function (require) {
             if (colorScale.domain().length > 1) {
                 var horz, vert;
                 var legendItem = this.svg.selectAll(id)
-                    .data(colorScale.domain())
+                    .data(colorScale.domain().slice().sort())
                     .enter().append('g')
                     .attr('class', 'legend-item')
                     .attr('transform', function (d, i) {

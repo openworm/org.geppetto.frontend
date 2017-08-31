@@ -41,6 +41,9 @@ define(function (require) {
             showTitleBar: true,
             transparentBackground: false,
             dirtyView: false,
+            helpInfo :  '### Inline help not yet available for this widget! \n\n' +
+            			'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html"'+
+            			'target="_blank">online documentation</a> instead.',
 
             defaultSize: function () { return { height: 300, width: 350 } },
             defaultPosition: function () { return { left: "50%", top: "50%" } },
@@ -696,10 +699,13 @@ define(function (require) {
                     return el.id === event
                 });
             },
+            
+            setHelpInfo : function(helpInfo){
+            	this.helpInfo = helpInfo;
+            },
 
             getHelp: function () {
-                return '### Inline help not yet available for this widget! \n\n' +
-                    'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
+                return this.helpInfo;
             },
 
             setController: function (controller) {

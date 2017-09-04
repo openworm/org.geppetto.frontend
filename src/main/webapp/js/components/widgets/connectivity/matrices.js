@@ -95,8 +95,8 @@ define(function (require) {
             });
             var post = nodes.map(function(x,i) { return {id: x.id, conn: matrixT[i].filter(function(d) { return d.z; }).length > 0}});
 
-            var typeIdFromId = function(id) {
-                return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(id)[0]).getType().getId();
+            var popNameFromId = function(id) {
+                return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(id)[0]).getParent().getName();
             };
 
             var mouseoverCell = function(msg) {
@@ -126,9 +126,9 @@ define(function (require) {
 			    return d.id;
 			})
 			.style("fill", function (d) {
-                            return colormap(typeIdFromId(d.id));
+                            return colormap(popNameFromId(d.id));
 			})
-                        .on("mouseover", function(d){ $.proxy(mouseoverCell, this)(typeIdFromId(d.id)) })
+                        .on("mouseover", function(d){ $.proxy(mouseoverCell, this)(popNameFromId(d.id)) })
 			.on("mouseout", $.proxy(mouseoutCell))
                 };
             };

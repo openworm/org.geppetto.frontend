@@ -34,7 +34,7 @@ define(function (require) {
             layout: "matrix", //[matrix, force, hive, chord]
             nodeType: function (node) {
                 if (node instanceof Instance) {
-                    return node.getType().getId();
+                    return node.getParent().getId();
                 } else {
                     return node.getPath().split('_')[0];
                 }
@@ -97,7 +97,7 @@ define(function (require) {
             var range = [];
             for (var i=0; i<cells.length; ++i) {
                 if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                    domain.push(cells[i].getChildren()[0].getType().getId());
+                    domain.push(cells[i].getName());
                     range.push(cells[i].getColor());
                 }
             }
@@ -187,8 +187,8 @@ define(function (require) {
 		                }
 		            }
 
-		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
-		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
+		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
+		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
 		            return true;
                 }
 

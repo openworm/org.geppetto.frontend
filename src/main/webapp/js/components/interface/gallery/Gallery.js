@@ -53,7 +53,7 @@ define(function (require) {
 					var slideID = $(this).attr('data-slide');
 
 					$('#lightgallery').lightGallery({
-						thumbnail: true,
+						thumbnail: false,
 						index: parseInt(slideID),
 						dynamic: true,
 						dynamicEl: dynamicEl,

@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "anchorme": "^0.7.1",
+    "aws-sdk": "^2.108.0",
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",
     "babel-plugin-transform-object-assign": "^6.8.0",
@@ -71,6 +72,7 @@
     "react": "15.4.1",
     "react-dom": "15.4.1",
     "react-jsonschema-form": "^0.48.0",
+    "react-lazy-load": "^3.0.12",
     "react-overlays": "^0.8.0",
     "react-player": "^0.18.0",
     "react-router": "^4.1.1",

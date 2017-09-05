@@ -558,10 +558,10 @@ define(function (require) {
                             "restore": true,
                             "minimizeLocation": "right",
                             "icons": {
-                                "maximize": "fa fa-window-maximize",
+                                "maximize": "fa fa-expand",
                                 "minimize": "fa fa-window-minimize",
                                 "collapse": "fa  fa-chevron-circle-up",
-                                "restore": "fa fa-window-restore",
+                                "restore": "fa fa-compress",
                             },
                             "load": function (evt, dlg) {
                                 var icons = $("#" + that.props.id).parent().find(".ui-icon");

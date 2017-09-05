@@ -551,6 +551,13 @@ define(['jquery'], function () {
                 }
             });
         },
+        
+        /**
+         * Sets whether picking is enabled or not
+         */
+        enablePicking: function(pickingEnabled){
+        	this.pickingEnabled=pickingEnabled;
+        },
 
         getWireframe: function(){
             return this.wireframe;

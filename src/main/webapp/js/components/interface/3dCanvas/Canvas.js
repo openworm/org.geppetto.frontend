@@ -168,6 +168,16 @@ define(function (require) {
             this.engine.setWireframe(wireframe);
             return this;
         }
+        
+        /**
+         * Sets whether picking is enabled or not
+         * @param pickingEnabled
+         * @return {Canvas}
+         */
+        enablePicking(pickingEnabled){
+        	this.engine.enablePicking(pickingEnabled);
+        	return this;
+        }
 
         /**
          * Get whether wireframe mode is being used

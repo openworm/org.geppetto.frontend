@@ -83,7 +83,7 @@ define(function (require) {
 			customButtons.push({ 'icon': 'fa-home', 'id':'home', 'title': 'Center Image'});
 			customButtons.push({ 'icon': 'fa-search-plus', 'id':'zoom-in', 'title': 'Zoom In'});
 			customButtons.push({ 'icon': 'fa-search-minus', 'id':'zoom-out', 'title': 'Zoom Out'});
-			customButtons.push({ 'icon': 'fa-arrows-alt', 'id':'full-page', 'title': 'Full Page'});
+			customButtons.push({ 'icon': 'fa-expand', 'id':'full-page', 'title': 'Full Page'});
 			return customButtons;
 		}
 

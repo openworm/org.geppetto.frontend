@@ -11,6 +11,8 @@ define(function (require) {
 	require('lg-pager');
 	require('../../../../node_modules/lightgallery/src/css/lightgallery.css');
 
+	var LazyLoad = require('react-lazy-load').default;
+
 	return class Gallery extends AbstractComponent {
 
 		constructor(props) {
@@ -66,7 +68,7 @@ define(function (require) {
 		componentDidMount() {
 			this.loadGallery();
 		}
-		
+
 		destroyEvents() {
 			if ($('#lightgallery').data('lightGallery')) $('#lightgallery').data('lightGallery').destroy(true)
 			$(".gallery-item").off("click");
@@ -93,15 +95,15 @@ define(function (require) {
 						switch (item.type) {
 							case 'image':
 								return <a className="gallery-item" data-slide={index}>
-									<img src={item.thumbnail} />
+									<LazyLoad offset={200}><img src={item.thumbnail} /></LazyLoad>
 								</a>
 							case 'video-youtube':
 								return <a className="gallery-item" data-slide={index}>
-									<img data-slide={index} src={
+									<LazyLoad offset={200}><img data-slide={index} src={
 										(item.thumbnail != undefined) ?
 											item.thumbnail :
 											'https://img.youtube.com/vi/' + item.id + '/0.jpg'}
-									/>
+									/></LazyLoad>
 								</a>
 						}
 					}) : null

@@ -719,9 +719,14 @@ define(function (require) {
         }
 
         render() {
+    	    var cameraControls = undefined;
+    	    if (!this.props.hideCameraControls) {
+    	    	cameraControls = <CameraControls viewer={this.props.id} />;
+    	    }
             return (
+
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <CameraControls viewer={this.props.id} />
+                    {cameraControls}
                 </div>
             )
         }

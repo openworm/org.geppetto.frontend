@@ -49,10 +49,6 @@ define(function (require) {
 					$('#lightgallery').data('lightGallery').destroy(true);
 				});
 
-				$('#lightgallery').on('onBeforeOpen.lg', function (event, index, fromTouch, fromThumb) {
-					$.fn.lightGallery.modules.fullscreen.prototype.requestFullscreen()
-				});
-
 				$(".gallery-item").on('click', function () {
 					var slideID = $(this).attr('data-slide');
 

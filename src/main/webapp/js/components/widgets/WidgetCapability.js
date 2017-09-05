@@ -623,7 +623,10 @@ define(function (require) {
                     dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
                     //add help button
-                    this.addHelpButton();
+                    if(this.props.help){
+                    	this.addHelpButton();	
+                    }
+                    
 
                     //add download button
                     if (super.download) {
@@ -811,6 +814,7 @@ define(function (require) {
                 showHistoryIcon: true,
                 closable: true,
                 maximizable: true,
+                help: true,
                 minimizable: true,
                 collapsable: true,
                 modalIsOpen: false,

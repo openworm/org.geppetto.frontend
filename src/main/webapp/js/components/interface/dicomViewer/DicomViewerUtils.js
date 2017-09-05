@@ -17,8 +17,11 @@ module.exports = {
         rendererObj.renderer.setSize(newWidth, newHeight);
 
         // update info to draw borders properly
-        rendererObj.stackHelper.slice.canvasWidth = newWidth;
-        rendererObj.stackHelper.slice.canvasHeight = newHeight;
+        // TODO: Remove once we are sure to remove the dotted line doesn't have any side effect
+        // rendererObj.stackHelper.slice.canvasWidth = newWidth;
+        // rendererObj.stackHelper.slice.canvasHeight = newHeight;
+        rendererObj.stackHelper.slice.canvasWidth = -1;
+        rendererObj.stackHelper.slice.canvasHeight = -1;
         rendererObj.localizerHelper.canvasWidth = newWidth;
         rendererObj.localizerHelper.canvasHeight = newHeight;
     },
@@ -35,8 +38,12 @@ module.exports = {
         rendererObj.stackHelper = new HelpersStack(stack);
         rendererObj.stackHelper.bbox.visible = false;
         rendererObj.stackHelper.borderColor = rendererObj.sliceColor;
-        rendererObj.stackHelper.slice.canvasWidth = rendererObj.domElement.clientWidth;
-        rendererObj.stackHelper.slice.canvasHeight = rendererObj.domElement.clientHeight;
+
+        // TODO: Remove once we are sure to remove the dotted line doesn't have any side effect
+        // rendererObj.stackHelper.slice.canvasWidth = rendererObj.domElement.clientWidth;
+        // rendererObj.stackHelper.slice.canvasHeight = rendererObj.domElement.clientHeight;
+        rendererObj.stackHelper.slice.canvasWidth = -1;
+        rendererObj.stackHelper.slice.canvasHeight = -1;
 
         // set camera
         let worldbb = stack.worldBoundingBox();

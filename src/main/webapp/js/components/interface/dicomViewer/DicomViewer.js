@@ -512,9 +512,11 @@ define(function (require) {
 			var customButtons = [];
 			if (this.state.mode == 'single_view') {
 				customButtons.push({ 'id':'changeModeIcon', 'icon': 'fa-th-large', 'title': 'Change Mode', 'action': this.changeMode });
+				customButtons.push({ 'id':'changeModeIcon', 'icon': 'fa-square activeColor', 'title': 'Change Mode', 'action': this.changeMode });
 				customButtons.push({ 'id':'changeOrientationIcon', 'icon': 'fa-exchange', 'title': 'Change Orientation', 'action': this.changeOrientation });
 			}
 			else {
+				customButtons.push({ 'id':'changeModeIcon', 'icon': 'fa-th-large activeColor', 'title': 'Change Mode', 'action': this.changeMode });
 				customButtons.push({ 'id':'changeModeIcon', 'icon': 'fa-square', 'title': 'Change Mode', 'action': this.changeMode });
 			}
 			return customButtons;

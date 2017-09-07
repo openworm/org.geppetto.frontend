@@ -2215,44 +2215,33 @@ define(['jquery'], function () {
                     GEPPETTO.Resources.OUTPUT :
                     GEPPETTO.Resources.INPUT;
 
-                var otherEndPath = connection.getA().getPath() == instance.getInstancePath() ?
-                    connection.getB().getPath() :
-                    connection.getA().getPath();
+                var thisEnd = connection.getA().getPath() == instance.getInstancePath() ? connection.getA() : connection.getB();
+                var otherEnd = connection.getA().getPath() == instance.getInstancePath() ? connection.getB() : connection.getA();
+                var otherEndPath = otherEnd.getPath();
 
                 var otherEndMesh = this.meshes[otherEndPath];
 
                 var destination;
                 var origin;
 
-                if (connection.getA().getPoint() == undefined) {
+                if (thisEnd.getPoint() == undefined) {
                     //same as before
                     origin = defaultOrigin;
                 }
                 else {
                     //the specified coordinate
-                    var p = connection.getA().getPoint();
-                    if (type == GEPPETTO.Resources.OUTPUT) {
-                        origin = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
-                    }
-                    else if (type == GEPPETTO.Resources.INPUT) {
-                        origin = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
-                    }
+                    var p = thisEnd.getPoint();
+                    origin = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
                 }
 
-                if (connection.getB().getPoint() == undefined) {
+                if (otherEnd.getPoint() == undefined) {
                     //same as before
                     destination = otherEndMesh.position.clone();
-                    ;
                 }
                 else {
                     //the specified coordinate
-                    var p = connection.getB().getPoint();
-                    if (type == GEPPETTO.Resources.OUTPUT) {
-                        destination = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
-                    }
-                    else if (type == GEPPETTO.Resources.INPUT) {
-                        destination = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
-                    }
+                    var p = otherEnd.getPoint();
+                    destination = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
                 }
 
                 var geometry = new THREE.Geometry();

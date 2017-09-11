@@ -1755,6 +1755,18 @@ define(['jquery'], function () {
         },
 
         /**
+         * Hide all instances
+         *
+         */
+        hideAllInstances: function () {
+        	for (var instancePath in this.meshes) {
+        	  if (this.meshes.hasOwnProperty(instancePath)) {
+        		  this.hideInstance(instancePath);
+        	  }
+        	}
+        },
+        
+        /**
          * Hide instance
          *
          * @param {String}

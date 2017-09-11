@@ -263,6 +263,16 @@ define(function (require) {
             this.engine.hideInstance(instancePath);
             return this;
         }
+        
+        /**
+         * Hide all instances
+         *
+         * @return {Canvas}
+         */
+        hideAllInstances() {
+            this.engine.hideAllInstances();
+            return this;
+        }
 
         /**
          * Set background color for this canvas

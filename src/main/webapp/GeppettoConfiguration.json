@@ -1,8 +1,8 @@
 {
     "_README" : "http://docs.geppetto.org/en/latest/build.html",
     "contextPath": "org.geppetto.frontend",
-    "useSsl": true,
-    "embedded": true,
+    "useSsl": false,
+    "embedded": false,
     "embedderURL": ["https://v2a.virtualflybrain.org","https://v2.virtualflybrain.org"],
     "noTest": false,
     "extensions": {

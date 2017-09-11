@@ -455,7 +455,7 @@ define(function (require) {
                     var that = this;
                     customButtons.forEach(function(customButton) {
                         that.addButtonToTitleBar(
-                            $("<div id='" + customButton.id + "' class='fa " + customButton.icon + "' title='" + customButton.title + "'></div>").click(customButton.action), '.customButtons');
+                            $("<div class='fa " + customButton.icon + "' title='" + customButton.title + "'></div>").click(customButton.action), '.customButtons');
                     });
                 }
 

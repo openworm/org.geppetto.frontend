@@ -17,7 +17,10 @@ define(function (require) {
 				zoomInButton: "zoom-in",
 				zoomOutButton: "zoom-out",
 				homeButton: "home",
-				fullPageButton: "full-page"
+				fullPageButton: "full-page",
+				showZoomControl: !this.isWidget(),
+				showHomeControl: !this.isWidget(),
+				showFullPageControl: !this.isWidget()
 			};
 
 			this.state = {
@@ -26,6 +29,11 @@ define(function (require) {
 			};
 
 			this.download = this.download.bind(this);
+
+			this.goHome = this.goHome.bind(this);
+			this.zoomIn = this.zoomIn.bind(this);
+			this.zoomOut = this.zoomOut.bind(this);
+			this.fullPage = this.fullPage.bind(this);
 		}
 
 		loadViewer() {
@@ -35,10 +43,6 @@ define(function (require) {
 				}
 				this.state.settings.tileSources = this.state.file;
 				this.viewer = OpenSeaDragon(this.state.settings);
-
-				// console.log(this.viewer);
-				// console.log($('.displayArea'));
-				// $(this.viewer.element).find('.displayArea').children().appendTo($(this.viewer.element).find('.displayArea').closest('.customButtons'));
 			}
 		}
 
@@ -68,38 +72,64 @@ define(function (require) {
 			this.loadViewer();
 
 			//If it is a widget -> set buttons in the toolbar
-			// if (this.isWidget()) {
-			// 	this.setCustomButtons(this.getCustomButtons());
-			// }
+			if (this.isWidget()) {
+				this.setCustomButtons(this.getCustomButtons());
+			}
 		}
 
 		componentDidMount() {
 			this.loadViewer();
 
 			//If it is a widget -> set buttons in the toolbar
-			// if (this.isWidget()) {
-			// 	this.setCustomButtons(this.getCustomButtons());
-			// }
+			if (this.isWidget()) {
+				this.setCustomButtons(this.getCustomButtons());
+			}
+		}
+
+		// These four methods are not exposed by OpenSeaDragon
+		goHome() {
+			this.viewer.viewport.goHome()
+		}
+
+		zoomIn(){
+			this.viewer.viewport.zoomBy(
+				this.viewer.zoomPerClick / 1.0
+			);
+			this.viewer.viewport.applyConstraints();
+
+		}
+
+		zoomOut(){
+			this.viewer.viewport.zoomBy(
+				1.0 / this.viewer.zoomPerClick
+			);
+			this.viewer.viewport.applyConstraints();
+		}
+
+		fullPage(){
+			this.viewer.setFullScreen( true );
+			this.viewer.fullPageButton.element.focus();
+			this.viewer.viewport.applyConstraints();
 		}
 
 		getCustomButtons() {
 			var customButtons = [];
-			customButtons.push({ 'icon': 'fa-home', 'id': 'home', 'title': 'Center Image' });
-			customButtons.push({ 'icon': 'fa-search-plus', 'id': 'zoom-in', 'title': 'Zoom In' });
-			customButtons.push({ 'icon': 'fa-search-minus', 'id': 'zoom-out', 'title': 'Zoom Out' });
-			customButtons.push({ 'icon': 'fa-expand', 'id': 'full-page', 'title': 'Full Page' });
+			customButtons.push({ 'icon': 'fa-home', 'id': 'home', 'title': 'Center Image', 'action': this.goHome });
+			customButtons.push({ 'icon': 'fa-search-plus', 'id': 'zoom-in', 'title': 'Zoom In', 'action': this.zoomIn  });
+			customButtons.push({ 'icon': 'fa-search-minus', 'id': 'zoom-out', 'title': 'Zoom Out', 'action': this.zoomOut });
+			customButtons.push({ 'icon': 'fa-expand', 'id': 'full-page', 'title': 'Full Page', 'action': this.fullPage });
 			return customButtons;
 		}
 
 		render() {
 			// Add the button bar if it is a component, otherwise add buttons in widget tool bar
-			// if (!this.isWidget()) {
-			var widgetButtonBar = <WidgetButtonBar>
-				{this.getCustomButtons().map((customButton) =>
-					<button className={'btn fa ' + customButton.icon} id={customButton.id} title={customButton.title} />
-				)}
-			</WidgetButtonBar>
-			// }
+			if (!this.isWidget()) {
+				var widgetButtonBar = <WidgetButtonBar>
+					{this.getCustomButtons().map((customButton) =>
+						<button className={'btn fa ' + customButton.icon} id={customButton.id} title={customButton.title} />
+					)}
+				</WidgetButtonBar>
+			}
 
 			return (
 				<div className="bigImageViewer">

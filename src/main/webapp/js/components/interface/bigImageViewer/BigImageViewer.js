@@ -34,7 +34,11 @@ define(function (require) {
 					this.viewer.destroy();
 				}
 				this.state.settings.tileSources = this.state.file;
-				this.viewer = OpenSeadragon(this.state.settings);
+				this.viewer = OpenSeaDragon(this.state.settings);
+
+				// console.log(this.viewer);
+				// console.log($('.displayArea'));
+				// $(this.viewer.element).find('.displayArea').children().appendTo($(this.viewer.element).find('.displayArea').closest('.customButtons'));
 			}
 		}
 
@@ -80,27 +84,27 @@ define(function (require) {
 
 		getCustomButtons() {
 			var customButtons = [];
-			customButtons.push({ 'icon': 'fa-home', 'id':'home', 'title': 'Center Image'});
-			customButtons.push({ 'icon': 'fa-search-plus', 'id':'zoom-in', 'title': 'Zoom In'});
-			customButtons.push({ 'icon': 'fa-search-minus', 'id':'zoom-out', 'title': 'Zoom Out'});
-			customButtons.push({ 'icon': 'fa-expand', 'id':'full-page', 'title': 'Full Page'});
+			customButtons.push({ 'icon': 'fa-home', 'id': 'home', 'title': 'Center Image' });
+			customButtons.push({ 'icon': 'fa-search-plus', 'id': 'zoom-in', 'title': 'Zoom In' });
+			customButtons.push({ 'icon': 'fa-search-minus', 'id': 'zoom-out', 'title': 'Zoom Out' });
+			customButtons.push({ 'icon': 'fa-expand', 'id': 'full-page', 'title': 'Full Page' });
 			return customButtons;
 		}
 
 		render() {
 			// Add the button bar if it is a component, otherwise add buttons in widget tool bar
 			// if (!this.isWidget()) {
-				var widgetButtonBar = <WidgetButtonBar>
-					{this.getCustomButtons().map((customButton) =>
-						<button className={'btn fa ' + customButton.icon} id={customButton.id} title={customButton.title} />
-					)}
-				</WidgetButtonBar>
+			var widgetButtonBar = <WidgetButtonBar>
+				{this.getCustomButtons().map((customButton) =>
+					<button className={'btn fa ' + customButton.icon} id={customButton.id} title={customButton.title} />
+				)}
+			</WidgetButtonBar>
 			// }
 
 			return (
 				<div className="bigImageViewer">
 					{widgetButtonBar}
-					<div id={this.props.id + "_component"} className="bigImageViewer"/>
+					<div id={this.props.id + "_component"} className="bigImageViewer" />
 				</div>
 			)
 		}

@@ -114,10 +114,10 @@ define(function (require) {
 
 		getCustomButtons() {
 			var customButtons = [];
-			customButtons.push({ 'icon': 'fa-home', 'id': 'home', 'title': 'Center Image', 'action': this.goHome });
-			customButtons.push({ 'icon': 'fa-search-plus', 'id': 'zoom-in', 'title': 'Zoom In', 'action': this.zoomIn  });
 			customButtons.push({ 'icon': 'fa-search-minus', 'id': 'zoom-out', 'title': 'Zoom Out', 'action': this.zoomOut });
-			customButtons.push({ 'icon': 'fa-expand', 'id': 'full-page', 'title': 'Full Page', 'action': this.fullPage });
+			customButtons.push({ 'icon': 'fa-search-plus', 'id': 'zoom-in', 'title': 'Zoom In', 'action': this.zoomIn  });
+			customButtons.push({ 'icon': 'fa-home', 'id': 'home', 'title': 'Center Image', 'action': this.goHome });
+			//customButtons.push({ 'icon': 'fa-expand', 'id': 'full-page', 'title': 'Full Page', 'action': this.fullPage });
 			return customButtons;
 		}
 

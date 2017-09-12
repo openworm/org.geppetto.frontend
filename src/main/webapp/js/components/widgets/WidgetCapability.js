@@ -589,13 +589,15 @@ define(function (require) {
                                 that.setTrasparentBackground(false);
                                 var divheight = $(window).height();
                                 var divwidth = $(window).width();
-                                that.$el.dialog({ height: divheight, width: divwidth });
+                                that.$el.dialog({ height: divheight, width: divwidth}).dialogExtend();
+                                that.$el.parent().css("bottom","0");
                                 $(this).trigger('resizeEnd');
                                 that.maximize = true;
                             },
                             "restore": function (evt, dlg) {
                                 if (that.maximize) {
                                     that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
+                                    that.$el.parent().height(that.previousMaxSize.height);
                                     $(this).trigger('restored', [that.props.id]);
                                 }
                                 that.setTrasparentBackground(that.previousMaxTransparency);
@@ -655,7 +657,7 @@ define(function (require) {
 
                     if (this.props.fixPosition) {
                         dialogParent.detach().appendTo(originalParentContainer);
-                        dialogParent.css({ top: this.position.top, left: this.position.left, position: 'absolute' });
+                        dialogParent.css({ top: this.position.top, left: this.position.left, height: this.size.height, width:this.size.width, position: 'absolute' });
                     }
 
                     window.addEventListener('resize', function (event) {

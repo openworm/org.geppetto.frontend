@@ -36,8 +36,9 @@ define(function (require) {
 		}
 
 		render() {
+			var that = this;
 			var items = this.state.files.map(function (path, index) {
-				return (<div key={index}><img src={path} /></div>);
+				return (<div key={index}><img onClick={() => that.props.onClick(path)} src={path} /></div>);
 			});
 
 			if (this.state.files != undefined) {

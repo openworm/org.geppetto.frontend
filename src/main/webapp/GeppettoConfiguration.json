@@ -13,7 +13,8 @@
         "geppetto-hm/ComponentsInitialization": false
     },
     "themes": {
-        "geppetto-default/colors": true,
-        "geppetto-hm/pages/styles/colors": false
+        "geppetto-default/colors": false,
+        "geppetto-hm/pages/styles/colors": false,
+        "geppetto-vfb/css/colors.less": true
     }
 }

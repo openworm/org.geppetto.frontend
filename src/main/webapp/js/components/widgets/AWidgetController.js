@@ -20,6 +20,7 @@ define(function (require) {
             registeredEvents: null,
             comments: [],
             history: [],
+            staticHistoryMenu: [],
 
             constructor: function () {
                 // Call the original constructor
@@ -52,6 +53,12 @@ define(function (require) {
                         "method": method,
                         "arguments": args,
                     });
+                    
+                    this.staticHistoryMenu.unshift({
+        				"label": label,
+        				"method": method,
+        				"arguments": args,
+        			});
                 }
                 
                 var widget = this.getWidgetById(id);

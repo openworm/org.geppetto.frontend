@@ -23,7 +23,7 @@ define(function (require) {
 			this.download = this.download.bind(this);
 		}
 
-		componentDidMount(){
+		componentDidMount() {
 			this.refs.slider.forceUpdate();
 		}
 
@@ -38,7 +38,7 @@ define(function (require) {
 		render() {
 			var that = this;
 			var items = this.state.files.map(function (path, index) {
-				return (<div key={index}><img onClick={() => that.props.onClick(path)} src={path} /></div>);
+				return (<div key={index}><img onClick={() => that.props.onClick(path)} onMouseEnter={() => that.props.onMouseEnter(path)} onMouseLeave={() => that.props.onMouseLeave(path)} src={path} /></div>);
 			});
 
 			if (this.state.files != undefined) {

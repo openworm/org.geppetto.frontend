@@ -767,7 +767,7 @@ define(function (require) {
                  * @param {*} items 
                  */
                 showOverlay(items) {
-                    var state = { show: true }
+                    var state = { show: true };
                     if (items != undefined) {
                         state["items"] = items;
                     }
@@ -806,7 +806,7 @@ define(function (require) {
                         </div>
                     )
                 }
-            };
+            }
 
             Widget.defaultProps = {
                 size: { height: 300, width: 350 },
@@ -826,4 +826,4 @@ define(function (require) {
             return Widget;
         }
     }
-})
+});

@@ -83,6 +83,12 @@ define(function (require) {
 			//If it is a widget -> set buttons in the toolbar
 			if (this.isWidget()) {
 				this.setCustomButtons(this.getCustomButtons());
+				$(this.getContainer()).parent().parent().find('.ui-dialog-titlebar').css({
+					"top": "2px",
+					"position": "absolute",
+					"z-index": "2",
+					"width": "100%"
+				});
 			}
 		}
 
@@ -91,7 +97,7 @@ define(function (require) {
 			this.viewer.viewport.goHome()
 		}
 
-		zoomIn(){
+		zoomIn() {
 			this.viewer.viewport.zoomBy(
 				this.viewer.zoomPerClick / 1.0
 			);
@@ -99,15 +105,15 @@ define(function (require) {
 
 		}
 
-		zoomOut(){
+		zoomOut() {
 			this.viewer.viewport.zoomBy(
 				1.0 / this.viewer.zoomPerClick
 			);
 			this.viewer.viewport.applyConstraints();
 		}
 
-		fullPage(){
-			this.viewer.setFullScreen( true );
+		fullPage() {
+			this.viewer.setFullScreen(true);
 			this.viewer.fullPageButton.element.focus();
 			this.viewer.viewport.applyConstraints();
 		}
@@ -115,7 +121,7 @@ define(function (require) {
 		getCustomButtons() {
 			var customButtons = [];
 			customButtons.push({ 'icon': 'fa-search-minus', 'id': 'zoom-out', 'title': 'Zoom Out', 'action': this.zoomOut });
-			customButtons.push({ 'icon': 'fa-search-plus', 'id': 'zoom-in', 'title': 'Zoom In', 'action': this.zoomIn  });
+			customButtons.push({ 'icon': 'fa-search-plus', 'id': 'zoom-in', 'title': 'Zoom In', 'action': this.zoomIn });
 			customButtons.push({ 'icon': 'fa-home', 'id': 'home', 'title': 'Center Image', 'action': this.goHome });
 			//customButtons.push({ 'icon': 'fa-expand', 'id': 'full-page', 'title': 'Full Page', 'action': this.fullPage });
 			return customButtons;

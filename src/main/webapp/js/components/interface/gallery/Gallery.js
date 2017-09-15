@@ -2,7 +2,7 @@ define(function (require) {
 
 	var React = require('react');
 	var AbstractComponent = require('../../AComponent');
-	require('./Gallery.less')
+	require('./Gallery.less');
 
 	require('lightgallery');
 	require('lg-thumbnail');
@@ -70,7 +70,9 @@ define(function (require) {
 		}
 
 		destroyEvents() {
-			if ($('#lightgallery').data('lightGallery')) $('#lightgallery').data('lightGallery').destroy(true)
+			if ($('#lightgallery').data('lightGallery')) {
+				$('#lightgallery').data('lightGallery').destroy(true);
+			}
 			$(".gallery-item").off("click");
 		}
 

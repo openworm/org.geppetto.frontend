@@ -62,7 +62,6 @@ define(function (require) {
             opacity: 0.5
         },
         containerClassName: "overlay-outer"
-
     };
 
     return Overlay;

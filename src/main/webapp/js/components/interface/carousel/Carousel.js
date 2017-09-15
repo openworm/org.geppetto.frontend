@@ -10,7 +10,7 @@ define(function (require) {
 			super(props);
 
 			var settings = {
-				infinite: true,
+				infinite: false,
 				speed: 500,
 				slidesToShow: 1
 			};

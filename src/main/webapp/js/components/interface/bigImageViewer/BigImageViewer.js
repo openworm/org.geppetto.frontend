@@ -28,7 +28,7 @@ define(function (require) {
 				file: this.extractFilePath(this.props.data)
 			};
 
-			this.download = this.download.bind(this);
+			//this.download = this.download.bind(this);
 
 			this.goHome = this.goHome.bind(this);
 			this.zoomIn = this.zoomIn.bind(this);
@@ -44,11 +44,6 @@ define(function (require) {
 				this.state.settings.tileSources = this.state.file;
 				this.viewer = OpenSeaDragon(this.state.settings);
 			}
-		}
-
-		download() {
-			//What do we do here?
-			console.log("Downloading data...");
 		}
 
 		extractFilePath(data) {

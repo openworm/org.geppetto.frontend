@@ -96,6 +96,7 @@ define(function (require) {
 
 		setMap(map) {
 			this.map = map;
+			this.addResizeHandler();
 		}
 
 		componentDidMount() {
@@ -113,10 +114,31 @@ define(function (require) {
 				_this.map.mapTypes.set('imageMapType', imageMapType);
 				_this.map.setMapTypeId('imageMapType');
 
+				$(window).resize(function () {
+					google.maps.event.trigger(_this.map, "resize");
+				});
+
+				_this.addResizeHandler();
+
+
 			});
 
 			GoogleMapsLoader.onLoad(function (google) {
 				//console.log('I just loaded google maps api');
+			});
+		}
+
+		addResizeHandler(){
+			var _this = this;
+			_this.newCenter = null;
+			google.maps.event.addListener(_this.map, 'idle', function () {
+				if (_this.newCenter== null){
+					_this.newCenter = _this.map.getCenter();
+				}
+
+			});
+			google.maps.event.addListener(_this.map, 'resize', function () {
+				setTimeout(function () { _this.map.setCenter(_this.newCenter); }, 200);
 			});
 		}
 

@@ -7,6 +7,7 @@ define(function (require, exports, module) {
 
 	var _ = require('underscore');
 
+
 	var EventsSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'EventsSync',
@@ -29,7 +30,7 @@ define(function (require, exports, module) {
 			});
 
 			GEPPETTO.on(GEPPETTO.Events.Send_Python_Message, function (data) {
-				_this.send({ event: 'Global_message', command: data.command, parameters: data.parameters});
+				_this.send({ event: 'Global_message', id: data.id, command: data.command, parameters: data.parameters});
 			});
 
 			this.on("msg:custom", this.handle_customMessage, this);

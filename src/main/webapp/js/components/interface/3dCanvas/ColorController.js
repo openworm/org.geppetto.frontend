@@ -121,10 +121,10 @@ define(['jquery'], function () {
         /**
          * Removes color functions
          *
-         * @param {Instance} instance - The instance to be lit
+         * @param {Instance} instances - The instances to be unlit
          */
         removeColorFunction: function (instances) {
-            while (this.litUpInstances.length > 0) {
+            while (instances.length > 0) {
                 this.clearColorFunctions(instances.pop(0));
             }
 

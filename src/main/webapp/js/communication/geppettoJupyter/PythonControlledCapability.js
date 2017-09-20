@@ -20,26 +20,29 @@ define(function (require) {
                     this.state = $.extend(this.state, {
                         value: undefined
                     });
-                    this.id=this.props.model;
+                    this.id = this.props.model;
                     this.handleChange = this.handleChange.bind(this);
                 }
 
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
-                    this.id=nextProps.model;
+                    this.id = nextProps.model;
                     GEPPETTO.ComponentFactory.addExistingComponent(nextProps.componentType, this);
                     this.connectToPython(nextProps.componentType, nextProps.model);
                 }
 
-                setSyncValueWithPythonHandler(handler){
-                    this.syncValueWithPython=handler;
+                setSyncValueWithPythonHandler(handler) {
+                    this.syncValueWithPython = handler;
                 }
 
-                handleChange(event) {
-                    this.state.value = event.target.value;
+                handleChange(event, index, value) {
+                    this.state.value = (event.target.value == undefined) ? value : event.target.value;
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
-                    if(this.syncValueWithPython){
-                        this.syncValueWithPython(event.target.value, this.props.requirement);
+                    if (this.syncValueWithPython) {
+                        this.syncValueWithPython(this.state.value, this.props.requirement);
+                    }
+                    if (this.props.onChange) {
+                        this.props.onChange(event, index, value);
                     }
                     this.forceUpdate();
                 }
@@ -47,19 +50,19 @@ define(function (require) {
                 connectToPython(componentType, model) {
                     var kernel = IPython.notebook.kernel;
                     kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType +'",model="' + model + '").connect()');
+                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '").connect()');
                 }
 
                 disconnectFromPython(componentType, model) {
                     var kernel = IPython.notebook.kernel;
                     kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.props.componentType +'",model="' + this.props.model + '")');
+                    kernel.execute('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.props.componentType + '",model="' + this.props.model + '")');
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.props.componentType, this);
                 }
 
                 componentDidMount() {
                     GEPPETTO.ComponentFactory.addExistingComponent(this.props.componentType, this);
-                    if (this.props.model != undefined){
+                    if (this.props.model != undefined) {
                         this.connectToPython(this.props.componentType, this.props.model);
                     }
                 }

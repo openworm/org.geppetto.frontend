@@ -73,8 +73,8 @@ define(function (require) {
                             <div className="circle default help-clearer left-floater" ></div><div className="circle-description left-floater">The element is <b>unselected</b>.</div>
                             <div className="circle selected help-clearer left-floater" ></div><div className="circle-description left-floater">The element is <b>selected.</b></div>
                             <div className="circle input help-clearer left-floater" ></div><div className="circle-description left-floater">The element is an <b>input</b> to the selected one.</div>
-                            <div className="circle output help-clearer left-floater" ></div><div className="circle-description left-floater">The element is an <b>output</b> to the selected one.</div>
-                            <div className="circle inputoutput help-clearer left-floater" ></div><div className="circle-description left-floater">The element is both an <b>input and an output</b> to the Selected one.</div>
+                            <div className="circle output help-clearer left-floater" ></div><div className="circle-description left-floater">The element is an <b>output</b> from the selected one.</div>
+                            <div className="circle inputoutput help-clearer left-floater" ></div><div className="circle-description left-floater">The element is both an <b>input and an output</b> to/from the selected one.</div>
                             <div className="help-spacer help-clearer"></div>
                             <h4>Colour coding for experiment status lifecycle</h4>
                             <div className="circle design-status help-clearer left-floater"></div><div className="circle-description left-floater">The experiment is in <b>design</b> phase. If available in the model, parameters can be set and state variables can be set to be recorded before running the experiment.</div>

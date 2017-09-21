@@ -43,7 +43,8 @@ define(function (require) {
 				'CAROUSEL': 'interface/carousel/Carousel',
 				'CANVAS': 'interface/3dCanvas/Canvas',
 				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer',
-				'TREE': 'interface/tree/Tree'
+				'TREE': 'interface/tree/Tree',
+				'LINKBUTTON': 'interface/linkButton/LinkButton'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},

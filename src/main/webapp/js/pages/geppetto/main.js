@@ -46,9 +46,9 @@ jQuery(function () {
         $(document).ready(
             function () {
                 if (expParam) {
-                    GEPPETTO.Console.executeCommand(command + '("' + simParam + '", "' + expParam + '")');
+                    GEPPETTO.CommandController.execute(command + '("' + simParam + '", "' + expParam + '")');
                 } else {
-                    GEPPETTO.Console.executeCommand(command + '("' + simParam + '")');
+                    GEPPETTO.CommandController.execute(command + '("' + simParam + '")');
                 }
             });
     }

@@ -16,10 +16,9 @@ define(function (require) {
         var $ = require('jquery');
         var _ = require('underscore');
 
-        // require('vendor/backbone-localStorage.min');
         require("backbone.localstorage");
 
-        GEPPETTO.Sandbox = {
+        GEPPETTO.SandboxConsole = {
 
             /**
              * The Sandbox.Model
@@ -36,7 +35,6 @@ define(function (require) {
                 initialize: function () {
                     // Attempt to fetch the Model from localStorage
                     this.fetch();
-
                 },
 
                 // The Sandbox Model tries to use the localStorage adapter to save the command history
@@ -128,6 +126,8 @@ define(function (require) {
                     this.tabCharacter = opts.tabCharacter || "\t";
                     this.placeholder = opts.placeholder || "// type some javascript and hit enter (help() for info)";
                     this.helpText = opts.helpText || "type javascript commands into the console, hit enter to evaluate. \n[up/down] to scroll through history, ':clear' to reset it. \n[alt + return/up/down] for returns and multi-line editing.";
+                    this.inputCommandAreaElSelector = opts.inputCommandAreaElSelector;
+                    this.consoleComponent = opts.consoleComponent;
 
                     // Bind to the model's change event to update the View
                     this.model.on('update:console', this.updateConsole, this);
@@ -223,6 +223,13 @@ define(function (require) {
                     this.addMessageHistory("debugMessage", {
                         result: message,
                         _class: "string"
+                    });
+                },
+
+                logRunCommand: function (message) {
+                    this.addMessageHistory("runMessage", {
+                        result: message,
+                        _class: "run"
                     });
                 },
 
@@ -377,11 +384,10 @@ define(function (require) {
                         e.preventDefault();
 
                         var thisKeypressTime = new Date();
-
-                        var input = $('#commandInputArea').val();
+                        var input = $(this.inputCommandAreaElSelector).val();
 
                         //retrieve array of available commands
-                        var commands = GEPPETTO.Console.availableSuggestions();
+                        var commands = this.consoleComponent.availableSuggestions();
 
                         //case where input entered by user is an object path or has object on left
                         //Example  "Simulation.s"
@@ -402,13 +408,13 @@ define(function (require) {
                         else {
                             //detects double tab, displays most of commands available
                             if (thisKeypressTime - lastKeypressTime <= delta) {
-                                commands = GEPPETTO.Console.availableCommands();
+                                commands = this.consoleComponent.availableCommands();
                                 var suggestionsFormatted = "";
                                 //loop through commands that match input and display them formatted
                                 var ownLineCommands = [];
                                 for (var i = 0; i < commands.length; i++) {
                                     var tag = commands[i];
-                                    if (tag.indexOf($('#commandInputArea').val()) != -1) {
+                                    if (tag.indexOf(input) != -1) {
                                         if (tag.length <= 80) {
                                             if ((i + 1) % 2 == 0) {
                                                 suggestionsFormatted = suggestionsFormatted + tag + "\n";
@@ -454,11 +460,11 @@ define(function (require) {
                 // Checks for special commands. If any are found, performs their action and returns true
                 specialCommands: function (command) {
                     if (command == "help()") {
-                        this.evaluate("GEPPETTO.Console.help()");
+                        this.consoleComponent.help();
                         return true;
                     }
                     else if (command == "toggleImplicitCommands()") {
-                        this.evaluate("GEPPETTO.Console.toggleImplicitCommands()");
+                        this.consoleComponent.toggleImplicitCommands();
                         return true;
                     }
                     // If no special commands, return false so the command gets evaluated
@@ -645,13 +651,7 @@ define(function (require) {
                 addMessageHistory: function (message, item) {
                     var history = this.model.get('history');
 
-                    if (message == "debugMessage") {
-                        item._class = "debug";
-                    }
-                    else if (message == "logMessage") {
-                        item._class = "message";
-                    }
-                    else if (message == "commandsSuggestions") {
+                    if (message == "commandsSuggestions") {
                         item._class = "commandsSuggestions";
                     }
                     history.push(item);

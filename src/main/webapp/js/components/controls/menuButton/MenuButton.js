@@ -58,7 +58,7 @@ define(function (require) {
 
             // execute action
             if (action != null) {
-                GEPPETTO.Console.executeImplicitCommand(action);
+                GEPPETTO.CommandController.execute(action, true);
             }
 
             this.setState({ icon: iconState });

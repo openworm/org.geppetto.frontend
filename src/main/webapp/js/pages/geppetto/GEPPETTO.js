@@ -66,16 +66,15 @@ define(function (require) {
 
     _.extend(GEPPETTO, Backbone.Events);
 
-    require('../../components/interface/jsConsole/SandboxConsole')(GEPPETTO);
     require('../../common/GEPPETTO.Resources')(GEPPETTO);
     require('../../common/GEPPETTO.ViewController')(GEPPETTO);
+    require('../../common/GEPPETTO.CommandController')(GEPPETTO);
     require('./GEPPETTO.Events')(GEPPETTO);
     require('../../common/GEPPETTO.UserController')(GEPPETTO);
     require('./GEPPETTO.Flows')(GEPPETTO);
     require('../../common/GEPPETTO.ScriptRunner')(GEPPETTO);
     require('../../common/GEPPETTO.UnitsController')(GEPPETTO);
     require('../../components/interface/jsEditor/GEPPETTO.JSEditor')(GEPPETTO);
-    require('../../components/interface/jsConsole/GEPPETTO.Console')(GEPPETTO);
 
     GEPPETTO.ModalFactory = new(require('../../components/controls/modals/ModalFactory'))();
     GEPPETTO.SceneController =  new(require('../../components/interface/3dCanvas/SceneController'))();

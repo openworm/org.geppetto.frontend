@@ -8,51 +8,51 @@ define(function(require) {
     var CameraControls = React.createClass({
 
         panLeft: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraPan(-0.01, 0)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(-0.01, 0)', true);
         },
 
         panRight: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraPan(0.01, 0)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(0.01, 0)', true);
         },
 
         panUp: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraPan(0, -0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(0, -0.01)', true);
         },
 
         panDown: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraPan(0, 0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(0, 0.01)', true);
         },
 
         rotateUp: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0, 0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0, 0.01)', true);
         },
 
         rotateDown: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0, -0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0, -0.01)', true);
         },
 
         rotateLeft: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(-0.01, 0)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(-0.01, 0)', true);
         },
 
         rotateRight: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0.01, 0)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0.01, 0)', true);
         },
 
         rotate: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.autoRotate()');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.autoRotate()', true);
         },
         
         cameraHome: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.resetCamera()');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.resetCamera()', true);
         },
 
         zoomIn: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraZoom(-0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraZoom(-0.01)', true);
         },
 
         zoomOut: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraZoom(+0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraZoom(+0.01)', true);
         },
 
         componentDidMount: function() {

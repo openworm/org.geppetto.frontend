@@ -47,7 +47,7 @@ define(function (require) {
 
             //create help command for connw
             cnt.help = function () {
-                return GEPPETTO.Utility.getObjectCommands(id);
+                return GEPPETTO.CommandController.getObjectCommands(id);
             };
 
             //store in local stack
@@ -56,10 +56,10 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //add commands help option
-            GEPPETTO.Console.updateHelpCommand(cnt, id, this.getFileComments("geppetto/js/components/widgets/connectivity/Connectivity.js"));
+            GEPPETTO.CommandController.updateHelpCommand(cnt, id, this.getFileComments("geppetto/js/components/widgets/connectivity/Connectivity.js"));
 
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(cnt.getId(), cnt);
+            GEPPETTO.CommandController.updateTags(cnt.getId(), cnt);
 
             return cnt;
         },

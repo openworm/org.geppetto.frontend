@@ -208,7 +208,7 @@ define(['jquery'], function () {
                                     if (geometryIdentifier == undefined) {
                                         geometryIdentifier = "";
                                     }
-                                    GEPPETTO.Console.executeCommand(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
+                                    GEPPETTO.CommandController.execute(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
                                 }
                             }
                         } else if (GEPPETTO.isKeyPressed("ctrl")) {

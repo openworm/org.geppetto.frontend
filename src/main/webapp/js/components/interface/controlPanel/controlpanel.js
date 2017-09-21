@@ -67,7 +67,7 @@ define(function (require) {
                 e.preventDefault();
                 var actionStr = that.props.metadata.actions;
                 actionStr = actionStr.replace(/\$entity\$/gi, path);
-                GEPPETTO.Console.executeImplicitCommand(actionStr);
+                GEPPETTO.CommandController.execute(actionStr, true);
             };
 
             return (
@@ -96,7 +96,7 @@ define(function (require) {
                             var actionStr = that.props.metadata.actions.replace(/\$entity\$/gi, actionItem);
 
                             // set action
-                            var onClickActionStr = 'GEPPETTO.Console.executeImplicitCommand("' + actionStr + '"); return false;';
+                            var onClickActionStr = 'GEPPETTO.CommandController.execute("' + actionStr + '", true); return false;';
                             anchorElement.attr('onclick', onClickActionStr);
 
                             // retrieve markup to inject as string
@@ -128,7 +128,7 @@ define(function (require) {
                                 e.preventDefault();
                                 var actionStr = that.props.metadata.actions;
                                 actionStr = actionStr.replace(/\$entity\$/gi, item);
-                                GEPPETTO.Console.executeImplicitCommand(actionStr);
+                                GEPPETTO.CommandController.execute(actionStr, true);
                             };
 
                             var separator = (i < originalArray.length - 1) ? <span>, </span> : <span></span>;
@@ -218,7 +218,7 @@ define(function (require) {
                     if (entity.getValue() != newVal) {
                         actionStr = actionStr.replace(/\$VALUE\$/gi, newVal);
                         actionStr = actionStr.replace(/\$entity\$/gi, path);
-                        GEPPETTO.Console.executeCommand(actionStr);
+                        GEPPETTO.CommandController.execute(actionStr);
                         // refresh to trigger color update if edited from default
                         if (newVal != defaultValue) {
                             that.refresh();
@@ -432,7 +432,7 @@ define(function (require) {
 
                             // run action
                             if (actionStr != '' && actionStr != undefined) {
-                                GEPPETTO.Console.executeImplicitCommand(actionStr);
+                                GEPPETTO.CommandController.execute(actionStr, true);
                                 // check custom action to run after configured command
                                 if (that.props.metadata.actions != '' && that.props.metadata.actions != undefined) {
                                     // straight up eval as we don't want this to show on the geppetto console
@@ -1537,7 +1537,7 @@ define(function (require) {
                                         result = eval(sourceActionStr);
                                     }
                                 } catch (e) {
-                                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                                    GEPPETTO.CommandController.log(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr, true);
                                 }
                             } else {
                                 // if no source assume the record has a property with the column name
@@ -1611,7 +1611,7 @@ define(function (require) {
                                 result = eval(sourceActionStr);
                             }
                         } catch (e) {
-                            GEPPETTO.Console.debugLog(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr);
+                            GEPPETTO.CommandController.log(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr, true);
                         }
                     } else {
                         // if no source assume the record has a property with the column name

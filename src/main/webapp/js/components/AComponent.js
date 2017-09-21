@@ -40,7 +40,7 @@ define(function (require) {
             }
 
             help() {
-                return GEPPETTO.Console.getObjectCommands(this.props.id);
+                return GEPPETTO.CommandController.getObjectCommands(this.props.id);
             }
 
             getComponentType(){

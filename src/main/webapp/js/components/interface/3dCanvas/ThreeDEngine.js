@@ -551,6 +551,13 @@ define(['jquery'], function () {
                 }
             });
         },
+        
+        /**
+         * Sets whether picking is enabled or not
+         */
+        enablePicking: function(pickingEnabled){
+        	this.pickingEnabled=pickingEnabled;
+        },
 
         getWireframe: function(){
             return this.wireframe;
@@ -1747,6 +1754,18 @@ define(['jquery'], function () {
             }
         },
 
+        /**
+         * Hide all instances
+         *
+         */
+        hideAllInstances: function () {
+        	for (var instancePath in this.meshes) {
+        	  if (this.meshes.hasOwnProperty(instancePath)) {
+        		  this.hideInstance(instancePath);
+        	  }
+        	}
+        },
+        
         /**
          * Hide instance
          *

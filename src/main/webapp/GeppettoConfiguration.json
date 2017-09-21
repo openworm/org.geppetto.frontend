@@ -6,14 +6,14 @@
     "embedderURL": ["/"],
     "noTest": false,
     "extensions": {
-        "geppetto-default/ComponentsInitialization": true,
+        "geppetto-default/ComponentsInitialization": false,
         "geppetto-osb/ComponentsInitialization": false,
         "geppetto-vfb/ComponentsInitialization": false,
         "geppetto-neuron/ComponentsInitialization": false,
-        "geppetto-hm/ComponentsInitialization": false
+        "geppetto-hm/ComponentsInitialization": true
     },
     "themes": {
-        "geppetto-default/colors": true,
-        "geppetto-hm/pages/styles/colors": false
+        "geppetto-default/colors": false,
+        "geppetto-hm/pages/styles/colors": true
     }
 }

@@ -20,13 +20,14 @@ define(function (require) {
                     this.state = $.extend(this.state, {
                         value: undefined
                     });
-                    this.id = this.props.model;
+                    this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
                     this.handleChange = this.handleChange.bind(this);
                 }
 
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
-                    this.id = nextProps.model;
+                    // this.id = nextProps.model;
+                    this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
                     GEPPETTO.ComponentFactory.addExistingComponent(nextProps.componentType, this);
                     this.connectToPython(nextProps.componentType, nextProps.model);
                 }
@@ -47,23 +48,26 @@ define(function (require) {
                     this.forceUpdate();
                 }
 
-                connectToPython(componentType, model) {
+                connectToPython() {
                     var kernel = IPython.notebook.kernel;
                     kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '").connect()');
+                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + this.props.componentType + '",model="' + this.props.model + '",id="' + this.id + '").connect()');
                 }
 
-                disconnectFromPython(componentType, model) {
+                disconnectFromPython() {
                     var kernel = IPython.notebook.kernel;
                     kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.props.componentType + '",model="' + this.props.model + '")');
+                    kernel.execute('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.props.componentType + '",model="' + this.id + '")');
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.props.componentType, this);
                 }
 
                 componentDidMount() {
-                    GEPPETTO.ComponentFactory.addExistingComponent(this.props.componentType, this);
+                    GEPPETTO.ComponentFactory.addExistingComponent(this.props.componentType, this, true);
                     if (this.props.model != undefined) {
                         this.connectToPython(this.props.componentType, this.props.model);
+                    }
+                    if (super.componentDidMount) {
+                        super.componentDidMount();
                     }
                 }
 

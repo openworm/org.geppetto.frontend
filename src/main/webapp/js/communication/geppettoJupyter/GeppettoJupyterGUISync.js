@@ -71,7 +71,7 @@ define(function (require, exports, module) {
 
 		handle_custom_messages: function (msg) {
 			if (msg.type === 'connect') {
-				var component = GEPPETTO.ComponentFactory.getComponentById(this.get("componentType"), this.get("model"));
+				var component = GEPPETTO.ComponentFactory.getComponentById(this.get("componentType"), this.id);
 				component.setSyncValueWithPythonHandler(this.syncValueWithPython.bind(this));
 				this.component = component;
 			}

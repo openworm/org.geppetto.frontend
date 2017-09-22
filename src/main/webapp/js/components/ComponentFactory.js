@@ -64,9 +64,21 @@ define(function (require) {
 			},
 
 
-			addExistingComponent(componentType, component) {
+			addExistingComponent(componentType, component, override) {
 				if (!(componentType in this.componentsMap)) {
 					this.componentsMap[componentType] = []
+				}
+				if (override){
+					var componentsMap = this.componentsMap[componentType];
+		
+					for (var c in componentsMap){
+						if (component.id === componentsMap[c].id){
+							componentsMap[c] = component;
+							// var index =  c;
+							return
+						}
+					}
+					
 				}
 				this.componentsMap[componentType].push(component);
 			},
@@ -82,7 +94,6 @@ define(function (require) {
 
 			getComponentById(componentType, componentId){
 				var componentsMap = this.componentsMap[componentType];
-				var component = undefined;
 				for (var c in componentsMap){
 					if (componentId === componentsMap[c].id){
 						return componentsMap[c];

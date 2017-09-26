@@ -276,6 +276,7 @@ define(function (require) {
              *
              * @param message
              * @param debug
+             * @param run
              */
             log: function(message, debug, run){
                 // default debug param to false
@@ -283,7 +284,7 @@ define(function (require) {
                     debug = false;
                 }
                 if(run == undefined){
-                    run=false
+                    run = false;
                 }
 
                 if(debug === true) {

@@ -14,17 +14,17 @@ define(['jquery'], function () {
     var THREE = require('three');
     require('./TrackballControls');
     require('./OBJLoader');
-    THREE.ColladaLoader = require('imports?THREE=three!exports?THREE.ColladaLoader!../../../../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
-    THREE.ConvolutionShader = require('imports?THREE=three!exports?THREE.ConvolutionShader!../../../../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
-    THREE.CopyShader = require('imports?THREE=three!exports?THREE.CopyShader!../../../../node_modules\/three\/examples\/js\/shaders\/CopyShader');
-    THREE.FilmShader = require('imports?THREE=three!exports?THREE.FilmShader!../../../../node_modules\/three\/examples\/js\/shaders\/FilmShader');
-    THREE.FocusShader = require('imports?THREE=three!exports?THREE.FocusShader!../../../../node_modules\/three\/examples\/js\/shaders\/FocusShader');
-    THREE.EffectComposer = require('imports?THREE=three!exports?THREE.EffectComposer!../../../../node_modules\/three\/examples\/js\/postprocessing\/EffectComposer');
-    THREE.MaskPass = require('imports?THREE=three!exports?THREE.MaskPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/MaskPass');
-    THREE.RenderPass = require('imports?THREE=three!exports?THREE.RenderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/RenderPass');
-    THREE.BloomPass = require('imports?THREE=three!exports?THREE.BloomPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
-    THREE.ShaderPass = require('imports?THREE=three!exports?THREE.ShaderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
-    THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
+    THREE.ColladaLoader = require('imports-loader?THREE=three!exports-loader?THREE.ColladaLoader!../../../../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
+    THREE.ConvolutionShader = require('imports-loader?THREE=three!exports-loader?THREE.ConvolutionShader!../../../../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
+    THREE.CopyShader = require('imports-loader?THREE=three!exports-loader?THREE.CopyShader!../../../../node_modules\/three\/examples\/js\/shaders\/CopyShader');
+    THREE.FilmShader = require('imports-loader?THREE=three!exports-loader?THREE.FilmShader!../../../../node_modules\/three\/examples\/js\/shaders\/FilmShader');
+    THREE.FocusShader = require('imports-loader?THREE=three!exports-loader?THREE.FocusShader!../../../../node_modules\/three\/examples\/js\/shaders\/FocusShader');
+    THREE.EffectComposer = require('imports-loader?THREE=three!exports-loader?THREE.EffectComposer!../../../../node_modules\/three\/examples\/js\/postprocessing\/EffectComposer');
+    THREE.MaskPass = require('imports-loader?THREE=three!exports-loader?THREE.MaskPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/MaskPass');
+    THREE.RenderPass = require('imports-loader?THREE=three!exports-loader?THREE.RenderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/RenderPass');
+    THREE.BloomPass = require('imports-loader?THREE=three!exports-loader?THREE.BloomPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
+    THREE.ShaderPass = require('imports-loader?THREE=three!exports-loader?THREE.ShaderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
+    THREE.FilmPass = require('imports-loader?THREE=three!exports-loader?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
 
     function ThreeDEngine(container, viewerId) {
 

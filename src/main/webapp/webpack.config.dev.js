@@ -1,7 +1,6 @@
 var webpackBaseConfig = require('./webpack.config.js');
 webpackBaseConfig.devServer = {
     progress: true,
-    colors: true,
     port: 8081,
     inline: true,
 

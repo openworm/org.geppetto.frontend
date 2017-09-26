@@ -69,7 +69,7 @@ module.exports = {
 
     entry: entries,
     output: {
-        path: './build/',
+        path: path.resolve(__dirname, 'build'),
         filename: '[name].bundle.js',
         publicPath: publicPath
     },
@@ -128,16 +128,17 @@ module.exports = {
             handlebars: 'handlebars/dist/handlebars.js'
 
         },
-        extensions: ['', '.js', '.json'],
+        extensions: ['*', '.js', '.json'],
     },
 
     module: {
         noParse: [/node_modules\/plotly.js\/dist\/plotly.js/, /js\/components\/interface\/dicomViewer\/ami.min.js/],
-        loaders: [
+        rules: [
             {
-                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], loader: ['babel-loader'],
+                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], 
+                loader: 'babel-loader',
                 query: {
-                    presets: ['react', 'es2015','es2017']
+                    presets: ['react', ['babel-preset-env', { "modules": false }]]
                 }
             },
             {
@@ -157,12 +158,17 @@ module.exports = {
                 loader: 'url-loader?limit=100000'
             },
             {
+                
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+                use: ExtractTextPlugin.extract({
+                  fallback: "style-loader",
+                  use: "css-loader"
+                })
+                  
             },
             {
                 test: /\.less$/,
-                loader: 'style!css!less?{"modifyVars":{"url":"\'../../../extensions/' + availableTheme + '\'"}}'
+                loader: 'style-loader!css-loader!less-loader?{"modifyVars":{"url":"\'../../../extensions/' + availableTheme + '\'"}}'
             },
             {
                 test: /\.html$/,

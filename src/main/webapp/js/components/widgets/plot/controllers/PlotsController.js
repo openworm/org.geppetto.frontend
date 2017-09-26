@@ -6,7 +6,7 @@
 define(function(require) {
 
     var AWidgetController = require('../../AWidgetController');
-    var Plot = require('../Plot');
+    
 
     /**
      * @exports Widgets/Plotly/PlotlyController
@@ -25,34 +25,48 @@ define(function(require) {
             if(isStateless == undefined){
                 isStateless = false;
             }
+            var that=this;
+            
+            
+            return new Promise(resolve => {
+            	require.ensure([],function(require){
+                	var Plot = require('../Plot');
+                    
+                    //look for a name and id for the new widget
+                    var id = that.getAvailableWidgetId("Plot", that.widgets);
+                    var name = id;
 
-            //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("Plot", this.widgets);
-            var name = id;
+                    //create plotting widget
+                    var p = window[name] = new Plot({
+                        id: id, name: name, visible: true,
+                        widgetType: GEPPETTO.Widgets.PLOT,
+                        stateless: isStateless
+                    });
+                    p.setController(that);
 
-            //create plotting widget
-            var p = window[name] = new Plot({
-                id: id, name: name, visible: true,
-                widgetType: GEPPETTO.Widgets.PLOT,
-                stateless: isStateless
+                    //create help command for plot
+                    p.help = function() {
+                        return GEPPETTO.CommandController.getObjectCommands(id);
+                    };
+
+                    //store in local stack
+                    that.widgets.push(p);
+
+                    GEPPETTO.WidgetsListener.subscribe(that, id);
+
+                    //add commands to console autocomplete and help option
+                    GEPPETTO.CommandController.updateHelpCommand(p, id, that.getFileComments("geppetto/js/components/widgets/plot/Plot.js"));
+                    //update tags for autocompletion
+                    GEPPETTO.CommandController.updateTags(p.getId(), p);
+
+                    resolve(p);
+                });
+            
+            
+            	
+            	
             });
-            p.setController(this);
-
-            //create help command for plot
-            p.help = function() {
-                return GEPPETTO.CommandController.getObjectCommands(id);
-            };
-
-            //store in local stack
-            this.widgets.push(p);
-
-            GEPPETTO.WidgetsListener.subscribe(this, id);
-
-            //add commands to console autocomplete and help option
-            GEPPETTO.CommandController.updateHelpCommand(p, id, this.getFileComments("geppetto/js/components/widgets/plot/Plot.js"));
-            //update tags for autocompletion
-            GEPPETTO.CommandController.updateTags(p.getId(), p);
-            return p;
+            
         },
 
         isColorbar: function(plot) {

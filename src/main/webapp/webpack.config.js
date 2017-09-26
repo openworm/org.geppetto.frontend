@@ -4,7 +4,6 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-
 var geppettoConfig;
 try {
     geppettoConfig = require('./GeppettoConfiguration.json');
@@ -34,8 +33,7 @@ console.log("\nThe public path (used by the main bundle when including split bun
 
 var entries = {
     main: "./js/pages/geppetto/main.js",
-    admin: "./js/pages/admin/admin.js",
-
+    admin: "./js/pages/admin/admin.js"
 };
 if (!geppettoConfig.noTest) {
     entries['tests'] = "./js/pages/tests/qunit/QUnitTests.js";
@@ -76,6 +74,9 @@ module.exports = {
         publicPath: publicPath
     },
     plugins: [
+    	new webpack.optimize.CommonsChunkPlugin({
+    		name: ['common'] // Specify the common bundle's name.
+    	}),
         new CopyWebpackPlugin(availableExtensions),
         new HtmlWebpackPlugin({
             filename: 'geppetto.vm',
@@ -136,7 +137,7 @@ module.exports = {
             {
                 test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], loader: ['babel-loader'],
                 query: {
-                    presets: ['react', 'es2015']
+                    presets: ['react', 'es2015','es2017']
                 }
             },
             {

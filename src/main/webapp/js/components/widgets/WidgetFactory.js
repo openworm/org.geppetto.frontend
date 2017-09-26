@@ -58,36 +58,37 @@ define(function (require) {
              * @param isStateless - boolean that controls if the widget is stateless and persisted in views or not (false by default)
              * @returns {*}
              */
-            addWidget: function (widgetType, isStateless) {
+            addWidget: async function (widgetType, isStateless) {
                 var widget = null;
                 switch (widgetType) {
                     //create plotting widget
                     case GEPPETTO.Widgets.PLOT:
-                        widget = this.getController(GEPPETTO.Widgets.PLOT).addPlotWidget(isStateless);
+                    	var controller=this.getController(GEPPETTO.Widgets.PLOT);
+                        widget = await controller.addPlotWidget(isStateless);
                         break;
                     //create popup widget
                     case GEPPETTO.Widgets.POPUP:
-                        widget = this.getController(GEPPETTO.Widgets.POPUP).addPopupWidget(isStateless);
+                        widget = await this.getController(GEPPETTO.Widgets.POPUP).addPopupWidget(isStateless);
                         break;
                     //create tree visualiser DAT widget
                     case GEPPETTO.Widgets.TREEVISUALISERDAT:
-                        widget = this.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).addTreeVisualiserDATWidget(isStateless);
+                        widget = await this.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).addTreeVisualiserDATWidget(isStateless);
                         break;
                     //create variable visualiser widget
                     case GEPPETTO.Widgets.VARIABLEVISUALISER:
-                        widget = this.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).addVariableVisualiserWidget(isStateless);
+                        widget = await this.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).addVariableVisualiserWidget(isStateless);
                         break;
                     //create connectivity widget
                     case GEPPETTO.Widgets.CONNECTIVITY:
-                        widget = this.getController(GEPPETTO.Widgets.CONNECTIVITY).addConnectivityWidget(isStateless);
+                        widget = await this.getController(GEPPETTO.Widgets.CONNECTIVITY).addConnectivityWidget(isStateless);
                         break;
                     //create button bar
                     case GEPPETTO.Widgets.BUTTONBAR:
-                        widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget(isStateless);
+                        widget = await this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget(isStateless);
                     	break;
                     //create stack viewer
                     case GEPPETTO.Widgets.STACKVIEWER:
-                        widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget(isStateless);
+                        widget = await this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget(isStateless);
                         break;
                     default:
                         break;

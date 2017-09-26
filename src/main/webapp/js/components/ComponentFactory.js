@@ -140,15 +140,27 @@ define(function (require) {
 			_createComponent: function (componentType, properties, container, callback, isWidget) {
 				var that = this;
 
-				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function (loadedModule) {
+	            return new Promise(resolve => {
+	            	require.ensure([],function(require){
+	            		if(componentType=="CONSOLE"){
+							require(["./interface/console/Console"], 
+									function (loadedModule) {
+										var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
+										var renderedComponent = that._renderComponent(component, componentType, properties, container, callback, isWidget)
+										resolve(renderedComponent);
+								});
 
-					var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
-
-					var renderedComponent = that._renderComponent(component, componentType, properties, container, callback, isWidget)
-
-
-					return renderedComponent;
-				});
+	            		}
+	            		else{
+							require(["./" + GEPPETTO.ComponentFactory.components[componentType]], 
+								function (loadedModule) {
+									var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
+									var renderedComponent = that._renderComponent(component, componentType, properties, container, callback, isWidget)
+									resolve(renderedComponent);
+							});
+	            		}
+					});	
+	            });
 			},
 
 			_renderComponent: function (component, componentType, properties, container, callback, isWidget) {
@@ -188,15 +200,20 @@ define(function (require) {
 					if (properties !== undefined && "isStateless" in properties) {
 						isStateless = properties["isStateless"];
 					}
-					var widget = GEPPETTO.WidgetFactory.addWidget(componentType, isStateless);
+					return new Promise(resolve => {
+						
+						GEPPETTO.WidgetFactory.addWidget(componentType, isStateless).then(widget => {
 
-					// Register in component map
-					if (!(componentType in this.componentsMap)) {
-						this.componentsMap[componentType] = []
-					}
-					this.componentsMap[componentType].push(widget);
-					return widget;
+							// Register in component map
+							if (!(componentType in this.componentsMap)) {
+								this.componentsMap[componentType] = []
+							}
+							this.componentsMap[componentType].push(widget);
+							resolve(widget);
+					});
+					});
 				}
+
 
 			},
 

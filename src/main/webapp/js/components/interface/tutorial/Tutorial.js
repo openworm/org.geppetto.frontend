@@ -448,7 +448,7 @@ define(function (require) {
 					showMemoryCheckbox = true;
 				}
 				return <div className="mainTutorialContainer">
-					<div className="tutorial-message">
+					<div className={"tutorial-message " + this.props.tutorialMessageClass}>
 						<div id="tutorialIcon" className={iconClass}></div>
 						<div id="message" dangerouslySetInnerHTML={this.getHTML(step.message)}></div>
 					</div>

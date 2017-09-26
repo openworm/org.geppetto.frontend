@@ -11,7 +11,8 @@ define(function (require) {
 	var Widget = require('../Widget');
 	var $ = require('jquery');
 	var math = require('mathjs');
-	var Plotly = require('plotly.js');
+	var Plotly = require('plotly.js/lib/core');
+	
 	var FileSaver = require('file-saver');
 	var pako = require('pako');
 	var JSZip = require("jszip");

@@ -132,7 +132,7 @@ module.exports = {
     },
 
     module: {
-        noParse: [/node_modules\/plotly.js\/dist\/plotly.js/, /js\/components\/interface\/dicomViewer\/ami.min.js/],
+        noParse: [/js\/components\/interface\/dicomViewer\/ami.min.js/],
         rules: [
             {
                 test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], 

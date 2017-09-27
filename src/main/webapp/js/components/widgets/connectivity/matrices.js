@@ -136,20 +136,23 @@ define(function (require) {
             var colormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
             var postMargin = 0.5*parseInt(rect.attr("width"))/pre.length;
             var preMargin = 0.5*parseInt(rect.attr("height"))/post.length;
+            var popIndicatorMaxRadius = 5;
             var postPop = container.selectAll(".postPop")
                 .data([post])
                 .enter()
                 .append("g")
                 .attr("class", "postPop")
                 .attr("transform", "translate("+postMargin+",-10)")
-                .each(popIndicator("cx", colormap, postMargin));
+                .each(popIndicator("cx", colormap,
+                                   (postMargin < popIndicatorMaxRadius) ? postMargin : popIndicatorMaxRadius));
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
                 .append("g")
                 .attr("class", "prePop")
                 .attr("transform", "translate(-10,"+preMargin+")")
-                .each(popIndicator("cy", colormap, preMargin));
+                .each(popIndicator("cy", colormap,
+                                   (preMargin < popIndicatorMaxRadius) ? preMargin : popIndicatorMaxRadius));
 
 	    var row = container.selectAll(".row")
 		.data(matrix)

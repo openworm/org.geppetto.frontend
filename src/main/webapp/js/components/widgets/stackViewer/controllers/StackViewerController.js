@@ -6,7 +6,7 @@
 define(function (require) {
 
     var AWidgetController = require('../../AWidgetController');
-    var Stack = require('../StackViewer');
+
 
     /**
      * @exports Widgets/stackViewer/stackViewerController
@@ -21,32 +21,42 @@ define(function (require) {
         /**
          * Creates new stack viewer widget
          */
-        addStackViewerWidget: function (isStateless) {
-            if(isStateless == undefined){
+        addWidget: function (isStateless) {
+            if (isStateless == undefined) {
                 // stateless by default
                 isStateless = true;
             }
 
-            //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("StackViewer", this.widgets);
-            var name = id;
-            var vv = window[name] = new Stack({
-                id: id, name: name, visible: true,
-                widgetType: GEPPETTO.Widgets.STACKVIEWER, stateless: isStateless
-            });
-            vv.help = function () {
-                return GEPPETTO.CommandController.getObjectCommands(id);
-            };
-            this.widgets.push(vv);
+            var that=this;
 
-            GEPPETTO.WidgetsListener.subscribe(this, id);
+            return new Promise(resolve => {
+                    require.ensure([], function (require) {
+                    var Stack = require('../StackViewer');
+                    //look for a name and id for the new widget
+                    var id = that.getAvailableWidgetId("StackViewer", that.widgets);
+                    var name = id;
+                    var vv = window[name] = new Stack({
+                        id: id, name: name, visible: true,
+                        widgetType: GEPPETTO.Widgets.STACKVIEWER, stateless: isStateless
+                    });
+                    vv.help = function () {
+                        return GEPPETTO.CommandController.getObjectCommands(id);
+                    };
+                    that.widgets.push(vv);
 
-            //updates help command options
-            GEPPETTO.CommandController.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/stackViewer/StackViewer.js"));
+                    GEPPETTO.WidgetsListener.subscribe(that, id);
 
-            //update tags for autocompletion
-            GEPPETTO.CommandController.updateTags(vv.getId(), vv);
-            return vv;
+                    //updates help command options
+                    GEPPETTO.CommandController.updateHelpCommand(vv, id, that.getFileComments("geppetto/js/components/widgets/stackViewer/StackViewer.js"));
+
+                    //update tags for autocompletion
+                    GEPPETTO.CommandController.updateTags(vv.getId(), vv);
+                    resolve(vv);
+                });
+
+
+        })
+            ;
         },
 
         /**

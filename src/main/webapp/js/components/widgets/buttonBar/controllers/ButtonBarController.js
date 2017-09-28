@@ -6,7 +6,7 @@
 define(function (require) {
 
     var AWidgetController = require('../../AWidgetController');
-    var BuBar = require('../ButtonBar');
+
 
     /**
      * @exports Widgets/ButtonBar/ButtonBarController
@@ -20,32 +20,40 @@ define(function (require) {
         /**
          * Creates new button bar widget
          */
-        addButtonBarWidget: function (isStateless) {
-            if(isStateless == undefined){
+        addWidget: function (isStateless) {
+            if (isStateless == undefined) {
                 isStateless = false;
             }
+            var that=this;
 
-            //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("ButtonBar", this.widgets);
-            var name = id;
-            var vv = window[name] = new BuBar({
-                id: id, name: name, visible: true,
-                widgetType: GEPPETTO.Widgets.BUTTONBAR, stateless: isStateless
-            });
-            vv.help = function () {
-                return GEPPETTO.CommandController.getObjectCommands(id);
-            };
-            this.widgets.push(vv);
+            return new Promise(resolve => {
+                    require.ensure([], function (require) {
+                    var BuBar = require('../ButtonBar');
 
-            GEPPETTO.WidgetsListener.subscribe(this, id);
+                    //look for a name and id for the new widget
+                    var id = that.getAvailableWidgetId("ButtonBar", that.widgets);
+                    var name = id;
+                    var vv = window[name] = new BuBar({
+                        id: id, name: name, visible: true,
+                        widgetType: GEPPETTO.Widgets.BUTTONBAR, stateless: isStateless
+                    });
+                    vv.help = function () {
+                        return GEPPETTO.CommandController.getObjectCommands(id);
+                    };
+                    that.widgets.push(vv);
 
-            //updates help command options
-            GEPPETTO.CommandController.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/buttonBar/ButtonBar.js"));
-            //update tags for autocompletion
-            GEPPETTO.CommandController.updateTags(vv.getId(), vv);
-            return vv;
+                    GEPPETTO.WidgetsListener.subscribe(that, id);
+
+                    //updates help command options
+                    GEPPETTO.CommandController.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/buttonBar/ButtonBar.js"));
+                    //update tags for autocompletion
+                    GEPPETTO.CommandController.updateTags(vv.getId(), vv);
+                    resolve(vv);
+                });
+
+
+        });
         },
-
         /**
          * Receives updates from widget listener class to update Button Bar widget(s)
          *

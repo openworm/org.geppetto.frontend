@@ -1,4 +1,3 @@
-
 /**
  * Controller class for connectivity widget. Use to make calls to widget from inside Geppetto.
  *
@@ -10,7 +9,7 @@
  */
 define(function (require) {
     var AWidgetController = require('../../AWidgetController');
-    var Connectivity = require('../Connectivity');
+
 
     /**
      * @exports Widgets/Connectivity/ConnectivityController
@@ -30,38 +29,45 @@ define(function (require) {
         /**
          * Adds a new Connectivity Widget to Geppetto
          */
-        addConnectivityWidget: function (isStateless) {
-            if(isStateless == undefined){
+        addWidget: function (isStateless) {
+            if (isStateless == undefined) {
                 isStateless = false;
             }
+            var that=this;
 
-            //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("Connectivity", this.widgets);
-            var name = id;
+            return new Promise(resolve => {
+                    require.ensure([], function (require) {
+                    var Connectivity = require('../Connectivity');
+                    //look for a name and id for the new widget
+                    var id = that.getAvailableWidgetId("Connectivity", this.widgets);
+                    var name = id;
 
-            //create tree visualiser widget
-            var cnt = window[name] = new Connectivity({
-                id: id, name: name, visible: false, width: 500, height: 500, controller: this,
-                widgetType: GEPPETTO.Widgets.CONNECTIVITY, stateless: isStateless
-            });
+                    //create tree visualiser widget
+                    var cnt = window[name] = new Connectivity({
+                        id: id, name: name, visible: false, width: 500, height: 500, controller: that,
+                        widgetType: GEPPETTO.Widgets.CONNECTIVITY, stateless: isStateless
+                    });
 
-            //create help command for connw
-            cnt.help = function () {
-                return GEPPETTO.CommandController.getObjectCommands(id);
-            };
+                    //create help command for connw
+                    cnt.help = function () {
+                        return GEPPETTO.CommandController.getObjectCommands(id);
+                    };
 
-            //store in local stack
-            this.widgets.push(cnt);
+                    //store in local stack
+                    that.widgets.push(cnt);
 
-            GEPPETTO.WidgetsListener.subscribe(this, id);
+                    GEPPETTO.WidgetsListener.subscribe(that, id);
 
-            //add commands help option
-            GEPPETTO.CommandController.updateHelpCommand(cnt, id, this.getFileComments("geppetto/js/components/widgets/connectivity/Connectivity.js"));
+                    //add commands help option
+                    GEPPETTO.CommandController.updateHelpCommand(cnt, id, that.getFileComments("geppetto/js/components/widgets/connectivity/Connectivity.js"));
 
-            //update tags for autocompletion
-            GEPPETTO.CommandController.updateTags(cnt.getId(), cnt);
+                    //update tags for autocompletion
+                    GEPPETTO.CommandController.updateTags(cnt.getId(), cnt);
 
-            return cnt;
+                    resolve(cnt);
+                });
+
+        });
         },
 
         /**

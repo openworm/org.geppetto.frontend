@@ -74,7 +74,7 @@ define(function (require) {
     require('./GEPPETTO.Flows')(GEPPETTO);
     require('../../common/GEPPETTO.ScriptRunner')(GEPPETTO);
     require('../../common/GEPPETTO.UnitsController')(GEPPETTO);
-    require('../../components/interface/jsEditor/GEPPETTO.JSEditor')(GEPPETTO);
+    
 
     GEPPETTO.ModalFactory = new(require('../../components/controls/modals/ModalFactory'))();
     GEPPETTO.SceneController =  new(require('../../components/interface/3dCanvas/SceneController'))();

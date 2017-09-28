@@ -20,7 +20,7 @@ define(function (require) {
         /**
          * Creates new variable visualiser widget
          */
-        addVariableVisualiserWidget: function (isStateless) {
+        addWidget: function (isStateless) {
             if(isStateless == undefined){
                 isStateless = false;
             }

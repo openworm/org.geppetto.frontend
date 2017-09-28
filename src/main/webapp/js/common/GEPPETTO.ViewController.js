@@ -5,6 +5,8 @@
 define(function(require)
 {
     return function(GEPPETTO) {
+    	require('babel-polyfill');
+
         GEPPETTO.ViewController = {
             monitorInterval: undefined,
             anyComponentsDestroyed: false,
@@ -63,7 +65,7 @@ define(function(require)
                 }, 1000);
             },
 
-            applyViewToComponentOrCreate: function(componentViews){
+            applyViewToComponentOrCreate: async function(componentViews){
                 if(componentViews != undefined){
                     for(var cv in componentViews){
                         // retrieve widget / component from factory
@@ -80,9 +82,8 @@ define(function(require)
                         if(component === undefined) {
                             // NOTE: this bit needs to be refactored once widgets/components are consolidated
                             if(componentViews[cv].widgetType != undefined && componentViews[cv].isWidget){
-                                component = GEPPETTO.ComponentFactory.addWidget(componentViews[cv].widgetType, {}, function () {
-                                    this.setView(componentViews[cv])
-                                });
+                                component = await GEPPETTO.ComponentFactory.addWidget(componentViews[cv].widgetType, {});
+                                component.setView(componentViews[cv]);
                             } else if(componentViews[cv].componentType != undefined) {
                                 // TODO: create component with component factory
                             }

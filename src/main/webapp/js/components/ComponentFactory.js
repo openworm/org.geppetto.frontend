@@ -137,28 +137,54 @@ define(function (require) {
 
 			},
 
+			
+			
 			_createComponent: function (componentType, properties, container, callback, isWidget) {
 				var that = this;
 
 	            return new Promise(resolve => {
 	            	require.ensure([],function(require){
-	            		if(componentType=="CONSOLE"){
-							require(["./interface/console/Console"], 
-									function (loadedModule) {
-										var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
-										var renderedComponent = that._renderComponent(component, componentType, properties, container, callback, isWidget)
-										resolve(renderedComponent);
-								});
-
+	            		var cb = function (loadedModule) {
+							var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
+							var renderedComponent = that._renderComponent(component, componentType, properties, container, callback, isWidget)
+							resolve(renderedComponent);
 	            		}
-	            		else{
-							require(["./" + GEPPETTO.ComponentFactory.components[componentType]], 
-								function (loadedModule) {
-									var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
-									var renderedComponent = that._renderComponent(component, componentType, properties, container, callback, isWidget)
-									resolve(renderedComponent);
-							});
+	            		switch(componentType){
+		            		case 'FORM': require(['./interface/form/Form'], cb); break;
+				            case 'PANEL': require(['./controls/panel/Panel'],cb); break; 
+				            case 'LOGO': require(['./interface/logo/Logo'],cb); break;
+				            case 'LOADINGSPINNER': require(['./interface/loadingSpinner/LoadingSpinner'],cb); break;
+				            case 'SAVECONTROL': require(['./interface/save/SaveControl'],cb); break;
+				            case 'TOGGLEBUTTON': require(['./controls/toggleButton/ToggleButton'],cb); break;
+				            case 'CONTROLPANEL': require(['./interface/controlPanel/controlpanel'],cb); break;
+				            case 'SPOTLIGHT': require(['./interface/spotlight/spotlight'],cb); break;
+				            case 'MENUBUTTON': require(['./controls/menuButton/MenuButton'],cb); break;
+				            case 'FOREGROUND': require(['./interface/foregroundControls/ForegroundControls'],cb); break;
+				            case 'EXPERIMENTSTABLE': require(['./interface/experimentsTable/ExperimentsTable'],cb); break;
+				            case 'HOME': require(['./interface/home/HomeControl'],cb); break;
+				            case 'SIMULATIONCONTROLS': require(['./interface/simulationControls/ExperimentControls'],cb); break;
+				            case 'CAMERACONTROLS': require(['./interface/cameraControls/CameraControls'],cb); break;
+				            case 'SHARE': require(['./interface/share/Share'],cb); break;
+				            case 'INFOMODAL': require(['./controls/modals/InfoModal'],cb); break;
+				            case 'MDMODAL': require(['./controls/modals/MarkDownModal'],cb); break;
+				            case 'QUERY': require(['./interface/query/query'],cb); break;
+				            case 'TUTORIAL': require(['./interface/tutorial/Tutorial'],cb); break;
+				            case 'PYTHONCONSOLE': require(['./interface/pythonConsole/PythonConsole'],cb); break;
+				            case 'CHECKBOX': require(['./controls/Checkbox'],cb); break;
+				            case 'TEXTFIELD': require(['./controls/TextField'],cb); break;
+				            case 'RAISEDBUTTON': require(['./controls/RaisedButton'],cb); break;
+				            case 'BUTTON': require(['./controls/button/Button'],cb); break;
+				            case 'DICOMVIEWER': require(['./interface/dicomViewer/DicomViewer'],cb); break;
+				            case 'GOOGLEVIEWER': require(['./interface/googleViewer/GoogleViewer'],cb); break;
+				            case 'BIGIMAGEVIEWER': require(['./interface/bigImageViewer/BigImageViewer'],cb); break;
+				            case 'CAROUSEL': require(['./interface/carousel/Carousel'],cb); break;
+				            case 'CANVAS': require(['./interface/3dCanvas/Canvas'],cb); break;
+				            case 'MOVIEPLAYER': require(['./interface/moviePlayer/MoviePlayer'],cb); break;
+				            case 'TREE': require(['./interface/tree/Tree'],cb); break;
+				            case 'CONSOLE': require(['./interface/console/Console'],cb); break;
+				            case 'LINKBUTTON': require(['./interface/linkButton/LinkButton'],cb); break;
 	            		}
+	            		
 					});	
 	            });
 			},
@@ -202,7 +228,7 @@ define(function (require) {
 					}
 					return new Promise(resolve => {
 						
-						GEPPETTO.WidgetFactory.addWidget(componentType, isStateless).then(widget => {
+						GEPPETTO.WidgetFactory.addWidget(componentType, isStateless, callback).then(widget => {
 
 							// Register in component map
 							if (!(componentType in this.componentsMap)) {

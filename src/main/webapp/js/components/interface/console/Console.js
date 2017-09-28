@@ -3,7 +3,7 @@ define(function (require) {
     var AbstractComponent = require('../../AComponent');
     var $ = require('jquery');
     require('jquery-ui-bundle');
-
+    require('../jsEditor/GEPPETTO.JSEditor')(GEPPETTO);
     require('./SandboxConsole')(GEPPETTO);
     require('./console.less');
     require('./jsConsole.less');

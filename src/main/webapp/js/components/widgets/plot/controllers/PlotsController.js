@@ -21,7 +21,7 @@ define(function(require) {
         /**
          * Creates plotting widget
          */
-        addPlotWidget: function (isStateless) {
+        addWidget: function (isStateless) {
             if(isStateless == undefined){
                 isStateless = false;
             }

@@ -5,7 +5,6 @@
  */
 define(function(require)
 {
-	var math = require('mathjs');
     return function(GEPPETTO)
     {
         GEPPETTO.UnitsController =

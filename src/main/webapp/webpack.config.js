@@ -3,6 +3,7 @@ var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 var geppettoConfig;
 try {
@@ -13,7 +14,8 @@ try {
     console.error('\nFailed to load Geppetto Configuration')
 }
 
-//We read the command line arguments, these are passed from maven through npm to webpack
+// We read the command line arguments, these are passed from maven through npm
+// to webpack
 console.log('\nReading Geppetto Parameters from Command line:');
 for (var i = 0; i < process.argv.length; i++) {
     var argValue = process.argv[i].replace("--", "").split("=");
@@ -74,21 +76,26 @@ module.exports = {
         publicPath: publicPath
     },
     plugins: [
-    	new webpack.optimize.CommonsChunkPlugin({
-    		name: ['common'] // Specify the common bundle's name.
-    	}),
+        // new BundleAnalyzerPlugin({
+        //     analyzerMode: 'static'
+        // }),
+	    new webpack.optimize.CommonsChunkPlugin(['common']),
         new CopyWebpackPlugin(availableExtensions),
         new HtmlWebpackPlugin({
             filename: 'geppetto.vm',
             template: './js/pages/geppetto/geppetto.ejs',
             GEPPETTO_CONFIGURATION: geppettoConfig,
-            //chunks: ['main'] Not specifying the chunk since its not possible yet (need to go to Webpack2) to specify UTF-8 as charset without which we have errors
+            // chunks: ['main'] Not specifying the chunk since its not possible
+			// yet (need to go to Webpack2) to specify UTF-8 as charset without
+			// which we have errors
             chunks: []
         }),
         new HtmlWebpackPlugin({
             filename: 'admin.vm',
             template: './js/pages/admin/admin.ejs',
-            //chunks: ['admin'] Not specifying the chunk since its not possible yet (need to go to Webpack2) to specify UTF-8 as charset without which we have errors
+            // chunks: ['admin'] Not specifying the chunk since its not possible
+			// yet (need to go to Webpack2) to specify UTF-8 as charset without
+			// which we have errors
             chunks: []
         }),
         new HtmlWebpackPlugin({
@@ -105,7 +112,9 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'qunitTest.vm',
             template: './js/pages/tests/qunitTest.ejs',
-            //chunks: ['tests'] Not specifying the chunk since its not possible yet (need to go to Webpack2) to specify UTF-8 as charset without which we have errors
+            // chunks: ['tests'] Not specifying the chunk since its not possible
+			// yet (need to go to Webpack2) to specify UTF-8 as charset without
+			// which we have errors
             chunks: []
         }),
         new HtmlWebpackPlugin({
@@ -135,10 +144,12 @@ module.exports = {
         noParse: [/js\/components\/interface\/dicomViewer\/ami.min.js/],
         rules: [
             {
-                test: /\.(js)$/, exclude: [/node_modules/, /build/, /\.bundle/, /ami.min.js/], 
+                test: /\.(js|jsx)$/,
+                include: [path.resolve(__dirname, './js'), path.resolve(__dirname, './extensions'), path.resolve(__dirname, './style'), path.resolve(__dirname, './WEB-INF')],
+                exclude: [/ami.min.js/], 
                 loader: 'babel-loader',
                 query: {
-                    presets: ['react', ['babel-preset-env', { "modules": false }]]
+                    presets: [['babel-preset-env', { "modules": false }], 'react']
                 }
             },
             {

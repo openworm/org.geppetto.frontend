@@ -1,11 +1,15 @@
-var TARGET_URL = "http://127.0.0.1";
-var port = ":8080"; 
+var urlBase = casper.cli.get('host');
+if(urlBase==null || urlBase==undefined){
+	urlBase = "http://127.0.0.1:8080/";
+}
 var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json";
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json";
 var PROJECT_URL_SUFFIX_3 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/balanced/project.json";
 var projectID;
 
-casper.test.begin('Geppetto basic tests', 133, function suite(test) {
+var defaultLongWaitingTime = 295000;
+
+casper.test.begin('Geppetto basic tests', function suite(test) {
     casper.options.viewportSize = {
         width: 1340,
         height: 768
@@ -28,31 +32,40 @@ casper.test.begin('Geppetto basic tests', 133, function suite(test) {
         }
     });
 
-    casper.start(TARGET_URL + port+"/org.geppetto.frontend", function () {
+    casper.start(urlBase+"org.geppetto.frontend", function () {
+    	this.echo("Starting geppetto at host "+ urlBase);
         this.waitForSelector('div#logo', function () {
             this.echo("I waited for the logo to load.");
             test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
             test.assertExists('div#logo', "logo is found");
-        }, null, 30000);
+        }, null, defaultLongWaitingTime);
     });
 
-    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/login?username=guest1&password=guest", function () {
+    casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
         /*this.waitForSelector('div#page', function() {
          this.echo("I've waited for the splash screen to come up.");
          test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
          }, null, 30000);*/
     });
 
-    casper.thenOpen(TARGET_URL+  port+"/org.geppetto.frontend/", function () {
-        this.waitForSelector('div.project-preview', function () {
+    casper.thenOpen(urlBase+"org.geppetto.frontend/", function () {
+        this.waitForSelector('div[project-id="2"]', function () {
             this.echo("I've waited for the projects to load.");
             test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
+            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+        }, null, 30000);
+        
+        this.waitForSelector('div[project-id="1"]', function () {
+            this.echo("I've waited for the projects to load.");
+            test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
             test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
         }, null, 30000);
     });
-
+    
     casper.then(function () {
-        testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
+        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
             false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true,"hhcell");
     });
     
@@ -64,15 +77,15 @@ casper.test.begin('Geppetto basic tests', 133, function suite(test) {
     });
     
     casper.then(function () {
-        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
     });
     
     casper.then(function () {
-        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
+        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
     });
 
     casper.then(function () {
-        testProject(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
+        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
             false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false,"c302_A_Pharyngeal");
     });
     
@@ -84,15 +97,15 @@ casper.test.begin('Geppetto basic tests', 133, function suite(test) {
     });
     
     casper.then(function () {
-        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,2);
     });
     
     casper.then(function () {
-        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
+        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
     });
 
     casper.then(function () {
-        testProject(test, TARGET_URL  +port+"/org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
+        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
             false, '', '', false,"Balanced_240cells_36926conns");
     });
     
@@ -104,46 +117,42 @@ casper.test.begin('Geppetto basic tests', 133, function suite(test) {
     });
     
     casper.then(function () {
-        reloadProjectTest(test, TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+    });
+   
+    casper.then(function () {
+        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
     });
     
     casper.then(function () {
-        deleteProject(test, TARGET_URL + port+"/org.geppetto.frontend",projectID);
-    });
-
-    casper.waitForSelector('.project-preview[title^="HippocampalNet"]', function(){
-        casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/geppetto?load_project_from_id="+getProjectIdByName("HippocampalNet"), function () {
-            doConnectivityWidgetsTest(test);
+    	//TODO: log back in as other users. Check more things
+        //TODO: exercise the run loop, check the changing experiment status, try to make experiment fail
+        casper.echo("Waiting to logout");
+        casper.thenOpen(urlBase+"org.geppetto.frontend/logout", function () {
+        	this.echo("I've waited for user to logout.");
         });
     });
 
-    //TODO: log back in as other users. Check more things
-    //TODO: exercise the run loop, check the changing experiment status, try to make experiment fail
-
-    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/logout", function () {
+    casper.then(function () {
+    	casper.echo("Waiting for admin to login");
+        casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=admin&password=admin", function () {
+        	this.echo("I've waited for the admin user to log");
+        });
     });
     
-    casper.thenOpen(TARGET_URL + port+"/org.geppetto.frontend/login?username=admin&password=admin", function () {
-    });
-
-    casper.thenOpen(TARGET_URL+  port+"/org.geppetto.frontend/admin", function () {
-        this.waitForSelector('div[class="griddle"]', function () {
-            this.echo("I've waited for the admin panel to load.");
-        }, null, 30000);
-    });
-    
+    casper.then(function () {
+    	casper.echo("Waiting for admin panel");
+        casper.thenOpen(urlBase+"org.geppetto.frontend/admin", function () {
+            this.waitForSelector('div[class="griddle"]', function () {
+                this.echo("I've waited for the admin panel to load.");
+            }, null, 30000);
+        });
+    });  
     
     casper.run(function () {
         test.done();
     });
 });
-
-function getProjectIdByName(name){
-    var id = casper.evaluate(function(name){
-        return $('.project-preview[title^="'+name+'"]').attr('project-id');
-    }, {name: name});
-    return id;
-}
 
 function deleteProject(test, url,id){
 	casper.thenOpen(url, function () {
@@ -191,7 +200,9 @@ function reloadProjectTest(test, url, customHandlers,widgetCanvasObject){
 			this.echo("I've waited for "+url+" project to load.");
 			
 			casper.then(function () {
-				casper.wait(5000, function () {});
+				casper.wait(3000, function () {});
+			});
+			casper.then(function () {
 				test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
 				test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
 				test.assertVisible('div#Connectivity1', "Connectivity1 is correctly open on reload");
@@ -221,7 +232,7 @@ function reloadProjectTest(test, url, customHandlers,widgetCanvasObject){
 				
 				test.assertEquals(meshInCanvas2Exists, false, "Canvas2 has mesh set correctly");
 			});
-		},null,300000);
+		},null,defaultLongWaitingTime);
 	});
 }
 
@@ -230,128 +241,137 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
     casper.thenOpen(url, function () {
         this.echo("Loading an external model that is not persisted at " + url);
 
-        if (expect_error) {
-            casper.then(function () {
-                closeErrorMesage(test)
-            });
-        }
-
         casper.then(function () {
-            doExperimentTableTest(test);
-            if(testConsole){
-                doConsoleTest(test);
+        	 casper.waitWhileVisible('div[id="loading-spinner"]', function () {
+         		this.echo("I've waited for "+url+" project to load.");
+         		test.assertTitle("geppetto", "geppetto title is ok");
+         		test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
+         		test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
+         		test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
+         	},null,defaultLongWaitingTime);
+        });
+        
+        casper.then(function () {
+        	if (expect_error) {
+                casper.then(function () {
+                    closeErrorMesage(test)
+                });
             }
-        });
 
-        casper.then(function () {
-            this.waitForSelector('tr.experimentsTableColumn:nth-child(1)', function () {
-                test.assertExists('tr.experimentsTableColumn:nth-child(1)', "At least one experiment row exists");
-            }, null, 60000);
-        });
-
-        //do checks on the state of the project if it is not persisted
-        if (persisted == false) {
-        	casper.then(function () {
-                // make sure experiment panel is open
-                this.evaluate(function() {
-                    $('a[href=experiments]').click();
-                });
-
-                //roll over the experiments row
-                this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+            casper.then(function () {
+                doExperimentTableTest(test);
+                if(testConsole){
+                    doConsoleTest(test);
+                }
             });
 
             casper.then(function () {
-            	if(casper.exists('#tutorialBtn')){
-        			casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
-        		}
-        		casper.evaluate(function(widgetCanvasObject) {
-        			var canvasObject = null;
-        			if(widgetCanvasObject=="hhcell"){
-        				canvasObject = hhcell;
-        			}else if(widgetCanvasObject=="c302_A_Pharyngeal"){
-        				canvasObject = c302_A_Pharyngeal;
-        			}else if(widgetCanvasObject=="Balanced_240cells_36926conns"){
-        				canvasObject = Balanced_240cells_36926conns;
-        			}
-        			G.addWidget(6);
-        			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([canvasObject])});
-        			G.addWidget(1).setMessage("Hhcell popup");
-        			var customHandler = function(node, path, widget) {};
-        			Popup1.addCustomNodeHandler(customHandler,'click');
-        			$(".nextBtn").click();
-        			$(".nextBtn").click();
-        		},widgetCanvasObject);
-        		
-        		 casper.wait(5000, function () {});
-                this.echo("Checking content of experiment row");
-                // test or wait for control panel stuff to be there
-                if(this.exists('a[href="#experiments"]')){
-                    doExperimentsTableRowTests(test);
-                } else {
-                    this.waitForSelector('a[href="#experiments"]', function(){
+                this.waitForSelector('tr.experimentsTableColumn:nth-child(1)', function () {
+                    test.assertExists('tr.experimentsTableColumn:nth-child(1)', "At least one experiment row exists");
+                }, null, 60000);
+            });
+
+            //do checks on the state of the project if it is not persisted
+            if (persisted == false) {
+            	casper.then(function () {
+                    // make sure experiment panel is open
+                    this.evaluate(function() {
+                        $('a[href=experiments]').click();
+                    });
+
+                    //roll over the experiments row
+                    this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+                });
+
+                casper.then(function () {
+                	if(casper.exists('#tutorialBtn')){
+            			casper.mouseEvent('click', 'button#tutorialBtn', "attempting to open tutorial");
+            		}
+            		casper.evaluate(function(widgetCanvasObject) {
+            			var canvasObject = null;
+            			if(widgetCanvasObject=="hhcell"){
+            				canvasObject = hhcell;
+            			}else if(widgetCanvasObject=="c302_A_Pharyngeal"){
+            				canvasObject = c302_A_Pharyngeal;
+            			}else if(widgetCanvasObject=="Balanced_240cells_36926conns"){
+            				canvasObject = Balanced_240cells_36926conns;
+            			}
+            			G.addWidget(6);
+            			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([canvasObject])});
+            			G.addWidget(1).setMessage("Hhcell popup");
+            			var customHandler = function(node, path, widget) {};
+            			Popup1.addCustomNodeHandler(customHandler,'click');
+            			$(".nextBtn").click();
+            			$(".nextBtn").click();
+            		},widgetCanvasObject);
+                });
+                casper.then(function () {
+                	this.echo("Checking content of experiment row");
+                    // test or wait for control panel stuff to be there
+                    if(this.exists('a[href="#experiments"]')){
                         doExperimentsTableRowTests(test);
-                    }, null, 10000);
-                }
-                doPrePersistenceExperimentsTableButtonsCheck(test);
-            });
-
-            casper.then(function () {
-                if(spotlight_record_variable != ''){
-                    doPrePersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
-                }
-            });
-            casper.then(function () {
-                if(spotlight_set_parameter != '') {
-                    doPrePersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
-                }
-            });
-
-            casper.then(function () {
-        		
-                this.waitForSelector('button.btn.SaveButton', function () {
-                    test.assertVisible('button.btn.SaveButton', "Persist button is present");
+                    } else {
+                        this.waitForSelector('a[href="#experiments"]', function(){
+                            doExperimentsTableRowTests(test);
+                        }, null, 10000);
+                    }
+                  //roll over the experiments row
+                    this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
+                    //doPrePersistenceExperimentsTableButtonsCheck(test);
+                });
+                casper.then(function () {
+                    if(spotlight_record_variable != ''){
+                        doPrePersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
+                    }
+                });
+                casper.then(function () {
+                    if(spotlight_set_parameter != '') {
+                        doPrePersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
+                    }
                 });
 
-                //Good pattern for checking the absence of an attribute
-                test.assertEvalEquals(function () {
-                    return require('../../utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
-                }, null, "The persist button is correctly active.");
+                casper.then(function () {
+                    this.waitForSelector('button.btn.SaveButton', function () {
+                        test.assertVisible('button.btn.SaveButton', "Persist button is present");
+                    });
 
-                //Click persist button. Check things again
-                this.mouseEvent('click', 'button.btn.SaveButton', "attempting to persist");
+                    //Good pattern for checking the absence of an attribute
+                    test.assertEvalEquals(function () {
+                        return require('../../utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
+                    }, null, "The persist button is correctly active.");
 
+                    //Click persist button. Check things again
+                    this.mouseEvent('click', 'button.btn.SaveButton', "attempting to persist");
+
+                });
+
+                //TODO: make this work
+                //this.mouseEvent('click', 'button[data-reactid=".9.4"]', "Running an experiment");
+
+                //TODO: Test indicator light during experiment run
+                //TODO: test experiment buttons again to see if they are in the right configuration after simulation run
+
+                //TODO: Clone an experiment and see if it has the right state and changes the state correctly for the other experiment rows
+
+            }
+
+            casper.then(function () {
+                test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
             });
-
-            //TODO: make this work
-            //this.mouseEvent('click', 'button[data-reactid=".9.4"]', "Running an experiment");
-
-            //TODO: Test indicator light during experiment run
-            //TODO: test experiment buttons again to see if they are in the right configuration after simulation run
-
-            //TODO: Clone an experiment and see if it has the right state and changes the state correctly for the other experiment rows
-
-        }
-
-        casper.then(function () {
-            test.assertExists("button.btn.SaveButton[disabled]", "The persist button is now correctly inactive");
-        });
-        casper.then(function () {
-            this.echo("Waiting for persist star to stop spinning");
-            casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function () {
-                //roll over the experiments row
-                this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
-                doPostPersistenceExperimentsTableButtonCheck(test);
-            }, null, 300000);
-        });
-        casper.then(function () {
-            doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_record_variable);
-        });
-        casper.then(function () {
-            doPostPersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
-            //TODO: set a variable to record and a parameter to watch and make sure
-            //the experiment table row updates correctly.
-            //TODO: logout
+            casper.then(function () {
+                this.echo("Waiting for persist star to stop spinning");
+                casper.waitWhileSelector('button.btn.SaveButton > i.fa-spin', function () {
+                    //roll over the experiments row
+                    this.echo("Persist star to stopped spinning");
+                    //doPostPersistenceExperimentsTableButtonCheck(test);
+                }, null, defaultLongWaitingTime);
+            });
+            casper.then(function () {
+                doPostPersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
+                //TODO: set a variable to record and a parameter to watch and make sure
+                //the experiment table row updates correctly.
+                //TODO: logout
+            });
         });
     });
 }
@@ -493,6 +513,11 @@ function doPrePersistenceExperimentsTableButtonsCheck(test) {
 
 function doPostPersistenceExperimentsTableButtonCheck(test) {
     casper.waitForSelector('button.btn.SaveButton[disabled]', function () {
+    	casper.wait(5000, function () {});
+    	if(this.exists('a[href="#experiments"]')){
+           casper.echo("Experiments button exists");
+        }
+    	casper.mouse.move('tr.experimentsTableColumn:nth-child(1)');
         //Check presence of experiment console buttons AFTER persistence
         casper.waitForSelector('a.activeIcon', function () {
             test.assertNotVisible('a.activeIcon', "active button exists and is correctly not enabled");
@@ -502,19 +527,16 @@ function doPostPersistenceExperimentsTableButtonCheck(test) {
             test.assertNotVisible('a.downloadResultsIcon', "download results button exists and is correctly not enabled");
         }, null, 5000);
 
-        casper.mouse.move('a.deleteIcon');
-        casper.waitUntilVisible('a.deleteIcon', function () {
-            test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
-        }, null, 5000);
-
-        casper.mouse.move('a.downloadModelsIcon');
         casper.waitUntilVisible('a.downloadModelsIcon', function () {
             test.assertVisible('a.downloadModelsIcon', "download models button exists and is correctly enabled");
         }, null, 5000);
-
-        casper.mouse.move('a.cloneIcon');
+        
         casper.waitUntilVisible('a.cloneIcon', function () {
             test.assertVisible('a.cloneIcon', "clone button exists and is correctly enabled");
+        }, null, 5000);
+        
+        casper.waitUntilVisible('a.deleteIcon', function () {
+            test.assertVisible('a.deleteIcon', "delete button exists and is correctly enabled");
         }, null, 5000);
     });
 }
@@ -591,58 +613,4 @@ function doPostPersistenceSpotlightCheckRecordedVariables(test, spotlight_search
 
 function doPostPersistenceSpotlightCheckSetParameters(test, spotlight_search) {
     doSpotlightCheck(test, spotlight_search, true, false);
-}
-
-function doConnectivityWidgetsTest(test) {
-    casper.waitForSelector('a[aria-controls="experiments"]', function () {
-        doExperimentTableTest(test);
-    });
-
-    casper.waitWhileVisible('div#loading-spinner', function() {
-        this.echo("Waited for spinner to finish");
-        this.mouse.move('tr.experimentsTableColumn');
-        casper.click('.activeIcon');
-        this.echo('Activating experiment.');
-    }, null, 80000);
-
-    casper.waitForSelector('button#Connectivity', function () {
-        this.echo("Waited for connectivity button");
-    }, null, 30000);
-
-    casper.then(function() {
-        this.mouse.click('button#Connectivity');
-        casper.waitForSelector('div#Connectivity1', function () {
-            this.echo("Waited for connectivity widget");
-            casper.waitWhileVisible("div#loading-spinner", function() {
-                this.echo("Waited for spinner to finish");
-                casper.mouseEvent('click', 'div#connectivity-config-modal', "closing connectivity modal");
-            }, null, 80000);
-        }, null, 45000);
-    });
-
-    casper.then(function() {
-        this.echo('Opening control panel.');
-        casper.click('button#controlPanelBtn');
-        casper.waitForSelector('button#HippocampalNet_pop_ngf_randomcolor_ctrlPanel_btn', function() {
-            this.echo('Changing ngf population color.');
-            casper.click('button#HippocampalNet_pop_ngf_randomcolor_ctrlPanel_btn');
-            var popColor = casper.evaluate(function() {
-                return $('#HippocampalNet_pop_ngf_color_ctrlPanel_btn').css('color');
-            });
-            this.echo('Closing control panel.')
-            casper.sendKeys('input[name="filter"]', casper.page.event.key.Escape, {keepFocus: true});
-            test.assertEvalEquals(function() {
-                return $("text:contains(ngfcell)").prev().css('fill');
-            }, popColor, 'Legend has updated to show new population color.');
-        });
-    });
-
-    casper.then(function() {
-        this.echo('Closing connectivity widget.');
-        casper.evaluate(function() {
-            Connectivity1.remove();
-        });
-        // allow to persist
-        casper.wait(3000, function () {});
-    });
 }

@@ -143,22 +143,10 @@ define(function (require) {
                 var itemId = $(event.target).attr('id');
                 var registeredItem = this.getClickedItem(itemId);
 
-                //This works if we pass the action as a pointer to a function
-                //if (typeof registeredItem === "function") registeredItem.apply(null, [this.data]);
-
-                //This works if we pass the action as a pointer to a function and we executes the code inside the function but the function itself
-                //var entire = registeredItem.toString();
-                //var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
-                //GEPPETTO.Console.executeImplicitCommand("var node = eval(" + this.data.getInstancePath() + ");");
-                //GEPPETTO.Console.executeImplicitCommand(body);
-
-                //This works if we pass the action as the function name
-                //GEPPETTO.Console.executeImplicitCommand(registeredItem["action"] + "(" + this.data.getInstancePath() + ")", registeredItem["option"]);
-
                 //TODO: We are not using the option parameter (registeredItem["option"])
                 for (var i=0;i<registeredItem["action"].length;i++) {
                 	if(registeredItem["action"][i] != null || undefined){
-                		GEPPETTO.Console.executeImplicitCommand(registeredItem["action"][i]);
+                        GEPPETTO.CommandController.execute(registeredItem["action"][i], true);
                 	}
                 }
             },

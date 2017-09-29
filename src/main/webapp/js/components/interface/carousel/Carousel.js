@@ -1,7 +1,7 @@
 define(function (require) {
 
 	var React = require('react');
-	var Slider = require('react-slick');
+	var Slider = require('react-slick').default;
 	var AbstractComponent = require('../../AComponent');
 
 	return class Carousel extends AbstractComponent {
@@ -10,18 +10,21 @@ define(function (require) {
 			super(props);
 
 			var settings = {
-				infinite: true,
+				infinite: false,
 				speed: 500,
-				slidesToShow: 1,
-				slidesToScroll: 1
+				slidesToShow: 1
 			};
 
 			this.state = {
-				settings: $.extend(settings, this.props.settings),
-				files: this.props.files
+				settings: $.extend(settings, props.settings),
+				files: props.files
 			};
 
 			this.download = this.download.bind(this);
+		}
+
+		componentDidMount() {
+			this.refs.slider.forceUpdate();
 		}
 
 		setData(files) {
@@ -33,14 +36,14 @@ define(function (require) {
 		}
 
 		render() {
+			var that = this;
+			var items = this.state.files.map(function (path, index) {
+				return (<div key={index}><img onClick={() => that.props.onClick(path)} onMouseEnter={() => that.props.onMouseEnter(path)} onMouseLeave={() => that.props.onMouseLeave(path)} src={path} /></div>);
+			});
 
 			if (this.state.files != undefined) {
-				var items = this.state.files.map(function (path) {
-					return (<div><img src={path} /></div>);
-				});
-
 				return (
-					<Slider {...this.state.settings}>
+					<Slider {...this.state.settings} ref='slider'>
 						{items}
 					</Slider>
 				)

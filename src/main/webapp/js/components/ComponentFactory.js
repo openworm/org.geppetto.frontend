@@ -7,7 +7,7 @@ define(function (require) {
 		var ReactDOM = require('react-dom');
 		var spinner = require('./interface/loadingSpinner/LoadingSpinner.js');
 
-		var addWidget = require('./widgets/AWidget.js');
+		var WidgetCapability = require('./widgets/WidgetCapability.js');
 
 		GEPPETTO.ComponentFactory = {
 
@@ -43,7 +43,9 @@ define(function (require) {
 				'CAROUSEL': 'interface/carousel/Carousel',
 				'CANVAS': 'interface/3dCanvas/Canvas',
 				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer',
-				'TREE': 'interface/tree/Tree'
+				'TREE': 'interface/tree/Tree',
+				'CONSOLE': 'interface/console/Console',
+				'LINKBUTTON': 'interface/linkButton/LinkButton'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},
@@ -167,7 +169,7 @@ define(function (require) {
 				// Create component/widget
 				var type = componentToAdd;
 				if (isWidget) {
-					type = addWidget(componentToAdd);
+					type = WidgetCapability.createWidget(componentToAdd);
 				}
 				var component = React.createFactory(type)(properties);
 
@@ -198,7 +200,7 @@ define(function (require) {
 					widgetController.registerWidget(renderedComponent)
 				}
 				else {
-					GEPPETTO.Console.updateTags(componentType, renderedComponent);
+					GEPPETTO.CommandController.updateTags(componentType, renderedComponent);
 					renderedComponent.container = container;
 				}
 				// Register in component map
@@ -216,6 +218,9 @@ define(function (require) {
 			addWidget: function (componentType, properties, callback) {
 
 				if (componentType in this.components) {
+					if(properties==undefined){
+						properties={};
+					}
 					this._createComponent(componentType, properties, document.getElementById('widgetContainer'), callback, true);
 				}
 				else {

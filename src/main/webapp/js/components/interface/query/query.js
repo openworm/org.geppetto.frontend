@@ -122,7 +122,7 @@ define(function (require) {
         },
 
         deleteResults: function(results) {
-        	GEPPETTO.Console.debugLog("delete results");
+            GEPPETTO.CommandController.log("delete results", true);
             for (var i = 0; i < this.results.length; i++) {
                 if (results.id == this.results[i].id) {
                     this.results.splice(i, 1);
@@ -161,7 +161,7 @@ define(function (require) {
                 e.preventDefault();
                 var actionStr = that.props.metadata.actions;
                 actionStr = actionStr.replace(/\$entity\$/gi, path);
-                GEPPETTO.Console.executeCommand(actionStr);
+                GEPPETTO.CommandController.execute(actionStr);
             };
 
             return (
@@ -185,7 +185,7 @@ define(function (require) {
                 e.preventDefault();
                 var actionStr = that.props.metadata.actions;
                 actionStr = actionStr.replace(/\$entity\$/gi, path);
-                GEPPETTO.Console.executeCommand(actionStr);
+                GEPPETTO.CommandController.execute(actionStr);
             };
 
             return action;
@@ -376,7 +376,7 @@ define(function (require) {
 
                             // run action
                             if (actionStr != '' && actionStr != undefined) {
-                                GEPPETTO.Console.executeCommand(actionStr);
+                                GEPPETTO.CommandController.execute(actionStr);
                                 // check custom action to run after configured command
                                 if(that.props.metadata.action != '' && that.props.metadata.action != undefined) {
                                     // straight up eval as we don't want this to show on the geppetto console
@@ -852,7 +852,7 @@ define(function (require) {
                     if (found.length == 1) {
                         var actions = found[0].actions;
                         actions.forEach(function (action) {
-                            GEPPETTO.Console.executeCommand(action)
+                            GEPPETTO.CommandController.execute(action)
                         });
                         $("#query-typeahead").typeahead('val', "");
                     }
@@ -982,6 +982,7 @@ define(function (require) {
                                     id: datasourceConfig.resultsFilters.getId(record),
                                     name: datasourceConfig.resultsFilters.getName(record),
                                     description: datasourceConfig.resultsFilters.getDescription(record),
+                                    type: datasourceConfig.resultsFilters.getType(record),
                                     images: datasourceConfig.resultsFilters.getImageData(record),
                                     controls: ''
                                 }

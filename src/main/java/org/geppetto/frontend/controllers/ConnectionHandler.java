@@ -1428,9 +1428,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * 
 	 * @param requestID
 	 */
-	/**
-	 * @param requestID
-	 */
 	public void checkUserPrivileges(String requestID)
 	{
 		boolean hasPersistence = false;

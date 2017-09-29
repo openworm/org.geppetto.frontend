@@ -90,10 +90,9 @@ define(function (require) {
 		 * @command setMessage(msg)
 		 * @param {String} msg - The message that is displayed inside the widget
 		 */
-		setMessage: function (msg) {
-			this.data = msg;
+		setRawMessage: function (msg) {
 			$("#" + this.id).html(msg);
-			GEPPETTO.Console.debugLog("Set new Message for " + this.id);
+			GEPPETTO.CommandController.log("Set new Message for " + this.id, true);
 
 			if (this.customHandlers.length > 0) {
 				// msg has changed, set hooked attribute on handlers to false
@@ -103,9 +102,21 @@ define(function (require) {
 
 				// trigger routine that hooks up handlers
 				hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
-				GEPPETTO.Console.debugLog("Hooked up custom handlers for " + this.id);
+				GEPPETTO.CommandController.log("Hooked up custom handlers for " + this.id, true);
 			}
 
+			return this;
+		},
+
+		/**
+		 * Sets the message that is displayed inside the widget
+		 *
+		 * @command setMessage(msg)
+		 * @param {String} msg - The message that is displayed inside the widget
+		 */
+		setMessage: function (msg) {
+			this.data = msg;
+			this.setRawMessage(msg);
 			// track change in state of the widget
 			this.dirtyView = true;
 
@@ -154,7 +165,7 @@ define(function (require) {
 
 			this.data = anyInstance.getPath();
 
-			this.setMessage(this.getHTML(anyInstance, "", filter));
+			this.setRawMessage(this.getHTML(anyInstance, "", filter));
 			var changeIcon=function(chevron){
 				if (chevron.hasClass('fa-chevron-circle-down')) {
 					chevron.removeClass("fa-chevron-circle-down").addClass("fa-chevron-circle-up");

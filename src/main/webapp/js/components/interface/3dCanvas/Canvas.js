@@ -14,18 +14,17 @@ define(function (require) {
 
     return class Canvas extends AbstractComponent {
 
-
         constructor(props) {
             super(props);
 
-            this.engine = null
+            this.engine = null;
             // this.container = null
 
             //State
             this.viewState = {
                 custom: {
-                    cameraPosition: {x: undefined, y: undefined, z: undefined},
-                    cameraRotation: {rx: undefined, ry: undefined, rz: undefined, radius: undefined},
+                    cameraPosition: { x: undefined, y: undefined, z: undefined },
+                    cameraRotation: { rx: undefined, ry: undefined, rz: undefined, radius: undefined },
                     colorMap: {},
                     opacityMap: {},
                     geometryTypeMap: {},
@@ -42,6 +41,13 @@ define(function (require) {
          * @returns {Canvas}
          */
         display(instances) {
+            if (this.isWidget()) {
+                this.showOverlay(<div className="spinner-container">
+                    <div className={"fa fa-circle-o-notch fa-spin"}></div>
+                    <p id="loadingmodaltext" className="orange">Loading Volumes...</p>
+                </div>);
+            }
+
             var added = [];
             for (var i = 0; i < instances.length; i++) {
                 if (this.viewState.instances.indexOf(instances[i].getInstancePath()) == -1) {
@@ -53,6 +59,11 @@ define(function (require) {
                 this.engine.updateSceneWithNewInstances(added);
                 this.setDirty(true);
             }
+
+            if (this.isWidget()) {
+                this.hideOverlay();
+            }
+
             return this;
         }
 
@@ -60,15 +71,15 @@ define(function (require) {
          * Remove all the passed instances from this canvas component
          * This method is only able to remove instances that were explicitly added
          * e.g. if acnet2 is added acent2.baskets[3] can't be removed.
-         * @param instances an array of instances
+         * @param instances an array of instance paths (cannot pass instances because they are deleted already)
          * @returns {Canvas}
          */
-        remove(instances) {
+        remove(instancePaths) {
             var removed = false;
-            for (var i = 0; i < instances.length; i++) {
-                if (this.viewState.instances.indexOf(instances[i].getInstancePath()) != -1) {
-                    this.viewState.instances.splice(this.viewState.instances.indexOf(instances[i].getInstancePath()), 1);
-                    this.engine.removeFromScene(instances[i]);
+            for (var i = 0; i < instancePaths.length; i++) {
+                if (this.viewState.instances.indexOf(instancePaths[i]) != -1) {
+                    this.viewState.instances.splice(this.viewState.instances.indexOf(instancePaths[i]), 1);
+                    this.engine.removeFromScene(instancePaths[i]);
                     removed = true;
                 }
             }
@@ -79,6 +90,14 @@ define(function (require) {
             return this;
         }
 
+        /**
+         * Remove an object from the canvas
+         *
+         * @param object
+         */
+        removeObject(object) {
+            this.engine.removeObject(object);
+        }
 
         /**
          * Displays all the instances available in the current model in this canvas
@@ -149,6 +168,69 @@ define(function (require) {
             this.engine.setWireframe(wireframe);
             return this;
         }
+        
+        /**
+         * Sets whether picking is enabled or not
+         * @param pickingEnabled
+         * @return {Canvas}
+         */
+        enablePicking(pickingEnabled){
+        	this.engine.enablePicking(pickingEnabled);
+        	return this;
+        }
+
+        /**
+         * Get whether wireframe mode is being used
+         *
+         * @returns {*}
+         */
+        getWireframe() {
+            return this.engine.getWireframe();
+        }
+
+        /**
+         * Adds a 3D plane to the canvas
+         *
+         * @param x1
+         * @param y1
+         * @param z1
+         * @param x2
+         * @param y2
+         * @param z2
+         * @param x3
+         * @param y3
+         * @param z3
+         * @param x4
+         * @param y4
+         * @param z4
+         * @param textureURL
+         * @returns {Canvas}
+         */
+        add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL) {
+            return this.engine.add3DPlane(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, textureURL);
+        }
+
+        /**
+         * Modifies plane object
+         *
+         * @param object
+         * @param x1
+         * @param y1
+         * @param z1
+         * @param x2
+         * @param y2
+         * @param z2
+         * @param x3
+         * @param y3
+         * @param z3
+         * @param x4
+         * @param y4
+         * @param z4
+         * @returns {Canvas}
+         */
+        modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
+            return this.engine.modify3DPlane(object, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
+        }
 
         /**
          * Show connection lines for instances.
@@ -179,6 +261,16 @@ define(function (require) {
          */
         hideInstance(instancePath) {
             this.engine.hideInstance(instancePath);
+            return this;
+        }
+        
+        /**
+         * Hide all instances
+         *
+         * @return {Canvas}
+         */
+        hideAllInstances() {
+            this.engine.hideAllInstances();
             return this;
         }
 
@@ -344,7 +436,7 @@ define(function (require) {
                     }
                 }
                 if (!recursion) {
-                    this.viewState.custom.geometryTypeMap[instance.getInstancePath()] = {"type": type, "thickness": thickness};
+                    this.viewState.custom.geometryTypeMap[instance.getInstancePath()] = { "type": type, "thickness": thickness };
                     this.setDirty(true);
                 }
             }
@@ -370,7 +462,7 @@ define(function (require) {
          * @param instances
          * @param groupElements
          */
-        splitGroups(instance, groupElements){
+        splitGroups(instance, groupElements) {
             this.engine.splitGroups(instance, groupElements);
             return this;
         }
@@ -498,6 +590,25 @@ define(function (require) {
             return this;
         }
 
+        /**
+         * Flips camera along Y axis
+         *
+         * @returns {Canvas}
+         */
+        flipCameraY() {
+            this.engine.flipCameraY();
+            return this;
+        }
+
+        /**
+         * Flips camera along z axis
+         *
+         * @returns {Canvas}
+         */
+        flipCameraZ() {
+            this.engine.flipCameraZ();
+            return this;
+        }
 
         /**
          * Set container dimensions depending on parent dialog
@@ -517,9 +628,6 @@ define(function (require) {
          * @param view
          */
         setView(view) {
-            // set base properties
-            super.setView(view)
-
             // set data
             if (view.data != undefined) {
                 if (view.dataType == 'instances') {
@@ -572,6 +680,10 @@ define(function (require) {
                     }
                 }
             }
+
+            // set dirty view to false
+            // NOTE: this needs to be at the end after the view has actually been set
+            this.setDirty(false);
         }
 
 
@@ -588,18 +700,10 @@ define(function (require) {
             return baseView;
         }
 
-        /**
-         *
-         * @returns {boolean}
-         */
         shouldComponentUpdate() {
             return false;
         }
 
-
-        /**
-         *
-         */
         componentDidMount() {
             if (!isWebglEnabled) {
                 Detector.addGetWebGLMessage();
@@ -625,14 +729,15 @@ define(function (require) {
             }
         }
 
-        /**
-         *
-         * @returns {XML}
-         */
         render() {
+    	    var cameraControls = undefined;
+    	    if (!this.props.hideCameraControls) {
+    	    	cameraControls = <CameraControls viewer={this.props.id} />;
+    	    }
             return (
+
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <CameraControls viewer={this.props.id}/>
+                    {cameraControls}
                 </div>
             )
         }

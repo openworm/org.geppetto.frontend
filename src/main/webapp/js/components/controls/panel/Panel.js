@@ -1,7 +1,7 @@
 define(function (require) {
 
 	var React = require('react');
-	require("./Panel.less")
+	require("./Panel.less");
 	var defaultChildStyle = { 'alignSelf': 'auto', 'flexGrow': 0, 'order': 0 };
 
 	var AbstractComponent = require('../../AComponent');

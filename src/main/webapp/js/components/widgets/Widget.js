@@ -475,13 +475,12 @@ define(function (require) {
                                     that.executedAction = historyItems.length - 1;
                                 }
                                 item = historyItems[that.executedAction].action[0];
-                                GEPPETTO.Console.executeImplicitCommand(item);
+                                GEPPETTO.CommandController.execute(item, true);
                                 $("#" + that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
                                 event.stopPropagation();
                             });
 
-                        var dialogParent = this.$el.parent();
-                        button.insertBefore(dialogParent.find("span.ui-dialog-title"));
+                        button.insertBefore(this.dialogParent.find("span.ui-dialog-title"));
                         $(button).addClass("widget-title-bar-button");
                     }
                 } else {
@@ -505,8 +504,7 @@ define(function (require) {
             },
 
             addButtonToTitleBar: function (button) {
-                var dialogParent = this.$el.parent();
-                dialogParent.find("div.ui-dialog-titlebar").prepend(button);
+                this.dialogParent.find("div.ui-dialog-titlebar").prepend(button);
                 $(button).addClass("widget-title-bar-button");
             },
 
@@ -589,6 +587,7 @@ define(function (require) {
 
                 var that = this;
 
+                
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -611,10 +610,10 @@ define(function (require) {
                         "restore": true,
                         "minimizeLocation": "right",
                         "icons": {
-                            "maximize": "fa fa-window-maximize",
+                            "maximize": "fa fa-expand",
                             "minimize": "fa fa-window-minimize",
                             "collapse": "fa  fa-chevron-circle-up",
-                            "restore": "fa fa-window-restore",
+                            "restore": "fa fa-compress",
                         },
                         "load": function (evt, dlg) {
                             var icons = $("#" + that.id).parent().find(".ui-icon");
@@ -635,6 +634,9 @@ define(function (require) {
                         },
                         "minimize": function (evt, dlg) {
                             that.$el.dialog({ title: that.name });
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
                         },
                         "maximize": function (evt, dlg) {
                             that.setTrasparentBackground(false);
@@ -642,6 +644,9 @@ define(function (require) {
                             var divheight = $(window).height();
                             var divwidth = $(window).width();
                             that.$el.dialog({ height: divheight, width: divwidth });
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                             that.maximize = true;
                         },
                         "restore": function (evt, dlg) {
@@ -655,24 +660,27 @@ define(function (require) {
                             that.collapsed = false;
                         },
                         "collapse": function (evt, dlg) {
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                             that.collapsed = true;
                         }
                     });
 
                 this.$el = $("#" + this.id);
-                var dialogParent = this.$el.parent();
+                this.dialogParent = this.$el.parent();
 
 
                 //add history
                 this.showHistoryIcon(true);
 
                 //remove the jQuery UI icon
-                dialogParent.find("button.ui-dialog-titlebar-close").html("");
-                dialogParent.find("button").append("<i class='fa fa-close'></i>");
+                this.dialogParent.find("button.ui-dialog-titlebar-close").html("");
+                this.dialogParent.find("button").append("<i class='fa fa-close'></i>");
 
 
                 //Take focus away from close button
-                dialogParent.find("button.ui-dialog-titlebar-close").blur();
+                this.dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
                 //add help button
                 this.addHelpButton();

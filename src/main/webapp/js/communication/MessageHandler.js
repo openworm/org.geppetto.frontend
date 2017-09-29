@@ -202,7 +202,7 @@ define(function(require) {
 
         messageHandler[messageTypes.WATCHED_VARIABLES_SET] = function(payload) {
             GEPPETTO.trigger(GEPPETTO.Events.Experiment_updated);
-            GEPPETTO.Console.log("The list of variables to watch was successfully updated.");
+            GEPPETTO.CommandController.log("The list of variables to watch was successfully updated.");
         };
 
         //handles the case where service doesn't support feature and shows message
@@ -214,27 +214,27 @@ define(function(require) {
         //received model tree from server
         messageHandler[messageTypes.UPDATE_MODEL_TREE] = function(payload) {
             GEPPETTO.trigger(GEPPETTO.Events.Experiment_updated);
-            GEPPETTO.Console.log("The model parameters were successfully updated.");
+            GEPPETTO.CommandController.log("The model parameters were successfully updated.");
         };
 
         //received supported outputs from server
         messageHandler[messageTypes.GET_SUPPORTED_OUTPUTS] = function(payload) {
             var supportedOutputs = JSON.parse(payload.get_supported_outputs);
-            GEPPETTO.Console.log(supportedOutputs);
+            GEPPETTO.CommandController.log(supportedOutputs);
         };
 
         messageHandler[messageTypes.PROJECT_PROPS_SAVED] = function(payload) {
-            GEPPETTO.Console.log("Project saved succesfully");
+            GEPPETTO.CommandController.log("Project saved succesfully");
             GEPPETTO.trigger(GEPPETTO.Events.Project_properties_saved);
         };
         
         messageHandler[messageTypes.SET_PARAMETERS] = function(payload) {
-            GEPPETTO.Console.log("Set parameters succesfully");
+            GEPPETTO.CommandController.log("Set parameters succesfully");
             GEPPETTO.trigger(GEPPETTO.Events.Parameters_set);
         };
 
         messageHandler[messageTypes.EXPERIMENT_PROPS_SAVED] = function(payload) {
-            GEPPETTO.Console.log("Experiment saved succesfully");
+            GEPPETTO.CommandController.log("Experiment saved succesfully");
             var data = JSON.parse(payload.update);
             var experiment = window.Project.getExperimentById(data.id);
 
@@ -248,32 +248,32 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.DROPBOX_LINKED] = function(payload) {
-            GEPPETTO.Console.log("Dropbox linked successfully");
+            GEPPETTO.CommandController.log("Dropbox linked successfully");
         };
 
         messageHandler[messageTypes.DROPBOX_UNLINKED] = function(payload) {
-            GEPPETTO.Console.log("Dropbox unlinked succesfully");
+            GEPPETTO.CommandController.log("Dropbox unlinked succesfully");
         };
 
         messageHandler[messageTypes.DOWNLOAD_RESULTS] = function(payload) {
-            GEPPETTO.Console.log("Results downloaded succesfully");
+            GEPPETTO.CommandController.log("Results downloaded succesfully");
         };
 
         messageHandler[messageTypes.DOWNLOAD_MODEL] = function(payload) {
-            GEPPETTO.Console.log("Model downloaded succesfully");
+            GEPPETTO.CommandController.log("Model downloaded succesfully");
         };
         
         messageHandler[messageTypes.DOWNLOAD_PROJECT] = function (payload) {
         	GEPPETTO.trigger(GEPPETTO.Events.Project_downloaded);
-            GEPPETTO.Console.log("Project downloaded succesfully");
+            GEPPETTO.CommandController.log("Project downloaded succesfully");
         };
 
         messageHandler[messageTypes.RESULTS_UPLOADED] = function(payload) {
-            GEPPETTO.Console.log("Results uploaded succesfully");
+            GEPPETTO.CommandController.log("Results uploaded succesfully");
         };
 
         messageHandler[messageTypes.MODEL_UPLOADED] = function(payload) {
-            GEPPETTO.Console.log("Model uploaded succesfully");
+            GEPPETTO.CommandController.log("Model uploaded succesfully");
         };
 
         GEPPETTO.SimulationHandler = {
@@ -303,7 +303,7 @@ define(function(require) {
                 window.Project.readOnly = false;
                 
                 GEPPETTO.trigger(GEPPETTO.Events.Project_persisted);
-                GEPPETTO.Console.log("The project has been persisted  [id=" + projectID + "].");
+                GEPPETTO.CommandController.log("The project has been persisted  [id=" + projectID + "].");
             },
 
             /**
@@ -325,7 +325,7 @@ define(function(require) {
 
 
                 GEPPETTO.trigger(GEPPETTO.Events.Project_loaded);
-                GEPPETTO.Console.log(GEPPETTO.Resources.PROJECT_LOADED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.PROJECT_LOADED);
             },
 
             /**
@@ -355,7 +355,7 @@ define(function(require) {
                 console.timeEnd(GEPPETTO.Resources.CREATING_INSTANCES);
 
                 GEPPETTO.trigger(GEPPETTO.Events.Model_loaded);
-                GEPPETTO.Console.log(GEPPETTO.Resources.MODEL_LOADED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.MODEL_LOADED);
 
                 // populate control panel with instances
                 GEPPETTO.trigger(GEPPETTO.Events.Instances_created, window.Instances);
@@ -382,7 +382,7 @@ define(function(require) {
                     GEPPETTO.trigger('spin_logo');
 
                 } else {
-                    GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ALREADY_EXISTS);
+                    GEPPETTO.CommandController.log(GEPPETTO.Resources.VARIABLE_ALREADY_EXISTS);
                     // the variable already exists, run the callback
                     callback();
                 }
@@ -411,7 +411,7 @@ define(function(require) {
 
                 console.timeEnd(GEPPETTO.Resources.ADDING_VARIABLE);
 
-                GEPPETTO.Console.log(GEPPETTO.Resources.VARIABLE_ADDED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.VARIABLE_ADDED);
             },
 
             /**
@@ -456,7 +456,7 @@ define(function(require) {
                 GEPPETTO.trigger(GEPPETTO.Events.Instances_created, newInstances);
 
                 console.timeEnd(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
-                GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.IMPORT_TYPE_RESOLVED);
             },
 
             /**
@@ -487,7 +487,7 @@ define(function(require) {
                 // STEP 1: merge model - expect a fully formed Geppetto model to be merged into current one
                 var diffReport = GEPPETTO.ModelFactory.mergeValue(rawModel, true);
 
-                GEPPETTO.Console.log(GEPPETTO.Resources.IMPORT_VALUE_RESOLVED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.IMPORT_VALUE_RESOLVED);
             },
 
             /**
@@ -608,7 +608,7 @@ define(function(require) {
                     throw ("Could not find the experiment with id " + experimentId);
                 }
 
-                GEPPETTO.Console.createTags("Project.getActiveExperiment()", GEPPETTO.Utility.extractMethodsFromObject(experiment, true));
+                GEPPETTO.CommandController.createTags("Project.getActiveExperiment()", GEPPETTO.Utility.extractMethodsFromObject(experiment, true));
 
                 window.Project.setActiveExperiment(experiment);
                 GEPPETTO.ExperimentsController.updateExperiment(experiment, message);
@@ -630,7 +630,7 @@ define(function(require) {
 
                 GEPPETTO.ExperimentsController.closeCurrentExperiment();
                 window.Project.setActiveExperiment(newExperiment);
-                GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.EXPERIMENT_CREATED);
                 GEPPETTO.trigger(GEPPETTO.Events.Experiment_created, newExperiment);
 
                 return newExperiment;
@@ -651,7 +651,7 @@ define(function(require) {
                     GEPPETTO.trigger(GEPPETTO.Events.Experiment_created, newExperiment);
                 }
 
-                GEPPETTO.Console.log(GEPPETTO.Resources.EXPERIMENT_BATCH_CREATED);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.EXPERIMENT_BATCH_CREATED);
             },
 
             /**

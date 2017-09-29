@@ -430,7 +430,7 @@ define(function (require) {
                             type.parent = parent;
 
                             types.push(type);
-                            GEPPETTO.Console.createTags(type.getPath(), GEPPETTO.Utility.extractMethodsFromObject(type, true));
+                            GEPPETTO.CommandController.createTags(type.getPath(), GEPPETTO.Utility.extractMethodsFromObject(type, true));
                         }
                     }
                 }
@@ -851,31 +851,6 @@ define(function (require) {
                     }            
                 return diffReport;
             },
-
-            createValueInstanceFronDiffReport : function(diffReport){
-            	 // get initial instance count (used to figure out if we added instances at the end)
-                var instanceCount = this.getInstanceCount(window.Instances);
-                var newInstancePaths = [];
-
-                // shortcut function to get potential instance paths given a set types
-                // NOTE: defined as a nested function to avoid polluting the visible API of ModelFactory
-
-                // STEP 1: check new variables to see if any new instances are needed
-            
-                var variableId = diffReport.variables[0].getId();    
-                var variable = eval(variableId);
-                var varTypes = variable.getTypes();
-                
-                // STEP 4: If instances were added, re-populate shortcuts
-                    GEPPETTO.ModelFactory.populateChildrenShortcuts(variableId);
-               
-                for (var k = 0; k < window.Instances.length; k++) {
-                    GEPPETTO.ModelFactory.populateConnections(window.Instances[k]);
-                }
-
-                return newInstances;
-            },
-
              
             /**
              * Updates capabilities of variables and their instances if any
@@ -941,7 +916,7 @@ define(function (require) {
 
                         // getChildren of instance and recurse by the power of greyskull!
                         updateInstancesCapabilities(instances[j].getChildren());
-                        GEPPETTO.Console.createTags(instances[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(instances[j], true));
+                        GEPPETTO.CommandController.createTags(instances[j].getPath(), GEPPETTO.Utility.extractMethodsFromObject(instances[j], true));
                     }
                 };
 
@@ -967,7 +942,7 @@ define(function (require) {
                     // update instances capabilities
                     updateInstancesCapabilities(varInstances);
                     if(variables[i]!=null || undefined){
-                    	GEPPETTO.Console.createTags(variables[i].getPath(), GEPPETTO.Utility.extractMethodsFromObject(variables[i], true));
+                    	GEPPETTO.CommandController.createTags(variables[i].getPath(), GEPPETTO.Utility.extractMethodsFromObject(variables[i], true));
                     }
                 }
             },
@@ -1315,7 +1290,7 @@ define(function (require) {
                             newlyCreatedInstances.push(explodedInstance);
                             
                             if(explodedInstance != null || undefined){
-                                GEPPETTO.Console.createTags(explodedInstance.getInstancePath(), GEPPETTO.Utility.extractMethodsFromObject(explodedInstance, true));
+                                GEPPETTO.CommandController.createTags(explodedInstance.getInstancePath(), GEPPETTO.Utility.extractMethodsFromObject(explodedInstance, true));
                             }
                         }
 
@@ -1389,7 +1364,7 @@ define(function (require) {
                         }
                         
                         if(newlyCreatedInstance != null || undefined){
-                        	GEPPETTO.Console.createTags(newlyCreatedInstance.getInstancePath(), GEPPETTO.Utility.extractMethodsFromObject(newlyCreatedInstance, true));
+                        	GEPPETTO.CommandController.createTags(newlyCreatedInstance.getInstancePath(), GEPPETTO.Utility.extractMethodsFromObject(newlyCreatedInstance, true));
                         }
                     }
                 }
@@ -1545,7 +1520,7 @@ define(function (require) {
                     // apply capability
                     parent.extendApi(capability);
                     
-                	GEPPETTO.Console.createTags(parent.getPath(), GEPPETTO.Utility.extractMethodsFromObject(parent, true));
+                	GEPPETTO.CommandController.createTags(parent.getPath(), GEPPETTO.Utility.extractMethodsFromObject(parent, true));
 
                     this.propagateCapabilityToParents(capability, parent);
                 }

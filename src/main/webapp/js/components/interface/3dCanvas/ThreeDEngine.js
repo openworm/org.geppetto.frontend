@@ -69,7 +69,7 @@ define(['jquery'], function () {
         this.setupControls();
         this.setupListeners();
         this.animate();
-    };
+    }
 
 
     ThreeDEngine.prototype = {
@@ -208,7 +208,7 @@ define(['jquery'], function () {
                                     if (geometryIdentifier == undefined) {
                                         geometryIdentifier = "";
                                     }
-                                    GEPPETTO.Console.executeCommand(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
+                                    GEPPETTO.CommandController.execute(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
                                 }
                             }
                         } else if (GEPPETTO.isKeyPressed("ctrl")) {
@@ -535,6 +535,32 @@ define(['jquery'], function () {
                 this.scene.updateMatrixWorld(true);
                 this.resetCamera();
             }
+        },
+
+        /**
+         * Sets whether to use wireframe for the materials of the meshes
+         */
+        setWireframe: function (wireframe) {
+            this.wireframe = wireframe;
+            var that = this;
+            this.scene.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    if(!(child.material.nowireframe==true)){
+                        child.material.wireframe = that.wireframe;
+                    }
+                }
+            });
+        },
+        
+        /**
+         * Sets whether picking is enabled or not
+         */
+        enablePicking: function(pickingEnabled){
+        	this.pickingEnabled=pickingEnabled;
+        },
+
+        getWireframe: function(){
+            return this.wireframe;
         },
 
         /**
@@ -868,13 +894,14 @@ define(['jquery'], function () {
             var loader = new THREE.ColladaLoader();
             loader.options.convertUpAxis = true;
             var scene = null;
+            var that = this;
             loader.parse(node.collada, function (collada) {
                 scene = collada.scene;
                 scene.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
                         child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                         child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-                        child.material.wireframe = this.wireframe;
+                        child.material.wireframe = that.wireframe;
                         child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                         child.geometry.computeVertexNormals();
                     }
@@ -882,7 +909,7 @@ define(['jquery'], function () {
                         child.material.skinning = true;
                         child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                         child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
-                        child.material.wireframe = this.wireframe;
+                        child.material.wireframe = that.wireframe;
                         child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                         child.geometry.computeVertexNormals();
                     }
@@ -903,11 +930,11 @@ define(['jquery'], function () {
             };
             var loader = new THREE.OBJLoader(manager);
             var scene = loader.parse(node.obj);
-
+            var that = this;
             scene.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
-                    this.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.DEFAULT);
-                    child.material.wireframe = this.wireframe;
+                    that.setThreeColor(child.material.color, GEPPETTO.Resources.COLORS.DEFAULT);
+                    child.material.wireframe = that.wireframe;
                     child.material.defaultColor = GEPPETTO.Resources.COLORS.DEFAULT;
                     child.material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
                     child.material.opacity = GEPPETTO.Resources.OPACITY.DEFAULT;
@@ -1132,6 +1159,12 @@ define(['jquery'], function () {
             return object;
         },
 
+        /**
+         * Remove an object from the scene
+         */
+        removeObject: function (object) {
+            this.scene.remove(object);
+        },
 
         /**
          *
@@ -1189,6 +1222,7 @@ define(['jquery'], function () {
             this.setThreeColor(material.color, color);
             material.defaultColor = color;
             material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
+            material.nowireframe = true;
             return material;
         },
 
@@ -1281,8 +1315,8 @@ define(['jquery'], function () {
          *
          * @param entity
          */
-        removeFromScene: function (entity) {
-            var path = entity.getPath();
+        removeFromScene: function (entityPath) {
+            var path = entityPath;
             var mergedMesh = this.meshes[path];
             if (mergedMesh) {
                 this.scene.remove(mergedMesh);
@@ -1721,6 +1755,18 @@ define(['jquery'], function () {
         },
 
         /**
+         * Hide all instances
+         *
+         */
+        hideAllInstances: function () {
+        	for (var instancePath in this.meshes) {
+        	  if (this.meshes.hasOwnProperty(instancePath)) {
+        		  this.hideInstance(instancePath);
+        	  }
+        	}
+        },
+        
+        /**
          * Hide instance
          *
          * @param {String}
@@ -1974,12 +2020,12 @@ define(['jquery'], function () {
                 return;
             }
             this.controls.reset();
-
+            var that = this;
             var zoomParameters = {};
             var mesh = this.meshes[instance.getInstancePath()];
             mesh.traverse(function (object) {
                 if (object.hasOwnProperty("geometry")) {
-                    this.addMeshToZoomParameters(object, zoomParameters);
+                    that.addMeshToZoomParameters(object, zoomParameters);
                 }
             });
 
@@ -2188,44 +2234,33 @@ define(['jquery'], function () {
                     GEPPETTO.Resources.OUTPUT :
                     GEPPETTO.Resources.INPUT;
 
-                var otherEndPath = connection.getA().getPath() == instance.getInstancePath() ?
-                    connection.getB().getPath() :
-                    connection.getA().getPath();
+                var thisEnd = connection.getA().getPath() == instance.getInstancePath() ? connection.getA() : connection.getB();
+                var otherEnd = connection.getA().getPath() == instance.getInstancePath() ? connection.getB() : connection.getA();
+                var otherEndPath = otherEnd.getPath();
 
                 var otherEndMesh = this.meshes[otherEndPath];
 
                 var destination;
                 var origin;
 
-                if (connection.getA().getPoint() == undefined) {
+                if (thisEnd.getPoint() == undefined) {
                     //same as before
                     origin = defaultOrigin;
                 }
                 else {
                     //the specified coordinate
-                    var p = connection.getA().getPoint();
-                    if (type == GEPPETTO.Resources.OUTPUT) {
-                        origin = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
-                    }
-                    else if (type == GEPPETTO.Resources.INPUT) {
-                        origin = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
-                    }
+                    var p = thisEnd.getPoint();
+                    origin = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
                 }
 
-                if (connection.getB().getPoint() == undefined) {
+                if (otherEnd.getPoint() == undefined) {
                     //same as before
                     destination = otherEndMesh.position.clone();
-                    ;
                 }
                 else {
                     //the specified coordinate
-                    var p = connection.getB().getPoint();
-                    if (type == GEPPETTO.Resources.OUTPUT) {
-                        destination = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
-                    }
-                    else if (type == GEPPETTO.Resources.INPUT) {
-                        destination = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
-                    }
+                    var p = otherEnd.getPoint();
+                    destination = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
                 }
 
                 var geometry = new THREE.Geometry();

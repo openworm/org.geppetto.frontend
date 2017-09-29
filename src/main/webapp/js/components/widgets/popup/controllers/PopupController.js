@@ -42,7 +42,7 @@ define(function (require) {
             p.setSize(394,490);
             //create help command for plot
             p.help = function () {
-                return GEPPETTO.Console.getObjectCommands(id);
+                return GEPPETTO.CommandController.getObjectCommands(id);
             };
 
             //store in local stack
@@ -52,10 +52,10 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //add commands to console autocomplete and help option
-            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/components/widgets/popup/Popup.js"));
+            GEPPETTO.CommandController.updateHelpCommand(p, id, this.getFileComments("geppetto/js/components/widgets/popup/Popup.js"));
 
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(p.getId(), p);
+            GEPPETTO.CommandController.updateTags(p.getId(), p);
 
             return p;
         },

@@ -148,11 +148,11 @@ module.exports = {
                 loader: 'ignore-loader'
             },
             {
-                test: /\.(py|jpeg|svg|gif|css|jpg|md|hbs|dcm|gz|xmi|dzi|sh|obj|yml)$/,
+                test: /\.(py|jpeg|svg|gif|css|jpg|md|hbs|dcm|gz|xmi|dzi|sh|obj|yml|nii)$/,
                 loader: 'ignore-loader'
             },
             {
-                test: /\.(png)$/,
+                test: /\.(png|eot|ttf|woff|woff2|svg)(\?[a-z0-9=.]+)?$/,
                 loader: 'url-loader?limit=100000'
             },
             {
@@ -162,10 +162,6 @@ module.exports = {
             {
                 test: /\.less$/,
                 loader: 'style!css!less?{"modifyVars":{"url":"\'../../../extensions/' + availableTheme + '\'"}}'
-            },
-            {
-                test: /\.(eot|svg|ttf|woff|woff2)$/,
-                loader: 'file?name=/fonts/[name].[ext]'
             },
             {
                 test: /\.html$/,

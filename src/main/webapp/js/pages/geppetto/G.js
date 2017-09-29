@@ -69,67 +69,8 @@ define(function (require) {
              * @command G.clear()
              */
             clear: function () {
-                GEPPETTO.Console.getConsole().clear();
+                GEPPETTO.CommandController.clear();
                 return GEPPETTO.Resources.CLEAR_HISTORY;
-            },
-
-            /**
-             * Copies console history to OS clipboard
-             *
-             * @command G.copyHistoryToClipboard()
-             */
-            copyHistoryToClipboard: function () {
-
-                var commandsString = "";
-                var commands = GEPPETTO.Console.consoleHistory();
-
-                if (!commands || !commands.length) {
-                    return GEPPETTO.Resources.EMPTY_CONSOLE_HISTORY;
-                }
-
-                for (var i = 0; i < commands.length; i++) {
-                    var n = commands[i];
-                    if (n.command) {
-
-                        var command = n.command.trim();
-                        if (command.indexOf(";") == -1) {
-                            command = command + ";";
-                        }
-
-                        commandsString += command;
-                        if (i != commands.length - 1) {
-                            commandsString += '\n';
-                        }
-                    }
-                }
-
-                if (commandsString) {
-                    var message = GEPPETTO.Resources.COPY_TO_CLIPBOARD_WINDOWS;
-
-                    //different command for copying in macs means different message
-                    if (navigator.userAgent.match(/(Mac|iPhone|iPod|iPad)/i)) {
-                        message = GEPPETTO.Resources.COPY_TO_CLIPBOARD_MAC;
-                    }
-
-                    React.renderComponent(ClipboardModal({
-                        show: true,
-                        keyboard: false,
-                        title: message,
-                    }), document.getElementById('modal-region'));
-
-                    $('#javascriptEditor').on('shown.bs.modal', function () {
-                        if ($("#javascriptEditor").hasClass("in")) {
-                            GEPPETTO.JSEditor.loadEditor();
-                            GEPPETTO.JSEditor.loadCode(commandsString);
-                        }
-                    });
-
-                    return GEPPETTO.Resources.COPY_CONSOLE_HISTORY;
-                }
-                else {
-                    return '';
-                }
-
             },
 
             /**
@@ -140,9 +81,9 @@ define(function (require) {
              */
             debug: function (mode) {
                 this.debugMode = mode;
-                if (mode != GEPPETTO.Console.getConsole().showImplicitCommands) {
-                    GEPPETTO.Console.toggleImplicitCommands();
-                }
+
+                GEPPETTO.CommandController.toggleImplicit();
+
                 return mode ? GEPPETTO.Resources.DEBUG_ON : GEPPETTO.Resources.DEBUG_OFF;
             },
 
@@ -230,28 +171,6 @@ define(function (require) {
 
                 return GEPPETTO.Resources.RUNNING_SCRIPT;
             },
-
-            /**
-             * Show or hide console using command
-             *
-             * @command G.showConsole(mode)
-             * @param {boolean} mode - "true" to show, "false" to hide.
-             */
-            showConsole: function (mode) {
-                var returnMessage;
-
-                if (mode) {
-                    returnMessage = GEPPETTO.Resources.SHOW_CONSOLE;
-                }
-                else {
-                    returnMessage = GEPPETTO.Resources.HIDE_CONSOLE;
-                }
-
-                GEPPETTO.Console.showConsole(mode);
-
-                return returnMessage;
-            },
-
 
             /**
              * Show or hide help window using command
@@ -367,7 +286,6 @@ define(function (require) {
             getSelectionOptions: function () {
                 return this.selectionOptions;
             },
-
 
             /**
              * Sets the timer for updates during play/replay.

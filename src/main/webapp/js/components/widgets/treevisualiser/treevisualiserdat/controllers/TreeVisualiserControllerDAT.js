@@ -40,7 +40,7 @@ define(function (require) {
             });
             // create help command for plot
             tvdat.help = function () {
-                return GEPPETTO.Utility.getObjectCommands(id);
+                return GEPPETTO.CommandController.getObjectCommands(id);
             };
             // store in local stack
             this.widgets.push(tvdat);
@@ -48,9 +48,9 @@ define(function (require) {
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             // updates helpc command output
-            GEPPETTO.Console.updateHelpCommand(tvdat, id, this.getFileComments("geppetto/js/components/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js"));
+            GEPPETTO.CommandController.updateHelpCommand(tvdat, id, this.getFileComments("geppetto/js/components/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js"));
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
+            GEPPETTO.CommandController.updateTags(tvdat.getId(), tvdat);
 
             return tvdat;
         },
@@ -74,7 +74,7 @@ define(function (require) {
                     if (_.find(treeVisualiserDAT.registeredEvents, function (el) {
                             return el.id === event;
                         })) {
-                        var selected = G.getSelection();
+                        var selected = GEPPETTO.SceneController.getSelection();
                         treeVisualiserDAT.reset();
                         //update treevisualiser with new data set
                         treeVisualiserDAT.setData(selected[0]);

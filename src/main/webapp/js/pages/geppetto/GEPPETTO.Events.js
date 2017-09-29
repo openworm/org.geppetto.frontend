@@ -57,6 +57,11 @@ define(function (require) {
             Experiment_properties_saved : "experiment_properties_saved",
             Project_properties_saved : "project_properties_saved",
             Parameters_set : "parameters_set",
+            Command_log : "command:log",
+            Command_log_debug : "command:log_debug",
+            Command_log_run : "command:log_run",
+            Command_clear : "command:clear",
+            Command_toggle_implicit : "command:toggle_implicit",
             Send_Python_Message: "send_python_message",
             Receive_Python_Message: "receive_python_message",
 
@@ -96,7 +101,7 @@ define(function (require) {
                         Project.getActiveExperiment().play({step: 1});
                     }
                     else {
-                        GEPPETTO.Console.log("Experiment " + name + " with " + id + " is over ");
+                        GEPPETTO.CommandController.log("Experiment " + name + " with " + id + " is over ");
                     }
                 });
 

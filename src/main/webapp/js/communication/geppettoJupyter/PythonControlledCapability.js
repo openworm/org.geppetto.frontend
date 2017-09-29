@@ -22,6 +22,7 @@ define(function (require) {
                     });
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
                     this.handleChange = this.handleChange.bind(this);
+                    this.handleUpdateInput = this.handleUpdateInput.bind(this);
                 }
 
                 componentWillReceiveProps(nextProps) {
@@ -37,13 +38,31 @@ define(function (require) {
                 }
 
                 handleChange(event, index, value) {
+                    // For textfields value is retrived from the event. For dropdown value is retrieved from the value
                     this.state.value = (event.target.value == undefined) ? value : event.target.value;
+
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
+                        // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
                         this.syncValueWithPython(this.state.value, this.props.requirement);
                     }
                     if (this.props.onChange) {
                         this.props.onChange(event, index, value);
+                    }
+                    this.forceUpdate();
+                }
+
+                handleUpdateInput(value) {
+                    // For textfields value is retrived from the event. For dropdown value is retrieved from the value
+                    this.state.value = value;
+
+                    //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
+                    if (this.syncValueWithPython) {
+                        // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
+                        this.syncValueWithPython(this.state.value, this.props.requirement);
+                    }
+                    if (this.props.onChange) {
+                        this.props.onChange(value);
                     }
                     this.forceUpdate();
                 }
@@ -66,15 +85,11 @@ define(function (require) {
                     if (this.props.model != undefined) {
                         this.connectToPython(this.props.componentType, this.props.model);
                     }
-                    if (super.componentDidMount) {
-                        super.componentDidMount();
-                    }
                 }
-
 
                 render() {
                     return (
-                        <WrappedComponent {...this.props} componentType={WrappedComponent.name} value={this.state.value} onChange={this.handleChange} />
+                        <WrappedComponent {...this.props} componentType={WrappedComponent.name} value={this.state.value} onChange={this.handleChange}  onUpdateInput={this.handleUpdateInput}/>
                     );
                 }
 

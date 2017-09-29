@@ -210,6 +210,8 @@ define(function (require) {
             $("#" + this.props.id + "_component #commandInputArea").focus(function () {
                 $('.ui-menu').remove();
             });
+            
+            $("#consoleButton").show();
 
             return console;
         }

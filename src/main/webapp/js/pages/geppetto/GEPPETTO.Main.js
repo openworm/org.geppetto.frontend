@@ -166,6 +166,8 @@ define(function (require) {
         };
 
         $(document).ready(function () {
+        	
+        	$("#loadingText").hide();
             // add console to placeholder
             // NOTE: eventually this gets refactored and only extensions that want the console add it
             GEPPETTO.ComponentFactory.addComponent('CONSOLE', {}, document.getElementById("console"));

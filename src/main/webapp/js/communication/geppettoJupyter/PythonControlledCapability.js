@@ -55,6 +55,7 @@ define(function (require) {
                 handleUpdateInput(value) {
                     // For textfields value is retrived from the event. For dropdown value is retrieved from the value
                     this.state.value = value;
+                    this.state.searchText = value;
 
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {

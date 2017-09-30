@@ -55,8 +55,8 @@ THREE.TrackballControls = function ( object, domElement, viewerId ) {
 
 	_eye = new THREE.Vector3(),
 
-	_movePrev = new THREE.Vector2(),
-	_moveCurr = new THREE.Vector2(),
+	_movePrev = new THREE.Vector3(),
+	_moveCurr = new THREE.Vector3(),
 
 	_lastAxis = new THREE.Vector3(),
 	_lastAngle = 0,
@@ -212,7 +212,14 @@ THREE.TrackballControls = function ( object, domElement, viewerId ) {
 
 		return function rotateCamera() {
 
-			moveDirection.set( _moveCurr.x - _movePrev.x, _moveCurr.y - _movePrev.y, 0 );
+			if(_moveCurr.z!=undefined && _moveCurr.z!=0){
+				moveDirection.set( 0, 0, _moveCurr.z - _movePrev.z);
+			}
+			else{
+				moveDirection.set( _moveCurr.x - _movePrev.x, _moveCurr.y - _movePrev.y, 0 );
+			}
+			
+			
 			angle = moveDirection.length();
 
 			if ( angle ) {
@@ -228,9 +235,21 @@ THREE.TrackballControls = function ( object, domElement, viewerId ) {
 
 				moveDirection.copy( objectUpDirection.add( objectSidewaysDirection ) );
 
-				axis.crossVectors( moveDirection, _eye ).normalize();
-
+				if(_moveCurr.z!=undefined && _moveCurr.z!=0){
+					if(_moveCurr.z - _movePrev.z>=0){
+						axis= new THREE.Vector3(0,0,1);	
+					}
+					else{
+						axis= new THREE.Vector3(0,0,-1);
+					}
+					
+				}
+				else{
+					axis.crossVectors( moveDirection, _eye ).normalize();	
+				}
+			
 				angle *= _this.rotateSpeed;
+				
 				quaternion.setFromAxisAngle( axis, angle );
 
 				_eye.applyQuaternion( quaternion );
@@ -675,11 +694,13 @@ THREE.TrackballControls = function ( object, domElement, viewerId ) {
 	
 	this.incrementRotationEnd = function(valX, valY, valZ)
 	{
-		if (_movePrev.x === 0 && _movePrev.y === 0)
-		{
-			_movePrev = new THREE.Vector2(0.1,0.1);
+		if(valZ==0){
+			if (_movePrev.x === 0 && _movePrev.y === 0)
+			{
+				_movePrev = new THREE.Vector2(0.1,0.1);
+			}
 		}
-		_moveCurr = new THREE.Vector2(_movePrev.x + valX, _movePrev.y + valY);
+		_moveCurr = new THREE.Vector3(_movePrev.x + valX, _movePrev.y + valY, _movePrev.z + valZ);
 		_prevState = _state;
 		_state = STATE.ROTATE;
 		_this.noRotate = false;

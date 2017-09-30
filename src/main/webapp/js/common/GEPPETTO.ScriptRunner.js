@@ -51,7 +51,7 @@ define(function (require) {
                             }
                             //execute command
                             else {
-                                GEPPETTO.Console.executeCommand(command);
+                                GEPPETTO.CommandController.execute(command);
                                 //keep track of reamaining commands
                                 var clone = commands.slice();
                                 remainingCommands = clone.splice(i + 1, clone.length - 1);
@@ -141,7 +141,7 @@ define(function (require) {
                 if (scripts.length > 1) {
                     //fire first script
                     var script = scripts[0].script;
-                    GEPPETTO.Console.executeCommand('G.runScript("' + script + '")');
+                    GEPPETTO.CommandController.execute('G.runScript("' + script + '")');
 
                     //store the other one, will fire once first one is done
                     for (var i = 1; i < scripts.length; i++) {
@@ -151,7 +151,7 @@ define(function (require) {
                 }
                 //one script only, fire it
                 else {
-                    GEPPETTO.Console.executeCommand('G.runScript("' + scripts[0].script + '")');
+                    GEPPETTO.CommandController.execute('G.runScript("' + scripts[0].script + '")');
                 }
             }
         };

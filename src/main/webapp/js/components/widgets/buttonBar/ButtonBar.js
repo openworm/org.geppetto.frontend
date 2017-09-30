@@ -52,7 +52,7 @@ define(function (require) {
             createButtonCallback: function (button) {
                 return function () {
                     button.actions.forEach(function (action) {
-                        GEPPETTO.Console.executeImplicitCommand(action)
+                        GEPPETTO.CommandController.execute(action, true)
                     });
                 }
             },
@@ -95,14 +95,14 @@ define(function (require) {
                 "buttonGroupOne": {
                     "buttonOne": {
                         "actions": [
-                            "GEPPETTO.Console.log('button1.action1')",
-                            "GEPPETTO.Console.log('button1.action2')"],
+                            "GEPPETTO.CommandController.log('button1.action1')",
+                            "GEPPETTO.CommandController.log('button1.action2')"],
                         "icon": "gpt-osb",
                         "label": "1",
                         "tooltip": "This is a button"
                     },
                     "buttonTwo": {
-                        "actions": ["GEPPETTO.Console.log('button2.action1')"],
+                        "actions": ["GEPPETTO.CommandController.log('button2.action1')"],
                         "icon": "gpt-pyramidal-cell",
                         "label": "2",
                         "tooltip": "This is another button"
@@ -169,13 +169,13 @@ define(function (require) {
                 error: function (xhr, status, error) {
                     var err = JSON.parse(xhr.responseText);
                     alert(err.Message);
-                    GEPPETTO.Console.log('Warning: could not read bar from ' + url + '. Using default.');
+                    GEPPETTO.CommandController.log('Warning: could not read bar from ' + url + '. Using default.');
                     barDef = that.sample;
                 },
                 complete: function (jqXHR, status) {
                     barName = Object.keys(barDef)[0];
                     bbar = that.renderBar(barName, barDef[barName]);
-                    GEPPETTO.Console.log("Button Bar definition read from " + ((status == "success") ? url + ' .' : 'default.'));
+                    GEPPETTO.CommandController.log("Button Bar definition read from " + ((status == "success") ? url + ' .' : 'default.'));
                 }
             });
 

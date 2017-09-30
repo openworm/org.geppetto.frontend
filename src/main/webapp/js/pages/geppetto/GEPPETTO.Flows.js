@@ -53,13 +53,13 @@ define(function (require) {
                     GEPPETTO.on(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
                 } else {
                     // nothing to do - run callbackCommand directly
-                    GEPPETTO.Console.executeImplicitCommand(callbackCommand);
+                    GEPPETTO.CommandController.execute(callbackCommand, true);
                 }
             },
 
             showSpotlightForPlay: function(callbackCommand){
             	// nothing to do - run callbackCommand directly
-                GEPPETTO.Console.executeImplicitCommand(callbackCommand);
+                GEPPETTO.CommandController.execute(callbackCommand, true);
                 var anyPlotUp = false;
 
                 // check if any plots are up
@@ -85,7 +85,7 @@ define(function (require) {
             	}
             	else{
             		$.each(this.compulsoryActions[GEPPETTO.Resources.RUN_FLOW], function (index, value) {
-            			GEPPETTO.Console.executeImplicitCommand(value + "('" + callbackCommand + "')");
+                        GEPPETTO.CommandController.execute(value + "('" + callbackCommand + "')", true);
                     });	
             	}
             	
@@ -101,13 +101,13 @@ define(function (require) {
             	}
             	else{
             		$.each(this.compulsoryActions[GEPPETTO.Resources.PLAY_FLOW], function (index, value) {
-            			GEPPETTO.Console.executeImplicitCommand(value + "('" + callbackCommand + "')");
+                        GEPPETTO.CommandController.execute(value + "('" + callbackCommand + "')", true);
                     });	
             	}
             },
 
             onSpotlightExitFlowCallback : function(){
-                GEPPETTO.Console.executeImplicitCommand(this.callbackCommand);
+                GEPPETTO.CommandController.execute(this.callbackCommand, true);
                 GEPPETTO.off(GEPPETTO.Events.Spotlight_closed, this.onSpotlightExitFlowCallback, this);
             }
         };

@@ -20,9 +20,6 @@ define(function (require) {
              * @returns - Formmatted commands with descriptions
              */
             extractCommandsFromFile: function (script, Object, objectName) {
-
-
-
                 //retrieve the script to get the comments for all the methods
                 $.ajax({
                     async: true,
@@ -92,7 +89,7 @@ define(function (require) {
                             }
                         }
 
-                        GEPPETTO.Console.log(commandsFormatted);
+                        GEPPETTO.CommandController.log(commandsFormatted);
                     }
                 });
 
@@ -112,7 +109,7 @@ define(function (require) {
                         var parameter = f.match(/\(.*?\)/)[0].replace(/[()]/gi, '').replace(/\s/gi, '').split(',');
 
                         var functionName = prop + "(" + parameter + ")";
-                        if (GEPPETTO.Console.getNonCommands().indexOf(functionName) <= -1) {
+                        if (GEPPETTO.CommandController.getNonCommands().indexOf(functionName) <= -1) {
                             methods.push(functionName);
                         }
                     }
@@ -157,7 +154,7 @@ define(function (require) {
             },
 
             getPathStringParameters: function () {
-                var paths = []
+                var paths = [];
                 var locationPaths = location.pathname.split("/");
                 for (var pathIndex in locationPaths) {
                     var locationPath = locationPaths[pathIndex];

@@ -43,7 +43,9 @@ define(function (require) {
 				'CAROUSEL': 'interface/carousel/Carousel',
 				'CANVAS': 'interface/3dCanvas/Canvas',
 				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer',
-				'TREE': 'interface/tree/Tree'
+				'TREE': 'interface/tree/Tree',
+				'CONSOLE': 'interface/console/Console',
+				'LINKBUTTON': 'interface/linkButton/LinkButton'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},
@@ -158,7 +160,7 @@ define(function (require) {
 					widgetController.registerWidget(renderedComponent)
 				}
 				else {
-					GEPPETTO.Console.updateTags(componentType, renderedComponent);
+					GEPPETTO.CommandController.updateTags(componentType, renderedComponent);
 					renderedComponent.container = container;
 				}
 				// Register in component map

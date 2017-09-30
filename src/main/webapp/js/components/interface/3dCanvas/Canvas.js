@@ -23,8 +23,8 @@ define(function (require) {
             //State
             this.viewState = {
                 custom: {
-                    cameraPosition: {x: undefined, y: undefined, z: undefined},
-                    cameraRotation: {rx: undefined, ry: undefined, rz: undefined, radius: undefined},
+                    cameraPosition: { x: undefined, y: undefined, z: undefined },
+                    cameraRotation: { rx: undefined, ry: undefined, rz: undefined, radius: undefined },
                     colorMap: {},
                     opacityMap: {},
                     geometryTypeMap: {},
@@ -41,6 +41,13 @@ define(function (require) {
          * @returns {Canvas}
          */
         display(instances) {
+            if (this.isWidget()) {
+                this.showOverlay(<div className="spinner-container">
+                    <div className={"fa fa-circle-o-notch fa-spin"}></div>
+                    <p id="loadingmodaltext" className="orange">Loading Volumes...</p>
+                </div>);
+            }
+
             var added = [];
             for (var i = 0; i < instances.length; i++) {
                 if (this.viewState.instances.indexOf(instances[i].getInstancePath()) == -1) {
@@ -52,6 +59,11 @@ define(function (require) {
                 this.engine.updateSceneWithNewInstances(added);
                 this.setDirty(true);
             }
+
+            if (this.isWidget()) {
+                this.hideOverlay();
+            }
+
             return this;
         }
 
@@ -83,7 +95,7 @@ define(function (require) {
          *
          * @param object
          */
-        removeObject(object){
+        removeObject(object) {
             this.engine.removeObject(object);
         }
 
@@ -155,6 +167,16 @@ define(function (require) {
         setWireframe(wireframe) {
             this.engine.setWireframe(wireframe);
             return this;
+        }
+        
+        /**
+         * Sets whether picking is enabled or not
+         * @param pickingEnabled
+         * @return {Canvas}
+         */
+        enablePicking(pickingEnabled){
+        	this.engine.enablePicking(pickingEnabled);
+        	return this;
         }
 
         /**
@@ -239,6 +261,16 @@ define(function (require) {
          */
         hideInstance(instancePath) {
             this.engine.hideInstance(instancePath);
+            return this;
+        }
+        
+        /**
+         * Hide all instances
+         *
+         * @return {Canvas}
+         */
+        hideAllInstances() {
+            this.engine.hideAllInstances();
             return this;
         }
 
@@ -404,7 +436,7 @@ define(function (require) {
                     }
                 }
                 if (!recursion) {
-                    this.viewState.custom.geometryTypeMap[instance.getInstancePath()] = {"type": type, "thickness": thickness};
+                    this.viewState.custom.geometryTypeMap[instance.getInstancePath()] = { "type": type, "thickness": thickness };
                     this.setDirty(true);
                 }
             }
@@ -430,7 +462,7 @@ define(function (require) {
          * @param instances
          * @param groupElements
          */
-        splitGroups(instance, groupElements){
+        splitGroups(instance, groupElements) {
             this.engine.splitGroups(instance, groupElements);
             return this;
         }
@@ -596,9 +628,6 @@ define(function (require) {
          * @param view
          */
         setView(view) {
-            // set base properties
-            super.setView(view);
-
             // set data
             if (view.data != undefined) {
                 if (view.dataType == 'instances') {
@@ -651,6 +680,10 @@ define(function (require) {
                     }
                 }
             }
+
+            // set dirty view to false
+            // NOTE: this needs to be at the end after the view has actually been set
+            this.setDirty(false);
         }
 
 
@@ -697,9 +730,14 @@ define(function (require) {
         }
 
         render() {
+    	    var cameraControls = undefined;
+    	    if (!this.props.hideCameraControls) {
+    	    	cameraControls = <CameraControls viewer={this.props.id} />;
+    	    }
             return (
+
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
-                    <CameraControls viewer={this.props.id}/>
+                    {cameraControls}
                 </div>
             )
         }

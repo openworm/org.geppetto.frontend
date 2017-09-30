@@ -108,7 +108,7 @@ define(function (require) {
                         "tooltip": "This is another button"
                     },
                     "buttonThree": {
-                        "actions": ["G.addWidget(1).setMessage('hello from button 3')"],
+                        "actions": ["G.addWidget(1).then(w=>{w.setMessage('hello from button 3');});"],
                         "icon": "gpt-ion-channel",
                         "label": "3",
                         "tooltip": "Yet another"
@@ -116,13 +116,13 @@ define(function (require) {
                 },
                 "buttonGroupTwo": {
                     "buttonFour": {
-                        "actions": ["G.addWidget(1).setMessage('hello from button 4')"],
+                        "actions": ["G.addWidget(1).then(w=>{w.setMessage('hello from button 4');});"],
                         "icon": "gpt-make-group",
                         "label": "four",
                         "tooltip": "And yet another..."
                     },
                     "buttonFive": {
-                        "actions": ["G.addWidget(1).setMessage('hello from The Worm')"],
+                        "actions": ["G.addWidget(1).then(w=>{w.setMessage('hello from The Worm');});"],
                         "icon": "gpt-worm",
                         "label": "five",
                         "tooltip": "OK, I'll stop now!"

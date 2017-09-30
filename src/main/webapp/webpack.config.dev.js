@@ -1,5 +1,6 @@
 var webpackBaseConfig = require('./webpack.config.js');
-webpackBaseConfig.devServer = {
+var extended=webpackBaseConfig();
+extended.devServer = {
     progress: true,
     port: 8081,
     inline: true,
@@ -10,6 +11,6 @@ webpackBaseConfig.devServer = {
     ],
 };
 
-webpackBaseConfig.devtool = 'source-map';
+extended.devtool = 'source-map';
 
-module.exports = webpackBaseConfig;
+module.exports = extended;

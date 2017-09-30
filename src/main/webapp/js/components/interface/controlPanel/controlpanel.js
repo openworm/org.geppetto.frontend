@@ -962,7 +962,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
-            "actions": "G.addWidget(3).setData($entity$).setName('$entity$')"
+            "actions": "G.addWidget(3).then(w=>{w.setData($entity$).setName('$entity$');});"
         },
         {
             "columnName": "controls",
@@ -1048,9 +1048,9 @@ define(function (require) {
     };
 
     //Control panel initialization
-    var createPlotButtonMenuItems = function (projectId, experimentId, instance) {
+    var createPlotButtonMenuItems = async function (projectId, experimentId, instance) {
         var menuButtonItems = [];
-        var controller = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT);
+        var controller = await GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT);
         var plots = controller.getWidgets()
             .filter(function (plot) {
                 return !controller.isColorbar(plot);
@@ -1128,7 +1128,7 @@ define(function (require) {
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
             "source": "$entity$.getTypes().map(function (t) {return t.getPath()})",
-            "actions": "G.addWidget(3).setData($entity$).setName('$entity$')",
+            "actions": "G.addWidget(3).then(w=>{w.setData($entity$).setName('$entity$');});",
             "cssClassName": "control-panel-type-column"
         },
     ];
@@ -1309,7 +1309,7 @@ define(function (require) {
             "visible": true,
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
-            "actions": "G.addWidget(3).setData($entity$).setName('$entity$')",
+            "actions": "G.addWidget(3).then(w=>{w.setData($entity$).setName('$entity$');});",
             "cssClassName": "control-panel-type-column"
         }
     ];
@@ -1422,7 +1422,7 @@ define(function (require) {
             "visible": true,
             "customComponent": GEPPETTO.ArrayComponent,
             "displayName": "Type(s)",
-            "actions": "G.addWidget(3).setData($entity$).setName('$entity$')",
+            "actions": "G.addWidget(3).then(w=>{w.setData($entity$).setName('$entity$');});",
             "cssClassName": "control-panel-type-column"
         },
         {

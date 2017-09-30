@@ -187,7 +187,7 @@ define(function(require) {
          * @param plotWidget - optional, if not provided a new widget will be created
          * @param xPath - optional, if plotting xy data a path for the x axis
          */
-        plotStateVariable: function(projectId, experimentId, path, plotWidget, xPath){
+        plotStateVariable: async function(projectId, experimentId, path, plotWidget, xPath){
             var self = this;
             
             if(
@@ -207,7 +207,7 @@ define(function(require) {
                         plotWidget.plotData(inst);
                         plotWidget.updateAxis(inst.getInstancePath());
                     } else {
-                        var widget = G.addWidget(0);
+                        var widget = await G.addWidget(0);
                         widget.plotData(inst).setName(path);
                         widget.updateAxis(path);
                     }

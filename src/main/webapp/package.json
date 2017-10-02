@@ -7,7 +7,7 @@
   "scripts": {
     "build": "webpack -p --progress",
     "build-dev": "webpack --devtool eval",
-    "build-dev-noTest": "webpack --devtool eval --noTest=true",
+    "build-dev-noTest": "webpack --devtool eval --env.noTest=true",
     "build-dev-noTest:watch": "onchange 'js/**/*.*' 'extensions/**/*.*' 'style/**/*.*' -- npm run build-dev-noTest",
     "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js"
   },

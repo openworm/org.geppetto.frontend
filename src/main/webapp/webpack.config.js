@@ -17,16 +17,6 @@ try {
 var publicPath = ((geppettoConfig.contextPath == '/') ? geppettoConfig.contextPath : "/" + geppettoConfig.contextPath + "/") + "geppetto/build/";
 console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath);
 
-var entries = {
-    main: "./js/pages/geppetto/main.js",
-    admin: "./js/pages/admin/admin.js"
-};
-if (!geppettoConfig.noTest) {
-    entries['tests'] = "./js/pages/tests/qunit/QUnitTests.js";
-}
-
-console.log("\nThe Webpack entries are:");
-console.log(entries);
 
 // Get available extensions in order to copy static pages
 var availableExtensions = [];
@@ -61,6 +51,9 @@ module.exports = function(env){
 		if(env.useSsl){
 			geppettoConfig.useSsl= JSON.parse(env.useSsl);
 		}
+		if(env.noTest){
+			geppettoConfig.noTest= JSON.parse(env.noTest);
+		}
 		if(env.embedded){
 			geppettoConfig.embedded= JSON.parse(env.embedded);
 		}
@@ -68,8 +61,23 @@ module.exports = function(env){
 			geppettoConfig.embedderURL=env.embedderURL;
 		}
 	}
+	
 	console.log('Geppetto configuration \n');
 	console.log(JSON.stringify(geppettoConfig, null, 2), '\n');
+	
+	var entries = {
+		    main: "./js/pages/geppetto/main.js",
+		    admin: "./js/pages/admin/admin.js"
+	};
+	if (!geppettoConfig.noTest) {
+	    entries['tests'] = "./js/pages/tests/qunit/QUnitTests.js";
+	}
+
+	console.log("\nThe Webpack entries are:");
+	console.log(entries);
+
+		
+
 
     return {
 	    entry: entries,

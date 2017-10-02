@@ -40,11 +40,11 @@ define(function(require) {
         },
         
         rotateZ: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0, 0, 0.01)');
+        	GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0, 0, 0.01)',true);
         },
 
         rotateMZ: function(increment) {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0, 0, -0.01)');
+        	GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0, 0, -0.01)',true);
         },
 
         rotate: function() {

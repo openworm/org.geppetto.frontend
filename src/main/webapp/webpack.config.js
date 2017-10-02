@@ -14,17 +14,8 @@ try {
     console.error('\nFailed to load Geppetto Configuration')
 }
 
-// We read the command line arguments, these are passed from maven through npm
-// to webpack
-console.log('\nReading Geppetto Parameters from Command line:');
-
-
-
-
-
 var publicPath = ((geppettoConfig.contextPath == '/') ? geppettoConfig.contextPath : "/" + geppettoConfig.contextPath + "/") + "geppetto/build/";
 console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath);
-
 
 var entries = {
     main: "./js/pages/geppetto/main.js",

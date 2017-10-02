@@ -65,6 +65,46 @@ define(function (require) {
 				return this.componentsMap;
 			},
 
+
+			addExistingComponent(componentType, component, override) {
+				if (!(componentType in this.componentsMap)) {
+					this.componentsMap[componentType] = []
+				}
+				if (override){
+					var componentsMap = this.componentsMap[componentType];
+		
+					for (var c in componentsMap){
+						if (component.id === componentsMap[c].id){
+							componentsMap[c] = component;
+							// var index =  c;
+							return
+						}
+					}
+					
+				}
+				this.componentsMap[componentType].push(component);
+			},
+
+			removeExistingComponent(componentType, component) {
+				if (componentType in this.componentsMap) {
+					var index = this.componentsMap[componentType].indexOf(component);
+					if (index > -1) {
+						this.componentsMap[componentType].splice(index, 1);
+					}
+				}
+			},
+
+			getComponentById(componentType, componentId){
+				var componentsMap = this.componentsMap[componentType];
+				for (var c in componentsMap){
+					if (componentId === componentsMap[c].id){
+						return componentsMap[c];
+					}
+				}
+				return undefined;
+			},
+
+
 			camelize(str) {
 				return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
 					if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces

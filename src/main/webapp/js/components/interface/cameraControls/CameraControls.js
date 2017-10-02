@@ -38,6 +38,14 @@ define(function(require) {
         rotateRight: function() {
             GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0.01, 0)', true);
         },
+        
+        rotateZ: function() {
+            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0, 0, 0.01)');
+        },
+
+        rotateMZ: function(increment) {
+            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0, 0, -0.01)');
+        },
 
         rotate: function() {
             GEPPETTO.CommandController.execute(this.props.viewer+'.autoRotate()', true);
@@ -48,11 +56,11 @@ define(function(require) {
         },
 
         zoomIn: function() {
-            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraZoom(-0.01)', true);
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraZoom(-0.1)',true);
         },
 
         zoomOut: function() {
-            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraZoom(+0.01)', true);
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraZoom(+0.1)',true);
         },
 
         componentDidMount: function() {
@@ -72,6 +80,8 @@ define(function(require) {
                     <button id="rotateUpBtn" className="btn squareB fa fa-repeat rotate90 rotate-top" onClick={this.rotateUp}></button>
                     <button id="rotateRightBtn" className="btn squareB fa fa-repeat rotate-right" onClick={this.rotateRight}></button>
                     <button id="rotateDownBtn" className="btn squareB fa fa-undo rotate90 rotate-bottom" onClick={this.rotateDown}></button>
+                    <button id="rotateZBtn" className="btn squareB fa fa-undo rotate-z" onClick={this.rotateZ}></button>
+                    <button id="rotateMZBtn" className="btn squareB fa fa-repeat rotate-mz" onClick={this.rotateMZ}></button>
                     <button id="rotateBtn" className="btn squareB fa fa-video-camera rotate-home" onClick={this.rotate}></button>
 
                     <button id="zoomInBtn" className="btn squareB fa fa-search-plus zoom-in" onClick={this.zoomIn}></button>

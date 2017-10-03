@@ -287,7 +287,11 @@ define(function (require) {
 
 			//Launches tutorial from button 
 			GEPPETTO.on(GEPPETTO.Events.Show_Tutorial, function () {
-				if (self.started) {
+				if (self.started== undefined) {
+					self.loadTutorial(self.props.tutorialData, true);
+					self.open(false);
+				}
+				else if (self.started) {
 					self.open(false);
 				} else {
 					if (!self.state.visible) {
@@ -448,7 +452,7 @@ define(function (require) {
 					showMemoryCheckbox = true;
 				}
 				return <div className="mainTutorialContainer">
-					<div className="tutorial-message">
+					<div className={"tutorial-message " + this.props.tutorialMessageClass}>
 						<div id="tutorialIcon" className={iconClass}></div>
 						<div id="message" dangerouslySetInnerHTML={this.getHTML(step.message)}></div>
 					</div>

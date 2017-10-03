@@ -161,7 +161,7 @@ module.exports = function(env){
 	                exclude: [/ami.min.js/], 
 	                loader: 'babel-loader',
 	                query: {
-	                    presets: [['babel-preset-env', { "modules": false }], 'react']
+	                    presets: [['babel-preset-env', { "modules": false }], 'stage-2', 'react']
 	                }
 	            },
 	            {

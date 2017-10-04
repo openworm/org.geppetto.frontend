@@ -7,34 +7,43 @@ var HelpersLocalizer = AMI.default.Helpers.Localizer;
 
 module.exports = {
     windowResize2D: function (rendererObj) {
+        var newWidth = rendererObj.domElement.clientWidth;
+        var newHeight = rendererObj.domElement.clientHeight;
         rendererObj.camera.canvas = {
-            width: rendererObj.domElement.clientWidth,
-            height: rendererObj.domElement.clientHeight,
+            width: newWidth,
+            height: newHeight,
         };
         rendererObj.camera.fitBox(2, 1);
-        rendererObj.renderer.setSize(
-            rendererObj.domElement.clientWidth,
-            rendererObj.domElement.clientHeight);
+        rendererObj.renderer.setSize(newWidth, newHeight);
 
         // update info to draw borders properly
-        rendererObj.stackHelper.slice.canvasWidth =
-            rendererObj.domElement.clientWidth;
-        rendererObj.stackHelper.slice.canvasHeight =
-            rendererObj.domElement.clientHeight;
-        rendererObj.localizerHelper.canvasWidth =
-            rendererObj.domElement.clientWidth;
-        rendererObj.localizerHelper.canvasHeight =
-            rendererObj.domElement.clientHeight;
+        // TODO: Remove once we are sure to remove the dotted line doesn't have any side effect
+        // rendererObj.stackHelper.slice.canvasWidth = newWidth;
+        // rendererObj.stackHelper.slice.canvasHeight = newHeight;
+        rendererObj.stackHelper.slice.canvasWidth = -1;
+        rendererObj.stackHelper.slice.canvasHeight = -1;
+        rendererObj.localizerHelper.canvasWidth = newWidth;
+        rendererObj.localizerHelper.canvasHeight = newHeight;
+    },
+
+    windowResize3D: function (rendererObj) {
+        var newWidth = rendererObj.domElement.clientWidth;
+        var newHeight = rendererObj.domElement.clientHeight;
+        rendererObj.camera.aspect = newWidth / newHeight;
+        rendererObj.camera.updateProjectionMatrix();
+        rendererObj.renderer.setSize(newWidth, newHeight);
     },
 
     initHelpersStack: function (rendererObj, stack) {
         rendererObj.stackHelper = new HelpersStack(stack);
         rendererObj.stackHelper.bbox.visible = false;
         rendererObj.stackHelper.borderColor = rendererObj.sliceColor;
-        rendererObj.stackHelper.slice.canvasWidth =
-            rendererObj.domElement.clientWidth;
-        rendererObj.stackHelper.slice.canvasHeight =
-            rendererObj.domElement.clientHeight;
+
+        // TODO: Remove once we are sure to remove the dotted line doesn't have any side effect
+        // rendererObj.stackHelper.slice.canvasWidth = rendererObj.domElement.clientWidth;
+        // rendererObj.stackHelper.slice.canvasHeight = rendererObj.domElement.clientHeight;
+        rendererObj.stackHelper.slice.canvasWidth = -1;
+        rendererObj.stackHelper.slice.canvasHeight = -1;
 
         // set camera
         let worldbb = stack.worldBoundingBox();
@@ -44,11 +53,9 @@ module.exports = {
             (worldbb[5] - worldbb[4]) / 2
         );
 
-        // box: {halfDimensions, center}
         let box = {
             center: stack.worldCenter().clone(),
-            halfDimensions:
-            new THREE.Vector3(lpsDims.x + 10, lpsDims.y + 10, lpsDims.z + 10),
+            halfDimensions: new THREE.Vector3(lpsDims.x + 5, lpsDims.y + 5, lpsDims.z + 5),
         };
 
         // init and zoom
@@ -80,10 +87,8 @@ module.exports = {
             rendererObj.localizerHelper['color' + (i + 1)] = localizers[i].color;
         }
 
-        rendererObj.localizerHelper.canvasWidth =
-            rendererObj.domElement.clientWidth;
-        rendererObj.localizerHelper.canvasHeight =
-            rendererObj.domElement.clientHeight;
+        rendererObj.localizerHelper.canvasWidth = rendererObj.domElement.clientWidth;
+        rendererObj.localizerHelper.canvasHeight = rendererObj.domElement.clientHeight;
 
         rendererObj.localizerScene = new THREE.Scene();
         rendererObj.localizerScene.add(rendererObj.localizerHelper);
@@ -121,8 +126,7 @@ module.exports = {
         });
         rendererObj.renderer.autoClear = false;
         rendererObj.renderer.localClippingEnabled = true;
-        rendererObj.renderer.setSize(
-            rendererObj.domElement.clientWidth, rendererObj.domElement.clientHeight);
+        rendererObj.renderer.setSize(rendererObj.domElement.clientWidth, rendererObj.domElement.clientHeight);
         rendererObj.renderer.setClearColor(0x121212, 1);
         rendererObj.renderer.setPixelRatio(window.devicePixelRatio);
         rendererObj.renderer.domElement.id = rendererObj.targetID;
@@ -141,6 +145,7 @@ module.exports = {
             rendererObj.camera, rendererObj.domElement);
         rendererObj.controls.staticMoving = true;
         rendererObj.controls.noRotate = true;
+        rendererObj.controls.noPan = true;
         rendererObj.camera.controls = rendererObj.controls;
 
         // scene
@@ -155,8 +160,7 @@ module.exports = {
         renderObj.renderer = new THREE.WebGLRenderer({
             antialias: true,
         });
-        renderObj.renderer.setSize(
-            renderObj.domElement.clientWidth, renderObj.domElement.clientHeight);
+        renderObj.renderer.setSize(renderObj.domElement.clientWidth, renderObj.domElement.clientHeight);
         renderObj.renderer.setClearColor(renderObj.color, 1);
         renderObj.renderer.domElement.id = renderObj.targetID;
         renderObj.domElement.appendChild(renderObj.renderer.domElement);

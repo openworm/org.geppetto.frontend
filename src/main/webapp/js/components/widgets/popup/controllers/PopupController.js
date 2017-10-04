@@ -5,7 +5,7 @@
  * @author Jesus R Martinez (jesus@metacell.us)
  */
 define(function (require) {
-    var Popup = require('../Popup');
+
     var AWidgetController = require('../../AWidgetController');
 
     /**
@@ -24,42 +24,51 @@ define(function (require) {
         /**
          * Creates popup widget
          */
-        addPopupWidget: function (isStateless) {
-            if(isStateless == undefined){
+        addWidget: function (isStateless) {
+            if (isStateless == undefined) {
                 isStateless = false;
             }
+            var that=this;
 
-            //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("Popup", this.widgets);
-            var name = id;
+            return new Promise(resolve => {
+                    require.ensure([], function (require) {
 
-            //create popup widget
-            var p = window[name] = new Popup({
-                id: id, name: name, visible: true, controller: this,
-                widgetType: GEPPETTO.Widgets.POPUP, stateless: isStateless
-            });
-            p.setController(this);
-            p.setSize(394,490);
-            //create help command for plot
-            p.help = function () {
-                return GEPPETTO.Console.getObjectCommands(id);
-            };
+                    var Popup = require('../Popup');
+                    //look for a name and id for the new widget
+                    var id = that.getAvailableWidgetId("Popup", that.widgets);
+                    var name = id;
 
-            //store in local stack
-            this.widgets.push(p);
+                    //create popup widget
+                    var p = window[name] = new Popup({
+                        id: id, name: name, visible: true, controller: that,
+                        widgetType: GEPPETTO.Widgets.POPUP, stateless: isStateless
+                    });
+                    p.setController(this);
+                    p.setSize(394, 490);
+                    //create help command for plot
+                    p.help = function () {
+                        return GEPPETTO.CommandController.getObjectCommands(id);
+                    };
+
+                    //store in local stack
+                    that.widgets.push(p);
 
 
-            GEPPETTO.WidgetsListener.subscribe(this, id);
+                    GEPPETTO.WidgetsListener.subscribe(that, id);
 
-            //add commands to console autocomplete and help option
-            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/components/widgets/popup/Popup.js"));
+                    //add commands to console autocomplete and help option
+                    GEPPETTO.CommandController.updateHelpCommand(p, id, that.getFileComments("geppetto/js/components/widgets/popup/Popup.js"));
 
-            //update tags for autocompletion
-            GEPPETTO.Console.updateTags(p.getId(), p);
+                    //update tags for autocompletion
+                    GEPPETTO.CommandController.updateTags(p.getId(), p);
 
-            return p;
+                    resolve(p);
+                });
+
+
+        })
+            ;
         },
-
         /**
          * Receives updates from widget listener class to update popup widget(s)
          *

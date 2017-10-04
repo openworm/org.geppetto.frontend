@@ -20,7 +20,7 @@ define(function (require) {
         /**
          * Creates new variable visualiser widget
          */
-        addVariableVisualiserWidget: function (isStateless) {
+        addWidget: function (isStateless) {
             if(isStateless == undefined){
                 isStateless = false;
             }
@@ -33,16 +33,16 @@ define(function (require) {
                 widgetType: GEPPETTO.Widgets.VARIABLEVISUALISER, stateless: isStateless
             });
             vv.help = function () {
-                return GEPPETTO.Console.getObjectCommands(id);
+                return GEPPETTO.CommandController.getObjectCommands(id);
             };
             this.widgets.push(vv);
 
             GEPPETTO.WidgetsListener.subscribe(this, id);
 
             //updates help command options
-            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/variablevisualiser/VariableVisualiser.js"));
+            GEPPETTO.CommandController.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/variablevisualiser/VariableVisualiser.js"));
             //update tags for autocompletion
-            GEPPETTO.Console.updateTags(vv.getId(), vv);
+            GEPPETTO.CommandController.updateTags(vv.getId(), vv);
             return vv;
         },
 

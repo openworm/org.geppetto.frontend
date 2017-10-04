@@ -214,7 +214,7 @@ define(function (require) {
 
 							// run action
 							if (actionStr != '' && actionStr != undefined) {
-								GEPPETTO.Console.executeCommand(actionStr);
+								GEPPETTO.CommandController.execute(actionStr);
 								that.refresh();
 							}
 

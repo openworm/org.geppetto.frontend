@@ -16,11 +16,11 @@ define(function (require, exports, module) {
 			widget_object: null,
 			triggerClose: true
 		}),
-		initialize: function () {
+		initialize: async function () {
 			WidgetSync.__super__.initialize.apply(this);
 
 			if (this.get('widget_id') > -1) {
-				var widget = G.addWidget(this.get('widget_id'))
+				var widget = await G.addWidget(this.get('widget_id'))
 				this.set('widget_object', widget)
 
 				if (this.get('name') != '') {

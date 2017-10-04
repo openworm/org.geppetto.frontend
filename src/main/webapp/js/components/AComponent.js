@@ -8,8 +8,7 @@ define(function (require) {
 
     var Backbone = require('backbone');
     var React = require('react');
-
-  
+    var ReactDOM = require('react-dom');
 
         /**
          * Creates base view for widget
@@ -27,6 +26,12 @@ define(function (require) {
                 if (this.container == null){
                     this.container = $(this.props.parentContainer).children().get(0);
                 }
+
+                // If widget is added in a react way parent Container will be null
+                if (this.container == null){
+                    this.container = ReactDOM.findDOMNode(this);
+                }
+                
                 return this.container;
             }
 
@@ -35,7 +40,7 @@ define(function (require) {
             }
 
             help() {
-                return GEPPETTO.Console.getObjectCommands(this.props.id);
+                return GEPPETTO.CommandController.getObjectCommands(this.props.id);
             }
 
             getComponentType(){

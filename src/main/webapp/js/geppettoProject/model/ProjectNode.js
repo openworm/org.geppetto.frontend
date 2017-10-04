@@ -35,7 +35,7 @@ define(['backbone'], function (require) {
                 delete this.experiments[experiment];
             }
             for (var entity in this.runTimeTree) {
-                GEPPETTO.Console.removeCommands(entity);
+                GEPPETTO.CommandController.removeCommands(entity);
             }
             this.experiments = [];
             this.runTimeTree = {};
@@ -215,8 +215,8 @@ define(['backbone'], function (require) {
                 parameters["projectId"] = projectID;
                 GEPPETTO.MessageSocket.send("load_project_from_id", parameters);
                 this.initializationTime = new Date();
-                GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-                GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+                GEPPETTO.CommandController.log("Message sent : " + this.initializationTime.getTime(), true);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD, true);
             }
 
             else {
@@ -247,8 +247,8 @@ define(['backbone'], function (require) {
                 GEPPETTO.MessageSocket.send("load_project_from_url", projectURL);
                 this.persisted = false;
                 this.initializationTime = new Date();
-                GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-                GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+                GEPPETTO.CommandController.log("Message sent : " + this.initializationTime.getTime(), true);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD, true);
                 //trigger simulation restart event
                 GEPPETTO.trigger(GEPPETTO.Events.Simulation_restarted);
             }
@@ -282,8 +282,8 @@ define(['backbone'], function (require) {
 
                 GEPPETTO.MessageSocket.send("load_project_from_content", content);
                 this.initializationTime = new Date();
-                GEPPETTO.Console.debugLog("Message sent : " + this.initializationTime.getTime());
-                GEPPETTO.Console.debugLog(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD);
+                GEPPETTO.CommandController.log("Message sent : " + this.initializationTime.getTime(), true);
+                GEPPETTO.CommandController.log(GEPPETTO.Resources.MESSAGE_OUTBOUND_LOAD, true);
                 //trigger simulation restart event
 
             }

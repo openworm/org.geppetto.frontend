@@ -78,7 +78,7 @@ define(function(require) {
         	this.evaluateState();
 			// there may or may not be a dynamic action to be executed via console
 			if(this.action!='') {
-				GEPPETTO.Console.executeCommand(this.action);
+				GEPPETTO.CommandController.execute(this.action, true);
 			}
 
         	this.props.configuration.clickHandler(this.props.id);

@@ -44,7 +44,9 @@ define(function (require) {
 				'CANVAS': 'interface/3dCanvas/Canvas',
 				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer',
 				'TREE': 'interface/tree/Tree',
-				'BUTTONBAR': 'interface/buttonBar/ButtonBar',
+				'CONSOLE': 'interface/console/Console',
+				'LINKBUTTON': 'interface/linkButton/LinkButton',
+				'BUTTONBAR': 'interface/buttonBar/ButtonBar'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},
@@ -63,6 +65,46 @@ define(function (require) {
 			getComponents: function () {
 				return this.componentsMap;
 			},
+
+
+			addExistingComponent(componentType, component, override) {
+				if (!(componentType in this.componentsMap)) {
+					this.componentsMap[componentType] = []
+				}
+				if (override){
+					var componentsMap = this.componentsMap[componentType];
+		
+					for (var c in componentsMap){
+						if (component.id === componentsMap[c].id){
+							componentsMap[c] = component;
+							// var index =  c;
+							return
+						}
+					}
+					
+				}
+				this.componentsMap[componentType].push(component);
+			},
+
+			removeExistingComponent(componentType, component) {
+				if (componentType in this.componentsMap) {
+					var index = this.componentsMap[componentType].indexOf(component);
+					if (index > -1) {
+						this.componentsMap[componentType].splice(index, 1);
+					}
+				}
+			},
+
+			getComponentById(componentType, componentId){
+				var componentsMap = this.componentsMap[componentType];
+				for (var c in componentsMap){
+					if (componentId === componentsMap[c].id){
+						return componentsMap[c];
+					}
+				}
+				return undefined;
+			},
+
 
 			camelize(str) {
 				return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
@@ -136,18 +178,56 @@ define(function (require) {
 
 			},
 
+			
+			
 			_createComponent: function (componentType, properties, container, callback, isWidget) {
 				var that = this;
 
-				require(["./" + GEPPETTO.ComponentFactory.components[componentType]], function (loadedModule) {
-
-					var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
-
-					var renderedComponent = that._renderComponent(component, componentType, properties, container, callback, isWidget)
-
-
-					return renderedComponent;
-				});
+	            return new Promise(resolve => {
+	            	require.ensure([],function(require){
+	            		var cb = function (loadedModule) {
+							var component = that._addComponent(loadedModule, componentType, properties, container, callback, isWidget);
+							var renderedComponent = that._renderComponent(component, componentType, properties, container, callback, isWidget)
+							resolve(renderedComponent);
+	            		}
+	            		switch(componentType){
+		            		case 'FORM': require(['./interface/form/Form'], cb); break;
+				            case 'PANEL': require(['./controls/panel/Panel'],cb); break; 
+				            case 'LOGO': require(['./interface/logo/Logo'],cb); break;
+				            case 'LOADINGSPINNER': require(['./interface/loadingSpinner/LoadingSpinner'],cb); break;
+				            case 'SAVECONTROL': require(['./interface/save/SaveControl'],cb); break;
+				            case 'TOGGLEBUTTON': require(['./controls/toggleButton/ToggleButton'],cb); break;
+				            case 'CONTROLPANEL': require(['./interface/controlPanel/controlpanel'],cb); break;
+				            case 'SPOTLIGHT': require(['./interface/spotlight/spotlight'],cb); break;
+				            case 'MENUBUTTON': require(['./controls/menuButton/MenuButton'],cb); break;
+				            case 'FOREGROUND': require(['./interface/foregroundControls/ForegroundControls'],cb); break;
+				            case 'EXPERIMENTSTABLE': require(['./interface/experimentsTable/ExperimentsTable'],cb); break;
+				            case 'HOME': require(['./interface/home/HomeControl'],cb); break;
+				            case 'SIMULATIONCONTROLS': require(['./interface/simulationControls/ExperimentControls'],cb); break;
+				            case 'CAMERACONTROLS': require(['./interface/cameraControls/CameraControls'],cb); break;
+				            case 'SHARE': require(['./interface/share/Share'],cb); break;
+				            case 'INFOMODAL': require(['./controls/modals/InfoModal'],cb); break;
+				            case 'MDMODAL': require(['./controls/modals/MarkDownModal'],cb); break;
+				            case 'QUERY': require(['./interface/query/query'],cb); break;
+				            case 'TUTORIAL': require(['./interface/tutorial/Tutorial'],cb); break;
+				            case 'PYTHONCONSOLE': require(['./interface/pythonConsole/PythonConsole'],cb); break;
+				            case 'CHECKBOX': require(['./controls/Checkbox'],cb); break;
+				            case 'TEXTFIELD': require(['./controls/TextField'],cb); break;
+				            case 'RAISEDBUTTON': require(['./controls/RaisedButton'],cb); break;
+				            case 'BUTTON': require(['./controls/button/Button'],cb); break;
+				            case 'DICOMVIEWER': require(['./interface/dicomViewer/DicomViewer'],cb); break;
+				            case 'GOOGLEVIEWER': require(['./interface/googleViewer/GoogleViewer'],cb); break;
+				            case 'BIGIMAGEVIEWER': require(['./interface/bigImageViewer/BigImageViewer'],cb); break;
+				            case 'CAROUSEL': require(['./interface/carousel/Carousel'],cb); break;
+				            case 'CANVAS': require(['./interface/3dCanvas/Canvas'],cb); break;
+				            case 'MOVIEPLAYER': require(['./interface/moviePlayer/MoviePlayer'],cb); break;
+				            case 'TREE': require(['./interface/tree/Tree'],cb); break;
+				            case 'CONSOLE': require(['./interface/console/Console'],cb); break;
+				            case 'LINKBUTTON': require(['./interface/linkButton/LinkButton'],cb); break;
+	            		}
+	            		
+					});	
+	            });
 			},
 
 			_renderComponent: function (component, componentType, properties, container, callback, isWidget) {
@@ -159,7 +239,7 @@ define(function (require) {
 					widgetController.registerWidget(renderedComponent)
 				}
 				else {
-					GEPPETTO.Console.updateTags(componentType, renderedComponent);
+					GEPPETTO.CommandController.updateTags(componentType, renderedComponent);
 					renderedComponent.container = container;
 				}
 				// Register in component map
@@ -187,15 +267,20 @@ define(function (require) {
 					if (properties !== undefined && "isStateless" in properties) {
 						isStateless = properties["isStateless"];
 					}
-					var widget = GEPPETTO.WidgetFactory.addWidget(componentType, isStateless);
+					return new Promise(resolve => {
+						
+						GEPPETTO.WidgetFactory.addWidget(componentType, isStateless, callback).then(widget => {
 
-					// Register in component map
-					if (!(componentType in this.componentsMap)) {
-						this.componentsMap[componentType] = []
-					}
-					this.componentsMap[componentType].push(widget);
-					return widget;
+							// Register in component map
+							if (!(componentType in this.componentsMap)) {
+								this.componentsMap[componentType] = []
+							}
+							this.componentsMap[componentType].push(widget);
+							resolve(widget);
+					});
+					});
 				}
+
 
 			},
 

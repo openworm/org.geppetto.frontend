@@ -18,7 +18,7 @@ define(function (require) {
 	var slick = require('slick-carousel');
 
 	require("./Popup.less");
-	require("./vendor/slick.css");
+	require("./vendor/slick.less");
 	require("./vendor/slick-theme.less");
 
 	/**

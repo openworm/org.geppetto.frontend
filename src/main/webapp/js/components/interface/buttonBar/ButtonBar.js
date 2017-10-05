@@ -107,7 +107,7 @@ define(function(require) {
 		}
 	});
 
-	return class Tutorial extends AbstractComponent {            
+	return class ButtonBar extends AbstractComponent {            
 		render() {
 			var buttons = [];
 

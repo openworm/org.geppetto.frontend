@@ -1419,11 +1419,11 @@ define(function (require) {
             var stepOutClass = 'btn fa fa-chevron-up';
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
-            var toggleSliceClass = 'btn fa fa-toggle-';
+            var toggleSliceClass = 'btn ';
             if (this.state.slice) {
-                toggleSliceClass += 'on';
+                toggleSliceClass += 'gpt-showplane';
             }else{
-                toggleSliceClass += 'off';
+                toggleSliceClass += 'gpt-hideplane';
             }
             var startOffset = 2.5;
             var displayArea = this.props.data.id + 'displayArea';
@@ -1482,8 +1482,8 @@ define(function (require) {
                         }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
                         <button style={{
                             position: 'absolute',
-                            left: 2.5,
-                            top: startOffset + 102,
+                            left: 3.5,
+                            top: startOffset + 106,
                             padding: 0,
                             border: 0,
                             background: 'transparent'

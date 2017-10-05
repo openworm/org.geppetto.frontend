@@ -42,6 +42,7 @@ define(function (require) {
             showTitleBar: true,
             transparentBackground: false,
             dirtyView: false,
+            updateHistoryPosition : true,
             helpInfo :  '### Inline help not yet available for this widget! \n\n' +
             			'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html"'+
             			'target="_blank">online documentation</a> instead.',
@@ -385,7 +386,7 @@ define(function (require) {
             showHistoryMenu: function (event) {
                 var that = this;
                 if (this.controller.history.length > 0) {
-
+                	that.updateHistoryPosition = true;
                     this.historyMenu.show({
                         top: event.pageY,
                         left: event.pageX + 1,
@@ -530,6 +531,7 @@ define(function (require) {
                                         }
                                     }
                                 }
+                                that.updateHistoryPosition = false;
                                 item = historyItems[that.executedAction].action[0];
                                 GEPPETTO.Console.executeImplicitCommand(item);
                                 $("#" + that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);

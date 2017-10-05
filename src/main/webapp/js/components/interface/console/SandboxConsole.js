@@ -214,9 +214,9 @@ define(function (require) {
                     );
 
                     // Scroll the output to the bottom, so that new commands are visible
-                    this.output.scrollTop(
-                        this.output[0].scrollHeight - this.output.height()
-                    );
+                    if(this.output.length>0){
+                        this.output.scrollTop(this.output[0].scrollHeight - this.output.height());
+                    }
                 },
 
                 debugLog: function (message) {

@@ -91,7 +91,7 @@ define(function (require) {
                     var widget = this.widgets[i];
 
                     //remove commands
-                    GEPPETTO.Console.removeCommands(widget.getId());
+                    GEPPETTO.CommandController.removeCommands(widget.getId());
 
                     widget.destroy();
 

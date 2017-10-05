@@ -1433,11 +1433,11 @@ define(function (require) {
             var stepOutClass = 'btn fa fa-chevron-up';
             var pointerClass = 'btn fa fa-hand-pointer-o';
             var orthClass = 'btn fa fa-refresh';
-            var toggleSliceClass = 'btn fa fa-toggle-';
+            var toggleSliceClass = 'btn ';
             if (this.state.slice) {
-                toggleSliceClass += 'on';
-            } else {
-                toggleSliceClass += 'off';
+                toggleSliceClass += 'gpt-hideplane';
+            }else{
+                toggleSliceClass += 'gpt-showplane';
             }
             var startOffset = 2.5;
             var displayArea = this.props.data.id + 'displayArea';
@@ -1445,262 +1445,79 @@ define(function (require) {
             var markup = '';
             if (this.state.stack.length > 0) {
                 markup = (
-                    < div
-                id = {displayArea}
-                style = {
-                {
-                    position: 'absolute', top
-                :
-                    -1, left
-                :
-                    -1
-                }
-            }>
-            <
-                button
-                style = {
-                {
-                    position: 'absolute',
-                        left
-                :
-                    2.5,
-                        top
-                :
-                    startOffset,
-                        padding
-                :
-                    0,
-                        border
-                :
-                    0,
-                        background
-                :
-                    'transparent'
-                }
-            }
-                className = {homeClass}
-                onClick = {this.onHome
-            }
-                title = {'Center Stack'}
-                />
-                < button
-                style = {
-                {
-                    position: 'absolute',
-                        left
-                :
-                    2.5,
-                        top
-                :
-                    startOffset + 20,
-                        padding
-                :
-                    0,
-                        border
-                :
-                    0,
-                        background
-                :
-                    'transparent'
-                }
-            }
-                className = {zoomInClass}
-                onClick = {this.onZoomIn
-            }
-                title = {'Zoom In'}
-                />
-                < button
-                style = {
-                {
-                    position: 'absolute',
-                        left
-                :
-                    2.5,
-                        top
-                :
-                    startOffset + 35,
-                        padding
-                :
-                    0,
-                        border
-                :
-                    0,
-                        background
-                :
-                    'transparent'
-                }
-            }
-                className = {zoomOutClass}
-                onClick = {this.onZoomOut
-            }
-                title = {'Zoom Out'}
-                />
-                < button
-                style = {
-                {
-                    position: 'absolute',
-                        left
-                :
-                    2.5,
-                        top
-                :
-                    startOffset + 64,
-                        padding
-                :
-                    0,
-                        border
-                :
-                    0,
-                        background
-                :
-                    'transparent'
-                }
-            }
-                className = {stepInClass}
-                onClick = {this.onStepIn
-            }
-                title = {'Step Into Stack'}
-                />
-                < button
-                style = {
-                {
-                    position: 'absolute',
-                        left
-                :
-                    2.5,
-                        top
-                :
-                    startOffset + 52,
-                        padding
-                :
-                    0,
-                        border
-                :
-                    0,
-                        background
-                :
-                    'transparent'
-                }
-            }
-                className = {stepOutClass}
-                onClick = {this.onStepOut
-            }
-                title = {'Step Out Of Stack'}
-                />
-                < button
-                style = {
-                {
-                    position: 'absolute',
-                        left
-                :
-                    2.5,
-                        top
-                :
-                    startOffset + 83,
-                        padding
-                :
-                    0,
-                        border
-                :
-                    0,
-                        background
-                :
-                    'transparent'
-                }
-            }
-                className = {orthClass}
-                onClick = {this.toggleOrth
-            }
-                title = {'Change Slice Plane Through Stack'}
-                />
-                < button
-                style = {
-                {
-                    position: 'absolute',
-                        left
-                :
-                    2.5,
-                        top
-                :
-                    startOffset + 102,
-                        padding
-                :
-                    0,
-                        border
-                :
-                    0,
-                        background
-                :
-                    'transparent'
-                }
-            }
-                className = {toggleSliceClass}
-                onClick = {this.toggleSlice
-            }
-                title = {'Toggle the 3D slice display'}
-                />
-                < Canvas
-                zoomLevel = {this.state.zoomLevel
-            }
-                dst = {this.state.dst
-            }
-                serverUrl = {this.props.config.serverUrl.replace('http:', location.protocol).replace('https:', location.protocol)
-            }
-                canvasRef = {this.props.canvasRef
-            }
-                fxp = {this.state.fxp
-            }
-                pit = {this.state.pit
-            }
-                yaw = {this.state.yaw
-            }
-                rol = {this.state.rol
-            }
-                stack = {this.state.stack
-            }
-                color = {this.state.color
-            }
-                setExtent = {this.onExtentChange
-            }
-                statusText = {this.state.text
-            }
-                stackX = {this.state.stackX
-            }
-                stackY = {this.state.stackY
-            }
-                scl = {this.state.scl
-            }
-                orth = {this.state.orth
-            }
-                label = {this.state.label
-            }
-                id = {this.state.id
-            }
-                height = {this.props.data.height
-            }
-                width = {this.props.data.width
-            }
-                voxelX = {this.state.voxelX
-            }
-                voxelY = {this.state.voxelY
-            }
-                voxelZ = {this.state.voxelZ
-            }
-                displayArea = {displayArea}
-                templateId = {this.props.config.templateId
-            }
-                templateDomainIds = {this.state.tempId
-            }
-                templateDomainTypeIds = {this.state.tempType
-            }
-                templateDomainNames = {this.state.tempName
-            }
-                slice = {this.state.slice
-            }
-                />
-                < /div>
-            )
-                ;
+                    <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={homeClass} onClick={this.onHome} title={'Center Stack'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset + 20,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={zoomInClass} onClick={this.onZoomIn} title={'Zoom In'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset + 35,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={zoomOutClass} onClick={this.onZoomOut} title={'Zoom Out'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset + 64,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={stepInClass} onClick={this.onStepIn} title={'Step Into Stack'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset + 52,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={stepOutClass} onClick={this.onStepOut} title={'Step Out Of Stack'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 2.5,
+                            top: startOffset + 83,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={orthClass} onClick={this.toggleOrth} title={'Change Slice Plane Through Stack'}/>
+                        <button style={{
+                            position: 'absolute',
+                            left: 3.5,
+                            top: startOffset + 106,
+                            padding: 0,
+                            border: 0,
+                            background: 'transparent'
+                        }} className={toggleSliceClass} onClick={this.toggleSlice} title={'Toggle the 3D slice display'}/>
+                        <Canvas zoomLevel={this.state.zoomLevel} dst={this.state.dst}
+                                serverUrl={this.props.config.serverUrl} canvasRef={this.props.canvasRef}
+                                fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
+                                stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
+                                statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
+                                scl={this.state.scl} orth={this.state.orth}
+                                label={this.state.label} id={this.state.id} height={this.props.data.height}
+                                width={this.props.data.width} voxelX={this.state.voxelX}
+                                voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}
+                                templateId={this.props.config.templateId}
+                                templateDomainIds={this.state.tempId}
+                        		templateDomainTypeIds={this.state.tempType}
+                                templateDomainNames={this.state.tempName}
+                                slice={this.state.slice} />
+                    </div>
+                );
             } else {
                 markup = (
                     < div

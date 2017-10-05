@@ -5,15 +5,6 @@
  */
 define(function (require) {
 
-    PlotsController = require('./plot/controllers/PlotsController');
-    ConnectivityController = require('./connectivity/controllers/ConnectivityController');
-    PopupsController = require('./popup/controllers/PopupController');
-    TreeVisualiserControllerDAT = require('./treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
-    VariableVisualizerController = require('./variablevisualiser/controllers/VariableVisualiserController');
-    StackViewerController = require('./stackViewer/controllers/StackViewerController');
-    //Use as template for new widgets
-    //WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
-
     return function (GEPPETTO) {
 
         /**
@@ -55,120 +46,80 @@ define(function (require) {
              * @param isStateless - boolean that controls if the widget is stateless and persisted in views or not (false by default)
              * @returns {*}
              */
-            addWidget: function (widgetType, isStateless) {
-                var widget = null;
-                switch (widgetType) {
-                    //create plotting widget
-                    case GEPPETTO.Widgets.PLOT:
-                        widget = this.getController(GEPPETTO.Widgets.PLOT).addPlotWidget(isStateless);
-                        break;
-                    //create popup widget
-                    case GEPPETTO.Widgets.POPUP:
-                        widget = this.getController(GEPPETTO.Widgets.POPUP).addPopupWidget(isStateless);
-                        break;
-                    //create tree visualiser DAT widget
-                    case GEPPETTO.Widgets.TREEVISUALISERDAT:
-                        widget = this.getController(GEPPETTO.Widgets.TREEVISUALISERDAT).addTreeVisualiserDATWidget(isStateless);
-                        break;
-                    //create variable visualiser widget
-                    case GEPPETTO.Widgets.VARIABLEVISUALISER:
-                        widget = this.getController(GEPPETTO.Widgets.VARIABLEVISUALISER).addVariableVisualiserWidget(isStateless);
-                        break;
-                    //create connectivity widget
-                    case GEPPETTO.Widgets.CONNECTIVITY:
-                        widget = this.getController(GEPPETTO.Widgets.CONNECTIVITY).addConnectivityWidget(isStateless);
-                        break;
-                    //create stack viewer
-                    case GEPPETTO.Widgets.STACKVIEWER:
-                        widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget(isStateless);
-                        break;
-                    default:
-                        break;
-                }
+            addWidget:  function (widgetType, isStateless, callback) {
+                return new Promise(resolve => {
 
-                return widget;
-            },
+                    this.getController(widgetType).then(controller => {
 
-            /**
-             * Removes widget from Geppetto
-             *
-             * @param {GEPPETTO.Widgets}
-             *            widgetType - Widget to remove from Geppetto
-             */
-            removeWidget: function (widgetType) {
-                this.getController(widgetType).removeWidgets();
-                //TODO Matteo: refactor this a complete custom string doesn't seem to be necessary
-                switch (widgetType) {
-                    case GEPPETTO.Widgets.PLOT:
-                        return GEPPETTO.Resources.REMOVE_PLOT_WIDGETS;
-                    case GEPPETTO.Widgets.POPUP:
-                        return GEPPETTO.Resources.REMOVE_POPUP_WIDGETS;
-                    case GEPPETTO.Widgets.TREEVISUALISERDAT:
-                        return GEPPETTO.Resources.REMOVE_TREEVISUALISERDAT_WIDGETS;
-                    case GEPPETTO.Widgets.VARIABLEVISUALISER:
-                        return GEPPETTO.Resources.REMOVE_VARIABLEVISUALISER_WIDGETS;
-                    case GEPPETTO.Widgets.CONNECTIVITY:
-                        return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
-                    case GEPPETTO.Widgets.STACKVIEWER:
-                        return GEPPETTO.Resources.REMOVE_STACKVIEWER_WIDGETS;
-                    //Use as template for new widgets
-                    //case GEPPETTO.Widgets.WIDGETNAME:
-                    //    return GEPPETTO.Resources.REMOVE_WIDGETNAME_WIDGETS;
-                    default:
-                        return GEPPETTO.Resources.NON_EXISTENT_WIDGETS;
-                }
+                        controller.addWidget(isStateless).then(widget => {
+                            if(callback){
+                                callback(widget);
+                            }
+                            resolve(widget);
+                        });
+
+                    });
+
+                });
             },
 
             getController: function (type) {
-                if (type == GEPPETTO.Widgets.PLOT) {
-                    if (this.plotsController == null || undefined) {
-                        this.plotsController = new PlotsController();
+            	return new Promise(resolve => {
+            	require.ensure([],function(require){
+            	    
+                    if (type == GEPPETTO.Widgets.PLOT) {
+                        if (this.plotsController == null || undefined) {
+                        	PlotsController = require('./plot/controllers/PlotsController');
+                            this.plotsController = new PlotsController();
+                        }
+                        resolve(this.plotsController);
                     }
-                    return this.plotsController;
-                }
-                else if (type == GEPPETTO.Widgets.POPUP) {
-                    if (this.popupsController == null || undefined) {
-                        this.popupsController = new PopupsController();
+                    else if (type == GEPPETTO.Widgets.POPUP) {
+                        if (this.popupsController == null || undefined) {
+                        	PopupsController = require('./popup/controllers/PopupController');
+                            this.popupsController = new PopupsController();
+                        }
+                        resolve(this.popupsController);
                     }
-                    return this.popupsController;
-                }
-                else if (type == GEPPETTO.Widgets.TREEVISUALISERDAT) {
-                    if (this.treeVisDatController == null || undefined) {
-                        this.treeVisDatController = new TreeVisualiserControllerDAT();
+                    else if (type == GEPPETTO.Widgets.TREEVISUALISERDAT) {
+                        if (this.treeVisDatController == null || undefined) {
+                        	TreeVisualiserControllerDAT = require('./treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
+                            this.treeVisDatController = new TreeVisualiserControllerDAT();
+                        }
+                        resolve(this.treeVisDatController);
                     }
-                    return this.treeVisDatController;
-                }
-                else if (type == GEPPETTO.Widgets.VARIABLEVISUALISER) {
-                    if (this.variableVisController == null || undefined) {
-                        this.variableVisController = new VariableVisualizerController();
+                    else if (type == GEPPETTO.Widgets.VARIABLEVISUALISER) {
+                        if (this.variableVisController == null || undefined) {
+                        	VariableVisualizerController = require('./variablevisualiser/controllers/VariableVisualiserController');
+                            this.variableVisController = new VariableVisualizerController();
+                        }
+                        resolve(this.variableVisController);
                     }
-                    return this.variableVisController;
-                }
-                else if (type == GEPPETTO.Widgets.CONNECTIVITY) {
-                    if (this.connectivityController == null || undefined) {
-                        this.connectivityController = new ConnectivityController();
+                    else if (type == GEPPETTO.Widgets.CONNECTIVITY) {
+                        if (this.connectivityController == null || undefined) {
+                        	ConnectivityController = require('./connectivity/controllers/ConnectivityController');
+                            this.connectivityController = new ConnectivityController();
+                        }
+                        resolve(this.connectivityController);
                     }
-                    return this.connectivityController;
-                }
-                else if (type == GEPPETTO.Widgets.BUTTONBAR) {
-                    if (this.buttonBarController == null || undefined) {
-                        this.buttonBarController = new ButtonBarController();
+                    else if (type == GEPPETTO.Widgets.STACKVIEWER) {
+                        if (this.stackViewerController == null || undefined) {
+                        	StackViewerController = require('./stackViewer/controllers/StackViewerController');
+                            this.stackViewerController = new StackViewerController();
+                        }
+                        resolve(this.stackViewerController);
                     }
-                    return this.buttonBarController;
-                }
-                else if (type == GEPPETTO.Widgets.STACKVIEWER) {
-                    if (this.stackViewerController == null || undefined) {
-                        this.stackViewerController = new StackViewerController();
-                    }
-                    return this.stackViewerController;
-                }
-                //Use as template for new widgets
-                //else if (type == GEPPETTO.Widgets.WIDGETNAME) {
-                //    if (this.WIDGETNAMEController == null || undefined) {
-                //        this.WIDGETNAMEController = new WIDGETNAMEController();
-                //    }
-                //    return this.WIDGETNAMEController;
-                //}
+                    //Use as template for new widgets
+                    //else if (type == GEPPETTO.Widgets.WIDGETNAME) {
+                    //    if (this.WIDGETNAMEController == null || undefined) {
+            	    //		  WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
+                    //        this.WIDGETNAMEController = new WIDGETNAMEController();
+                    //    }
+                    //    return this.WIDGETNAMEController;
+                    //}
+            	});
+            	});
+
             }
         };
     };

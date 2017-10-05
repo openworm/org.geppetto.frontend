@@ -15,6 +15,7 @@
     "themes": {
         "geppetto-default/colors": false,
         "geppetto-hm/pages/styles/colors": false,
-        "geppetto-vfb/css/colors.less": true
+        "geppetto-vfb/css/colors": true,
+        "geppetto-neuron/css/colors": false
     }
 }

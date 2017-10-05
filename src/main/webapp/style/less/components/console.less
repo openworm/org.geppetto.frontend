@@ -102,35 +102,35 @@
 .nav-tabs > li > a{
 	color: @primary_color;
 	height : 100%;
-	background: rgba(66,59,59,0.50);
+	background: fade(@background_color_widget, 70%);
 	cursor : pointer;
 }
 
 .nav-tabs > li.active > a{
 	color: @primary_color;
   	border: 0px;
-    background: rgba(66,59,59,0.80);
+    background: fade(@background_color_widget, 90%);
     cursor : pointer;
 }
 
 .nav-tabs > li.active > a:hover{
-	color: white!important;
+	color: @primary_color!important;
   	border: 0px;
-  	background-color: @primary_color!important;
+  	background: fade(@background_color_widget, 90%);
   	cursor : pointer;
 }
 
 .nav-tabs > li > a:hover{
-	color: white;
+	color: @primary_color;
   	border: 0px;
-  	background-color: @primary_color;
+  	background: fade(@background_color_widget, 90%);
   	cursor:pointer
 }
 
 .nav-tabs > li.active > a:focus {
 	color: @primary_color;
   	border: 0px;
-    background: rgba(66,59,59,0.80);
+    background: fade(@background_color_widget, 80%);
 }
 
 ::-webkit-scrollbar,

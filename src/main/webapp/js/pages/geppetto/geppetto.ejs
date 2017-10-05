@@ -33,6 +33,7 @@ $content
 
 
 <div id="mainContainer">
+	<div id="loadingText" style="text-align:center; font-family: consolas; margin-top: 50px;} ">LOADING... [~3MB]</div>
     <div id="controls" class="noSelection">
 		<div id="DownloadProjectButton" class="row"></div>
         <div id="SaveButton" class="row"></div>
@@ -42,11 +43,7 @@ $content
         <div id="sim-toolbar" class="row"></div>
         <div id="tutorial"></div>
         <div id="foreground-toolbar" class="row"></div>
-        <div id="github">
-            <a href="https://github.com/openworm/org.geppetto" target="_blank">
-                <icon class="fa fa-github" id="git"></icon>
-            </a>
-        </div>
+        <div id="github-logo"></div>
     </div>
 
     <div id="geppettologo" class="noSelection"></div>
@@ -59,13 +56,13 @@ $content
         <div id="footerHeader">
             <div id="consoleButtonContainer">
                 <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
-                    <li role="presentation" class="active" id="consoleButton"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i> Console</a></li>
+                    <li role="presentation" class="active" id="consoleButton" style="display:none"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i> Console</a></li>
                     <li role="presentation" id="experimentsButton" style="display:none"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>Experiments</a></li>
                     <li role="presentation" id="pythonConsoleButton" style="display:none"><a href="#pythonConsole" aria-controls="pythonConsole" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i> Python</a></li>
                 </ul>
 
                 <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="console">Console Loading...</div>
+                    <div role="tabpanel" class="tab-pane active" id="console"></div>
                     <div role="tabpanel" id="experiments" class="tab-pane panel panel-default"></div>
                     <div role="tabpanel" id="pythonConsole" class="tab-pane  panel panel-default"></div>
                 </div>
@@ -105,6 +102,7 @@ $content
     ga('send', 'pageview');
 </script>
 
+<script charset="utf-8" type="text/javascript" src="geppetto/build/common.bundle.js"></script>
 <script charset="utf-8" type="text/javascript" src="geppetto/build/main.bundle.js"></script>
 </body>
 </html>

@@ -39,12 +39,12 @@ define(function (require) {
                     GEPPETTO.MessageSocket.socket = new MozWebSocket(host);
                 }
                 else {
-                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_NOT_SUPPORTED);
+                    GEPPETTO.CommandController.log(GEPPETTO.Resources.WEBSOCKET_NOT_SUPPORTED, true);
                     return;
                 }
 
                 GEPPETTO.MessageSocket.socket.onopen = function () {
-                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_OPENED);
+                    GEPPETTO.CommandController.log(GEPPETTO.Resources.WEBSOCKET_OPENED, true);
 
                     //attach the handlers once socket is opened
                     messageHandlers.push(GEPPETTO.SimulationHandler);
@@ -52,7 +52,7 @@ define(function (require) {
                 };
 
                 GEPPETTO.MessageSocket.socket.onclose = function () {
-                    GEPPETTO.Console.debugLog(GEPPETTO.Resources.WEBSOCKET_CLOSED);
+                    GEPPETTO.CommandController.log(GEPPETTO.Resources.WEBSOCKET_CLOSED, true);
                 };
 
                 GEPPETTO.MessageSocket.socket.onmessage = function (msg) {

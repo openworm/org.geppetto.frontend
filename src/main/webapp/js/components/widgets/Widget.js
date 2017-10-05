@@ -531,7 +531,7 @@ define(function (require) {
                                     }
                                 }
                                 item = historyItems[that.executedAction].action[0];
-                                GEPPETTO.Console.executeImplicitCommand(item);
+                                GEPPETTO.CommandController.execute(item, true);
                                 $("#" + that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
                                 event.stopPropagation();
                             });
@@ -666,10 +666,10 @@ define(function (require) {
                         "restore": true,
                         "minimizeLocation": "right",
                         "icons": {
-                            "maximize": "fa fa-window-maximize",
+                            "maximize": "fa fa-expand",
                             "minimize": "fa fa-window-minimize",
                             "collapse": "fa  fa-chevron-circle-up",
-                            "restore": "fa fa-window-restore",
+                            "restore": "fa fa-compress",
                         },
                         "load": function (evt, dlg) {
                             var icons = $("#" + that.id).parent().find(".ui-icon");
@@ -690,6 +690,9 @@ define(function (require) {
                         },
                         "minimize": function (evt, dlg) {
                             that.$el.dialog({ title: that.name });
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
                         },
                         "maximize": function (evt, dlg) {
                             that.setTrasparentBackground(false);
@@ -697,6 +700,9 @@ define(function (require) {
                             var divheight = $(window).height();
                             var divwidth = $(window).width();
                             that.$el.dialog({ height: divheight, width: divwidth });
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                             that.maximize = true;
                         },
                         "restore": function (evt, dlg) {
@@ -710,6 +716,9 @@ define(function (require) {
                             that.collapsed = false;
                         },
                         "collapse": function (evt, dlg) {
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                             that.collapsed = true;
                         }
                     });

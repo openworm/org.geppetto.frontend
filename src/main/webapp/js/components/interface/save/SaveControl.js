@@ -78,7 +78,7 @@ define(function(require) {
        	 	$('.SaveButton').uitooltip({content: "The project is getting persisted..."});
         	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
         	self.setState({disableSave: true});
-        	GEPPETTO.Console.executeCommand("Project.persist();");
+            GEPPETTO.CommandController.execute("Project.persist();");
         	GEPPETTO.trigger("spin_persist");
         },
 

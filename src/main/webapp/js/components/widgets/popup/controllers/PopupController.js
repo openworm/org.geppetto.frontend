@@ -43,7 +43,7 @@ define(function (require) {
                         id: id, name: name, visible: true, controller: that,
                         widgetType: GEPPETTO.Widgets.POPUP, stateless: isStateless
                     });
-                    p.setController(this);
+                    p.setController(that);
                     p.setSize(394, 490);
                     //create help command for plot
                     p.help = function () {

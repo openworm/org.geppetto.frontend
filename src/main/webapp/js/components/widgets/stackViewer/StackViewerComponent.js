@@ -1421,9 +1421,9 @@ define(function (require) {
             var orthClass = 'btn fa fa-refresh';
             var toggleSliceClass = 'btn ';
             if (this.state.slice) {
-                toggleSliceClass += 'gpt-showplane';
-            }else{
                 toggleSliceClass += 'gpt-hideplane';
+            }else{
+                toggleSliceClass += 'gpt-showplane';
             }
             var startOffset = 2.5;
             var displayArea = this.props.data.id + 'displayArea';

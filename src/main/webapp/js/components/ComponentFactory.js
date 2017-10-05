@@ -224,6 +224,7 @@ define(function (require) {
 				            case 'TREE': require(['./interface/tree/Tree'],cb); break;
 				            case 'CONSOLE': require(['./interface/console/Console'],cb); break;
 				            case 'LINKBUTTON': require(['./interface/linkButton/LinkButton'],cb); break;
+				            case 'BUTTONBAR': require(['./interface/buttonBar/ButtonBar'], cb); break;
 	            		}
 	            		
 					});	
@@ -255,10 +256,9 @@ define(function (require) {
 			},
 
 			addWidget: function (componentType, properties, callback) {
-
 				if (componentType in this.components) {
-					if(properties==undefined){
-						properties={};
+					if (properties == undefined) {
+						properties = {};
 					}
 					this._createComponent(componentType, properties, document.getElementById('widgetContainer'), callback, true);
 				}
@@ -268,20 +268,16 @@ define(function (require) {
 						isStateless = properties["isStateless"];
 					}
 					return new Promise(resolve => {
-						
 						GEPPETTO.WidgetFactory.addWidget(componentType, isStateless, callback).then(widget => {
-
 							// Register in component map
 							if (!(componentType in this.componentsMap)) {
 								this.componentsMap[componentType] = []
 							}
 							this.componentsMap[componentType].push(widget);
 							resolve(widget);
-					});
+						});
 					});
 				}
-
-
 			},
 
 			renderComponent: function (component, container, callback) {

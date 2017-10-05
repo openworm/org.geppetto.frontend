@@ -53,7 +53,7 @@ define(function(require) {
 			//execute all actions
 			for(var action in this.actions){
 				if((this.actions).hasOwnProperty(action)){
-					GEPPETTO.Console.executeImplicitCommand(this.actions[action]);
+					GEPPETTO.CommandController.execute(this.actions[action], true);
 				}
 			}
 

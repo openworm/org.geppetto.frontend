@@ -10,6 +10,7 @@ define(function (require) {
     PopupsController = require('./popup/controllers/PopupController');
     TreeVisualiserControllerDAT = require('./treevisualiser/treevisualiserdat/controllers/TreeVisualiserControllerDAT');
     VariableVisualizerController = require('./variablevisualiser/controllers/VariableVisualiserController');
+    ButtonBarController = require('./buttonBar/controllers/ButtonBarController');
     StackViewerController = require('./stackViewer/controllers/StackViewerController');
     //Use as template for new widgets
     //WIDGETNAMEController = require('widgets/buttonBar/controllers/WIDGETNAMEController');
@@ -30,6 +31,7 @@ define(function (require) {
             TREEVISUALISERDAT: 3,
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
+            BUTTONBAR: 7,
             STACKVIEWER: 8 
             //WIDGETNAME: N
         };
@@ -43,6 +45,7 @@ define(function (require) {
             popupsController: null,
             connectivityController: null,
             variableVisController: null,
+            ButtonBarController: null,
             treeVisDatController: null,
             treeVis3DController: null,
             stackViewer3DController: null,
@@ -78,6 +81,10 @@ define(function (require) {
                     case GEPPETTO.Widgets.CONNECTIVITY:
                         widget = this.getController(GEPPETTO.Widgets.CONNECTIVITY).addConnectivityWidget(isStateless);
                         break;
+                    //create button bar
+                    case GEPPETTO.Widgets.BUTTONBAR:
+                        widget = this.getController(GEPPETTO.Widgets.BUTTONBAR).addButtonBarWidget(isStateless);
+                    	break;
                     //create stack viewer
                     case GEPPETTO.Widgets.STACKVIEWER:
                         widget = this.getController(GEPPETTO.Widgets.STACKVIEWER).addStackViewerWidget(isStateless);
@@ -109,6 +116,8 @@ define(function (require) {
                         return GEPPETTO.Resources.REMOVE_VARIABLEVISUALISER_WIDGETS;
                     case GEPPETTO.Widgets.CONNECTIVITY:
                         return GEPPETTO.Resources.REMOVE_CONNECTIVITY_WIDGETS;
+                    case GEPPETTO.Widgets.BUTTONBAR:
+                        return GEPPETTO.Resources.REMOVE_BUTTONBAR_WIDGETS;
                     case GEPPETTO.Widgets.STACKVIEWER:
                         return GEPPETTO.Resources.REMOVE_STACKVIEWER_WIDGETS;
                     //Use as template for new widgets

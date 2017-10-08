@@ -745,7 +745,7 @@ define(['jquery'], function () {
                     var visualValue = visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
                     threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
                     if (threeDeeObj) {
-                        threeDeeObjList.push(threeDeeObj);
+                    	threeDeeObjList.push(threeDeeObj);
                     }
                 }
             } else {
@@ -842,8 +842,8 @@ define(['jquery'], function () {
             var material = lines ? materials["line"] : materials["mesh"];
 
             switch (node.eClass) {
-                case GEPPETTO.Resources.PARTICLE:
-                    threeObject = this.createParticle(node);
+                case GEPPETTO.Resources.PARTICLES:
+                    threeObject = this.createParticles(node);
                     break;
 
                 case GEPPETTO.Resources.CYLINDER:
@@ -950,14 +950,34 @@ define(['jquery'], function () {
          * @param node
          * @returns {THREE.Vector3|*}
          */
-        createParticle: function (node) {
-            threeObject = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
+        createParticles: function (node) {
+            var geometry = new THREE.Geometry();
+            var threeColor = new THREE.Color();
+            var color=('0x' + Math.floor(Math.random() * 16777215).toString(16));
+            threeColor.setHex(color);
+
+            var textureLoader = new THREE.TextureLoader();
+            var material = new THREE.PointsMaterial(
+                {
+                    size: 2,
+                    map: textureLoader.load("geppetto/js/components/interface/3dCanvas/particle.png"),
+                    blending: THREE.AdditiveBlending,
+                    depthTest: false,
+                    transparent: true,
+                    color: threeColor
+                });
+
+        	for(var p=0;p<node.particles.length;p++){
+        		geometry.vertices.push(new THREE.Vector3(node.particles[p].x, node.particles[p].y, node.particles[p].z));
+
+        	}
+
+            material.defaultColor = color;
+            material.defaultOpacity = 1;
+            var threeObject= new THREE.Points(geometry, material);
             threeObject.visible = true;
             threeObject.instancePath = node.instancePath;
             threeObject.highlighted = false;
-            // TODO: does that need to be done?
-            this.visualModelMap[node.instancePath] = threeObject;
-
             return threeObject;
 
         },

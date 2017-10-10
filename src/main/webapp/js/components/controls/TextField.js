@@ -36,8 +36,8 @@ define(function (require, exports, module) {
 		sync() {
 			var kernel = IPython.notebook.kernel;
 			kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-			kernel.execute('taka = GeppettoJupyterGUISync.TextFieldSync(path="' + this.props.path + '",value="' + this.props.value + '")');
-			kernel.execute('taka.sync()');
+			kernel.execute('tf = GeppettoJupyterGUISync.TextFieldSync(path="' + this.props.path + '",value="' + this.props.value + '")');
+			kernel.execute('tf.sync()');
 		}
 
 		componentDidMount() {

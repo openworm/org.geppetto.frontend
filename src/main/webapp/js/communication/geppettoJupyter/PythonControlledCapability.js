@@ -31,6 +31,12 @@ define(function (require) {
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
                     GEPPETTO.ComponentFactory.addExistingComponent(nextProps.componentType, this);
                     this.connectToPython(nextProps.componentType, nextProps.model);
+                    if (this.state.searchText != nextProps.searchText){
+                        this.setState({searchText: nextProps.searchText});
+                    }
+                    if (this.state.value != nextProps.value){
+                        this.setState({value: nextProps.value});
+                    }
                 }
 
                 setSyncValueWithPythonHandler(handler) {
@@ -55,7 +61,6 @@ define(function (require) {
                 handleUpdateInput(value) {
                     // For textfields value is retrived from the event. For dropdown value is retrieved from the value
                     this.state.value = value;
-                    this.state.searchText = value;
 
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
@@ -68,10 +73,10 @@ define(function (require) {
                     this.forceUpdate();
                 }
 
-                connectToPython() {
+                connectToPython(componentType, model) {
                     var kernel = IPython.notebook.kernel;
                     kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + this.props.componentType + '",model="' + this.props.model + '",id="' + this.id + '").connect()');
+                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
                 }
 
                 disconnectFromPython() {
@@ -90,7 +95,7 @@ define(function (require) {
 
                 render() {
                     return (
-                        <WrappedComponent {...this.props} componentType={WrappedComponent.name} value={this.state.value} onChange={this.handleChange}  onUpdateInput={this.handleUpdateInput}/>
+                        <WrappedComponent {...this.props} componentType={WrappedComponent.name} value={this.state.value} searchText={this.state.searchText} onChange={this.handleChange}  onUpdateInput={this.handleUpdateInput}/>
                     );
                 }
 

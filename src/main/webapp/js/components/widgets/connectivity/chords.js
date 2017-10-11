@@ -17,7 +17,6 @@ define(function (require) {
 
             // if no custom colors set then use d3 provided color scheme
             var fill = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
-            fill.domain(context.dataset.nodeTypes);
 
             var svg = context.svg.append("g")
                 .attr("transform", "translate(" + context.options.innerWidth / 2 + "," + context.options.innerHeight / 2 + ")");

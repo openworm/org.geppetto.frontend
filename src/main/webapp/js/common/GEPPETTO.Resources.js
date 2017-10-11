@@ -451,7 +451,7 @@ define(function (require) {
             SPHERE: "Sphere",
             COLLADA: "Collada",
             OBJ: "OBJ",
-            PARTICLE: "Particle",
+            PARTICLES: "Particles",
             //GEPPETTO MODEL
             GEPPETTO_MODEL_NODE: "GeppettoModel",
             LIBRARY_NODE: "GeppettoLibrary",

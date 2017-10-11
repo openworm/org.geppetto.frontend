@@ -383,6 +383,22 @@ define(['jquery'], function () {
         },
 
         /**
+         * Associate a color function to an instance for all the
+         * existing canvas.  The visual instance that will be colored
+         * is given by the `instancePath`, and `modulation` provides
+         * the state variable.
+         *
+         * @param {string} instancePath
+           @param modulation
+           @param colorfn
+         */
+        addColorListener: function(instancePath, modulation, colorfn) {
+            for (var i = 0; i < this.canvasComponents.length; i++) {
+                this.canvasComponents[i].addColorListener(instancePath, modulation, colorfn);
+            }
+        },
+
+        /**
          * Show connection lines for instances.
            @param instances
            @param {boolean} mode - Show or hide connection lines

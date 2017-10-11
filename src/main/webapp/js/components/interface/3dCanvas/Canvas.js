@@ -500,6 +500,19 @@ define(function (require) {
         }
 
         /**
+         * Associate color function to an instance based on seperate
+         * modulation state variable
+         *
+         * @param {string} instancePath
+         * @param modulation
+         * @param colorfn
+         */
+        addColorListener(instancePath, modulation, colorfn) {
+            this.engine.colorController.addColorListener(instancePath, modulation, colorfn);
+            return this;
+        }
+
+        /**
          * Shows the visual groups associated to the passed instance
          * @param instance
          * @returns {Canvas}

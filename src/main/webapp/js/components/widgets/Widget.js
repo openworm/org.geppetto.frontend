@@ -598,7 +598,7 @@ define(function (require) {
              *
              * @param isTransparent
              */
-            setTrasparentBackground: function (isTransparent) {
+            setTransparentBackground: function (isTransparent) {
                 this.transparentBackground = isTransparent;
 
                 if (isTransparent) {
@@ -697,7 +697,7 @@ define(function (require) {
                         	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
                         },
                         "maximize": function (evt, dlg) {
-                            that.setTrasparentBackground(false);
+                            that.setTransparentBackground(false);
                             $(this).trigger('resizeEnd');
                             var divheight = $(window).height();
                             var divwidth = $(window).width();
@@ -712,7 +712,7 @@ define(function (require) {
                                 that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
                                 $(this).trigger('restored', [that.id]);
                             }
-                            that.setTrasparentBackground(that.previousMaxTransparency);
+                            that.setTransparentBackground(that.previousMaxTransparency);
                             $(this).trigger('resizeEnd');
                             that.maximize = false;
                             that.collapsed = false;
@@ -841,7 +841,7 @@ define(function (require) {
                 }
 
                 if (view.transparentBackground != undefined) {
-                    this.setTrasparentBackground(view.transparentBackground);
+                    this.setTransparentBackground(view.transparentBackground);
                 }
 
                 // after setting view through setView, reset dirty flag

@@ -20,6 +20,7 @@ define(function (require) {
             registeredEvents: null,
             comments: [],
             history: [],
+            staticHistoryMenu: [],
 
             constructor: function () {
                 // Call the original constructor
@@ -38,11 +39,15 @@ define(function (require) {
 
             addToHistory: function (label, method, args, id) {
                 var elementPresentInHistory = false;
+                var widget = this.getWidgetById(id);
+
                 for (var i = 0; i < this.history.length; i++) {
                     if (this.history[i].label == label && this.history[i].method == method) {
                         elementPresentInHistory = true;
                         //moves it to the first position
-                        this.history.splice(0, 0, this.history.splice(i, 1)[0]);
+                        if(widget.updateHistoryPosition){
+                        	this.history.splice(0, 0, this.history.splice(i, 1)[0]);
+                        }
                         break;
                     }
                 }
@@ -52,9 +57,14 @@ define(function (require) {
                         "method": method,
                         "arguments": args,
                     });
+                    
+                    this.staticHistoryMenu.push({
+        				"label": label,
+        				"method": method,
+        				"arguments": args,
+        			});
                 }
                 
-                var widget = this.getWidgetById(id);
                 widget.updateNavigationHistoryBar();
             },
 

@@ -118,6 +118,7 @@ define(function (require) {
 
 		open(started) {
 			var p = this.dialog.parent();
+			var shake = p.is(":visible");
 			p.show();
 
 			var self = this;
@@ -141,7 +142,9 @@ define(function (require) {
 			};
 
 			if (!started) {
-				p.effect("shake", {distance: 5, times: 3}, 500, callback);
+				if (shake) {
+					p.effect("shake", {distance: 5, times: 3}, 500, undefined);
+				}
 			} else {
 				//wait before ticking box, needed for dialog to appear and render
 				setTimeout(
@@ -208,7 +211,9 @@ define(function (require) {
 				if (start) {
 					this.start();
                     this.forceUpdate();
-                    this.open(true);
+                    if(!this.props.closeByDefault){
+                        this.open(true);
+        			}
 				}
 			}
 		}
@@ -282,7 +287,11 @@ define(function (require) {
 
 			//Launches tutorial from button 
 			GEPPETTO.on(GEPPETTO.Events.Show_Tutorial, function () {
-				if (self.started) {
+				if (self.started== undefined) {
+					self.loadTutorial(self.props.tutorialData, true);
+					self.open(false);
+				}
+				else if (self.started) {
 					self.open(false);
 				} else {
 					if (!self.state.visible) {
@@ -438,13 +447,17 @@ define(function (require) {
 				}
 				
 
-				return <div>
-					<div className="tutorial-message">
+				var showMemoryCheckbox = this.props.showMemoryCheckbox;
+				if(showMemoryCheckbox==undefined){
+					showMemoryCheckbox = true;
+				}
+				return <div className="mainTutorialContainer">
+					<div className={"tutorial-message " + this.props.tutorialMessageClass}>
 						<div id="tutorialIcon" className={iconClass}></div>
 						<div id="message" dangerouslySetInnerHTML={this.getHTML(step.message)}></div>
 					</div>
 					<div className="btn-group tutorial-buttons" role="group">
-						<div className="tutorial-buttons">
+						<div className={(activeTutorial.steps.length>1 ? "visible " : "hide ")+"tutorial-buttons"}>
 							<button className="prevBtn btn btn-default btn-lg" disabled={prevDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous step" data-container="body" onClick={this.prevStep}>
 								<span><i className="fa fa-arrow-left fa-2x" aria-hidden="true"></i></span>
 							</button>
@@ -452,7 +465,7 @@ define(function (require) {
 								<span>{lastStepLabel}   <i className={lastStep ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
 							</button>
 						</div>
-						<label className={cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTurialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
+						<label className={(showMemoryCheckbox ? "visible " : "hide ")+ cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTurialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
 					</div>
 
 				</div>

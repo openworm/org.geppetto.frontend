@@ -45,7 +45,7 @@ define(function (require) {
                     GEPPETTO.WidgetsListener.subscribe(that, id);
 
                     //updates help command options
-                    GEPPETTO.CommandController.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/buttonBar/ButtonBar.js"));
+                    GEPPETTO.CommandController.updateHelpCommand(vv, id, that.getFileComments("geppetto/js/components/widgets/buttonBar/ButtonBar.js"));
                     //update tags for autocompletion
                     GEPPETTO.CommandController.updateTags(vv.getId(), vv);
                     resolve(vv);

@@ -271,6 +271,12 @@ define(function (require) {
 			this.close();
 			var self = this;
 
+			GEPPETTO.on("widgetRestored", function (id) {
+				if(self.$el[0].id == id){
+					self.forceUpdate();
+				}
+			});
+			
 			//launches specific tutorial is experiment is loaded
 			GEPPETTO.on(GEPPETTO.Events.Model_loaded, function () {
 				if (!self.dontShowTutorial) {

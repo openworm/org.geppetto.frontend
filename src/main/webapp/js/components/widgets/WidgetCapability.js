@@ -603,6 +603,7 @@ define(function (require) {
                                 $(this).trigger('resizeEnd');
                                 that.maximize = false;
                                 that.collapsed = false;
+                                GEPPETTO.trigger("widgetRestored",that.props.id);
                             },
                             "collapse": function (evt, dlg) {
                                 that.collapsed = true;

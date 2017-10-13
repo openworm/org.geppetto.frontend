@@ -199,6 +199,8 @@ define(function (require) {
         },
 
         updateScene: function(){
+        	var originalZIndex = $("#" + this.id).parent().css("z-index");
+        	
             ReactDOM.render(
                 React.createElement(StackViewerComponent, {
                     data: this.data,
@@ -208,6 +210,8 @@ define(function (require) {
                 }),
                 document.getElementById('stack-container' + this.id)
             );
+            
+            $("#" + this.id).parent().css('z-index', originalZIndex);
         },
 
         removeBorders: function(){

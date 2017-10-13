@@ -97,20 +97,11 @@ function hhcellTest(test,name){
 	casper.echo("------------STARTING HHCELL TEST--------------");
 	casper.then(function(){
 		removeAllPlots();
-		casper.wait(2000, function(){
+		casper.wait(20000, function(){
 			var canvas= casper.evaluate(function(){
-				var canvas = document.createElement("canvas");
-			    // Get WebGLRenderingContext from canvas element.
-			    var gl = canvas.getContext("webgl")
-			      || canvas.getContext("experimental-webgl");
-			    // Report the result.
-			    if (gl && gl instanceof WebGLRenderingContext) {
-			      return true;
-			    } else {
-			      return false;
-			    }
+				return Canvas1==undefined;
 			});
-			casper.echo("WebGlEnabled"+canvas);
+			casper.echo("Canvas1"+canvas);
 		});
 	});
 	casper.then(function(){

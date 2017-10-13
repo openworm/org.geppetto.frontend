@@ -99,9 +99,18 @@ function hhcellTest(test,name){
 		removeAllPlots();
 		casper.wait(2000, function(){
 			var canvas= casper.evaluate(function(){
-				return Canvas1==undefined;
+				var canvas = document.createElement("canvas");
+			    // Get WebGLRenderingContext from canvas element.
+			    var gl = canvas.getContext("webgl")
+			      || canvas.getContext("experimental-webgl");
+			    // Report the result.
+			    if (gl && gl instanceof WebGLRenderingContext) {
+			      return true;
+			    } else {
+			      return false;
+			    }
 			});
-			casper.echo("Canvas1"+canvas);
+			casper.echo("WebGlEnabled"+canvas);
 		});
 	});
 	casper.then(function(){

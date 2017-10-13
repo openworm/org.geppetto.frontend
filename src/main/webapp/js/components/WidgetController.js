@@ -19,15 +19,15 @@ class WidgetController {
 		var that = this;
 		this.widgets.push(widget);
 
-		GEPPETTO.Console.updateHelpCommand(widget, widget.getId(), this.comments);
-		GEPPETTO.Console.updateTags(widget.getId(), widget);
+		GEPPETTO.CommandController.updateHelpCommand(widget, widget.getId(), this.comments);
+		GEPPETTO.CommandController.updateTags(widget.getId(), widget);
 
 		//registers remove handler for widget
 		widget.$el.on("remove", function () {
 
 
 			//remove tags and delete object upon destroying widget
-			GEPPETTO.Console.removeCommands(widget.getId());
+			GEPPETTO.CommandController.removeCommands(widget.getId());
 			var widgetsList = that.widgets;
 			for (var p in widgetsList) {
 				if (widgetsList[p].getId() == this.id) {
@@ -57,7 +57,7 @@ class WidgetController {
 			var height = ui.size.height;
 			var width = ui.size.width;
 
-			GEPPETTO.Console.executeImplicitCommand(widget.getId() + ".setSize(" + height + "," + width + ")");
+			GEPPETTO.CommandController.execute(widget.getId() + ".setSize(" + height + "," + width + ")", true);
 
 			var left = ui.position.left;
 			var top = ui.position.top;
@@ -71,7 +71,7 @@ class WidgetController {
 			var left = ui.position.left;
 			var top = ui.position.top;
 
-			GEPPETTO.Console.executeImplicitCommand(widget.getId() + ".setPosition(" + left + "," + top + ")");
+			GEPPETTO.CommandController.execute(widget.getId() + ".setPosition(" + left + "," + top + ")", true);
 		});
 	}
 
@@ -100,7 +100,7 @@ class WidgetController {
 			var widget = this.widgets[i];
 
 			//remove commands
-			GEPPETTO.Console.removeCommands(widget.getId());
+			GEPPETTO.CommandController.removeCommands(widget.getId());
 
 			widget.destroy();
 
@@ -130,6 +130,12 @@ class WidgetController {
 		}
 		if (!elementPresentInHistory) {
 			this.history.unshift({
+				"label": label,
+				"method": method,
+				"arguments": args,
+			});
+			
+			this.staticHistoryMenu.unshift({
 				"label": label,
 				"method": method,
 				"arguments": args,

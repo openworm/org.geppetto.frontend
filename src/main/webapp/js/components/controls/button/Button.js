@@ -32,11 +32,12 @@ define(function(require) {
 			if(position==undefined){
 				position = this.props.configuration.tooltipPosition;
 			}
-			$("#"+this.props.configuration.id).uitooltip("option", "show");
+
+			var selector = $("#"+this.props.configuration.id);
+			selector.uitooltip("option", "show");
 			// update contents of what's displayed on tooltip
-			$("#"+this.props.configuration.id).uitooltip({content: tooltipLabel,
-				position: position});
-			$("#"+this.props.configuration.id).mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
+			selector.uitooltip({content: tooltipLabel,position: position});
+			selector.mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
 		},
 
 		hideToolTip : function(){
@@ -61,7 +62,7 @@ define(function(require) {
 					<div>
 					<button className={this.props.configuration.className+" btn pull-right"} type="button" title=''
 						id={this.props.configuration.id} rel="tooltip" onClick={this.props.configuration.onClick}>
-					<i className={this.state.icon}></i>
+						<i className={this.state.icon} />
 					</button>
 					</div>
 			);

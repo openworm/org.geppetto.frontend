@@ -97,6 +97,12 @@ function hhcellTest(test,name){
 	casper.echo("------------STARTING HHCELL TEST--------------");
 	casper.then(function(){
 		removeAllPlots();
+		casper.wait(2000, function(){
+			var canvas= casper.evaluate(function(){
+				return Canvas1==undefined;
+			});
+			casper.echo("Canvas1"+canvas);
+		});
 	});
 	casper.then(function(){
 		casper.echo("-------Testing Camera Controls--------");
@@ -157,10 +163,8 @@ function hhcellTest(test,name){
 		casper.evaluate(function(){
 			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([hhcell])});
 			Plot1.setPosition(0,300);
-			G.addWidget(1).setMessage("Hhcell popup");
-			G.addWidget(1).setData(hhcell);
-			var customHandler = function(node, path, widget) {};
-	        Popup2.addCustomNodeHandler(customHandler,'click');
+			G.addWidget(1).then(w=>{w.setMessage("Hhcell popup");});
+			G.addWidget(1).then(w=>{w.setMessage("Hhcell popup 2").addCustomNodeHandler(function(){},'click');});
 		});
 	});
 	

@@ -1,7 +1,10 @@
 define(function (require) {
 
+	require("./vendor/slick.css");
+	require("./vendor/slick-theme.less");
 	var React = require('react');
 	var Slider = require('react-slick').default;
+	
 	var AbstractComponent = require('../../AComponent');
 
 	return class Carousel extends AbstractComponent {
@@ -10,7 +13,7 @@ define(function (require) {
 			super(props);
 
 			var settings = {
-				infinite: true,
+				infinite: false,
 				speed: 500,
 				slidesToShow: 1
 			};
@@ -23,7 +26,7 @@ define(function (require) {
 			this.download = this.download.bind(this);
 		}
 
-		componentDidMount(){
+		componentDidMount() {
 			this.refs.slider.forceUpdate();
 		}
 
@@ -36,8 +39,9 @@ define(function (require) {
 		}
 
 		render() {
+			var that = this;
 			var items = this.state.files.map(function (path, index) {
-				return (<div key={index}><img src={path} /></div>);
+				return (<div key={index}><img onClick={() => that.props.onClick(path)} onMouseEnter={() => that.props.onMouseEnter(path)} onMouseLeave={() => that.props.onMouseLeave(path)} src={path} /></div>);
 			});
 
 			if (this.state.files != undefined) {

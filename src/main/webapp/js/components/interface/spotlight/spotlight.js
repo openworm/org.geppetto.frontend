@@ -30,7 +30,7 @@ define(function (require) {
         plotSample: {
             "label": "Plot all recorded variables",
             "actions": [
-                "var p=G.addWidget(0).setName('Recorded Variables');",
+                "var p=G.addWidget(0).then(w=>{w.setName('Recorded Variables');});",
                 "$.each(Project.getActiveExperiment().getWatchedVariables(true,false),function(index,value){p.plotData(value)});"
             ],
             "icon": "fa-area-chart"
@@ -279,7 +279,7 @@ define(function (require) {
                         suggestionFound = true;
                         var actions = found[0].actions;
                         actions.forEach(function (action) {
-                            GEPPETTO.Console.executeImplicitCommand(action)
+                            GEPPETTO.CommandController.execute(action, true);
                         });
                         $("#typeahead").typeahead('val', "");
                     }
@@ -324,7 +324,7 @@ define(function (require) {
                             else{
                                 actions = found[0].actions;
                                 actions.forEach(function (action) {
-                                    GEPPETTO.Console.executeImplicitCommand(action)
+                                    GEPPETTO.CommandController.execute(action, true);
                                 });
                                 $("#typeahead").typeahead('val', "");
                             }
@@ -693,7 +693,7 @@ define(function (require) {
                 var that = this;
                 return function () {
                     button.actions.forEach(function (action) {
-                        GEPPETTO.Console.executeImplicitCommand(that.getCommand(action, instance))
+                        GEPPETTO.CommandController.execute(that.getCommand(action, instance), true);
                     });
                     $("#" + name).focus();
                 }
@@ -706,7 +706,7 @@ define(function (require) {
                     var condition = that.execute(button.condition, instance);
                     var actions = button[condition].actions;
                     actions.forEach(function (action) {
-                        GEPPETTO.Console.executeImplicitCommand(that.getCommand(action, instance));
+                        GEPPETTO.CommandController.execute(that.getCommand(action, instance), true);
                     });
                     that.switchStatefulButtonState(button, name, condition);
                 }
@@ -790,7 +790,7 @@ define(function (require) {
                             .attr('value', value)
                             .on('change', function() {
                                 var value=$("#" + name + " .spotlight-input").val();
-                                GEPPETTO.Console.executeImplicitCommand(that.getCommand(element.onChange, instance,value));
+                                GEPPETTO.CommandController.execute(that.getCommand(element.onChange, instance,value), true);
                             })
                             .css("width",((value.length + 1) * 14) + 'px')
                             .on('keyup',function() {
@@ -952,7 +952,7 @@ define(function (require) {
                 "CompositeType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(3).setData($type$).setName('$typeid$')",
+                            "G.addWidget(3).then(w=>{w.setData($type$).setName('$typeid$');});",
                         ],
                         "icon": "fa-puzzle-piece",
                         "label": "Explore type",
@@ -962,7 +962,7 @@ define(function (require) {
                 "TextType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(1).setText($instance0$).setName('$variableid$')",
+                            "G.addWidget(1).then(w=>{w.setText($instance0$).setName('$variableid$');});",
                         ],
                         "icon": "fa-eye",
                         "label": "View text",
@@ -972,7 +972,7 @@ define(function (require) {
                 "HTMLType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(1).setHTML($instance0$).setName('$variableid$').addCustomNodeHandler(function(node){G.addWidget(3).setData(node);}, 'click');",
+                            "G.addWidget(1).then(w=>{w.setHTML($instance0$).setName('$variableid$').addCustomNodeHandler(function(node){G.addWidget(3).then(w=>{w.setData(node);});}, 'click');});",
                         ],
                         "icon": "fa-eye",
                         "label": "View HTML",

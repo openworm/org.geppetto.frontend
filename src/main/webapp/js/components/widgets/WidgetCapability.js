@@ -6,10 +6,10 @@
  */
 define(function (require) {
 
-    var Backbone = require('backbone');
     var $ = require('jquery');
     require("./jquery.dialogextend.min");
     var React = require('react');
+    var Overlay = require('../../components/interface/overlay/Overlay');
 
     module.exports = {
         createWidget(WrappedComponent) {
@@ -34,7 +34,8 @@ define(function (require) {
                         previousMaxTransparency: false,
                         previousMaxSize: {},
                         maximize: false,
-                        collapsed: false,
+                        collapsed: false
+
                     });
 
                 }
@@ -43,8 +44,8 @@ define(function (require) {
                     return true;
                 }
 
-                help() {
-                    return GEPPETTO.Console.getObjectCommands(this.props.id);
+                help () {
+                    return GEPPETTO.CommandController.getObjectCommands(this.props.id);
                 }
 
                 /**
@@ -396,7 +397,7 @@ define(function (require) {
                                         that.executedAction = historyItems.length - 1;
                                     }
                                     item = historyItems[that.executedAction].action[0];
-                                    GEPPETTO.Console.executeImplicitCommand(item);
+                                    GEPPETTO.CommandController.execute(item, true);
                                     $("#" + that.props.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
                                     event.stopPropagation();
                                 });
@@ -425,9 +426,10 @@ define(function (require) {
                     }
                 }
 
-                addButtonToTitleBar(button) {
+                addButtonToTitleBar(button, containerSelector) {
+                    if (containerSelector == undefined){containerSelector="div.ui-dialog-titlebar"}
                     var dialogParent = this.$el.parent();
-                    dialogParent.find("div.ui-dialog-titlebar").prepend(button);
+                    dialogParent.find(containerSelector).prepend(button);
                     $(button).addClass("widget-title-bar-button");
                 }
 
@@ -440,6 +442,20 @@ define(function (require) {
                             show: true
                         }, document.getElementById("modal-region"));
                     }));
+                }
+
+                setCustomButtons(customButtons) {
+                    var dialogParent = this.$el.parent();
+                    dialogParent.find('.customButtons').empty();
+                    this.addCustomButtons(customButtons);
+                }
+
+                addCustomButtons(customButtons) {
+                    var that = this;
+                    customButtons.forEach(function(customButton) {
+                        that.addButtonToTitleBar(
+                            $("<div class='fa " + customButton.icon + "' title='" + customButton.title + "'></div>").click(customButton.action), '.customButtons');
+                    });
                 }
 
                 addDownloadButton(downloadFunction) {
@@ -541,10 +557,10 @@ define(function (require) {
                             "restore": true,
                             "minimizeLocation": "right",
                             "icons": {
-                                "maximize": "fa fa-window-maximize",
+                                "maximize": "fa fa-expand",
                                 "minimize": "fa fa-window-minimize",
                                 "collapse": "fa  fa-chevron-circle-up",
-                                "restore": "fa fa-window-restore",
+                                "restore": "fa fa-compress",
                             },
                             "load": function (evt, dlg) {
                                 var icons = $("#" + that.props.id).parent().find(".ui-icon");
@@ -572,31 +588,32 @@ define(function (require) {
                                 that.setTransparentBackground(false);
                                 var divheight = $(window).height();
                                 var divwidth = $(window).width();
-                                that.$el.dialog({ height: divheight, width: divwidth });
+                                that.$el.dialog({ height: divheight, width: divwidth}).dialogExtend();
+                                that.$el.parent().css("bottom","0");
                                 $(this).trigger('resizeEnd');
                                 that.maximize = true;
                             },
                             "restore": function (evt, dlg) {
                                 if (that.maximize) {
                                     that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
+                                    that.$el.parent().height(that.previousMaxSize.height);
                                     $(this).trigger('restored', [that.props.id]);
                                 }
                                 that.setTransparentBackground(that.previousMaxTransparency);
                                 $(this).trigger('resizeEnd');
                                 that.maximize = false;
                                 that.collapsed = false;
+                                GEPPETTO.trigger("widgetRestored",that.props.id);
                             },
                             "collapse": function (evt, dlg) {
                                 that.collapsed = true;
                             }
                         });
 
-                    //this.dialog.parent('.ui-dialog').prependTo($('#widgetContainer').find('div'));
-                    //this.dialog.dialog('open')
-
                     this.$el = $("#" + this.props.id);
                     this.container = this.$el.children().get(0);
                     var dialogParent = this.$el.parent();
+                    window[this.props.id]=this;
 
                     //add history
                     this.showHistoryIcon(this.props.showHistoryIcon);
@@ -605,17 +622,23 @@ define(function (require) {
                     dialogParent.find("button.ui-dialog-titlebar-close").html("");
                     dialogParent.find(".ui-dialog-titlebar").find("button").append("<i class='fa fa-close'></i>");
 
-
                     //Take focus away from close button
                     dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
                     //add help button
-                    this.addHelpButton();
+                    if(this.props.help){
+                    	this.addHelpButton();	
+                    }
+                    
 
                     //add download button
                     if (super.download) {
                         this.addDownloadButton(super.download);
                     }
+
+                    //add custom buttons
+                    dialogParent.find("div.ui-dialog-titlebar").prepend("<div class='customButtons'></div>");
+                    this.addCustomButtons(this.props.customButtons);
 
                     // initialize content
                     this.size = this.props.size;
@@ -635,7 +658,7 @@ define(function (require) {
 
                     if (this.props.fixPosition) {
                         dialogParent.detach().appendTo(originalParentContainer);
-                        dialogParent.css({ top: this.position.top, left: this.position.left, position: 'absolute' });
+                        dialogParent.css({ top: this.position.top, left: this.position.left, height: this.size.height, width:this.size.width, position: 'absolute' });
                     }
 
                     window.addEventListener('resize', function (event) {
@@ -739,23 +762,52 @@ define(function (require) {
                     super.setView(view);
                 }
 
+                /**
+                 * Show modal layer. items will be any react/html component. Typically it will be used to display a loading spinner but any component should work
+                 * 
+                 * @param {*} items 
+                 */
+                showOverlay(items) {
+                    var state = { show: true };
+                    if (items != undefined) {
+                        state["items"] = items;
+                    }
+                    this.refs.overlay.setState(state);
+                }
+
+                /**
+                 * Hide modal layer 
+                 * 
+                 */
+                hideOverlay() {
+                    this.refs.overlay.setState({ show: false });
+                }
 
                 /**
                  * Renders the widget dialog window
                  */
                 render() {
-                    /*return (
-                        <div key={this.props.id} id={this.props.id} className='dialog' title={this.props.title}>
-                            <WrappedComponent
-                                setName= {this.setName}
-                                {...this.props}
-                                {...this.state}
-                                ref={(c) => this._component = c}/>
+                    return (
+                        <div key={this.props.id} id={this.props.id} className={'dialog ' + (this.props.componentType != undefined) ? this.props.componentType.toLowerCase() + "-widget" : ''} title={this.props.title}>
+
+                            <Overlay
+                                ref="overlay"
+                                show={this.props.modalIsOpen}
+                                container={() => document.querySelector('#' + this.props.id)}
+                                items={this.props.overlayItems}
+                                style={{
+                                    position: 'absolute',
+                                    zIndex: 1040,
+                                    top: 0, bottom: 0, left: 0, right: 0,
+                                    color: 'white'
+                                }}
+                            />
+
+                            {super.render()}
                         </div>
-                    )*/
-                    return <div key={this.props.id} id={this.props.id} className={'dialog ' + (this.props.componentType!=undefined)?this.props.componentType.toLowerCase()+ "-widget":'' } title={this.props.title}> {super.render()} </div>
+                    )
                 }
-            };
+            }
 
             Widget.defaultProps = {
                 size: { height: 300, width: 350 },
@@ -765,10 +817,14 @@ define(function (require) {
                 showHistoryIcon: true,
                 closable: true,
                 maximizable: true,
+                help: true,
                 minimizable: true,
-                collapsable: true
+                collapsable: true,
+                modalIsOpen: false,
+                overlayItems: <div style={{ top: '50%', transform: 'translate(0, -50%)', position: 'absolute', fontSize: '4em' }}>Loading widget...</div>,
+                customButtons: []
             };
             return Widget;
         }
     }
-})
+});

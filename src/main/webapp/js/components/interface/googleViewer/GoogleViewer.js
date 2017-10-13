@@ -8,7 +8,7 @@ define(function (require) {
 	return class GoogleViewer extends AbstractComponent {
 
 		constructor(props) {
-            super(props);
+			super(props);
 
 			var _this = this;
 			var mapSettings = {
@@ -26,7 +26,7 @@ define(function (require) {
 						return null;
 					}
 					var bound = Math.pow(2, zoom);
-					return  _this.state.path +
+					return _this.state.path +
 						'/' + zoom + '/' + normalizedCoord.x + '/' +
 						(bound - normalizedCoord.y - 1) + '.jpg';
 				},
@@ -42,15 +42,15 @@ define(function (require) {
 			this.state = {
 				mapSettings: $.extend(mapSettings, this.props.mapSettings),
 				imageMapTypeSettings: $.extend(imageMapTypeSettings, this.props.imageMapTypeSettings),
-				tileWidth: (this.props.tileWidth != undefined)?this.props.tileWidth:256 ,
-				tileHeight: (this.props.tileHeight != undefined)?this.props.tileHeight:256,
+				tileWidth: (this.props.tileWidth != undefined) ? this.props.tileWidth : 256,
+				tileHeight: (this.props.tileHeight != undefined) ? this.props.tileHeight : 256,
 				path: path
 			};
 		}
 
 		extractFilesPath(data) {
 			var path;
-			if (data != undefined){
+			if (data != undefined) {
 				if (data.getMetaType == undefined) {
 					path = data;
 				}
@@ -69,7 +69,7 @@ define(function (require) {
 
 		// Normalizes the coords that tiles repeat across the x axis (horizontally)
 		// like the standard Google map tiles.
-		getNormalizedCoord (coord, zoom) {
+		getNormalizedCoord(coord, zoom) {
 			var y = coord.y;
 			var x = coord.x;
 
@@ -90,20 +90,36 @@ define(function (require) {
 			return { x: x, y: y };
 		}
 
-		componentDidMount () {
+		getMap() {
+			return this.map;
+		}
+
+		setMap(map) {
+			this.map = map;
+			this.addResizeHandler();
+		}
+
+		componentDidMount() {
 			var _this = this;
 			GoogleMapsLoader.KEY = this.props.googleKey;
 			GoogleMapsLoader.load(function (google) {
 				var container = document.getElementById(_this.props.id + "_component");
 
-				var map = new google.maps.Map(container, _this.state.mapSettings);
+				_this.map = new google.maps.Map(container, _this.state.mapSettings);
 
 				// tileSize: new google.maps.Size(256, 256),
 				_this.state.imageMapTypeSettings['tileSize'] = new google.maps.Size(_this.state.tileWidth, _this.state.tileHeight);
 				var imageMapType = new google.maps.ImageMapType(_this.state.imageMapTypeSettings);
 
-				map.mapTypes.set('imageMapType', imageMapType);
-				map.setMapTypeId('imageMapType');
+				_this.map.mapTypes.set('imageMapType', imageMapType);
+				_this.map.setMapTypeId('imageMapType');
+
+				$(window).resize(function () {
+					google.maps.event.trigger(_this.map, "resize");
+				});
+
+				_this.addResizeHandler();
+
 
 			});
 
@@ -112,14 +128,28 @@ define(function (require) {
 			});
 		}
 
+		addResizeHandler(){
+			var _this = this;
+			_this.newCenter = null;
+			google.maps.event.addListener(_this.map, 'idle', function () {
+				if (_this.newCenter== null){
+					_this.newCenter = _this.map.getCenter();
+				}
+
+			});
+			google.maps.event.addListener(_this.map, 'resize', function () {
+				setTimeout(function () { _this.map.setCenter(_this.newCenter); }, 200);
+			});
+		}
+
 		download() {
 			//What do we do here?
 			console.log("Downloading data...");
 		}
 
-		render () {
+		render() {
 			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="googleViewer">
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="googleViewer" style={this.props.style}>
 				</div>
 			)
 		}

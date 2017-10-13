@@ -69,7 +69,7 @@ define(function (require) {
             	var height = $("#"+that.id).parent().height();
                 var width = $("#"+that.id).parent().width();
 
-                GEPPETTO.Console.executeCommand(that.id + ".setSize(" + height + "," + width + ")");
+                GEPPETTO.CommandController.execute(that.id + ".setSize(" + height + "," + width + ")", true);
 
                 var left = $("#"+that.id).parent().offset().left;
                 var top = $("#"+that.id).parent().offset().top;

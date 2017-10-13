@@ -31,6 +31,7 @@ define(function (require) {
             position: {},
             registeredEvents: null,
             executedAction: 0,
+            lastExecutedAction: 0,
             title: null,
             previousMaxTransparency: false,
             previousMaxSize: {},
@@ -41,6 +42,10 @@ define(function (require) {
             showTitleBar: true,
             transparentBackground: false,
             dirtyView: false,
+            updateHistoryPosition : true,
+            helpInfo :  '### Inline help not yet available for this widget! \n\n' +
+            			'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html"'+
+            			'target="_blank">online documentation</a> instead.',
 
             defaultSize: function () { return { height: 300, width: 350 } },
             defaultPosition: function () { return { left: "50%", top: "50%" } },
@@ -381,7 +386,7 @@ define(function (require) {
             showHistoryMenu: function (event) {
                 var that = this;
                 if (this.controller.history.length > 0) {
-
+                	that.updateHistoryPosition = true;
                     this.historyMenu.show({
                         top: event.pageY,
                         left: event.pageX + 1,
@@ -441,7 +446,7 @@ define(function (require) {
 
             updateNavigationHistoryBar: function () {
                 var disabled = "arrow-disabled";
-                if (this.getItems(this.controller.history, "controller.history").length <= 1) {
+                if (this.getItems(this.controller.staticHistoryMenu, "controller.staticHistoryMenu").length <= 1) {
                     if (!$("#" + this.id + "-left-nav").hasClass(disabled)) {
                         $("#" + this.id + "-left-nav").addClass(disabled);
                         $("#" + this.id + "-right-nav").addClass(disabled);
@@ -462,20 +467,73 @@ define(function (require) {
                     if ((leftNav.length == 0) && (rightNav.length == 0)) {
 
                         var disabled = "";
-                        if (this.getItems(this.controller.history, "controller.history").length <= 1) {
+                        if (this.getItems(this.controller.staticHistoryMenu, "controller.staticHistoryMenu").length <= 1) {
                             disabled = "arrow-disabled ";
                         }
 
                         var that = this;
                         var button = $("<div id='" + this.id + "-left-nav' class='" + disabled + "fa fa-arrow-left'></div>" +
                             "<div id='" + this.id + "-right-nav' class='" + disabled + "fa fa-arrow-right'></div>").click(function (event) {
-                                var historyItems = that.getItems(that.controller.history, "controller.history");
+                                var historyItems = that.getItems(that.controller.staticHistoryMenu, "controller.staticHistoryMenu");
                                 var item;
-                                if (event.target.id == (that.id + "-left-nav") || (that.id + "-right-nav")) {
-                                    that.executedAction = historyItems.length - 1;
+                                that.lastExecutedAction = $("#" + that.id).parent().find(".ui-dialog-title").html();
+                                if (event.target.id == (that.id + "-right-nav")) {
+                                    that.executedAction = that.executedAction + 1;
+                                    if (that.executedAction >= historyItems.length) {
+                                        that.executedAction = 0;
+                                    }
+                                    
+                                    var match = that.executedAction;
+                                    for(var i=0; i<historyItems.length; i++){
+                                		var currentItem = historyItems[i];
+                                		if(that.lastExecutedAction == currentItem.label){
+                                			match= i;
+                                		}
+                                	}
+                                    
+                                    if (that.lastExecutedAction == historyItems[that.executedAction].label) {
+                                        that.executedAction = match+1;
+                                    }
+                                    
+                                    if(that.executedAction<=match){
+                                    	that.executedAction = match +1;
+                                    	if (that.executedAction >= historyItems.length) {
+                                            that.executedAction = 0;
+                                        }
+                                    }
                                 }
+                                if (event.target.id == (that.id + "-left-nav")) {
+                                    that.executedAction = that.executedAction - 1;
+                                    if (that.executedAction <= -1) {
+                                        that.executedAction = historyItems.length-1;
+                                    }
+                                    
+                                    var match = that.executedAction;
+                                    for(var i=0; i<historyItems.length; i++){
+                                		var currentItem = historyItems[i];
+                                		if(that.lastExecutedAction == currentItem.label){
+                                			match= i;
+                                		}
+                                	}
+                                    
+                                    if ((that.lastExecutedAction == historyItems[that.executedAction].label)) {
+                                        that.executedAction = match-1;
+                                    }
+                                    
+                                    if (that.executedAction <= -1) {
+                                        that.executedAction = historyItems.length-1;
+                                    }
+                                    
+                                    if(that.executedAction>match){
+                                    	that.executedAction = match-1;
+                                    	if (that.executedAction <= -1) {
+                                            that.executedAction = historyItems.length-1;
+                                        }
+                                    }
+                                }
+                                that.updateHistoryPosition = false;
                                 item = historyItems[that.executedAction].action[0];
-                                GEPPETTO.Console.executeImplicitCommand(item);
+                                GEPPETTO.CommandController.execute(item, true);
                                 $("#" + that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
                                 event.stopPropagation();
                             });
@@ -610,10 +668,10 @@ define(function (require) {
                         "restore": true,
                         "minimizeLocation": "right",
                         "icons": {
-                            "maximize": "fa fa-window-maximize",
+                            "maximize": "fa fa-expand",
                             "minimize": "fa fa-window-minimize",
                             "collapse": "fa  fa-chevron-circle-up",
-                            "restore": "fa fa-window-restore",
+                            "restore": "fa fa-compress",
                         },
                         "load": function (evt, dlg) {
                             var icons = $("#" + that.id).parent().find(".ui-icon");
@@ -634,6 +692,9 @@ define(function (require) {
                         },
                         "minimize": function (evt, dlg) {
                             that.$el.dialog({ title: that.name });
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
                         },
                         "maximize": function (evt, dlg) {
                             that.setTransparentBackground(false);
@@ -641,6 +702,9 @@ define(function (require) {
                             var divheight = $(window).height();
                             var divwidth = $(window).width();
                             that.$el.dialog({ height: divheight, width: divwidth });
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                             that.maximize = true;
                         },
                         "restore": function (evt, dlg) {
@@ -654,6 +718,9 @@ define(function (require) {
                             that.collapsed = false;
                         },
                         "collapse": function (evt, dlg) {
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                        	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                             that.collapsed = true;
                         }
                     });
@@ -696,10 +763,13 @@ define(function (require) {
                     return el.id === event
                 });
             },
+            
+            setHelpInfo : function(helpInfo){
+            	this.helpInfo = helpInfo;
+            },
 
             getHelp: function () {
-                return '### Inline help not yet available for this widget! \n\n' +
-                    'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html" target="_blank">online documentation</a> instead.';
+                return this.helpInfo;
             },
 
             setController: function (controller) {

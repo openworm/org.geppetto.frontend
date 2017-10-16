@@ -34,7 +34,8 @@ define(function (require) {
                         previousMaxTransparency: false,
                         previousMaxSize: {},
                         maximize: false,
-                        collapsed: false
+                        collapsed: false,
+                        previousZIndex : 1
 
                     });
 
@@ -550,7 +551,7 @@ define(function (require) {
                                 }
                             }
                         }).dialogExtend({
-                            "closable": this.props.closable,
+                        	"closable": this.props.closable,
                             "maximizable": this.props.maximizable,
                             "minimizable": this.props.minimizable,
                             "collapsable": this.props.collapsable,
@@ -583,29 +584,43 @@ define(function (require) {
                             },
                             "minimize": function (evt, dlg) {
                                 that.$el.dialog({ title: that.name });
+                                $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                            	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                            	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
+                            	that.previousZIndex = that.$el.parent().css("z-index");
+                            	that.$el.parent().css("z-index", 1);
                             },
                             "maximize": function (evt, dlg) {
                                 that.setTransparentBackground(false);
+                                $(this).trigger('resizeEnd');
                                 var divheight = $(window).height();
                                 var divwidth = $(window).width();
-                                that.$el.dialog({ height: divheight, width: divwidth}).dialogExtend();
-                                that.$el.parent().css("bottom","0");
-                                $(this).trigger('resizeEnd');
+                                that.$el.dialog({ height: divheight, width: divwidth });
+                                $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                            	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                            	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                                 that.maximize = true;
+                                that.previousZIndex = that.$el.parent().css("z-index");
+                                that.$el.parent().css("z-index", 999);
                             },
                             "restore": function (evt, dlg) {
                                 if (that.maximize) {
                                     that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
-                                    that.$el.parent().height(that.previousMaxSize.height);
-                                    $(this).trigger('restored', [that.props.id]);
+                                    $(this).trigger('restored', [that.id]);
                                 }
                                 that.setTransparentBackground(that.previousMaxTransparency);
                                 $(this).trigger('resizeEnd');
                                 that.maximize = false;
                                 that.collapsed = false;
+                                GEPPETTO.trigger("widgetRestored",that.props.id);
+                                that.$el.parent().css("z-index", that.previousZIndex);
                             },
                             "collapse": function (evt, dlg) {
+                            	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                            	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                            	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                                 that.collapsed = true;
+                                that.previousZIndex = that.$el.parent().css("z-index");
                             }
                         });
 

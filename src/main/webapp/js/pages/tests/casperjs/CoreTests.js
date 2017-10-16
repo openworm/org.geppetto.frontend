@@ -97,6 +97,12 @@ function hhcellTest(test,name){
 	casper.echo("------------STARTING HHCELL TEST--------------");
 	casper.then(function(){
 		removeAllPlots();
+		casper.wait(20000, function(){
+			var canvas= casper.evaluate(function(){
+				return Canvas1==undefined;
+			});
+			casper.echo("Canvas1"+canvas);
+		});
 	});
 	casper.then(function(){
 		casper.echo("-------Testing Camera Controls--------");

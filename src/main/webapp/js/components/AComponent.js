@@ -20,6 +20,7 @@ define(function (require) {
                 super(props);
                 this.dirtyView = false;
                 this.container = null;
+                window[this.props.id]=this;
             }
 
             getContainer() {

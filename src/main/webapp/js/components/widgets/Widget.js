@@ -682,10 +682,11 @@ define(function (require) {
                             }
                         },
                         "beforeMinimize": function (evt, dlg) {
-                            var label = that.name;
-                            label = label.substring(0, 6);
+                        	var label = that.name;
+                            if (label != undefined) {
+                                label = label.substring(0, 6);
+                            }
                             that.$el.dialog({ title: label });
-                            that.previousMaxSize = { width: divwidth, height: divheight };
                         },
                         "beforeMaximize": function (evt, dlg) {
                             var divheight = that.size.height;

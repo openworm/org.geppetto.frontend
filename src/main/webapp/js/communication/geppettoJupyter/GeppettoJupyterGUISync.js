@@ -63,7 +63,7 @@ define(function (require, exports, module) {
 			else {
 				if (this.component != undefined) {
 					if (this.component.state.value != value) {
-						this.component.setState({ value: value });
+						this.component.setState({ value: value, searchText: value });
 					}
 				}
 			}

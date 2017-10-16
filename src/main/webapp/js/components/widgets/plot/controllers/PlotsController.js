@@ -146,7 +146,7 @@ define(function(require) {
                 if (node.getWrappedObj().getInitialValues()[0].value.dynamics.functionPlot != undefined) {
                     var group1 = [{
                         label: "Plot Function",
-                        action: ["var p = G.addWidget(Widgets.PLOT).plotFunctionNode(" + node.getPath() + ")", "p.setSize(200,450)"],
+                        action: ["G.addWidget(Widgets.PLOT).then(w=>{w.plotFunctionNode(" + node.getPath() + "); w.setSize(200,450);});"],
                     }];
 
                     var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
@@ -212,13 +212,13 @@ define(function(require) {
                         widget.updateAxis(path);
                     }
                 } else {
-                    var cb = function(){
+                    var cb = async function(){
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
                     		plotWidget.plotData(i);
                     		plotWidget.updateAxis(i.getInstancePath());
                     	} else {
-                    		var plot = G.addWidget(0);
+                    		var plot = await G.addWidget(0);
                             plot.plotData(i).setName(path);
                             plot.updateAxis(path);
                     	}
@@ -228,7 +228,7 @@ define(function(require) {
                 }
             } else {
                 // we are dealing with external instances, define re-usable callback for plotting external instances
-                var plotExternalCallback = function() {
+                var plotExternalCallback = async function() {
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
                     // if xPath is not specified, assume time
                     if(xPath == undefined){ xPath = 'time(StateVariable)'; }
@@ -236,7 +236,7 @@ define(function(require) {
                     if (plotWidget != undefined) {
                         plotWidget.plotXYData(i, t);
                     } else {
-                    	var plot = G.addWidget(0);
+                    	var plot = await G.addWidget(0);
                         plot.plotXYData(i, t).setName(path);
                     }
                 };

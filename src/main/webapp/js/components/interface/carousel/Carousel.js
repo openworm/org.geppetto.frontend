@@ -1,7 +1,10 @@
 define(function (require) {
 
+	require("./vendor/slick.css");
+	require("./vendor/slick-theme.less");
 	var React = require('react');
 	var Slider = require('react-slick').default;
+	
 	var AbstractComponent = require('../../AComponent');
 
 	return class Carousel extends AbstractComponent {

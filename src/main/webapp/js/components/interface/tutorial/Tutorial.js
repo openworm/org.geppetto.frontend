@@ -121,26 +121,6 @@ define(function (require) {
 			var shake = p.is(":visible");
 			p.show();
 
-			var self = this;
-			var callback = function () {
-				var width = self.getActiveTutorial()["width"];
-				var height = self.getActiveTutorial()["height"];
-				if (height != undefined) {
-					p.height(height + "px");
-					self.dialog.css("height", height + "px");
-				}
-				if (width != undefined) {
-					p.width(width + "px");
-					self.dialog.css("width", width + "px");
-				}
-				
-				
-				var ignoreTutorial = $.cookie('ignore_tutorial');
-				if(ignoreTutorial== 'true'){
-					$('#ignoreTutorialCheck').prop('checked', true);
-				}
-			};
-
 			if (!started) {
 				if (shake) {
 					p.effect("shake", {distance: 5, times: 3}, 500, undefined);

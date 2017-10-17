@@ -32,7 +32,7 @@ define(function (require) {
 		 * Stores cookie to avoid showing tutorial next time at startup
 		 */
 		dontShowAtStartup(val) {
-			var value =$('#ignoreTurialCheck').prop('checked');
+			var value =$('#ignoreTutorialCheck').prop('checked');
 			$.cookie('ignore_tutorial', value);
 		}
 
@@ -137,7 +137,7 @@ define(function (require) {
 				
 				var ignoreTutorial = $.cookie('ignore_tutorial');
 				if(ignoreTutorial== 'true'){
-					$('#ignoreTurialCheck').prop('checked', true);
+					$('#ignoreTutorialCheck').prop('checked', true);
 				}
 			};
 
@@ -151,7 +151,7 @@ define(function (require) {
 					function () {
 						var ignoreTutorial = $.cookie('ignore_tutorial');
 						if (ignoreTutorial == 'true') {
-							$('#ignoreTurialCheck').prop('checked', true);
+							$('#ignoreTutorialCheck').prop('checked', true);
 						}
 					}, 100);
 			}
@@ -471,7 +471,7 @@ define(function (require) {
 								<span>{lastStepLabel}   <i className={lastStep ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
 							</button>
 						</div>
-						<label className={(showMemoryCheckbox ? "visible " : "hide ")+ cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTurialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
+						<label className={(showMemoryCheckbox ? "visible " : "hide ")+ cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTutorialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
 					</div>
 
 				</div>

@@ -462,8 +462,8 @@ define(function (require) {
 						<div id="tutorialIcon" className={iconClass}></div>
 						<div id="message" dangerouslySetInnerHTML={this.getHTML(step.message)}></div>
 					</div>
-					<div className="btn-group tutorial-buttons" role="group">
-						<div className={(activeTutorial.steps.length>1 ? "visible " : "hide ")+"tutorial-buttons"}>
+					<div className={(activeTutorial.steps.length>1 ? "visible " : "hide ")+"btn-group tutorial-buttons"} role="group">
+						<div className="tutorial-buttons">
 							<button className="prevBtn btn btn-default btn-lg" disabled={prevDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous step" data-container="body" onClick={this.prevStep}>
 								<span><i className="fa fa-arrow-left fa-2x" aria-hidden="true"></i></span>
 							</button>

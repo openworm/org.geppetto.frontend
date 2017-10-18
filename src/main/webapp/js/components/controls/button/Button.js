@@ -54,7 +54,9 @@ define(function(require) {
 
 		componentDidMount: function() {
 			this.attachTooltip();
-			this.props.configuration.eventHandler(this);
+			if(this.props.configuration.eventHandle!=undefined){
+				this.props.configuration.eventHandler(this);
+			}
 		},
 
 		render:  function () {

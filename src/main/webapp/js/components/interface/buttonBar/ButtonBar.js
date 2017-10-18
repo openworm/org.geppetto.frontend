@@ -101,7 +101,7 @@ define(function(require) {
 			return (
 					<button className="btn btn-default btn-lg button-bar-btn" data-toogle="tooltip" onClick={this.onClick}
 					data-placement="bottom" title={this.state.tooltip} id={this.props.id}>
-					<span className={this.state.icon}> </span>
+					<span className={this.state.icon}>{this.state.label}</span>
 					</button>
 			)
 		}

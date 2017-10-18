@@ -587,7 +587,6 @@ define(function (require) {
                                 $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                             	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
-                            	that.previousZIndex = that.$el.parent().css("z-index");
                             	that.$el.parent().css("z-index", 1);
                             },
                             "maximize": function (evt, dlg) {
@@ -600,8 +599,7 @@ define(function (require) {
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                             	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                                 that.maximize = true;
-                                that.previousZIndex = that.$el.parent().css("z-index");
-                                that.$el.parent().css("z-index", 999);
+                                that.$el.parent().css("z-index", 9999);
                             },
                             "restore": function (evt, dlg) {
                                 if (that.maximize) {
@@ -613,14 +611,14 @@ define(function (require) {
                                 that.maximize = false;
                                 that.collapsed = false;
                                 GEPPETTO.trigger("widgetRestored",that.props.id);
-                                that.$el.parent().css("z-index", that.previousZIndex);
+                                that.$el.parent().css("z-index",10);
                             },
                             "collapse": function (evt, dlg) {
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                             	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                                 that.collapsed = true;
-                                that.previousZIndex = that.$el.parent().css("z-index");
+                                that.$el.parent().css("z-index", 1);
                             }
                         });
 

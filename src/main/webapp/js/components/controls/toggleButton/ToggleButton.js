@@ -81,7 +81,7 @@ define(function(require) {
 				GEPPETTO.CommandController.execute(this.action, true);
 			}
 			if(this.props.configuration.clickHandler!=undefined){
-	        	this.props.configuration.clickHandler(this.props.id);
+				this.props.configuration.clickHandler(this.props.id);
 			}
         	$('div.ui-tooltip').remove();
         },

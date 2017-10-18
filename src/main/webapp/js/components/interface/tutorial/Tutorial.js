@@ -32,7 +32,7 @@ define(function (require) {
 		 * Stores cookie to avoid showing tutorial next time at startup
 		 */
 		dontShowAtStartup(val) {
-			var value =$('#ignoreTurialCheck').prop('checked');
+			var value =$('#ignoreTutorialCheck').prop('checked');
 			$.cookie('ignore_tutorial', value);
 		}
 
@@ -121,26 +121,6 @@ define(function (require) {
 			var shake = p.is(":visible");
 			p.show();
 
-			var self = this;
-			var callback = function () {
-				var width = self.getActiveTutorial()["width"];
-				var height = self.getActiveTutorial()["height"];
-				if (height != undefined) {
-					p.height(height + "px");
-					self.dialog.css("height", height + "px");
-				}
-				if (width != undefined) {
-					p.width(width + "px");
-					self.dialog.css("width", width + "px");
-				}
-				
-				
-				var ignoreTutorial = $.cookie('ignore_tutorial');
-				if(ignoreTutorial== 'true'){
-					$('#ignoreTurialCheck').prop('checked', true);
-				}
-			};
-
 			if (!started) {
 				if (shake) {
 					p.effect("shake", {distance: 5, times: 3}, 500, undefined);
@@ -151,7 +131,7 @@ define(function (require) {
 					function () {
 						var ignoreTutorial = $.cookie('ignore_tutorial');
 						if (ignoreTutorial == 'true') {
-							$('#ignoreTurialCheck').prop('checked', true);
+							$('#ignoreTutorialCheck').prop('checked', true);
 						}
 					}, 100);
 			}
@@ -457,12 +437,13 @@ define(function (require) {
 				if(showMemoryCheckbox==undefined){
 					showMemoryCheckbox = true;
 				}
+
 				return <div className="mainTutorialContainer">
 					<div className={"tutorial-message " + this.props.tutorialMessageClass}>
 						<div id="tutorialIcon" className={iconClass}></div>
 						<div id="message" dangerouslySetInnerHTML={this.getHTML(step.message)}></div>
 					</div>
-					<div className="btn-group tutorial-buttons" role="group">
+					<div className={(activeTutorial.steps.length>1 ? "visible " : "hide ")+"btn-group tutorial-buttons"} role="group">
 						<div className={(activeTutorial.steps.length>1 ? "visible " : "hide ")+"tutorial-buttons"}>
 							<button className="prevBtn btn btn-default btn-lg" disabled={prevDisabled} data-toogle="tooltip" data-placement="bottom" title="Previous step" data-container="body" onClick={this.prevStep}>
 								<span><i className="fa fa-arrow-left fa-2x" aria-hidden="true"></i></span>
@@ -471,7 +452,7 @@ define(function (require) {
 								<span>{lastStepLabel}   <i className={lastStep ? "fa fa-undo fa-2x" : "fa fa-arrow-right fa-2x"} aria-hidden="true"></i></span>
 							</button>
 						</div>
-						<label className={(showMemoryCheckbox ? "visible " : "hide ")+ cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTurialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
+						<label className={(showMemoryCheckbox ? "visible " : "hide ")+ cookieClass} id="ignoreTutorial"><input type="checkbox" id="ignoreTutorialCheck" value="Do not show tutorial at startup again." onClick={this.dontShowAtStartup} /> Do not show tutorial at startup again.</label>
 					</div>
 
 				</div>

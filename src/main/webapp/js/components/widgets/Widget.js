@@ -42,7 +42,6 @@ define(function (require) {
             previousMaxTransparency: false,
             previousMaxSize: {},
             maximize: false,
-            previousZIndex : 1,
             collapsed: false,
             widgetType: null,
             stateless: false,

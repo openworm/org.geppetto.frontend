@@ -11,6 +11,12 @@ define(function (require) {
     var $ = require('jquery');
     require("./jquery.dialogextend.min");
 
+    var zIndex = {
+            min : 1,
+            max : 9999,
+            restore : 10
+        };
+    
     return {
 
         /**
@@ -681,8 +687,10 @@ define(function (require) {
                             }
                         },
                         "beforeMinimize": function (evt, dlg) {
-                            var label = that.name;
-                            label = label.substring(0, 6);
+                        	var label = that.name;
+                            if (label != undefined) {
+                                label = label.substring(0, 6);
+                            }
                             that.$el.dialog({ title: label });
                         },
                         "beforeMaximize": function (evt, dlg) {
@@ -695,6 +703,7 @@ define(function (require) {
                             $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
                         	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                         	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
+                        	that.$el.parent().css("z-index", zIndex.min);
                         },
                         "maximize": function (evt, dlg) {
                             that.setTransparentBackground(false);
@@ -706,6 +715,7 @@ define(function (require) {
                         	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                         	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                             that.maximize = true;
+                            that.$el.parent().css("z-index", zIndex.max);
                         },
                         "restore": function (evt, dlg) {
                             if (that.maximize) {
@@ -716,12 +726,14 @@ define(function (require) {
                             $(this).trigger('resizeEnd');
                             that.maximize = false;
                             that.collapsed = false;
+                            that.$el.parent().css("z-index", zIndex.restore);
                         },
                         "collapse": function (evt, dlg) {
                         	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                         	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                         	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                             that.collapsed = true;
+                            that.$el.parent().css("z-index", zIndex.min);
                         }
                     });
 

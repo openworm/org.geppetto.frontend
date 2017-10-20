@@ -298,9 +298,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
             			}
             			G.addWidget(6);
             			GEPPETTO.ComponentFactory.addWidget('CANVAS', {name: '3D Canvas',}, function () {this.setName('Widget Canvas');this.setPosition();this.display([canvasObject])});
-            			G.addWidget(1).then(w=>{w.setMessage("Hhcell popup");});
-            			var customHandler = function(node, path, widget) {};
-            			Popup1.addCustomNodeHandler(customHandler,'click');
+            			G.addWidget(1).then(w=>{w.setMessage("Hhcell popup").addCustomNodeHandler(function(){},'click');});
             			$(".nextBtn").click();
             			$(".nextBtn").click();
             		},widgetCanvasObject);

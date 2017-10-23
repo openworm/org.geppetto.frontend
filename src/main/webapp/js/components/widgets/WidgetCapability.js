@@ -11,6 +11,12 @@ define(function (require) {
     var React = require('react');
     var Overlay = require('../../components/interface/overlay/Overlay');
 
+    var zIndex = {
+            min : 1,
+            max : 9999,
+            restore : 10
+        };
+    
     module.exports = {
         createWidget(WrappedComponent) {
 
@@ -35,7 +41,6 @@ define(function (require) {
                         previousMaxSize: {},
                         maximize: false,
                         collapsed: false,
-                        previousZIndex : 1
 
                     });
 
@@ -587,7 +592,7 @@ define(function (require) {
                                 $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                             	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
-                            	that.$el.parent().css("z-index", 1);
+                            	that.$el.parent().css("z-index", zIndex.min);
                             },
                             "maximize": function (evt, dlg) {
                                 that.setTransparentBackground(false);
@@ -599,7 +604,7 @@ define(function (require) {
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                             	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                                 that.maximize = true;
-                                that.$el.parent().css("z-index", 9999);
+                                that.$el.parent().css("z-index", zIndex.max);
                             },
                             "restore": function (evt, dlg) {
                                 if (that.maximize) {
@@ -611,14 +616,14 @@ define(function (require) {
                                 that.maximize = false;
                                 that.collapsed = false;
                                 GEPPETTO.trigger("widgetRestored",that.props.id);
-                                that.$el.parent().css("z-index",10);
+                                that.$el.parent().css("z-index",zIndex.restore);
                             },
                             "collapse": function (evt, dlg) {
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                             	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                                 that.collapsed = true;
-                                that.$el.parent().css("z-index", 1);
+                                that.$el.parent().css("z-index", zIndex.min);
                             }
                         });
 

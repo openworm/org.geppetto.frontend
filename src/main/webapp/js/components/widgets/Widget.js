@@ -11,6 +11,12 @@ define(function (require) {
     var $ = require('jquery');
     require("./jquery.dialogextend.min");
 
+    var zIndex = {
+            min : 1,
+            max : 9999,
+            restore : 10
+        };
+    
     return {
 
         /**
@@ -36,7 +42,6 @@ define(function (require) {
             previousMaxTransparency: false,
             previousMaxSize: {},
             maximize: false,
-            previousZIndex : 1,
             collapsed: false,
             widgetType: null,
             stateless: false,
@@ -698,7 +703,7 @@ define(function (require) {
                             $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
                         	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                         	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
-                        	that.$el.parent().css("z-index", 1);
+                        	that.$el.parent().css("z-index", zIndex.min);
                         },
                         "maximize": function (evt, dlg) {
                             that.setTransparentBackground(false);
@@ -710,7 +715,7 @@ define(function (require) {
                         	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                         	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                             that.maximize = true;
-                            that.$el.parent().css("z-index", 9999);
+                            that.$el.parent().css("z-index", zIndex.max);
                         },
                         "restore": function (evt, dlg) {
                             if (that.maximize) {
@@ -721,14 +726,14 @@ define(function (require) {
                             $(this).trigger('resizeEnd');
                             that.maximize = false;
                             that.collapsed = false;
-                            that.$el.parent().css("z-index", 10);
+                            that.$el.parent().css("z-index", zIndex.restore);
                         },
                         "collapse": function (evt, dlg) {
                         	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                         	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                         	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                             that.collapsed = true;
-                            that.$el.parent().css("z-index", 1);
+                            that.$el.parent().css("z-index", zIndex.min);
                         }
                     });
 

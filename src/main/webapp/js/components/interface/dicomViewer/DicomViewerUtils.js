@@ -177,10 +177,12 @@ module.exports = {
         renderObj.controls = new ControlsTrackball(
             renderObj.camera, renderObj.domElement);
         renderObj.controls.rotateSpeed = 5.5;
-        renderObj.controls.zoomSpeed = 1.2;
+        renderObj.controls.zoomSpeed = 0.6;
         renderObj.controls.panSpeed = 0.8;
         renderObj.controls.staticMoving = true;
         renderObj.controls.dynamicDampingFactor = 0.3;
+        renderObj.controls.minDistance = 80;
+        renderObj.controls.maxDistance = 500;
 
         // scene
         renderObj.scene = new THREE.Scene();

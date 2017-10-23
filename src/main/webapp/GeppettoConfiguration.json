@@ -6,16 +6,16 @@
     "embedderURL": ["/"],
     "noTest": false,
     "extensions": {
-        "geppetto-default/ComponentsInitialization": true,
+        "geppetto-default/ComponentsInitialization": false,
         "geppetto-osb/ComponentsInitialization": false,
-        "geppetto-vfb/ComponentsInitialization": false,
+        "geppetto-vfb/ComponentsInitialization": true,
         "geppetto-neuron/ComponentsInitialization": false,
         "geppetto-hm/ComponentsInitialization": false
     },
     "themes": {
-        "geppetto-default/colors": true,
+        "geppetto-default/colors": false,
         "geppetto-hm/pages/styles/colors": false,
-        "geppetto-vfb/css/colors": false,
+        "geppetto-vfb/css/colors": true,
         "geppetto-neuron/css/colors": false
     }
 }

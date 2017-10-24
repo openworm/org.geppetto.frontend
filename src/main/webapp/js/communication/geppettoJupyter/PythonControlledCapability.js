@@ -18,7 +18,8 @@ define(function (require) {
                 constructor(props) {
                     super(props);
                     this.state = $.extend(this.state, {
-                        value: undefined
+                        value: '',
+                        searchText: ''
                     });
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
                     this.handleChange = this.handleChange.bind(this);
@@ -27,15 +28,14 @@ define(function (require) {
 
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
-                    // this.id = nextProps.model;
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
                     GEPPETTO.ComponentFactory.addExistingComponent(nextProps.componentType, this);
                     this.connectToPython(nextProps.componentType, nextProps.model);
-                    if (this.state.searchText != nextProps.searchText){
-                        this.setState({searchText: nextProps.searchText});
+                    if (this.state.searchText != nextProps.searchText) {
+                        this.setState({ searchText: (nextProps.searchText === undefined) ? '' : nextProps.searchText });
                     }
-                    if (this.state.value != nextProps.value){
-                        this.setState({value: nextProps.value});
+                    if (this.state.value != nextProps.value) {
+                        this.setState({ value: (nextProps.value === undefined) ? '' : nextProps.value });
                     }
                 }
 
@@ -45,12 +45,13 @@ define(function (require) {
 
                 handleChange(event, index, value) {
                     // For textfields value is retrived from the event. For dropdown value is retrieved from the value
-                    this.state.value = (event.target.value == undefined) ? value : event.target.value;
+                    var newValue = (event.target.value == undefined) ? value : event.target.value;
+                    this.setState({ value: newValue });
 
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
-                        this.syncValueWithPython(this.state.value, this.props.requirement);
+                        this.syncValueWithPython(newValue, this.props.requirement);
                     }
                     if (this.props.onChange) {
                         this.props.onChange(event, index, value);
@@ -60,12 +61,12 @@ define(function (require) {
 
                 handleUpdateInput(value) {
                     // For textfields value is retrived from the event. For dropdown value is retrieved from the value
-                    this.state.value = value;
+                    this.setState({ value: value });
 
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
-                        this.syncValueWithPython(this.state.value, this.props.requirement);
+                        this.syncValueWithPython(value, this.props.requirement);
                     }
                     if (this.props.onChange) {
                         this.props.onChange(value);
@@ -95,7 +96,7 @@ define(function (require) {
 
                 render() {
                     return (
-                        <WrappedComponent {...this.props} componentType={WrappedComponent.name} value={this.state.value} searchText={this.state.searchText} onChange={this.handleChange}  onUpdateInput={this.handleUpdateInput}/>
+                        <WrappedComponent {...this.props} componentType={WrappedComponent.name} value={this.state.value} searchText={this.state.searchText} onChange={this.handleChange} onUpdateInput={this.handleUpdateInput} />
                     );
                 }
 

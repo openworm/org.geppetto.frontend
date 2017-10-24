@@ -21,7 +21,6 @@ define(function (require) {
             TREEVISUALISERDAT: 3,
             VARIABLEVISUALISER: 5,
             CONNECTIVITY: 6,
-            BUTTONBAR: 7,
             STACKVIEWER: 8 
             //WIDGETNAME: N
         };
@@ -35,7 +34,6 @@ define(function (require) {
             popupsController: null,
             connectivityController: null,
             variableVisController: null,
-            ButtonBarController: null,
             treeVisDatController: null,
             treeVis3DController: null,
             stackViewer3DController: null,
@@ -103,13 +101,6 @@ define(function (require) {
                             this.connectivityController = new ConnectivityController();
                         }
                         resolve(this.connectivityController);
-                    }
-                    else if (type == GEPPETTO.Widgets.BUTTONBAR) {
-                        if (this.buttonBarController == null || undefined) {
-                        	ButtonBarController = require('./buttonBar/controllers/ButtonBarController');
-                            this.buttonBarController = new ButtonBarController();
-                        }
-                        resolve(this.buttonBarController);
                     }
                     else if (type == GEPPETTO.Widgets.STACKVIEWER) {
                         if (this.stackViewerController == null || undefined) {

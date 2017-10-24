@@ -1242,7 +1242,7 @@ define(function (require) {
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
-                            showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={425}
+                            showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={(window.innerHeight-280)}
                             useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
                         </Tabs.Panel>
                     );
@@ -1334,7 +1334,7 @@ define(function (require) {
                         </div>
                         <div id="add-new-query-container">
                             <button id="add-query-btn" className="fa fa-plus" title="add query" />
-                            <input id='query-typeahead' className="typeahead" type="text" placeholder="Terms" />
+                            <input id='query-typeahead' className="typeahead" type="text" placeholder="Search for the item you'd like to query against..." />
                         </div>
                         <QueryFooter containerClass={footerClass} count={this.props.model.count} onRun={this.runQuery} />
                         <div id="brent-spiner" className={spinnerClass}></div>

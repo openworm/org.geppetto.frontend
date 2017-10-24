@@ -544,6 +544,7 @@ define(function (require) {
                             top: 10,
                             height: this.props.size.height,
                             width: this.props.size.width,
+                            closeOnEscape: false,
                             position: {
                                 my: "left+" + this.props.position.left + " top+" + this.props.position.top,
                                 at: "left top",

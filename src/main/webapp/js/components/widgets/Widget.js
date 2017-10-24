@@ -660,6 +660,7 @@ define(function (require) {
                         top: 10,
                         height: 300,
                         width: 350,
+                        closeOnEscape: false,
                         close: function (event, ui) {
                             if (event.originalEvent &&
                                 $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {

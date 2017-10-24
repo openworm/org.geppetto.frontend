@@ -597,13 +597,15 @@ define(function (require) {
                             },
                             "maximize": function (evt, dlg) {
                                 that.setTransparentBackground(false);
-                                $(this).trigger('resizeEnd');
                                 var divheight = $(window).height();
                                 var divwidth = $(window).width();
-                                that.$el.dialog({ height: divheight, width: divwidth });
+
+                                that.$el.dialog({ height: divheight, width: divwidth});
+                                that.$el.parent().css("bottom","0");    
                                 $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
                             	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
-                            	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
+                                $(".ui-dialog-titlebar-restore span").addClass("fa-compress");
+                                $(this).trigger('resizeEnd');
                                 that.maximize = true;
                                 that.$el.parent().css("z-index", zIndex.max);
                             },

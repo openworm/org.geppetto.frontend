@@ -46,4 +46,4 @@ org.geppetto.core/
 org.geppetto.model/
 org.geppetto.simulation/
 /libjhdf5.jnilib
-
+/src/main/webapp/.netbeans.xml

@@ -73,17 +73,17 @@ define(function (require) {
 					zeroline : false,
 					mirror : true,
 					ticklen : 0,
-					tickcolor : 'rgb(255, 255, 255)',
-					linecolor: 'rgb(255, 255, 255)',
+					tickcolor : 'rgb(80,80,80)',
+					linecolor: 'rgb(80,80,80)',
 					tickfont: {
 						family: 'Helvetica Neue',
 						size : 11,
-						color: 'rgb(255, 255, 255)'
+						color: 'rgb(80,80,80)'
 					},
 					titlefont : {
 						family: 'Helvetica Neue',
 						size : 12,
-						color: 'rgb(255, 255, 255)'
+						color: 'rgb(80,80,80)'
 					},
 					ticks: 'outside',
 					max: -9999999,
@@ -99,17 +99,17 @@ define(function (require) {
 					zeroline : false,
 					mirror : true,
 					ticklen : 0,
-					tickcolor : 'rgb(255, 255, 255)',
-					linecolor: 'rgb(255, 255, 255)',
+					tickcolor : 'rgb(80,80,80)',
+					linecolor: 'rgb(80,80,80)',
 					tickfont: {
 						family: 'Helvetica Neue',
 						size : 11,
-						color: 'rgb(255, 255, 255)'
+						color: 'rgb(80,80,80)'
 					},
 					titlefont : {
 						family: 'Helvetica Neue',
 						size : 12,
-						color: 'rgb(255, 255, 255)'
+						color: 'rgb(80,80,80)'
 					},
 					ticks: 'outside',
 				},
@@ -424,19 +424,19 @@ define(function (require) {
 
 			// play around with settings to make background temporarily white and margins wider
 			this.plotOptions.paper_bgcolor = "rgb(255,255,255)";
-			this.plotOptions.xaxis.linecolor = "rgb(0,0,0)";
-			this.plotOptions.yaxis.linecolor = "rgb(0,0,0)";
-			this.plotOptions.xaxis.tickfont.color = "rgb(0,0,0)";
-			this.plotOptions.yaxis.tickfont.color = "rgb(0,0,0)";
-			this.plotOptions.yaxis.titlefont.color = "rgb(0,0,0)";
-			this.plotOptions.xaxis.titlefont.color = "rgb(0,0,0)";
+			this.plotOptions.xaxis.linecolor = "rgb(80,80,80)";
+			this.plotOptions.yaxis.linecolor = "rgb(80,80,80)";
+			this.plotOptions.xaxis.tickfont.color = "rgb(80,80,80)";
+			this.plotOptions.yaxis.tickfont.color = "rgb(80,80,80)";
+			this.plotOptions.yaxis.titlefont.color = "rgb(80,80,80)";
+			this.plotOptions.xaxis.titlefont.color = "rgb(80,80,80)";
 			this.plotOptions.xaxis.tickfont.size = 18;
 			this.plotOptions.yaxis.tickfont.size = 18;
 			this.plotOptions.xaxis.titlefont.size = 18;
 			this.plotOptions.yaxis.titlefont.size = 18;
 			this.plotOptions.legend.font.size = 18;
 			this.plotOptions.legend.font.family = 'Helvetica Neue';
-			this.plotOptions.legend.font.color = "rgb(0,0,0)";
+			this.plotOptions.legend.font.color = "rgb(80,80,80)";
 			this.plotOptions.legend.bgcolor = "rgb(255,255,255)";
 			var oldMarginRight = this.plotOptions.margin.r;
 			this.plotOptions.margin.r= 40;

@@ -200,9 +200,15 @@ function reloadProjectTest(test, url, customHandlers,widgetCanvasObject){
 			this.echo("I've waited for "+url+" project to load.");
 			
 			casper.waitForSelector('div#Popup1', function() {
-				test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
 				test.assertVisible('div#Popup1', "Popup1 is correctly open on reload");
+            }, null, defaultLongWaitingTime);
+			
+			casper.waitForSelector('div#Connectivity1', function() {
 				test.assertVisible('div#Connectivity1', "Connectivity1 is correctly open on reload");
+            }, null, defaultLongWaitingTime);
+			
+			casper.waitForSelector('div#Canvas2', function() {
+				test.assertVisible('div#Canvas2', "Canvas2 is correctly open on reload.");
 				
 				if(casper.exists('#tutorialBtn')){
 					test.assertVisible('div#Tutorial1', "Tutorial1 is correctly open on reload");

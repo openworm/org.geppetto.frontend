@@ -324,6 +324,10 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                         doPrePersistenceSpotlightCheckSetParameters(test, spotlight_set_parameter);
                     }
                 });
+                
+                casper.then(function () {
+    				casper.wait(5000, function () {});
+    			});
 
                 casper.then(function () {
                     this.waitForSelector('button.btn.SaveButton', function () {

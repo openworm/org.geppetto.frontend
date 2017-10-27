@@ -340,10 +340,11 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
                         test.assertVisible('button.btn.SaveButton', "Persist button is present");
                     });
 
-                    //Good pattern for checking the absence of an attribute
+                    //Not really testing anything
+                    /*//Good pattern for checking the absence of an attribute
                     test.assertEvalEquals(function () {
                         return require('../../utils').dump(this.getElementAttribute('button.SaveButton', 'disabled'));
-                    }, null, "The persist button is correctly active.");
+                    }, null, "The persist button is correctly active.");*/
 
                     //Click persist button. Check things again
                     this.mouseEvent('click', 'button.btn.SaveButton', "attempting to persist");

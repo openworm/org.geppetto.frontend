@@ -414,6 +414,8 @@ define(function (require) {
 			if(view.data != undefined){
 				if(view.dataType == 'string'){
 					this.setMessage(view.data);
+				}else if(view.dataType == 'stringCommand'){
+					this.setMessage(eval(view.data));
 				} else if($.isArray(view.data)){
 					this.setData(eval(view.data[0]));
 				}else {

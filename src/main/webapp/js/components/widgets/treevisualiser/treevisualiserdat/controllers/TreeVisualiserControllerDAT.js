@@ -50,7 +50,7 @@ define(function (require) {
                         return GEPPETTO.CommandController.getObjectCommands(id);
                     };
                     // store in local stack
-                    this.widgets.push(tvdat);
+                    that.widgets.push(tvdat);
 
                     GEPPETTO.WidgetsListener.subscribe(that, id);
 

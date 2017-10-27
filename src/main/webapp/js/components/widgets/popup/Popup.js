@@ -18,7 +18,7 @@ define(function (require) {
 	var slick = require('slick-carousel');
 
 	require("./Popup.less");
-	require("./vendor/slick.css");
+	require("./vendor/slick.less");
 	require("./vendor/slick-theme.less");
 
 	/**
@@ -332,12 +332,14 @@ define(function (require) {
 					instancePath = instance.getPath();
 				}
 			}
-
+			var originalZIndex = $("#" + this.id).parent().css("z-index");
             this.buttonBar = ReactDOM.render(
                 React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
                 	instancePath : instancePath, instance : instance, geppetto: GEPPETTO, resize : function(){that.setSize(that.size.height,that.size.width);}}),
                 document.getElementById(barDiv)
             );
+            
+            $("#" + this.id).parent().css('z-index', originalZIndex);
         },
 
         setButtonBarControls : function(controls){

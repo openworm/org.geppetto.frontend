@@ -134,6 +134,12 @@ class WidgetController {
 				"method": method,
 				"arguments": args,
 			});
+			
+			this.staticHistoryMenu.unshift({
+				"label": label,
+				"method": method,
+				"arguments": args,
+			});
 		}
 
 		var widget = this.getWidgetById(id);

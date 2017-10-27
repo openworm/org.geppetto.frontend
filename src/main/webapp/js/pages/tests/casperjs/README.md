@@ -17,7 +17,6 @@ To run Core projects Tests (Requires NOT having the persistence bundle):
 
 `casperjs test --includes=CoreTestsUtility.js CoreTests.js --engine=slimerjs`
 
-
 To run Persistence Tests (Requires the persistence bundle and a running MySQL server):
 
 `casperjs test PersistenceTests.js --engine=slimerjs` to run Geppetto Persistence Tests.

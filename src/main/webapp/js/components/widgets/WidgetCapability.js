@@ -11,6 +11,12 @@ define(function (require) {
     var React = require('react');
     var Overlay = require('../../components/interface/overlay/Overlay');
 
+    var zIndex = {
+        min: 1,
+        max: 9999,
+        restore: 10
+    };
+
     module.exports = {
         createWidget(WrappedComponent) {
 
@@ -34,7 +40,7 @@ define(function (require) {
                         previousMaxTransparency: false,
                         previousMaxSize: {},
                         maximize: false,
-                        collapsed: false
+                        collapsed: false,
 
                     });
 
@@ -44,7 +50,7 @@ define(function (require) {
                     return true;
                 }
 
-                help () {
+                help() {
                     return GEPPETTO.CommandController.getObjectCommands(this.props.id);
                 }
 
@@ -427,7 +433,7 @@ define(function (require) {
                 }
 
                 addButtonToTitleBar(button, containerSelector) {
-                    if (containerSelector == undefined){containerSelector="div.ui-dialog-titlebar"}
+                    if (containerSelector == undefined) { containerSelector = "div.ui-dialog-titlebar" }
                     var dialogParent = this.$el.parent();
                     dialogParent.find(containerSelector).prepend(button);
                     $(button).addClass("widget-title-bar-button");
@@ -452,7 +458,7 @@ define(function (require) {
 
                 addCustomButtons(customButtons) {
                     var that = this;
-                    customButtons.forEach(function(customButton) {
+                    customButtons.forEach(function (customButton) {
                         that.addButtonToTitleBar(
                             $("<div class='fa " + customButton.icon + "' title='" + customButton.title + "'></div>").click(customButton.action), '.customButtons');
                     });
@@ -538,6 +544,7 @@ define(function (require) {
                             top: 10,
                             height: this.props.size.height,
                             width: this.props.size.width,
+                            closeOnEscape: false,
                             position: {
                                 my: "left+" + this.props.position.left + " top+" + this.props.position.top,
                                 at: "left top",
@@ -583,36 +590,50 @@ define(function (require) {
                             },
                             "minimize": function (evt, dlg) {
                                 that.$el.dialog({ title: that.name });
+                                $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                                $(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                                $(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
+                                that.$el.parent().css("z-index", zIndex.min);
                             },
                             "maximize": function (evt, dlg) {
                                 that.setTransparentBackground(false);
                                 var divheight = $(window).height();
                                 var divwidth = $(window).width();
-                                that.$el.dialog({ height: divheight, width: divwidth}).dialogExtend();
-                                that.$el.parent().css("bottom","0");
+
+                                that.$el.dialog({ height: divheight, width: divwidth });
+                                that.$el.parent().css("bottom", "0");
+                                $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
+                                $(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                                $(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                                 $(this).trigger('resizeEnd');
                                 that.maximize = true;
+                                that.$el.parent().css("z-index", zIndex.max);
                             },
                             "restore": function (evt, dlg) {
                                 if (that.maximize) {
                                     that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
-                                    that.$el.parent().height(that.previousMaxSize.height);
-                                    $(this).trigger('restored', [that.props.id]);
+                                    $(this).trigger('restored', [that.id]);
                                 }
                                 that.setTransparentBackground(that.previousMaxTransparency);
                                 $(this).trigger('resizeEnd');
                                 that.maximize = false;
                                 that.collapsed = false;
+                                GEPPETTO.trigger("widgetRestored", that.props.id);
+                                that.$el.parent().css("z-index", zIndex.restore);
                             },
                             "collapse": function (evt, dlg) {
+                                $(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                                $(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                                $(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                                 that.collapsed = true;
+                                that.$el.parent().css("z-index", zIndex.min);
                             }
                         });
 
                     this.$el = $("#" + this.props.id);
                     this.container = this.$el.children().get(0);
                     var dialogParent = this.$el.parent();
-                    
+
 
                     //add history
                     this.showHistoryIcon(this.props.showHistoryIcon);
@@ -625,10 +646,10 @@ define(function (require) {
                     dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
                     //add help button
-                    if(this.props.help){
-                    	this.addHelpButton();	
+                    if (this.props.help) {
+                        this.addHelpButton();
                     }
-                    
+
 
                     //add download button
                     if (super.download) {
@@ -657,7 +678,7 @@ define(function (require) {
 
                     if (this.props.fixPosition) {
                         dialogParent.detach().appendTo(originalParentContainer);
-                        dialogParent.css({ top: this.position.top, left: this.position.left, height: this.size.height, width:this.size.width, position: 'absolute' });
+                        dialogParent.css({ top: this.position.top, left: this.position.left, height: this.size.height, width: this.size.width, position: 'absolute' });
                     }
 
                     window.addEventListener('resize', function (event) {

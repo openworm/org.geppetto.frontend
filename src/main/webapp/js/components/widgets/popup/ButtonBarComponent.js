@@ -78,6 +78,9 @@ define(function (require) {
 					if(that.props!=null || that.props!=undefined){
 						if(instance.instance.getInstancePath() == that.props.instancePath){
 							that.forceUpdate();
+							if(that.props.instance!=null || that.props.instance!=undefined){
+								that.props.resize();
+							}
 						}
 					}
 				});

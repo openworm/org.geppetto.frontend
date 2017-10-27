@@ -12,6 +12,11 @@ define(function (require) {
 	var $ = require('jquery');
 	var math = require('mathjs');
 	var Plotly = require('plotly.js/lib/core');
+
+	Plotly.register([
+		require('plotly.js/lib/heatmap'),
+	]);
+
 	
 	var FileSaver = require('file-saver');
 	var pako = require('pako');

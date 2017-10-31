@@ -12,6 +12,7 @@
     "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js"
   },
   "devDependencies": {
+    "ami.js": "0.0.20",
     "anchorme": "^0.7.1",
     "aws-sdk": "^2.108.0",
     "babel-core": "^6.26.0",
@@ -89,7 +90,7 @@
     "stats.js": "^0.17.0",
     "style-loader": "^0.13.2",
     "text": "^0.1.0",
-    "three": "0.83.0",
+    "three": "0.87.0",
     "three-loaders-collada": "^1.0.1",
     "typeahead.js": "^0.11.1",
     "underscore": "^1.8.3",

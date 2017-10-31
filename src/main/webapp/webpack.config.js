@@ -153,7 +153,6 @@ module.exports = function(env){
 	    },
 	
 	    module: {
-	        noParse: [/js\/components\/interface\/dicomViewer\/ami.min.js/],
 	        rules: [
 	            {
 	                test: /\.(js|jsx)$/,

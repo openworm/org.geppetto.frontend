@@ -2,7 +2,7 @@ define(function (require) {
 
 	var React = require('react');
 	window.THREE = require('three');
-	var AMI = require('./ami.min.js');
+	var AMI = require('ami.js');
 	var LoadersVolume = AMI.default.Loaders.Volume;
 	var HelpersStack = AMI.default.Helpers.Stack;
 	var HelpersBoundingBox = AMI.default.Helpers.BoundingBox;
@@ -522,6 +522,13 @@ define(function (require) {
 			return customButtons;
 		}
 
+		componentWillUnmount() {
+			DicomViewerUtils.dispose(this.r0);
+			DicomViewerUtils.dispose(this.r1);
+			DicomViewerUtils.dispose(this.r2);
+			DicomViewerUtils.dispose(this.r3);
+		}
+		
 		componentDidMount() {
 			this.loadModel();
 

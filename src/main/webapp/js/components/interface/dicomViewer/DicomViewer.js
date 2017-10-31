@@ -2,7 +2,7 @@ define(function (require) {
 
 	var React = require('react');
 	window.THREE = require('three');
-	var AMI = require('ami.js');
+	var AMI = require('./ami.min.js');
 	var LoadersVolume = AMI.default.Loaders.Volume;
 	var HelpersStack = AMI.default.Helpers.Stack;
 	var HelpersBoundingBox = AMI.default.Helpers.BoundingBox;

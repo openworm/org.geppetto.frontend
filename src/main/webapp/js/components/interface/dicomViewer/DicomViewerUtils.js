@@ -1,4 +1,4 @@
-var AMI = require('ami.js');
+var AMI = require('./ami.min.js');
 var CamerasOrthographic = AMI.default.Cameras.Orthographic;
 var ControlsOrthographic = AMI.default.Controls.TrackballOrtho;
 var HelpersStack = AMI.default.Helpers.Stack;

@@ -307,6 +307,15 @@ define(function (require) {
             if (self.props.configuration.menuItems.length > 0) {
                 self.refs.dropDown.open();
             }
+            
+            if (typeof self.props.configuration.menuItems.then === "function") {
+            	self.props.configuration.menuItems.then(
+                		function(val){
+                			self.props.configuration.menuItems=val;
+                			self.refs.dropDown.open();
+                		}
+                );
+            }
 
             var showIcon = this.props.configuration.iconOn;
             this.setState({ open: true, icon: showIcon });

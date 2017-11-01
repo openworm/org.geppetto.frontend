@@ -17,12 +17,6 @@ var Pharyngeal = "load_project_from_id=58";
 var defaultColor = [0.00392156862745098,0.6,0.9098039215686274];
 var zoomClicks = 50, panClicks=10, rotateClicks=20;
 
-function roundPlus(x, n) { //x - число, n - количество знаков 
-    if(isNaN(x) || isNaN(n)) return false;
-    var m = Math.pow(10,n);
-    return Math.round(x*m)/m;
-}
-
 function launchTest(test, projectName, timeAllowed){
     casper.waitWhileVisible('div[id="loading-spinner"]', function () {
         this.echo("I've waited for "+projectName+" project to load.");
@@ -137,8 +131,8 @@ function testCameraPosition(test,expectedCamPosition){
     });
 
     for (var i in camPosition){
-        camPosition[i] = roundPlus(camPosition[i], 5)
-        expectedCamPosition[i] = roundPlus(expectedCamPosition[i], 5)
+        camPosition[i] = camPosition[i].toFixed(5)
+        expectedCamPosition[i] = expectedCamPosition[i].toFixed(5)
     }
 
     test.assertEquals( camPosition[0],expectedCamPosition[0], "Vector's x coordinate is correct as camera poistion");

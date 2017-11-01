@@ -127,7 +127,7 @@ function testMeshVisibility(test,visible,variableName){
 function testCameraPosition(test,expectedCamPosition){
 	var camPosition = casper.evaluate(function() {
 		var position = Canvas1.engine.camera.position;
-		return [position.x, position.y, position.z];
+		return [parseFloat(position.x.toFixed(5)), parseFloat(position.y.toFixed(5)), parseFloat(position.z.toFixed(5))];
 	});
 	
 	test.assertEquals( camPosition[0],expectedCamPosition[0], "Vector's x coordinate is correct as camera poistion");

@@ -127,12 +127,12 @@ function testMeshVisibility(test,visible,variableName){
 function testCameraPosition(test,expectedCamPosition){
 	var camPosition = casper.evaluate(function() {
 		var position = Canvas1.engine.camera.position;
-		return [parseFloat(position.x.toFixed(5)), parseFloat(position.y.toFixed(5)), parseFloat(position.z.toFixed(5))];
+		return [position.x, position.y, position.z];
 	});
 	
-	test.assertEquals( camPosition[0],parseFloat(expectedCamPosition[0].toFixed(5)), "Vector's x coordinate is correct as camera poistion");
-	test.assertEquals( camPosition[1],parseFloat(expectedCamPosition[1].toFixed(5)), "Vector's y coordinate is correct as camera poistion");
-	test.assertEquals( camPosition[2],parseFloat(expectedCamPosition[2].toFixed(5)), "Vector's z coordinate is correct as camera poistion");
+	test.assertEquals( camPosition[0],expectedCamPosition[0], "Vector's x coordinate is correct as camera poistion");
+	test.assertEquals( camPosition[1],expectedCamPosition[1], "Vector's y coordinate is correct as camera poistion");
+	test.assertEquals( camPosition[2],expectedCamPosition[2], "Vector's z coordinate is correct as camera poistion");
 }
 
 /**
@@ -148,12 +148,12 @@ function test3DMeshColor(test,testColor,variableName,index){
 	}
 	var color = casper.evaluate(function(variableName,index) {
 		var color = Canvas1.engine.getRealMeshesForInstancePath(variableName)[index].material.color;
-		return [parseFloat(color.r.toFixed(5)), parseFloat(color.g.toFixed(5)), parseFloat(color.b.toFixed(5))];
+		return [color.r, color.g, color.b];
 	},variableName,index);
 	
-	test.assertEquals(color[0],parseFloat(testColor[0].toFixed(5)), "Red default color is correct for "+ variableName);
-	test.assertEquals(color[1],parseFloat(testColor[1].toFixed(5)),"Green default color is correct for " + variableName);
-	test.assertEquals(color[2],parseFloat(testColor[2].toFixed(5)),"Blue default color is correct for " +variableName);
+	test.assertEquals(color[0],testColor[0], "Red default color is correct for "+ variableName);
+	test.assertEquals(color[1],testColor[1],"Green default color is correct for " + variableName);
+	test.assertEquals(color[2],testColor[2],"Blue default color is correct for " +variableName);
 }
 
 function getMeshColor(test,variableName,index){

@@ -272,7 +272,7 @@ function acnetTest(test){
 	});
 	casper.then(function(){
 		casper.echo("-------Testing Camera Controls--------");
-		testCameraControls(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
+		testCameraControls(test,[231.95608349343888,508.36555704435455,1849.8390343191731]);
 	});
 	casper.then(function () {
 		casper.echo("-------Testing Original Color--------");
@@ -369,7 +369,7 @@ function acnetTest(test){
 	
 	casper.then(function () {
 		//tests camera controls are working by checking camera has moved
-		testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
+		testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390343191731]);
 	});
 	
 	casper.then(function () {

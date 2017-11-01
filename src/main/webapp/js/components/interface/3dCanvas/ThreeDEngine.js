@@ -1237,7 +1237,7 @@ define(['jquery'], function () {
                 {
                     opacity: 1,
                     shininess: 10,
-                    shading: THREE.SmoothShading
+                    flatShading: true
                 });
 
             this.setThreeColor(material.color, color);

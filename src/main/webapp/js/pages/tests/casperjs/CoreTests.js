@@ -106,7 +106,7 @@ function hhcellTest(test,name){
 	});
 	casper.then(function(){
 		casper.echo("-------Testing Camera Controls--------");
-		testCameraControls(test, [0,0,30.90193]);
+		testCameraControls(test, [0,0,30.90193733102435]);
 	});
 	casper.then(function () {
 		casper.echo("Opening controls panel");
@@ -192,7 +192,7 @@ function hhcellTest(test,name){
 	
 	casper.then(function(){	
 		casper.echo("-------Testing Camera Controls on main Canvas and Canvas widget--------");
-		testCameraControlsWithCanvasWidget(test, [0,0,30.90193]);
+		testCameraControlsWithCanvasWidget(test, [0,0,30.90193733102435]);
 	});
 	
 	//test color Function
@@ -272,7 +272,7 @@ function acnetTest(test){
 	});
 	casper.then(function(){
 		casper.echo("-------Testing Camera Controls--------");
-		testCameraControls(test,[231.95608,508.36555,1849.83903]);
+		testCameraControls(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
 	});
 	casper.then(function () {
 		casper.echo("-------Testing Original Color--------");
@@ -369,7 +369,7 @@ function acnetTest(test){
 	
 	casper.then(function () {
 		//tests camera controls are working by checking camera has moved
-		testCameraControlsWithCanvasWidget(test,[231.95608,508.36555,1849.83903]);
+		testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
 	});
 	
 	casper.then(function () {

@@ -988,7 +988,8 @@ define(['jquery'], function () {
          * @param material
          * @returns {THREE.Line}
          */
-        create3DLineFromNode: function (node, material) {
+        create3DLineFromNode: function (node, material) { 
+        	var threeObject = null;
             if (node.eClass == GEPPETTO.Resources.CYLINDER) {
                 var bottomBasePos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
                 var topBasePos = new THREE.Vector3(node.distal.x, node.distal.y, node.distal.z);
@@ -1001,7 +1002,7 @@ define(['jquery'], function () {
                 var geometry = new THREE.Geometry();
                 geometry.vertices.push(bottomBasePos);
                 geometry.vertices.push(topBasePos);
-                var threeObject = new THREE.Line(geometry, material);
+                threeObject = new THREE.Line(geometry, material);
                 threeObject.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
                 threeObject.lookAt(axis);
                 threeObject.position.fromArray(midPoint.toArray());

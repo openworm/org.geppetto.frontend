@@ -6,7 +6,7 @@
 define(function(require) {
 
     var AWidgetController = require('../../AWidgetController');
-    var Plot = require('../Plot');
+    
 
     /**
      * @exports Widgets/Plotly/PlotlyController
@@ -21,38 +21,52 @@ define(function(require) {
         /**
          * Creates plotting widget
          */
-        addPlotWidget: function (isStateless) {
+        addWidget: function (isStateless) {
             if(isStateless == undefined){
                 isStateless = false;
             }
+            var that=this;
+            
+            
+            return new Promise(resolve => {
+            	require.ensure([],function(require){
+                	var Plot = require('../Plot');
+                    
+                    //look for a name and id for the new widget
+                    var id = that.getAvailableWidgetId("Plot", that.widgets);
+                    var name = id;
 
-            //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("Plot", this.widgets);
-            var name = id;
+                    //create plotting widget
+                    var p = window[name] = new Plot({
+                        id: id, name: name, visible: true,
+                        widgetType: GEPPETTO.Widgets.PLOT,
+                        stateless: isStateless
+                    });
+                    p.setController(that);
 
-            //create plotting widget
-            var p = window[name] = new Plot({
-                id: id, name: name, visible: true,
-                widgetType: GEPPETTO.Widgets.PLOT,
-                stateless: isStateless
+                    //create help command for plot
+                    p.help = function() {
+                        return GEPPETTO.CommandController.getObjectCommands(id);
+                    };
+
+                    //store in local stack
+                    that.widgets.push(p);
+
+                    GEPPETTO.WidgetsListener.subscribe(that, id);
+
+                    //add commands to console autocomplete and help option
+                    GEPPETTO.CommandController.updateHelpCommand(p, id, that.getFileComments("geppetto/js/components/widgets/plot/Plot.js"));
+                    //update tags for autocompletion
+                    GEPPETTO.CommandController.updateTags(p.getId(), p);
+
+                    resolve(p);
+                });
+            
+            
+            	
+            	
             });
-            p.setController(this);
-
-            //create help command for plot
-            p.help = function() {
-                return GEPPETTO.Console.getObjectCommands(id);
-            };
-
-            //store in local stack
-            this.widgets.push(p);
-
-            GEPPETTO.WidgetsListener.subscribe(this, id);
-
-            //add commands to console autocomplete and help option
-            GEPPETTO.Console.updateHelpCommand(p, id, this.getFileComments("geppetto/js/components/widgets/plot/Plot.js"));
-            //update tags for autocompletion
-            GEPPETTO.Console.updateTags(p.getId(), p);
-            return p;
+            
         },
 
         isColorbar: function(plot) {
@@ -132,7 +146,7 @@ define(function(require) {
                 if (node.getWrappedObj().getInitialValues()[0].value.dynamics.functionPlot != undefined) {
                     var group1 = [{
                         label: "Plot Function",
-                        action: ["var p = G.addWidget(Widgets.PLOT).plotFunctionNode(" + node.getPath() + ")", "p.setSize(200,450)"],
+                        action: ["G.addWidget(Widgets.PLOT).then(w=>{w.plotFunctionNode(" + node.getPath() + "); w.setSize(200,450);});"],
                     }];
 
                     var availableWidgets = GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets();
@@ -173,7 +187,7 @@ define(function(require) {
          * @param plotWidget - optional, if not provided a new widget will be created
          * @param xPath - optional, if plotting xy data a path for the x axis
          */
-        plotStateVariable: function(projectId, experimentId, path, plotWidget, xPath){
+        plotStateVariable: async function(projectId, experimentId, path, plotWidget, xPath){
             var self = this;
             
             if(
@@ -193,18 +207,18 @@ define(function(require) {
                         plotWidget.plotData(inst);
                         plotWidget.updateAxis(inst.getInstancePath());
                     } else {
-                        var widget = G.addWidget(0);
+                        var widget = await G.addWidget(0);
                         widget.plotData(inst).setName(path);
                         widget.updateAxis(path);
                     }
                 } else {
-                    var cb = function(){
+                    var cb = async function(){
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
                     		plotWidget.plotData(i);
                     		plotWidget.updateAxis(i.getInstancePath());
                     	} else {
-                    		var plot = G.addWidget(0);
+                    		var plot = await G.addWidget(0);
                             plot.plotData(i).setName(path);
                             plot.updateAxis(path);
                     	}
@@ -214,7 +228,7 @@ define(function(require) {
                 }
             } else {
                 // we are dealing with external instances, define re-usable callback for plotting external instances
-                var plotExternalCallback = function() {
+                var plotExternalCallback = async function() {
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
                     // if xPath is not specified, assume time
                     if(xPath == undefined){ xPath = 'time(StateVariable)'; }
@@ -222,7 +236,7 @@ define(function(require) {
                     if (plotWidget != undefined) {
                         plotWidget.plotXYData(i, t);
                     } else {
-                    	var plot = G.addWidget(0);
+                    	var plot = await G.addWidget(0);
                         plot.plotXYData(i, t).setName(path);
                     }
                 };

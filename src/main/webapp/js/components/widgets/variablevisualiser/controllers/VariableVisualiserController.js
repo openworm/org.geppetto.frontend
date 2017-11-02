@@ -6,7 +6,6 @@
 define(function (require) {
 
     var AWidgetController = require('../../AWidgetController');
-    var VarVis = require('../VariableVisualiser');
 
     /**
      * @exports Widgets/VariableVisualiser/VariableVisualiserController
@@ -20,30 +19,41 @@ define(function (require) {
         /**
          * Creates new variable visualiser widget
          */
-        addVariableVisualiserWidget: function (isStateless) {
+        addWidget: function (isStateless) {
             if(isStateless == undefined){
                 isStateless = false;
             }
 
-            //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("VarVis", this.widgets);
-            var name = id;
-            var vv = window[name] = new VarVis({
-                id: id, name: name, visible: true,
-                widgetType: GEPPETTO.Widgets.VARIABLEVISUALISER, stateless: isStateless
+            var that = this;
+
+            return new Promise(resolve => {
+                require.ensure([], function(require) {
+                    var VarVis = require('../VariableVisualiser');
+
+                    //look for a name and id for the new widget
+                    var id = that.getAvailableWidgetId("VarVis", that.widgets);
+                    var name = id;
+                    var vv = window[name] = new VarVis({
+                        id: id, name: name, visible: true,
+                        widgetType: GEPPETTO.Widgets.VARIABLEVISUALISER, stateless: isStateless
+                    });
+
+                    vv.help = function () {
+                        return GEPPETTO.CommandController.getObjectCommands(id);
+                    };
+
+                    // store in local stack
+                    that.widgets.push(vv);
+
+                    GEPPETTO.WidgetsListener.subscribe(that, id);
+
+                    //updates help command options
+                    GEPPETTO.CommandController.updateHelpCommand(vv, id, that.getFileComments("geppetto/js/components/widgets/variablevisualiser/VariableVisualiser.js"));
+                    //update tags for autocompletion
+                    GEPPETTO.CommandController.updateTags(vv.getId(), vv);
+                    resolve(vv);
+                });
             });
-            vv.help = function () {
-                return GEPPETTO.Console.getObjectCommands(id);
-            };
-            this.widgets.push(vv);
-
-            GEPPETTO.WidgetsListener.subscribe(this, id);
-
-            //updates help command options
-            GEPPETTO.Console.updateHelpCommand(vv, id, this.getFileComments("geppetto/js/components/widgets/variablevisualiser/VariableVisualiser.js"));
-            //update tags for autocompletion
-            GEPPETTO.Console.updateTags(vv.getId(), vv);
-            return vv;
         },
 
         /**

@@ -58,7 +58,7 @@ define(function (require) {
 
             // execute action
             if (action != null) {
-                GEPPETTO.Console.executeImplicitCommand(action);
+                GEPPETTO.CommandController.execute(action, true);
             }
 
             this.setState({ icon: iconState });
@@ -306,6 +306,15 @@ define(function (require) {
             var self = this;
             if (self.props.configuration.menuItems.length > 0) {
                 self.refs.dropDown.open();
+            }
+            
+            if (typeof self.props.configuration.menuItems.then === "function") {
+            	self.props.configuration.menuItems.then(
+                		function(val){
+                			self.props.configuration.menuItems=val;
+                			self.refs.dropDown.open();
+                		}
+                );
             }
 
             var showIcon = this.props.configuration.iconOn;

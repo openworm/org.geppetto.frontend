@@ -42,7 +42,7 @@ define(function (require) {
 
                 }
 
-                GEPPETTO.Console.updateTags("Project", p, true);
+                GEPPETTO.CommandController.updateTags("Project", p, true);
                 return p;
             },
 

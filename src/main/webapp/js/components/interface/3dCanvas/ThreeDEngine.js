@@ -14,17 +14,17 @@ define(['jquery'], function () {
     var THREE = require('three');
     require('./TrackballControls');
     require('./OBJLoader');
-    THREE.ColladaLoader = require('imports?THREE=three!exports?THREE.ColladaLoader!../../../../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
-    THREE.ConvolutionShader = require('imports?THREE=three!exports?THREE.ConvolutionShader!../../../../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
-    THREE.CopyShader = require('imports?THREE=three!exports?THREE.CopyShader!../../../../node_modules\/three\/examples\/js\/shaders\/CopyShader');
-    THREE.FilmShader = require('imports?THREE=three!exports?THREE.FilmShader!../../../../node_modules\/three\/examples\/js\/shaders\/FilmShader');
-    THREE.FocusShader = require('imports?THREE=three!exports?THREE.FocusShader!../../../../node_modules\/three\/examples\/js\/shaders\/FocusShader');
-    THREE.EffectComposer = require('imports?THREE=three!exports?THREE.EffectComposer!../../../../node_modules\/three\/examples\/js\/postprocessing\/EffectComposer');
-    THREE.MaskPass = require('imports?THREE=three!exports?THREE.MaskPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/MaskPass');
-    THREE.RenderPass = require('imports?THREE=three!exports?THREE.RenderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/RenderPass');
-    THREE.BloomPass = require('imports?THREE=three!exports?THREE.BloomPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
-    THREE.ShaderPass = require('imports?THREE=three!exports?THREE.ShaderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
-    THREE.FilmPass = require('imports?THREE=three!exports?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
+    THREE.ColladaLoader = require('imports-loader?THREE=three!exports-loader?THREE.ColladaLoader!../../../../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
+    THREE.ConvolutionShader = require('imports-loader?THREE=three!exports-loader?THREE.ConvolutionShader!../../../../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
+    THREE.CopyShader = require('imports-loader?THREE=three!exports-loader?THREE.CopyShader!../../../../node_modules\/three\/examples\/js\/shaders\/CopyShader');
+    THREE.FilmShader = require('imports-loader?THREE=three!exports-loader?THREE.FilmShader!../../../../node_modules\/three\/examples\/js\/shaders\/FilmShader');
+    THREE.FocusShader = require('imports-loader?THREE=three!exports-loader?THREE.FocusShader!../../../../node_modules\/three\/examples\/js\/shaders\/FocusShader');
+    THREE.EffectComposer = require('imports-loader?THREE=three!exports-loader?THREE.EffectComposer!../../../../node_modules\/three\/examples\/js\/postprocessing\/EffectComposer');
+    THREE.MaskPass = require('imports-loader?THREE=three!exports-loader?THREE.MaskPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/MaskPass');
+    THREE.RenderPass = require('imports-loader?THREE=three!exports-loader?THREE.RenderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/RenderPass');
+    THREE.BloomPass = require('imports-loader?THREE=three!exports-loader?THREE.BloomPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
+    THREE.ShaderPass = require('imports-loader?THREE=three!exports-loader?THREE.ShaderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
+    THREE.FilmPass = require('imports-loader?THREE=three!exports-loader?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
 
     function ThreeDEngine(container, viewerId) {
 
@@ -208,7 +208,7 @@ define(['jquery'], function () {
                                     if (geometryIdentifier == undefined) {
                                         geometryIdentifier = "";
                                     }
-                                    GEPPETTO.Console.executeCommand(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
+                                    GEPPETTO.CommandController.execute(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
                                 }
                             }
                         } else if (GEPPETTO.isKeyPressed("ctrl")) {
@@ -551,6 +551,13 @@ define(['jquery'], function () {
                 }
             });
         },
+        
+        /**
+         * Sets whether picking is enabled or not
+         */
+        enablePicking: function(pickingEnabled){
+        	this.pickingEnabled=pickingEnabled;
+        },
 
         getWireframe: function(){
             return this.wireframe;
@@ -738,7 +745,7 @@ define(['jquery'], function () {
                     var visualValue = visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
                     threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
                     if (threeDeeObj) {
-                        threeDeeObjList.push(threeDeeObj);
+                    	threeDeeObjList.push(threeDeeObj);
                     }
                 }
             } else {
@@ -835,8 +842,8 @@ define(['jquery'], function () {
             var material = lines ? materials["line"] : materials["mesh"];
 
             switch (node.eClass) {
-                case GEPPETTO.Resources.PARTICLE:
-                    threeObject = this.createParticle(node);
+                case GEPPETTO.Resources.PARTICLES:
+                    threeObject = this.createParticles(node);
                     break;
 
                 case GEPPETTO.Resources.CYLINDER:
@@ -943,14 +950,34 @@ define(['jquery'], function () {
          * @param node
          * @returns {THREE.Vector3|*}
          */
-        createParticle: function (node) {
-            threeObject = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
+        createParticles: function (node) {
+            var geometry = new THREE.Geometry();
+            var threeColor = new THREE.Color();
+            var color=('0x' + Math.floor(Math.random() * 16777215).toString(16));
+            threeColor.setHex(color);
+
+            var textureLoader = new THREE.TextureLoader();
+            var material = new THREE.PointsMaterial(
+                {
+                    size: 2,
+                    map: textureLoader.load("geppetto/js/components/interface/3dCanvas/particle.png"),
+                    blending: THREE.AdditiveBlending,
+                    depthTest: false,
+                    transparent: true,
+                    color: threeColor
+                });
+
+        	for(var p=0;p<node.particles.length;p++){
+        		geometry.vertices.push(new THREE.Vector3(node.particles[p].x, node.particles[p].y, node.particles[p].z));
+
+        	}
+
+            material.defaultColor = color;
+            material.defaultOpacity = 1;
+            var threeObject= new THREE.Points(geometry, material);
             threeObject.visible = true;
             threeObject.instancePath = node.instancePath;
             threeObject.highlighted = false;
-            // TODO: does that need to be done?
-            this.visualModelMap[node.instancePath] = threeObject;
-
             return threeObject;
 
         },
@@ -961,7 +988,8 @@ define(['jquery'], function () {
          * @param material
          * @returns {THREE.Line}
          */
-        create3DLineFromNode: function (node, material) {
+        create3DLineFromNode: function (node, material) { 
+        	var threeObject = null;
             if (node.eClass == GEPPETTO.Resources.CYLINDER) {
                 var bottomBasePos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
                 var topBasePos = new THREE.Vector3(node.distal.x, node.distal.y, node.distal.z);
@@ -974,7 +1002,7 @@ define(['jquery'], function () {
                 var geometry = new THREE.Geometry();
                 geometry.vertices.push(bottomBasePos);
                 geometry.vertices.push(topBasePos);
-                var threeObject = new THREE.Line(geometry, material);
+                threeObject = new THREE.Line(geometry, material);
                 threeObject.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
                 threeObject.lookAt(axis);
                 threeObject.position.fromArray(midPoint.toArray());
@@ -1209,7 +1237,7 @@ define(['jquery'], function () {
                 {
                     opacity: 1,
                     shininess: 10,
-                    shading: THREE.SmoothShading
+                    flatShading: true
                 });
 
             this.setThreeColor(material.color, color);
@@ -1748,6 +1776,18 @@ define(['jquery'], function () {
         },
 
         /**
+         * Hide all instances
+         *
+         */
+        hideAllInstances: function () {
+        	for (var instancePath in this.meshes) {
+        	  if (this.meshes.hasOwnProperty(instancePath)) {
+        		  this.hideInstance(instancePath);
+        	  }
+        	}
+        },
+        
+        /**
          * Hide instance
          *
          * @param {String}
@@ -2215,44 +2255,33 @@ define(['jquery'], function () {
                     GEPPETTO.Resources.OUTPUT :
                     GEPPETTO.Resources.INPUT;
 
-                var otherEndPath = connection.getA().getPath() == instance.getInstancePath() ?
-                    connection.getB().getPath() :
-                    connection.getA().getPath();
+                var thisEnd = connection.getA().getPath() == instance.getInstancePath() ? connection.getA() : connection.getB();
+                var otherEnd = connection.getA().getPath() == instance.getInstancePath() ? connection.getB() : connection.getA();
+                var otherEndPath = otherEnd.getPath();
 
                 var otherEndMesh = this.meshes[otherEndPath];
 
                 var destination;
                 var origin;
 
-                if (connection.getA().getPoint() == undefined) {
+                if (thisEnd.getPoint() == undefined) {
                     //same as before
                     origin = defaultOrigin;
                 }
                 else {
                     //the specified coordinate
-                    var p = connection.getA().getPoint();
-                    if (type == GEPPETTO.Resources.OUTPUT) {
-                        origin = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
-                    }
-                    else if (type == GEPPETTO.Resources.INPUT) {
-                        origin = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
-                    }
+                    var p = thisEnd.getPoint();
+                    origin = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
                 }
 
-                if (connection.getB().getPoint() == undefined) {
+                if (otherEnd.getPoint() == undefined) {
                     //same as before
                     destination = otherEndMesh.position.clone();
-                    ;
                 }
                 else {
                     //the specified coordinate
-                    var p = connection.getB().getPoint();
-                    if (type == GEPPETTO.Resources.OUTPUT) {
-                        destination = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
-                    }
-                    else if (type == GEPPETTO.Resources.INPUT) {
-                        destination = new THREE.Vector3(p.x + mesh.position.x, p.y + mesh.position.y, p.z + mesh.position.z);
-                    }
+                    var p = otherEnd.getPoint();
+                    destination = new THREE.Vector3(p.x + otherEndMesh.position.x, p.y + otherEndMesh.position.y, p.z + otherEndMesh.position.z);
                 }
 
                 var geometry = new THREE.Geometry();

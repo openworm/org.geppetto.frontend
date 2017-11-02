@@ -8,51 +8,59 @@ define(function(require) {
     var CameraControls = React.createClass({
 
         panLeft: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraPan(-0.01, 0)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(-0.01, 0)', true);
         },
 
         panRight: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraPan(0.01, 0)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(0.01, 0)', true);
         },
 
         panUp: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraPan(0, -0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(0, -0.01)', true);
         },
 
         panDown: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraPan(0, 0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(0, 0.01)', true);
         },
 
         rotateUp: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0, 0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0, 0.01)', true);
         },
 
         rotateDown: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0, -0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0, -0.01)', true);
         },
 
         rotateLeft: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(-0.01, 0)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(-0.01, 0)', true);
         },
 
         rotateRight: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraRotate(0.01, 0)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0.01, 0)', true);
+        },
+        
+        rotateZ: function() {
+        	GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0, 0, 0.01)',true);
+        },
+
+        rotateMZ: function(increment) {
+        	GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraRotate(0, 0, -0.01)',true);
         },
 
         rotate: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.autoRotate()');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.autoRotate()', true);
         },
         
         cameraHome: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.resetCamera()');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.resetCamera()', true);
         },
 
         zoomIn: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraZoom(-0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraZoom(-0.1)',true);
         },
 
         zoomOut: function() {
-            GEPPETTO.Console.executeImplicitCommand(this.props.viewer+'.incrementCameraZoom(+0.01)');
+            GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraZoom(+0.1)',true);
         },
 
         componentDidMount: function() {
@@ -72,6 +80,8 @@ define(function(require) {
                     <button id="rotateUpBtn" className="btn squareB fa fa-repeat rotate90 rotate-top" onClick={this.rotateUp}></button>
                     <button id="rotateRightBtn" className="btn squareB fa fa-repeat rotate-right" onClick={this.rotateRight}></button>
                     <button id="rotateDownBtn" className="btn squareB fa fa-undo rotate90 rotate-bottom" onClick={this.rotateDown}></button>
+                    <button id="rotateZBtn" className="btn squareB fa fa-undo rotate-z" onClick={this.rotateZ}></button>
+                    <button id="rotateMZBtn" className="btn squareB fa fa-repeat rotate-mz" onClick={this.rotateMZ}></button>
                     <button id="rotateBtn" className="btn squareB fa fa-video-camera rotate-home" onClick={this.rotate}></button>
 
                     <button id="zoomInBtn" className="btn squareB fa fa-search-plus zoom-in" onClick={this.zoomIn}></button>

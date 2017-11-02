@@ -82,7 +82,7 @@ define(function (require) {
         messageHandler[messageTypes.GEPPETTO_VERSION] = function (payload) {
             var version = payload.geppetto_version;
             var geppettoVersion = GEPPETTO.Resources.GEPPETTO_VERSION_HOLDER.replace("$1", version);
-            GEPPETTO.Console.log(geppettoVersion);
+            GEPPETTO.CommandController.log(geppettoVersion);
         };
 
         messageHandler[messageTypes.SCRIPT_FETCHED] = function (payload) {

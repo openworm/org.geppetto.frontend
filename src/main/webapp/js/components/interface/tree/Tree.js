@@ -44,6 +44,7 @@ define(function (require) {
 		}
 
 		handleClick(event, rowInfo) {
+			var toggleMode = this.props.toggleMode;
 			var currentTreeData = this.state.treeData;
 			// If node has children, we expand/collapse the node
 			if (rowInfo.node.children != undefined && rowInfo.node.children.length > 0) {
@@ -58,10 +59,17 @@ define(function (require) {
 					ignoreCollapsed: false,
 					callback: (rowInfoIter) => {
 						var isActive = (rowInfoIter.treeIndex == rowInfo.treeIndex);
-						if (isActive != rowInfoIter.node.active){
+						// If toggleMode just toggle to activate/inactivate selected node
+						// If non toggle mode inactive all nodes but selected
+						if (isActive && toggleMode) {
+							rowInfoIter.node.active = !rowInfoIter.node.active;
+							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
+						}
+						else if (isActive != rowInfoIter.node.active  && !toggleMode) {
 							rowInfoIter.node.active = isActive;
 							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
 						}
+
 					}
 				});
 
@@ -99,7 +107,7 @@ define(function (require) {
 						style={this.props.style}
 						treeData={this.state.treeData}
 						canDrag={false}
-						rowHeight={40}
+						rowHeight={this.props.rowHeight}
 						scaffoldBlockPxWidth={22}
 						generateNodeProps={rowInfo => (this.getNodeProps(rowInfo))}
 						onChange={treeData => this.updateTreeData(treeData)}

@@ -41,7 +41,7 @@ define(function (require) {
 
             return (
                 <div className="col-lg-6 panel-body" id="pythonConsoleOutput">
-                    <iframe id="pythonConsoleFrame" src={this.props.pythonNotebookPath} marginWidth="0" marginHeight="0" frameBorder="no" scrolling="yes" style={{width:'100%', height:'100%'}}>
+                    <iframe id="pythonConsoleFrame" src={this.props.pythonNotebookPath} marginWidth="0" marginHeight="0" frameBorder="no" scrolling="yes" allowTransparency="true" style={{width:'100%', height:'100%'}}>
                    </iframe>
              	</div>  
             );

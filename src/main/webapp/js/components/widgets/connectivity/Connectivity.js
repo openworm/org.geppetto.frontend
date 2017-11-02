@@ -25,6 +25,7 @@ define(function (require) {
     return Widget.View.extend({
 
         dataset: {},
+        linkCache: {},
         nodeColormap: {},
         connectivityOptions: {},
         defaultConnectivityOptions: {
@@ -33,7 +34,7 @@ define(function (require) {
             layout: "matrix", //[matrix, force, hive, chord]
             nodeType: function (node) {
                 if (node instanceof Instance) {
-                    return node.getType().getId();
+                    return node.getParent().getId();
                 } else {
                     return node.getPath().split('_')[0];
                 }
@@ -68,7 +69,7 @@ define(function (require) {
             	var height = $("#"+that.id).parent().height();
                 var width = $("#"+that.id).parent().width();
 
-                GEPPETTO.Console.executeCommand(that.id + ".setSize(" + height + "," + width + ")");
+                GEPPETTO.CommandController.execute(that.id + ".setSize(" + height + "," + width + ")", true);
 
                 var left = $("#"+that.id).parent().offset().left;
                 var top = $("#"+that.id).parent().offset().top;
@@ -96,7 +97,7 @@ define(function (require) {
             var range = [];
             for (var i=0; i<cells.length; ++i) {
                 if (cells[i].getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                    domain.push(cells[i].getChildren()[0].getType().getId());
+                    domain.push(cells[i].getName());
                     range.push(cells[i].getColor());
                 }
             }
@@ -182,12 +183,12 @@ define(function (require) {
 	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
 	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
-	                        this.createLink(sourceId, targetId, this.options.linkType(connectionVariable), this.options.linkWeight(connectionVariable));
+	                            this.createLink(sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache), this.options.linkWeight(connectionVariable));
 		                }
 		            }
 
-		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type'));
-		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type'));
+		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
+		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
 		            return true;
                 }
 
@@ -265,7 +266,7 @@ define(function (require) {
             if (colorScale.domain().length > 1) {
                 var horz, vert;
                 var legendItem = this.svg.selectAll(id)
-                    .data(colorScale.domain())
+                    .data(colorScale.domain().slice().sort())
                     .enter().append('g')
                     .attr('class', 'legend-item')
                     .attr('transform', function (d, i) {

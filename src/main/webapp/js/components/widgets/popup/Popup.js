@@ -18,7 +18,7 @@ define(function (require) {
 	var slick = require('slick-carousel');
 
 	require("./Popup.less");
-	require("./vendor/slick.css");
+	require("./vendor/slick.less");
 	require("./vendor/slick-theme.less");
 
 	/**
@@ -92,7 +92,7 @@ define(function (require) {
 		 */
 		setRawMessage: function (msg) {
 			$("#" + this.id).html(msg);
-			GEPPETTO.Console.debugLog("Set new Message for " + this.id);
+			GEPPETTO.CommandController.log("Set new Message for " + this.id, true);
 
 			if (this.customHandlers.length > 0) {
 				// msg has changed, set hooked attribute on handlers to false
@@ -102,7 +102,7 @@ define(function (require) {
 
 				// trigger routine that hooks up handlers
 				hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
-				GEPPETTO.Console.debugLog("Hooked up custom handlers for " + this.id);
+				GEPPETTO.CommandController.log("Hooked up custom handlers for " + this.id, true);
 			}
 
 			return this;
@@ -301,14 +301,21 @@ define(function (require) {
 		 * @param {String} eventType - event that triggers the custom handler
 		 */
 		addCustomNodeHandler: function (funct, eventType, metaType) {
-			this.customHandlers.push({funct: funct, event: eventType, meta: metaType, hooked: false});
+			var addHandler =true;
+			for(var i=0; i<this.customHandlers.length; i++){
+				if(eventType == this.customHandlers[i].event){
+					addHandler =false;
+				}
+			}
+			if(addHandler){
+				this.customHandlers.push({funct: funct, event: eventType, meta: metaType, hooked: false});
 
-			// trigger routine that hooks up handlers
-			hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
+				// trigger routine that hooks up handlers
+				hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
 
-			// track change in state of the widget
-			this.dirtyView = true;
-
+				// track change in state of the widget
+				this.dirtyView = true;
+			}
 			return this;
 		},
 
@@ -332,12 +339,14 @@ define(function (require) {
 					instancePath = instance.getPath();
 				}
 			}
-
+			var originalZIndex = $("#" + this.id).parent().css("z-index");
             this.buttonBar = ReactDOM.render(
                 React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
                 	instancePath : instancePath, instance : instance, geppetto: GEPPETTO, resize : function(){that.setSize(that.size.height,that.size.width);}}),
                 document.getElementById(barDiv)
             );
+            
+            $("#" + this.id).parent().css('z-index', originalZIndex);
         },
 
         setButtonBarControls : function(controls){
@@ -405,6 +414,8 @@ define(function (require) {
 			if(view.data != undefined){
 				if(view.dataType == 'string'){
 					this.setMessage(view.data);
+				}else if(view.dataType == 'stringCommand'){
+					this.setMessage(eval(view.data));
 				} else if($.isArray(view.data)){
 					this.setData(eval(view.data[0]));
 				}else {

@@ -120,7 +120,14 @@ define(function (require) {
 		}
 
 		loadModel() {
-			if (this.state.files != undefined) {
+			if (this.state.files != undefined && this.state.files != null) {
+
+				if (this.isWidget()) {
+					this.showOverlay(<div className="spinner-container">
+						<div className={"fa fa-circle-o-notch fa-spin"}></div>
+						<p id="loadingmodaltext" className="orange">Loading MRI files...</p>
+					</div>);
+				}
 
 				this.ready = false;
 				var _this = this;
@@ -135,35 +142,46 @@ define(function (require) {
 					function animate() {
 						// we are ready when both meshes have been loaded
 						if (_this.ready) {
-							// render
-							_this.r0.controls.update();
-							_this.r1.controls.update();
-							_this.r2.controls.update();
-							_this.r3.controls.update();
+							if ((_this.state.mode == "single_view" && _this.state.orientation == "3d") || _this.state.mode == "quad_view") {
+								// render
+								_this.r0.controls.update();
+								_this.r0.light.position.copy(_this.r0.camera.position);
+								_this.r0.renderer.render(_this.r0.scene, _this.r0.camera);
+							}
 
-							_this.r0.light.position.copy(_this.r0.camera.position);
-							_this.r0.renderer.render(_this.r0.scene, _this.r0.camera);
 
-							// r1
-							_this.r1.renderer.clear();
-							_this.r1.renderer.render(_this.r1.scene, _this.r1.camera);
-							// localizer
-							_this.r1.renderer.clearDepth();
-							_this.r1.renderer.render(_this.r1.localizerScene, _this.r1.camera);
+							if ((_this.state.mode == "single_view" && _this.state.orientation == "sagittal") || _this.state.mode == "quad_view") {
+								_this.r1.controls.update();
+								// r1
+								_this.r1.renderer.clear();
+								_this.r1.renderer.render(_this.r1.scene, _this.r1.camera);
 
-							// r2
-							_this.r2.renderer.clear();
-							_this.r2.renderer.render(_this.r2.scene, _this.r2.camera);
-							// localizer
-							_this.r2.renderer.clearDepth();
-							_this.r2.renderer.render(_this.r2.localizerScene, _this.r2.camera);
+								// localizer
+								_this.r1.renderer.clearDepth();
+								_this.r1.renderer.render(_this.r1.localizerScene, _this.r1.camera);
 
-							// r3
-							_this.r3.renderer.clear();
-							_this.r3.renderer.render(_this.r3.scene, _this.r3.camera);
-							// localizer
-							_this.r3.renderer.clearDepth();
-							_this.r3.renderer.render(_this.r3.localizerScene, _this.r3.camera);
+							}
+
+
+							if ((_this.state.mode == "single_view" && _this.state.orientation == "axial") || _this.state.mode == "quad_view") {
+								_this.r2.controls.update();
+								// r2
+								_this.r2.renderer.clear();
+								_this.r2.renderer.render(_this.r2.scene, _this.r2.camera);
+								// localizer
+								_this.r2.renderer.clearDepth();
+								_this.r2.renderer.render(_this.r2.localizerScene, _this.r2.camera);
+							}
+
+							if ((_this.state.mode == "single_view" && _this.state.orientation == "coronal") || _this.state.mode == "quad_view") {
+								_this.r3.controls.update();
+								// r3
+								_this.r3.renderer.clear();
+								_this.r3.renderer.render(_this.r3.scene, _this.r3.camera);
+								// localizer
+								_this.r3.renderer.clearDepth();
+								_this.r3.renderer.render(_this.r3.localizerScene, _this.r3.camera);
+							}
 						}
 
 						// request new frame
@@ -263,6 +281,9 @@ define(function (require) {
 
 						_this.configureEvents();
 						_this.ready = true;
+						if (_this.isWidget()) {
+							_this.hideOverlay();
+						}
 
 					})
 					.catch(function (error) {
@@ -273,12 +294,7 @@ define(function (require) {
 
 		}
 
-		componentDidMount() {
-			this.loadModel();
-		}
-
 		configureEvents() {
-
 			var _this = this;
 			function goToPoint(event) {
 				const canvas = event.srcElement.parentElement;
@@ -339,6 +355,9 @@ define(function (require) {
 				const id = event.target.id;
 				let orientation = null;
 				switch (id) {
+					case '0':
+						orientation = "3d";
+						break;
 					case '1':
 						orientation = "sagittal";
 						break;
@@ -355,13 +374,12 @@ define(function (require) {
 				}
 			}
 
-			function onClick(event) {
-
-				if (event.ctrlKey) {
-					goToSingleView(event);
+			function togglMode(event) {
+				if (_this.state.mode == 'single_view') {
+					_this.changeMode();
 				}
 				else {
-					goToPoint(event);
+					goToSingleView(event);
 				}
 			}
 
@@ -397,26 +415,50 @@ define(function (require) {
 				DicomViewerUtils.updateLocalizer(_this.r3, [_this.r1.localizerHelper, _this.r2.localizerHelper]);
 			}
 
-			// event listeners
-			// _this.r0.domElement.addEventListener('dblclick', onDoubleClick);
-			// _this.r1.domElement.addEventListener('dblclick', onDoubleClick);
-			// _this.r2.domElement.addEventListener('dblclick', onDoubleClick);
-			// _this.r3.domElement.addEventListener('dblclick', onDoubleClick);
+			function performEventAction(action, event) {
+				// Check if it is a already defined action or a external one
+				if (action == 'goToPoint' || action == 'goToSingleView' || action == 'togglMode') {
+					eval(action + '(event)');
+				}
+				else {
+					action(event, this)
+				}
+			}
 
-			// event listeners
-			this.r0.domElement.addEventListener('click', onClick);
-			this.r1.domElement.addEventListener('click', onClick);
-			this.r2.domElement.addEventListener('click', onClick);
-			this.r3.domElement.addEventListener('click', onClick);
+			function eventHandling(event) {
+				if (event.type == "click" && _this.props.onClick != undefined) {
+					performEventAction(_this.props.onClick, event)
+				}
+				else if (event.type == "click" && (event.ctrlKey || event.metaKey) && _this.props.onCtrlClick != undefined) {
+					performEventAction(_this.props.onCtrlClick, event);
+				}
+				else if (event.type == "click" && event.shiftKey && _this.props.onShiftClick != undefined) {
+					performEventAction(_this.props.onShiftClick, event);
+				}
+				else if (event.type == "dblclick" && _this.props.onDoubleClick != undefined) {
+					performEventAction(_this.props.onDoubleClick, event);
+				}
+			}
 
-			// event listeners
+			// event listeners ondoubleclick
+			_this.r0.domElement.addEventListener('dblclick', eventHandling);
+			_this.r1.domElement.addEventListener('dblclick', eventHandling);
+			_this.r2.domElement.addEventListener('dblclick', eventHandling);
+			_this.r3.domElement.addEventListener('dblclick', eventHandling);
+
+			// event listeners onclick
+			this.r0.domElement.addEventListener('click', eventHandling);
+			this.r1.domElement.addEventListener('click', eventHandling);
+			this.r2.domElement.addEventListener('click', eventHandling);
+			this.r3.domElement.addEventListener('click', eventHandling);
+
+			// event listeners on scrol
 			this.r1.controls.addEventListener('OnScroll', onScroll);
 			this.r2.controls.addEventListener('OnScroll', onScroll);
 			this.r3.controls.addEventListener('OnScroll', onScroll);
 
-
+			// event listeners on resize
 			window.addEventListener('resize', function () { _this.setLayout(); }, false);
-
 			$(this.getContainer()).parent().on("resizeEnd", function (event, ui) {
 				_this.setLayout()
 			});
@@ -424,10 +466,7 @@ define(function (require) {
 
 		setQuadLayout() {
 			// update 3D
-			this.r0.camera.aspect = this.r0.domElement.clientWidth / this.r0.domElement.clientHeight;
-			this.r0.camera.updateProjectionMatrix();
-			this.r0.renderer.setSize(
-				this.r0.domElement.clientWidth, this.r0.domElement.clientHeight);
+			DicomViewerUtils.windowResize3D(this.r0);
 
 			// update 2d
 			DicomViewerUtils.windowResize2D(this.r1);
@@ -438,6 +477,9 @@ define(function (require) {
 		setSingleLayout() {
 			var rendererObj;
 			switch (this.state.orientation) {
+				case '3d':
+					rendererObj = this.r0;
+					break;
 				case 'sagittal':
 					rendererObj = this.r1;
 					break;
@@ -449,18 +491,12 @@ define(function (require) {
 					break;
 			}
 
-
-			var container = this.getContainer();
-			rendererObj.camera.canvas = {
-				width: container.offsetWidth,
-				height: container.offsetHeight,
-			};
-			rendererObj.stackHelper.slice.canvasWidth =
-				container.offsetWidth;
-			rendererObj.stackHelper.slice.canvasHeight =
-				container.offsetHeight + 20;
-			rendererObj.camera.fitBox(2);
-			rendererObj.renderer.setSize(container.offsetWidth, container.offsetHeight);
+			if (this.state.orientation == '3d') {
+				DicomViewerUtils.windowResize3D(rendererObj);
+			}
+			else {
+				DicomViewerUtils.windowResize2D(rendererObj);
+			}
 		}
 
 		setLayout() {
@@ -472,12 +508,47 @@ define(function (require) {
 			}
 		}
 
+		getCustomButtons() {
+			var customButtons = [];
+			if (this.state.mode == 'single_view') {
+				customButtons.push({'icon': 'fa-th-large', 'title': 'Change Mode', 'action': this.changeMode });
+				customButtons.push({'icon': 'fa-square activeColor', 'title': 'Change Mode', 'action': this.changeMode });
+				customButtons.push({'icon': 'fa-exchange', 'title': 'Change Orientation', 'action': this.changeOrientation });
+			}
+			else {
+				customButtons.push({'icon': 'fa-th-large activeColor', 'title': 'Change Mode', 'action': this.changeMode });
+				customButtons.push({'icon': 'fa-square', 'title': 'Change Mode', 'action': this.changeMode });
+			}
+			return customButtons;
+		}
+
+		componentWillUnmount() {
+			DicomViewerUtils.dispose(this.r0);
+			DicomViewerUtils.dispose(this.r1);
+			DicomViewerUtils.dispose(this.r2);
+			DicomViewerUtils.dispose(this.r3);
+		}
+		
+		componentDidMount() {
+			this.loadModel();
+
+			//If it is a widget -> set buttons in the toolbar
+			if (this.isWidget()) {
+				this.setCustomButtons(this.getCustomButtons());
+			}
+		}
+
 		componentDidUpdate(prevProps, prevState) {
 			if (prevState.files != this.state.files) {
 				this.loadModel();
 			}
 			else {
 				this.setLayout();
+			}
+
+			//If it is a widget -> set buttons in the toolbar
+			if (this.isWidget()) {
+				this.setCustomButtons(this.getCustomButtons());
 			}
 		}
 
@@ -491,17 +562,22 @@ define(function (require) {
 		}
 
 		changeOrientation() {
-			var newOrientation;
-			if (this.state.orientation == "coronal") {
-				newOrientation = "sagittal";
+			switch (this.state.orientation) {
+				case "coronal":
+					var newOrientation = "sagittal";
+					break;
+				case "sagittal":
+					var newOrientation = "axial";
+					break;
+				case "axial":
+					var newOrientation = "3d";
+					break;
+				case "3d":
+					var newOrientation = "coronal";
+					break;
+				default:
+					break;
 			}
-			else if (this.state.orientation == "sagittal") {
-				newOrientation = "axial";
-			}
-			else if (this.state.orientation == "axial") {
-				newOrientation = "coronal";
-			}
-
 			this.setState({ orientation: newOrientation });
 		}
 
@@ -510,19 +586,24 @@ define(function (require) {
 		}
 
 		render() {
+			// Add the button bar if it is a component, otherwise add buttons in widget tool bar
+			if (!this.isWidget()) {
+				var widgetButtonBar = <WidgetButtonBar>
+					{this.getCustomButtons().map((customButton) =>
+						<button className={'btn fa ' + customButton.icon} onClick={customButton.action} title={customButton.title} />
+					)}
+				</WidgetButtonBar>
+			}
 
 			return (
-				<div key={this.props.id + "_component"} id={this.props.id + "_component"} style={{ width: '100%', height: '100%' }}>
-					<WidgetButtonBar>
-						<button className={this.state.mode == 'single_view' ? 'btn fa fa-th-large' : 'btn fa fa-square'} onClick={this.changeMode} title={'Change Mode'} />
-						{(this.state.mode == "single_view") ? (<button className="btn fa fa-repeat" onClick={this.changeOrientation} title={'Change Orientation'} />) : null}
-					</WidgetButtonBar>
+				<div key={this.props.id + "_component"} id={this.props.id + "_component"} className="dicomViewerContainer" style={this.props.style}>
+					{widgetButtonBar}
 
 					<div className="dicomViewer">
-						<div data-id="r0" className="renderer r0" style={{ display: this.state.mode == 'single_view' ? 'none' : '' }}></div>
-						<div data-id="r1" className="renderer r1" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'sagittal' ? 'none' : '' }}></div>
-						<div data-id="r2" className="renderer r2" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'axial' ? 'none' : '' }}></div>
-						<div data-id="r3" className="renderer r3" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'coronal' ? 'none' : '' }}></div>
+						<div data-id="r0" className="renderer r0" style={{ display: this.state.mode == 'single_view' && this.state.orientation != '3d' ? 'none' : '', width: this.state.mode == 'single_view' && this.state.orientation == '3d' ? '100%' : '50%', height: this.state.mode == 'single_view' && this.state.orientation == '3d' ? '100%' : '50%' }}></div>
+						<div data-id="r1" className="renderer r1" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'sagittal' ? 'none' : '', width: this.state.mode == 'single_view' && this.state.orientation == 'sagittal' ? '100%' : '50%', height: this.state.mode == 'single_view' && this.state.orientation == 'sagittal' ? '100%' : '50%' }}></div>
+						<div data-id="r2" className="renderer r2" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'axial' ? 'none' : '', width: this.state.mode == 'single_view' && this.state.orientation == 'axial' ? '100%' : '50%', height: this.state.mode == 'single_view' && this.state.orientation == 'axial' ? '100%' : '50%' }}></div>
+						<div data-id="r3" className="renderer r3" style={{ display: this.state.mode == 'single_view' && this.state.orientation != 'coronal' ? 'none' : '', width: this.state.mode == 'single_view' && this.state.orientation == 'coronal' ? '100%' : '50%', height: this.state.mode == 'single_view' && this.state.orientation == 'coronal' ? '100%' : '50%' }}></div>
 					</div>
 
 				</div>

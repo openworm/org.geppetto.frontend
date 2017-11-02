@@ -9,7 +9,7 @@
  */
 define(function (require) {
     var AWidgetController = require('../../../AWidgetController');
-    var TreeVisualiserDAT = require('../TreeVisualiserDAT');
+
 
     /**
      * @exports Widgets/Connectivity/TreeVisualiserControllerDATController
@@ -23,36 +23,45 @@ define(function (require) {
         /**
          * Adds a new TreeVisualizerDAT Widget to Geppetto
          */
-        addTreeVisualiserDATWidget: function (isStateless) {
-            if(isStateless == undefined){
+        addWidget: function (isStateless) {
+            if (isStateless == undefined) {
                 // stateless by default
                 isStateless = true;
             }
 
-            //look for a name and id for the new widget
-            var id = this.getAvailableWidgetId("TreeVisualiserDAT", this.widgets);
-            var name = id;
+            var that=this;
 
-            // create tree visualiser widget
-            var tvdat = window[name] = new TreeVisualiserDAT({
-                id: id, name: name, visible: true, width: 260, height: 350,
-                widgetType: GEPPETTO.Widgets.TREEVISUALISERDAT, stateless: isStateless
-            });
-            // create help command for plot
-            tvdat.help = function () {
-                return GEPPETTO.Utility.getObjectCommands(id);
-            };
-            // store in local stack
-            this.widgets.push(tvdat);
+            return new Promise(resolve => {
+                    require.ensure([], function (require) {
 
-            GEPPETTO.WidgetsListener.subscribe(this, id);
 
-            // updates helpc command output
-            GEPPETTO.Console.updateHelpCommand(tvdat, id, this.getFileComments("geppetto/js/components/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js"));
-            //update tags for autocompletion
-            GEPPETTO.Console.updateTags(tvdat.getId(), tvdat);
+                    var TreeVisualiserDAT = require('../TreeVisualiserDAT');
+                    //look for a name and id for the new widget
+                    var id = that.getAvailableWidgetId("TreeVisualiserDAT", that.widgets);
+                    var name = id;
 
-            return tvdat;
+                    // create tree visualiser widget
+                    var tvdat = window[name] = new TreeVisualiserDAT({
+                        id: id, name: name, visible: true, width: 260, height: 350,
+                        widgetType: GEPPETTO.Widgets.TREEVISUALISERDAT, stateless: isStateless
+                    });
+                    // create help command for plot
+                    tvdat.help = function () {
+                        return GEPPETTO.CommandController.getObjectCommands(id);
+                    };
+                    // store in local stack
+                    that.widgets.push(tvdat);
+
+                    GEPPETTO.WidgetsListener.subscribe(that, id);
+
+                    // updates helpc command output
+                    GEPPETTO.CommandController.updateHelpCommand(tvdat, id, that.getFileComments("geppetto/js/components/widgets/treevisualiser/treevisualiserdat/TreeVisualiserDAT.js"));
+                    //update tags for autocompletion
+                    GEPPETTO.CommandController.updateTags(tvdat.getId(), tvdat);
+
+                    resolve(tvdat);
+                });
+        });
         },
 
         /**

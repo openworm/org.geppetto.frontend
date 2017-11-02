@@ -95,8 +95,8 @@ define(function (require) {
             });
             var post = nodes.map(function(x,i) { return {id: x.id, conn: matrixT[i].filter(function(d) { return d.z; }).length > 0}});
 
-            var typeIdFromId = function(id) {
-                return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(id)[0]).getType().getId();
+            var popNameFromId = function(id) {
+                return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(id)[0]).getParent().getName();
             };
 
             var mouseoverCell = function(msg) {
@@ -112,7 +112,7 @@ define(function (require) {
 		return tooltip.text(defaultTooltipText);
 	    };
 
-            var popIndicator = function(pos, colormap) {
+            var popIndicator = function(pos, colormap, r) {
                 return function(d,i) {
                     d3.select(this).selectAll(".cell")
                         .data(d)
@@ -121,14 +121,14 @@ define(function (require) {
 			.attr(pos, function (d, i) {
 			    return x(i);
 			})
-			.attr("r", 3)
+			.attr("r", r)
 			.attr("title", function (d) {
 			    return d.id;
 			})
 			.style("fill", function (d) {
-                            return colormap(typeIdFromId(d.id));
+                            return colormap(popNameFromId(d.id));
 			})
-                        .on("mouseover", function(d){ $.proxy(mouseoverCell, this)(typeIdFromId(d.id)) })
+                        .on("mouseover", function(d){ $.proxy(mouseoverCell, this)(popNameFromId(d.id)) })
 			.on("mouseout", $.proxy(mouseoutCell))
                 };
             };
@@ -136,20 +136,23 @@ define(function (require) {
             var colormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
             var postMargin = 0.5*parseInt(rect.attr("width"))/pre.length;
             var preMargin = 0.5*parseInt(rect.attr("height"))/post.length;
+            var popIndicatorMaxRadius = 5;
             var postPop = container.selectAll(".postPop")
                 .data([post])
                 .enter()
                 .append("g")
                 .attr("class", "postPop")
                 .attr("transform", "translate("+postMargin+",-10)")
-                .each(popIndicator("cx", colormap));
+                .each(popIndicator("cx", colormap,
+                                   (postMargin < popIndicatorMaxRadius) ? postMargin : popIndicatorMaxRadius));
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
                 .append("g")
                 .attr("class", "prePop")
                 .attr("transform", "translate(-10,"+preMargin+")")
-                .each(popIndicator("cy", colormap));
+                .each(popIndicator("cy", colormap,
+                                   (preMargin < popIndicatorMaxRadius) ? preMargin : popIndicatorMaxRadius));
 
 	    var row = container.selectAll(".row")
 		.data(matrix)

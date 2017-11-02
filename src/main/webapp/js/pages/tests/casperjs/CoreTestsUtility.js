@@ -131,8 +131,8 @@ function testCameraPosition(test,expectedCamPosition){
     });
 
     for (var i in camPosition){
-        camPosition[i] = parseFloat(camPosition[i].toFixed(5))
-        expectedCamPosition[i] = parseFloat(expectedCamPosition[i].toFixed(5))
+        camPosition[i] = parseFloat(camPosition[i].toFixed(3))
+        expectedCamPosition[i] = parseFloat(expectedCamPosition[i].toFixed(3))
     }
 
     test.assertEquals( camPosition[0],expectedCamPosition[0], "Vector's x coordinate is correct as camera poistion");

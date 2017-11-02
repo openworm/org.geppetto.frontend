@@ -522,6 +522,13 @@ define(function (require) {
 			return customButtons;
 		}
 
+		componentWillUnmount() {
+			DicomViewerUtils.dispose(this.r0);
+			DicomViewerUtils.dispose(this.r1);
+			DicomViewerUtils.dispose(this.r2);
+			DicomViewerUtils.dispose(this.r3);
+		}
+		
 		componentDidMount() {
 			this.loadModel();
 

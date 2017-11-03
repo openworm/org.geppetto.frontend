@@ -464,11 +464,13 @@ function acnetTest(test){
 
 function c302Test(test){
     casper.echo("------------STARTING C302 TEST--------------");
-
-    casper.waitForSelector('div[id="Plot1"]', function() {
-        this.echo("I've waited for Plot1 to load.");
-        test.assertExists('div[id="Plot1"]', "geppetto loads the initial Plot1");
-    }, null, 5000);
+    
+    casper.then(function(){
+    	casper.waitUntilVisible('div[id="Plot1"]', function () {
+    		this.echo("I've waited for Plot1 to load.");
+            test.assertExists('div[id="Plot1"]', "geppetto loads the initial Plot1");
+    	},15000);
+    });
 
     casper.then(function(){
         resetCameraTest(test, [49.25,-0.8000001907348633,733.3303486467378]);

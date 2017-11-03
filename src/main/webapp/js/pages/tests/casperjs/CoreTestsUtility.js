@@ -409,6 +409,6 @@ function testPlotWidgets(test, widget, variableName, expectedGElements){
 			var gElements = $("#"+widget).find("svg").find("g").length;
 			return gElements;
 		}, widget, expectedGElements);
-		test.assertEquals(expectedGElements, gElements, "Right amount of graph elements for "+widget);
+		test.assertEquals(gElements, expectedGElements, "Right amount of graph elements for "+widget);
 	});
 }

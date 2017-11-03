@@ -12,6 +12,7 @@ install:
 - npm install --silent -g casperjs 
 - npm install --silent -g slimerjs
 - npm install --silent -g gl
+- npm config set registry http://registry.npmjs.org/
 
 services:
   - docker

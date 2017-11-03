@@ -469,7 +469,7 @@ function c302Test(test){
     	casper.waitUntilVisible('div[id="Plot1"]', function () {
     		this.echo("I've waited for Plot1 to load.");
             test.assertExists('div[id="Plot1"]', "geppetto loads the initial Plot1");
-    	},15000);
+    	},25000);
     });
 
     casper.then(function(){
@@ -566,7 +566,7 @@ function ca1Test(test){
     casper.waitForSelector('div[id="TreeVisualiserDAT1"]', function() {
         this.echo("I've waited for the TreeVisualiserDAT1 to load.");
         test.assertExists('div[id="TreeVisualiserDAT1"]', "geppetto loads the initial TreeVisualiserDAT1");
-    }, null, 5000);
+    }, null, 25000);
 
     casper.then(function () {
         this.echo("Opening controls panel");

@@ -112,16 +112,17 @@ define(function (require) {
 		return tooltip.text(defaultTooltipText);
 	    };
 
-            var popIndicator = function(pos, colormap, r) {
+            var popIndicator = function(pos, colormap, w, h) {
                 return function(d,i) {
                     d3.select(this).selectAll(".cell")
                         .data(d)
-			.enter().append("circle")
+			.enter().append("rect")
 			.attr("class", "cell")
 			.attr(pos, function (d, i) {
 			    return x(i);
 			})
-			.attr("r", r)
+			.attr("width", w)
+		        .attr("height", h)
 			.attr("title", function (d) {
 			    return d.id;
 			})
@@ -137,24 +138,24 @@ define(function (require) {
             };
 
             var colormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
-            var postMargin = 0.5*parseInt(rect.attr("width"))/pre.length;
-            var preMargin = 0.5*parseInt(rect.attr("height"))/post.length;
-            var popIndicatorMaxRadius = 5;
+            var postMargin = parseInt(rect.attr("width"))/pre.length;
+            var preMargin = parseInt(rect.attr("height"))/post.length;
+            var popIndicatorMaxRadius = 10;
             var postPop = container.selectAll(".postPop")
                 .data([post])
                 .enter()
                 .append("g")
                 .attr("class", "postPop")
-                .attr("transform", "translate("+postMargin+",-10)")
-                .each(popIndicator("cx", colormap,
-                                   (postMargin < popIndicatorMaxRadius) ? postMargin : popIndicatorMaxRadius));
+                .attr("transform", "translate(0,-10)")
+                .each(popIndicator("x", colormap,
+                                   (postMargin < popIndicatorMaxRadius) ? postMargin : popIndicatorMaxRadius, 5));
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
                 .append("g")
                 .attr("class", "prePop")
-                .attr("transform", "translate(-10,"+preMargin+")")
-                .each(popIndicator("cy", colormap,
+                .attr("transform", "translate(-10,0)")
+                .each(popIndicator("y", colormap, 5,
                                    (preMargin < popIndicatorMaxRadius) ? preMargin : popIndicatorMaxRadius));
 
 	    var row = container.selectAll(".row")

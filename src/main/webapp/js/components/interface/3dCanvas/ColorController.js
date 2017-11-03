@@ -223,7 +223,9 @@ define(['jquery'], function () {
             }
 
             var [r,g,b] = colorfn(intensity);
-            threeObject.material.color.setRGB(r,g,b);
+            if (threeObject!=undefined) {
+                threeObject.material.color.setRGB(r,g,b);
+            }
         },
 
         /**

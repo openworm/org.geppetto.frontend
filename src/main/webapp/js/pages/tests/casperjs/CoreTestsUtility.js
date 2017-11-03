@@ -400,3 +400,15 @@ function testMoviePlayerWidget(test,id){
     test.assertExists('div[id="'+id+'"]', "Movie player exists");
     test.assertExists("iframe[id=\"widget6\"]", "Movie player iframe exists");
 }
+
+function testPlotWidgets(test, widget, variableName, expectedGElements){
+	test.assertExists('div[id="'+widget+'"]', "Plot widget exists")
+
+	casper.then(function(){
+		var gElements = casper.evaluate(function(widget, expectedGElements) {
+			var gElements = $("#"+widget).find("svg").find("g").length;
+			return gElements;
+		}, widget, expectedGElements);
+		test.assertEquals(expectedGElements, gElements, "Right amount of graph elements for "+widget);
+	});
+}

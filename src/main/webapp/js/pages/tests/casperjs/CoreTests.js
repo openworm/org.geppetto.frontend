@@ -96,13 +96,15 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
 function hhcellTest(test,name){
     casper.echo("------------STARTING HHCELL TEST--------------");
     casper.then(function(){
+    	casper.waitUntilVisible('div[id="Plot2"]', function () {
+    		casper.echo("-------Testing Widgets--------");
+    		//test plot widgets have expected amount of graphs by counting G elements plotly draws
+    		testPlotWidgets(test,"Plot1","hhcell.hhpop[0].v", 65);
+    		testPlotWidgets(test,"Plot2","hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.m.q",79);
+    	});
+    });
+    casper.then(function(){
         removeAllPlots();
-        casper.wait(20000, function(){
-            var canvas= casper.evaluate(function(){
-                return Canvas1==undefined;
-            });
-            casper.echo("Canvas1"+canvas);
-        });
     });
     casper.then(function(){
         casper.echo("-------Testing Camera Controls--------");

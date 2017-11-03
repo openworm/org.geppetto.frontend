@@ -89,7 +89,7 @@
     "stats.js": "^0.17.0",
     "style-loader": "^0.13.2",
     "text": "^0.1.0",
-    "three": "0.83.0",
+    "three": "0.87.0",
     "three-loaders-collada": "^1.0.1",
     "typeahead.js": "^0.11.1",
     "underscore": "^1.8.3",

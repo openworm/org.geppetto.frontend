@@ -301,14 +301,21 @@ define(function (require) {
 		 * @param {String} eventType - event that triggers the custom handler
 		 */
 		addCustomNodeHandler: function (funct, eventType, metaType) {
-			this.customHandlers.push({funct: funct, event: eventType, meta: metaType, hooked: false});
+			var addHandler =true;
+			for(var i=0; i<this.customHandlers.length; i++){
+				if(eventType == this.customHandlers[i].event){
+					addHandler =false;
+				}
+			}
+			if(addHandler){
+				this.customHandlers.push({funct: funct, event: eventType, meta: metaType, hooked: false});
 
-			// trigger routine that hooks up handlers
-			hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
+				// trigger routine that hooks up handlers
+				hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
 
-			// track change in state of the widget
-			this.dirtyView = true;
-
+				// track change in state of the widget
+				this.dirtyView = true;
+			}
 			return this;
 		},
 
@@ -407,6 +414,8 @@ define(function (require) {
 			if(view.data != undefined){
 				if(view.dataType == 'string'){
 					this.setMessage(view.data);
+				}else if(view.dataType == 'stringCommand'){
+					this.setMessage(eval(view.data));
 				} else if($.isArray(view.data)){
 					this.setData(eval(view.data[0]));
 				}else {

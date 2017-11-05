@@ -22,7 +22,8 @@ define(function (require) {
                         searchText: ''
                     });
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
-                    this.handleChange = this.handleChange.bind(this);
+
+                    this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange;
                     this.handleUpdateInput = this.handleUpdateInput.bind(this);
                 }
 
@@ -96,7 +97,12 @@ define(function (require) {
 
                 render() {
                     return (
-                        <WrappedComponent {...this.props} componentType={WrappedComponent.name} value={this.state.value} searchText={this.state.searchText} onChange={this.handleChange} onUpdateInput={this.handleUpdateInput} />
+                        <WrappedComponent {...this.props}
+                            componentType={WrappedComponent.name}
+                            value={this.state.value}
+                            searchText={this.state.searchText}
+                            onChange={this.handleChange}
+                            onUpdateInput={this.handleUpdateInput} />
                     );
                 }
 

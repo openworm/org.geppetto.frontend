@@ -140,23 +140,21 @@ define(function (require) {
             var colormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
             var postMargin = parseInt(rect.attr("width"))/pre.length;
             var preMargin = parseInt(rect.attr("height"))/post.length;
-            var popIndicatorMaxRadius = 10;
+
             var postPop = container.selectAll(".postPop")
                 .data([post])
                 .enter()
                 .append("g")
                 .attr("class", "postPop")
                 .attr("transform", "translate(0,-10)")
-                .each(popIndicator("x", colormap,
-                                   (postMargin < popIndicatorMaxRadius) ? postMargin : popIndicatorMaxRadius, 5));
+                .each(popIndicator("x", colormap, postMargin, 5));
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
                 .append("g")
                 .attr("class", "prePop")
                 .attr("transform", "translate(-10,0)")
-                .each(popIndicator("y", colormap, 5,
-                                   (preMargin < popIndicatorMaxRadius) ? preMargin : popIndicatorMaxRadius));
+                .each(popIndicator("y", colormap, 5, preMargin));
 
 	    var row = container.selectAll(".row")
 		.data(matrix)

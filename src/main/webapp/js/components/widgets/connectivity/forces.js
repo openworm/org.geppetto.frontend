@@ -76,7 +76,7 @@ define(function (require) {
 	    var zoom_handler = d3.zoom()
 		.on("zoom", zoom_actions);
 	    function zoom_actions(){
-		g.attr("transform", d3.event.transform)
+		g.attr("transform", d3.event.transform);
 	    }
             zoom_handler(context.svg);
 

@@ -3,7 +3,6 @@
  */
 define(function(require) {
 
-    var GeppettoManager = require("../common/GeppettoManager");
     return function(GEPPETTO) {
 
         var messageTypes = {
@@ -48,17 +47,10 @@ define(function(require) {
 
         var messageHandler = {};
 
-        onMessage = function (parsedServerMessage) {
-            // parsed message has a type and data fields - data contains the payload of the message
-            // Switch based on parsed incoming message type
-            if (messageHandler.hasOwnProperty(parsedServerMessage.type)) {
-                messageHandler[parsedServerMessage.type](JSON.parse(parsedServerMessage.data));
-            }
-        };
 
         messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {
-            var project = JSON.parse(payload.project_loaded).project;
-            GeppettoManager.loadProject(project);
+            var message = JSON.parse(payload.project_loaded);
+            GEPPETTO.Manager.loadProject(message.project, message.persisted);
         };
 
         messageHandler[messageTypes.MODEL_LOADED] = function(payload) {
@@ -66,7 +58,7 @@ define(function(require) {
             GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.PARSING_MODEL);
 
             var model = JSON.parse(payload.geppetto_model_loaded);
-            GeppettoManager.loadModel(model);
+            GEPPETTO.Manager.loadModel(model);
             if(Project.getActiveExperiment()=="" || Project.getActiveExperiment()==null || Project.getActiveExperiment()==undefined){
             	GEPPETTO.ViewController.resolveViews();	
             }
@@ -74,12 +66,12 @@ define(function(require) {
 
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {
             var experiment = JSON.parse(payload.experiment_created);
-            GeppettoManager.createExperiment(experiment);
+            GEPPETTO.Manager.createExperiment(experiment);
         };
 
         messageHandler[messageTypes.EXPERIMENT_BATCH_CREATED] = function(payload) {
             var experiments = JSON.parse(payload.experiment_batch_created);
-            GeppettoManager.createExperimentBatch(experiments);
+            GEPPETTO.Manager.createExperimentBatch(experiments);
         };
 
         messageHandler[messageTypes.ERROR_RUNNING_EXPERIMENT] = function(payload) {
@@ -112,36 +104,27 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.EXPERIMENT_LOADED] = function(payload) {
-            var experimentId = JSON.parse(payload.experiment_loaded).experimentId;
-            GeppettoManager.loadExperiment(experimentId);
-            GEPPETTO.trigger(GEPPETTO.Events.Experiment_loaded);
-            GEPPETTO.ViewController.resolveViews();
-
-            // after applying views, run script if any
-            if(window.Project.getActiveExperiment()!=null && window.Project.getActiveExperiment()!=undefined){
-            	if (window.Project.getActiveExperiment().getScript() != undefined) {
-            		G.runScript(window.Project.getActiveExperiment().getScript());
-            	}
-            }
+            var experimentState = JSON.parse(payload.experiment_loaded);
+            GEPPETTO.Manager.loadExperiment(experimentState.experimentId, experimentState);
         };
 
         messageHandler[messageTypes.VARIABLE_FETCHED] = function(payload) {
             GEPPETTO.trigger('spin_logo');
             var rawModel = JSON.parse(payload.variable_fetched);
-            GeppettoManager.addVariableToModel(rawModel);
+            GEPPETTO.Manager.addVariableToModel(rawModel);
             GEPPETTO.trigger('stop_spin_logo');
         };
 
         messageHandler[messageTypes.IMPORT_TYPE_RESOLVED] = function(payload) {
             GEPPETTO.trigger('spin_logo');
             var rawModel = JSON.parse(payload.import_type_resolved);
-            GeppettoManager.swapResolvedType(rawModel);
+            GEPPETTO.Manager.swapResolvedType(rawModel);
             GEPPETTO.trigger('stop_spin_logo');
         };
 
         messageHandler[messageTypes.IMPORT_VALUE_RESOLVED] = function(payload) {
             var rawModel = JSON.parse(payload.import_value_resolved);
-            GeppettoManager.swapResolvedValue(rawModel);
+            GEPPETTO.Manager.swapResolvedValue(rawModel);
             GEPPETTO.trigger('stop_spin_logo');
         };
 
@@ -164,53 +147,15 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.EXPERIMENT_STATUS] = function(payload) {
-            var experimentStatus = JSON.parse(payload.update);
-
-            var experiments = window.Project.getExperiments();
-            for (var key in experimentStatus) {
-                var projectID = experimentStatus[key].projectID;
-                var status = experimentStatus[key].status;
-                var experimentID = experimentStatus[key].experimentID;
-
-                //changing status in matched experiment
-                for (var e in experiments) {
-                	if (experiments[e].getId() == experimentID) {
-                		if (experiments[e].getStatus() != status) {
-                			if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.RUNNING &&
-                					status == GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
-                				experiments[e].setDetails("");
-                				experiments[e].setStatus(status);
-                				GEPPETTO.trigger(GEPPETTO.Events.Experiment_completed, experimentID);
-                			} else if (status == GEPPETTO.Resources.ExperimentStatus.ERROR) {
-                				experiments[e].setStatus(status);
-                				GEPPETTO.trigger(GEPPETTO.Events.Experiment_failed, experimentID);
-                			} else if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN &&
-                					status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                				experiments[e].setStatus(status);
-                				GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
-                			}else if (experiments[e].getStatus() == GEPPETTO.Resources.ExperimentStatus.QUEUED &&
-                					status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                				experiments[e].setStatus(status);
-                				GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
-                			}else if (status == GEPPETTO.Resources.ExperimentStatus.QUEUED) {
-                    			experiments[e].setStatus(status);
-                    			GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
-                    		}else if (status == GEPPETTO.Resources.ExperimentStatus.RUNNING) {
-                    			experiments[e].setStatus(status);
-                    			GEPPETTO.trigger(GEPPETTO.Events.Experiment_running, experimentID);
-                    		} 
-                		}
-                	}
-                }
-            }
-            GEPPETTO.trigger(GEPPETTO.Events.Experiment_status_check);
+            var experimentsStatus = JSON.parse(payload.update);
+            GEPPETTO.Manager.updateExperimentsStatus(experimentsStatus);
         };
 
         messageHandler[messageTypes.PROJECT_PERSISTED] = function(payload) {
             var message = JSON.parse(payload.update);
             var projectID = message.projectID;
             var activeExperimentID = message.activeExperimentID;
-            GeppettoManager.persistProject(projectID, activeExperimentID);
+            GEPPETTO.Manager.persistProject(projectID, activeExperimentID);
             GEPPETTO.trigger("stop_spin_persist");
         };
 
@@ -221,7 +166,7 @@ define(function(require) {
 
         messageHandler[messageTypes.EXPERIMENT_DELETED] = function(payload) {
             var data = JSON.parse(payload.update);
-            GeppettoManager.deleteExperiment(data);
+            GEPPETTO.Manager.deleteExperiment(data);
         };
 
         messageHandler[messageTypes.WATCHED_VARIABLES_SET] = function(payload) {
@@ -299,6 +244,17 @@ define(function(require) {
         messageHandler[messageTypes.MODEL_UPLOADED] = function(payload) {
             GEPPETTO.CommandController.log("Model uploaded succesfully");
         };
+
+        GEPPETTO.MessageHandler =
+        {
+            onMessage: function (parsedServerMessage) {
+                if (messageHandler.hasOwnProperty(parsedServerMessage.type)) {
+                    messageHandler[parsedServerMessage.type](JSON.parse(parsedServerMessage.data));
+                }
+            }
+        };
+
+        GEPPETTO.MessageHandler.MESSAGE_TYPE = messageTypes;
 
     }
 

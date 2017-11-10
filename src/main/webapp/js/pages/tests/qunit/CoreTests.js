@@ -168,13 +168,13 @@ define(function (require) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
                         //Simulation has been loaded and model need to be loaded
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
                             assert.equal(window.Project.getId(), 5, "Project ID checked");
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
                             var payload = JSON.parse(parsedServerMessage.data);
-                            GEPPETTO.SimulationHandler.loadModel(payload);
+                            GEPPETTO.Manager.loadModel(payload);
 
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
@@ -280,13 +280,13 @@ define(function (require) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
                         //Simulation has been loaded and model need to be loaded
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
                             assert.equal(window.Project.getId(), 5, "Project ID checked");
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
                             var payload = JSON.parse(parsedServerMessage.data);
-                            GEPPETTO.SimulationHandler.loadModel(payload);
+                            GEPPETTO.Manager.loadModel(payload);
 
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");

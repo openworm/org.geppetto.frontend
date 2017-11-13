@@ -93,6 +93,8 @@ define(function (require) {
                         self.maximize = true;
                     }
                 });
+                
+                //this.setSize(this.defaultSize.height, this.defaultSize.width);
             },
 
             /**
@@ -717,6 +719,10 @@ define(function (require) {
                         	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                             that.maximize = true;
                             that.$el.parent().css("z-index", zIndex.max);
+                            that.size = {
+                                height: divheight,
+                                width: divwidth
+                            };
                         },
                         "restore": function (evt, dlg) {
                             if (that.maximize) {

@@ -15,7 +15,7 @@ To test that Casper is properly installed:
 
 To run Core projects Tests (Requires NOT having the persistence bundle):
 
-`casperjs test --includes=CoreTestsUtility.js CoreTests.js --engine=slimerjs`
+`casperjs test --includes=/utilities/TestsUtility.js DefaultProjectsTests.js --engine=slimerjs`
 
 To run Persistence Tests (Requires the persistence bundle and a running MySQL server):
 

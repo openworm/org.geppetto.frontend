@@ -34,7 +34,7 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
         }, null, 3000);
     });
 
-    /**Tests HHCELL project**/
+    /**Tests SingleComponentHH project**/
     casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
         casper.then(function(){launchTest(test,"Hhcell",30000);});
         casper.then(function(){hhcellTest(test);});

@@ -32,6 +32,7 @@ before_script:
   - export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
     
 script:
+  - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - echo "$TRAVIS_BRANCH"

@@ -99,10 +99,25 @@ function testUsingSingleCompononetHHProject(test){
 
 	casper.then(function () {
 		test.assertEval(function() {
-			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups().length == 3 &&
-			acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[0].getId() == 'Cell_Regions' &&
-			acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Na_bask' &&
-			acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Kdr_bask';
+			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups().length;
+		},'Visual groups created as expected. Tested with acnet2.baskets_12[0]');
+	});	
+	
+	casper.then(function () {
+		test.assertEval(function() {
+			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[0].getId() == 'Cell_Regions';
+		},'Visual groups created as expected. Tested with acnet2.baskets_12[0]');
+	});	
+	
+	casper.then(function () {
+		test.assertEval(function() {
+			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Na_bask';
+		},'Visual groups created as expected. Tested with acnet2.baskets_12[0]');
+	});	
+	
+	casper.then(function () {
+		test.assertEval(function() {
+			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Kdr_bask';
 		},'Visual groups created as expected. Tested with acnet2.baskets_12[0]');
 	});	
 

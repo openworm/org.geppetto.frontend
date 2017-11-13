@@ -111,13 +111,13 @@ function testUsingSingleCompononetHHProject(test){
 	
 	casper.then(function () {
 		test.assertEval(function() {
-			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Na_bask';
+			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId();
 		},'Visual groups created as expected. Tested with acnet2.baskets_12[0]');
 	});	
 	
 	casper.then(function () {
 		test.assertEval(function() {
-			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Kdr_bask';
+			return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId();
 		},'Visual groups created as expected. Tested with acnet2.baskets_12[0]');
 	});	
 

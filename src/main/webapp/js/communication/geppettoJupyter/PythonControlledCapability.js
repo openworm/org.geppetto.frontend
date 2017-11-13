@@ -52,7 +52,7 @@ define(function (require) {
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
-                        this.syncValueWithPython(newValue, this.props.requirement);
+                        this.syncValueWithPython(newValue, window.requirement);
                     }
                     if (this.props.onChange) {
                         this.props.onChange(event, index, value);
@@ -67,7 +67,7 @@ define(function (require) {
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
-                        this.syncValueWithPython(value, this.props.requirement);
+                        this.syncValueWithPython(value, window.requirement);
                     }
                     if (this.props.onChange) {
                         this.props.onChange(value);
@@ -96,9 +96,26 @@ define(function (require) {
                 }
 
                 render() {
+                    const wrappedComponentProps = Object.assign({}, this.props);
+                    delete wrappedComponentProps.model;
+
+                    switch (WrappedComponent.name) {
+                        case 'AutoComplete':
+                            break;
+                        case 'TextField':
+                            delete wrappedComponentProps.onUpdateInput;
+                            delete wrappedComponentProps.searchText;
+                            delete wrappedComponentProps.dataSource;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    //Is this actually needed? For now it is commented out...
+                    // /* componentType={WrappedComponent.name} */
+
                     return (
-                        <WrappedComponent {...this.props}
-                            componentType={WrappedComponent.name}
+                        <WrappedComponent {...wrappedComponentProps}
                             value={this.state.value}
                             searchText={this.state.searchText}
                             onChange={this.handleChange}

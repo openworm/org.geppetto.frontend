@@ -40,12 +40,12 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
     });
     
     /**Tests Primary Auditory Cortex Network project**/
-    casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
+    casper.thenOpen(urlBase+baseFollowUp+acnetProject,function() {
         casper.then(function(){testACNET2Project(test);});
     });
     
     /**Tests C302 Network project**/
-    casper.thenOpen(urlBase+baseFollowUp+hhcellProject,function() {
+    casper.thenOpen(urlBase+baseFollowUp+c302Project,function() {
         casper.then(function(){testC302NetworkProject(test);});
     });
     

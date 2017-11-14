@@ -13,9 +13,21 @@ To test that Casper is properly installed:
 
 `casperjs test LiveTests.js --engine=slimerjs` 
 
-To run Core projects Tests (Requires NOT having the persistence bundle):
+To run UIComponents Tests (Requires NOT having the persistence bundle):
 
-`casperjs test --includes=/utilities/TestsUtility.js DefaultProjectsTests.js --engine=slimerjs`
+`casperjs test --includes=/utilities/TestsUtility.js UIComponentsTests.js --engine=slimerjs`
+
+To run Geppetto Model Tests (Requires NOT having the persistence bundle):
+
+`casperjs test --includes=/utilities/TestsUtility.js GeppettoModelTests.js --engine=slimerjs`
+
+To run Neuronal Model Projects Tests (Requires NOT having the persistence bundle):
+
+`casperjs test --includes=/utilities/TestsUtility.js,NeuronalTestsLogic.js NeuronalProjectsTests.js --engine=slimerjs`
+
+To run Core default projects Tests (Requires NOT having the persistence bundle) including Neuronal Projects:
+
+`casperjs test --includes=/utilities/TestsUtility.js,NeuronalTestsLogic.js DefaultProjectsTests.js --engine=slimerjs`
 
 To run Persistence Tests (Requires the persistence bundle and a running MySQL server):
 

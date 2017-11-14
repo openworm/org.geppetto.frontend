@@ -103,8 +103,8 @@ function testUsingSingleCompononetHHProject(test){
 			acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[0].getId() == 'Cell_Regions' &&
 			(acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Na_bask' ||
 					acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[1].getId() == 'Na_bask') &&
-			(acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask' ||
-					acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask');
+					(acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask' ||
+							acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups()[2].getId() == 'Kdr_bask');
 		},'Visual groups created as expected. Tested with acnet2.baskets_12[0]');
 	});	
 
@@ -152,7 +152,8 @@ function testUsingSingleCompononetHHProject(test){
 
 	casper.then(function () {
 		var instances = casper.evaluate(function() {return window.Instances.getInstance('acnet2.baskets_12[3].soma_0.v').getInstancePath();});
-		test.assertEquals(instances, 'acnet2.baskets_12[3].soma_0.v', "Instances.getInstance creates and fetches instance as expected. Tested with acnet2.baskets_12[3].soma_0.v");
+		test.assertEquals(instances, 'acnet2.baskets_12[3].soma_0.v', 
+		"Instances.getInstance creates and fetches instance as expected. Tested with acnet2.baskets_12[3].soma_0.v");
 	});
 
 	casper.then(function () {
@@ -188,7 +189,9 @@ function testUsingSingleCompononetHHProject(test){
 
 	casper.then(function () {
 		var getAllVariablesOfMetaType = casper.evaluate(function() {
-			return GEPPETTO.ModelFactory.getAllVariablesOfMetaType(GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE), 'ConnectionType')[0].hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY);
+			var meta = GEPPETTO.ModelFactory.getAllTypesOfMetaType(GEPPETTO.Resources.COMPOSITE_TYPE_NODE);
+			var vars = GEPPETTO.ModelFactory.getAllVariablesOfMetaType(meta, 'ConnectionType')[0];
+			return vars.hasCapability(GEPPETTO.Resources.CONNECTION_CAPABILITY);
 		});
 		test.assertEquals(getAllVariablesOfMetaType, true, "Connection capability injected to variables of ConnectionType.");
 	});

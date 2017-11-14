@@ -644,7 +644,7 @@ function testPMuscleCellProject(test){
     
     casper.then(function () {
 		test.assertEval(function() {
-			return pvdr.getConnections().length===0;
+			return net1.getConnections().length===0;
 		},"Connections checked for PMuscle Model");
 	});
     

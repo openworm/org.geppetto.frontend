@@ -277,8 +277,10 @@ define(function (require) {
 			//don't allow duplicates
 			for (var i = 0; i < this.datasets.length; i++) {
             	variable = this.variables[this.getLegendInstancePath(this.datasets[i].name)];
-                if (variable.getInstancePath() == data[i].getInstancePath()) {
-                    return;
+            	for (var j = 0; j < data.length; j++) {
+                    if (variable.getInstancePath() == data[j].getInstancePath()) {
+                        return;
+                    }
                 }
             }
 			// set flags for function node and xy both to false

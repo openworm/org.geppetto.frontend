@@ -99,8 +99,8 @@ function hhcellTest(test,name){
     	casper.waitUntilVisible('div[id="Plot2"]', function () {
     		casper.echo("-------Testing Widgets--------");
     		//test plot widgets have expected amount of graphs by counting G elements plotly draws
-    		testPlotWidgets(test,"Plot1","hhcell.hhpop[0].v", 65);
-    		testPlotWidgets(test,"Plot2","hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.m.q",79);
+    		testPlotWidgets(test,"Plot1","hhcell.hhpop[0].v", 1);
+    		testPlotWidgets(test,"Plot2","hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.m.q",3);
     	});
     });
     casper.then(function(){

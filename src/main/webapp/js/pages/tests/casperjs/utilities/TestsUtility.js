@@ -406,7 +406,7 @@ function testPlotWidgets(test, widget, variableName, expectedGElements){
 
 	casper.then(function(){
 		var gElements = casper.evaluate(function(widget, expectedGElements) {
-			var gElements = $("#"+widget).find("svg").find("g").length;
+			var gElements = $("#"+widget).getElementsByClassName("legendtoggle").length;
 			return gElements;
 		}, widget, expectedGElements);
 		test.assertEquals(gElements, expectedGElements, "Right amount of graph elements for "+widget);

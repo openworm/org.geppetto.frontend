@@ -34,7 +34,35 @@ module.exports = {
         rendererObj.renderer.setSize(newWidth, newHeight);
     },
 
+    dispose: function (rendererObj) {
+    	if(rendererObj.stackHelper!=undefined){
+    		rendererObj.stackHelper.dispose();
+			if(rendererObj.stackHelper.stack!=undefined){
+				rendererObj.stackHelper.stack._rawData.length=0;
+				rendererObj.stackHelper.stack._frame.length=0;
+				rendererObj.stackHelper.stack=null;	
+			}
+    	}
+    	if(rendererObj.localizerHelper!=undefined){
+    	    if (rendererObj.localizerHelper._mesh) {
+    	    	rendererObj.localizerHelper.remove(rendererObj.localizerHelper._mesh);
+    	    	rendererObj.localizerHelper._mesh.geometry.dispose();
+    	    	rendererObj.localizerHelper._mesh.geometry = null;
+    	    	rendererObj.localizerHelper._mesh = null;
+	    	}
+    	}
+    },
+    
     initHelpersStack: function (rendererObj, stack) {
+    	if(rendererObj.stackHelper!=undefined){
+    		rendererObj.stackHelper.dispose();
+			if(rendererObj.stackHelper.stack!=undefined){
+				rendererObj.stackHelper.stack._rawData.length=0;
+				rendererObj.stackHelper.stack._frame.length=0;
+				rendererObj.stackHelper.stack=null;	
+			}
+			
+    	}
         rendererObj.stackHelper = new HelpersStack(stack);
         rendererObj.stackHelper.bbox.visible = false;
         rendererObj.stackHelper.borderColor = rendererObj.sliceColor;
@@ -79,7 +107,15 @@ module.exports = {
     },
 
     initHelpersLocalizer: function (rendererObj, stack, referencePlane, localizers) {
-        rendererObj.localizerHelper = new HelpersLocalizer(
+    	if(rendererObj.localizerHelper!=undefined){
+    	    if (rendererObj.localizerHelper._mesh) {
+    	    	rendererObj.localizerHelper.remove(rendererObj.localizerHelper._mesh);
+    	    	rendererObj.localizerHelper._mesh.geometry.dispose();
+    	    	rendererObj.localizerHelper._mesh.geometry = null;
+    	    	rendererObj.localizerHelper._mesh = null;
+	    	}
+    	}
+    	rendererObj.localizerHelper = new HelpersLocalizer(
             stack, rendererObj.stackHelper.slice.geometry, referencePlane);
 
         for (let i = 0; i < localizers.length; i++) {

@@ -34,7 +34,7 @@ script:
   - echo "Current time :$(date +"%T")"
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - echo "$TRAVIS_BRANCH"
-  - docker build -t="geppetto" --build-arg frontendBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#master:utilities/docker/geppetto/
+  - docker build -t="geppetto" --build-arg frontendBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#development:utilities/docker/geppetto/
   - echo "Current time :$(date +"%T")"
   - docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/test_geppetto_server.sh
@@ -54,7 +54,7 @@ script:
     done;
   - "curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'}"
   - sleep 60;
-  - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --verbose --log-level=debug --includes=CoreTestsUtility.js CoreTests.js --host=http://localhost:28081/ --engine=slimerjs  
+  - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=CoreTestsUtility.js CoreTests.js --host=http://localhost:28081/ --engine=slimerjs  
   - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 100
   - echo "Current time :$(date +"%T")"

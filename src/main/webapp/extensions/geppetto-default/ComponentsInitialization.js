@@ -1,7 +1,7 @@
 define(function (require) {
 	return function (GEPPETTO) {
 		// Enable local storage
-		G.enableLocalStorage(true);
+		G.enableLocalStorage(false);
 		
 	    window.voltage_color = function(x) {
 	        x = (x+0.07)/0.1; // normalization

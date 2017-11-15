@@ -29,12 +29,12 @@ define(function (require) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
                         //Simulation has been loaded and model need to be loaded
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
                             assert.equal(window.Project.getId(), 1, "Project ID checked");
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
-                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.Manager.loadModel(JSON.parse(parsedServerMessage.data));
 
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
@@ -45,9 +45,9 @@ define(function (require) {
                             assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'hhcell', "1 top level instance as expected");
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var payload = JSON.parse(parsedServerMessage.data);
-                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            GEPPETTO.Manager.loadExperiment(payload);
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Active experiment id of loaded project checked");
 
                             done();
@@ -96,12 +96,12 @@ define(function (require) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
                         //Simulation has been loaded and model need to be loaded
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
                             assert.equal(window.Project.getId(), 1, "Project ID checked");
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
-                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.Manager.loadModel(JSON.parse(parsedServerMessage.data));
 
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
@@ -112,9 +112,9 @@ define(function (require) {
                             assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'hhcell', "1 top level instance as expected");
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var payload = JSON.parse(parsedServerMessage.data);
-                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            GEPPETTO.Manager.loadExperiment(payload);
                             // if experiment isn't completed don't play
                             if (Project.getActiveExperiment().getStatus() != GEPPETTO.Resources.ExperimentStatus.COMPLETED) {
                                 assert.ok(false, "Unable to play experiment for project");
@@ -125,7 +125,7 @@ define(function (require) {
                                 Project.getActiveExperiment().play();
                             }
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.GET_EXPERIMENT_STATE:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.GET_EXPERIMENT_STATE:
                             var payload = JSON.parse(parsedServerMessage.data);
                             var timeSeries = hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries();
                             assert.equal(timeSeries, null, "Checking that time series is still null in variable");
@@ -183,17 +183,17 @@ define(function (require) {
                 onMessage: function (parsedServerMessage) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
 
                             assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experiments checked");
                             assert.equal(window.Project.getId(), 8, "Project loaded ID checked");
                             window.Project.getExperiments()[0].setActive();
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
-                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.Manager.loadModel(JSON.parse(parsedServerMessage.data));
 
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
@@ -204,10 +204,10 @@ define(function (require) {
                             assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'pvdr', "1 top level instance as expected");
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
                             var payload = JSON.parse(parsedServerMessage.data);
-                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            GEPPETTO.Manager.loadExperiment(payload);
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 1,"Experiment id of loaded project chekced");
 
@@ -268,9 +268,9 @@ define(function (require) {
                 onMessage: function (parsedServerMessage) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
 
                             assert.equal(window.Project.getExperiments().length, 2, "Initial amount of experiments checked");
                             assert.equal(window.Project.getId(), 5, "Project loaded ID checked");
@@ -278,8 +278,8 @@ define(function (require) {
                             window.Project.getExperiments()[0].setActive();
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
-                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.Manager.loadModel(JSON.parse(parsedServerMessage.data));
 
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
@@ -290,10 +290,10 @@ define(function (require) {
                             assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'acnet2', "1 top level instance as expected");
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
                             var payload = JSON.parse(parsedServerMessage.data);
-                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            GEPPETTO.Manager.loadExperiment(payload);
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 
@@ -364,16 +364,16 @@ define(function (require) {
                 onMessage: function (parsedServerMessage) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
 
                             assert.equal(window.Project.getExperiments().length, 2, "Initial amount of experiments checked");
                             assert.equal(window.Project.getId(), 6, "Project loaded ID checked");
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
-                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.Manager.loadModel(JSON.parse(parsedServerMessage.data));
 
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
@@ -384,10 +384,10 @@ define(function (require) {
                             assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'c302', "1 top level instance as expected");
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
                             var payload = JSON.parse(parsedServerMessage.data);
-                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            GEPPETTO.Manager.loadExperiment(payload);
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 
@@ -457,15 +457,15 @@ define(function (require) {
                 onMessage: function (parsedServerMessage) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
 
                             assert.equal(window.Project.getExperiments().length, 1, "Initial amount of experimetns checked");
                             assert.equal(window.Project.getId(), 4, "Project loaded ID checked");
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
-                            GEPPETTO.SimulationHandler.loadModel(JSON.parse(parsedServerMessage.data));
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.Manager.loadModel(JSON.parse(parsedServerMessage.data));
 
                             // test that geppetto model high level is as expected
                             assert.ok(window.Model != undefined, "Model is not undefined");
@@ -476,10 +476,10 @@ define(function (require) {
                             assert.ok(window.Instances != undefined && window.Instances.length == 1 && window.Instances[0].getId() == 'net1', "1 top level instance as expected");
 
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
                             var payload = JSON.parse(parsedServerMessage.data);
-                            GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            GEPPETTO.Manager.loadExperiment(payload);
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 

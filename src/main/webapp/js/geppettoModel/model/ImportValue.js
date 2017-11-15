@@ -18,7 +18,7 @@ define(function (require) {
     ImportValue.prototype.constructor = ImportValue;
     
     ImportValue.prototype.resolve = function(callback) {
-            GEPPETTO.SimulationHandler.resolveImportValue(this.getPath(), callback);
+            GEPPETTO.Manager.resolveImportValue(this.getPath(), callback);
     };
     
     

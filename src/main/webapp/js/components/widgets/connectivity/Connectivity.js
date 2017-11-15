@@ -39,23 +39,24 @@ define(function (require) {
                     return node.getPath().split('_')[0];
                 }
             },
-            linkWeight: function (conn) {
-		var projectionSummary = (function() {
-		    var projSummary = {}
-		    var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
-		    for (var i=0; i<projs.length; ++i) {
-			var proj = projs[i];
-			if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
-			    // too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
-			    var synapse = proj.getVariables().filter((x)=> {
-				if (typeof x.getType().getSuperType().getPath === 'function')
-				    return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
-			    })[0];
-			    projSummary[proj.getId()] = {pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, synapse: synapse};
-			}
+	    projectionSummary: function() {
+		var projSummary = {}
+		var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
+		for (var i=0; i<projs.length; ++i) {
+		    var proj = projs[i];
+		    if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+			// too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
+			var synapse = proj.getVariables().filter((x)=> {
+			    if (typeof x.getType().getSuperType().getPath === 'function')
+				return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
+			})[0];
+			projSummary[proj.getId()] = {pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, synapse: synapse};
 		    }
-		    return projSummary;
-		})();
+		}
+		return projSummary;
+	    },
+            linkSynapse: function (conn) {
+		var projectionSummary = this.projectionSummary();
 		var preId = conn.getA().getPath().split("[")[0];
 		var postId = conn.getB().getPath().split("[")[0];
 		var proj;
@@ -64,8 +65,14 @@ define(function (require) {
 			projectionSummary[proj].post.pointerValue.getWrappedObj().path.startsWith(postId))
 			break;
 		}
-		return projectionSummary[proj].synapse.getType().gbase.getInitialValue();
+		return projectionSummary[proj].synapse;
             },
+	    linkWeight: function (conn) {
+		return this.linkSynapse(conn).getType().gbase.getInitialValue();
+	    },
+	    linkErev: function (conn) {
+		return this.linkSynapse(conn).getType().erev.getInitialValue();	
+	    },
             linkType: function (conn) {
                 return 1;
             },
@@ -207,7 +214,8 @@ define(function (require) {
 	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
 	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
-	                            this.createLink(sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache), this.options.linkWeight(connectionVariable));
+	                            this.createLink(sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache),
+						    this.options.linkWeight(connectionVariable), this.options.linkErev(connectionVariable));
 		                }
 		            }
 
@@ -350,12 +358,13 @@ define(function (require) {
             }
         },
 
-        createLink: function (sourceId, targetId, type, weight) {
+        createLink: function (sourceId, targetId, type, weight, erev) {
             var linkItem = {
                 source: this.mapping[sourceId],
                 target: this.mapping[targetId],
                 type: type,
-                weight: weight
+                weight: weight,
+		erev: erev
             };
             this.dataset["links"].push(linkItem);
         },

@@ -101,13 +101,14 @@ define(function (require) {
 
                     switch (WrappedComponent.name) {
                         case 'AutoComplete':
-                            break;
-                        case 'TextField':
-                            delete wrappedComponentProps.onUpdateInput;
-                            delete wrappedComponentProps.searchText;
-                            delete wrappedComponentProps.dataSource;
+                            wrappedComponentProps['onUpdateInput'] = this.handleUpdateInput;
+                            wrappedComponentProps['searchText'] = this.state.searchText;
                             break;
                         default:
+                            wrappedComponentProps['onChange'] = this.handleChange;
+                            wrappedComponentProps['value'] = this.state.value;
+                            delete wrappedComponentProps.searchText;
+                            delete wrappedComponentProps.dataSource;
                             break;
                     }
 
@@ -115,11 +116,7 @@ define(function (require) {
                     // /* componentType={WrappedComponent.name} */
 
                     return (
-                        <WrappedComponent {...wrappedComponentProps}
-                            value={this.state.value}
-                            searchText={this.state.searchText}
-                            onChange={this.handleChange}
-                            onUpdateInput={this.handleUpdateInput} />
+                        <WrappedComponent {...wrappedComponentProps} />
                     );
                 }
 

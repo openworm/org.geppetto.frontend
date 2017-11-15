@@ -40,7 +40,31 @@ define(function (require) {
                 }
             },
             linkWeight: function (conn) {
-                return 1;
+		var projectionSummary = (function() {
+		    var projSummary = {}
+		    var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
+		    for (var i=0; i<projs.length; ++i) {
+			var proj = projs[i];
+			if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+			    // too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
+			    var synapse = proj.getVariables().filter((x)=> {
+				if (typeof x.getType().getSuperType().getPath === 'function')
+				    return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
+			    })[0];
+			    projSummary[proj.getId()] = {pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, synapse: synapse};
+			}
+		    }
+		    return projSummary;
+		})();
+		var preId = conn.getA().getPath().split("[")[0];
+		var postId = conn.getB().getPath().split("[")[0];
+		var proj;
+		for (proj in projectionSummary) {
+		    if (projectionSummary[proj].pre.pointerValue.getWrappedObj().path.startsWith(preId) &&
+			projectionSummary[proj].post.pointerValue.getWrappedObj().path.startsWith(postId))
+			break;
+		}
+		return projectionSummary[proj].synapse.getType().gbase.getInitialValue();
             },
             linkType: function (conn) {
                 return 1;

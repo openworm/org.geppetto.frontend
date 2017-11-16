@@ -19,12 +19,14 @@ define(function (require) {
                     super(props);
                     this.state = $.extend(this.state, {
                         value: '',
-                        searchText: ''
+                        searchText: '',
+                        checked: false
                     });
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
 
                     this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange;
                     this.handleUpdateInput = this.handleUpdateInput.bind(this);
+                    this.handleUpdateCheckbox = this.handleUpdateCheckbox.bind(this);
                 }
 
                 componentWillReceiveProps(nextProps) {
@@ -34,6 +36,9 @@ define(function (require) {
                     this.connectToPython(nextProps.componentType, nextProps.model);
                     if (this.state.searchText != nextProps.searchText) {
                         this.setState({ searchText: (nextProps.searchText === undefined) ? '' : nextProps.searchText });
+                    }
+                    if (this.state.checked != nextProps.checked) {
+                        this.setState({ checked: (nextProps.checked === undefined) ? false : nextProps.checked });
                     }
                     if (this.state.value != nextProps.value) {
                         this.setState({ value: (nextProps.value === undefined) ? '' : nextProps.value });
@@ -75,6 +80,21 @@ define(function (require) {
                     this.forceUpdate();
                 }
 
+                handleUpdateCheckbox(event, isInputChecked) {
+                    // For textfields value is retrived from the event. For dropdown value is retrieved from the value
+                    this.setState({ value: isInputChecked });
+
+                    //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
+                    if (this.syncValueWithPython) {
+                        // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
+                        this.syncValueWithPython(isInputChecked, window.requirement);
+                    }
+                    if (this.props.onChange) {
+                        this.props.isInputChecked(event, isInputChecked);
+                    }
+                    this.forceUpdate();
+                }
+
                 connectToPython(componentType, model) {
                     var kernel = IPython.notebook.kernel;
                     kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
@@ -97,6 +117,12 @@ define(function (require) {
 
                 render() {
                     const wrappedComponentProps = Object.assign({}, this.props);
+                    if (wrappedComponentProps.key == undefined) {
+                        wrappedComponentProps.key = wrappedComponentProps.model;
+                    }
+                    if (wrappedComponentProps.id == undefined) {
+                        wrappedComponentProps.id = wrappedComponentProps.model;
+                    }
                     delete wrappedComponentProps.model;
 
                     switch (WrappedComponent.name) {
@@ -104,6 +130,11 @@ define(function (require) {
                             wrappedComponentProps['onUpdateInput'] = this.handleUpdateInput;
                             wrappedComponentProps['searchText'] = this.state.searchText;
                             break;
+                        case 'Checkbox':
+                            wrappedComponentProps['onCheck'] = this.handleUpdateCheckbox;
+                            wrappedComponentProps['checked'] = this.state.checked;
+                            delete wrappedComponentProps.searchText;
+                            delete wrappedComponentProps.dataSource;
                         default:
                             wrappedComponentProps['onChange'] = this.handleChange;
                             wrappedComponentProps['value'] = this.state.value;

@@ -39,8 +39,9 @@ define(function (require) {
                     return node.getPath().split('_')[0];
                 }
             },
-	    projectionSummary: function() {
-		var projSummary = {}
+	    projectionSummary: {},
+	    getProjectionSummary: function() {
+		var projSummary = {};
 		var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
 		for (var i=0; i<projs.length; ++i) {
 		    var proj = projs[i];
@@ -56,22 +57,34 @@ define(function (require) {
 		return projSummary;
 	    },
             linkSynapse: function (conn) {
-		var projectionSummary = this.projectionSummary();
+		if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
+		    this.projectionSummary = this.getProjectionSummary();
 		var preId = conn.getA().getPath().split("[")[0];
 		var postId = conn.getB().getPath().split("[")[0];
 		var proj;
-		for (proj in projectionSummary) {
-		    if (projectionSummary[proj].pre.pointerValue.getWrappedObj().path.startsWith(preId) &&
-			projectionSummary[proj].post.pointerValue.getWrappedObj().path.startsWith(postId))
+		for (proj in this.projectionSummary) {
+		    if (this.projectionSummary[proj].pre.pointerValue.getWrappedObj().path.startsWith(preId) &&
+			this.projectionSummary[proj].post.pointerValue.getWrappedObj().path.startsWith(postId))
 			break;
 		}
-		return projectionSummary[proj].synapse;
+		return this.projectionSummary[proj].synapse;
             },
 	    linkWeight: function (conn) {
-		return this.linkSynapse(conn).getType().gbase.getInitialValue();
+		if (typeof this.linkSynapse(conn) !== 'undefined') {
+		    var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+		    var weight = 1;
+		    if (weightIndex > -1)
+			weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
+		    return weight * this.linkSynapse(conn).getType().gbase.getInitialValue();
+		}
+		else
+		    return 0;
 	    },
 	    linkErev: function (conn) {
-		return this.linkSynapse(conn).getType().erev.getInitialValue();	
+		if (typeof this.linkSynapse(conn) !== 'undefined')
+		    return this.linkSynapse(conn).getType().erev.getInitialValue();
+		else
+		    return 0;
 	    },
             linkType: function (conn) {
                 return 1;
@@ -84,7 +97,7 @@ define(function (require) {
 
             Widget.View.prototype.initialize.call(this, options);
             this.setOptions(this.defaultConnectivityOptions);
-
+	    this.defaultConnectivityOptions.projectionSummary = this.options.getProjectionSummary();
             this.render();
             this.setSize(options.height, options.width);
 
@@ -121,6 +134,13 @@ define(function (require) {
                 this.createLayout();
             }
         },
+
+	weightColorMap: function() {
+	    var weights = Array.from(new Set(this.dataset.links.map(x => x.weight))).filter(x => x != 0);
+	    var min = Math.min.apply(null, weights);
+	    var max = Math.max.apply(null, weights);
+	    return d3.scaleLinear().range(["black", "red", "blue"]).domain([0, min, max]);
+	},
 
         defaultColorMapFunction: function() {
             var cells = this.dataset["root"].getChildren();

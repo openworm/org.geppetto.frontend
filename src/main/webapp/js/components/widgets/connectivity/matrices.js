@@ -244,6 +244,25 @@ define(function (require) {
 		}
 	    } (context.svg));
 
+	    // toggle weight scheme
+	    var schemeContainer = $('<div/>', {
+		id: context.id + '-ordering',
+		style: 'width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 58) + 'px;',
+		class: 'weights'
+	    }).appendTo(context.connectivityContainer);
+
+	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight"><label for="weightScheme" class="weight-label">Show weights</label>');
+	    schemeContainer.append(weightCheckbox);
+
+	    weightCheckbox.on("change", function (ctx) {
+		return function () {
+		    if (this.checked)
+			ctx.nodeColormap = ctx.weightColorMap();
+		    else
+			ctx.nodeColormap = ctx.defaultColorMapFunction();
+		}
+	    } (context));
+
 	    // Draw squares for each connection
 	    function row(row) {
 		var cell = d3.select(this).selectAll(".cell")
@@ -262,10 +281,10 @@ define(function (require) {
 		    })
 			//.style("fill-opacity", function(d) { return z(d.z); })
 		    .style("fill", function (d) {
-			return c(d.z);
+			return colormap(d.z);
 		    })
                     .style("stroke", function (d) {
-			return c(d.z);
+			return colormap(d.z);
 		    })
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();

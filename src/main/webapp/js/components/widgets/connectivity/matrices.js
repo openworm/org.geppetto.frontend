@@ -4,6 +4,7 @@
 define(function (require) {
 
     return {
+	weight: false,
 	createMatrixLayout: function (context) {
 	    var d3 = require("d3");
 
@@ -47,13 +48,16 @@ define(function (require) {
 	    });
 
 	    // Convert links to matrix; count pre / post conns.
-	    context.dataset.links.forEach(function (link) {
+	    context.dataset.links.forEach((function (link) {
 		//TODO: think about zero weight lines
 		//matrix[link.source][link.target].z = link.weight ? link.type : 0;
-		matrix[link.source][link.target].z = link.type;
+		if (this.weight)
+		    matrix[link.source][link.target].z = link.weight;
+		else
+		    matrix[link.source][link.target].z = link.type;
 		nodes[link.source].pre_count += 1;
 		nodes[link.target].post_count += 1;
-	    });
+	    }).bind(this));
 
 	    //Sorting matrix entries.
 	    //TODO: runtime specified sorting criteria
@@ -254,14 +258,24 @@ define(function (require) {
 	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight"><label for="weightScheme" class="weight-label">Show weights</label>');
 	    schemeContainer.append(weightCheckbox);
 
-	    weightCheckbox.on("change", function (ctx) {
+	    weightCheckbox.on("change", function (ctx, that) {
 		return function () {
-		    if (this.checked)
+		    if (this.checked) {
+			that.weight = true;
 			ctx.nodeColormap = ctx.weightColorMap();
-		    else
+			ctx.dataset.links.forEach(function (link) {
+			    matrix[link.source][link.target].z = link.weight;
+			});
+		    }
+		    else {
+			that.weight = false;
 			ctx.nodeColormap = ctx.defaultColorMapFunction();
+			ctx.dataset.links.forEach(function (link) {
+			    matrix[link.source][link.target].z = link.type;
+			});
+		    }
 		}
-	    } (context));
+	    } (context, this));
 
 	    // Draw squares for each connection
 	    function row(row) {

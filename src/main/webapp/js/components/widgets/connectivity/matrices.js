@@ -5,19 +5,17 @@ define(function (require) {
 
     return {
 	weight: false,
+	linkColormap: {},
 	createMatrixLayout: function (context) {
 	    var d3 = require("d3");
 
-	    var margin = { top: 45, right: 10, bottom: 10, left: 15 };
+	    var margin = { top: 45, right: 10, bottom: 10, left: 25 };
 	    var legendWidth = 120;
 
 	    var matrixDim = (context.options.innerHeight < (context.options.innerWidth - legendWidth)) ? (context.options.innerHeight) : (context.options.innerWidth - legendWidth);
 
-	    var x = d3.scaleBand().range([0, matrixDim - margin.top]),
-		// Opacity
-		z = d3.scaleLinear().domain([0, 4]).clamp(true),
-		// Colors
-		c = d3.scaleOrdinal(d3.schemeCategory10);
+	    var x = d3.scaleBand().range([0, matrixDim - margin.top]);
+	    var z = d3.scaleLinear().domain([0, 4]).clamp(true);
 
 	    var labelTop = margin.top - 25;
             var defaultTooltipText = "Hover the squares to see the connections.";
@@ -141,25 +139,33 @@ define(function (require) {
                 };
             };
 
-            var colormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
+            var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
+	    this.linkColormap = (function() {
+		if (this.weight)
+		    return context.weightColormap();
+		else
+		    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
+	    }).bind(this)();
+
             var postMargin = parseInt(rect.attr("width"))/pre.length;
             var preMargin = parseInt(rect.attr("height"))/post.length;
-
+	    var popIndicatorSize = 10;
             var postPop = container.selectAll(".postPop")
                 .data([post])
                 .enter()
                 .append("g")
                 .attr("class", "postPop")
-                .attr("transform", "translate(0,-10)")
-                .each(popIndicator("x", colormap, postMargin, 5));
+                .attr("transform", "translate(0,-20)")
+                .each(popIndicator("x", nodeColormap, postMargin, popIndicatorSize));
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
                 .append("g")
                 .attr("class", "prePop")
-                .attr("transform", "translate(-10,0)")
-                .each(popIndicator("y", colormap, 5, preMargin));
+                .attr("transform", "translate(-20,0)")
+                .each(popIndicator("y", nodeColormap, popIndicatorSize, preMargin));
 
+	    var rowFn = row(this.linkColormap);
 	    var row = container.selectAll(".row")
 		.data(matrix)
 		.enter().append("g")
@@ -167,7 +173,7 @@ define(function (require) {
 		.attr("transform", function (d, i) {
 		    return "translate(0," + x(i) + ")";
 		})
-		.each(row);
+		.each(rowFn);
 
 	    row.append("line")
 		.attr("x2", context.options.innerWidth);
@@ -183,14 +189,22 @@ define(function (require) {
 	    column.append("line")
 		.attr("x1", -context.options.innerWidth);
 
-	    context.createLegend('legend', colormap, { x: matrixDim, y: 0 });
+	    context.createLegend('legend',
+				 d3.scaleOrdinal(nodeColormap.range().concat(this.linkColormap.range()))
+				 .domain(nodeColormap.domain().concat(this.linkColormap.domain())),
+				 { x: matrixDim, y: 0 });
 
 	    //Sorting matrix entries by criteria specified via combobox
+	    var optionsContainer = $('<div/>', {
+		id: context.id + "-options",
+		style: 'width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 32) + 'px;',
+		class: 'connectivity-options'
+	    }).appendTo(context.connectivityContainer);
 	    var orderContainer = $('<div/>', {
 		id: context.id + '-ordering',
 		style: 'width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 32) + 'px;',
 		class: 'connectivity-ordering'
-	    }).appendTo(context.connectivityContainer);
+	    }).appendTo(optionsContainer);
 
 	    var orderCombo = $('<select/>');
 	    $.each(sortOptions, function (k, v) {
@@ -250,22 +264,27 @@ define(function (require) {
 
 	    // toggle weight scheme
 	    var schemeContainer = $('<div/>', {
-		id: context.id + '-ordering',
-		style: 'width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 58) + 'px;',
+		id: context.id + '-weight',
+		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 58) + 'px;',
 		class: 'weights'
-	    }).appendTo(context.connectivityContainer);
+	    }).appendTo(optionsContainer);
 
-	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight"><label for="weightScheme" class="weight-label">Show weights</label>');
+	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight">');
+	    if (this.weight)
+		weightCheckbox.attr("checked", "checked");
 	    schemeContainer.append(weightCheckbox);
-
+	    schemeContainer.append($('<label for="weightScheme" class="weight-label">Show weights</label>'));
+	    
 	    weightCheckbox.on("change", function (ctx, that) {
 		return function () {
 		    if (this.checked) {
 			that.weight = true;
-			ctx.nodeColormap = ctx.weightColorMap();
+			that.linkColormap = ctx.weightColormap();
 			ctx.dataset.links.forEach(function (link) {
 			    matrix[link.source][link.target].z = link.weight;
 			});
+			$('#' + ctx.id + "-weight").remove();
+			ctx.createLayout();
 		    }
 		    else {
 			that.weight = false;
@@ -273,12 +292,15 @@ define(function (require) {
 			ctx.dataset.links.forEach(function (link) {
 			    matrix[link.source][link.target].z = link.type;
 			});
+			$('#' + ctx.id + "-weight").remove();
+			ctx.createLayout();
 		    }
 		}
 	    } (context, this));
 
 	    // Draw squares for each connection
-	    function row(row) {
+	    function row(linkColormap) {
+		return function(row) {
 		var cell = d3.select(this).selectAll(".cell")
 		    .data(row.filter(function (d) {
 			return d.z;
@@ -293,12 +315,12 @@ define(function (require) {
 		    .attr("title", function (d) {
 			return d.id;
 		    })
-			//.style("fill-opacity", function(d) { return z(d.z); })
-		    .style("fill", function (d) {
-			return colormap(d.z);
+		    //.style("fill-opacity", function(d) { return z(d.z); })
+                    .style("fill", function (d) {
+			return linkColormap(d.z);
 		    })
-                    .style("stroke", function (d) {
-			return colormap(d.z);
+		    .style("stroke", function (d) {
+			return linkColormap(d.z);
 		    })
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();
@@ -310,6 +332,7 @@ define(function (require) {
 		    })
 		    .on("mouseover", function (d) { $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id); })
 		    .on("mouseout", $.proxy(mouseoutCell));
+		}
 	    }
 	}
     }

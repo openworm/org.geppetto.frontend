@@ -75,14 +75,23 @@ define(function (require) {
 		    var weight = 1;
 		    if (weightIndex > -1)
 			weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-		    return weight * this.linkSynapse(conn).getType().gbase.getInitialValue();
+		    var gbase = this.linkSynapse(conn).getType().gbase;
+		    var scale = 1;
+		    if (gbase.getUnit() === 'S')
+			scale = 1e9;
+		    return Math.round(scale * weight * gbase.getInitialValue() * 100) / 100;
 		}
 		else
 		    return 0;
 	    },
 	    linkErev: function (conn) {
-		if (typeof this.linkSynapse(conn) !== 'undefined')
-		    return this.linkSynapse(conn).getType().erev.getInitialValue();
+		if (typeof this.linkSynapse(conn) !== 'undefined') {
+		    var erev = this.linkSynapse(conn).getType().erev;
+		    var scale = 1;
+		    if (erev.getUnit() === 'V')
+			scale = 1e3;
+		    return Math.round(scale * erev.getInitialValue() * 100) / 100;
+		}
 		else
 		    return 0;
 	    },
@@ -135,7 +144,7 @@ define(function (require) {
             }
         },
 
-	weightColorMap: function() {
+	weightColormap: function() {
 	    var weights = Array.from(new Set(this.dataset.links.map(x => x.weight))).filter(x => x != 0);
 	    var min = Math.min.apply(null, weights);
 	    var max = Math.max.apply(null, weights);
@@ -276,7 +285,7 @@ define(function (require) {
 
         createLayout: function () {
             $('#' + this.id + " svg").remove();
-            $('#' + this.id + " #matrix-sorter").remove();
+	    $('#' + this.id + '-options').remove();
 
             this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
             this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;

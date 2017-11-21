@@ -59,9 +59,9 @@ define(function (require) {
 			else {
 			    var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
 			    var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-			    var data = [{id: proj.getId(), synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation}];
+			    var data = {id: proj.getId(), synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation};
 			    if (typeof projSummary[[preId, postId]] === 'undefined')
-				projSummary[[preId, postId]] = data;
+				projSummary[[preId, postId]] = [data];
 			    else
 				projSummary[[preId, postId]].push(data);
 			}
@@ -89,7 +89,7 @@ define(function (require) {
 			weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
 		    var gbases = this.linkSynapse(conn).map(c => c.getType().gbase);
 		    var scale = gbases.map(g => { if (g.getUnit() === 'S') { return 1e9; } else { return 1; } });
-		    return gbases.map((g, i) => Math.round(weight * scale[i] * g.getInitialValue() * 100)/100).reduce((x,y) => x+y, 0);
+		    return gbases.map((g, i) => weight * scale[i] * g.getInitialValue()).reduce((x,y) => x+y, 0);
 		}
 		else
 		    return 0;
@@ -98,7 +98,7 @@ define(function (require) {
 		if (this.linkSynapse(conn).length > 0) {
 		    var erevs = this.linkSynapse(conn).map(c => c.getType().erev);
 		    var scale = erevs.map(e => { if (e.getUnit() === 'V') { return 1e3; } else { return 1; } });
-		    return erevs.map((e, i) => Math.round(scale[i] * e.getInitialValue() * 100)/100).reduce((x,y) => x+y, 0);
+		    return erevs.map((e, i) => scale[i] * e.getInitialValue()).reduce((x,y) => x+y, 0);
 		}
 		else
 		    return 0;

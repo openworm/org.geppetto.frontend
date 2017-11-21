@@ -215,11 +215,11 @@ define(function (require) {
 		for (var type in linkColormaps) {
 		    var legendFullHeight = 400;
 		    var legendFullWidth = 50;
-		    var legendMargin = { top: 20, bottom: 20, left: 50, right: 20 };
+		    var legendMargin = { top: 20, bottom: 20, left: 60, right: 20 };
 		    var legendWidth = 20;
 		    var legendHeight = legendFullHeight - legendMargin.top - legendMargin.bottom;
 
-		    var x = context.options.innerWidth - (legendMargin.left*(i+1)); i++;
+		    var x = context.options.innerWidth - (legendMargin.left*(i+1));
 		    var y = legendMargin.top;
 		    var legend = context.svg
 			.append('g')
@@ -264,14 +264,18 @@ define(function (require) {
 			.domain(linkColormaps[type].domain())
 			.range([0, 360]);
 
+		    var legendAxis;
+		    if (i == 0)
+			legendAxis = d3.axisRight(legendScale);
+		    else
+			legendAxis = d3.axisLeft(legendScale);
 		    // FIXME: don't hardcode number of ticks
-		    var legendAxis = d3.axisRight(legendScale)
-			.ticks(10);
+		    legendAxis.ticks(10).tickFormat(d3.format(".1e"));
 
 		    legend.append("g")
 			.attr('height', legendHeight)
 			.attr("class", "legend-axis")
-			.attr("transform", "translate(" + legendWidth + ", 0)")
+			.attr("transform", "translate(" + (i==0 ? legendWidth : 0) + ", 0)")
 			.call(legendAxis);
 
 		    legend.append("text")
@@ -279,6 +283,8 @@ define(function (require) {
 			.attr('width', 20)
 			.attr('height', 20)
 			.text(type);
+
+		    i++;
 		}
 	    }
 

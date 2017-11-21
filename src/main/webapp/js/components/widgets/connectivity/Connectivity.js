@@ -87,18 +87,28 @@ define(function (require) {
 		    var weight = 1;
 		    if (weightIndex > -1)
 			weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-		    var gbases = this.linkSynapse(conn).map(c => c.getType().gbase);
-		    var scale = gbases.map(g => { if (g.getUnit() === 'S') { return 1e9; } else { return 1; } });
-		    return gbases.map((g, i) => weight * scale[i] * g.getInitialValue()).reduce((x,y) => x+y, 0);
+		    var gbases = this.linkSynapse(conn).map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : 1);
+		    var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
+		    return gbases.map((g, i) => {
+			if (typeof g.getInitialValue === 'function')
+			    return weight * scale[i] * g.getInitialValue();
+			else
+			    return weight * scale[i] * g;
+		    }).reduce((x,y) => x+y, 0);
 		}
 		else
 		    return 0;
 	    },
 	    linkErev: function (conn) {
 		if (this.linkSynapse(conn).length > 0) {
-		    var erevs = this.linkSynapse(conn).map(c => c.getType().erev);
-		    var scale = erevs.map(e => { if (e.getUnit() === 'V') { return 1e3; } else { return 1; } });
-		    return erevs.map((e, i) => scale[i] * e.getInitialValue()).reduce((x,y) => x+y, 0);
+		    var erevs = this.linkSynapse(conn).map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
+		    var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
+		    return erevs.map((e, i) => {
+			if (typeof e.getInitialValue === 'function')
+			    return scale[i] * e.getInitialValue();
+			else
+			    return scale[i] * e;
+		    }).reduce((x,y) => x+y, 0);
 		}
 		else
 		    return 0;
@@ -154,10 +164,10 @@ define(function (require) {
 
 	weightColormaps: function() {
 	    var exc_threshold = -70; // >-70 mV => excitatory
-	    var exc_conns = this.dataset.links.filter(l => l.erev >= exc_threshold);
-	    var inh_conns = this.dataset.links.filter(l => l.erev < exc_threshold);
+	    var exc_conns = this.dataset.links.filter(l => (l.erev >= exc_threshold) && (l.weight >= 0));
+	    var inh_conns = this.dataset.links.filter(l => (l.erev < exc_threshold) || (l.weight < 0));
 	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.weight))).filter(x => x != 0);
-	    var weights_inh = Array.from(new Set(inh_conns.map(c => c.weight))).filter(x => x != 0);
+	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.weight >= 0) ? c.weight : -1*c.weight))).filter(x => x != 0);
 	    var colormaps = {};
 	    if (weights_exc.length > 0) {
 		var min_exc = Math.min.apply(null, weights_exc);

@@ -5,7 +5,7 @@ define(function (require) {
 
     return {
 	weight: false,
-	linkColormap: {},
+	linkColormaps: {},
 	createMatrixLayout: function (context) {
 	    var d3 = require("d3");
 
@@ -49,10 +49,14 @@ define(function (require) {
 	    context.dataset.links.forEach((function (link) {
 		//TODO: think about zero weight lines
 		//matrix[link.source][link.target].z = link.weight ? link.type : 0;
-		if (this.weight)
+		if (this.weight) {
 		    matrix[link.source][link.target].z = link.weight;
-		else
+		    matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
+		}
+		else {
 		    matrix[link.source][link.target].z = link.type;
+		    delete matrix[link.source][link.target].type;
+		}
 		nodes[link.source].pre_count += 1;
 		nodes[link.target].post_count += 1;
 	    }).bind(this));
@@ -83,7 +87,7 @@ define(function (require) {
 	    var rect = container
 		.append("rect")
 		.attr("class", "background")
-		.attr("width", matrixDim - margin.left - 30)
+		.attr("width", matrixDim - margin.left - 20)
 		.attr("height", matrixDim - margin.top);
 
             // we store the 'conn' key in case we want to
@@ -140,9 +144,9 @@ define(function (require) {
             };
 
             var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
-	    this.linkColormap = (function() {
+	    this.linkColormaps = (function() {
 		if (this.weight)
-		    return context.weightColormap();
+		    return context.weightColormaps();
 		else
 		    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
 	    }).bind(this)();
@@ -165,7 +169,7 @@ define(function (require) {
                 .attr("transform", "translate(-20,0)")
                 .each(popIndicator("y", nodeColormap, popIndicatorSize, preMargin));
 
-	    var rowFn = row(this.linkColormap);
+	    var rowFn = row(this.linkColormaps);
 	    var row = container.selectAll(".row")
 		.data(matrix)
 		.enter().append("g")
@@ -189,10 +193,94 @@ define(function (require) {
 	    column.append("line")
 		.attr("x1", -context.options.innerWidth);
 
-	    context.createLegend('legend',
-				 d3.scaleOrdinal(nodeColormap.range().concat(this.linkColormap.range()))
-				 .domain(nodeColormap.domain().concat(this.linkColormap.domain())),
-				 { x: matrixDim, y: 0 });
+	    context.createLegend('legend', nodeColormap, { x: matrixDim, y: 0 });
+	    if (this.weight) createWeightLegend(this.linkColormaps);
+
+	    function linspace(start, end, n) {
+		var out = [];
+		var delta = (end - start) / (n - 1);
+
+		var i = 0;
+		while(i < (n - 1)) {
+		    out.push(start + (i * delta));
+		    i++;
+		}
+
+		out.push(end);
+		return out;
+	    }
+
+	    function createWeightLegend(linkColormaps) {
+		var i = 0;
+		for (var type in linkColormaps) {
+		    var legendFullHeight = 400;
+		    var legendFullWidth = 50;
+		    var legendMargin = { top: 20, bottom: 20, left: 50, right: 20 };
+		    var legendWidth = 20;
+		    var legendHeight = legendFullHeight - legendMargin.top - legendMargin.bottom;
+
+		    var x = context.options.innerWidth - (legendMargin.left*(i+1)); i++;
+		    var y = legendMargin.top;
+		    var legend = context.svg
+			.append('g')
+			.attr('width', legendFullWidth)
+			.attr('height', legendFullHeight)
+			.attr('transform', 'translate(' + [x,y] + ')');
+
+		    var gradient = legend.append('defs')
+			.append('linearGradient')
+			.attr('id', 'gradient')
+			.attr('x1', '0%')
+			.attr('y1', '100%')
+			.attr('x2', '0%')
+			.attr('y2', '0%')
+			.attr('spreadMethod', 'pad');
+
+		    // programatically generate the gradient for the legend
+		    // this creates an array of [pct, colour] pairs as stop
+		    // values for legend
+		    var pct = linspace(0, 100, linkColormaps[type].range().length).map(function(d) {
+			return Math.round(d) + '%';
+		    });
+
+		    var colourPct = d3.zip(pct, linkColormaps[type].range().reverse());
+
+		    colourPct.forEach(function(d) {
+			gradient.append('stop')
+			    .attr('offset', d[0])
+			    .attr('stop-color', d[1])
+			    .attr('stop-opacity', 1);
+		    });
+
+		    legend.append('rect')
+			.attr('x1', 0)
+			.attr('y1', 0)
+			.attr('width', legendWidth)
+			.attr('height', legendHeight)
+			.style('fill', 'url(#gradient)');
+
+		    // create a scale and axis for the legend
+		    var legendScale = d3.scaleLinear()
+			.domain(linkColormaps[type].domain())
+			.range([0, 360]);
+
+		    // FIXME: don't hardcode number of ticks
+		    var legendAxis = d3.axisRight(legendScale)
+			.ticks(10);
+
+		    legend.append("g")
+			.attr('height', legendHeight)
+			.attr("class", "legend-axis")
+			.attr("transform", "translate(" + legendWidth + ", 0)")
+			.call(legendAxis);
+
+		    legend.append("text")
+			.attr('class', 'weight-legend-label')
+			.attr('width', 20)
+			.attr('height', 20)
+			.text(type);
+		}
+	    }
 
 	    //Sorting matrix entries by criteria specified via combobox
 	    var optionsContainer = $('<div/>', {
@@ -279,19 +367,13 @@ define(function (require) {
 		return function () {
 		    if (this.checked) {
 			that.weight = true;
-			that.linkColormap = ctx.weightColormap();
-			ctx.dataset.links.forEach(function (link) {
-			    matrix[link.source][link.target].z = link.weight;
-			});
+			that.linkColormaps = ctx.weightColormaps();
 			$('#' + ctx.id + "-weight").remove();
 			ctx.createLayout();
 		    }
 		    else {
 			that.weight = false;
 			ctx.nodeColormap = ctx.defaultColorMapFunction();
-			ctx.dataset.links.forEach(function (link) {
-			    matrix[link.source][link.target].z = link.type;
-			});
 			$('#' + ctx.id + "-weight").remove();
 			ctx.createLayout();
 		    }
@@ -299,7 +381,7 @@ define(function (require) {
 	    } (context, this));
 
 	    // Draw squares for each connection
-	    function row(linkColormap) {
+	    function row(linkColormaps) {
 		return function(row) {
 		var cell = d3.select(this).selectAll(".cell")
 		    .data(row.filter(function (d) {
@@ -317,10 +399,16 @@ define(function (require) {
 		    })
 		    //.style("fill-opacity", function(d) { return z(d.z); })
                     .style("fill", function (d) {
-			return linkColormap(d.z);
+			if (typeof d.type !== 'undefined')
+			    return linkColormaps[d.type](d.z);
+			else
+			    return linkColormaps(d.z);
 		    })
 		    .style("stroke", function (d) {
-			return linkColormap(d.z);
+			if (typeof d.type !== 'undefined')
+			    return linkColormaps[d.type](d.z);
+			else
+			    return linkColormaps(d.z);
 		    })
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();

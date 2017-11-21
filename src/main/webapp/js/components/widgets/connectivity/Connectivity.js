@@ -51,7 +51,20 @@ define(function (require) {
 			    if (typeof x.getType().getSuperType().getPath === 'function')
 				return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
 			})[0];
-			projSummary[proj.getId()] = {pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, synapse: synapse};
+			// synapse undefined here => electrical projection, since currently the synapse attr is not given in the
+			// <electricalProjection/> tag but in the <electricalConnectionInstance(W)/> tag.
+			// in any case, we are currently ignoring electrical projections, but FIXME
+			if (typeof synapse === 'undefined')
+			    continue;
+			else {
+			    var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
+			    var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
+			    var data = [{id: proj.getId(), synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation}];
+			    if (typeof projSummary[[preId, postId]] === 'undefined')
+				projSummary[[preId, postId]] = data;
+			    else
+				projSummary[[preId, postId]].push(data);
+			}
 		    }
 		}
 		return projSummary;
@@ -61,36 +74,29 @@ define(function (require) {
 		    this.projectionSummary = this.getProjectionSummary();
 		var preId = conn.getA().getPath().split("[")[0];
 		var postId = conn.getB().getPath().split("[")[0];
-		var proj;
-		for (proj in this.projectionSummary) {
-		    if (this.projectionSummary[proj].pre.pointerValue.getWrappedObj().path.startsWith(preId) &&
-			this.projectionSummary[proj].post.pointerValue.getWrappedObj().path.startsWith(postId))
-			break;
-		}
-		return this.projectionSummary[proj].synapse;
+		if (typeof this.projectionSummary[[preId, postId]] !== 'undefined')
+		    return this.projectionSummary[[preId, postId]].map(p => p.synapse);
+		else
+		    return [];
             },
 	    linkWeight: function (conn) {
-		if (typeof this.linkSynapse(conn) !== 'undefined') {
+		if (this.linkSynapse(conn).length > 0) {
 		    var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		    var weight = 1;
 		    if (weightIndex > -1)
 			weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-		    var gbase = this.linkSynapse(conn).getType().gbase;
-		    var scale = 1;
-		    if (gbase.getUnit() === 'S')
-			scale = 1e9;
-		    return Math.round(scale * weight * gbase.getInitialValue() * 100) / 100;
+		    var gbases = this.linkSynapse(conn).map(c => c.getType().gbase);
+		    var scale = gbases.map(g => { if (g.getUnit() === 'S') { return 1e9; } else { return 1; } });
+		    return gbases.map((g, i) => Math.round(weight * scale[i] * g.getInitialValue() * 100)/100).reduce((x,y) => x+y, 0);
 		}
 		else
 		    return 0;
 	    },
 	    linkErev: function (conn) {
-		if (typeof this.linkSynapse(conn) !== 'undefined') {
-		    var erev = this.linkSynapse(conn).getType().erev;
-		    var scale = 1;
-		    if (erev.getUnit() === 'V')
-			scale = 1e3;
-		    return Math.round(scale * erev.getInitialValue() * 100) / 100;
+		if (this.linkSynapse(conn).length > 0) {
+		    var erevs = this.linkSynapse(conn).map(c => c.getType().erev);
+		    var scale = erevs.map(e => { if (e.getUnit() === 'V') { return 1e3; } else { return 1; } });
+		    return erevs.map((e, i) => Math.round(scale[i] * e.getInitialValue() * 100)/100).reduce((x,y) => x+y, 0);
 		}
 		else
 		    return 0;
@@ -144,11 +150,24 @@ define(function (require) {
             }
         },
 
-	weightColormap: function() {
-	    var weights = Array.from(new Set(this.dataset.links.map(x => x.weight))).filter(x => x != 0);
-	    var min = Math.min.apply(null, weights);
-	    var max = Math.max.apply(null, weights);
-	    return d3.scaleLinear().range(["black", "red", "blue"]).domain([0, min, max]);
+	weightColormaps: function() {
+	    var exc_threshold = -70; // >-70 mV => excitatory
+	    var exc_conns = this.dataset.links.filter(l => l.erev >= exc_threshold);
+	    var inh_conns = this.dataset.links.filter(l => l.erev < exc_threshold);
+	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.weight))).filter(x => x != 0);
+	    var weights_inh = Array.from(new Set(inh_conns.map(c => c.weight))).filter(x => x != 0);
+	    var colormaps = {};
+	    if (weights_exc.length > 0) {
+		var min_exc = Math.min.apply(null, weights_exc);
+		var max_exc = Math.max.apply(null, weights_exc);
+		colormaps.exc = d3.scaleLinear().range(["red", "blue"]).domain([min_exc, max_exc]);
+	    }
+	    if (weights_inh.length > 0) {
+		var min_inh = Math.min.apply(null, weights_inh);
+		var max_inh = Math.max.apply(null, weights_inh);
+		colormaps.inh = d3.scaleLinear().range(["red", "blue"]).domain([min_inh, max_inh]);
+	    }
+	    return colormaps;
 	},
 
         defaultColorMapFunction: function() {

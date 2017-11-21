@@ -75,7 +75,9 @@ define(function (require) {
 		var preId = conn.getA().getPath().split("[")[0];
 		var postId = conn.getB().getPath().split("[")[0];
 		if (typeof this.projectionSummary[[preId, postId]] !== 'undefined')
-		    return this.projectionSummary[[preId, postId]].map(p => p.synapse);
+		    return this.projectionSummary[[preId, postId]]
+		           .map(p => p.synapse)
+		           .filter(s => typeof s !== 'undefined');
 		else
 		    return [];
             },

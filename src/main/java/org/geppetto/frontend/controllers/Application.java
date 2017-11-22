@@ -162,12 +162,10 @@ public class Application
 		return "tests";
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
 	public String dashboard()
 	{
 		return "dashboard";
 	}
-	
-	
 
 }

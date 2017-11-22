@@ -102,7 +102,15 @@ $content
     ga('send', 'pageview');
 </script>
 
-<script charset="utf-8" type="text/javascript" src="/geppetto/build/common.bundle.js"></script>
-<script charset="utf-8" type="text/javascript" src="/geppetto/build/main.bundle.js"></script>
+<% if (htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath == "/") { %>
+    	<script charset="utf-8" type="text/javascript" src="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>geppetto/build/common.bundle.js"></script>
+		<script charset="utf-8" type="text/javascript" src="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>geppetto/build/main.bundle.js"></script>
+	<% }
+	else{ %>
+    	<script charset="utf-8" type="text/javascript" src="geppetto/build/common.bundle.js"></script>
+		<script charset="utf-8" type="text/javascript" src="geppetto/build/main.bundle.js"></script>
+	<% }
+%>
+	
 </body>
 </html>

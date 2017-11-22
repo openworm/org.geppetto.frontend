@@ -75,7 +75,11 @@ define(function (require) {
                 if (this.statusWorker != undefined) {
                     this.statusWorker.terminate();
                 }
-                this.statusWorker = new Worker("/geppetto/js/geppettoProject/PullStatusWorker.js");
+                if (GEPPETTO_CONFIGURATION.contextPath == "/") {
+                    this.statusWorker = new Worker("/geppetto/js/geppettoProject/PullStatusWorker.js");
+                }else{
+                    this.statusWorker = new Worker("geppetto/js/geppettoProject/PullStatusWorker.js");
+                }
 
                 this.statusWorker.postMessage(2000);
 

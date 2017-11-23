@@ -260,7 +260,11 @@ define(function (require) {
 					if (properties == undefined) {
 						properties = {};
 					}
-					this._createComponent(componentType, properties, document.getElementById('widgetContainer'), callback, true);
+					return new Promise(resolve => {
+						component = this._createComponent(componentType, properties, document.getElementById('widgetContainer'), callback, true);
+						resolve(component);
+					});
+					
 				}
 				else {
 					var isStateless = false;

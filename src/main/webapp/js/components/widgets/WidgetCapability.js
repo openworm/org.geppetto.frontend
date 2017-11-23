@@ -466,7 +466,7 @@ define(function (require) {
 
                 addDownloadButton(downloadFunction) {
                     var that = this;
-                    this.addButtonToTitleBar($("<div class='fa fa-download' title='Download data'></div>").click(function () {
+                    this.addButtonToTitleBar($("<div class='downloadButton fa fa-download' title='Download data'></div>").click(function () {
                         that.download();
                     }));
                 }
@@ -650,9 +650,8 @@ define(function (require) {
                         this.addHelpButton();
                     }
 
-
                     //add download button
-                    if (super.download) {
+                    if (super.download && this.props.showDownloadButton) {
                         this.addDownloadButton(super.download);
                     }
 
@@ -835,6 +834,7 @@ define(function (require) {
                 resizable: true,
                 draggable: true,
                 showHistoryIcon: true,
+                showDownloadButton: false,
                 closable: true,
                 maximizable: true,
                 help: true,

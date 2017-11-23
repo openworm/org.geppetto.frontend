@@ -89,7 +89,7 @@ define(function(require)
                             }
                         }
 
-                        if(component !== undefined && component !== null && typeof component.setView == 'function'){
+                        else if(component !== undefined && component !== null && typeof component.setView == 'function'){
                             // if the interface is exposed, set view
                             component.setView(componentViews[cv]);
                         }

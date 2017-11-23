@@ -107,7 +107,7 @@ define(function (require) {
 						style={this.props.style}
 						treeData={this.state.treeData}
 						canDrag={false}
-						rowHeight={45}
+						rowHeight={this.props.rowHeight}
 						scaffoldBlockPxWidth={22}
 						generateNodeProps={rowInfo => (this.getNodeProps(rowInfo))}
 						onChange={treeData => this.updateTreeData(treeData)}

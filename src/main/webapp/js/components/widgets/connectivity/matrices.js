@@ -94,15 +94,18 @@ define(function (require) {
 	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.weight))).filter(x => x != 0);
 	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.weight >= 0) ? c.weight : -1*c.weight))).filter(x => x != 0);
 	    var colormaps = {};
+	    var baseColormap = d3.scaleLinear()
+		.range([d3.cubehelix(0, 1, 0.5), d3.cubehelix(240, 1, 0.5)])
+		.interpolate(d3.interpolateCubehelixLong);
 	    if (weights_exc.length > 0) {
 		var min_exc = Math.min.apply(null, weights_exc);
 		var max_exc = Math.max.apply(null, weights_exc);
-		colormaps.exc = d3.scaleLinear().domain([min_exc, max_exc]).range(["red", "white", "green"]).interpolate(d3.interpolateCubehelix);
+		colormaps.exc = baseColormap.copy().domain([min_exc, max_exc]);
 	    }
 	    if (weights_inh.length > 0) {
 		var min_inh = Math.min.apply(null, weights_inh);
 		var max_inh = Math.max.apply(null, weights_inh);
-		colormaps.inh = d3.scaleLinear().range(["red", "blue"]).domain([min_inh, max_inh]);
+		colormaps.inh = baseColormap.copy().domain([min_inh, max_inh]);
 	    }
 	    return colormaps;
 	},
@@ -315,7 +318,7 @@ define(function (require) {
 		for (var type in linkColormaps) {
 		    var legendFullHeight = 400;
 		    var legendFullWidth = 50;
-		    var legendMargin = { top: 20, bottom: 20, left: 60, right: 20 };
+		    var legendMargin = { top: 20, bottom: 20, left: 80, right: 30 };
 		    var legendWidth = 20;
 		    var legendHeight = legendFullHeight - legendMargin.top - legendMargin.bottom;
 
@@ -339,11 +342,21 @@ define(function (require) {
 		    // programatically generate the gradient for the legend
 		    // this creates an array of [pct, colour] pairs as stop
 		    // values for legend
-		    var pct = linspace(0, 100, linkColormaps[type].range().length).map(function(d) {
+		    var resolution = 100;
+		    var pct = linspace(0, 100, resolution).map(function(d) {
 			return Math.round(d) + '%';
 		    });
 
-		    var colourPct = d3.zip(pct, linkColormaps[type].range().reverse());
+		    var colors = [];
+		    var start = linkColormaps[type].domain()[0];
+		    var end = linkColormaps[type].domain()[1];
+		    var inc = (end-start)/resolution;
+		    var n = start;
+		    for (var j=0; j<resolution; ++j) {
+			colors.push(linkColormaps[type](n));
+			n += inc;
+		    }
+		    var colourPct = d3.zip(pct, colors.reverse());
 
 		    colourPct.forEach(function(d) {
 			gradient.append('stop')
@@ -384,7 +397,7 @@ define(function (require) {
 			.attr('height', 20)
 			.text(type);
 
-		    i++;
+		    i+=0.5;
 		}
 	    }
 

@@ -2,10 +2,110 @@
  * Connectivity widget
  */
 define(function (require) {
-
+    var d3 = require("d3");
+    var d3Scale = require("d3-scale");
     return {
 	weight: false,
 	linkColormaps: {},
+	projectionSummary: {},
+	getProjectionSummary: function() {
+	    var projSummary = {};
+	    var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
+	    for (var i=0; i<projs.length; ++i) {
+		var proj = projs[i];
+		if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+		    // too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
+		    var synapse = proj.getVariables().filter((x)=> {
+			if (typeof x.getType().getSuperType().getPath === 'function')
+			    return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
+		    })[0];
+		    // synapse undefined here => electrical projection, since currently the synapse attr is not given in the
+		    // <electricalProjection/> tag but in the <electricalConnectionInstance(W)/> tag.
+		    // in any case, we are currently ignoring electrical projections, but FIXME
+		    if (typeof synapse === 'undefined')
+			continue;
+		    else {
+			var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
+			var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
+			var data = {id: proj.getId(), synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation};
+			if (typeof projSummary[[preId, postId]] === 'undefined')
+			    projSummary[[preId, postId]] = [data];
+			else
+			    projSummary[[preId, postId]].push(data);
+		    }
+		}
+	    }
+	    return projSummary;
+	},
+	linkSynapse: function (conn) {
+	    if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
+		this.projectionSummary = this.getProjectionSummary();
+	    var preId = conn.getA().getPath().split("[")[0];
+	    var postId = conn.getB().getPath().split("[")[0];
+	    if (typeof this.projectionSummary[[preId, postId]] !== 'undefined')
+		return this.projectionSummary[[preId, postId]]
+		.map(p => p.synapse)
+		.filter(s => typeof s !== 'undefined');
+	    else
+		return [];
+        },
+	linkWeight: function (conn) {
+	    if (this.linkSynapse(conn).length > 0) {
+		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+		var weight = 1;
+		if (weightIndex > -1)
+		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
+		var gbases = this.linkSynapse(conn).map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : 1);
+		var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
+		return gbases.map((g, i) => {
+		    if (typeof g.getInitialValue === 'function')
+			return weight * scale[i] * g.getInitialValue();
+		    else
+			return weight * scale[i] * g;
+		}).reduce((x,y) => x+y, 0);
+	    }
+	    else
+		return 0;
+	},
+	linkErev: function (conn) {
+	    if (this.linkSynapse(conn).length > 0) {
+		var erevs = this.linkSynapse(conn).map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
+		var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
+		return erevs.map((e, i) => {
+		    if (typeof e.getInitialValue === 'function')
+			return scale[i] * e.getInitialValue();
+		    else
+			return scale[i] * e;
+		}).reduce((x,y) => x+y, 0);
+	    }
+	    else
+		return 0;
+	},
+	populateWeights: function(links) {
+	    for (var i in links) {
+		links[i].weight =  this.linkWeight(links[i].conn);
+		links[i].erev = this.linkErev(links[i].conn);
+	    }
+	},
+	weightColormaps: function(links) {
+	    var exc_threshold = -70; // >-70 mV => excitatory
+	    var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.weight >= 0));
+	    var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.weight < 0));
+	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.weight))).filter(x => x != 0);
+	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.weight >= 0) ? c.weight : -1*c.weight))).filter(x => x != 0);
+	    var colormaps = {};
+	    if (weights_exc.length > 0) {
+		var min_exc = Math.min.apply(null, weights_exc);
+		var max_exc = Math.max.apply(null, weights_exc);
+		colormaps.exc = d3.scaleLinear().domain([min_exc, max_exc]).range(["red", "white", "green"]).interpolate(d3.interpolateCubehelix);
+	    }
+	    if (weights_inh.length > 0) {
+		var min_inh = Math.min.apply(null, weights_inh);
+		var max_inh = Math.max.apply(null, weights_inh);
+		colormaps.inh = d3.scaleLinear().range(["red", "blue"]).domain([min_inh, max_inh]);
+	    }
+	    return colormaps;
+	},
 	createMatrixLayout: function (context) {
 	    var d3 = require("d3");
 
@@ -146,7 +246,7 @@ define(function (require) {
             var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
 	    this.linkColormaps = (function() {
 		if (this.weight)
-		    return context.weightColormaps();
+		    return this.weightColormaps(context.dataset.links);
 		else
 		    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
 	    }).bind(this)();
@@ -372,17 +472,19 @@ define(function (require) {
 	    weightCheckbox.on("change", function (ctx, that) {
 		return function () {
 		    if (this.checked) {
+			if (Object.keys(that.projectionSummary).length == 0) {
+			    that.projectionSummary = that.getProjectionSummary();
+			    that.populateWeights(ctx.dataset.links);
+			}
 			that.weight = true;
-			that.linkColormaps = ctx.weightColormaps();
-			$('#' + ctx.id + "-weight").remove();
-			ctx.createLayout();
+			that.linkColormaps = that.weightColormaps(ctx.dataset.links);
 		    }
 		    else {
 			that.weight = false;
 			ctx.nodeColormap = ctx.defaultColorMapFunction();
-			$('#' + ctx.id + "-weight").remove();
-			ctx.createLayout();
 		    }
+		    $('#' + ctx.id + "-weight").remove();
+		    ctx.createLayout();
 		}
 	    } (context, this));
 

@@ -39,80 +39,6 @@ define(function (require) {
                     return node.getPath().split('_')[0];
                 }
             },
-	    projectionSummary: {},
-	    getProjectionSummary: function() {
-		var projSummary = {};
-		var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
-		for (var i=0; i<projs.length; ++i) {
-		    var proj = projs[i];
-		    if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
-			// too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
-			var synapse = proj.getVariables().filter((x)=> {
-			    if (typeof x.getType().getSuperType().getPath === 'function')
-				return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
-			})[0];
-			// synapse undefined here => electrical projection, since currently the synapse attr is not given in the
-			// <electricalProjection/> tag but in the <electricalConnectionInstance(W)/> tag.
-			// in any case, we are currently ignoring electrical projections, but FIXME
-			if (typeof synapse === 'undefined')
-			    continue;
-			else {
-			    var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-			    var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-			    var data = {id: proj.getId(), synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation};
-			    if (typeof projSummary[[preId, postId]] === 'undefined')
-				projSummary[[preId, postId]] = [data];
-			    else
-				projSummary[[preId, postId]].push(data);
-			}
-		    }
-		}
-		return projSummary;
-	    },
-            linkSynapse: function (conn) {
-		if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
-		    this.projectionSummary = this.getProjectionSummary();
-		var preId = conn.getA().getPath().split("[")[0];
-		var postId = conn.getB().getPath().split("[")[0];
-		if (typeof this.projectionSummary[[preId, postId]] !== 'undefined')
-		    return this.projectionSummary[[preId, postId]]
-		           .map(p => p.synapse)
-		           .filter(s => typeof s !== 'undefined');
-		else
-		    return [];
-            },
-	    linkWeight: function (conn) {
-		if (this.linkSynapse(conn).length > 0) {
-		    var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
-		    var weight = 1;
-		    if (weightIndex > -1)
-			weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-		    var gbases = this.linkSynapse(conn).map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : 1);
-		    var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
-		    return gbases.map((g, i) => {
-			if (typeof g.getInitialValue === 'function')
-			    return weight * scale[i] * g.getInitialValue();
-			else
-			    return weight * scale[i] * g;
-		    }).reduce((x,y) => x+y, 0);
-		}
-		else
-		    return 0;
-	    },
-	    linkErev: function (conn) {
-		if (this.linkSynapse(conn).length > 0) {
-		    var erevs = this.linkSynapse(conn).map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
-		    var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
-		    return erevs.map((e, i) => {
-			if (typeof e.getInitialValue === 'function')
-			    return scale[i] * e.getInitialValue();
-			else
-			    return scale[i] * e;
-		    }).reduce((x,y) => x+y, 0);
-		}
-		else
-		    return 0;
-	    },
             linkType: function (conn) {
                 return 1;
             },
@@ -124,7 +50,6 @@ define(function (require) {
 
             Widget.View.prototype.initialize.call(this, options);
             this.setOptions(this.defaultConnectivityOptions);
-	    this.defaultConnectivityOptions.projectionSummary = this.options.getProjectionSummary();
             this.render();
             this.setSize(options.height, options.width);
 
@@ -161,26 +86,6 @@ define(function (require) {
                 this.createLayout();
             }
         },
-
-	weightColormaps: function() {
-	    var exc_threshold = -70; // >-70 mV => excitatory
-	    var exc_conns = this.dataset.links.filter(l => (l.erev >= exc_threshold) && (l.weight >= 0));
-	    var inh_conns = this.dataset.links.filter(l => (l.erev < exc_threshold) || (l.weight < 0));
-	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.weight))).filter(x => x != 0);
-	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.weight >= 0) ? c.weight : -1*c.weight))).filter(x => x != 0);
-	    var colormaps = {};
-	    if (weights_exc.length > 0) {
-		var min_exc = Math.min.apply(null, weights_exc);
-		var max_exc = Math.max.apply(null, weights_exc);
-		colormaps.exc = d3.scaleLinear().range(["red", "blue"]).domain([min_exc, max_exc]);
-	    }
-	    if (weights_inh.length > 0) {
-		var min_inh = Math.min.apply(null, weights_inh);
-		var max_inh = Math.max.apply(null, weights_inh);
-		colormaps.inh = d3.scaleLinear().range(["red", "blue"]).domain([min_inh, max_inh]);
-	    }
-	    return colormaps;
-	},
 
         defaultColorMapFunction: function() {
             var cells = this.dataset["root"].getChildren();
@@ -274,8 +179,7 @@ define(function (require) {
 	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
 	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
-	                            this.createLink(sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache),
-						    this.options.linkWeight(connectionVariable), this.options.linkErev(connectionVariable));
+	                            this.createLink(connectionVariable, sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache));
 		                }
 		            }
 
@@ -418,13 +322,12 @@ define(function (require) {
             }
         },
 
-        createLink: function (sourceId, targetId, type, weight, erev) {
+        createLink: function (conn, sourceId, targetId, type) {
             var linkItem = {
+		conn: conn,
                 source: this.mapping[sourceId],
                 target: this.mapping[targetId],
                 type: type,
-                weight: weight,
-		erev: erev
             };
             this.dataset["links"].push(linkItem);
         },

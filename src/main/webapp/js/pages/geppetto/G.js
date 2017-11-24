@@ -247,7 +247,7 @@ define(function (require) {
                 }
                 else {
                     var dropboxURL =
-                        "https://www.dropbox.com/1/oauth2/authorize?locale=en_US&client_id=kbved8e6wnglk4h&response_type=code";
+                        "https://www.dropbox.com/oauth2/authorize?locale=en_US&client_id=kbved8e6wnglk4h&response_type=code";
                     var win = window.open(dropboxURL, '_blank');
                     win.focus();
                 }

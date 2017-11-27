@@ -24,6 +24,7 @@ define(function (require) {
                     });
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
 
+                    // If a handleChange method is passed as a props it will overwrite the handleChange python controlled capability
                     this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange;
                     this.handleUpdateInput = this.handleUpdateInput.bind(this);
                     this.handleUpdateCheckbox = this.handleUpdateCheckbox.bind(this);
@@ -45,54 +46,56 @@ define(function (require) {
                     }
                 }
 
+                componentDidUpdate(prevProps, prevState) {
+                    switch (WrappedComponent.name) {
+                        case 'AutoComplete':
+                            if (this.state.searchText != prevState.searchText && this.props.onChange) {
+                                this.props.onChange(this.state.searchText);
+                            }
+                            break;
+                        case 'Checkbox':
+                            if (this.state.checked != prevState.checked && this.props.onCheck) {
+                                this.props.onCheck(null, this.state.checked);
+                            }
+                            break;
+                        default:
+                            if (this.state.value != prevState.value && this.props.onChange) {
+                                this.props.onChange(null, null, this.state.value);
+                            }
+                            break;
+                    }
+                }
+
                 setSyncValueWithPythonHandler(handler) {
                     this.syncValueWithPython = handler;
                 }
 
-                handleChange(event, index, value) {
-                    // For textfields value is retrived from the event. For dropdown value is retrieved from the value
-                    var newValue = (event.target.value == undefined) ? value : event.target.value;
-                    this.setState({ value: newValue });
+                updatePythonValue(newValue) {
+                    this.setState({ value: newValue, searchText: newValue, checked: newValue});
 
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
                         this.syncValueWithPython(newValue, window.requirement);
                     }
-                    if (this.props.onChange) {
-                        this.props.onChange(event, index, value);
-                    }
+
                     this.forceUpdate();
                 }
 
+                // Default handle (mainly textfields and dropdowns)
+                handleChange(event, index, value) {
+                    // For textfields value is retrived from the event. For dropdown value is retrieved from the value
+                    this.updatePythonValue((event == null || event.target.value == undefined) ? value : event.target.value);
+                }
+
+                // Autocomplete handle
                 handleUpdateInput(value) {
-                    // For textfields value is retrived from the event. For dropdown value is retrieved from the value
-                    this.setState({ value: value });
-
-                    //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
-                    if (this.syncValueWithPython) {
-                        // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
-                        this.syncValueWithPython(value, window.requirement);
-                    }
-                    if (this.props.onChange) {
-                        this.props.onChange(value);
-                    }
-                    this.forceUpdate();
+                    this.updatePythonValue(value);
                 }
 
+                //Checkbox
                 handleUpdateCheckbox(event, isInputChecked) {
-                    // For textfields value is retrived from the event. For dropdown value is retrieved from the value
-                    this.setState({ value: isInputChecked });
-
-                    //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
-                    if (this.syncValueWithPython) {
-                        // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
-                        this.syncValueWithPython(isInputChecked, window.requirement);
-                    }
-                    if (this.props.onChange) {
-                        this.props.isInputChecked(event, isInputChecked);
-                    }
-                    this.forceUpdate();
+                    this.updatePythonValue(isInputChecked);
                 }
 
                 connectToPython(componentType, model) {
@@ -135,6 +138,7 @@ define(function (require) {
                             wrappedComponentProps['checked'] = this.state.checked;
                             delete wrappedComponentProps.searchText;
                             delete wrappedComponentProps.dataSource;
+                            break;
                         default:
                             wrappedComponentProps['onChange'] = this.handleChange;
                             wrappedComponentProps['value'] = this.state.value;
@@ -142,9 +146,6 @@ define(function (require) {
                             delete wrappedComponentProps.dataSource;
                             break;
                     }
-
-                    //Is this actually needed? For now it is commented out...
-                    // /* componentType={WrappedComponent.name} */
 
                     return (
                         <WrappedComponent {...wrappedComponentProps} />

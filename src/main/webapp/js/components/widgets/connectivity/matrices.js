@@ -397,8 +397,19 @@ define(function (require) {
 			.attr('height', 20)
 			.text(type);
 
+                    // append unit, would be tidier to have both scalebars in a parent <g/>
+                    if (i == 0) {
+                        legend.append("text")
+			.attr('class', 'weight-legend-label')
+			.attr('width', 20)
+			.attr('height', 20)
+                        .attr('transform', 'translate(-18, 375)')
+			.text("nS");
+                    }
+
 		    i+=0.5;
 		}
+
 	    }
 
 	    //Sorting matrix entries by criteria specified via combobox

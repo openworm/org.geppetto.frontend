@@ -39,9 +39,6 @@ define(function (require) {
                     return node.getPath().split('_')[0];
                 }
             },
-            linkWeight: function (conn) {
-                return 1;
-            },
             linkType: function (conn) {
                 return 1;
             },
@@ -53,7 +50,6 @@ define(function (require) {
 
             Widget.View.prototype.initialize.call(this, options);
             this.setOptions(this.defaultConnectivityOptions);
-
             this.render();
             this.setSize(options.height, options.width);
 
@@ -183,7 +179,7 @@ define(function (require) {
 	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
 	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
-	                            this.createLink(sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache), this.options.linkWeight(connectionVariable));
+	                            this.createLink(connectionVariable, sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache));
 		                }
 		            }
 
@@ -224,7 +220,7 @@ define(function (require) {
 
         createLayout: function () {
             $('#' + this.id + " svg").remove();
-            $('#' + this.id + " #matrix-sorter").remove();
+	    $('#' + this.id + '-options').remove();
 
             this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
             this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
@@ -326,12 +322,12 @@ define(function (require) {
             }
         },
 
-        createLink: function (sourceId, targetId, type, weight) {
+        createLink: function (conn, sourceId, targetId, type) {
             var linkItem = {
+		conn: conn,
                 source: this.mapping[sourceId],
                 target: this.mapping[targetId],
                 type: type,
-                weight: weight
             };
             this.dataset["links"].push(linkItem);
         },

@@ -1236,7 +1236,8 @@ define(['jquery'], function () {
             var material = new THREE.MeshPhongMaterial(
                 {
                     opacity: 1,
-                    shininess: 10
+                    shininess: 10,
+                    flatShading: false
                 });
 
             this.setThreeColor(material.color, color);

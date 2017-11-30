@@ -27,17 +27,21 @@
     margin: 0 auto;
     margin-bottom:26px;
     position: relative;
-    color: @primary_color;
-    border-color: #2e2828;
-    border-width: 0;
+
+    border-width: 1px;
+    border-bottom: 0;
+    border-left: 0;
+    border-style:solid;
     cursor:pointer!important;
     box-shadow:none;
     text-shadow: none;
     width: 140px;
     height: 35px;
     z-index : 3;
-    bottom : 1px;
 }
+
+
+
 #consoleButton > a::-moz-focus-inner {
   border: 0;
 }
@@ -61,7 +65,7 @@
 }
 
 #fullscreen:hover {
-    color: @primary_color;
+    color: @secondary_color;
 }
 
 #javascriptFullscreen {
@@ -77,6 +81,11 @@
 
 #javascriptFullscreen:hover {
     color: @primary_color;
+}
+
+.tab-content{
+    border-top:1px solid;
+    border-color:@secondary_color;
 }
 
 .CodeMirror-fullscreen {
@@ -99,38 +108,49 @@
     border-radius: 0px;
 }
 
+.nav-tabs > li {
+    color: @primary_color;
+    border-color: @secondary_color;
+}
+
+.nav-tabs > li.active {
+    color: @primary_color;
+    border-color: @secondary_color;
+}
+
+
 .nav-tabs > li > a{
-	color: @primary_color;
+	color: @background_color_widget;
 	height : 100%;
-	background: fade(@background_color_widget, 70%);
+	background: fade(@primary_color, 100%);
 	cursor : pointer;
 }
 
 .nav-tabs > li.active > a{
 	color: @primary_color;
   	border: 0px;
-    background: fade(@background_color_widget, 90%);
+    background: fade(@background_color_widget, 100%);
     cursor : pointer;
 }
 
 .nav-tabs > li.active > a:hover{
 	color: @primary_color!important;
   	border: 0px;
-  	background: fade(@background_color_widget, 90%);
+  	background: fade(@background_color_widget, 100%);
   	cursor : pointer;
 }
 
 .nav-tabs > li > a:hover{
 	color: @primary_color;
   	border: 0px;
-  	background: fade(@background_color_widget, 90%);
+  	background: fade(@background_color_widget, 100%);
   	cursor:pointer
 }
 
 .nav-tabs > li.active > a:focus {
 	color: @primary_color;
   	border: 0px;
-    background: fade(@background_color_widget, 80%);
+    background: fade(@background_color_widget, 100%);
 }
 
 ::-webkit-scrollbar,

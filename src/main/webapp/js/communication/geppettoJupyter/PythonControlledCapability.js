@@ -127,6 +127,7 @@ define(function (require) {
                         wrappedComponentProps.id = wrappedComponentProps.model;
                     }
                     delete wrappedComponentProps.model;
+                    delete wrappedComponentProps.handleChange;
 
                     switch (WrappedComponent.name) {
                         case 'AutoComplete':

@@ -13,6 +13,55 @@ function testSingleCompononetHHProject(test,name){
     		testPlotWidgets(test,"Plot2","hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.m.q",3);
     	});
     });
+    casper.then(function () {
+		var experiments = casper.evaluate(function() {return window.Project.getExperiments().length;});
+		test.assertEquals(experiments, 1, "Initial amount of experiments for hhcell checked");
+	});
+    
+    casper.then(function () {
+		var evaluate = casper.evaluate(function() {return hhcell!=null;});
+		test.assertEquals(evaluate,true, "Top level instance present");
+	});
+    
+	casper.then(function () {
+		test.assertEval(function() {
+			return window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+			window.Model.getVariables()[0].getId() == 'hhcell' && window.Model.getVariables()[1].getId() == 'time';
+		},"2 top Variables as expected for hhcell");
+	});
+
+	casper.then(function () {
+		test.assertEval(function() {
+			return window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2;
+		},"2 Libraries as expected for hhcell");
+	});
+
+	casper.then(function () {
+		test.assertEval(function() {
+			return window.Instances != undefined && window.Instances.length == 2 && window.Instances[0].getId() == 'hhcell';
+		},"1 top level instance as expected for hhcell");
+	});
+    
+    casper.then(function () {
+		test.assertEval(function() {
+			return hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries()==null;
+		},"Checking that time series is still null in variable for hhcell project");
+    });
+
+    casper.then(function(){
+    	casper.evaluate(function() {
+    		 var experimentState = JSON.parse(payload.update);
+             var experiment = window.Project.getActiveExperiment();
+             GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);
+        });
+    });
+    
+    casper.then(function () {
+		test.assertEval(function() {
+			return hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries()==6001;
+		},"Checking that time series is still null in variable for hhcell project");
+    });
+    
     casper.then(function(){
     	casper.evaluate(function() {
             Plot1.plotData(hhcell.hhpop[0].v);
@@ -183,6 +232,69 @@ function testSingleCompononetHHProject(test,name){
 function testACNET2Project(test){
     casper.then(function(){launchTest(test,"ACNET2",45000);});
     casper.echo("------------Starting Primary Auditory Cortary Test--------------");
+    casper.then(function () {
+		var experiments = casper.evaluate(function() {return window.Project.getExperiments().length;});
+		test.assertEquals(experiments, 2, "Initial amount of experiments for ACNE2 checked");
+	});
+    
+    casper.then(function () {
+		var evaluate = casper.evaluate(function() {return acnet2!=null;});
+		test.assertEquals(evaluate,true, "Top level instance present");
+	});
+    
+    casper.then(function () {
+		test.assertEval(function() {
+			return acnet2.baskets_12[3] != undefined && acnet2.pyramidals_48[12] != undefined;
+		},"Instances exploded as expected");
+	});
+    
+    casper.then(function () {
+		test.assertEval(function() {
+			return acnet2.baskets_12[9].getConnections().length=== 0 && acnet2.pyramidals_48[23].getConnections().length=== 0;
+		},"bask and pyramidal connections check before resolveAllImportTypes() call.");
+	});
+    
+    casper.page.onCallback = function(){
+    	test.assertEval(function() {
+			return acnet2.baskets_12[9].getConnections().length===60 && acnet2.pyramidals_48[23].getConnections().length===22;
+		},"bask and pyramidal connections check after resolveAllImportTypes() call.");
+    };
+    
+    casper.then(function () {
+		casper.evaluate(function() {Model.neuroml.resolveAllImportTypes(window.callPhantom);});
+	});
+    
+    casper.then(function () {
+    	test.assertEval(function() {
+    		return acnet2.pyramidals_48[23].getVisualGroups().length==5;
+    	},"Test number of Visual Groups on pyramidals");
+    });
+
+    casper.then(function () {
+    	test.assertEval(function() {
+    		return acnet2.baskets_12[9].getVisualGroups().length==3;
+    	},"Test number of Visual Groups on bask");
+    });
+
+    casper.then(function () {
+    	test.assertEval(function() {
+			return window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+            window.Model.getVariables()[0].getId() == 'acnet2' && window.Model.getVariables()[1].getId() == 'time';
+		},"2 top Variables as expected for ACNET2");
+	});
+    
+    casper.then(function () {
+		test.assertEval(function() {
+			return window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2;
+		},"2 Libraries as expected for ACNET2");
+	});
+    
+    casper.then(function () {
+		test.assertEval(function() {
+			return window.Instances != undefined && window.Instances.length == 2 && window.Instances[0].getId() == 'acnet2';
+		},"1 top level instance as expected for ACNET2");
+	});
+    
     casper.then(function(){
         removeAllPlots();
     });

@@ -44,22 +44,8 @@ function testSingleCompononetHHProject(test,name){
     
     casper.then(function () {
 		test.assertEval(function() {
-			return hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries()==null;
-		},"Checking that time series is still null in variable for hhcell project");
-    });
-
-    casper.then(function(){
-    	casper.evaluate(function() {
-    		 var experimentState = JSON.parse(payload.update);
-             var experiment = window.Project.getActiveExperiment();
-             GEPPETTO.ExperimentsController.updateExperiment(experiment, experimentState);
-        });
-    });
-    
-    casper.then(function () {
-		test.assertEval(function() {
-			return hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries()==6001;
-		},"Checking that time series is still null in variable for hhcell project");
+			return hhcell.hhpop[0].bioPhys1.membraneProperties.naChans.na.h.q.getTimeSeries().length==6001;
+		},"Checking that time series length is 6001 in variable for hhcell project");
     });
     
     casper.then(function(){
@@ -246,12 +232,6 @@ function testACNET2Project(test){
 		test.assertEval(function() {
 			return acnet2.baskets_12[3] != undefined && acnet2.pyramidals_48[12] != undefined;
 		},"Instances exploded as expected");
-	});
-    
-    casper.then(function () {
-		test.assertEval(function() {
-			return acnet2.baskets_12[9].getConnections().length=== 0 && acnet2.pyramidals_48[23].getConnections().length=== 0;
-		},"bask and pyramidal connections check before resolveAllImportTypes() call.");
 	});
     
     casper.page.onCallback = function(){

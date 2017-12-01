@@ -222,7 +222,7 @@ define(function (require) {
 			.delay(function (d, i) {
 			    return x(i) * 4;
 			})
-			.attr("cx", function (d, i) {
+			.attr("x", function (d, i) {
 			    return x(i);
 			});
 
@@ -230,7 +230,7 @@ define(function (require) {
 			.delay(function (d, i) {
 			    return x(i) * 4;
 			})
-			.attr("cy", function (d, i) {
+			.attr("y", function (d, i) {
 			    return x(i);
 			});
 

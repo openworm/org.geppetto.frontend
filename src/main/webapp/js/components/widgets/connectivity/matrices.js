@@ -128,6 +128,9 @@ define(function (require) {
 			.style("fill", function (d) {
                             return colormap(popNameFromId(d.id));
 			})
+                        .style("stroke", function (d) {
+                            return colormap(popNameFromId(d.id));
+			})
                         .on("mouseover", function(d){ $.proxy(mouseoverCell, this)(popNameFromId(d.id)) })
 			.on("mouseout", $.proxy(mouseoutCell))
                 };
@@ -260,6 +263,9 @@ define(function (require) {
 		    })
 			//.style("fill-opacity", function(d) { return z(d.z); })
 		    .style("fill", function (d) {
+			return c(d.z);
+		    })
+                    .style("stroke", function (d) {
 			return c(d.z);
 		    })
 		    .on("click", function (d) {

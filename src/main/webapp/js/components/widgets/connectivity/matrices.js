@@ -264,9 +264,6 @@ define(function (require) {
 		    .style("fill", function (d) {
 			return c(d.z);
 		    })
-                    .style("stroke", function (d) {
-			return c(d.z);
-		    })
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();
 			//Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.

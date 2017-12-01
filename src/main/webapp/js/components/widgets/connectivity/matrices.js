@@ -257,6 +257,7 @@ define(function (require) {
             var postMargin = parseInt(rect.attr("width"))/pre.length;
             var preMargin = parseInt(rect.attr("height"))/post.length;
 	    var popIndicatorSize = 10;
+
             var postPop = container.selectAll(".postPop")
                 .data([post])
                 .enter()
@@ -264,6 +265,7 @@ define(function (require) {
                 .attr("class", "postPop")
                 .attr("transform", "translate(0,-20)")
                 .each(popIndicator("x", nodeColormap, postMargin, popIndicatorSize));
+
             var prePop = container.selectAll(".prePop")
                 .data([pre])
                 .enter()
@@ -458,7 +460,7 @@ define(function (require) {
 			.delay(function (d, i) {
 			    return x(i) * 4;
 			})
-			.attr("cx", function (d, i) {
+			.attr("x", function (d, i) {
 			    return x(i);
 			});
 
@@ -466,7 +468,7 @@ define(function (require) {
 			.delay(function (d, i) {
 			    return x(i) * 4;
 			})
-			.attr("cy", function (d, i) {
+			.attr("y", function (d, i) {
 			    return x(i);
 			});
 
@@ -541,6 +543,9 @@ define(function (require) {
 			    return linkColormaps[d.type](d.z);
 			else
 			    return linkColormaps(d.z);
+		    })
+                    .style("stroke", function (d) {
+			return c(d.z);
 		    })
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();

@@ -76,6 +76,13 @@ define(function (require) {
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
+                        switch (this.props.realType) {
+                            case 'float':
+                                newValue = parseFloat(newValue)
+                                break;
+                            default:
+                                break;
+                        }
                         this.syncValueWithPython(newValue, window.requirement);
                     }
 
@@ -128,6 +135,7 @@ define(function (require) {
                     }
                     delete wrappedComponentProps.model;
                     delete wrappedComponentProps.handleChange;
+                    delete wrappedComponentProps.realType;
 
                     switch (WrappedComponent.name) {
                         case 'AutoComplete':

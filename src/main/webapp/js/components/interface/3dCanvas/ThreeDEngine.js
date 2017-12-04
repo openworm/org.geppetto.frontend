@@ -1458,9 +1458,15 @@ define(['jquery'], function () {
                 }
             }
             else {
-                if (instancePath in this.meshes) {
-                    meshes.push(this.meshes[instancePath]);
+                for (var keyMeshes in this.meshes) {
+                    if (keyMeshes.startsWith(instancePath)) {
+                        meshes.push(this.meshes[keyMeshes]);
+                    }
+
                 }
+                /*if (instancePath in this.meshes) {
+                    meshes.push(this.meshes[instancePath]);
+                }*/
             }
             return meshes;
         },

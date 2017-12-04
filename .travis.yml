@@ -48,7 +48,7 @@ script:
       docker stop $(docker ps -a -q);
       docker rm $(docker ps -a -q);
       docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto;
-      bash test_geppetto_server.sh;
+      bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh
       sleep 60;
       http_status=$(curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'});
       echo "Done restarting";

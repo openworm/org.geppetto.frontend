@@ -46,6 +46,7 @@ public enum OutboundMessages {
 	EXPERIMENT_PROPS_SAVED("experiment_props_saved"),
 	DROPBOX_LINKED("dropbox_linked"),
 	DROPBOX_UNLINKED("dropbox_unlinked"),
+        GET_DROPBOX_TOKEN("get_dropbox_token"),
 	RESULTS_UPLOADED("results_uploaded"),
 	MODEL_UPLOADED("model_uploaded"),
 	DOWNLOAD_RESULTS("download_results"),

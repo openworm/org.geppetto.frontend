@@ -35,6 +35,7 @@ define(function(require) {
             PROJECT_PERSISTENCE_STATE: "project_persistence_state",
             DROPBOX_LINKED: "dropbox_linked",
             DROPBOX_UNLINKED: "dropbox_unlinked",
+            GET_DROPBOX_TOKEN: "get_dropbox_token",
             RESULTS_UPLOADED: "results_uploaded",
             MODEL_UPLOADED: "model_uploaded",
             UPDATE_MODEL_TREE: "update_model_tree",
@@ -49,6 +50,10 @@ define(function(require) {
         messageHandler[messageTypes.PROJECT_LOADED] = function(payload) {
             GEPPETTO.SimulationHandler.loadProject(payload);
         };
+
+        messageHandler[messageTypes.GET_DROPBOX_TOKEN] = function(payload) {
+            GEPPETTO.UserController.setDropboxToken(payload.get_dropbox_token);
+        }
 
         messageHandler[messageTypes.MODEL_LOADED] = function(payload) {
             GEPPETTO.SimulationHandler.loadModel(payload);

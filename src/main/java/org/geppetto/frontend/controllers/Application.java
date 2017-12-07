@@ -128,40 +128,6 @@ public class Application
 		return new Gson().fromJson(reader, Test.class);
 	}
 
-	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
-	public String testNeuronal(Model model)
-	{
-		model.addAttribute("qunitfile", new String("NeuronalTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
-	public String testCore(Model model)
-	{
-		model.addAttribute("qunitfile", new String("CoreTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
-	public String testExternalSimulator(Model model)
-	{
-		model.addAttribute("qunitfile", new String("ExternalSimulatorTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
-	public String testPersistence(Model model)
-	{
-		model.addAttribute("qunitfile", new String("PersistenceTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)
-	public String tests()
-	{
-		return "tests";
-	}
-
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String dashboard()
 	{

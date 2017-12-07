@@ -237,11 +237,11 @@ define(function (require) {
              * @param key
              * @returns {string}
              */
-            linkDropBox: function (key) {
+            linkDropBox: function (key, callback) {
                 if (key != null || key != undefined) {
                     var parameters = {};
                     parameters["key"] = key;
-                    GEPPETTO.MessageSocket.send("link_dropbox", parameters);
+                    GEPPETTO.MessageSocket.send("link_dropbox", parameters, callback);
 
                     return "Sending request to link dropbox to Geppetto";
                 }

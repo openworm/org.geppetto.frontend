@@ -25,7 +25,7 @@ define(function (require) {
 					className="geppettoForm"
 						schema={this.props.schema}
 					formData={this.props.formData}
-					uiSchema={uiSchema}
+			                uiSchema={this.props.uiSchema ? this.props.uiSchema : uiSchema}
 					onChange={this.props.changeHandler}
 					onSubmit={this.props.submitHandler}
 					onError={this.props.errorHandler} />

@@ -253,7 +253,7 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.DROPBOX_LINKED] = function(payload) {
-            GEPPETTO.CommandController.log("Dropbox linked successfully");
+            GEPPETTO.ModalFactory.infoDialog("Success", "Dropbox linked successfully");
         };
 
         messageHandler[messageTypes.DROPBOX_UNLINKED] = function(payload) {

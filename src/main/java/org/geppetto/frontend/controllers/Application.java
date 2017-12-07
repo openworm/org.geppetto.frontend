@@ -78,12 +78,14 @@ public class Application
 				// This is with any other authentication system from another web application.
 				// since sharing the scope session across the different web application bundles
 				// is more complex than expected (if possible at all) we are using cookies
-				for(Cookie c : req.getCookies())
-				{
-					if(c.getName().equals(authService.getSessionId()))
+				if (req.getCookies() != null) {
+				    for(Cookie c : req.getCookies())
 					{
-						auth = authService.isAuthenticated(c.getValue());
-						break;
+					    if(c.getName().equals(authService.getSessionId()))
+						{
+						    auth = authService.isAuthenticated(c.getValue());
+						    break;
+						}
 					}
 				}
 			}

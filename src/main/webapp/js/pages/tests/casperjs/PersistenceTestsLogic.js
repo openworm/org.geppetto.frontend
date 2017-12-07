@@ -2,7 +2,6 @@ function deleteProject(test, url,id){
 	casper.thenOpen(url, function () {
 		this.echo("Loading an external model that is persisted at " + url);
 
-
 		casper.then(function () {
 			this.waitForSelector("div.project-preview", function () {
 				this.echo("Dashboard loaded")
@@ -465,30 +464,505 @@ function doPostPersistenceSpotlightCheckSetParameters(test, spotlight_search) {
     doSpotlightCheck(test, spotlight_search, true, false);
 }
 
-function testUpload2DropBoxFeature(test){
-	
+function testPersistedProjectFeatures(test,url){
+	casper.thenOpen(url, function () {
+        this.echo("Loading a model that is persisted at " + url);
+
+        casper.then(function () {
+        	 casper.waitWhileVisible('div[id="loading-spinner"]', function () {
+         		this.echo("I've waited for "+url+" project to load.");
+         		test.assertTitle("geppetto", "geppetto title is ok");
+         		test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
+         		test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
+         		test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
+         	},null,defaultLongWaitingTime);
+        });
+        
+        casper.then(function () {
+        	casper.then(function () {
+        		var experiments = casper.evaluate(function() {return window.Project.getExperiments().length;});
+        		test.assertEquals(experiments, 3, "Initial amount of experiments for hhcell checked");
+        	});
+        	
+            casper.then(function () {
+        		test.assertEval(function() {
+        			return window.Project.getExperiments().length > 1;
+        		},"Loaded project from persistence");
+            });
+            
+            casper.then(function(){
+            	casper.evaluate(function() {
+            		window.Project.getExperiments()[1].setActive();
+                });
+            });
+            
+            casper.then(function () {
+            	casper.waitWhileVisible('div[id="loading-spinner"]', function () {
+                    this.echo("I've waited for experment to be actve.");
+                    test.assertEval(function() {
+            			return window.Project.getActiveExperiment().getId()===2;
+            		},"New Active experiment id of loaded project checked");
+                },null,10000);
+            });
+            
+            casper.then(function () {
+        		var evaluate = casper.evaluate(function() {return hhcell!=null;});
+        		test.assertEquals(evaluate,true, "Top level instance present");
+        	});
+            
+        	casper.then(function () {
+        		test.assertEval(function() {
+        			return window.Model.getVariables() != undefined && window.Model.getVariables().length == 2 &&
+        			window.Model.getVariables()[0].getId() == 'hhcell' && window.Model.getVariables()[1].getId() == 'time';
+        		},"2 top Variables as expected for hhcell");
+        	});
+
+        	casper.then(function () {
+        		test.assertEval(function() {
+        			return window.Model.getLibraries() != undefined && window.Model.getLibraries().length == 2;
+        		},"2 Libraries as expected for hhcell");
+        	});
+
+        	casper.then(function () {
+        		test.assertEval(function() {
+        			return window.Instances != undefined && window.Instances.length == 2 && window.Instances[0].getId() == 'hhcell';
+        		},"1 top level instance as expected for hhcell");
+        	});
+            
+       });
+        
+        casper.then(function () {
+        	testUpload2DropBoxFeature(test,url);
+        });
+        
+        casper.then(function () {
+        	testDownloadExperimentModel(test);
+        });
+        
+        casper.then(function () {
+        	testDownloadExperimentResults(test);
+        });
+        
+        casper.then(function () {
+        	testCreateExperiment(test);
+        });
+
+        casper.then(function () {
+        	experimentConsoleToggleTests(test,4);
+        });
+
+        casper.then(function () {
+        	testDeleteExperiment(test);
+        });
+        
+        casper.then(function () {
+        	experimentConsoleToggleTests(test,3);
+        });
+        
+        casper.then(function () {
+        	testCloneExperiment(test);
+        });
+        
+        casper.then(function () {
+        	experimentConsoleToggleTests(test,4);
+        });
+        
+        casper.then(function () {
+        	testDeleteExperiment(test);
+        });
+        
+        casper.then(function () {
+        	experimentConsoleToggleTests(test,3);
+        });
+        
+        casper.then(function () {
+        	testSaveExperimentProperties(test);
+        });
+
+    });
 }
 
-function testDownloadExperimentData(test){
+function testUpload2DropBoxFeature(test,projectURL){
+	var dropBoxURL="https://www.dropbox.com/1/oauth2/authorize?locale=en_US&client_id=kbved8e6wnglk4h&response_type=code";
+	var code;
+	var permissions;
 	
+	var email = casper.cli.get('email');
+	var password = casper.cli.get('password');
+
+	casper.then(function () {
+		permissions = test.assertEval(function() {
+			 var login = GEPPETTO.UserController.isLoggedIn();
+		     var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+		     var projectPersisted = window.Project.persisted;
+		     return writePermission && projectPersisted && login;
+		},"No Permissions restrictions for uploading!");
+    });
+	
+	casper.echo("Dropbox: Sign in to email"+dropBoxURL);
+	casper.thenOpen(dropBoxURL, function () {
+		this.waitUntilVisible('div[id="regular-login-forms"]', function () {
+			casper.then(function () {
+				casper.evaluate(function() {
+					document.querySelector('.auth-google').click();
+				});
+				this.echo("Dropbox: Sign in to email");
+			});
+		},300000);
+    });
+	
+	casper.then(function () {
+		this.waitUntilVisible('input[id="identifierId"]', function () {
+			//test console is empty upon opening
+			casper.then(function () {
+				this.then(function(){
+				    this.mouse.move('input#identifierId'); //moving at the name of element
+				  });
+			});
+			casper.then(function () {
+				casper.evaluate(function(email) {
+					document.getElementById("identifierId").value = email;
+				},email);
+				this.echo("Dropbox: Use email");
+			});
+			
+			casper.then(function () {
+				casper.evaluate(function() {
+					document.getElementById("identifierNext").click();
+				});
+				this.echo("Dropbox: Next");
+			});
+			
+		});
+    });
+	
+	casper.then(function () {
+		this.waitUntilVisible('div[id="password"]', function () {
+			casper.then(function () {
+				casper.then(function(){
+				    this.mouse.move('div#password'); //moving at the name of element
+				  });
+			});
+			
+			
+			casper.then(function () {
+				casper.evaluate(function(password) {
+					for(var j=0;j<document.getElementsByTagName("input").length;j++){
+						if(document.getElementsByTagName("input")[j].type=="password"){
+							document.getElementsByTagName("input")[j].value = password;
+						}
+					}
+				},password);
+				this.echo("Dropbox: Email and password");
+			});
+			
+			casper.then(function () {
+				casper.evaluate(function() {
+					document.getElementById("passwordNext").click();
+				});
+				this.echo("Dropbox: Next button");
+			});	
+		});
+	});
+	
+	casper.then(function () {
+		this.waitUntilVisible('ul', function () {
+			casper.then(function () {
+				casper.evaluate(function(email) {
+					for(var j=0;j<document.getElementsByTagName("p").length;j++){
+						if(document.getElementsByTagName("p")[j].textContent==email){
+							document.getElementsByTagName("p")[j].click();
+						}
+					}
+				},email);
+				this.echo("Select account");
+			});
+		});
+	});
+	
+		casper.then(function(){
+			this.waitUntilVisible('div[id="submit_deny_access"]', function () {
+				//test console is empty upon opening
+				casper.then(function () {
+					casper.evaluate(function() {
+						document.getElementById("submit_deny_access").click();
+					});
+					this.echo("Allow access to account");
+				});
+			},300000);
+		});
+		
+	casper.then(function(){
+		this.waitUntilVisible('div[id="buttons"]', function () {
+			//test console is empty upon opening
+			casper.then(function () {
+				casper.evaluate(function() {
+					document.getElementsByClassName("auth-button")[1].click();
+				});
+				this.echo("Allow access to drop box folder geppetto");
+			});
+		},300000);
+	});
+	
+	casper.then(function(){
+		this.waitUntilVisible('div[id="auth-code"]', function () {
+			//test console is empty upon opening
+			casper.then(function () {
+				var c = casper.evaluate(function() {
+					var code = document.getElementsByClassName("auth-box")[0].value;
+					return code;
+				});
+				this.echo("Copy drop box access code"+c);
+				code = c;
+			});
+		},300000);
+	});
+	
+	casper.then(function () {
+		casper.evaluate(function() {
+			window.Project.getActiveExperiment().uploadResults("hhcell", "GEPPETTO_RECORDING");
+        });
+    });
+	
+	casper.thenOpen(projectURL, function () {
+		casper.then(function () {
+       	 	casper.waitWhileVisible('div[id="loading-spinner"]', function () {
+        		this.echo("I've waited for "+projectURL+" project to load.");
+        		this.echo("Copy drop box access code"+code);
+        		test.assertTitle("geppetto", "geppetto title is ok");
+        		test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
+        		test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
+        		test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
+        	},null,defaultLongWaitingTime);
+		});
+       
+       casper.then(function () {
+       		casper.evaluate(function() {
+               $("#consoleButton").click();
+       		});
+   		});
+       
+       casper.then(function(){
+   			this.waitUntilVisible('div[id="Console1_console"]', function () {
+   				casper.then(function () {
+   					casper.evaluate(function() {
+   						G.debug(true);
+   					});
+   				});
+   			});
+   		});
+       
+       casper.then(function () {
+			casper.evaluate(function(code) {
+               G.linkDropBox(code);
+			},code);
+			this.echo("Copy drop box access code"+code);
+		});
+       
+       casper.then(function () {
+			casper.wait(90000,function() {
+				this.echo("Wated 10000 seconds");
+			});
+		});
+       
+       casper.then(function () {
+			casper.evaluate(function(permissions) {
+             	if(permissions){
+    				window.Project.getActiveExperiment().uploadModel('hhcell');
+                    window.Project.getActiveExperiment().uploadResults("hhcell", "GEPPETTO_RECORDING");
+             	}
+			},permissions);
+			this.echo("");
+		});
+       
+       casper.then(function () {
+           casper.waitForText("Dropbox linked successfully", function() {
+       	    	this.echo('Dropbox linked successfully using persisted project hhcell');
+       		},10000);
+		});
+
+       casper.then(function () {
+			casper.waitForText("Results uploaded succesfully", function() {
+	    	    this.echo('Results uploaded succesfully using persisted project hhcell');
+	    	},150000);
+			
+			casper.waitForText("Model uploaded succesfully", function() {
+	    	    this.echo('Model uploaded succesfully using persisted project hhcell');
+	    	},150000);
+		});
+    });
+}
+
+function testDownloadExperimentModel(test){
+	casper.then(function () {
+		casper.evaluate(function() {
+			var login = GEPPETTO.UserController.isLoggedIn();
+        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+        	var projectPersisted = window.Project.persisted;
+        	if(writePermission && projectPersisted && login){
+         		window.Project.downloadModel('hhcell');
+         	}
+		});
+	});
+	
+	casper.then(function () {
+		casper.waitForText("Results downloaded succesfully", function() {
+    	    this.echo('Results downloaded succesfully using persisted project hhcell');
+    	},150000);
+	});
+}
+
+function testDownloadExperimentResults(test){
+	casper.then(function () {
+		casper.evaluate(function() {
+			var login = GEPPETTO.UserController.isLoggedIn();
+        	var writePermission = GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT);
+        	var projectPersisted = window.Project.persisted;
+        	if(writePermission && projectPersisted && login){
+        		window.Project.getActiveExperiment().downloadResults('hhcell', 'GEPPETTO_RECORDING');
+         	}
+		});
+	});
+	
+	casper.then(function () {
+		casper.waitForText("Results downloaded succesfully", function() {
+    	    this.echo('Results downloaded succesfully using persisted project hhcell');
+    	},150000);
+	});
 }
 
 function testSaveProjectProperties(test){
-	
+	casper.then(function () {
+		casper.evaluate(function() {
+			window.Project.newExperiment();
+		});
+		this.echo("Creating new experiment using persisted project hhcell");
+	});
+
+	casper.then(function () {
+		test.assertEval(function() {
+			return window.Project.getExperiments().length===4;
+		},"New experiment created checked using persisted project hhcell");
+	});
 }
 
 function testSaveExperimentProperties(test){
-	
+	casper.then(function () {
+		casper.evaluate(function() {
+			window.Project.newExperiment();
+		});
+		this.echo("Creating new experiment using persisted project hhcell");
+	});
+
+	casper.then(function () {
+		test.assertEval(function() {
+			return window.Project.getExperiments().length===4;
+		},"New experiment created checked using persisted project hhcell");
+	});
 }
 
 function testDeleteExperiment(test){
+	casper.then(function () {
+		casper.evaluate(function() {
+			window.Project.getExperiments()[(window.Project.getExperiments().length-1)].deleteExperiment();
+		});
+		this.echo("Deleting new experiment using persisted project hhcell");
+	});
 	
+	casper.then(function () {
+		casper.waitForText("Experiment deleted succesfully", function() {
+    	    this.echo('Experiment deleted succesfully using persisted project hhcell');
+    	    
+    		casper.then(function () {
+    			test.assertEval(function() {
+    				return window.Project.getExperiments().length===3;
+    			},"Experiment deleted checked using persisted project hhcell");
+    		});
+    	},150000);
+	});
 }
 
 function testCreateExperiment(test){
+	casper.then(function () {
+		casper.evaluate(function() {
+			window.Project.newExperiment();
+		});
+		this.echo("Creating new experiment using persisted project hhcell");
+	});
 	
+	casper.then(function () {
+		casper.waitForText("Experiment created succesfully", function() {
+    	    this.echo("Experiment created succesfully using persisted project hhcell");
+    	    
+    		casper.then(function () {
+    			test.assertEval(function() {
+    				return window.Project.getExperiments().length===4;
+    			},"New experiment created checked using persisted project hhcell");
+    		});
+    	},150000);
+	});
 }
 
-function cloneExperiment(test){
+function testCloneExperiment(test){
+	casper.then(function () {
+		casper.evaluate(function() {
+			window.Project.getExperiments()[1].clone();
+		});
+		this.echo("Cloning new experiment using persisted project hhcell");
+	});
 	
+	casper.then(function () {
+		casper.waitForText("Experiment created succesfully", function() {
+        	casper.waitWhileVisible('div[id="loading-spinner"]', function () {
+            	    this.echo('Experiment cloned succesfully using persisted project hhcell');
+            	    
+            		casper.then(function () {
+            			test.assertEval(function() {
+            				return window.Project.getExperiments().length===4;
+            			},"Experiment cloned checked using persisted project hhcell");
+            		});
+            },null,10000);
+    	},150000);
+	});
+}
+
+function experimentConsoleToggleTests(test,rowLength){
+    casper.then(function () {
+    	casper.then(function () {
+    		this.echo("Opening experiment console");
+    		this.evaluate(function() {
+    			$("a[href='#experiments']").click();
+    		});
+
+    		this.waitUntilVisible('div#experiments', function () {
+    			test.assertVisible('div#experiments', "The experiment panel is correctly open.");
+    		}, null, 15000);
+    	});
+    	casper.then(function () {
+    		var length = casper.evaluate(function() {
+    			return document.getElementsByClassName("nested-experiment-info").length;
+    		});
+    		
+    		test.assertEquals(length, rowLength,"Amount of experiment rows correct")
+    	});
+
+    	casper.then(function () {
+    		casper.then(function () {
+    			casper.evaluate(function() {
+    				$("#consoleButton").click();
+    			});
+    		});
+
+    		casper.then(function(){
+    			this.waitUntilVisible('div[id="Console1_console"]', function () {
+    				casper.then(function () {
+    					casper.evaluate(function() {
+    						G.debug(true);
+    					});
+    				});
+    			});
+    		});
+    	});
+    	this.echo("Experiment download model using persisted project hhcell.");
+    });
 }

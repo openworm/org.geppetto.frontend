@@ -3,8 +3,7 @@ var dropBoxURL="https://www.dropbox.com/1/oauth2/authorize?locale=en_US&client_i
 var code;
 var permissions;
 
-var email = casper.cli.get('email');
-var password = casper.cli.get('password');
+var dropboxcode = casper.cli.get('dropboxcode');
 
 function deleteProject(test, url,id){
 	casper.thenOpen(url, function () {
@@ -621,170 +620,36 @@ function testUpload2DropBoxFeature(test,projectURL){
 		},"No Permissions restrictions for uploading!");
 	});
 
-	casper.echo("Dropbox: Sign in to email"+dropBoxURL);
-	casper.thenOpen(dropBoxURL, function () {
-		this.waitUntilVisible('div[id="regular-login-forms"]', function () {
-			casper.then(function () {
-				casper.evaluate(function() {
-					document.querySelector('.auth-google').click();
-				});
-				this.echo("Dropbox: Sign in to email");
-			});
-		},300000);
-	});
-
-	casper.then(function () {
-		this.waitUntilVisible('input[id="identifierId"]', function () {
-			//test console is empty upon opening
-			casper.then(function () {
-				this.then(function(){
-					this.mouse.move('input#identifierId'); //moving at the name of element
-				});
-			});
-			casper.then(function () {
-				casper.evaluate(function(email) {
-					document.getElementById("identifierId").value = email;
-				},email);
-				this.echo("Dropbox: Use email");
-			});
-
-			casper.then(function () {
-				casper.evaluate(function() {
-					document.getElementById("identifierNext").click();
-				});
-				this.echo("Dropbox: Next");
-			});
-
-		});
-	});
-
-	casper.then(function () {
-		this.waitUntilVisible('div[id="password"]', function () {
-			casper.then(function () {
-				casper.then(function(){
-					this.mouse.move('div#password'); //moving at the name of element
-				});
-			});
-
-
-			casper.then(function () {
-				casper.evaluate(function(password) {
-					for(var j=0;j<document.getElementsByTagName("input").length;j++){
-						if(document.getElementsByTagName("input")[j].type=="password"){
-							document.getElementsByTagName("input")[j].value = password;
-						}
-					}
-				},password);
-				this.echo("Dropbox: Email and password");
-			});
-
-			casper.then(function () {
-				casper.evaluate(function() {
-					document.getElementById("passwordNext").click();
-				});
-				this.echo("Dropbox: Next button");
-			});	
-		});
-	});
-
-	casper.then(function () {
-		this.waitUntilVisible('ul', function () {
-			casper.then(function () {
-				casper.evaluate(function(email) {
-					for(var j=0;j<document.getElementsByTagName("p").length;j++){
-						if(document.getElementsByTagName("p")[j].textContent==email){
-							document.getElementsByTagName("p")[j].click();
-						}
-					}
-				},email);
-				this.echo("Select account"+email);
-			});
-		});
-	});
-
-	casper.then(function(){
-		this.waitUntilVisible('div[id="submit_deny_access"]', function () {
-			//test console is empty upon opening
-			casper.then(function () {
-				casper.evaluate(function() {
-					document.getElementById("submit_deny_access").click();
-				});
-				this.echo("Allow access to account");
-			});
-		},300000);
-	});
-
-	casper.then(function(){
-		this.waitUntilVisible('div[id="buttons"]', function () {
-			//test console is empty upon opening
-			casper.then(function () {
-				casper.evaluate(function() {
-					document.getElementsByClassName("auth-button")[1].click();
-				});
-				this.echo("Allow access to drop box folder geppetto");
-			});
-		},300000);
-	});
-
-	casper.then(function(){
-		this.waitUntilVisible('div[id="auth-code"]', function () {
-			//test console is empty upon opening
-			casper.then(function () {
-				var c = casper.evaluate(function() {
-					var code = document.getElementsByClassName("auth-box")[0].value;
-					return code;
-				});
-				this.echo("Copy drop box access code"+c);
-				code = c;
-			});
-		},300000);
-	});
-
+	
 	casper.then(function () {
 		casper.evaluate(function() {
-			window.Project.getActiveExperiment().uploadResults("hhcell", "GEPPETTO_RECORDING");
+			$("#consoleButton").click();
 		});
 	});
 
-	casper.thenOpen(projectURL, function () {
-		casper.then(function () {
-			casper.waitWhileVisible('div[id="loading-spinner"]', function () {
-				this.echo("I've waited for "+projectURL+" project to load.");
-				this.echo("Copy drop box access code"+code);
-				test.assertTitle("geppetto", "geppetto title is ok");
-				test.assertExists('div[id="sim-toolbar"]', "geppetto loads the initial simulation controls");
-				test.assertExists('div[id="controls"]', "geppetto loads the initial camera controls");
-				test.assertExists('div[id="foreground-toolbar"]', "geppetto loads the initial foreground controls");
-			},null,defaultLongWaitingTime);
-		});
-
-		casper.then(function () {
-			casper.evaluate(function() {
-				$("#consoleButton").click();
-			});
-		});
-
-		casper.then(function(){
-			this.waitUntilVisible('div[id="Console1_console"]', function () {
-				casper.then(function () {
-					casper.evaluate(function() {
-						G.debug(true);
-					});
+	casper.then(function(){
+		this.waitUntilVisible('div[id="Console1_console"]', function () {
+			casper.then(function () {
+				casper.evaluate(function() {
+					G.debug(true);
 				});
 			});
 		});
+	});
+	
+	if(dropboxcode!=null && dropboxcode !=undefined && dropboxcode!=""){
 
 		casper.then(function () {
-			casper.evaluate(function(code) {
-				G.linkDropBox(code);
-			},code);
-			this.echo("Copy drop box access code"+code);
+			casper.evaluate(function(dropboxcode) {
+				G.linkDropBox(dropboxcode);
+			},dropboxcode);
+			this.echo("Copy drop box access code"+dropboxcode);
 		});
 
 		casper.then(function () {
-			casper.wait(90000,function() {
-				this.echo("Wated 10000 seconds");
-			});
+			casper.waitForText("Dropbox linked successfully", function() {
+				this.echo('Dropbox linked successfully using persisted project hhcell');
+			},10000);
 		});
 
 		casper.then(function () {
@@ -798,12 +663,6 @@ function testUpload2DropBoxFeature(test,projectURL){
 		});
 
 		casper.then(function () {
-			casper.waitForText("Dropbox linked successfully", function() {
-				this.echo('Dropbox linked successfully using persisted project hhcell');
-			},10000);
-		});
-
-		casper.then(function () {
 			casper.waitForText("Results uploaded succesfully", function() {
 				this.echo('Results uploaded succesfully using persisted project hhcell');
 			},150000);
@@ -812,7 +671,7 @@ function testUpload2DropBoxFeature(test,projectURL){
 				this.echo('Model uploaded succesfully using persisted project hhcell');
 			},150000);
 		});
-	});
+	}
 }
 
 function testDownloadExperimentModel(test){

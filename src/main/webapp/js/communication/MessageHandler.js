@@ -13,6 +13,7 @@ define(function(require) {
             PROJECT_PROPS_SAVED: "project_props_saved",
             EXPERIMENT_PROPS_SAVED: "experiment_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
+            EXPERIMENT_CLONED: "experiment_cloned",
             EXPERIMENT_BATCH_CREATED: "experiment_batch_created",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
@@ -60,6 +61,11 @@ define(function(require) {
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {
             GEPPETTO.SimulationHandler.createExperiment(payload);
             GEPPETTO.CommandController.log("Experiment created succesfully");
+        };
+        
+        messageHandler[messageTypes.EXPERIMENT_CLONED] = function(payload) {
+            GEPPETTO.SimulationHandler.createExperiment(payload);
+            GEPPETTO.CommandController.log("Experiment cloned succesfully");
         };
 
         messageHandler[messageTypes.EXPERIMENT_BATCH_CREATED] = function(payload) {

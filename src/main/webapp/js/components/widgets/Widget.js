@@ -12,11 +12,11 @@ define(function (require) {
     require("./jquery.dialogextend.min");
 
     var zIndex = {
-            min : 1,
-            max : 9999,
-            restore : 10
-        };
-    
+        min: 1,
+        max: 9999,
+        restore: 10
+    };
+
     return {
 
         /**
@@ -48,10 +48,10 @@ define(function (require) {
             showTitleBar: true,
             transparentBackground: false,
             dirtyView: false,
-            updateHistoryPosition : true,
-            helpInfo :  '### Inline help not yet available for this widget! \n\n' +
-            			'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html"'+
-            			'target="_blank">online documentation</a> instead.',
+            updateHistoryPosition: true,
+            helpInfo: '### Inline help not yet available for this widget! \n\n' +
+                'Try the <a href="http://docs.geppetto.org/en/latest/usingwidgets.html"' +
+                'target="_blank">online documentation</a> instead.',
 
             defaultSize: function () { return { height: 300, width: 350 } },
             defaultPosition: function () { return { left: "50%", top: "50%" } },
@@ -206,10 +206,10 @@ define(function (require) {
              * @param {Integer} w - Width of the widget
              */
             setSize: function (h, w) {
-                if (h != null && h != undefined && h!=-1) {
+                if (h != null && h != undefined && h != -1) {
                     this.size.height = h;
                 }
-                if (w != null && w != undefined && w!=-1) {
+                if (w != null && w != undefined && w != -1) {
                     this.size.width = w;
                 }
                 this.$el.dialog({ height: this.size.height, width: this.size.width }).dialogExtend();
@@ -392,7 +392,7 @@ define(function (require) {
             showHistoryMenu: function (event) {
                 var that = this;
                 if (this.controller.history.length > 0) {
-                	that.updateHistoryPosition = true;
+                    that.updateHistoryPosition = true;
                     this.historyMenu.show({
                         top: event.pageY,
                         left: event.pageX + 1,
@@ -488,22 +488,22 @@ define(function (require) {
                                     if (that.executedAction >= historyItems.length) {
                                         that.executedAction = 0;
                                     }
-                                    
+
                                     var match = that.executedAction;
-                                    for(var i=0; i<historyItems.length; i++){
-                                		var currentItem = historyItems[i];
-                                		if(that.lastExecutedAction == currentItem.label){
-                                			match= i;
-                                		}
-                                	}
-                                    
-                                    if (that.lastExecutedAction == historyItems[that.executedAction].label) {
-                                        that.executedAction = match+1;
+                                    for (var i = 0; i < historyItems.length; i++) {
+                                        var currentItem = historyItems[i];
+                                        if (that.lastExecutedAction == currentItem.label) {
+                                            match = i;
+                                        }
                                     }
-                                    
-                                    if(that.executedAction<=match){
-                                    	that.executedAction = match +1;
-                                    	if (that.executedAction >= historyItems.length) {
+
+                                    if (that.lastExecutedAction == historyItems[that.executedAction].label) {
+                                        that.executedAction = match + 1;
+                                    }
+
+                                    if (that.executedAction <= match) {
+                                        that.executedAction = match + 1;
+                                        if (that.executedAction >= historyItems.length) {
                                             that.executedAction = 0;
                                         }
                                     }
@@ -511,29 +511,29 @@ define(function (require) {
                                 if (event.target.id == (that.id + "-left-nav")) {
                                     that.executedAction = that.executedAction - 1;
                                     if (that.executedAction <= -1) {
-                                        that.executedAction = historyItems.length-1;
+                                        that.executedAction = historyItems.length - 1;
                                     }
-                                    
+
                                     var match = that.executedAction;
-                                    for(var i=0; i<historyItems.length; i++){
-                                		var currentItem = historyItems[i];
-                                		if(that.lastExecutedAction == currentItem.label){
-                                			match= i;
-                                		}
-                                	}
-                                    
+                                    for (var i = 0; i < historyItems.length; i++) {
+                                        var currentItem = historyItems[i];
+                                        if (that.lastExecutedAction == currentItem.label) {
+                                            match = i;
+                                        }
+                                    }
+
                                     if ((that.lastExecutedAction == historyItems[that.executedAction].label)) {
-                                        that.executedAction = match-1;
+                                        that.executedAction = match - 1;
                                     }
-                                    
+
                                     if (that.executedAction <= -1) {
-                                        that.executedAction = historyItems.length-1;
+                                        that.executedAction = historyItems.length - 1;
                                     }
-                                    
-                                    if(that.executedAction>match){
-                                    	that.executedAction = match-1;
-                                    	if (that.executedAction <= -1) {
-                                            that.executedAction = historyItems.length-1;
+
+                                    if (that.executedAction > match) {
+                                        that.executedAction = match - 1;
+                                        if (that.executedAction <= -1) {
+                                            that.executedAction = historyItems.length - 1;
                                         }
                                     }
                                 }
@@ -572,16 +572,7 @@ define(function (require) {
                 $(button).addClass("widget-title-bar-button");
             },
 
-            addHelpButton: function () {
-                var that = this;
-                this.addButtonToTitleBar($("<div class='fa fa-question' title='Widget Help'></div>").click(function () {
-                    GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
-                        title: that.id.slice(0, -1) + ' help',
-                        content: that.getHelp(),
-                        show: true
-                    }, document.getElementById("modal-region"));
-                }));
-            },
+
 
             /**
              * Makes the widget draggable or not
@@ -651,7 +642,7 @@ define(function (require) {
 
                 var that = this;
 
-                
+
                 //create the dialog window for the widget
                 this.dialog = $("<div id=" + this.id + " class='dialog' title='" + this.name + " Widget'></div>").dialog(
                     {
@@ -688,7 +679,7 @@ define(function (require) {
                             }
                         },
                         "beforeMinimize": function (evt, dlg) {
-                        	var label = that.name;
+                            var label = that.name;
                             if (label != undefined) {
                                 label = label.substring(0, 6);
                             }
@@ -702,9 +693,9 @@ define(function (require) {
                         "minimize": function (evt, dlg) {
                             that.$el.dialog({ title: that.name });
                             $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
-                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
-                        	$(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
-                        	that.$el.parent().css("z-index", zIndex.min);
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                            $(".ui-dialog-titlebar-restore span").addClass("fa-window-restore");
+                            that.$el.parent().css("z-index", zIndex.min);
                         },
                         "maximize": function (evt, dlg) {
                             that.setTransparentBackground(false);
@@ -713,8 +704,8 @@ define(function (require) {
                             var divwidth = $(window).width();
                             that.$el.dialog({ height: divheight, width: divwidth });
                             $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
-                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
-                        	$(".ui-dialog-titlebar-restore span").addClass("fa-compress");
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                            $(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                             that.maximize = true;
                             that.$el.parent().css("z-index", zIndex.max);
                         },
@@ -730,9 +721,9 @@ define(function (require) {
                             that.$el.parent().css("z-index", zIndex.restore);
                         },
                         "collapse": function (evt, dlg) {
-                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
-                        	$(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
-                        	$(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
+                            $(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
+                            $(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                             that.collapsed = true;
                             that.$el.parent().css("z-index", zIndex.min);
                         }
@@ -754,7 +745,7 @@ define(function (require) {
                 this.dialogParent.find("button.ui-dialog-titlebar-close").blur();
 
                 //add help button
-                this.addHelpButton();
+                this.showHelpIcon(true);
             },
 
             /**
@@ -776,9 +767,9 @@ define(function (require) {
                     return el.id === event
                 });
             },
-            
-            setHelpInfo : function(helpInfo){
-            	this.helpInfo = helpInfo;
+
+            setHelpInfo: function (helpInfo) {
+                this.helpInfo = helpInfo;
             },
 
             getHelp: function () {
@@ -787,6 +778,23 @@ define(function (require) {
 
             setController: function (controller) {
                 this.controller = controller;
+            },
+
+
+            showHelpIcon: function (show) {
+                var that = this;
+                if (show && this.$el.parent().find(".history-icon").length == 0) {
+                    this.addButtonToTitleBar($("<div class='fa fa-question help-icon' title='Widget Help'></div>").click(function () {
+                        GEPPETTO.ComponentFactory.addComponent('MDMODAL', {
+                            title: that.id.slice(0, -1) + ' help',
+                            content: that.getHelp(),
+                            show: true
+                        }, document.getElementById("modal-region"));
+                    }));
+                }
+                else {
+                    this.$el.parent().find(".help-icon").remove();
+                }
             },
 
             showHistoryIcon: function (show) {

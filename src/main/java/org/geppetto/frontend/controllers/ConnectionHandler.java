@@ -305,7 +305,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 			Gson gson = new Gson();
 			String json = gson.toJson(cloneExperiment);
-			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CLONED, json);
+			websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_CREATED, json);
 
 		}
 		catch(GeppettoExecutionException | GeppettoAccessException e)

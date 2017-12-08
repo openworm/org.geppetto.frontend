@@ -62,11 +62,6 @@ define(function(require) {
             GEPPETTO.SimulationHandler.createExperiment(payload);
             GEPPETTO.CommandController.log("Experiment created succesfully");
         };
-        
-        messageHandler[messageTypes.EXPERIMENT_CLONED] = function(payload) {
-            GEPPETTO.SimulationHandler.createExperiment(payload);
-            GEPPETTO.CommandController.log("Experiment cloned succesfully");
-        };
 
         messageHandler[messageTypes.EXPERIMENT_BATCH_CREATED] = function(payload) {
             GEPPETTO.SimulationHandler.createExperimentBatch(payload);

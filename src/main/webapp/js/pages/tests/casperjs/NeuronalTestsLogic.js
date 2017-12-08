@@ -252,8 +252,14 @@ function testACNET2Project(test){
 
     casper.then(function () {
     	test.assertEval(function() {
-    		return acnet2.baskets_12[9].getVisualGroups().length==3;
-    	},"Test number of Visual Groups on bask");
+    		return acnet2.baskets_12[0].getTypes()[0].getVisualType().getVisualGroups().length==3;
+    	},"Test number of Visual Groups on acnet2.baskets_12[0]");
+    });
+    
+    casper.then(function () {
+    	test.assertEval(function() {
+    		return acnet2.pyramidals_48[23].getVisualGroups().length==5;
+    	},"Test number of Visual Groups on pyramidals");
     });
 
     casper.then(function () {

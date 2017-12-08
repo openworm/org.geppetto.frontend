@@ -806,7 +806,7 @@ function testCloneExperiment(test){
 	});
 
 	casper.then(function () {
-		casper.waitForText("Experiment cloned succesfully", function() {
+		casper.waitForText("Experiment created succesfully", function() {
 			this.echo('Experiment cloned succesfully using persisted project hhcell');
 
 			casper.then(function () {
@@ -816,17 +816,17 @@ function testCloneExperiment(test){
 
 				test.assertEval(function() {
 					return Project.getExperiments()[0].simulatorConfigurations["hhcell"].length ===
-						Project.getExperiments()[newLength-1].simulatorConfigurations["hhcell"].length;
+						Project.getExperiments()[Project.getExperiments().length-1].simulatorConfigurations["hhcell"].length;
 				},"Clone Experiment - Simulator Configuration duration checked");
 
 				test.assertEval(function() {
 					return Project.getExperiments()[0].simulatorConfigurations["hhcell"].timeStep===
-						Project.getExperiments()[newLength-1].simulatorConfigurations["hhcell"].timeStep;
+						Project.getExperiments()[Project.getExperiments().length-1].simulatorConfigurations["hhcell"].timeStep;
 				},"Clone Experiment - Simulator Configuration time step checked");
 
 				test.assertEval(function() {
 					return Project.getExperiments()[0].simulatorConfigurations["hhcell"].simulatorId===
-						roject.getExperiments()[newLength-1].simulatorConfigurations["hhcell"].simulatorId;
+						Project.getExperiments()[Project.getExperiments().length-1].simulatorConfigurations["hhcell"].simulatorId;
 				},"Clone Experiment - Simulator Configuration service id checked");
 			});
 		},150000);

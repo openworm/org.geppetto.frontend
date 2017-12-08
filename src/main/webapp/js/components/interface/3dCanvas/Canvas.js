@@ -390,8 +390,9 @@ define(function (require) {
          * @param radius Desired radius
          */
         setRadius(instancePath, radius) {
-            var mesh = this.engine.getRealMeshesForInstancePath(instancePath)[0];
-            this.engine.modify3DSphere(mesh, mesh.position.x, mesh.position.y, mesh.position.z, radius, mesh.material);
+            var meshes = this.engine.getRealMeshesForInstancePath(instancePath);
+            for (var i=0; i<meshes.length; ++i)
+                this.engine.modify3DSphere(meshes[i], meshes[i].position.x, meshes[i].position.y, meshes[i].position.z, radius, meshes[i].material);
         }
 
         /**

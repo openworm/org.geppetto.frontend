@@ -33,14 +33,14 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
         }
     });
 
-//    casper.start(urlBase+"org.geppetto.frontend", function () {
-//    	this.echo("Starting geppetto at host "+ urlBase);
-//        this.waitForSelector('div#logo', function () {
-//            this.echo("I waited for the logo to load.");
-//            test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
-//            test.assertExists('div#logo', "logo is found");
-//        }, null, defaultLongWaitingTime);
-//    });
+    casper.start(urlBase+"org.geppetto.frontend", function () {
+    	this.echo("Starting geppetto at host "+ urlBase);
+        this.waitForSelector('div#logo', function () {
+            this.echo("I waited for the logo to load.");
+            test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
+            test.assertExists('div#logo', "logo is found");
+        }, null, defaultLongWaitingTime);
+    });
 
     casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
         /*this.waitForSelector('div#page', function() {

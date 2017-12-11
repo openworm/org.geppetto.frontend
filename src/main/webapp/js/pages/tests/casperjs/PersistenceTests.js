@@ -32,7 +32,7 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
         this.echo('URL: ' + resource.url + ' body: ' + resource.body);
     });
 
-    casper.start(urlBase+"org.geppetto.frontend", function () {
+    casper.start(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
     	this.echo("Starting geppetto at host "+ urlBase);
 //        this.waitForSelector('div#logo', function () {
 //            this.echo("I waited for the logo to load.");
@@ -41,14 +41,7 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
 //        }, null, defaultLongWaitingTime);
     });
 
-    casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
-        /*this.waitForSelector('div#page', function() {
-         this.echo("I've waited for the splash screen to come up.");
-         test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
-         }, null, 30000);*/
-    });
-
-    casper.thenOpen(urlBase+"org.geppetto.frontend", function () {
+    casper.thenOpen(urlBase+"org.geppetto.frontend/", function () {
         this.waitForSelector('div[project-id="2"]', function () {
             this.echo("I've waited for the projects to load.");
             test.assertExists('div#logo', "logo is found");

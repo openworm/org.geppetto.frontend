@@ -971,6 +971,11 @@ define(function (require) {
 			return this;
 		},
 
+            setInitialStyle: function()
+            {
+                $('.main-svg:first-child').attr('style','');
+            },
+
 		/**
 		 * Plots a function against a data series
 		 *

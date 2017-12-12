@@ -28,8 +28,10 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
     // show page level errors
     casper.on('resource.received', function (resource) {
         var status = resource.status;
+        if (status >= 400) {
             this.echo('URL: ' + resource.url + ' Status: ' + resource.status);
-            this.echo('URL: ' + resource.url + ' Body:  '+ resource.status);
+            this.echo('URL: ' + resource.url + ' Body:  + resource.status);
+        }
     });
 
     casper.start(urlBase+"org.geppetto.frontend", function () {
@@ -47,22 +49,22 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
          test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
          }, null, 30000);*/
     });
-//
-//    casper.thenOpen(urlBase+"org.geppetto.frontend", function () {
-//        this.waitForSelector('div[project-id="2"]', function () {
-//            this.echo("I've waited for the projects to load.");
-//            test.assertExists('div#logo', "logo is found");
-//            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
-//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-//        }, null, 30000);
-//        
-//        this.waitForSelector('div[project-id="1"]', function () {
-//            this.echo("I've waited for the projects to load.");
-//            test.assertExists('div#logo', "logo is found");
-//            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
-//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-//        }, null, 30000);
-//    });
+
+    casper.thenOpen(urlBase+"org.geppetto.frontend", function () {
+        this.waitForSelector('div[project-id="2"]', function () {
+            this.echo("I've waited for the projects to load.");
+            test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
+            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+        }, null, 300000);
+        
+        this.waitForSelector('div[project-id="1"]', function () {
+            this.echo("I've waited for the projects to load.");
+            test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
+            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+        }, null, 300000);
+    });
     
     casper.then(function () {
         testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,

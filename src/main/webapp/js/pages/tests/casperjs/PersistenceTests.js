@@ -51,19 +51,19 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
     });
 
     casper.thenOpen(urlBase+"org.geppetto.frontend", function () {
-//        this.waitForSelector('div[project-id="2"]', function () {
-//            this.echo("I've waited for the projects to load.");
-//            test.assertExists('div#logo', "logo is found");
-//            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
-//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-//        }, null, 30000);
-//        
-//        this.waitForSelector('div[project-id="1"]', function () {
-//            this.echo("I've waited for the projects to load.");
-//            test.assertExists('div#logo', "logo is found");
-//            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
-//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-//        }, null, 30000);
+        this.waitForSelector('div[project-id="2"]', function () {
+            this.echo("I've waited for the projects to load.");
+            test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
+            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+        }, null, 30000);
+        
+        this.waitForSelector('div[project-id="1"]', function () {
+            this.echo("I've waited for the projects to load.");
+            test.assertExists('div#logo', "logo is found");
+            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
+            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+        }, null, 30000);
     });
     
     casper.then(function () {

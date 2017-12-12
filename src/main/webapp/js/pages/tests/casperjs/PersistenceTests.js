@@ -28,20 +28,29 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
     // show page level errors
     casper.on('resource.received', function (resource) {
         var status = resource.status;
-        this.echo('URL: ' + resource.url + ' Status: ' + resource.status);
-        this.echo('URL: ' + resource.url + ' body: ' + resource.body);
+        if (status >= 400) {
+            this.echo('URL: ' + resource.url + ' Status: ' + resource.status);
+            this.echo('URL: ' + resource.url + ' Status: ' + resource.status);
+        }
     });
 
-    casper.start(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
+    casper.start(urlBase+"org.geppetto.frontend", function () {
     	this.echo("Starting geppetto at host "+ urlBase);
-//        this.waitForSelector('div#logo', function () {
-//            this.echo("I waited for the logo to load.");
-//            test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
-//            test.assertExists('div#logo', "logo is found");
-//        }, null, defaultLongWaitingTime);
+        this.waitForSelector('div#logo', function () {
+            this.echo("I waited for the logo to load.");
+            test.assertTitle("geppetto's home", "geppetto's homepage title is the one expected");
+            test.assertExists('div#logo', "logo is found");
+        }, null, defaultLongWaitingTime);
     });
 
-    casper.thenOpen(urlBase+"org.geppetto.frontend/", function () {
+    casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
+        /*this.waitForSelector('div#page', function() {
+         this.echo("I've waited for the splash screen to come up.");
+         test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');
+         }, null, 30000);*/
+    });
+
+    casper.thenOpen(urlBase+"org.geppetto.frontend", function () {
         this.waitForSelector('div[project-id="2"]', function () {
             this.echo("I've waited for the projects to load.");
             test.assertExists('div#logo', "logo is found");

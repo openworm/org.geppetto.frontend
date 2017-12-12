@@ -76,12 +76,12 @@ define(function (require) {
 					tickcolor : 'rgb(255, 255, 255)',
 					linecolor: 'rgb(255, 255, 255)',
 					tickfont: {
-						family: 'Helvetica Neue',
+						family: 'Helvetica Neue, Helvetica, sans-serif',
 						size : 11,
 						color: 'rgb(255, 255, 255)'
 					},
 					titlefont : {
-						family: 'Helvetica Neue',
+						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size : 12,
 						color: 'rgb(255, 255, 255)'
 					},
@@ -102,12 +102,12 @@ define(function (require) {
 					tickcolor : 'rgb(255, 255, 255)',
 					linecolor: 'rgb(255, 255, 255)',
 					tickfont: {
-						family: 'Helvetica Neue',
+						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size : 11,
 						color: 'rgb(255, 255, 255)'
 					},
 					titlefont : {
-						family: 'Helvetica Neue',
+						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size : 12,
 						color: 'rgb(255, 255, 255)'
 					},
@@ -123,7 +123,7 @@ define(function (require) {
 					xanchor : "auto",
 					yanchor : "auto",
 					font: {
-						family: 'Helvetica Neue',
+						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size: 12,
 						color : '#fff'
 					},
@@ -435,7 +435,7 @@ define(function (require) {
 			this.plotOptions.xaxis.titlefont.size = 18;
 			this.plotOptions.yaxis.titlefont.size = 18;
 			this.plotOptions.legend.font.size = 18;
-			this.plotOptions.legend.font.family = 'Helvetica Neue';
+			this.plotOptions.legend.font.family = 'Helvetica Neue, Helvetica, sans-serif';
 			this.plotOptions.legend.font.color = "rgb(0,0,0)";
 			this.plotOptions.legend.bgcolor = "rgb(255,255,255)";
 			var oldMarginRight = this.plotOptions.margin.r;

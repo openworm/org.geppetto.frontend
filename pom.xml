@@ -62,7 +62,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build  -- --env.contextPath=${contextPath} --env.useSsl=false --env.embedded=false --env.embedderURL=${embedderURL}</arguments>
+									<arguments>run build  -- --env.contextPath=${contextPath} --env.useSsl=${useSsl} --env.embedded=${embedded} --env.embedderURL=${embedderURL}</arguments>
 									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
@@ -112,7 +112,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build-dev -- --env.contextPath=${contextPath} --env.useSsl=false --env.embedded=false --env.embedderURL=${embedderURL}</arguments>
+									<arguments>run build-dev -- --env.contextPath=${contextPath} --env.useSsl=${useSsl} --env.embedded=${embedded} --env.embedderURL=${embedderURL}</arguments>
 								</configuration>
 							</execution>
 						</executions>

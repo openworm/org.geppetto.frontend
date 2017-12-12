@@ -28,10 +28,8 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
     // show page level errors
     casper.on('resource.received', function (resource) {
         var status = resource.status;
-        if (status >= 400) {
             this.echo('URL: ' + resource.url + ' Status: ' + resource.status);
-            this.echo('URL: ' + resource.url + ' Status: ' + resource.status);
-        }
+            this.echo('URL: ' + resource.url + ' Body:  + resource.status);
     });
 
     casper.start(urlBase+"org.geppetto.frontend", function () {

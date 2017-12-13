@@ -274,8 +274,8 @@ define(function (require) {
         /**
          * Set the type of geometry to be used for this aspect
          */
-        setGeometryType: function (type, thickness) {
-            GEPPETTO.SceneController.setGeometryType(this, type, thickness)
+        setGeometryType: function (type, thickness, maxRadius) {
+            GEPPETTO.SceneController.setGeometryType(this, type, thickness, maxRadius)
             return this;
         },
 

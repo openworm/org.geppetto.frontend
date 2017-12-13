@@ -413,7 +413,7 @@ define(function (require) {
          * @param thickness Optional: the thickness to be used if the geometry is "lines"
          * @return {Canvas}
          */
-        setGeometryType(instance, type, thickness, recursion) {
+        setGeometryType(instance, type, thickness, maxRadius, recursion) {
 
             if (recursion === undefined) {
                 recursion = false;
@@ -421,19 +421,19 @@ define(function (require) {
 
             if (instance.hasCapability("VisualCapability")) {
                 if (instance instanceof Instance || instance instanceof ArrayInstance) {
-                    this.engine.setGeometryType(instance, type, thickness);
+                    this.engine.setGeometryType(instance, type, thickness, maxRadius);
 
                     if (typeof instance.getChildren === "function") {
                         var children = instance.getChildren();
                         for (var i = 0; i < children.length; i++) {
-                            this.setGeometryType(children[i], type, thickness, true);
+                            this.setGeometryType(children[i], type, thickness, maxRadius, true);
                         }
                     }
                 } else if (instance instanceof Type || instance instanceof Variable) {
                     // fetch all instances for the given type or variable and call hide on each
                     var instances = GEPPETTO.ModelFactory.getAllInstancesOf(instance);
                     for (var j = 0; j < instances.length; j++) {
-                        this.setGeometryType(instance, type, thickness, true);
+                        this.setGeometryType(instance, type, thickness, maxRadius, true);
                     }
                 }
                 if (!recursion) {

@@ -569,10 +569,10 @@ define(['jquery'], function () {
          * @param instances -
          *            skeleton with instances and visual entities
          */
-        traverseInstances: function (instances, lines, thickness) {
+        traverseInstances: function (instances, lines, thickness, maxRadius) {
             
             for (var j = 0; j < instances.length; j++) {
-                var traversedInstances = this.checkVisualInstance(instances[j], lines, thickness);
+                var traversedInstances = this.checkVisualInstance(instances[j], lines, thickness, maxRadius);
             }
             return traversedInstances
         },
@@ -583,18 +583,18 @@ define(['jquery'], function () {
          * @param instances -
          *            skeleton with instances and visual entities
          */
-        checkVisualInstance: function (instance, lines, thickness) {
+        checkVisualInstance: function (instance, lines, thickness, maxRadius) {
             var traversedInstances = [];
             if (instance.hasCapability(GEPPETTO.Resources.VISUAL_CAPABILITY)) {
                 //since the visualcapability propagates up through the parents we can avoid visiting things that don't have it
                 if ((instance.getType().getMetaType() != GEPPETTO.Resources.ARRAY_TYPE_NODE) && instance.getVisualType()) {
-                    this.buildVisualInstance(instance, lines, thickness);
+                    this.buildVisualInstance(instance, lines, thickness, maxRadius);
                 }
                 // this block keeps traversing the instances
                 if (instance.getMetaType() == GEPPETTO.Resources.INSTANCE_NODE) {
-                    this.traverseInstances(instance.getChildren(), lines, thickness);
+                    this.traverseInstances(instance.getChildren(), lines, thickness, maxRadius);
                 } else if (instance.getMetaType() == GEPPETTO.Resources.ARRAY_INSTANCE_NODE) {
-                    this.traverseInstances(instance, lines, thickness);
+                    this.traverseInstances(instance, lines, thickness, maxRadius);
                 }
                 traversedInstances.push(instance);
             }
@@ -608,8 +608,8 @@ define(['jquery'], function () {
          * @param lines
          * @param thickness
          */
-        buildVisualInstance: function (instance, lines, thickness) {
-            var meshes = this.generate3DObjects(instance, lines, thickness);
+        buildVisualInstance: function (instance, lines, thickness, maxRadius) {
+            var meshes = this.generate3DObjects(instance, lines, thickness, maxRadius);
             this.init3DObject(meshes, instance);
         },
 
@@ -670,7 +670,7 @@ define(['jquery'], function () {
          * @param thickness
          * @returns {Array}
          */
-        generate3DObjects: function (instance, lines, thickness) {
+        generate3DObjects: function (instance, lines, thickness, maxRadius) {
             var previous3DObject = this.meshes[instance.getInstancePath()];
             var color = undefined;
             if (previous3DObject) {
@@ -695,7 +695,7 @@ define(['jquery'], function () {
                 "line": that.getLineMaterial(thickness, color)
             };
             var instanceObjects = [];
-            var threeDeeObjList = this.walkVisTreeGen3DObjs(instance, materials, lines);
+            var threeDeeObjList = this.walkVisTreeGen3DObjs(instance, materials, lines, thickness, maxRadius);
 
             // only merge if there are more than one object
             if (threeDeeObjList.length > 1) {
@@ -727,7 +727,7 @@ define(['jquery'], function () {
          * @param lines
          * @returns {Array}
          */
-        walkVisTreeGen3DObjs: function (instance, materials, lines) {
+        walkVisTreeGen3DObjs: function (instance, materials, lines, thickness, maxRadius) {
             var threeDeeObj = null;
             var threeDeeObjList = [];
             var visualType = instance.getVisualType();
@@ -743,14 +743,14 @@ define(['jquery'], function () {
             if (visualType.getMetaType() == GEPPETTO.Resources.COMPOSITE_VISUAL_TYPE_NODE) {
                 for (var v in visualType.getVariables()) {
                     var visualValue = visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
-                    threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
+                    threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines, thickness, maxRadius);
                     if (threeDeeObj) {
                     	threeDeeObjList.push(threeDeeObj);
                     }
                 }
             } else {
                 var visualValue = visualType.getWrappedObj().defaultValue;
-                threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getId(), materials, lines);
+                threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getId(), materials, lines, thickness, maxRadius);
                 if (threeDeeObj) {
                     threeDeeObjList.push(threeDeeObj);
                 }
@@ -832,7 +832,7 @@ define(['jquery'], function () {
          * @param lines
          * @returns {*}
          */
-        create3DObjectFromInstance: function (instance, node, id, materials, lines) {
+        create3DObjectFromInstance: function (instance, node, id, materials, lines, thickness, maxRadius) {
             var threeObject = null;
 
             if (lines === undefined) {
@@ -850,7 +850,7 @@ define(['jquery'], function () {
                     if (lines) {
                         threeObject = this.create3DLineFromNode(node, material);
                     } else {
-                        threeObject = this.create3DCylinderFromNode(node, material);
+                        threeObject = this.create3DCylinderFromNode(node, material, thickness, maxRadius);
                     }
                     this.complexity++;
                     break;
@@ -1023,7 +1023,7 @@ define(['jquery'], function () {
          * @param material
          * @returns {THREE.Mesh}
          */
-        create3DCylinderFromNode: function (cylNode, material) {
+        create3DCylinderFromNode: function (cylNode, material, minRadius, maxRadius) {
 
             var bottomBasePos = new THREE.Vector3(cylNode.position.x, cylNode.position.y, cylNode.position.z);
             var topBasePos = new THREE.Vector3(cylNode.distal.x, cylNode.distal.y, cylNode.distal.z);
@@ -1033,7 +1033,22 @@ define(['jquery'], function () {
             var midPoint = new THREE.Vector3();
             midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
 
-            var c = new THREE.CylinderGeometry(cylNode.topRadius, cylNode.bottomRadius, axis.length(), 20, 1, false);
+            var topRadius = cylNode.topRadius;
+            var bottomRadius = cylNode.bottomRadius;
+            if (typeof minRadius !== 'undefined') {
+                if (cylNode.topRadius < minRadius)
+                    topRadius = minRadius;
+                if (cylNode.bottomRadius < minRadius)
+                    bottomRadius = minRadius;
+            }
+            if (typeof maxRadius !== 'undefined') {
+                if (cylNode.topRadius > maxRadius)
+                    topRadius = maxRadius;
+                if (cylNode.bottomRadius > maxRadius)
+                    bottomRadius = maxRadius;
+            }
+
+            var c = new THREE.CylinderGeometry(topRadius, bottomRadius, axis.length(), 20, 1, false);
             c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
             var threeObject = new THREE.Mesh(c, material);
 
@@ -1995,9 +2010,11 @@ define(['jquery'], function () {
          * @param {String}
          *            type - The geometry type, see GEPPETTO.Resources.GeometryTypes
          * @param {String}
-         *            thickness - Optional: the thickness to be used if the geometry is "lines"
+         *            thickness - Optional: the thickness to be used if the geometry is "lines" or "cylinders" (min radius)
+         * @param {String}
+         *            maxRadius - Optional: the thickness to be used if the geometry is "cylinders" (max radius)
          */
-        setGeometryType: function (instance, type, thickness) {
+        setGeometryType: function (instance, type, thickness, maxRadius) {
             if (!this.hasInstance(instance)) {
                 return;
             }
@@ -2012,7 +2029,7 @@ define(['jquery'], function () {
                 return false;
             }
 
-            this.traverseInstances([instance], lines, thickness);
+            this.traverseInstances([instance], lines, thickness, maxRadius);
 
             return true;
         }

@@ -300,11 +300,13 @@ define(['jquery'], function () {
          * @param {String}
          *            type - The geometry type, see GEPPETTO.Resources.GeometryTypes
          * @param {String}
-         *            thickness - Optional: the thickness to be used if the geometry is "lines"
+         *            thickness - Optional: the thickness to be used if the geometry is "lines" or "cylinders" (min radius)
+         * @param {String}
+         *            maxRadius - Optional: the maxRadius to be used if the geometry is "cylinders" (max radius)
          */
-        setGeometryType: function (instance, type, thickness) {
+        setGeometryType: function (instance, type, thickness, maxRadius) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
-                this.canvasComponents[i].setGeometryType(instance, type, thickness);
+                this.canvasComponents[i].setGeometryType(instance, type, thickness, maxRadius);
             }
         },
 

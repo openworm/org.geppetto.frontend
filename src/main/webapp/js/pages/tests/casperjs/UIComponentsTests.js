@@ -149,18 +149,18 @@ function consoleTest(test){
 				});
 				test.assertEquals(spanCount, 1, "Console output empty");
 			});
-			
+
 			casper.then(function () {
 				casper.evaluate(function() {
 					G.debug(true);
 				});
 			});
-			
+
 			//dummy UI interaction to create logs on console
 			casper.then(function () {
 				buttonClick("#panHomeBtn");
 			});
-			
+
 			//test console is empty upon opening
 			casper.then(function () {
 				var spanCount = casper.evaluate(function() {
@@ -168,7 +168,7 @@ function consoleTest(test){
 				});
 				test.assertEquals(spanCount, 4, "Console output not empty");
 			});
-			
+
 			//test clear command works on console
 			casper.then(function () {
 				var clearConsole = casper.evaluate(function() {
@@ -184,7 +184,7 @@ function consoleTest(test){
 				});
 				test.assertEquals(spanCount, 0, "Console output not empty after G.clear");
 			});
-			
+
 			//disable debug mode now that we are done
 			casper.then(function () {
 				casper.evaluate(function() {

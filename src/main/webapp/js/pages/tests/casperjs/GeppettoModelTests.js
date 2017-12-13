@@ -18,6 +18,7 @@ casper.test.begin('Geppetto Model Factory and Injected Capabilities Tests', func
 
 	casper.start(urlBase+"org.geppetto.frontend", function () {
 		this.echo(urlBase+baseFollowUp+hhcellProject);
+		//testing with project ACNET
 		this.waitForSelector('div[project-id="5"]', function () {
 			this.echo("I've waited for the projects to load.");
 			test.assertExists('div#logo', "logo is found");

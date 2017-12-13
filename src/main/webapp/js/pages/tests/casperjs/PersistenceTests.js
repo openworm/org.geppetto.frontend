@@ -126,6 +126,7 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
         deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
     });
     
+    //tests persistence project features
     casper.then(function () {
         testPersistedProjectFeatures(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id=1");
     });

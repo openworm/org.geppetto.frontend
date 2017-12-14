@@ -2,7 +2,13 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>geppetto</title>
+    <title><%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.title%></title>
+    <meta name="description" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.description%>" />
+    <meta property="og:title" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.title%>" />
+    <meta property="og:type" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.type%>" />
+    <meta property="og:url" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.url%>" />
+    <meta property="og:image" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.image%>" />
+    <meta property="og:description" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.description%>" />
 
 	<% var cssPaths = '/'; %>
 
@@ -20,7 +26,7 @@
 	
 	<link rel="stylesheet" href="<%= cssPaths%>geppetto/build/main.css"/>
 	
-	<link rel="icon" type="image/png" href="<%= cssPaths%>geppetto/style/favicon.png"/>
+	<link rel="icon" type="image/png" href="<%= cssPaths%><%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
 	    
 </head>
 <body>

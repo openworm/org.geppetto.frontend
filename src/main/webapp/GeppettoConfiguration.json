@@ -19,7 +19,7 @@
         "geppetto-neuron/css/colors": false
     },
     "properties": {
-    	"title" : "H.M. Dude Patient H.M.",
+    	"title" : "Patient H.M.",
     	"description": "Learn about the brain of the famous memory patient H.M.  This definitive resource houses a data portal containing blockface images, MRIs and 3D models reconstructed from this brain as well as an atlas of histological sections.",
     	"type": "website",
     	"url": "http://www.patienthm.org",

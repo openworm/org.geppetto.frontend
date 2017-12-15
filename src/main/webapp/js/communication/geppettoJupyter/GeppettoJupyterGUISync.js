@@ -32,9 +32,10 @@ define(function (require, exports, module) {
 		},
 
 		syncValueWithPython: function (value, requirement) {
-			this.set('value', value);
+			var jsonValue=JSON.stringify(value);
+			this.set('value', jsonValue);
 			this.save_changes();
-			this.send({ event: 'sync_value', value: value, requirement: requirement});
+			this.send({ event: 'sync_value', value: jsonValue, requirement: requirement});
 		},
 
 		getParameters: function (parameters) {
@@ -56,7 +57,11 @@ define(function (require, exports, module) {
 			return component;
 		},
 
-		handle_value_change: function(model, value, options) {
+		handle_value_change: function(model, jsonValue, options) {
+			var value="";
+			if (jsonValue != undefined && jsonValue !="") {
+				value=JSON.parse(jsonValue);
+			}
 			if (model.get('parent') != null) {
 				model.get('parent').forceRender();
 			}

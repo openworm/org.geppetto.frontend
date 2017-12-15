@@ -25,7 +25,7 @@ define(function (require) {
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
 
                     // If a handleChange method is passed as a props it will overwrite the handleChange python controlled capability
-                    this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange;
+                    this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange.bind(this);
                     this.handleUpdateInput = this.handleUpdateInput.bind(this);
                     this.handleUpdateCheckbox = this.handleUpdateCheckbox.bind(this);
                 }
@@ -71,7 +71,7 @@ define(function (require) {
                 }
 
                 updatePythonValue(newValue) {
-                    this.setState({ value: newValue, searchText: newValue, checked: newValue});
+                    this.setState({ value: newValue, searchText: newValue, checked: newValue });
 
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
@@ -89,20 +89,45 @@ define(function (require) {
                     this.forceUpdate();
                 }
 
+                triggerUpdate(updateMethod) {
+                    //common strategy when triggering processing of a value change, delay it, every time there is a change we reset
+                    if (this.updateTimer != undefined) {
+                        clearTimeout(this.updateTimer);
+                    }
+                    this.updateTimer = setTimeout(updateMethod, 500);
+                }
+
                 // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {
-                    // For textfields value is retrived from the event. For dropdown value is retrieved from the value
-                    this.updatePythonValue((event == null || event.target.value == undefined) ? value : event.target.value);
+                    var that = this;
+                    var targetValue = value;
+                    if (event != null) {
+                        targetValue = event.target.value;
+                    }
+                    this.setState({ value: targetValue });
+                    var v = value
+                    this.triggerUpdate(function () {
+                        // For textfields value is retrived from the event. For dropdown value is retrieved from the value
+                        that.updatePythonValue(targetValue);
+                    });
                 }
 
                 // Autocomplete handle
                 handleUpdateInput(value) {
-                    this.updatePythonValue(value);
+                    var that = this;
+                    var v = value
+                    this.triggerUpdate(function () {
+                        that.updatePythonValue(value);
+                    });
                 }
 
                 //Checkbox
                 handleUpdateCheckbox(event, isInputChecked) {
-                    this.updatePythonValue(isInputChecked);
+                    var that = this;
+                    var c = isInputChecked;
+                    this.triggerUpdate(function () {
+                        that.updatePythonValue(isInputChecked);
+                    });
                 }
 
                 connectToPython(componentType, model) {

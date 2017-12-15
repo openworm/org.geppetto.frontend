@@ -163,7 +163,7 @@ define(function (require) {
 		setData: function (anyInstance, filter) {
 			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance, filter], this.getId());
 
-			this.data = anyInstance.getPath();
+		        this.data = [anyInstance, filter];
 
 			this.setRawMessage(this.getHTML(anyInstance, "", filter));
 			var changeIcon=function(chevron){
@@ -386,24 +386,29 @@ define(function (require) {
         },
 
 		getView: function(){
-			var baseView = Widget.View.prototype.getView.call(this);
+		    var baseView = Widget.View.prototype.getView.call(this);
 
-			// add data-type and data field + any other custom fields in the component-specific attribute
-			baseView.dataType = (typeof this.data == "string") ? "string" : "object";
+		    // add data-type and data field + any other custom fields in the component-specific attribute
+		    baseView.dataType = (typeof this.data == "string") ? "string" : "object";
+
+                    if ($.isArray(this.data))
+                        baseView.data = [this.data[0].getPath(), this.data[1]]
+                    else
 			baseView.data = this.data;
-			baseView.componentSpecific = {
-				customHandlers: this.customHandlers.map(function(item){
-					return {
-						funct: item.funct.toString(),
-						event: item.event,
-						metType: item.metType
-					}
-				}),
-				buttonBarControls: this.buttonBarControls,
-				buttonBarConfig: this.buttonBarConfig
-			};
 
-			return baseView;
+		    baseView.componentSpecific = {
+			customHandlers: this.customHandlers.map(function(item){
+			    return {
+				funct: item.funct.toString(),
+				event: item.event,
+				metType: item.metType
+			    }
+			}),
+			buttonBarControls: this.buttonBarControls,
+			buttonBarConfig: this.buttonBarConfig
+		    };
+
+		    return baseView;
 		},
 
 		setView: function(view){
@@ -414,13 +419,11 @@ define(function (require) {
 			if(view.data != undefined){
 				if(view.dataType == 'string'){
 					this.setMessage(view.data);
-				}else if(view.dataType == 'stringCommand'){
-					this.setMessage(eval(view.data));
 				} else if($.isArray(view.data)){
-					this.setData(eval(view.data[0]));
-				}else {
-					// it's an object
-					this.setData(view.data);
+				    this.setData(eval(view.data[0]), view.data[1]);
+				} else {
+				    // it's an object
+				    this.setData(view.data);
 				}
 			}
 

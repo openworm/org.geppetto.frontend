@@ -500,10 +500,12 @@ define(function (require) {
 			    that.projectionSummary = that.getProjectionSummary();
 			    that.populateWeights(ctx.dataset.links);
 			}
+                        ctx.setSize(ctx.size.height, ctx.size.width + 100);
 			that.weight = true;
 			that.linkColormaps = that.weightColormaps(ctx.dataset.links);
 		    }
 		    else {
+                        ctx.setSize(ctx.size.height, ctx.size.width - 100);
 			that.weight = false;
 			ctx.nodeColormap = ctx.defaultColorMapFunction();
 		    }

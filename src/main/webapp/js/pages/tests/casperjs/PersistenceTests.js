@@ -53,81 +53,81 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
         });
     });
     
-    casper.thenOpen(urlBase+"org.geppetto.frontend", function () {
-        this.waitForSelector('div[project-id="2"]', function () {
-            this.echo("I've waited for the projects to load.");
-            test.assertExists('div#logo', "logo is found");
-            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
-            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-        }, null, 30000);
-        
-        this.waitForSelector('div[project-id="1"]', function () {
-            this.echo("I've waited for the projects to load.");
-            test.assertExists('div#logo', "logo is found");
-            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
-            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
-        }, null, 30000);
-    });
-    
-    casper.then(function () {
-        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
-            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true,"hhcell");
-    });
-    
-    casper.then(function () {
-    	projectID = this.evaluate(function() {
-           return Project.getId();
-        });
-    	this.echo("Project id to delete : "+projectID);
-    });
-    
-    casper.then(function () {
-        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
-    });
-    
-    casper.then(function () {
-        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
-    });
- 
-    casper.then(function () {
-        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
-            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false,"c302_A_Pharyngeal");
-    });
-    
-    casper.then(function () {
-    	projectID = this.evaluate(function() {
-           return Project.getId();
-        });
-    	this.echo("Project id to delete : "+projectID);
-    });
-    
-    casper.then(function () {
-        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
-    });
-    
-    casper.then(function () {
-        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
-    });
-
-    casper.then(function () {
-        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-            false, '', '', false,"Balanced_240cells_36926conns");
-    });
-    
-    casper.then(function () {
-    	projectID = this.evaluate(function() {
-           return Project.getId();
-        });
-    	this.echo("Project id to delete : "+projectID);
-    });
-    
-    casper.then(function () {
-        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
-    });
-   
-    casper.then(function () {
-        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
-    });
+//    casper.thenOpen(urlBase+"org.geppetto.frontend", function () {
+//        this.waitForSelector('div[project-id="2"]', function () {
+//            this.echo("I've waited for the projects to load.");
+//            test.assertExists('div#logo', "logo is found");
+//            test.assertExists('div[project-id="2"]', "Projects from persistence bundle are present")
+//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+//        }, null, 30000);
+//        
+//        this.waitForSelector('div[project-id="1"]', function () {
+//            this.echo("I've waited for the projects to load.");
+//            test.assertExists('div#logo', "logo is found");
+//            test.assertExists('div[project-id="1"]', "Projects from persistence bundle are present")
+//            test.assertSelectorHasText('div.user', 'Guest user', "Guest user is logged in");
+//        }, null, 30000);
+//    });
+//    
+//    casper.then(function () {
+//        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
+//            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true,"hhcell");
+//    });
+//    
+//    casper.then(function () {
+//    	projectID = this.evaluate(function() {
+//           return Project.getId();
+//        });
+//    	this.echo("Project id to delete : "+projectID);
+//    });
+//    
+//    casper.then(function () {
+//        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+//    });
+//    
+//    casper.then(function () {
+//        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
+//    });
+// 
+//    casper.then(function () {
+//        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
+//            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false,"c302_A_Pharyngeal");
+//    });
+//    
+//    casper.then(function () {
+//    	projectID = this.evaluate(function() {
+//           return Project.getId();
+//        });
+//    	this.echo("Project id to delete : "+projectID);
+//    });
+//    
+//    casper.then(function () {
+//        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+//    });
+//    
+//    casper.then(function () {
+//        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
+//    });
+//
+//    casper.then(function () {
+//        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
+//            false, '', '', false,"Balanced_240cells_36926conns");
+//    });
+//    
+//    casper.then(function () {
+//    	projectID = this.evaluate(function() {
+//           return Project.getId();
+//        });
+//    	this.echo("Project id to delete : "+projectID);
+//    });
+//    
+//    casper.then(function () {
+//        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+//    });
+//   
+//    casper.then(function () {
+//        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
+//    });
     
     //tests persistence project features
     casper.then(function () {

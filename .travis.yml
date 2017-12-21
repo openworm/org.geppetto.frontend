@@ -7,6 +7,9 @@ node_js:
 env:
   global:
     secure: dn0FPQ5IG4M/3kdwnyI78ElQ308Vc3QnKAvkWfwMFb8QxDqxQdnTo7AV1qTMtbLrDNkeEWIgi4nc7jmXNtvGTwOfhAULVh6606Qs5B+ezTdwzajbbFMI8SKQx/pnTojOMu8dx7V4lMoR/YWcojR0VC1IWVC62TGbSB1k5BDGgH0=
+env:
+- TEST_SUITE=neuronal
+- TEST_SUITE=default
 install:
 - npm install --silent -g phantomjs 
 - npm install --silent -g casperjs 

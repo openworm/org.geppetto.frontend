@@ -1,6 +1,6 @@
 var urlBase = casper.cli.get('host');
 if(urlBase==null || urlBase==undefined){
-	urlBase = "http://127.0.0.1:8081/";
+	urlBase = "http://127.0.0.1:8080/";
 }
 var PROJECT_URL_SUFFIX = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/SingleComponentHH/GEPPETTO.json";
 var PROJECT_URL_SUFFIX_2 = "?load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/pharyngeal/project.json";
@@ -78,65 +78,65 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
         }, null, 30000);
     });
     
-    casper.then(function () {
-        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
-            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true,"hhcell");
-    });
-    
-    casper.then(function () {
-    	projectID = this.evaluate(function() {
-           return Project.getId();
-        });
-    	this.echo("Project id to delete : "+projectID);
-    });
-    
-    casper.then(function () {
-        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
-    });
-    
-    casper.then(function () {
-        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
-    });
- 
-    casper.then(function () {
-        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
-            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false,"c302_A_Pharyngeal");
-    });
-    
-    casper.then(function () {
-    	projectID = this.evaluate(function() {
-           return Project.getId();
-        });
-    	this.echo("Project id to delete : "+projectID);
-    });
-    
-    casper.then(function () {
-        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
-    });
-    
-    casper.then(function () {
-        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
-    });
-
-    casper.then(function () {
-        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
-            false, '', '', false,"Balanced_240cells_36926conns");
-    });
-    
-    casper.then(function () {
-    	projectID = this.evaluate(function() {
-           return Project.getId();
-        });
-    	this.echo("Project id to delete : "+projectID);
-    });
-    
-    casper.then(function () {
-        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
-    });
-   
-    casper.then(function () {
-        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
-    });
+//    casper.then(function () {
+//        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX, true,
+//            false, 'hhcell.hhpop[0].v', 'Model.neuroml.pulseGen1.delay', true,"hhcell");
+//    });
+//    
+//    casper.then(function () {
+//    	projectID = this.evaluate(function() {
+//           return Project.getId();
+//        });
+//    	this.echo("Project id to delete : "+projectID);
+//    });
+//    
+//    casper.then(function () {
+//        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+//    });
+//    
+//    casper.then(function () {
+//        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
+//    });
+// 
+//    casper.then(function () {
+//        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_2, false,
+//            false, 'c302_A_Pharyngeal.M1[0].v', 'Model.neuroml.generic_neuron_iaf_cell.C', false,"c302_A_Pharyngeal");
+//    });
+//    
+//    casper.then(function () {
+//    	projectID = this.evaluate(function() {
+//           return Project.getId();
+//        });
+//    	this.echo("Project id to delete : "+projectID);
+//    });
+//    
+//    casper.then(function () {
+//        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+//    });
+//    
+//    casper.then(function () {
+//        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
+//    });
+//
+//    casper.then(function () {
+//        testProject(test, urlBase+"org.geppetto.frontend/geppetto" + PROJECT_URL_SUFFIX_3, false,
+//            false, '', '', false,"Balanced_240cells_36926conns");
+//    });
+//    
+//    casper.then(function () {
+//    	projectID = this.evaluate(function() {
+//           return Project.getId();
+//        });
+//    	this.echo("Project id to delete : "+projectID);
+//    });
+//    
+//    casper.then(function () {
+//        reloadProjectTest(test, urlBase+"org.geppetto.frontend/geppetto?load_project_from_id="+projectID,1);
+//    });
+//   
+//    casper.then(function () {
+//        deleteProject(test, urlBase+"org.geppetto.frontend",projectID);
+//    });
     
     //tests persistence project features
     casper.then(function () {

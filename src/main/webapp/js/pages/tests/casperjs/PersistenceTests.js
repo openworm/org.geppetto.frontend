@@ -54,9 +54,7 @@ casper.test.begin('Geppetto basic tests', function suite(test) {
     
     casper.then(function () {
         casper.thenOpen(urlBase+"org.geppetto.frontend/login?username=guest1&password=guest", function () {
-        	casper.wait(15000, function () {
-            	this.echo("Starting geppetto at host login "+ urlBase);
-        	});
+        	this.echo("Starting geppetto at host login "+ urlBase);
             /*this.waitForSelector('div#page', function() {
              this.echo("I've waited for the splash screen to come up.");
              test.assertUrlMatch(/splash$/, 'Virgo Splash Screen comes up indicating successful login');

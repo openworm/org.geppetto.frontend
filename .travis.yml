@@ -7,9 +7,6 @@ node_js:
 env:
   global:
     secure: dn0FPQ5IG4M/3kdwnyI78ElQ308Vc3QnKAvkWfwMFb8QxDqxQdnTo7AV1qTMtbLrDNkeEWIgi4nc7jmXNtvGTwOfhAULVh6606Qs5B+ezTdwzajbbFMI8SKQx/pnTojOMu8dx7V4lMoR/YWcojR0VC1IWVC62TGbSB1k5BDGgH0=
-env:
-- TEST_SUITE=neuronal
-- TEST_SUITE=default
 install:
 - npm install --silent -g phantomjs 
 - npm install --silent -g casperjs 
@@ -60,7 +57,6 @@ script:
   - "curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'}"
   - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js UIComponentsTests.js --host=http://localhost:28081/ --engine=slimerjs  
   - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js GeppettoModelTests.js --host=http://localhost:28081/ --engine=slimerjs 
-  - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js,NeuronalTestsLogic.js NeuronalProjectsTests.js --host=http://localhost:28081/ --engine=slimerjs  
   - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js,NeuronalTestsLogic.js DefaultProjectsTests.js --host=http://localhost:28081/ --engine=slimerjs  
   - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 100

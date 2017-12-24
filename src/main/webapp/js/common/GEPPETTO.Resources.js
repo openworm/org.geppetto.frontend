@@ -468,6 +468,7 @@ define(function (require) {
             TEXT: "Text",
             HTML: "HTML",
             SKELETON_ANIMATION_NODE: "SkeletonAnimation",
+            PARTICLES_TYPE: "particles",
             // CAPABILITIES
             VISUAL_CAPABILITY: 'VisualCapability',
             STATE_VARIABLE_CAPABILITY: 'StateVariableCapability',

@@ -365,6 +365,40 @@ define(['jquery'], function () {
             this.camera.position.addVectors(dir, this.controls.target);
             this.camera.updateProjectionMatrix();
         },
+        
+        
+        /**
+         * Receives updates from widget listener class to update moving objects on the 3d canvas
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+         */
+        update: function(event, parameters) {
+            //reset plot's datasets
+            if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+
+                
+            }
+            else if (event == GEPPETTO.Events.Experiment_update) {                    
+            	this.scene.traverse(function (child) {
+                    if (child instanceof THREE.Points) {
+                        var instance = Instances.getInstance(child.instancePath);
+                        if(instance.getTimeSeries()!=undefined){
+                            //if we have recorded this object we'll have a timeseries
+                        	var particles = instance.getTimeSeries()[parameters.step-1].particles;
+                            
+                            var geometry = new THREE.Geometry();
+                        	for(var p=0;p<particles.length;p++){
+                        		geometry.vertices.push(new THREE.Vector3(particles[p].x, particles[p].y, particles[p].z));
+
+                        	}
+                        	child.geometry = geometry;
+                        }
+                    }
+                });
+
+            }
+        	
+        },
 
         /**
          *
@@ -747,6 +781,13 @@ define(['jquery'], function () {
                     if (threeDeeObj) {
                     	threeDeeObjList.push(threeDeeObj);
                     }
+                }
+            } 
+            else if (visualType.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE && visualType.getId()=="particles") {
+                var visualValue = instance.getVariable().getWrappedObj().initialValues[0].value;
+                threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, instance.getVariable().getId(), materials, lines);
+                if (threeDeeObj) {
+                	threeDeeObjList.push(threeDeeObj);
                 }
             } else {
                 var visualValue = visualType.getWrappedObj().defaultValue;
@@ -1200,7 +1241,6 @@ define(['jquery'], function () {
             var threeObject = new THREE.Mesh(sphere, material);
             threeObject.position.set(sphereNode.position.x, sphereNode.position.y, sphereNode.position.z);
 
-            threeObject.geometry.verticesNeedUpdate = true;
             return threeObject;
         },
 

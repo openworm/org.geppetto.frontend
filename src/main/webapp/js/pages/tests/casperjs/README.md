@@ -31,9 +31,14 @@ To run Core default projects Tests (Requires NOT having the persistence bundle) 
 
 To run Persistence Tests (Requires the persistence bundle and a running MySQL server):
 
-`casperjs test --includes=PersistenceTestsLogic.js PersistenceTests.js --engine=slimerjs` to run Geppetto Persistence Tests.
+`casperjs test --includes=PersistenceTestsLogic.js PersistenceTests.js --engine=slimerjs`
 
-Tests are executed by default on port 8080. If you would like to execute tests on a different port you can change it [here](https://github.com/openworm/org.geppetto.frontend/blob/downloadData/src/main/webapp/js/pages/tests/casperjs/CoreTestsUtility.js#L1).
+Tests are executed by default on port 8080. If you would like to execute tests on a different port you can change it [here](https://github.com/openworm/org.geppetto.frontend/blob/caspers-qunit/src/main/webapp/js/pages/tests/casperjs/PersistenceTests.js#L3).
+
+To test Gepptto's upload features you'll need to give Geppetto permission to upload to your Dropbox folder. To do this, first
+launch Geppetto in the browser and run command 'G.linkDropBox()', a new tab/window will open asking you to sign in to your drop box account and give Geppetto permission. Once you have given Geppetto permission you'll be presented with an access key code, you'll need to copy and past it as the value of 'dropboxcode' argument in the casper test run command.
+
+`casperjs test --includes=PersistenceTestsLogic.js PersistenceTests.js --dropboxcode=accessKey --engine=slimerjs`
 
 If you have an error similar to this one:
 `Gecko error: it seems /usr/bin/firefox is not compatible with SlimerJS.`

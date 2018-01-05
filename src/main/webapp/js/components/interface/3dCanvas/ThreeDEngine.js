@@ -274,10 +274,8 @@ define(['jquery'], function () {
                 this.composer.addPass(effectFocus);
             } else {
                 //standard
-                var copyPass = new THREE.ShaderPass(THREE.CopyShader);
-                copyPass.renderToScreen = true;
+                renderModel.renderToScreen = true;
                 this.composer.addPass(renderModel);
-                this.composer.addPass(copyPass);
             }
 
         },

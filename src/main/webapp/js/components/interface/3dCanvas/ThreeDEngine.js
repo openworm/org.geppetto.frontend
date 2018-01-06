@@ -6,6 +6,9 @@
  */
 define(['jquery'], function () {
 
+	
+	
+
     var Instance = require('../../../geppettoModel/model/Instance');
     var ArrayInstance = require('../../../geppettoModel/model/ArrayInstance');
     var Type = require('../../../geppettoModel/model/Type');
@@ -25,9 +28,42 @@ define(['jquery'], function () {
     THREE.BloomPass = require('imports-loader?THREE=three!exports-loader?THREE.BloomPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
     THREE.ShaderPass = require('imports-loader?THREE=three!exports-loader?THREE.ShaderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
     THREE.FilmPass = require('imports-loader?THREE=three!exports-loader?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
+    THREE.MarchingCubes = require('imports-loader?THREE=three!exports-loader?THREE.MarchingCubes!../../../../node_modules\/three\/examples\/js\/MarchingCubes');
 
     function ThreeDEngine(container, viewerId) {
 
+    	this.semvs="varying vec2 vN;\n" + 
+    			"\n" + 
+    			"void main() {\n" + 
+    			"\n" + 
+    			"  vec4 p = vec4( position, 1. );\n" + 
+    			"\n" + 
+    			"  vec3 e = normalize( vec3( modelViewMatrix * p ) );\n" + 
+    			"  vec3 n = normalize( normalMatrix * normal );\n" + 
+    			"\n" + 
+    			"  vec3 r = reflect( e, n );\n" + 
+    			"  float m = 2. * sqrt(\n" + 
+    			"    pow( r.x, 2. ) +\n" + 
+    			"    pow( r.y, 2. ) +\n" + 
+    			"    pow( r.z + 1., 2. )\n" + 
+    			"  );\n" + 
+    			"  vN = r.xy / m + .5;\n" + 
+    			"\n" + 
+    			"  gl_Position = projectionMatrix * modelViewMatrix * p;\n" + 
+    			"\n" + 
+    			"}";
+
+    	this.semfs="uniform sampler2D tMatCap;\n" + 
+    			"\n" + 
+    			"varying vec2 vN;\n" + 
+    			"\n" + 
+    			"void main() {\n" + 
+    			"\n" + 
+    			"  vec3 base = texture2D( tMatCap, vN ).rgb;\n" + 
+    			"  gl_FragColor = vec4( base, 1. );\n" + 
+    			"\n" + 
+    			"}";
+    	
         this.container = container;
         this.colorController = new (require('./ColorController'))(this);
         this.viewerId = viewerId;
@@ -288,6 +324,7 @@ define(['jquery'], function () {
         setupLights: function () {
             // Lights
             this.camera.add(new THREE.PointLight(0xffffff, 1.5));
+			this.camera.add(  new THREE.AmbientLight( 0x080808 ) );
 
         },
 
@@ -382,16 +419,15 @@ define(['jquery'], function () {
             	this.scene.traverse(function (child) {
                     if (child instanceof THREE.Points) {
                         var instance = Instances.getInstance(child.instancePath);
-                        if(instance.getTimeSeries()!=undefined){
+                        if(instance.getTimeSeries()!=undefined && instance.getTimeSeries()[parameters.step]!=undefined){
                             //if we have recorded this object we'll have a timeseries
-                        	var particles = instance.getTimeSeries()[parameters.step-1].particles;
-                            
-                            var geometry = new THREE.Geometry();
+                        	var particles = instance.getTimeSeries()[parameters.step].particles;
                         	for(var p=0;p<particles.length;p++){
-                        		geometry.vertices.push(new THREE.Vector3(particles[p].x, particles[p].y, particles[p].z));
-
+                        		child.geometry.vertices[p].x=particles[p].x;
+                        		child.geometry.vertices[p].y=particles[p].y;
+                        		child.geometry.vertices[p].z=particles[p].z;
                         	}
-                        	child.geometry = geometry;
+                        	child.geometry.verticesNeedUpdate = true;
                         }
                     }
                 });
@@ -998,15 +1034,42 @@ define(['jquery'], function () {
             threeColor.setHex(color);
 
             var textureLoader = new THREE.TextureLoader();
+            
+//            textureLoader.setCrossOrigin ('');
+//            var matcap = textureLoader.load ("geppetto/js/components/interface/3dCanvas/particle.jpg");
+//            
+//            var material = new THREE.ShaderMaterial( {
+//              transparent: true,
+//              side: THREE.DoubleSide,
+//          		uniforms: { 
+//          			tMatCap: { type: 't', value: matcap} 
+//          		},
+//          		vertexShader: this.semvs,
+//          		fragmentShader: this.semfs,
+//          		shading: THREE.SmoothShading
+//          		
+//          	} );
+//            
+//            material.uniforms.tMatCap.value.wrapS =
+//            	material.uniforms.tMatCap.value.wrapT =
+//            	THREE.ClampToEdgeWrapping;
+//            
             var material = new THREE.PointsMaterial(
                 {
                     size: 2,
                     map: textureLoader.load("geppetto/js/components/interface/3dCanvas/particle.png"),
-                    blending: THREE.AdditiveBlending,
-                    depthTest: false,
+                    blending: THREE.NormalBlending,
+                    depthTest: true,
                     transparent: true,
                     color: threeColor
                 });
+            
+			// custom distance material
+			var distanceMaterial = new THREE.MeshDistanceMaterial( {
+				alphaMap: material.alphaMap,
+				alphaTest: material.alphaTest
+			} );
+			threeColor.customDistanceMaterial = distanceMaterial;
 
         	for(var p=0;p<node.particles.length;p++){
         		geometry.vertices.push(new THREE.Vector3(node.particles[p].x, node.particles[p].y, node.particles[p].z));
@@ -1019,8 +1082,80 @@ define(['jquery'], function () {
             threeObject.visible = true;
             threeObject.instancePath = node.instancePath;
             threeObject.highlighted = false;
+            
+			
             return threeObject;
 
+        },
+        
+        
+        createParticleshM: function (node) {
+            var threeColor = new THREE.Color();
+            var color=('0x' + Math.floor(Math.random() * 16777215).toString(16));
+            threeColor.setHex(color);
+            
+            var resolution = 28;
+
+			var threeObject = new THREE.MarchingCubes( resolution, new THREE.MeshPhongMaterial( { color: threeColor, specular: 0x111111, shininess: 1 } ), true, true );
+			threeObject.position.set( 0, 0, 0 );
+			threeObject.scale.set( 20, 20, 20 );
+
+			threeObject.enableUvs = false;
+			threeObject.enableColors = false;
+		
+			threeObject.init( Math.floor( resolution ) );
+			this.scene.add(threeObject);	
+			threeObject.reset();
+			var subtract = 12;
+			var strength = 1.2 / ( ( Math.sqrt( node.particles.length ) - 1 ) / 4 + 1 );
+
+			
+        	for(var p=0;p<2;p++){
+        		
+        		threeObject.addBall(node.particles[p].x/100, node.particles[p].y/100, node.particles[p].z/100, strength, subtract);
+
+        	}
+        	
+            threeObject.visible = true;
+            threeObject.instancePath = node.instancePath;
+            threeObject.highlighted = false;
+            
+			
+            return threeObject;
+
+        },
+        
+        march(){
+            
+            var resolution = 28;
+			
+			var node = worm.muscle_65.getInitialValue()[0].value;
+			var numBlobs = node.particles.length;
+			var effect = new THREE.MarchingCubes( resolution, new THREE.MeshPhongMaterial( { color: 0xff0022, specular: 0x111111, shininess: 1 } ), true, true );
+			effect.position.set( 0, 0, 0 );
+			effect.scale.set( 7, 7, 7);
+
+			effect.enableUvs = false;
+			effect.enableColors = false;
+			
+			this.scene.add( effect );
+		
+			effect.init( Math.floor( resolution ) );
+
+			effect.reset();
+			var subtract = 12;
+			var strength = 1.2 / ( ( Math.sqrt( numBlobs ) - 1 ) / 4 + 1 );
+
+			for ( i = 0; i < numBlobs; i ++ ) {
+				effect.addBall(node.particles[i].x/100, node.particles[i].y/100, node.particles[i].z/100, strength, subtract);
+//				ballx = Math.sin( i + 1.26  * ( 1.03 + 0.5 * Math.cos( 0.21 * i ) ) ) * 0.27 + 0.5;
+//				bally = Math.abs( Math.cos( i + 1.12  * Math.cos( 1.22 + 0.1424 * i ) ) ) * 0.77; // dip into the floor
+//				ballz = Math.cos( i + 1.32  * 0.1 * Math.sin( ( 0.92 + 0.53 * i ) ) ) * 0.27 + 0.5;
+//
+//				effect.addBall(ballx, bally, ballz, strength, subtract);
+
+			}
+			
         },
 
         /**

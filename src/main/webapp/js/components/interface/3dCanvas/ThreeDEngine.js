@@ -6,9 +6,6 @@
  */
 define(['jquery'], function () {
 
-	
-	
-
     var Instance = require('../../../geppettoModel/model/Instance');
     var ArrayInstance = require('../../../geppettoModel/model/ArrayInstance');
     var Type = require('../../../geppettoModel/model/Type');
@@ -1034,26 +1031,6 @@ define(['jquery'], function () {
             threeColor.setHex(color);
 
             var textureLoader = new THREE.TextureLoader();
-            
-//            textureLoader.setCrossOrigin ('');
-//            var matcap = textureLoader.load ("geppetto/js/components/interface/3dCanvas/particle.jpg");
-//            
-//            var material = new THREE.ShaderMaterial( {
-//              transparent: true,
-//              side: THREE.DoubleSide,
-//          		uniforms: { 
-//          			tMatCap: { type: 't', value: matcap} 
-//          		},
-//          		vertexShader: this.semvs,
-//          		fragmentShader: this.semfs,
-//          		shading: THREE.SmoothShading
-//          		
-//          	} );
-//            
-//            material.uniforms.tMatCap.value.wrapS =
-//            	material.uniforms.tMatCap.value.wrapT =
-//            	THREE.ClampToEdgeWrapping;
-//            
             var material = new THREE.PointsMaterial(
                 {
                     size: 2,
@@ -1082,8 +1059,6 @@ define(['jquery'], function () {
             threeObject.visible = true;
             threeObject.instancePath = node.instancePath;
             threeObject.highlighted = false;
-            
-			
             return threeObject;
 
         },

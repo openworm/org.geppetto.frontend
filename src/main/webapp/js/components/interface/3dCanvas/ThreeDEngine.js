@@ -307,10 +307,8 @@ define(['jquery'], function () {
                 this.composer.addPass(effectFocus);
             } else {
                 //standard
-                var copyPass = new THREE.ShaderPass(THREE.CopyShader);
-                copyPass.renderToScreen = true;
+                renderModel.renderToScreen = true;
                 this.composer.addPass(renderModel);
-                this.composer.addPass(copyPass);
             }
 
         },
@@ -526,9 +524,15 @@ define(['jquery'], function () {
         /**
          * Adds debug axis to the scene
          */
-        setupAxis: function () {
+        showAxis: function (show) {
             // To use enter the axis length
-            this.scene.add(new THREE.AxisHelper(200));
+            if (show) {
+                if (!this.axis) {
+                    this.axis = new THREE.AxisHelper(200);
+                    this.scene.add(this.axis);
+                }
+            } else
+                this.scene.remove(this.axis);
         },
 
         /**

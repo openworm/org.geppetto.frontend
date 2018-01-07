@@ -25,8 +25,11 @@
 	<link rel="stylesheet" href="<%= cssPaths%>geppetto/style/css/gpt-icons.css"/>
 	
 	<link rel="stylesheet" href="<%= cssPaths%>geppetto/build/main.css"/>
-	
-	<link rel="icon" type="image/png" href="<%= cssPaths%><%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
+	<% if(htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon.indexOf("http") !== -1){ %>
+		<link rel="icon" type="image/png" href="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
+ 	<% } else{ %>  
+		<link rel="icon" type="image/png" href="<%= cssPaths%><%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
+	<% } %>
 	    
 </head>
 <body>

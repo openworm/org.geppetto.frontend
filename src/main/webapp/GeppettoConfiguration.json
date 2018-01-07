@@ -19,11 +19,11 @@
         "geppetto-neuron/css/colors": false
     },
     "properties": {
-    	"title" : "Patient H.M.",
-    	"description": "Learn about the brain of the famous memory patient H.M.  This definitive resource houses a data portal containing blockface images, MRIs and 3D models reconstructed from this brain as well as an atlas of histological sections.",
+    	"title" : "geppetto",
+    	"description": "",
     	"type": "website",
-    	"url": "http://www.patienthm.org",
-    	"icon" :"geppetto/extensions/geppetto-hm/pages/images/HMFavicon.png",
-    	"image": "https://upload.wikimedia.org/wikipedia/en/c/cd/Henry_Gustav_1.jpg"
+    	"url": "",
+    	"icon" :"geppetto/style/favicon.png",
+    	"image": ""
     }
 }

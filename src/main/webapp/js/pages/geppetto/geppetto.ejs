@@ -27,8 +27,8 @@
 	<link rel="stylesheet" href="<%= cssPaths%>geppetto/build/main.css"/>
 	<% if(htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon.indexOf("http") !== -1){ %>
 		<link rel="icon" type="image/png" href="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
- 	<% } else{ %>  
-		<link rel="icon" type="image/png" href="<%= cssPaths%><%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
+	<% } else{ %>
+	    <link rel="icon" type="image/png" href="<%= cssPaths%><%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
 	<% } %>
 	    
 </head>

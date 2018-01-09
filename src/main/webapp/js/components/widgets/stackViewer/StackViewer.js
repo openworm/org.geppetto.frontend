@@ -174,16 +174,13 @@ define(function (require) {
                     console.log('Adding ' + instances.parent.getName() + ' to ' + this.data.instances.length);
                 }else{
                     console.log('Adding ' + instances.toString() + ' to ' + this.data.instances.length);
-                    window.test = instances;
                 }
             }else{
                 console.log('Adding ' + instances.length + ' instances to ' + this.data.instances.length);
             }
             this.data.instances = arrayUnique(this.data.instances.concat(instances));
-            if (curr != this.data.instances.length){
-            	console.log('Passing ' + this.data.instances.length + ' instances');
-            	this.updateScene();
-            }
+		
+            this.updateScene();
         },
 
         removeSlice: function(path){

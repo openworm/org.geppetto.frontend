@@ -266,13 +266,16 @@ define(function (require) {
 					});
 					
 				}
-				else {
+			        else {
+                                        GEPPETTO.trigger('spin_logo');
 					var isStateless = false;
 					if (properties !== undefined && "isStateless" in properties) {
 						isStateless = properties["isStateless"];
 					}
+
 					return new Promise(resolve => {
-						GEPPETTO.WidgetFactory.addWidget(componentType, isStateless, callback).then(widget => {
+					    GEPPETTO.WidgetFactory.addWidget(componentType, isStateless, callback).then(widget => {
+                                                        GEPPETTO.trigger('stop_spin_logo');
 							// Register in component map
 							if (!(componentType in this.componentsMap)) {
 								this.componentsMap[componentType] = []

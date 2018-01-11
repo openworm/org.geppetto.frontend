@@ -1,7 +1,7 @@
 define(function (require) {
 
     require('./ControlPanel.less');
-    
+
     function loadCss(url) {
         var link = document.createElement("link");
         link.type = "text/css";
@@ -11,11 +11,11 @@ define(function (require) {
     }
 
     loadCss("geppetto/js/components/interface/controlPanel/vendor/css/bootstrap-colorpicker.min.css");
-    
+
     //require('./vendor/css/bootstrap-colorpicker.min.css'); Matteo: This require is not working?!?
 
     var React = require('react'), $ = require('jquery');
-    var Griddle = require('griddle-react');
+    var Griddle = require('griddle-react-metacell');
     var GEPPETTO = require('geppetto');
     var MenuButton = require('./../../controls/menuButton/MenuButton');
     var ToggleButton = require('./../../controls/toggleButton/ToggleButton');

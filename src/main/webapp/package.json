@@ -40,7 +40,8 @@
     "extract-text-webpack-plugin": "3.0.0",
     "file-saver": "^1.3.3",
     "google-maps": "^3.2.1",
-    "griddle-react": "https://github.com/MetaCell/griddle.git",
+    "griddle-react": "^1.0.3",
+    "griddle-react-metacell": "https://github.com/MetaCell/griddle.git#griddle-0.6-fork",
     "handlebars": "^4.0.5",
     "html-webpack-plugin": "2.30.1",
     "ignore-loader": "^0.1.2",
@@ -71,7 +72,8 @@
     "plotly.js": "^1.30.0",
     "qunitjs": "^2.1.1",
     "raw-loader": "^0.5.1",
-    "react": "15.4.1",
+    "react": "^15.6.2",
+    "react-at-rest": "^2.0.11",
     "react-autosuggest": "^9.3.2",
     "react-dom": "15.4.1",
     "react-jsonschema-form": "^0.48.0",
@@ -96,8 +98,7 @@
     "url-loader": "^0.5.8",
     "velocity.java": "^1.3.1",
     "webpack": "3.6.0",
-    "webpack-dev-server": "2.8.2",
-    "react-at-rest": "^2.0.11"
+    "webpack-dev-server": "2.8.2"
   },
   "buildOptions": {
     "emitEntryPoint": true,

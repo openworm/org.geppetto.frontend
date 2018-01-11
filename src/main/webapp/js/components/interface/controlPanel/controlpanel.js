@@ -15,7 +15,7 @@ define(function (require) {
     //require('./vendor/css/bootstrap-colorpicker.min.css'); Matteo: This require is not working?!?
 
     var React = require('react'), $ = require('jquery');
-    var Griddle = require('griddle-react-metacell');
+    var Griddle = require('griddle-0.6-fork');
     var GEPPETTO = require('geppetto');
     var MenuButton = require('./../../controls/menuButton/MenuButton');
     var ToggleButton = require('./../../controls/toggleButton/ToggleButton');

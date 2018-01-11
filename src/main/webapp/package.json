@@ -63,6 +63,7 @@
     "lg-video": "^1.1.0",
     "lg-zoom": "^1.1.0",
     "lightgallery": "^1.6.0",
+    "lodash.clone": "^4.5.0",
     "material-ui": "^0.18.6",
     "mathjs": "^3.5.3",
     "openseadragon": "^2.2.1",

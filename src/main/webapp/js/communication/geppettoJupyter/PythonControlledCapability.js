@@ -12,8 +12,59 @@ define(function (require) {
 
     module.exports = {
         createPythonControlledComponent(WrappedComponent) {
-
             class PythonControlledComponent extends WrappedComponent {
+                constructor(props) {
+                    super(props);
+                    this.state.model=props.model;
+                    this.state.componentType=WrappedComponent.name;
+                    this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
+                }
+
+                setSyncValueWithPythonHandler(handler) {
+                    this.syncValueWithPython = handler;
+                }
+
+                connectToPython(componentType, model) {
+                    var kernel = IPython.notebook.kernel;
+                    kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
+                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
+                }
+
+                disconnectFromPython() {
+                    var kernel = IPython.notebook.kernel;
+                    kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
+                    kernel.execute('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
+                    GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
+                }
+
+                componentWillReceiveProps(nextProps) {
+                    this.disconnectFromPython();
+                    this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
+                    GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this);
+                    this.connectToPython(this.state.componentType, nextProps.model);
+                    if (this.state.value != nextProps.value) {
+                        this.setState({ value: (nextProps.value === undefined) ? '' : nextProps.value });
+                    }
+                }
+
+                componentDidMount() {
+                    GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this, true);
+                    if (this.props.model != undefined) {
+                        this.connectToPython(this.state.componentType, this.props.model);
+                    }
+                    if (this.props.value != undefined) {
+                        this.setState({ value: this.props.value });
+                    }
+                }
+            }
+
+            return PythonControlledComponent;
+        },
+
+        createPythonControlledControl(WrappedComponent) {
+
+            var PythonControlledComponent = this.createPythonControlledComponent(WrappedComponent);
+            class PythonControlledControl extends PythonControlledComponent {
 
                 constructor(props) {
                     super(props);
@@ -22,7 +73,6 @@ define(function (require) {
                         searchText: '',
                         checked: false
                     });
-                    this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
 
                     // If a handleChange method is passed as a props it will overwrite the handleChange python controlled capability
                     this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange.bind(this);
@@ -33,8 +83,8 @@ define(function (require) {
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
-                    GEPPETTO.ComponentFactory.addExistingComponent(nextProps.componentType, this);
-                    this.connectToPython(nextProps.componentType, nextProps.model);
+                    GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this);
+                    this.connectToPython(this.state.componentType, nextProps.model);
                     if (this.state.searchText != nextProps.searchText) {
                         this.setState({ searchText: (nextProps.searchText === undefined) ? '' : nextProps.searchText });
                     }
@@ -43,6 +93,9 @@ define(function (require) {
                     }
                     if (this.state.value != nextProps.value) {
                         this.setState({ value: (nextProps.value === undefined) ? '' : nextProps.value });
+                    }
+                    if (this.state.model != nextProps.model) {
+                        this.setState({ model: (nextProps.model === undefined) ? '' : nextProps.model });
                     }
                 }
 
@@ -66,9 +119,7 @@ define(function (require) {
                     }
                 }
 
-                setSyncValueWithPythonHandler(handler) {
-                    this.syncValueWithPython = handler;
-                }
+
 
                 updatePythonValue(newValue) {
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
@@ -130,25 +181,6 @@ define(function (require) {
                     });
                 }
 
-                connectToPython(componentType, model) {
-                    var kernel = IPython.notebook.kernel;
-                    kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
-                }
-
-                disconnectFromPython() {
-                    var kernel = IPython.notebook.kernel;
-                    kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.props.componentType + '",model="' + this.id + '")');
-                    GEPPETTO.ComponentFactory.removeExistingComponent(this.props.componentType, this);
-                }
-
-                componentDidMount() {
-                    GEPPETTO.ComponentFactory.addExistingComponent(this.props.componentType, this, true);
-                    if (this.props.model != undefined) {
-                        this.connectToPython(this.props.componentType, this.props.model);
-                    }
-                }
 
                 render() {
                     const wrappedComponentProps = Object.assign({}, this.props);
@@ -188,7 +220,7 @@ define(function (require) {
 
             };
 
-            return PythonControlledComponent;
+            return PythonControlledControl;
         }
     }
 })

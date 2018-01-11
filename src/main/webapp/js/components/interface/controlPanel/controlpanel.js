@@ -1695,7 +1695,10 @@ define(function (require) {
 
             // show control panel
             this.open();
+            this.refs.filterComponent.refreshToggleState();
+            this.setTab(filterTabOption);
             var that = this;
+            setTimeout(function() { that.setFilter(filterText); }, 500);
         },
 
         open: function () {

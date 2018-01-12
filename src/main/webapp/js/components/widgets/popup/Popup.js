@@ -412,20 +412,20 @@ define(function (require) {
 		},
 
 		setView: function(view){
-			// set base properties
-			Widget.View.prototype.setView.call(this, view);
-
 			// set data
 			if(view.data != undefined){
 				if(view.dataType == 'string'){
 					this.setMessage(view.data);
 				} else if($.isArray(view.data)){
-				    this.setData(eval(view.data[0]), view.data[1]);
-				} else {
-				    // it's an object
-				    this.setData(view.data);
+				        this.setData(eval(view.data[0]), view.data[1]);
+				}else {
+					// it's an object
+					this.setData(view.data);
 				}
 			}
+
+                        // set base properties after setting data so navigation history is correct
+			Widget.View.prototype.setView.call(this, view);
 
 			// set component specific stuff, only custom handlers for popup widget
 			if(view.componentSpecific != undefined){

@@ -170,10 +170,7 @@ define(function (require) {
             GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
             GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
             GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
-            var deTokenizedCondition = this.replaceTokensWithProjectExperimentIds(this.props.metadata.readOnlyCondition,
-                                                                                  this.props.rowData.projectId,
-                                                                                  this.props.rowData.experimentId);
-            if (!eval(deTokenizedCondition))
+            if (!GEPPETTO.UserController.hasPersistence())
                 this.attachTooltip();
         },
 

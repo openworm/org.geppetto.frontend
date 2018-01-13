@@ -436,7 +436,7 @@ define(function (require) {
              * hides / shows the title bar
              */
             showTitleBar: function (show) {
-                this.showTitleBar = show;
+                this.hasTitleBar = show;
 
                 if (show) {
                     this.$el.parent().find(".ui-dialog-titlebar").show();
@@ -466,6 +466,7 @@ define(function (require) {
             },
 
             showHistoryNavigationBar: function (show) {
+                this.hasHistoryNavigationBar = show;
                 var leftNav = $("#" + this.id + "-left-nav");
                 var rightNav = $("#" + this.id + "-right-nav");
 
@@ -812,7 +813,8 @@ define(function (require) {
                 return {
                     widgetType: this.widgetType,
                     isWidget: this.isWidget(),
-                    showTitleBar: this.showTitleBar,
+                    showTitleBar: this.hasTitleBar,
+                    showHistoryNavigationBar: this.hasHistoryNavigationBar,
                     transparentBackground: this.transparentBackground,
                     name: this.name,
                     size: {
@@ -851,6 +853,10 @@ define(function (require) {
 
                 if (view.showTitleBar != undefined) {
                     this.showTitleBar(view.showTitleBar);
+                }
+
+                if (view.showHistoryNavigationBar != undefined) {
+                    this.showHistoryNavigationBar(view.showHistoryNavigationBar);
                 }
 
                 if (view.transparentBackground != undefined) {

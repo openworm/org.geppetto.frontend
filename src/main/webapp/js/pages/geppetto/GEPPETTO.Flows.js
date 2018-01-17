@@ -3,7 +3,7 @@
 /**
  * UI flows controller
  *
- *  @author Giovanni Idili
+ *  @author Giovanni Idili & Friends
  */
 define(function (require) {
 

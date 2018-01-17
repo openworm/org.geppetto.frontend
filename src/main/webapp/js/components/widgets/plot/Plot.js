@@ -936,7 +936,7 @@ define(function (require) {
 				//TODO: What are we going to do if we have two arguments?
 				var values = [];
 				for (var i = initialValue; i < finalValue; i = i + stepValue) {
-					values.push([i]);
+				    values.push(i);
 				}
 
 				var plotTitle = plotMetadata["title"];
@@ -996,22 +996,10 @@ define(function (require) {
 			data.data = {};
 			data.data["x"] = [];
 			data.data["y"] = [];
-			for (var data_xIndex in data_x) {
-				var dataElementString = data_x[data_xIndex].valueOf();
-				data_y = mathFunc(dataElementString);
-				//TODO: Understand why sometimes it returns an array and not a value
-				if (typeof value == 'object') {
-					data.data["x"].push(data_x[data_xIndex][0]);
-					data.data["y"].push(data_y[0]);
-				}
-				else {
-					data.data["x"].push(data_x[data_xIndex][0]);
-					if(data_y instanceof Array){
-						data.data["y"].push(data_y[0]);
-					}else{
-						data.data["y"].push(data_y);
-					}
-				}
+			for (var i in data_x) {
+                            data.data["x"].push(data_x[i]);
+                            var data_y = mathFunc(data_x[i]);
+			    data.data["y"].push($.isArray(data_y) ? data_y[0] : data_y);
 			}
 
 			this.plotOptions.yaxis.title = options.yaxis.axisLabel;

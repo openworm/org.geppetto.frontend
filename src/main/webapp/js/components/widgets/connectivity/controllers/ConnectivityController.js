@@ -39,7 +39,7 @@ define(function (require) {
                     require.ensure([], function (require) {
                     var Connectivity = require('../Connectivity');
                     //look for a name and id for the new widget
-                    var id = that.getAvailableWidgetId("Connectivity", this.widgets);
+                    var id = that.getAvailableWidgetId("Connectivity", that.widgets);
                     var name = id;
 
                     //create tree visualiser widget

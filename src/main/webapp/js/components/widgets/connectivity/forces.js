@@ -23,7 +23,11 @@ define(function (require) {
                 .force("link", d3.forceLink().id(function (d) { return d.index; }))
                 .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2));
 
-            var link = context.svg.selectAll(".link")
+	    //add encompassing group for the zoom
+	    var g = context.svg.append("g")
+		.attr("class", "everything");
+
+            var link = g.selectAll(".link")
                 .data(context.dataset.links)
                 .enter().append("line")
                 .attr("class", "link")
@@ -34,7 +38,7 @@ define(function (require) {
                     return weightScale(d.weight)
                 });
 
-            var node = context.svg.selectAll(".node")
+            var node = g.selectAll(".node")
                 .data(context.dataset.nodes)
                 .enter().append("circle")
                 .attr("class", "node")
@@ -68,6 +72,13 @@ define(function (require) {
                 d.fx = null;
                 d.fy = null;
             }
+
+	    var zoom_handler = d3.zoom()
+		.on("zoom", zoom_actions);
+	    function zoom_actions(){
+		g.attr("transform", d3.event.transform);
+	    }
+            zoom_handler(context.svg);
 
             var legendPosition = { x: 0.75 * context.options.innerWidth, y: 0 };
 

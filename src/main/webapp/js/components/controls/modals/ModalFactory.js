@@ -50,7 +50,7 @@ define(['jquery'], function () {
 
 
         /**
-         * Basic Dialog box with message to display.
+         * Dialog box with two buttons (e.g. yes/no)
          *
          * @method
          *
@@ -59,14 +59,15 @@ define(['jquery'], function () {
          * @param msg -
          *            Message to display
          */
-        inputDialog: function (title, msg, aLabel, aClick, bLabel, bClick) {
-            var infoFactory = React.createFactory(InputModal);
+        inputDialog: function (title, msg, aLabel, aClick, bLabel, bClick, form) {
+            var inputFactory = React.createFactory(InputModal);
 
             ReactDOM.render(
-                infoFactory(
+                inputFactory(
                     {
                         show: true,
                         keyboard: false,
+                        form: form,
                         title: title,
                         text: msg,
                         aLabel: aLabel,

@@ -152,16 +152,16 @@ define(function (require) {
             return inputStr.replace(/\$projectId\$/gi, projectId).replace(/\$experimentId\$/gi, experimentId);
         },
 
-        attachTooltip: function () {
+        attachTooltip: function (content) {
             $('.control-panel-parameter-input').uitooltip({
                 position: {my: "right+50", at: "left-100"},
                 tooltipClass: "tooltip-container",
-                content: "Save project (★) to enable editing"
+                content: content
             });
             $('.control-panel-parameter-input').tooltip({
                 position: {my: "right+50", at: "left-100"},
                 tooltipClass: "tooltip-container",
-                content: "Save project (★) to enable editing"
+                content: content
             });
         },
 
@@ -171,7 +171,9 @@ define(function (require) {
             GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
             GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
             if (!GEPPETTO.UserController.hasPersistence())
-                this.attachTooltip();
+                this.attachTooltip("Save project (★) to enable editing.");
+            else if (window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED)
+                this.attachTooltip("Cannot edit parameters for completed experiment.");
         },
 
         componentWillUnmount: function () {

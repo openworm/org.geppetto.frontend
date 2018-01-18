@@ -60,8 +60,11 @@ define(function (require) {
 						dataType: 'html',
 						url: step.content_url,
 						success(responseData, textStatus, jqXHR) {
-							step.message = responseData;
-							self.forceUpdate();
+						    step.message = responseData;
+						    self.forceUpdate();
+                                                    var tutorialScript = document.getElementById("tutorialScript");
+                                                    if (tutorialScript !== null)
+                                                        eval(tutorialScript.innerHTML);
 						},
 						error(responseData, textStatus, errorThrown) {
 							throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
@@ -362,9 +365,6 @@ define(function (require) {
 				if (view.dataType == 'array') {
 					if(view.data.length == this.tutorials.length){
 						this.setComponentSpecificView(view.componentSpecific);
-						if(view.position!=undefined){
-							this.updatePosition(view.position);
-						}
 					}else if (view.data.length > 0){
 						for (var i = 0; i < view.data.length; i++) {
 							this.addTutorial(view.data[i], cb);
@@ -372,6 +372,14 @@ define(function (require) {
 					}
 				}
 			}
+
+                       if(view.size!=undefined){
+			   this.setSize(view.size.height, view.size.width);
+		       }
+
+                       if(view.position!=undefined){
+			   this.updatePosition(view.position);
+		       }
 
 			this.setDirty(false);
 		}

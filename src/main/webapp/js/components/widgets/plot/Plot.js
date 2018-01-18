@@ -170,7 +170,8 @@ define(function (require) {
 			this.dialog.append("<div id='" + this.id + "'></div>");
 			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
-			this.plotOptions.xaxis.range =[0,this.limit];
+		        this.plotOptions.xaxis.range =[0,this.limit];
+                        this.pinned = true; // by default, don't destroy when switching expts
 
 			var that = this;
 

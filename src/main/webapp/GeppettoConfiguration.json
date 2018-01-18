@@ -4,6 +4,7 @@
     "useSsl": false,
     "embedded": false,
     "embedderURL": ["/"],
+    "rootRedirect":"home",
     "noTest": false,
     "extensions": {
         "geppetto-default/ComponentsInitialization": false,

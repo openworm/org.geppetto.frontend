@@ -60,8 +60,11 @@ define(function (require) {
 						dataType: 'html',
 						url: step.content_url,
 						success(responseData, textStatus, jqXHR) {
-							step.message = responseData;
-							self.forceUpdate();
+						    step.message = responseData;
+						    self.forceUpdate();
+                                                    var tutorialScript = document.getElementById("tutorialScript");
+                                                    if (tutorialScript !== null)
+                                                        eval(tutorialScript.innerHTML);
 						},
 						error(responseData, textStatus, errorThrown) {
 							throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);

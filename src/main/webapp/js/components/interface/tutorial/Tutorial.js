@@ -365,9 +365,6 @@ define(function (require) {
 				if (view.dataType == 'array') {
 					if(view.data.length == this.tutorials.length){
 						this.setComponentSpecificView(view.componentSpecific);
-						if(view.position!=undefined){
-							this.updatePosition(view.position);
-						}
 					}else if (view.data.length > 0){
 						for (var i = 0; i < view.data.length; i++) {
 							this.addTutorial(view.data[i], cb);
@@ -375,6 +372,14 @@ define(function (require) {
 					}
 				}
 			}
+
+                       if(view.size!=undefined){
+			   this.setSize(view.size.height, view.size.width);
+		       }
+
+                       if(view.position!=undefined){
+			   this.updatePosition(view.position);
+		       }
 
 			this.setDirty(false);
 		}

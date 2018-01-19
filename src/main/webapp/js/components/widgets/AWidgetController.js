@@ -92,12 +92,13 @@ define(function (require) {
                 //remove all existing widgets
                 for (var i = 0; i < this.widgets.length; i++) {
                     var widget = this.widgets[i];
-                    if (!widget.pinned) {
-                        //remove commands
-                        GEPPETTO.CommandController.removeCommands(widget.getId());
-                        widget.destroy();
-                        i--;
-                    }
+
+                    //remove commands
+                    GEPPETTO.CommandController.removeCommands(widget.getId());
+
+                    widget.destroy();
+
+                    i--;
                 }
 
                 this.widgets = [];

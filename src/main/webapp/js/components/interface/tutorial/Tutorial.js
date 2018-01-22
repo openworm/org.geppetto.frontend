@@ -62,6 +62,7 @@ define(function (require) {
 						success(responseData, textStatus, jqXHR) {
 						    step.message = responseData;
 						    self.forceUpdate();
+                                                    self.setSize(self.size.height, self.size.width);
                                                     var tutorialScript = document.getElementById("tutorialScript");
                                                     if (tutorialScript !== null)
                                                         eval(tutorialScript.innerHTML);
@@ -351,7 +352,10 @@ define(function (require) {
 
 		setView(view) {
 			// set base properties
-			super.setView(view);
+		    super.setView(view);
+                    if(view.size!=undefined){
+			this.setSize(view.size.height, view.size.width);
+		    }
 			var self = this;
 			var cb = function(tutorials){
 				// only restore chapter and step once all the tutorials are loaded
@@ -372,10 +376,6 @@ define(function (require) {
 					}
 				}
 			}
-
-                       if(view.size!=undefined){
-			   this.setSize(view.size.height, view.size.width);
-		       }
 
                        if(view.position!=undefined){
 			   this.updatePosition(view.position);

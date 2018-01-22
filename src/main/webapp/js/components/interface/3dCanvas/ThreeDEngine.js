@@ -1080,7 +1080,6 @@ define(['jquery'], function () {
             var sphereNode = {radius: radius, position: {x: x, y: y, z: z}}
             var mesh = this.create3DSphereFromNode(sphereNode, material)
             mesh.renderOrder = 1;
-            mesh.clickThrough = true;
             this.scene.add(mesh);
             return mesh;
         },

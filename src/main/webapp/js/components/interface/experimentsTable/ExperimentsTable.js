@@ -386,8 +386,8 @@ define(function (require) {
         },
 
         activeExperiment : function(e){
-        	var experiment = this.props.experiment;
-        	var index = window.Project.getExperiments().indexOf(experiment);
+            var experiment = this.props.experiment;
+            var index = window.Project.getExperiments().indexOf(experiment);
             GEPPETTO.CommandController.execute("Project.getExperiments()[" + index + "].setActive();", true);
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();
@@ -534,6 +534,7 @@ define(function (require) {
 
             GEPPETTO.on(GEPPETTO.Events.Experiment_loaded, function () {
                 self.updateExperimentStatus();
+                self.updateExperimentsTableStatus();
             });
 
             GEPPETTO.on(GEPPETTO.Events.Experiment_created, function (experiment) {
@@ -699,11 +700,17 @@ define(function (require) {
          * Update experiment status of those in table
          */
         updateExperimentsTableStatus: function () {
-        	var self = this;
+            var self = this;
+            var active = window.Project.getActiveExperiment();
+            var smallStatus = $('.small-expt-indicator').attr("data-status");
+            if (smallStatus != active.getStatus()) {
+                $('.small-expt-indicator').removeClass(smallStatus);
+                $('.small-expt-indicator').addClass(active.getStatus());
+                $('.small-expt-indicator').attr("data-status", active.getStatus());
+            }
             // loop through each row of experiments table
             $('#experimentsTable tbody tr').each(function () {
                 var experiments = window.Project.getExperiments();
-                var active = window.Project.getActiveExperiment();
                 for (var e in experiments) {
                     var experiment = experiments[e];
                     if (this.id == ("#" + experiment.getId()) || this.id == (experiment.getId())) {

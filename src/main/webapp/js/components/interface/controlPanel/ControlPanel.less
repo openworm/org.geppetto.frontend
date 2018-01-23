@@ -91,7 +91,10 @@
 	background-color: fade(@background_color_widget, 70%);
 	border: 0px;
 	color: @primary_color;
-	padding: 5px;
+	padding: 0.5em 1em 0.5em 1em;
+}
+
+th.control-panel-value-column {
 	text-align: center;
 }
 
@@ -174,14 +177,25 @@
 }
 
 #controlpanel .control-panel-parameter-input {
-	border: 0;
+	border-style: none none dashed none;
+        border-width: 1px;
+        border-radius: 3px;
 	color: white;
-	background-color: transparent;
+	background-color: #4442427d;
 	margin-right: 5px;
+        padding-right: 0.5em;
 	float: left;
-	width: 65%;
+	width: 50%;
+        text-align: right;
 	font-family: "Consolas", "Andale Mono", "Courier New", "Courier",
 		monospace !important;
+}
+
+#controlpanel .control-panel-parameter-input:read-only {
+	border: 0;
+	background-color: transparent;
+        box-shadow: none;
+        -webkit-box-shadow: none;
 }
 
 #controlpanel .control-panel-parameter-edited {
@@ -189,12 +203,14 @@
 }
 
 #controlpanel .control-panel-parameter-unit {
-	float: right;
+	float: left;
+        margin-left: 0.5em;
 }
 
 #controlpanel td.control-panel-path-column {
 	font-family: "Consolas", "Andale Mono", "Courier New", "Courier",
 		monospace !important;
+        padding: 0 0 0 1em;
 }
 
 #controlpanel .control-panel-path-column {
@@ -204,6 +220,7 @@
 #controlpanel td.control-panel-parameter-path-column {
 	font-family: "Consolas", "Andale Mono", "Courier New", "Courier",
 		monospace !important;
+        padding: 0 0 0 1em;
 }
 
 #controlpanel .control-panel-parameter-path-column {

@@ -158,11 +158,6 @@ define(function (require) {
                 tooltipClass: "tooltip-container",
                 content: content
             });
-            $('.control-panel-parameter-input').tooltip({
-                position: {my: "right+50", at: "left-100"},
-                tooltipClass: "tooltip-container",
-                content: content
-            });
         },
 
         componentDidMount: function () {
@@ -253,12 +248,14 @@ define(function (require) {
             // if value is not default give it a different background
             var classString = (defaultValue === initialValue) ? "control-panel-parameter-input" : "control-panel-parameter-input control-panel-parameter-edited";
 
+            // IMPORTANT NOTE: empty title tag in the markup below is needed or the tooltip stops working
             return (
                 <div>
                     <input defaultValue={initialValue}
                            onBlur={onInputChangeHandler}
                            onKeyPress={onKeyPressHandler}
                            className={classString}
+                           title=""
                            readOnly={readOnly}/>
                     <span className="control-panel-parameter-unit">{unit}</span>
                 </div>

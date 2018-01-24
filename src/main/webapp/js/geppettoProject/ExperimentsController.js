@@ -195,6 +195,8 @@ define(function (require) {
                         localStorage.setItem("{0}_{1}_{2}_view".format(window.location.origin, Project.getId(), window.Project.getActiveExperiment().getId()), JSON.stringify(view));
                     }
                     setView = true;
+                }else if(GEPPETTO.UserController.persistence && GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)){
+                    setView = true;
                 }
                 
                 if(setView && GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)){

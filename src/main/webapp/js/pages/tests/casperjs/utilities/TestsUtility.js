@@ -1,6 +1,6 @@
 var urlBase = casper.cli.get('host');
 if(urlBase==null || urlBase==undefined){
-    urlBase = "http://127.0.0.1:8081/";
+    urlBase = "http://127.0.0.1:8080/";
 }
 var baseFollowUp = "org.geppetto.frontend/geppetto?";
 
@@ -399,4 +399,16 @@ function testingConnectionLines(test, expectedLines){
 function testMoviePlayerWidget(test,id){
     test.assertExists('div[id="'+id+'"]', "Movie player exists");
     test.assertExists("iframe[id=\"widget6\"]", "Movie player iframe exists");
+}
+
+function testPlotWidgets(test, widget, variableName, expectedGElements){
+	test.assertExists('div[id="'+widget+'"]', "Plot widget exists")
+
+	casper.then(function(){
+		var gElements = casper.evaluate(function(widget, expectedGElements) {
+			var gElements = $("#"+widget)[0].getElementsByClassName("legendtoggle").length;
+			return gElements;
+		}, widget, expectedGElements);
+		test.assertEquals(gElements, expectedGElements, "Right amount of graph elements for "+widget);
+	});
 }

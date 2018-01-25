@@ -69,9 +69,6 @@ module.exports = function(env){
 		    main: "./js/pages/geppetto/main.js",
 		    admin: "./js/pages/admin/admin.js"
 	};
-	if (!geppettoConfig.noTest) {
-	    entries['tests'] = "./js/pages/tests/qunit/QUnitTests.js";
-	}
 
 	console.log("\nThe Webpack entries are:");
 	console.log(entries);
@@ -114,19 +111,6 @@ module.exports = function(env){
 	            filename: 'dashboard.vm',
 	            template: './js/pages/dashboard/dashboard.ejs',
 	            GEPPETTO_CONFIGURATION: geppettoConfig,
-	            chunks: []
-	        }),
-	        new HtmlWebpackPlugin({
-	            filename: 'tests.vm',
-	            template: './js/pages/tests/tests.ejs',
-	            chunks: []
-	        }),
-	        new HtmlWebpackPlugin({
-	            filename: 'qunitTest.vm',
-	            template: './js/pages/tests/qunitTest.ejs',
-	            // chunks: ['tests'] Not specifying the chunk since its not possible
-				// yet (need to go to Webpack2) to specify UTF-8 as charset without
-				// which we have errors
 	            chunks: []
 	        }),
 	        new HtmlWebpackPlugin({

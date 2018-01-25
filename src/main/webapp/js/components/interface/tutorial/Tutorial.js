@@ -216,7 +216,7 @@ define(function (require) {
 						"position": i
 					})
 				}
-
+                            data.sort();
 				this.chaptersMenu.show({
 					top: event.pageY,
 					left: event.pageX + 1,

@@ -43,7 +43,8 @@ define(function(require) {
                         stateless: isStateless
                     });
                     p.setController(that);
-
+                    p.setSize(p.defaultSize().height, p.defaultSize().width);
+                    
                     //create help command for plot
                     p.help = function() {
                         return GEPPETTO.CommandController.getObjectCommands(id);

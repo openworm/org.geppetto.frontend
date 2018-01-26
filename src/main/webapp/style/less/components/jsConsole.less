@@ -23,7 +23,7 @@
 
 
 #console {
-	background:rgba(66,59,59,0.80);
+	background:fade(@background_color_widget, 80%);
 	color: #ccc;
 	padding:20px 20px 18px 20px;
 	height: 250px;
@@ -48,8 +48,8 @@
 	background:transparent
 }
 
-#console div.output span           { color:#f7f7f7; }
-#console div.output span.command   { color:#ccc; }
+#console div.output span           { color:@primary_color; }
+#console div.output span.command   { color:@primary_color; }
 #console div.output span.prefix    { color:#777; }
 #console div.output span.undefined { color:#777; }
 #console div.output span.string    { color:@primary_color; white-space:pre; }
@@ -71,10 +71,10 @@
 	position:absolute;
 	top: 1px;
 	left: 0;
-	color:#ddd
+	color:@secondary_color;
 }
 #console textarea {
-	color:#f7f7f7;
+	color:@primary_color;;
 	background:transparent;
 	border:0 none;
 	outline:0 none;

@@ -142,6 +142,8 @@ define(function (require) {
          */
         setTimeStep: function (timeStep) {
             var properties = {};
+            if (typeof timeStep === 'string')
+                timeStep = parseFloat(timestep);
             properties["timeStep"] = timeStep;
             properties["aspectInstancePath"] = this.aspectInstancePath;
             this.getParent().saveExperimentProperties(properties);
@@ -165,6 +167,8 @@ define(function (require) {
          */
         setLength: function (length) {
             var properties = {};
+            if (typeof length === 'string')
+                length = parseFloat(length);
             properties["length"] = length;
             properties["aspectInstancePath"] = this.aspectInstancePath;
             this.getParent().saveExperimentProperties(properties);

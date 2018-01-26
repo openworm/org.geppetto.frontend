@@ -265,10 +265,6 @@ define(function (require) {
 		 * @param {Object} options - options for the plotting widget, if null uses default
 		 */
 		plotData: function (data, options) {
-			// set flags for function node and xy both to false
-			this.isFunctionNode = false;
-			this.hasStandardPlotData = true;
-
 			var validVariable = eval(data);
 			if(validVariable == null || undefined){
 				return "Can't plot undefined variable";
@@ -277,6 +273,19 @@ define(function (require) {
 			if (!$.isArray(data)) {
 				data = [data];
 			}
+
+			//don't allow duplicates
+			for (var i = 0; i < this.datasets.length; i++) {
+            	variable = this.variables[this.getLegendInstancePath(this.datasets[i].name)];
+            	for (var j = 0; j < data.length; j++) {
+                    if (variable.getInstancePath() == data[j].getInstancePath()) {
+                        return;
+                    }
+                }
+            }
+			// set flags for function node and xy both to false
+			this.isFunctionNode = false;
+			this.hasStandardPlotData = true;
 
         	for (var i = 0; i < data.length; i++) {
         		this.controller.addToHistory("Plot "+data[i].getInstancePath(),"plotData",[data[i]],this.getId());

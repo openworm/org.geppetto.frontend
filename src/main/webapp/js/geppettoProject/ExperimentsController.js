@@ -38,7 +38,7 @@ define(function (require) {
 
             /** Update the instances of this experiment given the experiment state */
             updateExperiment: function (experiment, experimentState) {
-            	
+            	this.addExternalExperimentState(experimentState);
                 this.playExperimentReady = false; //we reset
                 this.maxSteps = 0;
                 for (var i = 0; i < experimentState.recordedVariables.length; i++) {
@@ -47,7 +47,7 @@ define(function (require) {
                     var instance = Instances.getInstance(instancePath);
                     instance.setWatched(true, false);
                     if (recordedVariable.hasOwnProperty("value") && recordedVariable.value != undefined) {
-                        //if at least one of the varialbes has a value we consider the experiment as ready to be played
+                        //if at least one of the variables has a value we consider the experiment as ready to be played
                         this.playExperimentReady = true;
                         instance.setTimeSeries(recordedVariable.value.value);
                         if (recordedVariable.value.value.length > this.maxSteps) {
@@ -136,17 +136,30 @@ define(function (require) {
             },
             
             setActive:function(experiment){
+                var currentExpt = Project.getActiveExperiment();
                 GEPPETTO.ExperimentsController.closeCurrentExperiment();
                 var parameters = {};
                 parameters["experimentId"] = experiment.id;
                 parameters["projectId"] = experiment.getParent().getId();
-                
-	            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
+
+                // switch out variables in existing plot widgets Instance<->ExternalInstance
+                var plots = GEPPETTO.ComponentFactory.getComponents()["0"];
+                if (plots)
+                    for (var i=0; i<plots.length; ++i) {
+                        var plot = plots[i];
+                        GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).then(
+                            (function(plot, exptPrev, exptTarget){
+                                return controller => controller.switchVariables(plot, currentExpt, experiment);
+                            })(plot, currentExpt, experiment)
+                        );
+                    }
+
+	        GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.LOADING_EXPERIMENT);
                 // before wiping widgets stop view monitoring otherwise we may wipe the experiment view
                 GEPPETTO.ViewController.clearViewMonitor();
                 // wipe widgets
-				GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
-				GEPPETTO.MessageSocket.send("load_experiment", parameters);
+		GEPPETTO.WidgetsListener.update(GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.DELETE);
+		GEPPETTO.MessageSocket.send("load_experiment", parameters);
             },
 
             /**

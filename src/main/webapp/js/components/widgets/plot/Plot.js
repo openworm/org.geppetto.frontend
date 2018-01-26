@@ -170,7 +170,8 @@ define(function (require) {
 			this.dialog.append("<div id='" + this.id + "'></div>");
 			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
-			this.plotOptions.xaxis.range =[0,this.limit];
+		        this.plotOptions.xaxis.range =[0,this.limit];
+                        this.pinned = true; // by default, don't destroy when switching expts
 
 			var that = this;
 
@@ -1058,7 +1059,7 @@ define(function (require) {
 		plotXYData: function (dataY, dataX, options) {
 			// set flags
 			this.hasXYData = true;
-			this.isFunctionNode = false;
+                        this.isFunctionNode = false;
 			var xyDataEntry = { dataY : dataY.getPath(), dataX: dataX.getPath() };
 			if(dataY instanceof ExternalInstance){
 				xyDataEntry.projectId = dataY.projectId;
@@ -1145,14 +1146,14 @@ define(function (require) {
 					baseView.xyData = this.xyData.slice(0);
 				}
 
-				if (this.hasStandardPlotData) {
+			       if (this.hasStandardPlotData) {
 					// simple plot with non external instances
 					baseView.dataType = 'object';
 					baseView.data = [];
 					for(var item in this.variables){
 						// only add non external instances
 						if(!(this.variables[item] instanceof ExternalInstance)){
-							baseView.data.push(item)
+						    baseView.data.push(item);
 						}
 					}
 				}
@@ -1162,9 +1163,9 @@ define(function (require) {
 		},
 
 		setView: function(view){
-			// set base properties
+		    // set base properties
+                    if (this.pinned && this.datasets.length > 0) return;
 			Widget.View.prototype.setView.call(this, view);
-
 			if(view.dataType == 'function'){
 				var functionNode = eval(view.data);
 				this.plotFunctionNode(functionNode);
@@ -1193,11 +1194,11 @@ define(function (require) {
 				// if any data, loop through it
 				if(view.data != undefined){
 					for (var index in view.data) {
-						var path = view.data[index];
-						this.controller.plotStateVariable(
+					    var item = view.data[index];
+                                            this.controller.plotStateVariable(
 							Project.getId(),
 							Project.getActiveExperiment().getId(),
-							path,
+							item,
 							this
 						);
 					}

@@ -33,6 +33,7 @@ define(function (require) {
             dialog: null,
             visible: true,
             destroyed: false,
+            pinned: false, // whether to delete when switching expt.
             size: {},
             position: {},
             registeredEvents: null,

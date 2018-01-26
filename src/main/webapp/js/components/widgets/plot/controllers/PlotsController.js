@@ -6,7 +6,7 @@
 define(function(require) {
 
     var AWidgetController = require('../../AWidgetController');
-    
+    var ExternalInstance = require('../../../../geppettoModel/model/ExternalInstance');
 
     /**
      * @exports Widgets/Plotly/PlotlyController
@@ -284,6 +284,58 @@ define(function(require) {
             }
 
             return legend;
+        },
+
+        // when switching experiments, update variables from current
+        // experiments in existing plots to point to
+        // ExternalInstances, or update ExternalInstances to Instances
+        // if we are switching to the experiment to which they belong
+        switchVariables: function(plotWidget, exptPrev, exptTarget) {
+            var cb = function(plotWidget, exptPrev, exptTarget) {
+                return function() {
+                    for (var v in plotWidget.variables) {
+                        var variable = plotWidget.variables[v];
+                        if (variable.path == "time(StateVariable)")
+                            continue
+                        if (!(variable instanceof ExternalInstance)) {
+                            plotWidget.variables[v] = GEPPETTO.ExperimentsController.getExternalInstance(
+                                Project.getId(),
+                                exptPrev.getId(),
+                                variable.getInstancePath()
+                            );
+                        } else if (variable.experimentId == exptTarget.id &&
+                                   variable.projectId == exptTarget.getParent().getId()) {
+                                plotWidget.variables[v] = Instances.getInstance(variable.path);
+                        }
+                    }
+                    if (Object.values(plotWidget.variables).filter(x => x instanceof ExternalInstance).length > 0) {
+                        plotWidget.hasStandardPlotData = false;
+                        plotWidget.xyData = Object.values(plotWidget.variables).map(function(v) {
+                            return {'dataY': v.getInstancePath(),
+                                    'dataX': "time(StateVariable)",
+                                    'projectId': v.projectId,
+                                    'experimentId': v.experimentId}
+                        });
+                        plotWidget.hasXYData = true;
+                        plotWidget.dirtyView = true;
+                    }
+                    else {
+                        plotWidget.hasStandardPlotData = true;
+                        plotWidget.xyData = [];
+                        plotWidget.hasXYData = false;
+                        plotWidget.dirtyView = true;
+                    }
+                }
+            };
+            if (GEPPETTO.ExperimentsController.externalExperiments[Project.getId()] !== 'undefined' &&
+                GEPPETTO.ExperimentsController.externalExperiments[Project.getId()][exptPrev.getId()] == 'undefined')
+                GEPPETTO.ExperimentsController.getExperimentState(Project.getId(),
+                                                                  exptPrev.getId(),
+                                                                  Object.values(plotWidget.variables)
+                                                                      .map(x => x.getInstancePath()),
+                                                                  cb(plotWidget, exptPrev, exptTarget));
+            else
+                cb(plotWidget, exptPrev, exptTarget)();
         }
     });
 });

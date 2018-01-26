@@ -14,6 +14,7 @@ define(function(require) {
             PROJECT_PROPS_SAVED: "project_props_saved",
             EXPERIMENT_PROPS_SAVED: "experiment_props_saved",
             EXPERIMENT_CREATED: "experiment_created",
+            EXPERIMENT_CLONED: "experiment_cloned",
             EXPERIMENT_BATCH_CREATED: "experiment_batch_created",
             EXPERIMENT_LOADING: "experiment_loading",
             EXPERIMENT_LOADED: "experiment_loaded",
@@ -67,6 +68,7 @@ define(function(require) {
         messageHandler[messageTypes.EXPERIMENT_CREATED] = function(payload) {
             var experiment = JSON.parse(payload.experiment_created);
             GEPPETTO.Manager.createExperiment(experiment);
+            GEPPETTO.CommandController.log("Experiment created succesfully");
         };
 
         messageHandler[messageTypes.EXPERIMENT_BATCH_CREATED] = function(payload) {
@@ -156,6 +158,7 @@ define(function(require) {
             var projectID = message.projectID;
             var activeExperimentID = message.activeExperimentID;
             GEPPETTO.Manager.persistProject(projectID, activeExperimentID);
+            GEPPETTO.CommandController.log("Project persisted");
             GEPPETTO.trigger("stop_spin_persist");
         };
 
@@ -167,6 +170,7 @@ define(function(require) {
         messageHandler[messageTypes.EXPERIMENT_DELETED] = function(payload) {
             var data = JSON.parse(payload.update);
             GEPPETTO.Manager.deleteExperiment(data);
+            GEPPETTO.CommandController.log("Experiment deleted succesfully");
         };
 
         messageHandler[messageTypes.WATCHED_VARIABLES_SET] = function(payload) {
@@ -217,32 +221,33 @@ define(function(require) {
         };
 
         messageHandler[messageTypes.DROPBOX_LINKED] = function(payload) {
-            GEPPETTO.CommandController.log("Dropbox linked successfully");
+            GEPPETTO.CommandController.log("Dropbox linked successfully",true);
+			GEPPETTO.ModalFactory.infoDialog("Success", "Dropbox linked successfully");
         };
 
         messageHandler[messageTypes.DROPBOX_UNLINKED] = function(payload) {
-            GEPPETTO.CommandController.log("Dropbox unlinked succesfully");
+            GEPPETTO.CommandController.log("Dropbox unlinked succesfully",true);
         };
 
         messageHandler[messageTypes.DOWNLOAD_RESULTS] = function(payload) {
-            GEPPETTO.CommandController.log("Results downloaded succesfully");
+            GEPPETTO.CommandController.log("Results downloaded succesfully",true);
         };
 
         messageHandler[messageTypes.DOWNLOAD_MODEL] = function(payload) {
-            GEPPETTO.CommandController.log("Model downloaded succesfully");
+            GEPPETTO.CommandController.log("Model downloaded succesfully",true);
         };
         
         messageHandler[messageTypes.DOWNLOAD_PROJECT] = function (payload) {
         	GEPPETTO.trigger(GEPPETTO.Events.Project_downloaded);
-            GEPPETTO.CommandController.log("Project downloaded succesfully");
+            GEPPETTO.CommandController.log("Project downloaded succesfully",true);
         };
 
         messageHandler[messageTypes.RESULTS_UPLOADED] = function(payload) {
-            GEPPETTO.CommandController.log("Results uploaded succesfully");
+            GEPPETTO.CommandController.log("Results uploaded succesfully",true);
         };
 
         messageHandler[messageTypes.MODEL_UPLOADED] = function(payload) {
-            GEPPETTO.CommandController.log("Model uploaded succesfully");
+            GEPPETTO.CommandController.log("Model uploaded succesfully",true);
         };
 
         GEPPETTO.MessageHandler =

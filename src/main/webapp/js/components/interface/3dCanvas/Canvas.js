@@ -623,6 +623,11 @@ define(function (require) {
             return this;
         }
 
+        showAxis(show) {
+            this.engine.showAxis(show)
+            return this;
+        }
+
         /**
          * Set container dimensions depending on parent dialog
          * @return {*[]}

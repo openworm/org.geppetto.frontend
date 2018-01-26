@@ -32,10 +32,10 @@ define(function (require, exports, module) {
 		},
 
 		syncValueWithPython: function (value, requirement) {
-			var jsonValue=JSON.stringify(value);
+			var jsonValue = JSON.stringify(value);
 			this.set('value', jsonValue);
 			this.save_changes();
-			this.send({ event: 'sync_value', value: jsonValue, requirement: requirement});
+			this.send({ event: 'sync_value', value: jsonValue, requirement: requirement });
 		},
 
 		getParameters: function (parameters) {
@@ -57,10 +57,10 @@ define(function (require, exports, module) {
 			return component;
 		},
 
-		handle_value_change: function(model, jsonValue, options) {
-			var value="";
-			if (jsonValue != undefined && jsonValue !="") {
-				value=JSON.parse(jsonValue);
+		handle_value_change: function (model, jsonValue, options) {
+			var value = "";
+			if (jsonValue != undefined && jsonValue != "") {
+				value = JSON.parse(jsonValue);
 			}
 			if (model.get('parent') != null) {
 				model.get('parent').forceRender();
@@ -77,14 +77,21 @@ define(function (require, exports, module) {
 		handle_custom_messages: function (msg) {
 			if (msg.type === 'connect') {
 				var component = GEPPETTO.ComponentFactory.getComponentById(this.get("componentType"), this.id);
-				component.setSyncValueWithPythonHandler(this.syncValueWithPython.bind(this));
-				this.component = component;
+				//this could be undefined if we are in the middle of a rename
+				if (component != undefined) {
+					component.setSyncValueWithPythonHandler(this.syncValueWithPython.bind(this));
+					this.component = component;
+				}
+
 			}
 			else if (msg.type === 'disconnect') {
 				this.off("msg:custom", this.handle_custom_messages, this);
 				this.off("change:value", this.handle_value_change, this);
-				this.component.setSyncValueWithPythonHandler(null);
-				this.component = null;
+				//this could be undefined if we are in the middle of a rename
+				if (this.component != undefined) {
+					this.component.setSyncValueWithPythonHandler(null);
+					this.component = null;
+				}
 			}
 		}
 	});

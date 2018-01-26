@@ -93,6 +93,8 @@ define(function (require) {
                         self.maximize = true;
                     }
                 });
+                
+                //this.setSize(this.defaultSize.height, this.defaultSize.width);
             },
 
             /**
@@ -436,7 +438,7 @@ define(function (require) {
              * hides / shows the title bar
              */
             showTitleBar: function (show) {
-                this.showTitleBar = show;
+                this.hasTitleBar = show;
 
                 if (show) {
                     this.$el.parent().find(".ui-dialog-titlebar").show();
@@ -466,6 +468,7 @@ define(function (require) {
             },
 
             showHistoryNavigationBar: function (show) {
+                this.hasHistoryNavigationBar = show;
                 var leftNav = $("#" + this.id + "-left-nav");
                 var rightNav = $("#" + this.id + "-right-nav");
 
@@ -708,6 +711,10 @@ define(function (require) {
                             $(".ui-dialog-titlebar-restore span").addClass("fa-compress");
                             that.maximize = true;
                             that.$el.parent().css("z-index", zIndex.max);
+                            that.size = {
+                                height: divheight,
+                                width: divwidth
+                            };
                         },
                         "restore": function (evt, dlg) {
                             if (that.maximize) {
@@ -820,7 +827,8 @@ define(function (require) {
                 return {
                     widgetType: this.widgetType,
                     isWidget: this.isWidget(),
-                    showTitleBar: this.showTitleBar,
+                    showTitleBar: this.hasTitleBar,
+                    showHistoryNavigationBar: this.hasHistoryNavigationBar,
                     transparentBackground: this.transparentBackground,
                     name: this.name,
                     size: {
@@ -859,6 +867,10 @@ define(function (require) {
 
                 if (view.showTitleBar != undefined) {
                     this.showTitleBar(view.showTitleBar);
+                }
+
+                if (view.showHistoryNavigationBar != undefined) {
+                    this.showHistoryNavigationBar(view.showHistoryNavigationBar);
                 }
 
                 if (view.transparentBackground != undefined) {

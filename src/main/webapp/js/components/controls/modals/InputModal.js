@@ -21,6 +21,10 @@ define(function (require) {
                 bClick: function(){},
             }
         },
+
+        handleChange: function(event) {
+            this.setState({text: event.target.value});
+        },
         
         render: function (){
         	return <div className="modal fade" id="infomodal">
@@ -31,10 +35,13 @@ define(function (require) {
         				</div>
         				<div className="modal-body">
         			 		<p id="infomodal-text">{this.props.text}</p>
-        			 	</div>
+                                                {this.props.form &&
+                                                     <input type="text" className="form-control" id="infomodal-input" onChange={this.handleChange}></input>
+                                                }
+                                        </div>
         			 	<div className="modal-footer" id="infomodal-footer">
-        			 		<button  className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.aClick} dangerouslySetInnerHTML={{__html: this.props.aLabel}}></button>
-        			 		<button  className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.bClick} dangerouslySetInnerHTML={{__html: this.props.bLabel}}></button>
+                <button className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.aClick.bind(this)} dangerouslySetInnerHTML={{__html: this.props.aLabel}}></button>
+                <button className="btn" data-dismiss="modal" aria-hidden="true" onClick={this.props.bClick.bind(this)} dangerouslySetInnerHTML={{__html: this.props.bLabel}}></button>
         			 	</div>
         			 </div>
               		 </div>

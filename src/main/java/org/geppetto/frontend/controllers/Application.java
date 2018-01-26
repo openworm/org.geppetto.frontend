@@ -78,12 +78,14 @@ public class Application
 				// This is with any other authentication system from another web application.
 				// since sharing the scope session across the different web application bundles
 				// is more complex than expected (if possible at all) we are using cookies
-				for(Cookie c : req.getCookies())
-				{
-					if(c.getName().equals(authService.getSessionId()))
+				if (req.getCookies() != null) {
+				    for(Cookie c : req.getCookies())
 					{
-						auth = authService.isAuthenticated(c.getValue());
-						break;
+					    if(c.getName().equals(authService.getSessionId()))
+						{
+						    auth = authService.isAuthenticated(c.getValue());
+						    break;
+						}
 					}
 				}
 			}
@@ -126,40 +128,6 @@ public class Application
 		URL resource = URLReader.getURL(url);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream()));
 		return new Gson().fromJson(reader, Test.class);
-	}
-
-	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
-	public String testNeuronal(Model model)
-	{
-		model.addAttribute("qunitfile", new String("NeuronalTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
-	public String testCore(Model model)
-	{
-		model.addAttribute("qunitfile", new String("CoreTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
-	public String testExternalSimulator(Model model)
-	{
-		model.addAttribute("qunitfile", new String("ExternalSimulatorTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
-	public String testPersistence(Model model)
-	{
-		model.addAttribute("qunitfile", new String("PersistenceTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)
-	public String tests()
-	{
-		return "tests";
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)

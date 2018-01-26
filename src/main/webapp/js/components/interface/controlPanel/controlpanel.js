@@ -165,10 +165,11 @@ define(function (require) {
             GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
             GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
             GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
-            if (!GEPPETTO.UserController.hasPersistence())
+            var status = window.Project.getActiveExperiment().getStatus();
+            if (GEPPETTO.UserController.hasPersistence() && !window.Project.persisted)
                 this.attachTooltip("Save project (★) to enable editing.");
-            else if (window.Project.getActiveExperiment().getStatus() == GEPPETTO.Resources.ExperimentStatus.COMPLETED)
-                this.attachTooltip("Cannot edit parameters for completed experiment.");
+            else if (status != GEPPETTO.Resources.ExperimentStatus.DESIGN)
+                this.attachTooltip("Experiment status is " + status + ". Create new experiment to enable parameter editing.");
         },
 
         componentWillUnmount: function () {

@@ -958,8 +958,13 @@ define(function (require) {
 				parameterizedExpression = parameterizedExpression.substring(0, parameterizedExpression.length - 1);
 				parameterizedExpression += ") =" + expression;
 
-				//Plot data function
+			    //Plot data function
+                            try {
 				this.plotDataFunction(parameterizedExpression, values, options);
+                            } catch (e) {
+                                this.destroy();
+                                GEPPETTO.ModalFactory.infoDialog("Plotting of this variable not yet supported.");
+                            }
 
 				//Set title to widget
 				this.setName(plotTitle);

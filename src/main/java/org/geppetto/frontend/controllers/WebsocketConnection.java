@@ -373,6 +373,12 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 				connectionHandler.linkDropBox(requestID, key);
 				break;
 			}
+                        case GET_DROPBOX_TOKEN:
+                        {
+                            //ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+                                connectionHandler.getDropboxToken(requestID);
+                                break;
+                        }
 			case UNLINK_DROPBOX:
 			{
 				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()

@@ -265,10 +265,6 @@ define(function (require) {
 		 * @param {Object} options - options for the plotting widget, if null uses default
 		 */
 		plotData: function (data, options) {
-			// set flags for function node and xy both to false
-			this.isFunctionNode = false;
-			this.hasStandardPlotData = true;
-
 			var validVariable = eval(data);
 			if(validVariable == null || undefined){
 				return "Can't plot undefined variable";
@@ -277,6 +273,19 @@ define(function (require) {
 			if (!$.isArray(data)) {
 				data = [data];
 			}
+
+			//don't allow duplicates
+			for (var i = 0; i < this.datasets.length; i++) {
+            	variable = this.variables[this.getLegendInstancePath(this.datasets[i].name)];
+            	for (var j = 0; j < data.length; j++) {
+                    if (variable.getInstancePath() == data[j].getInstancePath()) {
+                        return;
+                    }
+                }
+            }
+			// set flags for function node and xy both to false
+			this.isFunctionNode = false;
+			this.hasStandardPlotData = true;
 
         	for (var i = 0; i < data.length; i++) {
         		this.controller.addToHistory("Plot "+data[i].getInstancePath(),"plotData",[data[i]],this.getId());
@@ -936,7 +945,7 @@ define(function (require) {
 				//TODO: What are we going to do if we have two arguments?
 				var values = [];
 				for (var i = initialValue; i < finalValue; i = i + stepValue) {
-					values.push([i]);
+				    values.push(i);
 				}
 
 				var plotTitle = plotMetadata["title"];
@@ -996,22 +1005,10 @@ define(function (require) {
 			data.data = {};
 			data.data["x"] = [];
 			data.data["y"] = [];
-			for (var data_xIndex in data_x) {
-				var dataElementString = data_x[data_xIndex].valueOf();
-				data_y = mathFunc(dataElementString);
-				//TODO: Understand why sometimes it returns an array and not a value
-				if (typeof value == 'object') {
-					data.data["x"].push(data_x[data_xIndex][0]);
-					data.data["y"].push(data_y[0]);
-				}
-				else {
-					data.data["x"].push(data_x[data_xIndex][0]);
-					if(data_y instanceof Array){
-						data.data["y"].push(data_y[0]);
-					}else{
-						data.data["y"].push(data_y);
-					}
-				}
+			for (var i in data_x) {
+                            data.data["x"].push(data_x[i]);
+                            var data_y = mathFunc(data_x[i]);
+			    data.data["y"].push($.isArray(data_y) ? data_y[0] : data_y);
 			}
 
 			this.plotOptions.yaxis.title = options.yaxis.axisLabel;

@@ -702,11 +702,8 @@ define(['jquery'], function () {
                 if (position != null) {
                     var p = new THREE.Vector3(position.x, position.y, position.z);
                     mesh.position.set(p.x, p.y, p.z);
-                    mesh.matrixAutoUpdate = false;
-                    mesh.applyMatrix(new THREE.Matrix4().makeTranslation(p.x, p.y, p.z));
                     mesh.geometry.verticesNeedUpdate = true;
                     mesh.updateMatrix();
-                    // mesh.geometry.translate(position.x, position.y,position.z);
                 }
                 this.scene.add(mesh);
                 this.meshes[instancePath] = mesh;
@@ -1158,9 +1155,10 @@ define(['jquery'], function () {
                 geometry.vertices.push(bottomBasePos);
                 geometry.vertices.push(topBasePos);
                 threeObject = new THREE.Line(geometry, material);
+                threeObject.applyMatrix(new THREE.Matrix4().makeTranslation(0, axis.length() / 2, 0));
                 threeObject.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
                 threeObject.lookAt(axis);
-                threeObject.position.fromArray(midPoint.toArray());
+                threeObject.position.fromArray(bottomBasePos.toArray());
 
                 threeObject.geometry.verticesNeedUpdate = true;
             } else if (node.eClass == GEPPETTO.Resources.SPHERE) {
@@ -1185,17 +1183,21 @@ define(['jquery'], function () {
 
             var axis = new THREE.Vector3();
             axis.subVectors(topBasePos, bottomBasePos);
-            var midPoint = new THREE.Vector3();
-            midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
 
             var c = new THREE.CylinderGeometry(cylNode.topRadius, cylNode.bottomRadius, axis.length(), 20, 1, false);
-            c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+
+            // shift it so one end rests on the origin
+            c.applyMatrix(new THREE.Matrix4().makeTranslation(0, axis.length() / 2, 0));
+            // rotate it the right way for lookAt to work
+            c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI/2));
+            // make a mesh with the geometry
             var threeObject = new THREE.Mesh(c, material);
-
+            // make it point to where we want
             threeObject.lookAt(axis);
-            threeObject.position.fromArray(midPoint.toArray());
-
+            // move base
+            threeObject.position.fromArray(bottomBasePos.toArray());
             threeObject.geometry.verticesNeedUpdate = true;
+
             return threeObject;
         },
 

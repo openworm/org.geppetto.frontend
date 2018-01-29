@@ -62,18 +62,16 @@ define(function (require) {
                 GEPPETTO.CommandController.execute(callbackCommand, true);
                 var anyPlotUp = false;
 
-                // check if any plots are up
-                if(GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT) != null && GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT) != undefined &&
-                    GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets() != null && GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets() != undefined &&
-                    GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).getWidgets().length > 0){
-                    anyPlotUp = true;
-                }
-
-                if(!anyPlotUp){
-                    // if not, bring up spotlight configured for the PLAY flow
-                    GEPPETTO.Spotlight.open(GEPPETTO.Resources.PLAY_FLOW);
-
-                }
+                GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).then(controller => {
+                    // check if any plots are up
+                    if (controller.getWidgets().length > 0) {
+                        anyPlotUp = true;
+                        if(!anyPlotUp){
+                            // if not, bring up spotlight configured for the PLAY flow
+                            GEPPETTO.Spotlight.open(GEPPETTO.Resources.PLAY_FLOW);
+                        }
+                    }
+                });
             },
             
             /*

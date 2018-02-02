@@ -205,7 +205,7 @@ define(function (require) {
             var post = nodes.map(function(x,i) { return {id: x.id, conn: matrixT[i].filter(function(d) { return d.z; }).length > 0}});
 
             var popNameFromId = function(id) {
-                return eval(GEPPETTO.ModelFactory.getAllPotentialInstancesEndingWith(id)[0]).getParent().getName();
+                return id.split('[')[0];
             };
 
             var mouseoverCell = function(msg) {

@@ -104,7 +104,9 @@ define(['jquery'], function () {
 
                 if (multicompartment) {
                     for (var j = 0; j < composite.getChildren().length; ++j) {
-                        visualObjectsToLit[currentCompositePath].push(composite.getChildren()[j].getId());
+                        var id = composite.getChildren()[j].getId();
+                        if (visualObjectsToLit[currentCompositePath].indexOf(id) < 0)
+                            visualObjectsToLit[currentCompositePath].push(id);
                     }
                 }
                 variables[currentCompositePath].push(instances[i]);
@@ -158,13 +160,16 @@ define(['jquery'], function () {
                     var elements = {};
                     for (var voIndex in visualObjects) {
                         elements[visualObjects[voIndex]] = "";
-                        modulations.push(instance.getInstancePath() + "." + visualObjects[voIndex]);
+                        var path = instance.getInstancePath() + "." + visualObjects[voIndex];
+                        if (modulations.indexOf(path) < 0)
+                            modulations.push(path);
 
                     }
                     this.engine.splitGroups(instance, elements);
                 }
                 else {
-                    modulations.push(instance.getInstancePath());
+                    if (modulations.indexOf(instance.getInstancePath()) < 0)
+                        modulations.push(instance.getInstancePath());
                 }
             }
 

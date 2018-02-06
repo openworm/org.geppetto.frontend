@@ -417,10 +417,10 @@ define(function (require) {
 				if(view.dataType == 'string'){
 					this.setMessage(view.data);
 				} else if($.isArray(view.data)){
-				        this.setData(eval(view.data[0]), view.data[1]);
-				}else {
-					// it's an object
-					this.setData(view.data);
+				    this.setData(eval(view.data[0]), view.data[1]);
+				} else {
+				    // it's an object
+				    this.setData(view.data);
 				}
 			}
 

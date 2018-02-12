@@ -14,6 +14,7 @@ var cElegansPVDR = "load_project_from_id=8";
 var eyeWire = "load_project_from_id=9";
 var nwbSample = "load_project_from_id=18";
 var Pharyngeal = "load_project_from_id=58";
+var cylinders = "load_project_from_url=https://raw.githubusercontent.com/openworm/org.geppetto.samples/development/UsedInUnitTests/cylinder/geppetto.json";
 var defaultColor = [0.00392156862745098,0.6,0.9098039215686274];
 var zoomClicks = 50, panClicks=10, rotateClicks=20;
 
@@ -135,9 +136,9 @@ function testCameraPosition(test,expectedCamPosition){
         expectedCamPosition[i] = parseFloat(expectedCamPosition[i].toFixed(3))
     }
 
-    test.assertEquals( camPosition[0],expectedCamPosition[0], "Vector's x coordinate is correct as camera poistion");
-    test.assertEquals( camPosition[1],expectedCamPosition[1], "Vector's y coordinate is correct as camera poistion");
-    test.assertEquals( camPosition[2],expectedCamPosition[2], "Vector's z coordinate is correct as camera poistion");
+    test.assertEquals( camPosition[0],expectedCamPosition[0], "Vector's x coordinate is correct as camera position");
+    test.assertEquals( camPosition[1],expectedCamPosition[1], "Vector's y coordinate is correct as camera position");
+    test.assertEquals( camPosition[2],expectedCamPosition[2], "Vector's z coordinate is correct as camera position");
 }
 
 /**

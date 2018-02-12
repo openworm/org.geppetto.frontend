@@ -288,7 +288,7 @@ function testACNET2Project(test){
     });
     casper.then(function(){
         casper.echo("-------Testing Camera Controls--------");
-        testCameraControls(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
+        testCameraControls(test,[231.95608349343888,508.36555704435455,1849.839]);
     });
     casper.then(function () {
         casper.echo("-------Testing Original Color--------");
@@ -385,7 +385,7 @@ function testACNET2Project(test){
 
     casper.then(function () {
         //tests camera controls are working by checking camera has moved
-        testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.8390363191731]);
+        testCameraControlsWithCanvasWidget(test,[231.95608349343888,508.36555704435455,1849.839]);
     });
 
     casper.then(function () {
@@ -792,4 +792,29 @@ function testC302Connectome(test){
     casper.waitForSelector('div[id="Popup1"]', function() {
         this.echo("I've waited for Popup1 to load.");
     }, null, 150000);
+}
+
+
+function testCylindersProject(test){
+	casper.then(function(){launchTest(test,"Cylinders",200000);});
+	casper.echo("------------STARTING Cylinder Orientation TEST--------------");
+
+    casper.then(function () {
+
+        test.assertEval(function() {
+            var expected = {"Example2.Pop_OneSeg[0]":[0, Math.PI/2, 0, "XYZ"],
+                            "Example2.Pop_OneSeg[1]":[0, Math.PI/2, 0, "XYZ"],
+                            "Example2.Pop_TwoSeg[0]":[0, 0, 0, "XYZ"]};
+            var results = [];
+            var rotation = Canvas1.engine.meshes["Example2.Pop_OneSeg[0]"].rotation.toArray();
+            for (var path in expected) {
+                var rotation = Canvas1.engine.meshes[path].rotation.toArray();
+                for (var i=0; i<rotation.length; ++i)
+                    results.push(rotation[i] === expected[i]);
+            }
+            for (var i=0; i<rotation.length; ++i)
+                results.push(rotation[i] === expected[i]);
+	    return results.every(x => x);
+	},"Rotation checked for all segments");
+    });
 }

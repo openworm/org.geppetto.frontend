@@ -1,0 +1,2 @@
+- [ ] Add coverage for whatever new functionality, to a JUnit test if it's backend, to a Casper Test if it's frontend
+- [ ] Make sure both push and pr travis builds are passing before asking for a review

@@ -25,7 +25,6 @@ define(['jquery'], function () {
     THREE.BloomPass = require('imports-loader?THREE=three!exports-loader?THREE.BloomPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/BloomPass');
     THREE.ShaderPass = require('imports-loader?THREE=three!exports-loader?THREE.ShaderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
     THREE.FilmPass = require('imports-loader?THREE=three!exports-loader?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
-    THREE.MarchingCubes = require('imports-loader?THREE=three!exports-loader?THREE.MarchingCubes!../../../../node_modules\/three\/examples\/js\/MarchingCubes');
 
     function ThreeDEngine(container, viewerId) {
 

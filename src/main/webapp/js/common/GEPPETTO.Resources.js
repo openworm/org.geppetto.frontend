@@ -16,7 +16,7 @@ define(function (require) {
         GEPPETTO.Resources = {
 
             Icon: {
-                "ParameterType": "fa-sign-in",
+                "ParameterType": "fa-sliders",
                 "TextType": "fa-file-text-o",
                 "CompositeType": "fa-align-justify",
                 "ArrayType": "fa-list",

@@ -1132,7 +1132,9 @@ define(['jquery'], function () {
             // Impossible to change the radius of a Sphere.
             // Removing old object and creating a new one
             this.scene.remove(object);
-            return this.add3DSphere(x, y, z, radius, material);
+            var mesh = this.add3DSphere(x, y, z, radius, material);
+            mesh.instancePath = object.instancePath;
+            return mesh;
         },
 
         /**
@@ -1156,7 +1158,6 @@ define(['jquery'], function () {
             var sphereNode = {radius: radius, position: {x: x, y: y, z: z}}
             var mesh = this.create3DSphereFromNode(sphereNode, material)
             mesh.renderOrder = 1;
-            mesh.clickThrough = true;
             this.scene.add(mesh);
             return mesh;
         },

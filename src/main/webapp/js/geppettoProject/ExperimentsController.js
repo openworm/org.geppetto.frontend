@@ -375,8 +375,10 @@ define(function (require) {
 
                         if (currentStep >= that.maxSteps) {
                             this.postMessage(["experiment:loop"]);
-                            Project.getActiveExperiment().stop();
-                            Project.getActiveExperiment().playAll();
+                            if(!that.playLoop){
+                            	Project.getActiveExperiment().stop();
+                                Project.getActiveExperiment().playAll();	
+                            }
                         } else {
                             GEPPETTO.trigger(GEPPETTO.Events.Experiment_update, {
                                 step: currentStep,

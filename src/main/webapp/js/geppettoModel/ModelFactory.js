@@ -32,6 +32,7 @@ define(function (require) {
         var AVisualGroupCapability = require('./capabilities/AVisualGroupCapability');
         var AConnectionCapability = require('./capabilities/AConnectionCapability');
         var AParameterCapability = require('./capabilities/AParameterCapability');
+        var AParticlesCapability = require('./capabilities/AParticlesCapability');
         var AStateVariableCapability = require('./capabilities/AStateVariableCapability');
         var ADerivedStateVariableCapability = require('./capabilities/ADerivedStateVariableCapability');
        
@@ -907,7 +908,7 @@ define(function (require) {
                                 instances[j].extendApi(ADerivedStateVariableCapability);
                             }
                         }
-
+                        
                         if (instances[j].getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
                             if (!instances[j].hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)) {
                                 instances[j].extendApi(AParameterCapability);
@@ -1322,6 +1323,10 @@ define(function (require) {
                         if ((!(visualType instanceof Array) && visualType != null && visualType != undefined) ||
                             (visualType instanceof Array && visualType.length > 0)) {
                             newlyCreatedInstance.extendApi(AVisualCapability);
+                            //particles can move, we store its state in the time series coming from the statevariablecapability
+                            if (visualType.getId() == GEPPETTO.Resources.PARTICLES_TYPE) {
+                                newlyCreatedInstance.extendApi(AParticlesCapability);
+                            }
                             this.propagateCapabilityToParents(AVisualCapability, newlyCreatedInstance);
 
                             if (visualType instanceof Array && visualType.length > 1) {

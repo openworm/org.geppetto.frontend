@@ -1044,9 +1044,10 @@ define(['jquery'], function () {
                 geometry.vertices.push(topBasePos);
                 threeObject = new THREE.Line(geometry, material);
                 threeObject.applyMatrix(new THREE.Matrix4().makeTranslation(0, axis.length() / 2, 0));
-                threeObject.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+                threeObject.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI / 2));
                 threeObject.lookAt(axis);
                 threeObject.position.fromArray(bottomBasePos.toArray());
+                threeObject.applyMatrix(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
 
                 threeObject.geometry.verticesNeedUpdate = true;
             } else if (node.eClass == GEPPETTO.Resources.SPHERE) {

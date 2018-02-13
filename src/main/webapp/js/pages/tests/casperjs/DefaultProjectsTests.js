@@ -79,6 +79,11 @@ casper.test.begin('Geppetto default projects tests', function suite(test) {
 		casper.then(function(){testPVDRNeuronProject(test);});
 	});
 
+        /**Tests cylinders project**/
+	casper.thenOpen(urlBase+baseFollowUp+cylinders,function() {
+		casper.then(function(){testCylindersProject(test);});
+	});
+
 	casper.run(function() {
 		test.done();
 	});

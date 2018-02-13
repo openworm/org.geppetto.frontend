@@ -1035,20 +1035,13 @@ define(['jquery'], function () {
             var material = new THREE.PointsMaterial(
                 {
                     size: 2,
-                    map: textureLoader.load("geppetto/js/components/interface/3dCanvas/particle.png"),
+                    map: textureLoader.load("geppetto/js/components/interface/3dCanvas/3dparticle.png"),
                     blending: THREE.NormalBlending,
                     depthTest: true,
                     transparent: true,
                     color: threeColor
                 });
             
-			// custom distance material
-			var distanceMaterial = new THREE.MeshDistanceMaterial( {
-				alphaMap: material.alphaMap,
-				alphaTest: material.alphaTest
-			} );
-			threeColor.customDistanceMaterial = distanceMaterial;
-
         	for(var p=0;p<node.particles.length;p++){
         		geometry.vertices.push(new THREE.Vector3(node.particles[p].x, node.particles[p].y, node.particles[p].z));
 
@@ -1062,76 +1055,6 @@ define(['jquery'], function () {
             threeObject.highlighted = false;
             return threeObject;
 
-        },
-        
-        
-        createParticleshM: function (node) {
-            var threeColor = new THREE.Color();
-            var color=('0x' + Math.floor(Math.random() * 16777215).toString(16));
-            threeColor.setHex(color);
-            
-            var resolution = 28;
-
-			var threeObject = new THREE.MarchingCubes( resolution, new THREE.MeshPhongMaterial( { color: threeColor, specular: 0x111111, shininess: 1 } ), true, true );
-			threeObject.position.set( 0, 0, 0 );
-			threeObject.scale.set( 20, 20, 20 );
-
-			threeObject.enableUvs = false;
-			threeObject.enableColors = false;
-		
-			threeObject.init( Math.floor( resolution ) );
-			this.scene.add(threeObject);	
-			threeObject.reset();
-			var subtract = 12;
-			var strength = 1.2 / ( ( Math.sqrt( node.particles.length ) - 1 ) / 4 + 1 );
-
-			
-        	for(var p=0;p<2;p++){
-        		
-        		threeObject.addBall(node.particles[p].x/100, node.particles[p].y/100, node.particles[p].z/100, strength, subtract);
-
-        	}
-        	
-            threeObject.visible = true;
-            threeObject.instancePath = node.instancePath;
-            threeObject.highlighted = false;
-            
-			
-            return threeObject;
-
-        },
-        
-        march(){
-            
-            var resolution = 28;
-			
-			var node = worm.muscle_65.getInitialValue()[0].value;
-			var numBlobs = node.particles.length;
-			var effect = new THREE.MarchingCubes( resolution, new THREE.MeshPhongMaterial( { color: 0xff0022, specular: 0x111111, shininess: 1 } ), true, true );
-			effect.position.set( 0, 0, 0 );
-			effect.scale.set( 7, 7, 7);
-
-			effect.enableUvs = false;
-			effect.enableColors = false;
-			
-			this.scene.add( effect );
-		
-			effect.init( Math.floor( resolution ) );
-
-			effect.reset();
-			var subtract = 12;
-			var strength = 1.2 / ( ( Math.sqrt( numBlobs ) - 1 ) / 4 + 1 );
-
-			for ( i = 0; i < numBlobs; i ++ ) {
-				effect.addBall(node.particles[i].x/100, node.particles[i].y/100, node.particles[i].z/100, strength, subtract);
-//				ballx = Math.sin( i + 1.26  * ( 1.03 + 0.5 * Math.cos( 0.21 * i ) ) ) * 0.27 + 0.5;
-//				bally = Math.abs( Math.cos( i + 1.12  * Math.cos( 1.22 + 0.1424 * i ) ) ) * 0.77; // dip into the floor
-//				ballz = Math.cos( i + 1.32  * 0.1 * Math.sin( ( 0.92 + 0.53 * i ) ) ) * 0.27 + 0.5;
-//
-//				effect.addBall(ballx, bally, ballz, strength, subtract);
-
-			}
-			
         },
 
         /**

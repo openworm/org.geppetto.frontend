@@ -30,6 +30,11 @@ define(function (require) {
 			this.forceUpdate();
 		}
 
+		loop(loopp){
+			this.setState({loop:loopp});
+			this.forceUpdate();
+		}
+		
 		stop(){
 			this.setState({play:false});
 			this.forceUpdate();

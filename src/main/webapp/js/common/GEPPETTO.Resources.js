@@ -378,6 +378,8 @@ define(function (require) {
             INSTANTIATING_MODEL : "Instantiating model",
             PARSING_MODEL : "Parsing Model",
             RUNNING_SIMULATION : "Running Simulation",
+            IMPORTING_MODEL : "Importing Model",
+            EXPORTING_MODEL : "Exporting Model",
 
 
 

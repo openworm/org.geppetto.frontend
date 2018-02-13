@@ -286,8 +286,6 @@ define(['jquery'], function () {
         setupLights: function () {
             // Lights
             this.camera.add(new THREE.PointLight(0xffffff, 1.5));
-			this.camera.add(  new THREE.AmbientLight( 0x080808 ) );
-
         },
 
         /**

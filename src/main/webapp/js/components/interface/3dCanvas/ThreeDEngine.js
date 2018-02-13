@@ -27,38 +27,6 @@ define(['jquery'], function () {
     THREE.FilmPass = require('imports-loader?THREE=three!exports-loader?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
 
     function ThreeDEngine(container, viewerId) {
-
-    	this.semvs="varying vec2 vN;\n" + 
-    			"\n" + 
-    			"void main() {\n" + 
-    			"\n" + 
-    			"  vec4 p = vec4( position, 1. );\n" + 
-    			"\n" + 
-    			"  vec3 e = normalize( vec3( modelViewMatrix * p ) );\n" + 
-    			"  vec3 n = normalize( normalMatrix * normal );\n" + 
-    			"\n" + 
-    			"  vec3 r = reflect( e, n );\n" + 
-    			"  float m = 2. * sqrt(\n" + 
-    			"    pow( r.x, 2. ) +\n" + 
-    			"    pow( r.y, 2. ) +\n" + 
-    			"    pow( r.z + 1., 2. )\n" + 
-    			"  );\n" + 
-    			"  vN = r.xy / m + .5;\n" + 
-    			"\n" + 
-    			"  gl_Position = projectionMatrix * modelViewMatrix * p;\n" + 
-    			"\n" + 
-    			"}";
-
-    	this.semfs="uniform sampler2D tMatCap;\n" + 
-    			"\n" + 
-    			"varying vec2 vN;\n" + 
-    			"\n" + 
-    			"void main() {\n" + 
-    			"\n" + 
-    			"  vec3 base = texture2D( tMatCap, vN ).rgb;\n" + 
-    			"  gl_FragColor = vec4( base, 1. );\n" + 
-    			"\n" + 
-    			"}";
     	
         this.container = container;
         this.colorController = new (require('./ColorController'))(this);

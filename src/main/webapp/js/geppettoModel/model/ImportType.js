@@ -1,5 +1,3 @@
-
-
 /**
  * Client class use to represent an array type.
  *
@@ -65,7 +63,7 @@ define(function (require) {
      * @command ImportType.resolve()
      */
     ImportType.prototype.resolve = function (callback) {
-        GEPPETTO.SimulationHandler.resolveImportType(this.getPath(), callback);
+        GEPPETTO.Manager.resolveImportType(this.getPath(), callback);
     };
 
     return ImportType;

@@ -47,7 +47,7 @@ define(function (require) {
                     GEPPETTO.CommandController.log(GEPPETTO.Resources.WEBSOCKET_OPENED, true);
 
                     //attach the handlers once socket is opened
-                    messageHandlers.push(GEPPETTO.SimulationHandler);
+                    messageHandlers.push(GEPPETTO.MessageHandler);
                     messageHandlers.push(GEPPETTO.GlobalHandler);
                 };
 

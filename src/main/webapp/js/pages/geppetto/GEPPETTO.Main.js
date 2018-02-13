@@ -93,7 +93,7 @@ define(function (require) {
                         }
 
                         if (pull && window.Project.persisted && window.Project.getId() != -1) {
-                            GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_STATUS, window.Project.id);
+                            GEPPETTO.MessageSocket.send(GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_STATUS, window.Project.id);
                         }
                     }
                 };

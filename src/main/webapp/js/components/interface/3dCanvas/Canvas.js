@@ -754,7 +754,7 @@ define(function (require) {
     	    }
             return (
 
-                <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
+                <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas" style={this.props.style}>
                     {cameraControls}
                 </div>
             )

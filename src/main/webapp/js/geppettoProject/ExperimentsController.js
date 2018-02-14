@@ -112,10 +112,8 @@ define(function (require) {
                         }
                         this.externalExperiments[experimentState.projectId][experimentState.experimentId][instancePath] = instance;
                     }
-                }
+                },
 
-            },
-            
         getExternalInstance : function(projectId,experimentId,instancePath){
             	if(this.externalExperiments[projectId] == undefined){
             		return undefined;
@@ -126,16 +124,6 @@ define(function (require) {
             	return this.externalExperiments[projectId][experimentId][instancePath];
             },
 
-                getExternalInstance: function (projectId, experimentId, instancePath) {
-                    if (this.externalExperiments[projectId] == undefined) {
-                        return undefined;
-                    }
-                    if (this.externalExperiments[projectId][experimentId] == undefined) {
-                        return undefined;
-                    }
-                    return this.externalExperiments[projectId][experimentId][instancePath];
-                },
-                    
                     setActive:function(experiment){
                         var currentExpt = Project.getActiveExperiment();
                         GEPPETTO.ExperimentsController.closeCurrentExperiment();

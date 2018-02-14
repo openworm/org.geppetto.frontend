@@ -85,7 +85,7 @@
 
 .tab-content{
     border-top:1px solid;
-    border-color:@secondary_color;
+    border-color:@primary_color;
 }
 
 .CodeMirror-fullscreen {
@@ -110,17 +110,20 @@
 
 .nav-tabs > li {
     color: @primary_color;
-    border-color: @secondary_color;
+    border-color: @primary_color;
 }
 
 .nav-tabs > li.active {
     color: @primary_color;
-    border-color: @secondary_color;
+    border-color: @primary_color;
 }
 
+.nav > li > a {
+    padding: 7px 15px;
+}
 
 .nav-tabs > li > a{
-	color: @background_color_widget;
+	color: fade(@background_color_widget, 100%);
 	height : 100%;
 	background: fade(@primary_color, 100%);
 	cursor : pointer;
@@ -129,28 +132,28 @@
 .nav-tabs > li.active > a{
 	color: @primary_color;
   	border: 0px;
-    background: fade(@background_color_widget, 100%);
+    background: @background_color_widget;
     cursor : pointer;
 }
 
 .nav-tabs > li.active > a:hover{
-	color: @primary_color!important;
+	color: @secondary_color!important;
   	border: 0px;
-  	background: fade(@background_color_widget, 100%);
+  	background: @background_color_widget;
   	cursor : pointer;
 }
 
 .nav-tabs > li > a:hover{
-	color: @primary_color;
+	color: @secondary_color;
   	border: 0px;
-  	background: fade(@background_color_widget, 100%);
+  	background: @background_color_widget;
   	cursor:pointer
 }
 
 .nav-tabs > li.active > a:focus {
 	color: @primary_color;
   	border: 0px;
-    background: fade(@background_color_widget, 100%);
+    background: @background_color_widget;
 }
 
 ::-webkit-scrollbar,

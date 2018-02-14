@@ -37,12 +37,12 @@ define(function (require) {
             },
 
             /** Update the instances of this experiment given the experiment state */
-            updateExperiment: function (experiment, recordedVariables, setParameters) {
+            updateExperiment: function (experiment, experimentState) {
             	
                 this.playExperimentReady = false; //we reset
                 this.maxSteps = 0;
-                for (var i = 0; i < recordedVariables.length; i++) {
-                    var recordedVariable = recordedVariables[i];
+                for (var i = 0; i < experimentState.recordedVariables.length; i++) {
+                    var recordedVariable = experimentState.recordedVariables[i];
                     var instancePath = this.getInstancePathFromPointer(recordedVariable.pointer, false);
                     var instance = Instances.getInstance(instancePath);
                     instance.setWatched(true, false);
@@ -55,9 +55,9 @@ define(function (require) {
                         }
                     }
                 }
-                if (setParameters) {
-                    for (var i = 0; i < setParameters.length; i++) {
-                        var setParameter = setParameters[i];
+                if (experimentState.setParameters) {
+                    for (var i = 0; i < experimentState.setParameters.length; i++) {
+                        var setParameter = experimentState.setParameters[i];
                         if (setParameter.hasOwnProperty("value") && setParameter.value != undefined) {
                             var path = setParameter.pointer.path;
                             var firstToken = path.split(".")[0];

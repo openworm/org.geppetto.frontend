@@ -83,6 +83,9 @@ define(function (require) {
     require('../../components/widgets/MenuManager')(GEPPETTO);
     require('../../communication/MessageSocket')(GEPPETTO);
     require('../../communication/GEPPETTO.GlobalHandler')(GEPPETTO);
+
+    GEPPETTO.Manager = new(require('../../common/Manager'))();
+
     require('../../communication/MessageHandler')(GEPPETTO);
     require('./G')(GEPPETTO);
     require('./GEPPETTO.Main')(GEPPETTO);

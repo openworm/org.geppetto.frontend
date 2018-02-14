@@ -28,24 +28,24 @@ define(function (require) {
                 onMessage: function (parsedServerMessage) {
                     // Switch based on parsed incoming message type
                     switch (parsedServerMessage.type) {
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.PROJECT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.PROJECT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
-                            GEPPETTO.SimulationHandler.loadProject(JSON.parse(parsedServerMessage.data));
+                            GEPPETTO.Manager.loadProject(JSON.parse(parsedServerMessage.data));
                             assert.equal(window.Project.getId(), 1, "Project loaded ID checked");
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.MODEL_LOADED:
-                            GEPPETTO.SimulationHandler.loadModel(payload);
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.MODEL_LOADED:
+                            GEPPETTO.Manager.loadModel(payload);
                             break
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_LOADED:
                             var time = (new Date() - initializationTime) / 1000;
                             var payload = JSON.parse(parsedServerMessage.data);
-                            var newExperiment = GEPPETTO.SimulationHandler.loadExperiment(payload);
+                            var newExperiment = GEPPETTO.Manager.loadExperiment(payload);
 
                             assert.equal(window.Project.getActiveExperiment().getId(), 1, "Experiment id of loaded project checked");
 
                             window.Project.getActiveExperiment().run();
                             break;
-                        case GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_STATUS:
+                        case GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_STATUS:
                             var time = (new Date() - initializationTime) / 1000;
                             var payload = JSON.parse(parsedServerMessage.data);
                             var experimentStatus = JSON.parse(payload.update);

@@ -18,7 +18,6 @@ define(function (require) {
             super(props);
 
             this.engine = null;
-            // this.container = null
 
             //State
             this.viewState = {
@@ -733,6 +732,7 @@ define(function (require) {
                 this.engine.setSize(width, height);
 
                 GEPPETTO.SceneController.add3DCanvas(this);
+                GEPPETTO.WidgetsListener.subscribe(this.engine, this.id);
 
                 var that = this;
                 $("#" + this.props.id).on("dialogresizestop resizeEnd", function (event, ui) {
@@ -755,7 +755,7 @@ define(function (require) {
     	    }
             return (
 
-                <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas">
+                <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas" style={this.props.style}>
                     {cameraControls}
                 </div>
             )

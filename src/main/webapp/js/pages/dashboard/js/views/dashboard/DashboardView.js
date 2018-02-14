@@ -15,6 +15,7 @@ define([ 'jquery', 'underscore', 'backbone',
 		events : {
 			'click .project-preview-tn' : 'showProject',
 			'dblclick .project-preview-tn' : 'openProject',
+			'doubletap .project-preview-tn' : 'openProject'
 		},
 
 		initialize : function(options) {

@@ -3,7 +3,7 @@
 /**
  * UI flows controller
  *
- *  @author Giovanni Idili
+ *  @author Giovanni Idili & Friends
  */
 define(function (require) {
 
@@ -62,14 +62,15 @@ define(function (require) {
                 GEPPETTO.CommandController.execute(callbackCommand, true);
                 var anyPlotUp = false;
 
-                GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).then(controller => {
+                GEPPETTO.WidgetFactory.getController(GEPPETTO.Widgets.PLOT).then(c => {
                     // check if any plots are up
-                    if (controller.getWidgets().length > 0) {
+                    if(c != null && c != undefined && c.getWidgets() != null && c.getWidgets() != undefined && c.getWidgets().length > 0){
                         anyPlotUp = true;
-                        if(!anyPlotUp){
-                            // if not, bring up spotlight configured for the PLAY flow
-                            GEPPETTO.Spotlight.open(GEPPETTO.Resources.PLAY_FLOW);
-                        }
+                    }
+
+                    if(!anyPlotUp){
+                        // if not, bring up spotlight configured for the PLAY flow
+                        GEPPETTO.Spotlight.open(GEPPETTO.Resources.PLAY_FLOW);
                     }
                 });
             },

@@ -177,9 +177,7 @@ define(['jquery'], function () {
             //statevariableinstances come out of order, needs to sort into map to avoid nulls
             for (var index in modulations) {
                 for (var i in stateVariableInstances) {
-                    if (stateVariableInstances[i].getParent().getInstancePath() == modulations[index]) {
-                        matchedMap[modulations[index]] = stateVariableInstances[i];
-                    }
+		            matchedMap[modulations[index]] = stateVariableInstances[i];
                 }
             }
 

@@ -131,12 +131,13 @@ code {
 
 .project-preview {
 	float: left;
-	width: 25%;
-	padding: 20px;
+    width: 128px;
+    padding: 20px;
+    margin-right: 60px;
 }
 
 .orange{
-	color:#ff6d00!important;
+	color:#fc6320!important;
 }
 
 .project-preview-caption {
@@ -151,7 +152,7 @@ code {
     text-align: center;
 }
 
-.peoject-heading {
+.project-heading {
 	margin-top: 10px;
 	margin-bottom: 15px;
 	font-size: 25px;

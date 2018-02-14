@@ -4,17 +4,19 @@
     margin: 0 auto;
     margin-bottom:26px;
     position: relative;
-    color: @primary_color;
-    border-color: #2e2828;
-    border-width: 0;
+
+    border-width: 1px;
+    border-bottom: 0;
+    border-left: 0;
+    border-style:solid;
+    cursor:pointer!important;
     box-shadow:none;
-    cursor : pointer;
     text-shadow: none;
     width: 140px;
     height: 35px;
     z-index : 3;
-    bottom : 1px;
 }
+
 
 #experimentsButton > a::-moz-focus-inner {
   border: 0;
@@ -106,7 +108,7 @@
 }
 
 .nthTr {
-	background:rgba(71,58,51,0.80);
+	background:#1c1d1f82;
 }
 
 .experimentsTableColumn{
@@ -132,7 +134,7 @@
 }
 
 .activeExperiment {
-	background-color:rgba(84,32,0,1)  !important;
+	background-color:#1c1d1f  !important;
 }
 
 .newExperimentFocus {

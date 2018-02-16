@@ -129,11 +129,11 @@ function testUsingSingleCompononetHHProject(test){
 
 	casper.then(function () {
 		test.assertEval(function() {
-			return GEPPETTO.ModelFactory.allPathsIndexing.length == 7693 &&
+			return GEPPETTO.ModelFactory.allPathsIndexing.length == 9741 &&
 			GEPPETTO.ModelFactory.allPathsIndexing[0].path == 'acnet2' &&
 			GEPPETTO.ModelFactory.allPathsIndexing[0].metaType == 'CompositeType' &&
-			GEPPETTO.ModelFactory.allPathsIndexing[7693 - 1].path == "acnet2.SmallNet_bask_bask.GABA_syn_inh.GABA_syn_inh" &&
-			GEPPETTO.ModelFactory.allPathsIndexing[7693 - 1].metaType == 'StateVariableType';
+			GEPPETTO.ModelFactory.allPathsIndexing[9741 - 1].path == "acnet2.SmallNet_bask_bask.GABA_syn_inh.GABA_syn_inh" &&
+			GEPPETTO.ModelFactory.allPathsIndexing[9741 - 1].metaType == 'StateVariableType';
 		},"All potential instance paths exploded as expected");
 	});
 

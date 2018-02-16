@@ -45,6 +45,9 @@ script:
   - echo "$http_status"
   - while [ "$http_status" == "404" ]; do
       echo "Restart run";
+      echo "Printing logs for debugging purposes";
+      sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
+      tail /etc/log.log -n 200
       docker stop $(docker ps -a -q);
       docker rm $(docker ps -a -q);
       docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto;
@@ -59,7 +62,7 @@ script:
   - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js GeppettoModelTests.js --host=http://localhost:28081/ --engine=slimerjs 
   - xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js,NeuronalTestsLogic.js DefaultProjectsTests.js --host=http://localhost:28081/ --engine=slimerjs  
   - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
-  - tail /etc/log.log -n 100
+  - tail /etc/log.log -n 200
   - echo "Current time :$(date +"%T")"
   - docker stop $(docker ps -a -q)
   - docker rm $(docker ps -a -q)

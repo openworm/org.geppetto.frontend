@@ -787,7 +787,7 @@ function testPMuscleCellProject(test){
 }
 
 function testC302Connectome(test){
-	casper.then(function(){launchTest(test,"C302 Connectome",200000);});
+	casper.then(function(){launchTest(test,"C302 Connectome",300000);});
     casper.echo("------------STARTING C302 Connectome TEST--------------");
     casper.waitForSelector('div[id="Popup1"]', function() {
         this.echo("I've waited for Popup1 to load.");

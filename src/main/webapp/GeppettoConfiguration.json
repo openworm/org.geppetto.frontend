@@ -1,6 +1,6 @@
 {
     "_README" : "http://docs.geppetto.org/en/latest/build.html",
-    "contextPath": "/org.geppetto.frontend",
+    "contextPath": "org.geppetto.frontend",
     "useSsl": false,
     "embedded": false,
     "embedderURL": ["/"],
@@ -20,11 +20,11 @@
         "geppetto-neuron/css/colors": false
     },
     "properties": {
-    	"title" : "geppetto",
-    	"description": "",
-    	"type": "website",
-    	"url": "",
-    	"icon" :"geppetto/style/favicon.png",
-    	"image": ""
+	    	"title" : "geppetto",
+	    	"description": "Geppetto is an open-source platform to build web-based tools to visualize and simulate neuroscience data and models. This is a live deployment to showcase its functionalities.",
+	    	"type": "website",
+	    	"url": "http://live.geppetto.org",
+	    	"icon" :"geppetto/style/favicon.png",
+	    	"image": "http://www.geppetto.org/images/logo.png"
     }
 }

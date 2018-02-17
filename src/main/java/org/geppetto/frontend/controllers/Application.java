@@ -138,7 +138,7 @@ public class Application
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String dashboard(HttpServletRequest request, HttpServletResponse response)
+	public String root(HttpServletRequest request, HttpServletResponse response)
 	{
 		JsonParser parser = new JsonParser();
 		HttpSession session = request.getSession();

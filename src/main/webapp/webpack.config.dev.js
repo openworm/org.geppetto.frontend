@@ -6,7 +6,8 @@ extended.devServer = {
     inline: true,
 
     proxy: [
-		{ path: '/geppetto', target: 'http://localhost:8080/org.geppetto.frontend'},
+    	{ path: '/', target: 'http://localhost:8080/'},
+    	{ path: '/geppetto', target: 'http://localhost:8080/org.geppetto.frontend'},
 		{ path: '/org.geppetto.frontend', target: 'ws://localhost:8080', ws: true},
     ],
 };

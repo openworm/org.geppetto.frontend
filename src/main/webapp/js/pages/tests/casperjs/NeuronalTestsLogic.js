@@ -802,19 +802,19 @@ function testCylindersProject(test){
     casper.then(function () {
 
         test.assertEval(function() {
-            var expected = {"Example2.Pop_OneSeg[0]":[0, Math.PI/2, 0, "XYZ"],
+            var reference = {"Example2.Pop_OneSeg[0]":[0, Math.PI/2, 0, "XYZ"],
                             "Example2.Pop_OneSeg[1]":[0, Math.PI/2, 0, "XYZ"],
                             "Example2.Pop_TwoSeg[0]":[0, 0, 0, "XYZ"]};
             var results = [];
-            var rotation = Canvas1.engine.meshes["Example2.Pop_OneSeg[0]"].rotation.toArray();
-            for (var path in expected) {
+            for (var path in reference) {
                 var rotation = Canvas1.engine.meshes[path].rotation.toArray();
+                var expected = reference[path];
                 for (var i=0; i<rotation.length; ++i)
                     results.push(rotation[i] === expected[i]);
             }
             for (var i=0; i<rotation.length; ++i)
                 results.push(rotation[i] === expected[i]);
-	    return results.every(x => x);
+	    return results.every(function(x){return x;});
 	},"Rotation checked for all segments");
     });
 }

@@ -27,7 +27,7 @@ define(['jquery'], function () {
     THREE.FilmPass = require('imports-loader?THREE=three!exports-loader?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
 
     function ThreeDEngine(container, viewerId) {
-
+    	
         this.container = container;
         this.colorController = new (require('./ColorController'))(this);
         this.viewerId = viewerId;
@@ -274,10 +274,8 @@ define(['jquery'], function () {
                 this.composer.addPass(effectFocus);
             } else {
                 //standard
-                var copyPass = new THREE.ShaderPass(THREE.CopyShader);
-                copyPass.renderToScreen = true;
+                renderModel.renderToScreen = true;
                 this.composer.addPass(renderModel);
-                this.composer.addPass(copyPass);
             }
 
         },
@@ -288,7 +286,6 @@ define(['jquery'], function () {
         setupLights: function () {
             // Lights
             this.camera.add(new THREE.PointLight(0xffffff, 1.5));
-
         },
 
         /**
@@ -364,6 +361,39 @@ define(['jquery'], function () {
             // Store camera position
             this.camera.position.addVectors(dir, this.controls.target);
             this.camera.updateProjectionMatrix();
+        },
+        
+        
+        /**
+         * Receives updates from widget listener class to update moving objects on the 3d canvas
+         *
+         * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
+         */
+        update: function(event, parameters) {
+            //reset plot's datasets
+            if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
+
+                
+            }
+            else if (event == GEPPETTO.Events.Experiment_update) {                    
+            	this.scene.traverse(function (child) {
+                    if (child instanceof THREE.Points) {
+                        var instance = Instances.getInstance(child.instancePath);
+                        if(instance.getTimeSeries()!=undefined && instance.getTimeSeries()[parameters.step]!=undefined){
+                            //if we have recorded this object we'll have a timeseries
+                        	var particles = instance.getTimeSeries()[parameters.step].particles;
+                        	for(var p=0;p<particles.length;p++){
+                        		child.geometry.vertices[p].x=particles[p].x;
+                        		child.geometry.vertices[p].y=particles[p].y;
+                        		child.geometry.vertices[p].z=particles[p].z;
+                        	}
+                        	child.geometry.verticesNeedUpdate = true;
+                        }
+                    }
+                });
+
+            }
+        	
         },
 
         /**
@@ -459,9 +489,15 @@ define(['jquery'], function () {
         /**
          * Adds debug axis to the scene
          */
-        setupAxis: function () {
+        showAxis: function (show) {
             // To use enter the axis length
-            this.scene.add(new THREE.AxisHelper(200));
+            if (show) {
+                if (!this.axis) {
+                    this.axis = new THREE.AxisHelper(200);
+                    this.scene.add(this.axis);
+                }
+            } else
+                this.scene.remove(this.axis);
         },
 
         /**
@@ -631,11 +667,8 @@ define(['jquery'], function () {
                 if (position != null) {
                     var p = new THREE.Vector3(position.x, position.y, position.z);
                     mesh.position.set(p.x, p.y, p.z);
-                    mesh.matrixAutoUpdate = false;
-                    mesh.applyMatrix(new THREE.Matrix4().makeTranslation(p.x, p.y, p.z));
                     mesh.geometry.verticesNeedUpdate = true;
                     mesh.updateMatrix();
-                    // mesh.geometry.translate(position.x, position.y,position.z);
                 }
                 this.scene.add(mesh);
                 this.meshes[instancePath] = mesh;
@@ -747,6 +780,13 @@ define(['jquery'], function () {
                     if (threeDeeObj) {
                     	threeDeeObjList.push(threeDeeObj);
                     }
+                }
+            } 
+            else if (visualType.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE && visualType.getId()=="particles") {
+                var visualValue = instance.getVariable().getWrappedObj().initialValues[0].value;
+                threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, instance.getVariable().getId(), materials, lines);
+                if (threeDeeObj) {
+                	threeDeeObjList.push(threeDeeObj);
                 }
             } else {
                 var visualValue = visualType.getWrappedObj().defaultValue;
@@ -960,13 +1000,13 @@ define(['jquery'], function () {
             var material = new THREE.PointsMaterial(
                 {
                     size: 2,
-                    map: textureLoader.load("geppetto/js/components/interface/3dCanvas/particle.png"),
-                    blending: THREE.AdditiveBlending,
-                    depthTest: false,
+                    map: textureLoader.load("geppetto/js/components/interface/3dCanvas/3dparticle.png"),
+                    blending: THREE.NormalBlending,
+                    depthTest: true,
                     transparent: true,
                     color: threeColor
                 });
-
+            
         	for(var p=0;p<node.particles.length;p++){
         		geometry.vertices.push(new THREE.Vector3(node.particles[p].x, node.particles[p].y, node.particles[p].z));
 
@@ -1003,9 +1043,11 @@ define(['jquery'], function () {
                 geometry.vertices.push(bottomBasePos);
                 geometry.vertices.push(topBasePos);
                 threeObject = new THREE.Line(geometry, material);
-                threeObject.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+                threeObject.applyMatrix(new THREE.Matrix4().makeTranslation(0, axis.length() / 2, 0));
+                threeObject.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI / 2));
                 threeObject.lookAt(axis);
-                threeObject.position.fromArray(midPoint.toArray());
+                threeObject.position.fromArray(bottomBasePos.toArray());
+                threeObject.applyMatrix(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
 
                 threeObject.geometry.verticesNeedUpdate = true;
             } else if (node.eClass == GEPPETTO.Resources.SPHERE) {
@@ -1030,17 +1072,21 @@ define(['jquery'], function () {
 
             var axis = new THREE.Vector3();
             axis.subVectors(topBasePos, bottomBasePos);
-            var midPoint = new THREE.Vector3();
-            midPoint.addVectors(bottomBasePos, topBasePos).multiplyScalar(0.5);
 
             var c = new THREE.CylinderGeometry(cylNode.topRadius, cylNode.bottomRadius, axis.length(), 20, 1, false);
-            c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+
+            // shift it so one end rests on the origin
+            c.applyMatrix(new THREE.Matrix4().makeTranslation(0, axis.length() / 2, 0));
+            // rotate it the right way for lookAt to work
+            c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI/2));
+            // make a mesh with the geometry
             var threeObject = new THREE.Mesh(c, material);
-
+            // make it point to where we want
             threeObject.lookAt(axis);
-            threeObject.position.fromArray(midPoint.toArray());
-
+            // move base
+            threeObject.position.fromArray(bottomBasePos.toArray());
             threeObject.geometry.verticesNeedUpdate = true;
+
             return threeObject;
         },
 
@@ -1052,7 +1098,9 @@ define(['jquery'], function () {
             // Impossible to change the radius of a Sphere.
             // Removing old object and creating a new one
             this.scene.remove(object);
-            return this.add3DSphere(x, y, z, radius, material);
+            var mesh = this.add3DSphere(x, y, z, radius, material);
+            mesh.instancePath = object.instancePath;
+            return mesh;
         },
 
         /**
@@ -1076,7 +1124,6 @@ define(['jquery'], function () {
             var sphereNode = {radius: radius, position: {x: x, y: y, z: z}}
             var mesh = this.create3DSphereFromNode(sphereNode, material)
             mesh.renderOrder = 1;
-            mesh.clickThrough = true;
             this.scene.add(mesh);
             return mesh;
         },
@@ -1200,7 +1247,6 @@ define(['jquery'], function () {
             var threeObject = new THREE.Mesh(sphere, material);
             threeObject.position.set(sphereNode.position.x, sphereNode.position.y, sphereNode.position.z);
 
-            threeObject.geometry.verticesNeedUpdate = true;
             return threeObject;
         },
 

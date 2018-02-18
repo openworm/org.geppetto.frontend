@@ -1,18 +1,17 @@
 
 
 /**
- * Client class use to augment a model with state variable capabilities
+ * Client class use to augment a model with particles capabilities
  *
- * @module model/AStateVariableCapability
+ * @module model/AParticlesCapability
  * @author Matteo Cantarelli
  */
 
 define(['jquery'], function (require) {
     return {
-        capabilityId: 'StateVariableCapability',
+        capabilityId: 'ParticlesCapability',
         watched: false,
         timeSeries: null,
-        unit: null,
 
         /**
          * Get value of quantity
@@ -25,14 +24,11 @@ define(['jquery'], function (require) {
                 var timeSeries = undefined;
                 var initialValues = this.getVariable().getWrappedObj().initialValues;
 
-                if(initialValues != undefined) {
-                    for (var i = 0; i < initialValues.length; i++) {
-                        if (initialValues[i].value.eClass === 'TimeSeries') {
-                            timeSeries = initialValues[i].value.value
-                        }
+                for (var i = 0; i < initialValues.length; i++) {
+                    if (initialValues[i].value.eClass === 'TimeSeries') {
+                        timeSeries = initialValues[i].value.value
                     }
                 }
-
                 return timeSeries;
             }
             return this.timeSeries;
@@ -61,36 +57,7 @@ define(['jquery'], function (require) {
             return this.getVariable().getWrappedObj().initialValues;
         },
 
-        /**
-         * Set unit value
-         *
-         * @param unit
-         */
-        setUnit: function(unit){
-          this.unit = unit;
-        },
 
-        /**
-         * Get the type of tree this is
-         *
-         * @command Variable.getUnit()
-         * @returns {String} Unit for quantity
-         */
-        getUnit: function () {
-        	return (this.unit == null) ? this.extractUnit() : this.unit;
-        },
-        
-        extractUnit : function(){
-        	var unit = undefined;
-        	var initialValues = this.getVariable().getWrappedObj().initialValues;
-
-        	for (var i = 0; i < initialValues.length; i++) {
-        		if (initialValues[i].value.eClass === 'PhysicalQuantity' || initialValues[i].value.eClass === 'TimeSeries') {
-        			unit = initialValues[i].value.unit.unit
-        		}
-        	}
-        	return unit;
-        },
 
         /**
          * Get watched

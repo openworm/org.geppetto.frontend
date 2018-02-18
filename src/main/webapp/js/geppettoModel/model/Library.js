@@ -62,9 +62,9 @@ define(function (require) {
     			b.push(this.importTypes[i].getPath());
     		} 
         	while(b.length>BATCH){
-        		GEPPETTO.SimulationHandler.resolveImportType(b.splice(0,BATCH));
+        		GEPPETTO.Manager.resolveImportType(b.splice(0,BATCH));
     		}
-        	GEPPETTO.SimulationHandler.resolveImportType(b, function(){
+        	GEPPETTO.Manager.resolveImportType(b, function(){
         		if(callback!=undefined){
         			callback();
         		} 

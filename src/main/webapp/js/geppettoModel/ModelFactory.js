@@ -32,6 +32,7 @@ define(function (require) {
         var AVisualGroupCapability = require('./capabilities/AVisualGroupCapability');
         var AConnectionCapability = require('./capabilities/AConnectionCapability');
         var AParameterCapability = require('./capabilities/AParameterCapability');
+        var AParticlesCapability = require('./capabilities/AParticlesCapability');
         var AStateVariableCapability = require('./capabilities/AStateVariableCapability');
         var ADerivedStateVariableCapability = require('./capabilities/ADerivedStateVariableCapability');
        
@@ -907,7 +908,7 @@ define(function (require) {
                                 instances[j].extendApi(ADerivedStateVariableCapability);
                             }
                         }
-
+                        
                         if (instances[j].getType().getMetaType() == GEPPETTO.Resources.PARAMETER_TYPE) {
                             if (!instances[j].hasCapability(GEPPETTO.Resources.PARAMETER_CAPABILITY)) {
                                 instances[j].extendApi(AParameterCapability);
@@ -977,12 +978,14 @@ define(function (require) {
                 // Get all paths for the new type
                 var partialPathsForNewType = [];
                 var partialPathsForNewTypeIndexing = [];
+
                 this.fetchAllPotentialInstancePathsForType(type, partialPathsForNewType, partialPathsForNewTypeIndexing, []);
 
                 // Get all potential instances for the type we are swapping
                 var potentialInstancesForNewtype = GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(typePath);
                 var potentialInstancesForNewtypeIndexing = GEPPETTO.ModelFactory.getAllPotentialInstancesOfType(typePath, this.allPathsIndexing);
 
+                this.allPaths.replace = [];
                 // Generate new paths and add
                 for (var i = 0; i < potentialInstancesForNewtype.length; i++) {
                     for (var j = 0; j < partialPathsForNewType.length; j++) {
@@ -1001,16 +1004,12 @@ define(function (require) {
                             type: partialPathsForNewType[j].type
                         };
 
-                        // If variable is already in allPaths remove it before adding the new variable
-                        for (var k = 0; k < this.allPaths.length; k++) {
-                            if (this.allPaths[k].path == entry.path) {
-                                this.allPaths.splice(k,1);
-                                break;
-                            }
-                        }
-                        this.allPaths.push(entry);
+                        this.allPaths.replace.push(entry);
                     }
                 }
+
+                this.allPathsIndexing.replace = [];
+                this.newPathsIndexing.replace = [];
                 // same as above for indexing paths
                 for (var i = 0; i < potentialInstancesForNewtypeIndexing.length; i++) {
                     for (var j = 0; j < partialPathsForNewTypeIndexing.length; j++) {
@@ -1029,37 +1028,29 @@ define(function (require) {
                             type: partialPathsForNewType[j].type
                         };
 
-                        // If variable already in allPathsIndexing and newPathsIndexing remove it before adding the new variable
-                        for (var k = 0; k < this.allPathsIndexing.length; k++) {
-                            if (this.allPathsIndexing[k].path == entry.path) {
-                                this.allPathsIndexing.splice(k,1);
-                                break;
-                            }
-                        }
-                        this.allPathsIndexing.push(entry);
-
-                        for (var k = 0; k < this.newPathsIndexing.length; k++) {
-                            if (this.newPathsIndexing[k].path == entry.path) {
-                                this.newPathsIndexing.splice(k,1);
-                                break;
-                            }
-                        }
-                        this.newPathsIndexing.push(entry);
+                        this.allPathsIndexing.replace.push(entry);
+                        this.newPathsIndexing.replace.push(entry);
                     }
+                }
+
+                // If variable already in allPathsIndexing, newPathsIndexing and allPaths, remove it before adding the new variable
+                for (var list of [this.allPathsIndexing, this.newPathsIndexing, this.allPaths]) {
+                    var is = [];
+                    for (var i = 0; i < list.length; ++i)
+                        if (list.replace.indexOf(list[i].path) > -1)
+                            is.push(i);
+                    for (var i = 0; i < list.replace.length; ++i) {
+                        if (is[i] > -1) list.splice(is[i],1);
+                        list.push(list.replace[i]);
+                    }
+                    delete list.replace;
                 }
 
                 // look for import type references and amend type
-                for (var i = 0; i < this.allPaths.length; i++) {
-                    if (this.allPaths[i].type == typePath) {
-                        this.allPaths[i].metaType = type.getMetaType();
-                    }
-                }
-                // same as above for indexing paths
-                for (var i = 0; i < this.allPathsIndexing.length; i++) {
-                    if (this.allPathsIndexing[i].type == typePath) {
-                        this.allPathsIndexing[i].metaType = type.getMetaType();
-                    }
-                }
+                for (var list of [this.allPaths, this.allPathsIndexing])
+                    for (var i = 0; i < list.length; ++i)
+                        if (list[i].type == typePath)
+                            list[i].metaType = type.getMetaType();
             },
 
             /**
@@ -1322,6 +1313,10 @@ define(function (require) {
                         if ((!(visualType instanceof Array) && visualType != null && visualType != undefined) ||
                             (visualType instanceof Array && visualType.length > 0)) {
                             newlyCreatedInstance.extendApi(AVisualCapability);
+                            //particles can move, we store its state in the time series coming from the statevariablecapability
+                            if (visualType.getId() == GEPPETTO.Resources.PARTICLES_TYPE) {
+                                newlyCreatedInstance.extendApi(AParticlesCapability);
+                            }
                             this.propagateCapabilityToParents(AVisualCapability, newlyCreatedInstance);
 
                             if (visualType instanceof Array && visualType.length > 1) {

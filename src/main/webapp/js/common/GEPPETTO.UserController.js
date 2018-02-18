@@ -24,6 +24,14 @@ define(function(require)
             	    return [value];
             	});
             },
+
+            setDropboxToken : function(token) {
+                this.dropboxToken = token;
+            },
+
+            getDropboxToken : function() {
+                return this.dropboxToken;
+            },
             
             getUserPrivileges : function(){
             	return this.privileges;

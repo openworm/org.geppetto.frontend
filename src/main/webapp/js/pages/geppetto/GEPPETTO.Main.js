@@ -75,7 +75,11 @@ define(function (require) {
                 if (this.statusWorker != undefined) {
                     this.statusWorker.terminate();
                 }
-                this.statusWorker = new Worker("geppetto/js/geppettoProject/PullStatusWorker.js");
+                if (GEPPETTO_CONFIGURATION.contextPath == "/") {
+                    this.statusWorker = new Worker("/geppetto/js/geppettoProject/PullStatusWorker.js");
+                }else{
+                    this.statusWorker = new Worker("geppetto/js/geppettoProject/PullStatusWorker.js");
+                }
 
                 this.statusWorker.postMessage(2000);
 
@@ -93,7 +97,7 @@ define(function (require) {
                         }
 
                         if (pull && window.Project.persisted && window.Project.getId() != -1) {
-                            GEPPETTO.MessageSocket.send(GEPPETTO.SimulationHandler.MESSAGE_TYPE.EXPERIMENT_STATUS, window.Project.id);
+                            GEPPETTO.MessageSocket.send(GEPPETTO.MessageHandler.MESSAGE_TYPE.EXPERIMENT_STATUS, window.Project.id);
                         }
                     }
                 };
@@ -103,7 +107,12 @@ define(function (require) {
              * Initialize web socket communication
              */
             init: function () {
-                GEPPETTO.MessageSocket.connect(GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet');
+            	var host = GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet';
+            	if(GEPPETTO_CONFIGURATION.contextPath=="/"){
+            		host = GEPPETTO.MessageSocket.protocol + window.location.host.replace("8081","8080") + '/GeppettoServlet';
+            	}
+                GEPPETTO.MessageSocket.connect(host);
+                console.log("Host for MessageSocket to connect: "+host);
                 GEPPETTO.Events.listen();
                 this.createChannel();
                 GEPPETTO.CommandController.log(GEPPETTO.Resources.GEPPETTO_INITIALIZED, true);

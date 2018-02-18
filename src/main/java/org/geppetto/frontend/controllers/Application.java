@@ -1,14 +1,18 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Scanner;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Controller
 public class Application
@@ -78,12 +85,14 @@ public class Application
 				// This is with any other authentication system from another web application.
 				// since sharing the scope session across the different web application bundles
 				// is more complex than expected (if possible at all) we are using cookies
-				for(Cookie c : req.getCookies())
-				{
-					if(c.getName().equals(authService.getSessionId()))
+				if (req.getCookies() != null) {
+				    for(Cookie c : req.getCookies())
 					{
-						auth = authService.isAuthenticated(c.getValue());
-						break;
+					    if(c.getName().equals(authService.getSessionId()))
+						{
+						    auth = authService.isAuthenticated(c.getValue());
+						    break;
+						}
 					}
 				}
 			}
@@ -128,46 +137,32 @@ public class Application
 		return new Gson().fromJson(reader, Test.class);
 	}
 
-	@RequestMapping(value = "/GeppettoNeuronalTests.html", method = RequestMethod.GET)
-	public String testNeuronal(Model model)
-	{
-		model.addAttribute("qunitfile", new String("NeuronalTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoCoreTests.html", method = RequestMethod.GET)
-	public String testCore(Model model)
-	{
-		model.addAttribute("qunitfile", new String("CoreTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoExternalSimulatorTests.html", method = RequestMethod.GET)
-	public String testExternalSimulator(Model model)
-	{
-		model.addAttribute("qunitfile", new String("ExternalSimulatorTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/GeppettoPersistenceTests.html", method = RequestMethod.GET)
-	public String testPersistence(Model model)
-	{
-		model.addAttribute("qunitfile", new String("PersistenceTests"));
-		return "qunitTest";
-	}
-
-	@RequestMapping(value = "/tests.html", method = RequestMethod.GET)
-	public String tests()
-	{
-		return "tests";
-	}
-
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String dashboard()
+	public String root(HttpServletRequest request, HttpServletResponse response)
 	{
+		JsonParser parser = new JsonParser();
+		HttpSession session = request.getSession();
+		ServletContext sc = session.getServletContext();
+		try {
+			String s = sc.getRealPath("/");
+			JsonObject obj = (JsonObject) parser.parse(new FileReader(s+"/GeppettoConfiguration.json"));
+
+			JsonElement rootRedirectElement =  obj.get("rootRedirect");
+			String rootRedirect =rootRedirectElement.toString().replace("\"", "");
+
+			//if not redirect is specified in GeppettoConfiguration.json then redirect to dashboard by default
+			if(rootRedirect == null || rootRedirect.isEmpty()){
+				rootRedirect="dashboard";
+			}else if(!rootRedirect.equals("dashboard")){
+				rootRedirect= "redirect:" + rootRedirect;
+			}
+			
+			return rootRedirect;
+		} catch (Exception e) {
+			logger.error("Can't redirect using rootURL from GeppettoConfiguration.json");
+		}
+
 		return "dashboard";
 	}
-	
-	
 
 }

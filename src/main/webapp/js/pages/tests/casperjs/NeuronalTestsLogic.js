@@ -631,10 +631,6 @@ function testC302NetworkProject(test){
 function ca1Test(test){
     casper.then(function(){launchTest(test,"CA1",45000);});
     casper.echo("------------STARTING CA1 TEST--------------");
-    casper.waitForSelector('div[id="TreeVisualiserDAT1"]', function() {
-        this.echo("I've waited for the TreeVisualiserDAT1 to load.");
-        test.assertExists('div[id="TreeVisualiserDAT1"]', "geppetto loads the initial TreeVisualiserDAT1");
-    }, null, 25000);
 
     casper.then(function () {
         this.echo("Opening controls panel");

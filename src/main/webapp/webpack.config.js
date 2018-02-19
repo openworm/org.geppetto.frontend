@@ -167,6 +167,7 @@ module.exports = function(env){
 	            {
 	                
 	                test: /\.css$/,
+			exclude: [/css\/unpacked/],
 	                use: ExtractTextPlugin.extract({
 	                  fallback: "style-loader",
 	                  use: "css-loader"

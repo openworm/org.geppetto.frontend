@@ -195,6 +195,7 @@ define(function (require) {
                     delete wrappedComponentProps.realType;
                     delete wrappedComponentProps.modelName;
                     delete wrappedComponentProps.dimensionType;
+                    delete wrappedComponentProps.noStyle;
 
                     switch (WrappedComponent.name) {
                         case 'AutoComplete':

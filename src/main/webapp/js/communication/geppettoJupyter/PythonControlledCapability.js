@@ -192,10 +192,14 @@ define(function (require) {
                     }
                     delete wrappedComponentProps.model;
                     delete wrappedComponentProps.handleChange;
-                    delete wrappedComponentProps.realType;
+
                     delete wrappedComponentProps.modelName;
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
+
+                    if (WrappedComponent.name != 'ListComponent' ){
+                        delete wrappedComponentProps.realType;
+                    }
 
                     switch (WrappedComponent.name) {
                         case 'AutoComplete':

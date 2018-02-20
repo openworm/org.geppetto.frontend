@@ -504,17 +504,20 @@ function testC302NetworkProject(test){
     
     casper.then(function () {
     	casper.echo("-------Testing Empty Connections------");
-		test.assertEval(function() {
-			return c302.ADAL[0].getConnections().length=== 0;
-		},"ADAL connections check before resolveAllImportTypes() call.");
+		var connections = test.assertEval(function() {
+			return c302.ADAL[0].getConnections().length;
+		});
+		test.assertEquals(connections,0 ,"ADAL connections check before resolveAllImportTypes() call.");
 		
-		test.assertEval(function() {
-			return c302.AVAL[0].getConnections().length === 0;
-		},"AVAL connections check before resolveAllImportTypes() call.");
+		var connections2 = test.assertEval(function() {
+			return c302.AVAL[0].getConnections().length;
+		});
+		test.assertEquals(connections2,0,"AVAL connections check before resolveAllImportTypes() call.");
 		
-		test.assertEval(function() {
-			return c302.PVDR[0].getConnections().length===0;
-		},"PVDRD connections check before resolveAllImportTypes() call.");
+		var connections3 = test.assertEval(function() {
+			return c302.PVDR[0].getConnections().length;
+		});
+		test.assertEquals(connections3,0,"PVDRD connections check before resolveAllImportTypes() call.");
 	});
     
     casper.page.onCallback = function(){

@@ -503,20 +503,38 @@ function testC302NetworkProject(test){
 	});
     
     casper.then(function () {
+    	casper.echo("-------Testing Empty Connections------");
 		test.assertEval(function() {
-			return c302.ADAL[0].getConnections().length=== 0 && c302.AVAL[0].getConnections().length === 0 
-					&& c302.PVDR[0].getConnections().length===0;
-		},"AVAL, ADAL and PVDRD connections check before resolveAllImportTypes() call.");
+			return c302.ADAL[0].getConnections().length=== 0;
+		},"ADAL connections check before resolveAllImportTypes() call.");
+		
+		test.assertEval(function() {
+			return c302.AVAL[0].getConnections().length === 0;
+		},"AVAL connections check before resolveAllImportTypes() call.");
+		
+		test.assertEval(function() {
+			return c302.PVDR[0].getConnections().length===0;
+		},"PVDRD connections check before resolveAllImportTypes() call.");
 	});
     
     casper.page.onCallback = function(){
+    	casper.echo("-------Testing Resolved Connections--------");
+    	
     	test.assertEval(function() {
-			return c302.ADAL[0].getConnections().length=== 31 && c302.AVAL[0].getConnections().length === 170 
-					&& c302.PVDR[0].getConnections().length===7;
-		},"AVAL, ADAL and PVDRD connections check after resolveAllImportTypes() call.");
+			return c302.ADAL[0].getConnections().length=== 31;
+		},"ADAL connections check after resolveAllImportTypes() call.");
+		
+		test.assertEval(function() {
+			return c302.AVAL[0].getConnections().length === 170;
+		},"AVAL connections check after resolveAllImportTypes() call.");
+		
+		test.assertEval(function() {
+			return c302.PVDR[0].getConnections().length===7;
+		},"PVDRD connections check after resolveAllImportTypes() call.");
     };
     
     casper.then(function () {
+    	casper.echo("-------Executing command Model.neuroml.resolveAllImportTypes()--------");
 		casper.evaluate(function() {Model.neuroml.resolveAllImportTypes(window.callPhantom);});
 	});
     

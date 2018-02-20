@@ -643,10 +643,6 @@ function testC302NetworkProject(test){
 function ca1Test(test){
     casper.then(function(){launchTest(test,"CA1",45000);});
     casper.echo("------------STARTING CA1 TEST--------------");
-    casper.waitForSelector('div[id="TreeVisualiserDAT1"]', function() {
-        this.echo("I've waited for the TreeVisualiserDAT1 to load.");
-        test.assertExists('div[id="TreeVisualiserDAT1"]', "geppetto loads the initial TreeVisualiserDAT1");
-    }, null, 25000);
 
     casper.then(function () {
         this.echo("Opening controls panel");
@@ -799,7 +795,7 @@ function testPMuscleCellProject(test){
 }
 
 function testC302Connectome(test){
-	casper.then(function(){launchTest(test,"C302 Connectome",300000);});
+	casper.then(function(){launchTest(test,"C302 Connectome",200000);});
     casper.echo("------------STARTING C302 Connectome TEST--------------");
     casper.waitForSelector('div[id="Popup1"]', function() {
         this.echo("I've waited for Popup1 to load.");

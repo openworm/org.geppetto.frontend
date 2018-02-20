@@ -504,6 +504,12 @@ function testC302NetworkProject(test){
     
     casper.then(function () {
     	casper.echo("-------Testing Empty Connections------");
+		
+		var variablePath = casper.evaluate(function() {
+			return c302.ADAL[0].getConnections()[0].variable.instancePath;
+		});
+		test.assertEquals(variablePath,"","Test variable path");
+		
 		var connections = casper.evaluate(function() {
 			return c302.ADAL[0].getConnections().length;
 		});
@@ -512,7 +518,7 @@ function testC302NetworkProject(test){
 		var connections2 = casper.evaluate(function() {
 			return c302.AVAL[0].getConnections().length;
 		});
-		test.assertEquals(connections2,0,"AVAL connections check before resolveAllImportTypes() call.");
+		test.assertEquals(connections2,0 ,"AVAL connections check before resolveAllImportTypes() call.");
 		
 		var connections3 = casper.evaluate(function() {
 			return c302.PVDR[0].getConnections().length;

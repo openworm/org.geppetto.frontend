@@ -511,7 +511,7 @@ function testC302NetworkProject(test){
 		test.assertEquals(evaluate,true, "Top level instance present");
 	});
     
-    casper.page.onCallback = function(){
+    casper.then(function () {
     	casper.echo("-------Testing Resolved Connections--------");
 
     	test.assertEval(function() {
@@ -526,11 +526,6 @@ function testC302NetworkProject(test){
     		return c302.PVDR[0].getConnections().length===7;
     	},"PVDRD connections check after resolveAllImportTypes() call.");
     };
-
-    casper.then(function () {
-    	casper.echo("-------Executing command Model.neuroml.resolveAllImportTypes()--------");
-    	casper.evaluate(function() {Model.neuroml.resolveAllImportTypes(window.callPhantom);});
-    });
     
     casper.then(function () {
 		test.assertEval(function() {

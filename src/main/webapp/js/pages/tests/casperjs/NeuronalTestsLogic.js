@@ -484,6 +484,16 @@ function testC302NetworkProject(test){
     	casper.waitUntilVisible('div[id="Plot1"]', function () {
     		this.echo("I've waited for Plot1 to load.");
             test.assertExists('div[id="Plot1"]', "geppetto loads the initial Plot1");
+            
+            casper.then(function(){
+            	casper.waitUntilVisible('div[id="loading-spinner"]', function () {
+            		this.echo("I've waited for resolve types loading spinner to appear.");
+            	},125000);
+            	
+            	casper.waitForText("Resolving types", function() {
+        			this.echo('Resolving types loading spinner exists.');
+        		},125000);
+            });
     	},25000);
     });
     
@@ -502,29 +512,29 @@ function testC302NetworkProject(test){
 		test.assertEquals(evaluate,true, "Top level instance present");
 	});
     
-    casper.then(function () {
-    	casper.echo("-------Testing Empty Connections------");
-		
-		var variablePath = casper.evaluate(function() {
-			return c302.ADAL[0].getConnections()[0].variable.instancePath;
-		});
-		test.assertEquals(variablePath,"","Test variable path");
-		
-		var connections = casper.evaluate(function() {
-			return c302.ADAL[0].getConnections().length;
-		});
-		test.assertEquals(connections,0 ,"ADAL connections check before resolveAllImportTypes() call.");
-		
-		var connections2 = casper.evaluate(function() {
-			return c302.AVAL[0].getConnections().length;
-		});
-		test.assertEquals(connections2,0 ,"AVAL connections check before resolveAllImportTypes() call.");
-		
-		var connections3 = casper.evaluate(function() {
-			return c302.PVDR[0].getConnections().length;
-		});
-		test.assertEquals(connections3,0,"PVDRD connections check before resolveAllImportTypes() call.");
-	});
+//    casper.then(function () {
+//    	casper.echo("-------Testing Empty Connections------");
+//		
+//		var variablePath = casper.evaluate(function() {
+//			return c302.ADAL[0].getConnections()[0].variable.instancePath;
+//		});
+//		test.assertEquals(variablePath,"","Test variable path");
+//		
+//		var connections = casper.evaluate(function() {
+//			return c302.ADAL[0].getConnections().length;
+//		});
+//		test.assertEquals(connections,0 ,"ADAL connections check before resolveAllImportTypes() call.");
+//		
+//		var connections2 = casper.evaluate(function() {
+//			return c302.AVAL[0].getConnections().length;
+//		});
+//		test.assertEquals(connections2,0 ,"AVAL connections check before resolveAllImportTypes() call.");
+//		
+//		var connections3 = casper.evaluate(function() {
+//			return c302.PVDR[0].getConnections().length;
+//		});
+//		test.assertEquals(connections3,0,"PVDRD connections check before resolveAllImportTypes() call.");
+//	});
     
     casper.page.onCallback = function(){
     	casper.echo("-------Testing Resolved Connections--------");

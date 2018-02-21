@@ -488,11 +488,6 @@ function testC302NetworkProject(test){
     		casper.then(function(){
     			casper.waitUntilVisible('div[id="loading-spinner"]', function () {
     				this.echo("I've waited for resolve types loading spinner to appear.");
-    				casper.then(function () {
-    					casper.waitWhileVisible('div[id="loading-spinner"]', function () {
-    						this.echo("Wait for loading spinner to disappear, meaning resolveTypes finished.");
-    					},125000);
-    				});
     			},125000);
     		});
     	},25000);
@@ -513,7 +508,7 @@ function testC302NetworkProject(test){
 		test.assertEquals(evaluate,true, "Top level instance present");
 	});
     
-    casper.then(function () {
+    casper.page.onCallback = function(){
     	casper.echo("-------Testing Resolved Connections--------");
 
     	test.assertEval(function() {
@@ -527,6 +522,11 @@ function testC302NetworkProject(test){
     	test.assertEval(function() {
     		return c302.PVDR[0].getConnections().length===7;
     	},"PVDRD connections check after resolveAllImportTypes() call.");
+    };
+
+    casper.then(function () {
+    	casper.echo("-------Executing command Model.neuroml.resolveAllImportTypes()--------");
+    	casper.evaluate(function() {Model.neuroml.resolveAllImportTypes(window.callPhantom);});
     });
     
     casper.then(function () {

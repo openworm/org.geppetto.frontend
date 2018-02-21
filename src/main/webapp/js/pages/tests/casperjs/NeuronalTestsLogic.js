@@ -631,10 +631,6 @@ function testC302NetworkProject(test){
 function ca1Test(test){
     casper.then(function(){launchTest(test,"CA1",45000);});
     casper.echo("------------STARTING CA1 TEST--------------");
-    casper.waitForSelector('div[id="TreeVisualiserDAT1"]', function() {
-        this.echo("I've waited for the TreeVisualiserDAT1 to load.");
-        test.assertExists('div[id="TreeVisualiserDAT1"]', "geppetto loads the initial TreeVisualiserDAT1");
-    }, null, 25000);
 
     casper.then(function () {
         this.echo("Opening controls panel");
@@ -788,7 +784,7 @@ function testPMuscleCellProject(test){
 
 function testC302Connectome(test){
 	casper.then(function(){launchTest(test,"C302 Connectome",200000);});
-    casper.echo("------------STARTING C302 Muscle Model TEST--------------");
+    casper.echo("------------STARTING C302 Connectome TEST--------------");
     casper.waitForSelector('div[id="Popup1"]', function() {
         this.echo("I've waited for Popup1 to load.");
     }, null, 150000);
@@ -802,19 +798,19 @@ function testCylindersProject(test){
     casper.then(function () {
 
         test.assertEval(function() {
-            var expected = {"Example2.Pop_OneSeg[0]":[0, Math.PI/2, 0, "XYZ"],
+            var reference = {"Example2.Pop_OneSeg[0]":[0, Math.PI/2, 0, "XYZ"],
                             "Example2.Pop_OneSeg[1]":[0, Math.PI/2, 0, "XYZ"],
                             "Example2.Pop_TwoSeg[0]":[0, 0, 0, "XYZ"]};
             var results = [];
-            var rotation = Canvas1.engine.meshes["Example2.Pop_OneSeg[0]"].rotation.toArray();
-            for (var path in expected) {
+            for (var path in reference) {
                 var rotation = Canvas1.engine.meshes[path].rotation.toArray();
+                var expected = reference[path];
                 for (var i=0; i<rotation.length; ++i)
                     results.push(rotation[i] === expected[i]);
             }
             for (var i=0; i<rotation.length; ++i)
                 results.push(rotation[i] === expected[i]);
-	    return results.every(x => x);
+	    return results.every(function(x){return x;});
 	},"Rotation checked for all segments");
     });
 }

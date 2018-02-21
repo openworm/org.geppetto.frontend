@@ -1,14 +1,18 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Scanner;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Controller
 public class Application
@@ -131,11 +138,31 @@ public class Application
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String dashboard()
+	public String root(HttpServletRequest request, HttpServletResponse response)
 	{
+		JsonParser parser = new JsonParser();
+		HttpSession session = request.getSession();
+		ServletContext sc = session.getServletContext();
+		try {
+			String s = sc.getRealPath("/");
+			JsonObject obj = (JsonObject) parser.parse(new FileReader(s+"/GeppettoConfiguration.json"));
+
+			JsonElement rootRedirectElement =  obj.get("rootRedirect");
+			String rootRedirect =rootRedirectElement.toString().replace("\"", "");
+
+			//if not redirect is specified in GeppettoConfiguration.json then redirect to dashboard by default
+			if(rootRedirect == null || rootRedirect.isEmpty()){
+				rootRedirect="dashboard";
+			}else if(!rootRedirect.equals("dashboard")){
+				rootRedirect= "redirect:" + rootRedirect;
+			}
+			
+			return rootRedirect;
+		} catch (Exception e) {
+			logger.error("Can't redirect using rootURL from GeppettoConfiguration.json");
+		}
+
 		return "dashboard";
 	}
-	
-	
 
 }

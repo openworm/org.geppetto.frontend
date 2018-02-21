@@ -488,9 +488,11 @@ function testC302NetworkProject(test){
     		casper.then(function(){
     			casper.waitUntilVisible('div[id="loading-spinner"]', function () {
     				this.echo("I've waited for resolve types loading spinner to appear.");
-    				casper.waitWhileVisible('div[id="loading-spinner"]', function () {
-    					this.echo("Wait for loading spinner to disappear, meaning resolveTypes finished.");
-    				},125000);
+    				casper.then(function () {
+    					casper.waitWhileVisible('div[id="loading-spinner"]', function () {
+    						this.echo("Wait for loading spinner to disappear, meaning resolveTypes finished.");
+    					},125000);
+    				});
     			},125000);
     		});
     	},25000);

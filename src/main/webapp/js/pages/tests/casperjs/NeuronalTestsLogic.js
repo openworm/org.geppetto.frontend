@@ -525,7 +525,7 @@ function testC302NetworkProject(test){
     	test.assertEval(function() {
     		return c302.PVDR[0].getConnections().length===7;
     	},"PVDRD connections check after resolveAllImportTypes() call.");
-    };
+    });
     
     casper.then(function () {
 		test.assertEval(function() {

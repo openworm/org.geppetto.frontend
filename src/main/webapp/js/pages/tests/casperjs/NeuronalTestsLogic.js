@@ -483,7 +483,13 @@ function testC302NetworkProject(test){
     casper.then(function(){
     	casper.waitUntilVisible('div[id="Plot1"]', function () {
     		this.echo("I've waited for Plot1 to load.");
-            test.assertExists('div[id="Plot1"]', "geppetto loads the initial Plot1");
+    		test.assertExists('div[id="Plot1"]', "geppetto loads the initial Plot1");
+
+    		casper.then(function(){
+    			casper.waitUntilVisible('div[id="loading-spinner"]', function () {
+    				this.echo("I've waited for resolve types loading spinner to appear.");
+    			},125000);
+    		});
     	},25000);
     });
     
@@ -502,23 +508,26 @@ function testC302NetworkProject(test){
 		test.assertEquals(evaluate,true, "Top level instance present");
 	});
     
-    casper.then(function () {
-		test.assertEval(function() {
-			return c302.ADAL[0].getConnections().length=== 0 && c302.AVAL[0].getConnections().length === 0 
-					&& c302.PVDR[0].getConnections().length===0;
-		},"AVAL, ADAL and PVDRD connections check before resolveAllImportTypes() call.");
-	});
-    
     casper.page.onCallback = function(){
+    	casper.echo("-------Testing Resolved Connections--------");
+
     	test.assertEval(function() {
-			return c302.ADAL[0].getConnections().length=== 31 && c302.AVAL[0].getConnections().length === 170 
-					&& c302.PVDR[0].getConnections().length===7;
-		},"AVAL, ADAL and PVDRD connections check after resolveAllImportTypes() call.");
+    		return c302.ADAL[0].getConnections().length=== 31;
+    	},"ADAL connections check after resolveAllImportTypes() call.");
+
+    	test.assertEval(function() {
+    		return c302.AVAL[0].getConnections().length === 170;
+    	},"AVAL connections check after resolveAllImportTypes() call.");
+
+    	test.assertEval(function() {
+    		return c302.PVDR[0].getConnections().length===7;
+    	},"PVDRD connections check after resolveAllImportTypes() call.");
     };
-    
+
     casper.then(function () {
-		casper.evaluate(function() {Model.neuroml.resolveAllImportTypes(window.callPhantom);});
-	});
+    	casper.echo("-------Executing command Model.neuroml.resolveAllImportTypes()--------");
+    	casper.evaluate(function() {Model.neuroml.resolveAllImportTypes(window.callPhantom);});
+    });
     
     casper.then(function () {
 		test.assertEval(function() {

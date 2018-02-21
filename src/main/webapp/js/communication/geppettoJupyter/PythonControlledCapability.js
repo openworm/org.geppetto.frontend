@@ -9,14 +9,18 @@ define(function (require) {
 
     var $ = require('jquery');
     var React = require('react');
+    var Utils = require('./GeppettoJupyterUtils');
 
     module.exports = {
         createPythonControlledComponent(WrappedComponent) {
             class PythonControlledComponent extends WrappedComponent {
                 constructor(props) {
                     super(props);
-                    this.state.model=props.model;
-                    this.state.componentType=WrappedComponent.name;
+                    if (this.state == undefined) {
+                        this.state = {};
+                    }
+                    this.state.model = props.model;
+                    this.state.componentType = WrappedComponent.name;
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
                 }
 
@@ -192,9 +196,14 @@ define(function (require) {
                     }
                     delete wrappedComponentProps.model;
                     delete wrappedComponentProps.handleChange;
-                    delete wrappedComponentProps.realType;
+
                     delete wrappedComponentProps.modelName;
                     delete wrappedComponentProps.dimensionType;
+                    delete wrappedComponentProps.noStyle;
+
+                    if (WrappedComponent.name != 'ListComponent' ){
+                        delete wrappedComponentProps.realType;
+                    }
 
                     switch (WrappedComponent.name) {
                         case 'AutoComplete':
@@ -223,6 +232,133 @@ define(function (require) {
             };
 
             return PythonControlledControl;
-        }
+        },
+
+        createPythonControlledControlWithPythonDataFetch(WrappedComponent) {
+
+            var PythonControlledComponent = this.createPythonControlledComponent(WrappedComponent);
+            class PythonControlledControlWithPythonDataFetch extends PythonControlledComponent {
+
+                constructor(props) {
+                    super(props);
+                    this.state = $.extend(this.state, {
+                        value: [],
+                        items: [],
+                        pythonData: []
+                    });
+                    // If a handleChange method is passed as a props it will overwrite the handleChange python controlled capability
+                    this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange.bind(this);
+                    this.callPythonMethod();
+                }
+
+                componentWillReceiveProps(nextProps) {
+                    this.disconnectFromPython();
+                    this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
+                    GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this);
+                    this.connectToPython(this.state.componentType, nextProps.model);
+                }
+
+                componentDidUpdate(prevProps, prevState) {
+                    if (this.state.value != prevState.value && this.props.onChange) {
+                        this.props.onChange(null, null, this.state.value);
+                    }
+                }
+
+                updatePythonValue(newValue) {
+                    this.setState({ value: newValue, searchText: newValue, checked: newValue });
+                    if (this.syncValueWithPython) {
+                        this.syncValueWithPython(newValue, window.requirement);
+                    }
+
+                    this.forceUpdate();
+                }
+
+
+                // Default handle (mainly textfields and dropdowns)
+                handleChange(event, index, value) {
+                    var targetValue = value;
+                    if (event != null && event.target.value != undefined) {
+                        targetValue = event.target.value;
+                    }
+                    this.setState({ value: targetValue });
+                    this.updatePythonValue(targetValue);
+                }
+
+
+                compareArrays(array1, array2) {
+                    // if the other array is a falsy value, return
+                    if (!array1 || !array2)
+                        return false;
+
+                    // compare lengths - can save a lot of time 
+                    if (array1.length != array2.length)
+                        return false;
+
+                    for (var i = 0, l = array1.length; i < l; i++) {
+                        // Check if we have nested arrays
+                        if (array1[i] instanceof Array && array2[i] instanceof Array) {
+                            // recurse into the nested arrays
+                            if (!array1[i].equals(array2[i]))
+                                return false;
+                        }
+                        else if (array1[i] != array2[i]) {
+                            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
+                callPythonMethod = (value) => {
+                    Utils.sendPythonMessage(this.props.method, []).then((response) => {
+                        if (Object.keys(response).length != 0) {
+                            this.setState({ pythonData: response });
+                        }
+                    });
+                }
+
+                componentDidUpdate(prevProps, prevState) {
+                    if (!this.compareArrays(this.state.value, prevState.value)) {
+                        if ($.isArray(this.state.value)) {
+                            for (var v in this.state.value) {
+                                if (this.state.pythonData.indexOf(this.state.value[v]) < 0) {
+                                    var newValue = [this.state.value[v]];
+                                    this.setState({ pythonData: this.state.pythonData.concat(newValue) });
+                                }
+                            }
+                        }
+                    }
+                }
+
+                shouldComponentUpdate(nextProps, nextState) {
+                    return !this.compareArrays(this.state.pythonData, nextState.pythonData) || !this.compareArrays(this.state.value, nextState.value);
+                }
+
+                render() {
+                    const wrappedComponentProps = Object.assign({}, this.props);
+                    if (wrappedComponentProps.key == undefined) {
+                        wrappedComponentProps.key = wrappedComponentProps.model;
+                    }
+                    if (wrappedComponentProps.id == undefined) {
+                        wrappedComponentProps.id = wrappedComponentProps.model;
+                    }
+                    wrappedComponentProps['onChange'] = this.handleChange;
+                    wrappedComponentProps['value'] = this.state.value;
+                    delete wrappedComponentProps.model;
+                    delete wrappedComponentProps.postProcessItems;
+                    if(this.props.postProcessItems){
+                        var items = this.props.postProcessItems(this.state.pythonData, this.state.value);
+                    }
+                    return (
+                        <WrappedComponent {...wrappedComponentProps}>
+                            {items}
+                        </WrappedComponent>
+                    );
+                }
+
+            };
+
+            return PythonControlledControlWithPythonDataFetch;
+        },
     }
 })

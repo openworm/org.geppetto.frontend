@@ -1089,8 +1089,6 @@ define(['jquery'], function () {
             }
 
             var c = new THREE.CylinderGeometry(topRadius, bottomRadius, axis.length(), 20, 1, false);
-            c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-            var threeObject = new THREE.Mesh(c, material);
 
             // shift it so one end rests on the origin
             c.applyMatrix(new THREE.Matrix4().makeTranslation(0, axis.length() / 2, 0));

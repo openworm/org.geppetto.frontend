@@ -222,7 +222,7 @@ define(function (require) {
                             break;
                         default:
                             wrappedComponentProps['onChange'] = this.handleChange;
-                            wrappedComponentProps['value'] = (typeof this.state.value === 'object' && this.state.value !== null) ? JSON.stringify(this.state.value) : this.state.value;
+                            wrappedComponentProps['value'] = (typeof this.state.value === 'object' && this.state.value !== null && !Array.isArray(this.state.value)) ? JSON.stringify(this.state.value) : this.state.value;
                             delete wrappedComponentProps.searchText;
                             delete wrappedComponentProps.dataSource;
                             break;

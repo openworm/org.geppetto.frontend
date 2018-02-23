@@ -1662,6 +1662,10 @@ define(function (require) {
             GEPPETTO.ControlPanel = this;
         },
 
+        componentWillUnmount: function () {
+            GEPPETTO.off(null, null, this);
+        },
+
         setTab: function(filterTabOption){
             // only do something if builtin filters are being used
             if (this.props.useBuiltInFilters === true) {
@@ -1994,36 +1998,29 @@ define(function (require) {
             // listen to events we need to react to
             GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
                 that.clearData();
-            });
+            }, this);
 
             GEPPETTO.on(GEPPETTO.Events.Experiment_properties_saved, function () {
             	if(that.isOpen()){
             		that.refreshData();
             	}
-            });
+            }, this);
 
             GEPPETTO.on(GEPPETTO.Events.Project_properties_saved, function () {
             	if(that.isOpen()){
             		that.refreshData();
             	}
-            });
+            }, this);
 
             GEPPETTO.on(GEPPETTO.Events.Parameters_set, function () {
             	if(that.isOpen()){
             		that.refreshData();
             	}
-            });
+            }, this);
 
             if (this.props.listenToInstanceCreationEvents) {
-                GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (parameters) {
-                    that.deleteData([parameters]);
-                });
-
-                GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
-                    if (instances != undefined) {
-                        that.addData(instances);
-                    }
-                });
+                GEPPETTO.on(GEPPETTO.Events.Instance_deleted, this.handleDeleteData, this);
+                GEPPETTO.on(GEPPETTO.Events.Instances_created, this.handleAddData, this);
             }
 
             if (GEPPETTO.ForegroundControls != undefined) {
@@ -2033,6 +2030,17 @@ define(function (require) {
             this.plotController = new PlotCtrlr();
 
             this.addData(window.Instances);
+        },
+
+
+        handleDeleteData:function (parameters) {
+            this.deleteData([parameters]);
+        },
+
+        handleAddData:function (instances) {
+            if (instances != undefined) {
+                this.addData(instances);
+            }
         },
 
         render: function () {

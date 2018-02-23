@@ -41,6 +41,10 @@ define(function (require) {
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
                 }
 
+                componentWillUnmount(){
+                    this.disconnectFromPython();
+                }
+                
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;

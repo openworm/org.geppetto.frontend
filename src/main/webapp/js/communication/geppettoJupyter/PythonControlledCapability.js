@@ -135,6 +135,8 @@ define(function (require) {
                             case 'float':
                                 newValue = parseFloat(newValue)
                                 break;
+                            case 'dict':
+                                newValue = JSON.parse(newValue)
                             default:
                                 break;
                         }
@@ -201,7 +203,7 @@ define(function (require) {
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
 
-                    if (WrappedComponent.name != 'ListComponent' ){
+                    if (WrappedComponent.name != 'ListComponent') {
                         delete wrappedComponentProps.realType;
                     }
 
@@ -215,10 +217,12 @@ define(function (require) {
                             wrappedComponentProps['checked'] = this.state.checked;
                             delete wrappedComponentProps.searchText;
                             delete wrappedComponentProps.dataSource;
+                            delete wrappedComponentProps.floatingLabelText;
+                            delete wrappedComponentProps.hintText;
                             break;
                         default:
                             wrappedComponentProps['onChange'] = this.handleChange;
-                            wrappedComponentProps['value'] = this.state.value;
+                            wrappedComponentProps['value'] = (typeof this.state.value === 'object' && this.state.value !== null) ? JSON.stringify(this.state.value) : this.state.value;
                             delete wrappedComponentProps.searchText;
                             delete wrappedComponentProps.dataSource;
                             break;
@@ -346,7 +350,7 @@ define(function (require) {
                     wrappedComponentProps['value'] = this.state.value;
                     delete wrappedComponentProps.model;
                     delete wrappedComponentProps.postProcessItems;
-                    if(this.props.postProcessItems){
+                    if (this.props.postProcessItems) {
                         var items = this.props.postProcessItems(this.state.pythonData, this.state.value);
                     }
                     return (

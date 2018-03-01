@@ -1115,6 +1115,7 @@ define(['jquery'], function () {
             this.scene.remove(object);
             var mesh = this.add3DSphere(x, y, z, radius, material);
             mesh.instancePath = object.instancePath;
+            this.meshes[mesh.instancePath] = mesh;
             return mesh;
         },
 

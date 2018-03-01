@@ -952,7 +952,7 @@ define(function (require) {
                 "CompositeType": {
                     "type": {
                         "actions": [
-                            "G.addWidget(3).then(w=>{w.setData($type$).setName('$typeid$');});",
+                            "G.addWidget(1).then(w=>{w.setData($type$, [GEPPETTO.Resources.HTML_TYPE]).setName('$type$')});"
                         ],
                         "icon": "fa-puzzle-piece",
                         "label": "Explore type",

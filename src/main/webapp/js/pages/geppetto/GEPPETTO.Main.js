@@ -7,7 +7,7 @@
  */
 define(function (require) {
     return function (GEPPETTO) {
-    	require('babel-polyfill');
+        require('babel-polyfill');
         var $ = require('jquery');
         var React = require('react');
         var InfoModal = require('../../components/controls/modals/InfoModal');
@@ -51,10 +51,10 @@ define(function (require) {
                     // we have to listen for 'message'
                     window.addEventListener('message', handleRequest, false);
                     if ($.isArray(GEPPETTO_CONFIGURATION.embedderURL)) {
-                        window.parent.postMessage({"command": "ready"}, GEPPETTO_CONFIGURATION.embedderURL[0]);
+                        window.parent.postMessage({ "command": "ready" }, GEPPETTO_CONFIGURATION.embedderURL[0]);
                     }
                     else {
-                        window.parent.postMessage({"command": "ready"}, GEPPETTO_CONFIGURATION.embedderURL);
+                        window.parent.postMessage({ "command": "ready" }, GEPPETTO_CONFIGURATION.embedderURL);
                     }
                 }
             },
@@ -132,7 +132,7 @@ define(function (require) {
 
                             //TODO Matteo: Make a function to create a custom Info modal inside ModalFactory and use it from here.
                             var infoFactory = React.createFactory(InfoModal);
-                            ReactDOM.render(infoFactory({show: true, keyboard: false}), document.getElementById('modal-region'));
+                            ReactDOM.render(infoFactory({ show: true, keyboard: false }), document.getElementById('modal-region'));
 
                             $('#infomodal-title').html("Zzz");
                             $('#infomodal-text').html(GEPPETTO.Resources.IDLE_MESSAGE);
@@ -175,8 +175,8 @@ define(function (require) {
         };
 
         $(document).ready(function () {
-        	
-        	$("#loadingText").hide();
+
+            $("#loadingText").hide();
             // add console to placeholder
             // NOTE: eventually this gets refactored and only extensions that want the console add it
             GEPPETTO.ComponentFactory.addComponent('CONSOLE', {}, document.getElementById("console"));
@@ -227,7 +227,7 @@ define(function (require) {
 
                 var embeddedConsoleVisible = false;
                 $('#consoleButton').click(function (e) {
-                    if(!embeddedConsoleVisible) {
+                    if (!embeddedConsoleVisible) {
                         $('#console').show();
                         $('#experiments').hide();
                         $("#pythonConsole").hide();
@@ -250,6 +250,7 @@ define(function (require) {
 
                 $('.nav-tabs li.active').removeClass('active');
             }
-        });
+        }
+        );
     };
 });

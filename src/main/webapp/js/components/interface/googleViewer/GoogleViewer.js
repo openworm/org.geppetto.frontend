@@ -131,6 +131,7 @@ define(function (require) {
 		addResizeHandler(){
 			var _this = this;
 			_this.newCenter = null;
+			_this.newZoom = null;
 			google.maps.event.addListener(_this.map, 'idle', function () {
 				if (_this.newCenter== null){
 					_this.newCenter = _this.map.getCenter();
@@ -140,29 +141,19 @@ define(function (require) {
 			google.maps.event.addListener(_this.map, 'resize', function () {
 				setTimeout(function () { _this.map.setCenter(_this.newCenter); }, 200);
 			});
-
-			google.maps.event.addListener( _this.map, 'bounds_changed', function () {
-				//FULL SCREEN mode, zoom in
-				if ( $(_this.map.getDiv()).children().eq(0).height() == window.innerHeight &&
-						$(_this.map.getDiv()).children().eq(0).width()  == window.innerWidth ) {
-					if(_this.props.zoomSettings!=undefined){
-						if(_this.props.zoomSettings.fullScreen!=undefined){
-							if(_this.map.getZoom() != _this.props.zoomSettings.fullScreen){
-								_this.map.setZoom(_this.props.zoomSettings.fullScreen);
-							}
-						}
-					}
-				}
-				else {
-					if(_this.props.zoomSettings!=undefined){
-						if(_this.props.zoomSettings.normalScreen!=undefined){
-							if(_this.map.getZoom() != _this.props.zoomSettings.normalScreen){
-								_this.map.setZoom(_this.props.zoomSettings.normalScreen);
-							}
-						}
-					}
-				}
-			} );
+			
+			$(document).bind('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+			    var isFullScreen = document.fullScreen ||
+			        document.mozFullScreen ||
+			        document.webkitIsFullScreen;
+			    if (isFullScreen) {
+			        if(_this.props.zoomSettings!=undefined){
+			        	if(_this.props.zoomSettings.fullScreen!=undefined){
+			        		_this.map.setZoom(_this.props.zoomSettings.fullScreen);
+			        	}
+			        }
+			    }
+			});
 		}
 
 		download() {

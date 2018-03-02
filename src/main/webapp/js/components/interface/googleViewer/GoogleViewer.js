@@ -145,10 +145,14 @@ define(function (require) {
 				//FULL SCREEN mode, zoom in
 				if ( $(_this.map.getDiv()).children().eq(0).height() == window.innerHeight &&
 						$(_this.map.getDiv()).children().eq(0).width()  == window.innerWidth ) {
-					_this.map.setZoom(3);
+					if(_this.props.zoomSettings!=undefined){
+						_this.map.setZoom(_this.props.zoomSettings.fullScreen);
+					}
 				}
 				else {
-					_this.map.setZoom(1);
+					if(_this.props.zoomSettings!=undefined){
+						_this.map.setZoom(_this.props.zoomSettings.normalScreen);
+					}
 				}
 			} );
 		}

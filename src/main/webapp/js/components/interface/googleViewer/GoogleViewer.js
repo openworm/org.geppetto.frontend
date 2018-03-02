@@ -146,12 +146,20 @@ define(function (require) {
 				if ( $(_this.map.getDiv()).children().eq(0).height() == window.innerHeight &&
 						$(_this.map.getDiv()).children().eq(0).width()  == window.innerWidth ) {
 					if(_this.props.zoomSettings!=undefined){
-						_this.map.setZoom(_this.props.zoomSettings.fullScreen);
+						if(_this.props.zoomSettings.fullScreen!=undefined){
+							if(_this.map.getZoom() != _this.props.zoomSettings.fullScreen){
+								_this.map.setZoom(_this.props.zoomSettings.fullScreen);
+							}
+						}
 					}
 				}
 				else {
 					if(_this.props.zoomSettings!=undefined){
-						_this.map.setZoom(_this.props.zoomSettings.normalScreen);
+						if(_this.props.zoomSettings.normalScreen!=undefined){
+							if(_this.map.getZoom() != _this.props.zoomSettings.normalScreen){
+								_this.map.setZoom(_this.props.zoomSettings.normalScreen);
+							}
+						}
 					}
 				}
 			} );

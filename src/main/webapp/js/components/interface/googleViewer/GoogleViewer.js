@@ -140,6 +140,17 @@ define(function (require) {
 			google.maps.event.addListener(_this.map, 'resize', function () {
 				setTimeout(function () { _this.map.setCenter(_this.newCenter); }, 200);
 			});
+
+			google.maps.event.addListener( _this.map, 'bounds_changed', function () {
+				//FULL SCREEN mode, zoom in
+				if ( $(_this.map.getDiv()).children().eq(0).height() == window.innerHeight &&
+						$(_this.map.getDiv()).children().eq(0).width()  == window.innerWidth ) {
+					_this.map.setZoom(3);
+				}
+				else {
+					_this.map.setZoom(1);
+				}
+			} );
 		}
 
 		download() {

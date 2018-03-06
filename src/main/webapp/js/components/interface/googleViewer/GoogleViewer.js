@@ -149,7 +149,9 @@ define(function (require) {
 			    if (isFullScreen) {
 			        if(_this.props.zoomSettings!=undefined){
 			        	if(_this.props.zoomSettings.fullScreen!=undefined){
+			        		//zoom in and set min zoom to same value to avoid zooming out to multiple images view
 			        		_this.map.setZoom(_this.props.zoomSettings.fullScreen);
+			        		_this.map.setOptions({minZoom: _this.props.zoomSettings.fullScreen});
 			        	}
 			        }
 			    }

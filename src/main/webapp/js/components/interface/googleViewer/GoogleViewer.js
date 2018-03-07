@@ -32,7 +32,7 @@ define(function (require) {
 				},
 				isPng: false,
 				maxZoom: 11,
-				minZoom: 0,
+				minZoom: 1,
 				radius: 1738000,
 				path: path
 			}
@@ -119,10 +119,8 @@ define(function (require) {
 				});
 
 				_this.addResizeHandler();
-
-
+				
 			});
-
 			GoogleMapsLoader.onLoad(function (google) {
 				//console.log('I just loaded google maps api');
 			});
@@ -142,6 +140,27 @@ define(function (require) {
 				setTimeout(function () { _this.map.setCenter(_this.newCenter); }, 200);
 			});
 			
+			var latOffset = 35;
+			var lngOffset = 30;
+			var center = _this.props.mapSettings.center;
+			var allowedBounds = new google.maps.LatLngBounds(
+					new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
+					new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
+			);
+			var lastValidCenter = _this.map.getCenter();
+
+			//keep the map centered to avoid seeing the images/slices repeat
+			google.maps.event.addListener(_this.map, 'center_changed', function() {
+				if (allowedBounds.contains(_this.map.getCenter())) {
+					// still within valid bounds, so save the last valid position
+					lastValidCenter = _this.map.getCenter();
+					return; 
+				}
+
+				// not valid anymore => return to last valid position
+				_this.map.panTo(lastValidCenter);
+			});
+
 			$(document).bind('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
 			    var isFullScreen = document.fullScreen ||
 			        document.mozFullScreen ||
@@ -151,7 +170,6 @@ define(function (require) {
 			        	if(_this.props.zoomSettings.fullScreen!=undefined){
 			        		//zoom in and set min zoom to same value to avoid zooming out to multiple images view
 			        		_this.map.setZoom(_this.props.zoomSettings.fullScreen);
-			        		_this.map.setOptions({minZoom: _this.props.zoomSettings.fullScreen});
 			        	}
 			        }
 			    }

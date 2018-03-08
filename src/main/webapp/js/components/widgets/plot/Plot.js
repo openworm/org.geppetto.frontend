@@ -232,9 +232,11 @@ define(function (require) {
 			return this.variables;
 		},
 
-		plotGeneric: function(dataset) {
-			if (dataset != undefined)
-				this.datasets.push(dataset);
+	    plotGeneric: function(datasets) {
+                if ($.isArray(datasets))
+                    this.datasets = datasets;
+                else
+                    this.datasets.push(datasets);
 
 			if(this.plotly==null){
 				this.plotOptions.xaxis.autorange = true;

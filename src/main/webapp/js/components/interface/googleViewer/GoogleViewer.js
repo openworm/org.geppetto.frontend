@@ -129,16 +129,6 @@ define(function (require) {
 		addResizeHandler(){
 			var _this = this;
 			_this.newCenter = null;
-			_this.newZoom = null;
-			google.maps.event.addListener(_this.map, 'idle', function () {
-				if (_this.newCenter== null){
-					_this.newCenter = _this.map.getCenter();
-				}
-
-			});
-			google.maps.event.addListener(_this.map, 'resize', function () {
-				setTimeout(function () { _this.map.setCenter(_this.newCenter); }, 200);
-			});
 			
 			var latOffset = 35;
 			var lngOffset = 30;
@@ -148,6 +138,35 @@ define(function (require) {
 					new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
 			);
 			var lastValidCenter = _this.map.getCenter();
+			var changeAllowedBounds = true;
+			
+			google.maps.event.addListener(_this.map, 'idle', function () {
+				if (_this.newCenter== null){
+					_this.newCenter = _this.map.getCenter();
+				}
+
+			});
+			google.maps.event.addListener(_this.map, 'zoom_changed', function () {
+				if(_this.map.getZoom()>1){
+					if(changeAllowedBounds){
+						allowedBounds = new google.maps.LatLngBounds(
+								new google.maps.LatLng(center.lat - (latOffset*4),center.lng - (lngOffset*4)), 
+								new google.maps.LatLng(center.lat + (latOffset*4),center.lng + (lngOffset*4))
+						);
+						changeAllowedBounds = false;
+					}
+				}else{
+					allowedBounds = new google.maps.LatLngBounds(
+							new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
+							new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
+					);
+					changeAllowedBounds = true;
+				}
+			});
+			google.maps.event.addListener(_this.map, 'resize', function () {
+				setTimeout(function () { _this.map.setCenter(_this.newCenter); }, 200);
+			});
+			
 
 			//keep the map centered to avoid seeing the images/slices repeat
 			google.maps.event.addListener(_this.map, 'center_changed', function() {
@@ -166,12 +185,28 @@ define(function (require) {
 			        document.mozFullScreen ||
 			        document.webkitIsFullScreen;
 			    if (isFullScreen) {
-			        if(_this.props.zoomSettings!=undefined){
-			        	if(_this.props.zoomSettings.fullScreen!=undefined){
-			        		//zoom in and set min zoom to same value to avoid zooming out to multiple images view
-			        		_this.map.setZoom(_this.props.zoomSettings.fullScreen);
-			        	}
-			        }
+			    	if(_this.props.zoomSettings!=undefined){
+			    		if(_this.props.zoomSettings.fullScreen!=undefined){
+			    			//zoom in and set min zoom to same value to avoid zooming out to multiple images view
+			    			_this.map.setZoom(_this.props.zoomSettings.fullScreen);
+			    			_this.map.setOptions({minZoom : _this.props.zoomSettings.fullScreen});
+			    			allowedBounds = new google.maps.LatLngBounds(
+			    					new google.maps.LatLng(center.lat - (latOffset*3.5),center.lng - (lngOffset*3.5)), 
+			    					new google.maps.LatLng(center.lat + (latOffset*3.5),center.lng + (lngOffset*3.5))
+			    			);
+			    		}
+			    	}
+			    }else{
+			    	if(_this.props.zoomSettings!=undefined){
+			    		if(_this.props.zoomSettings.normalScreen!=undefined){
+			    			//zoom in and set min zoom to same value to avoid zooming out to multiple images view
+			    			_this.map.setOptions({minZoom : _this.props.zoomSettings.normalScreen});
+			    			allowedBounds = new google.maps.LatLngBounds(
+			    					new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
+			    					new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
+			    			);
+			    		}
+			    	}
 			    }
 			});
 		}

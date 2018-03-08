@@ -150,15 +150,15 @@ define(function (require) {
 				if(_this.map.getZoom()>1){
 					if(changeAllowedBounds){
 						allowedBounds = new google.maps.LatLngBounds(
-								new google.maps.LatLng(center.lat - (latOffset*4),center.lng - (lngOffset*4)), 
-								new google.maps.LatLng(center.lat + (latOffset*4),center.lng + (lngOffset*4))
+						  new google.maps.LatLng(center.lat - (latOffset*4),center.lng - (lngOffset*4)), 
+					      new google.maps.LatLng(center.lat + (latOffset*4),center.lng + (lngOffset*4))
 						);
 						changeAllowedBounds = false;
 					}
 				}else{
 					allowedBounds = new google.maps.LatLngBounds(
-							new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
-							new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
+					    new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
+					    new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
 					);
 					changeAllowedBounds = true;
 				}
@@ -191,8 +191,8 @@ define(function (require) {
 			    			_this.map.setZoom(_this.props.zoomSettings.fullScreen);
 			    			_this.map.setOptions({minZoom : _this.props.zoomSettings.fullScreen});
 			    			allowedBounds = new google.maps.LatLngBounds(
-			    					new google.maps.LatLng(center.lat - (latOffset*3.5),center.lng - (lngOffset*3.5)), 
-			    					new google.maps.LatLng(center.lat + (latOffset*3.5),center.lng + (lngOffset*3.5))
+			    				new google.maps.LatLng(center.lat - (latOffset*3.5),center.lng - (lngOffset*3.5)), 
+			    				new google.maps.LatLng(center.lat + (latOffset*3.5),center.lng + (lngOffset*3.5))
 			    			);
 			    		}
 			    	}
@@ -202,8 +202,8 @@ define(function (require) {
 			    			//zoom in and set min zoom to same value to avoid zooming out to multiple images view
 			    			_this.map.setOptions({minZoom : _this.props.zoomSettings.normalScreen});
 			    			allowedBounds = new google.maps.LatLngBounds(
-			    					new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
-			    					new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
+			    				new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
+			    				new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
 			    			);
 			    		}
 			    	}

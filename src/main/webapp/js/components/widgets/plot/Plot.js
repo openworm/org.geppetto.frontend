@@ -233,9 +233,9 @@ define(function (require) {
 		},
 
 	    plotGeneric: function(datasets) {
-                if ($.isArray(datasets))
+                if (typeof datasets !== 'undefined' && $.isArray(datasets))
                     this.datasets = datasets;
-                else
+                else if (typeof datasets !== 'undefined')
                     this.datasets.push(datasets);
 
 			if(this.plotly==null){

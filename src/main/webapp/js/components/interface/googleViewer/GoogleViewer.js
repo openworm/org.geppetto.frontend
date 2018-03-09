@@ -161,6 +161,7 @@ define(function (require) {
 					    new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
 					);
 					changeAllowedBounds = true;
+					lastValidCenter = _this.props.mapSettings.center;
 				}
 			});
 			google.maps.event.addListener(_this.map, 'resize', function () {
@@ -197,14 +198,24 @@ define(function (require) {
 			    		}
 			    	}
 			    }else{
+			    	//modify allowed bounds after exiting fullscreen
+			    	if(_this.map.getZoom()>1){
+			    		allowedBounds = new google.maps.LatLngBounds(
+			    				new google.maps.LatLng(center.lat - (latOffset*4),center.lng - (lngOffset*4)), 
+			    				new google.maps.LatLng(center.lat + (latOffset*4),center.lng + (lngOffset*4))
+			    		);
+			    	}else{
+			    		allowedBounds = new google.maps.LatLngBounds(
+			    				new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
+			    				new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
+			    		);
+			    		changeAllowedBounds = true;
+			    		lastValidCenter = _this.props.mapSettings.center;
+			    	}
 			    	if(_this.props.zoomSettings!=undefined){
 			    		if(_this.props.zoomSettings.normalScreen!=undefined){
 			    			//zoom in and set min zoom to same value to avoid zooming out to multiple images view
 			    			_this.map.setOptions({minZoom : _this.props.zoomSettings.normalScreen});
-			    			allowedBounds = new google.maps.LatLngBounds(
-			    				new google.maps.LatLng(center.lat - latOffset,center.lng - lngOffset), 
-			    				new google.maps.LatLng(center.lat + latOffset,center.lng + lngOffset)
-			    			);
 			    		}
 			    	}
 			    }

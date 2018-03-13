@@ -229,37 +229,64 @@ define(function (require) {
 
                 var value = jsonImageVariable.initialValues[0].value;
                 if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
-                    this.isCarousel = true;
-                    var imagesToLoad = 2;
-                    if(this.state.carouselFullyLoaded){
-                    	imagesToLoad = value.elements.length;
+                    if (value.elements.length > 1)
+                    {
+                        this.isCarousel = true;
+                        var imagesToLoad = 2;
+                        if(this.state.carouselFullyLoaded){
+                            imagesToLoad = value.elements.length;
+                        }
+
+                        //set flag to fully loaded if total length of images to render is less or equal to 2
+                        if(value.elements.length<=2){
+                            this.fullyLoaded = true;
+                        }
+
+                        var that = this;
+                        //if it's an array, create a carousel (relies on slick)
+                        var elements = value.elements.map(function (item, key) {
+                            if(key<imagesToLoad){
+                                var image = item.initialValue;
+                                var action = that.getImageClickAction(image.reference);
+                                return <div key={key} className="query-results-slick-image"> {image.name}
+                                    <a href='' onClick={action}>
+                                        <img className="popup-image invert" src={image.data}/>
+                                    </a>
+                                </div>
+                            }
+                        });
+
+                        elements = elements.slice(0,imagesToLoad);
+
+                        imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
+                                          data-slick={JSON.stringify({fade: true, centerMode: true, slidesToShow: 1, slidesToScroll: 1})}>
+                            {elements}
+                        </div>
                     }
+                    else
+                    {
+                        this.isCarousel = false;
+                        this.fullyLoaded = true;
+                        var imagesToLoad = 1;
+                      
+                        var that = this;
+                        //if it's an array, create a carousel (relies on slick)
+                        var elements = value.elements.map(function (item, key) {
+                            if(key<imagesToLoad){
+                                var image = item.initialValue;
+                                var action = that.getImageClickAction(image.reference);
+                                return <a href='' onClick={action}>
+                                        <img className="query-results-image invert" src={image.data}/>
+                                    </a>
+                            }
+                        });
 
-                    //set flag to fully loaded if total length of images to render is less or equal to 2
-                    if(value.elements.length<=2){
-                    	this.fullyLoaded = true;
+                        elements = elements.slice(0,imagesToLoad);
+
+                        imgElement = <div id={imageContainerId} className="query-results-image collapse in">
+                            {elements}
+                        </div>
                     }
-
-                    var that = this;
-                    //if it's an array, create a carousel (relies on slick)
-                    var elements = value.elements.map(function (item, key) {
-                    	if(key<imagesToLoad){
-                    		var image = item.initialValue;
-                            var action = that.getImageClickAction(image.reference);
-                    		return <div key={key} className="query-results-slick-image"> {image.name}
-                                <a href='' onClick={action}>
-                                    <img className="popup-image invert" src={image.data}/>
-                                </a>
-                    		</div>
-                    	}
-                    });
-
-                    elements = elements.slice(0,imagesToLoad);
-
-                    imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
-                                      data-slick={JSON.stringify({fade: true, centerMode: true, slidesToShow: 1, slidesToScroll: 1})}>
-                        {elements}
-                    </div>
                 }
                 else if (value.eClass == GEPPETTO.Resources.IMAGE) {
                     //otherwise we just show an image

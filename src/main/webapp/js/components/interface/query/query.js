@@ -275,7 +275,8 @@ define(function (require) {
                             if(key<imagesToLoad){
                                 var image = item.initialValue;
                                 var action = that.getImageClickAction(image.reference);
-                                return <a href='' onClick={action}>
+                                return  {image.name}
+                                    <a href='' onClick={action}>
                                         <img className="query-results-image invert" src={image.data}/>
                                     </a>
                             }
@@ -283,7 +284,7 @@ define(function (require) {
 
                         elements = elements.slice(0,imagesToLoad);
 
-                        imgElement = <div id={imageContainerId} className="query-results-image collapse in">
+                        imgElement = <div id={imageContainerId} key=0 className="query-results-image collapse in">
                             {elements}
                         </div>
                     }

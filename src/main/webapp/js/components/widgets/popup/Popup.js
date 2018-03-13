@@ -42,7 +42,7 @@ define(function (require) {
 					var node;
 
 					try {
-						node = eval(path);
+						node = window[path];
 					} catch (ex) {
 						// if instance path doesn't exist set path to undefined
 						node = undefined;

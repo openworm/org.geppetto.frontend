@@ -232,28 +232,31 @@ define(function (require) {
 			return this.variables;
 		},
 
-	    plotGeneric: function(datasets) {
+	    plotGeneric: function(datasets, variables) {
                 if (typeof datasets !== 'undefined' && $.isArray(datasets))
                     this.datasets = datasets;
                 else if (typeof datasets !== 'undefined')
                     this.datasets.push(datasets);
 
-			if(this.plotly==null){
-				this.plotOptions.xaxis.autorange = true;
-				this.xaxisAutoRange = true;
-				//Creates new plot using datasets and default options
-				this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-				var that = this;
-				this.plotDiv.on('plotly_doubleclick', function() {
-					that.resize();
-				});
-				this.plotDiv.on('plotly_click', function() {
-					that.resize();
-				});
-			}else{
-				Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
-			}
-			this.resize(false);
+                if (typeof variables !== 'undefined')
+                    this.variables = variables;
+
+		if(this.plotly==null){
+		    this.plotOptions.xaxis.autorange = true;
+		    this.xaxisAutoRange = true;
+		    //Creates new plot using datasets and default options
+		    this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
+		    var that = this;
+		    this.plotDiv.on('plotly_doubleclick', function() {
+			that.resize();
+		    });
+		    this.plotDiv.on('plotly_click', function() {
+			that.resize();
+		    });
+		}else{
+		    Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
+		}
+		this.resize(false);
 		},
 
 
@@ -267,7 +270,7 @@ define(function (require) {
 		 * @param {Object} state - series to plot, can be array of data or an geppetto simulation variable
 		 * @param {Object} options - options for the plotting widget, if null uses default
 		 */
-		plotData: function (data, options) {
+	    plotData: function (data, plotOptions, lineOptions) {
 			var validVariable = eval(data);
 			if(validVariable == null || undefined){
 				return "Can't plot undefined variable";
@@ -295,9 +298,9 @@ define(function (require) {
         	}
 
 			// If no options specify by user, use default options
-			if (options != null) {
+			if (plotOptions != null) {
 				// Merge object2 into object1
-				$.extend( this.plotOptions, options );
+				$.extend( this.plotOptions, plotOptions );
 			}
 			var instance =  null;
 			var timeSeriesData = {};
@@ -334,19 +337,19 @@ define(function (require) {
 					 * Create object with x, y data, and graph information.
 					 * Object is used to plot on plotly library
 					 */
-					var newLine = {
-							x : timeSeriesData["x"],
-							y : timeSeriesData["y"],
-							mode : "lines",
-							path: instance.getInstancePath(),
-							name: legendName,
-							line: {
-								dash: 'solid',
-								width: 2
-							},
-							hoverinfo : 'all',
-							type : 'scatter'
-					};
+				    var newLine = {
+					x : timeSeriesData["x"],
+					y : timeSeriesData["y"],
+					mode : "lines",
+					path: instance.getInstancePath(),
+					name: legendName,
+					line: $.extend({
+					    dash: 'solid',
+					    width: 2
+					}, lineOptions),
+					hoverinfo : 'all',
+					type : 'scatter'
+				    };
 
 					this.datasets.push(newLine);
 				}else{
@@ -705,41 +708,67 @@ define(function (require) {
 							this.plotOptions.xaxis.autorange = false;
 							this.xaxisAutoRange = false;
 						}
-						else{
-							newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
+					    else{
+                                                if (typeof set.name === 'undefined') {
+                                                    newValue = [];
+                                                    var variables = Object.values(this.variables);
+                                                    for (var j=0; j<variables.length; ++j)
+                                                        newValue.push(variables[j].getTimeSeries()[step])
+                                                }
+                                                else if (set.name)
+                                                    newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
+                                                else
+                                                    newValue = this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
+							//newValue = this.dependent//this.variables[this.getLegendInstancePath(set.name)].getTimeSeries()[step];
 
-							oldDataX = this.datasets[key].x;
-							oldDataY = this.datasets[key].y;
+						oldDataX = this.datasets[key].x;
+                                                oldDataDependent = this.datasets[key][this.dependent];
 
 							reIndex = false;
 
-							if (oldDataX.length >= this.limit) {
+							 if (oldDataX.length >= this.limit) {
 								//this happens when we reach the end of the width of the plot
 								//i.e. when we have already put all the points that it can contain
-								oldDataX.splice(0, 1);
-								oldDataY.splice(0,1);
+							     oldDataX.splice(0, 1);
+                                                             if ($.isArray(oldDataDependent))
+                                                                 for (var i=0; i<oldDataDependent.length; ++i)
+								     oldDataDependent[i].splice(0,1);
+                                                             else
+                                                                 oldDataDependent.splice(0,1);
 								reIndex = true;
 							}
 
-							oldDataX.push(oldDataX.length);
-							oldDataY.push(newValue);
+						oldDataX.push(oldDataX.length);
+                                                if (typeof set.name === 'undefined') {
+                                                    if ($.isEmptyObject(oldDataDependent))
+                                                        for (var j=0; j<Object.keys(this.variables).length; ++j)
+                                                            oldDataDependent.push([]);
+                                                    for (var j=0; j<newValue.length; ++j)
+                                                        oldDataDependent[j].push(newValue[j]);
+                                                }
+                                                else
+						    oldDataDependent.push(newValue);
 
 							if (reIndex) {
 								// re-index data
 								var indexedDataX = [];
-								var indexedDataY = [];
+								var indexedDataDependent = [];
 								for (var index = 0, len = oldDataX.length; index < len; index++) {
-									var valueY = oldDataY[index];
-									indexedDataX.push(index);
-									indexedDataY.push(valueY);
+								    var valueDependent = oldDataDependent[index];
+                                                                    if ($.isArray(valueDependent))
+                                                                        //for (var i=0; i<oldDataDependent
+									indexedDataDependent.push(valueDependent);
+                                                                    else
+                                                                        indexedDataDependent.push(valueDependent);
+                                                                    indexedDataX.push(index);
 								}
 
 								this.datasets[key].x = indexedDataX;
-								this.datasets[key].y = indexedDataY;
+								this.datasets[key][this.dependent] = indexedDataDependent;
 							}
 							else {
 								this.datasets[key].x = oldDataX;
-								this.datasets[key].y = oldDataY;
+								this.datasets[key][this.dependent] = oldDataDependent;
 							}
 						}
 					}
@@ -1158,15 +1187,11 @@ define(function (require) {
 				}
 
 			       if (this.hasStandardPlotData) {
-					// simple plot with non external instances
-					baseView.dataType = 'object';
-					baseView.data = [];
-					for(var item in this.variables){
-						// only add non external instances
-						if(!(this.variables[item] instanceof ExternalInstance)){
-						    baseView.data.push(item);
-						}
-					}
+				   // simple plot with non external instances
+				   baseView.dataType = 'object';
+				   baseView.data = this.datasets.map(function(d) {
+                                       return {'path': d.path, 'line': d.line}
+                                   });
 				}
 			}
 
@@ -1207,10 +1232,12 @@ define(function (require) {
 					for (var index in view.data) {
 					    var item = view.data[index];
                                             this.controller.plotStateVariable(
-							Project.getId(),
-							Project.getActiveExperiment().getId(),
-							item,
-							this
+						Project.getId(),
+						Project.getActiveExperiment().getId(),
+						item.path,
+						this,
+                                                null,
+                                                item.line
 						);
 					}
 				}

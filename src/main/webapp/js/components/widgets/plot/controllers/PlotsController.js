@@ -207,22 +207,22 @@ define(function(require) {
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data
                     if (plotWidget != undefined) {
-                        plotWidget.plotData(inst);
+                        plotWidget.plotData(inst, null, lineOptions);
                         plotWidget.updateAxis(inst.getInstancePath());
                     } else {
                         var widget = await G.addWidget(0);
-                        widget.plotData(inst).setName(path);
+                        widget.plotData(inst, null, lineOptions).setName(path);
                         widget.updateAxis(path);
                     }
                 } else {
                     var cb = async function(){
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
-                    		plotWidget.plotData(i);
+                    	    plotWidget.plotData(i, null, lineOptions);
                     		plotWidget.updateAxis(i.getInstancePath());
                     	} else {
                     		var plot = await G.addWidget(0);
-                            plot.plotData(i).setName(path);
+                            plot.plotData(i, null, lineOptions).setName(path);
                             plot.updateAxis(path);
                     	}
                     };

@@ -133,9 +133,11 @@ define(function (require) {
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+            var legendDiv = context.svg.append('div').attr('class', 'legend');
 
 	    var matrix = [];
 	    var nodes = context.dataset.nodes;
+            var links = context.dataset.links;
 	    var root = context.dataset.root;
 	    var n = nodes.length;
 
@@ -554,7 +556,15 @@ define(function (require) {
 			eval(root.getId() + "." + nodes[d.y].id).select();
 			eval(root.getId() + "." + nodes[d.y].id).showConnectionLines(false);
 		    })
-		    .on("mouseover", function (d) { $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id); })
+		    .on("mouseover", function (d) {
+                        var source_id = parseInt(nodes[d.y].id.match(/\[([0-9]+)\]/)[1]);
+                        var target_id = parseInt(nodes[d.x].id.match(/\[([0-9]+)\]/)[1]);
+                        var cweight = links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
+                        var weightStr = "";
+                        if (typeof cweight !== 'undefined')
+                            weightStr = " (weight≈" + Math.round(cweight*100)/100 + ")";
+                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
+                    })
 		    .on("mouseout", $.proxy(mouseoutCell));
 		}
 	    }

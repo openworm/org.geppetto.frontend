@@ -802,10 +802,12 @@ define(function (require) {
 				}
 
 				if(this.firstStep==0){
-					for(var key =0; key<this.datasets.length;key++){
-						this.updateYAxisRange(window.time,this.variables[this.getLegendInstancePath(this.datasets[key].name)].getTimeSeries());
-						this.updateAxis(this.datasets[key].name);
-					}
+				    for(var key =0; key<this.datasets.length;key++){
+                                        if (typeof set.name !== 'undefined') {
+					    this.updateYAxisRange(window.time,this.variables[this.getLegendInstancePath(this.datasets[key].name)].getTimeSeries());
+					    this.updateAxis(this.datasets[key].name);
+                                        }
+				    }
 					//redraws graph for play all mode
 					this.resize();
 				}
@@ -1096,7 +1098,7 @@ define(function (require) {
 			return originalInstancePath;
 		},
 
-		plotXYData: function (dataY, dataX, options) {
+	    plotXYData: function (dataY, dataX, options, lineOptions) {
 			// set flags
 			this.hasXYData = true;
                         this.isFunctionNode = false;
@@ -1126,11 +1128,11 @@ define(function (require) {
 					mode : "lines",
 					path: dataY.getInstancePath(),
 					name: legendName,
-					line: {
-						dash: 'solid',
-						width: 2
-					},
-					hoverinfo : 'all'
+			    line: $.extend({
+                                dash: 'solid',
+				width: 2
+			    }, lineOptions),
+					hoverinfo : 'alle'
 			};
 
 			this.variables[legendName] = dataY;
@@ -1182,8 +1184,9 @@ define(function (require) {
                         } else {
 
 				if (this.hasXYData){
-					baseView.dataType = 'object';
-					baseView.xyData = this.xyData.slice(0);
+				    baseView.dataType = 'object';
+				    baseView.xyData = this.xyData.slice(0);
+                                    baseView.lines = this.datasets.map(d => d.line);
 				}
 
 			       if (this.hasStandardPlotData) {
@@ -1218,11 +1221,12 @@ define(function (require) {
 						var projectId = view.xyData[i].projectId != undefined ? view.xyData[i].projectId : Project.getId();
 						var experimentId = view.xyData[i].projectId != undefined ? view.xyData[i].experimentId : Project.getActiveExperiment().getId();
 						this.controller.plotStateVariable(
-							projectId,
-							experimentId,
-							yPath,
-							this,
-							xPath
+						    projectId,
+						    experimentId,
+						    yPath,
+						    this,
+						    xPath,
+                                                    view.lines ? view.lines[i] : null
 						);
 					}
 				}

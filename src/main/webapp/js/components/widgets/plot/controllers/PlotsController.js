@@ -190,7 +190,7 @@ define(function(require) {
          * @param plotWidget - optional, if not provided a new widget will be created
          * @param xPath - optional, if plotting xy data a path for the x axis
          */
-        plotStateVariable: async function(projectId, experimentId, path, plotWidget, xPath){
+        plotStateVariable: async function(projectId, experimentId, path, plotWidget, xPath, lineOptions){
             var self = this;
             
             if(
@@ -237,10 +237,10 @@ define(function(require) {
                     if(xPath == undefined){ xPath = 'time(StateVariable)'; }
                     var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, xPath);
                     if (plotWidget != undefined) {
-                        plotWidget.plotXYData(i, t);
+                        plotWidget.plotXYData(i, t, null, lineOptions);
                     } else {
                     	var plot = await G.addWidget(0);
-                        plot.plotXYData(i, t).setName(path);
+                        plot.plotXYData(i, t, null, lineOptions).setName(path);
                     }
                 };
 

@@ -12,7 +12,7 @@ export default class IconButton extends React.Component {
     render() {
         return (
 
-            <RaisedButton style={this.props.style} className={"iconButton"} onClick={this.props.onClick}>
+            <RaisedButton style={this.props.style} className={"iconButton"} onClick={this.props.onClick} id={this.props.id}>
                 <FontIcon className={"fa " + this.props.icon}></FontIcon>
             </RaisedButton>
 

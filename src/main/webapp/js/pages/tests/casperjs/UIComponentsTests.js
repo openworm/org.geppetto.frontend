@@ -147,7 +147,7 @@ function consoleTest(test){
 				var spanCount = casper.evaluate(function() {
 					return $("#Console1_console").find("span").length;
 				});
-				test.assertEquals(spanCount, 1, "Console output empty");
+				test.assertEquals(spanCount, 0, "Console output empty");
 			});
 
 			casper.then(function () {
@@ -166,7 +166,7 @@ function consoleTest(test){
 				var spanCount = casper.evaluate(function() {
 					return $("#Console1_console").find("span").length;
 				});
-				test.assertEquals(spanCount, 4, "Console output not empty");
+				test.assertEquals(spanCount, 3, "Console output not empty");
 			});
 
 			//test clear command works on console

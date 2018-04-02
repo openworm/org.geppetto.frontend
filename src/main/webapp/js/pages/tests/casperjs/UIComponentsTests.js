@@ -141,7 +141,7 @@ function consoleTest(test){
 	});
 
 	casper.then(function(){
-		this.waitUntilVisible('textarea[id="commandInputArea"]', function () {
+		this.waitUntilVisible("#commandInputArea", function () {
 			//test console is empty upon opening
 			casper.then(function () {
 				var spanCount = casper.evaluate(function() {

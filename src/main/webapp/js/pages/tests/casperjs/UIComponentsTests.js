@@ -38,14 +38,16 @@ casper.test.begin('Geppetto basic UI Components/Widgets Tests', function suite(t
 	/**Tests Widgets, components and other UI elements using a new project with no scene loaded**/
 	casper.thenOpen(urlBase+baseFollowUp,function() {
 		casper.then(function(){launchTest(test,"Default Empty Project",5000);});
-		casper.then(function(){consoleTest(test);});
-		casper.then(function(){debugModeTest(test);});
-		casper.then(function(){helpWindowTest(test);});
-		casper.then(function(){popupWidgetTest(test);});
-		casper.then(function(){plotWidgetTest(test);});
-		casper.then(function(){treeVisualizerTest(test);});
-		casper.then(function(){variableVisualizerTest(test);});
-		casper.then(function(){unitsControllerTest(test);});
+		casper.then(function(){casper.wait(2000, function () {
+			casper.then(function(){consoleTest(test);});
+			casper.then(function(){debugModeTest(test);});
+			casper.then(function(){helpWindowTest(test);});
+			casper.then(function(){popupWidgetTest(test);});
+			casper.then(function(){plotWidgetTest(test);});
+			casper.then(function(){treeVisualizerTest(test);});
+			casper.then(function(){variableVisualizerTest(test);});
+			casper.then(function(){unitsControllerTest(test);});
+		})});
 	});
 
 	casper.run(function() {

@@ -557,8 +557,8 @@ define(function (require) {
 			eval(root.getId() + "." + nodes[d.y].id).showConnectionLines(false);
 		    })
 		    .on("mouseover", function (d) {
-                        var source_id = parseInt(nodes[d.y].id.match(/\[([0-9]+)\]/)[1]);
-                        var target_id = parseInt(nodes[d.x].id.match(/\[([0-9]+)\]/)[1]);
+                        var source_id = d.y;
+                        var target_id = d.x;
                         var cweight = links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
                         var weightStr = "";
                         if (typeof cweight !== 'undefined')

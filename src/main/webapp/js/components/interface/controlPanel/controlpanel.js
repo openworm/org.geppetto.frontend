@@ -1983,6 +1983,7 @@ define(function (require) {
             $(document).keydown(function (e) {
                 if (GEPPETTO.isKeyPressed("ctrl") && e.keyCode == pKey) {
                     // show control panel
+                    e.preventDefault();
                     that.open();
                     // set focus on filter text box
                     $('#controlpanel .griddle-filter input').focus();

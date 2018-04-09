@@ -11,8 +11,8 @@ define(function (require) {
 	var $ = require('jquery');
 	var Type = require('../../../geppettoModel/model/Type');
 	var React = require('react');
-    var ReactDOM = require('react-dom');
-    var ButtonBarComponent = require('./ButtonBarComponent');
+	var ReactDOM = require('react-dom');
+	var ButtonBarComponent = require('./ButtonBarComponent');
 
 	var anchorme = require('anchorme');
 	var slick = require('slick-carousel');
@@ -67,9 +67,9 @@ define(function (require) {
 	return Widget.View.extend({
 
 		data: null,
-		buttonBarConfig : null,
-		buttonBarControls : null,
-		buttonBar : null,
+		buttonBarConfig: null,
+		buttonBarControls: null,
+		buttonBar: null,
 
 		/**
 		 * Initialize the popup widget
@@ -140,14 +140,14 @@ define(function (require) {
 		 * @param {Object} htmlInstance - An instance of type HTML
 		 */
 		setHTML: function (htmlNode) {
-			if($.isArray(htmlNode)){
+			if ($.isArray(htmlNode)) {
 				var html = "";
-				for(var i in htmlNode){
+				for (var i in htmlNode) {
 					var values = this.getVariable(htmlNode[i]).getInitialValues();
 					html += values[0].value.html;
 				}
 				this.setMessage(html);
-			}else{
+			} else {
 				this.setMessage(this.getVariable(htmlNode).getInitialValues()[0].value.html);
 			}
 		},
@@ -161,12 +161,12 @@ define(function (require) {
 		 */
 
 		setData: function (anyInstance, filter) {
-			this.controller.addToHistory(anyInstance.getName(),"setData",[anyInstance, filter], this.getId());
+			this.controller.addToHistory(anyInstance.getName(), "setData", [anyInstance, filter], this.getId());
 
-			this.data = anyInstance.getPath();
+			this.data = [anyInstance, filter];
 
 			this.setRawMessage(this.getHTML(anyInstance, "", filter));
-			var changeIcon=function(chevron){
+			var changeIcon = function (chevron) {
 				if (chevron.hasClass('fa-chevron-circle-down')) {
 					chevron.removeClass("fa-chevron-circle-down").addClass("fa-chevron-circle-up");
 				}
@@ -182,11 +182,11 @@ define(function (require) {
 			});
 			$("#" + this.getId() + " .slickdiv").slick();
 
-			if(this.buttonBarConfig!=null && this.buttonBarConfig!=undefined){
+			if (this.buttonBarConfig != null && this.buttonBarConfig != undefined) {
 				this.renderButtonBar();
 			}
 
-			if(this.collapsed){
+			if (this.collapsed) {
 				this.$el.dialogExtend("collapse");
 			}
 
@@ -203,27 +203,27 @@ define(function (require) {
 		 */
 		getHTML: function (anyInstance, id, filter) {
 			var anchorOptions = {
-			  "attributes":{
-			    "target": "_blank",
-			    "class" : "popup_link"
-			  },
-			  "html":true,
-			  ips:false,
-			  emails:true,
-			  urls:true,
-			  TLDs:20,
-			  truncate:0,
-			  defaultProtocol:"http://"
+				"attributes": {
+					"target": "_blank",
+					"class": "popup_link"
+				},
+				"html": true,
+				ips: false,
+				emails: true,
+				urls: true,
+				TLDs: 20,
+				truncate: 0,
+				defaultProtocol: "http://"
 			};
 			var type = anyInstance;
-			if(!(type instanceof Type)){
-				type=anyInstance.getType();
+			if (!(type instanceof Type)) {
+				type = anyInstance.getType();
 			}
 			var html = "";
 
 			//let's check the filter
-			if(filter!=undefined && type.getMetaType() != GEPPETTO.Resources.COMPOSITE_TYPE_NODE){
-				if($.inArray(type.getMetaType(), filter)==-1){
+			if (filter != undefined && type.getMetaType() != GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+				if ($.inArray(type.getMetaType(), filter) == -1) {
 					//this type is not in the filter!
 					return html;
 				}
@@ -233,15 +233,15 @@ define(function (require) {
 				for (var i = 0; i < type.getVariables().length; i++) {
 					var v = type.getVariables()[i];
 
-					if(filter!=undefined){
-						if($.inArray(v.getType().getMetaType(), filter)==-1){
+					if (filter != undefined) {
+						if ($.inArray(v.getType().getMetaType(), filter) == -1) {
 							//this type is not in the filter!
 							continue;
 						}
 					}
 
 					var id = this.getId() + "_" + type.getId() + "_el_" + i;
-					if(filter==undefined){
+					if (filter == undefined) {
 						//Titles are only displayed if there's no filter..maybe random, make it a separate parameter
 						html += "<div class='popup-title' data-toggle='collapse' data-target='#" + id + "'>" + v.getName() + "</div><div id='" + id + "_chevron" + "' data-toggle='collapse' data-target='#" + id + "' class='popup-chevron fa fa-chevron-circle-down '></div>"
 					}
@@ -257,7 +257,7 @@ define(function (require) {
 				html += "<div id='" + id + "' class='collapse in popup-text'>" + anchorme(value.text, anchorOptions) + "</div>";
 			}
 			else if (type.getMetaType() == GEPPETTO.Resources.IMAGE_TYPE) {
-				if(this.getVariable(anyInstance).getInitialValues()[0] != undefined) {
+				if (this.getVariable(anyInstance).getInitialValues()[0] != undefined) {
 					var value = this.getVariable(anyInstance).getInitialValues()[0].value;
 					if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
 						//if it's an array we use slick to create a carousel
@@ -301,14 +301,14 @@ define(function (require) {
 		 * @param {String} eventType - event that triggers the custom handler
 		 */
 		addCustomNodeHandler: function (funct, eventType, metaType) {
-			var addHandler =true;
-			for(var i=0; i<this.customHandlers.length; i++){
-				if(eventType == this.customHandlers[i].event){
-					addHandler =false;
+			var addHandler = true;
+			for (var i = 0; i < this.customHandlers.length; i++) {
+				if (eventType == this.customHandlers[i].event) {
+					addHandler = false;
 				}
 			}
-			if(addHandler){
-				this.customHandlers.push({funct: funct, event: eventType, meta: metaType, hooked: false});
+			if (addHandler) {
+				this.customHandlers.push({ funct: funct, event: eventType, meta: metaType, hooked: false });
 
 				// trigger routine that hooks up handlers
 				hookupCustomHandlers(this.customHandlers, $("#" + this.id), this);
@@ -319,47 +319,49 @@ define(function (require) {
 			return this;
 		},
 
-		renderButtonBar: function(){
+		renderButtonBar: function () {
 			var that = this;
 			var buttonBarContainer = 'button-bar-container-' + this.id;
-			var barDiv = 'bar-div-'+this.id;
-			if(this.buttonBar != null){
+			var barDiv = 'bar-div-' + this.id;
+			if (this.buttonBar != null) {
 				ReactDOM.unmountComponentAtNode(document.getElementById(barDiv));
-				$("#"+buttonBarContainer).remove();
+				$("#" + buttonBarContainer).remove();
 			}
 
-			this.$el.parent().append("<div id='"+ buttonBarContainer + "' class='button-bar-container'><div id='" + barDiv + "' class='button-bar-div'></div></div>");
+			this.$el.parent().append("<div id='" + buttonBarContainer + "' class='button-bar-container'><div id='" + barDiv + "' class='button-bar-div'></div></div>");
 
 			var instance = null;
 			var instancePath = '';
 
-			if(this.buttonBarConfig.filter!=null && this.buttonBarConfig.filter!=undefined){
-				if(this.data!=null && this.data!=undefined){
+			if (this.buttonBarConfig.filter != null && this.buttonBarConfig.filter != undefined) {
+				if (this.data != null && this.data != undefined) {
 					instance = this.buttonBarConfig.filter(this.data);
 					instancePath = instance.getPath();
 				}
 			}
 			var originalZIndex = $("#" + this.id).parent().css("z-index");
-            this.buttonBar = ReactDOM.render(
-                React.createElement(ButtonBarComponent, {buttonBarConfig: this.buttonBarConfig, showControls:this.buttonBarControls,
-                	instancePath : instancePath, instance : instance, geppetto: GEPPETTO, resize : function(){that.setSize(that.size.height,that.size.width);}}),
-                document.getElementById(barDiv)
-            );
-            
-            $("#" + this.id).parent().css('z-index', originalZIndex);
-        },
+			this.buttonBar = ReactDOM.render(
+				React.createElement(ButtonBarComponent, {
+					buttonBarConfig: this.buttonBarConfig, showControls: this.buttonBarControls,
+					instancePath: instancePath, instance: instance, geppetto: GEPPETTO, resize: function () { that.setSize(that.size.height, that.size.width); }
+				}),
+				document.getElementById(barDiv)
+			);
 
-        setButtonBarControls : function(controls){
-        	this.buttonBarControls = controls;
+			$("#" + this.id).parent().css('z-index', originalZIndex);
+		},
+
+		setButtonBarControls: function (controls) {
+			this.buttonBarControls = controls;
 			// track change in state of the widget
 			this.dirtyView = true;
-        },
+		},
 
-        setButtonBarConfiguration : function(configuration){
-        	this.buttonBarConfig = configuration;
-        	if(this.data!=null || this.data!=undefined){
-        		this.renderButtonBar();
-        	}
+		setButtonBarConfiguration: function (configuration) {
+			this.buttonBarConfig = configuration;
+			if (this.data != null || this.data != undefined) {
+				this.renderButtonBar();
+			}
 
 			// if the user clicks outside this popup hide color pickers if visible
 			var popupSelector = $("#" + this.id);
@@ -375,24 +377,29 @@ define(function (require) {
 
 			// track change in state of the widget
 			this.dirtyView = true;
-        },
+		},
 
-        destroy: function () {
-        	var bar = document.getElementById('bar-div-'+this.id);
-        	if(bar!=null || bar!=undefined){
-        		ReactDOM.unmountComponentAtNode(bar);
-        	}
-            Widget.View.prototype.destroy.call(this);
-        },
+		destroy: function () {
+			var bar = document.getElementById('bar-div-' + this.id);
+			if (bar != null || bar != undefined) {
+				ReactDOM.unmountComponentAtNode(bar);
+			}
+			Widget.View.prototype.destroy.call(this);
+		},
 
-		getView: function(){
+		getView: function () {
 			var baseView = Widget.View.prototype.getView.call(this);
 
 			// add data-type and data field + any other custom fields in the component-specific attribute
 			baseView.dataType = (typeof this.data == "string") ? "string" : "object";
-			baseView.data = this.data;
+
+			if ($.isArray(this.data))
+				baseView.data = [this.data[0].getPath(), this.data[1]]
+			else
+				baseView.data = this.data;
+
 			baseView.componentSpecific = {
-				customHandlers: this.customHandlers.map(function(item){
+				customHandlers: this.customHandlers.map(function (item) {
 					return {
 						funct: item.funct.toString(),
 						event: item.event,
@@ -406,28 +413,29 @@ define(function (require) {
 			return baseView;
 		},
 
-		setView: function(view){
+		setView: function (view) {
 			// set data
-			if(view.data != undefined){
-				if(view.dataType == 'string'){
+			if (view.data != undefined) {
+				if (view.dataType == 'string') {
 					this.setMessage(view.data);
-				}else if(view.dataType == 'stringCommand'){
+				} else if (view.dataType == 'stringCommand') {
 					this.setMessage(eval(view.data));
-				} else if($.isArray(view.data)){
-				        this.setData(eval(view.data[0]), view.data[1]);
-				}else {
+				}
+				else if ($.isArray(view.data)) {
+					this.setData(eval(view.data[0]), view.data[1]);
+				} else {
 					// it's an object
 					this.setData(view.data);
 				}
 			}
 
-                        // set base properties after setting data so navigation history is correct
+			// set base properties after setting data so navigation history is correct
 			Widget.View.prototype.setView.call(this, view);
 
 			// set component specific stuff, only custom handlers for popup widget
-			if(view.componentSpecific != undefined){
-				if(view.componentSpecific.customHandlers != undefined){
-					for(var i=0; i<view.componentSpecific.customHandlers.length; i++){
+			if (view.componentSpecific != undefined) {
+				if (view.componentSpecific.customHandlers != undefined) {
+					for (var i = 0; i < view.componentSpecific.customHandlers.length; i++) {
 						this.addCustomNodeHandler(
 							eval("(" + view.componentSpecific.customHandlers[i].funct + ")"),
 							view.componentSpecific.customHandlers[i].event,
@@ -436,7 +444,7 @@ define(function (require) {
 					}
 				}
 
-				if(view.componentSpecific.buttonBarControls != undefined && view.componentSpecific.buttonBarConfig != undefined){
+				if (view.componentSpecific.buttonBarControls != undefined && view.componentSpecific.buttonBarConfig != undefined) {
 					this.setButtonBarControls(view.componentSpecific.buttonBarControls);
 					this.setButtonBarConfiguration(view.componentSpecific.buttonBarConfig);
 				}

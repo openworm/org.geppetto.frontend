@@ -1081,6 +1081,16 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	}
 
+    public void getDropboxToken(String requestID) {
+        try {
+            websocketConnection.sendMessage(requestID, OutboundMessages.GET_DROPBOX_TOKEN, geppettoManager.getDropboxToken());
+        }
+        catch (Exception e)
+            {
+                error(e, "Unable to get dropbox token.");
+            }
+    }
+
 	/**
 	 * @param requestID
 	 * @param key

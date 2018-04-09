@@ -2,22 +2,34 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>geppetto</title>
+    <title><%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.title%></title>
+    <meta name="description" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.description%>" />
+    <meta property="og:title" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.title%>" />
+    <meta property="og:type" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.type%>" />
+    <meta property="og:url" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.url%>" />
+    <meta property="og:image" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.image%>" />
+    <meta property="og:description" content="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.description%>" />
+
+	<% var cssPaths = '/'; %>
 
 	<% if (htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath != "/") { %>
     	<base href="/<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>/" />
+    	<% var cssPaths = ''; %>
 	<% } %>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="geppetto/style/css/custom-theme/jquery-ui-1.10.0.custom.css"/>
-    <link rel="stylesheet" href="geppetto/style/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="geppetto/style/css/codemirror.css"/>
-    <link rel="stylesheet" href="geppetto/style/css/lesser-dark.css"/>
-    <link rel="stylesheet" href="geppetto/style/css/gpt-icons.css"/>
-
-    <link rel="stylesheet" href="geppetto/build/main.css"/>
-
-    <link rel="icon" type="image/png" href="geppetto/style/favicon.png"/>
+	<link rel="stylesheet" href="<%= cssPaths%>geppetto/style/css/custom-theme/jquery-ui-1.10.0.custom.css"/>
+	<link rel="stylesheet" href="<%= cssPaths%>geppetto/style/css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="<%= cssPaths%>geppetto/style/css/codemirror.css"/>
+	<link rel="stylesheet" href="<%= cssPaths%>geppetto/style/css/lesser-dark.css"/>
+	<link rel="stylesheet" href="<%= cssPaths%>geppetto/style/css/gpt-icons.css"/>
+	
+	<% if(htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon.indexOf("http") !== -1){ %>
+		<link rel="icon" type="image/png" href="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
+	<% } else{ %>
+	    <link rel="icon" type="image/png" href="<%= cssPaths%><%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.properties.icon%>"/>
+	<% } %>
+	    
 </head>
 <body>
 
@@ -57,7 +69,7 @@ $content
             <div id="consoleButtonContainer">
                 <ul class="btn nav nav-tabs" role="tablist" id="tabButton">
                     <li role="presentation" class="active" id="consoleButton" style="display:none"><a href="#console" aria-controls="console" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i> Console</a></li>
-                    <li role="presentation" id="experimentsButton" style="display:none"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i>Experiments</a></li>
+                    <li role="presentation" id="experimentsButton" style="display:none"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab"><i class="fa fa-flask"></i> Experiments</a></li>
                     <li role="presentation" id="pythonConsoleButton" style="display:none"><a href="#pythonConsole" aria-controls="pythonConsole" role="tab" data-toggle="tab"><i class="fa fa-terminal"></i> Python</a></li>
                 </ul>
 
@@ -101,8 +113,7 @@ $content
     ga('create', 'UA-45841517-1', 'geppetto.org');
     ga('send', 'pageview');
 </script>
-
-<script charset="utf-8" type="text/javascript" src="geppetto/build/common.bundle.js"></script>
-<script charset="utf-8" type="text/javascript" src="geppetto/build/main.bundle.js"></script>
+<script charset="utf-8" type="text/javascript" src="<%= cssPaths%>geppetto/build/common.bundle.js"></script>
+<script charset="utf-8" type="text/javascript" src="<%= cssPaths%>geppetto/build/main.bundle.js"></script>
 </body>
 </html>

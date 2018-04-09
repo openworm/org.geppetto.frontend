@@ -199,7 +199,7 @@ define(function (require) {
                 model: new GEPPETTO.SandboxConsole.Model(),
                 resultPrefix: "  => ",
                 tabCharacter: "\t",
-                placeholder: "// type a javascript command and hit enter (help() for info)",
+                placeholder: "// type a Javascript command and press enter to execute (to debug run `G.debug(true)`)",
                 inputCommandAreaElSelector: inputCmdElSelector,
                 consoleComponent: that
             });

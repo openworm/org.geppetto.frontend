@@ -152,11 +152,24 @@ define(function (require) {
             return inputStr.replace(/\$projectId\$/gi, projectId).replace(/\$experimentId\$/gi, experimentId);
         },
 
+        attachTooltip: function (content) {
+            $('.control-panel-parameter-input').uitooltip({
+                position: {my: "right+50", at: "left-100"},
+                tooltipClass: "tooltip-container",
+                content: content
+            });
+        },
+
         componentDidMount: function () {
             // listen to experiment status change and trigger a re-render to refresh input / read-only status
             GEPPETTO.on(GEPPETTO.Events.Experiment_completed, this.refresh, this);
             GEPPETTO.on(GEPPETTO.Events.Experiment_running, this.refresh, this);
             GEPPETTO.on(GEPPETTO.Events.Experiment_failed, this.refresh, this);
+            var status = window.Project.getActiveExperiment().getStatus();
+            if (GEPPETTO.UserController.hasPersistence() && !window.Project.persisted)
+                this.attachTooltip("Save project (★) to enable editing.");
+            else if (status != GEPPETTO.Resources.ExperimentStatus.DESIGN)
+                this.attachTooltip("Experiment status is " + status + ". Create new experiment to enable parameter editing.");
         },
 
         componentWillUnmount: function () {
@@ -236,12 +249,14 @@ define(function (require) {
             // if value is not default give it a different background
             var classString = (defaultValue === initialValue) ? "control-panel-parameter-input" : "control-panel-parameter-input control-panel-parameter-edited";
 
+            // IMPORTANT NOTE: empty title tag in the markup below is needed or the tooltip stops working
             return (
                 <div>
                     <input defaultValue={initialValue}
                            onBlur={onInputChangeHandler}
                            onKeyPress={onKeyPressHandler}
                            className={classString}
+                           title=""
                            readOnly={readOnly}/>
                     <span className="control-panel-parameter-unit">{unit}</span>
                 </div>
@@ -812,13 +827,13 @@ define(function (require) {
                     return that.state.paramsFilterToggled;
                 },
                 true: {
-                    icon: 'fa fa-sign-in',
+                    icon: 'fa fa-sliders',
                     action: '',
                     label: '',
                     tooltip: 'Parameters'
                 },
                 false: {
-                    icon: 'fa fa-sign-in',
+                    icon: 'fa fa-sliders',
                     action: '',
                     label: '',
                     tooltip: 'Parameters'
@@ -1647,6 +1662,10 @@ define(function (require) {
             GEPPETTO.ControlPanel = this;
         },
 
+        componentWillUnmount: function () {
+            GEPPETTO.off(null, null, this);
+        },
+
         setTab: function(filterTabOption){
             // only do something if builtin filters are being used
             if (this.props.useBuiltInFilters === true) {
@@ -1979,36 +1998,29 @@ define(function (require) {
             // listen to events we need to react to
             GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
                 that.clearData();
-            });
+            }, this);
 
             GEPPETTO.on(GEPPETTO.Events.Experiment_properties_saved, function () {
             	if(that.isOpen()){
             		that.refreshData();
             	}
-            });
+            }, this);
 
             GEPPETTO.on(GEPPETTO.Events.Project_properties_saved, function () {
             	if(that.isOpen()){
             		that.refreshData();
             	}
-            });
+            }, this);
 
             GEPPETTO.on(GEPPETTO.Events.Parameters_set, function () {
             	if(that.isOpen()){
             		that.refreshData();
             	}
-            });
+            }, this);
 
             if (this.props.listenToInstanceCreationEvents) {
-                GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (parameters) {
-                    that.deleteData([parameters]);
-                });
-
-                GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
-                    if (instances != undefined) {
-                        that.addData(instances);
-                    }
-                });
+                GEPPETTO.on(GEPPETTO.Events.Instance_deleted, this.handleDeleteData, this);
+                GEPPETTO.on(GEPPETTO.Events.Instances_created, this.handleAddData, this);
             }
 
             if (GEPPETTO.ForegroundControls != undefined) {
@@ -2018,6 +2030,17 @@ define(function (require) {
             this.plotController = new PlotCtrlr();
 
             this.addData(window.Instances);
+        },
+
+
+        handleDeleteData:function (parameters) {
+            this.deleteData([parameters]);
+        },
+
+        handleAddData:function (instances) {
+            if (instances != undefined) {
+                this.addData(instances);
+            }
         },
 
         render: function () {

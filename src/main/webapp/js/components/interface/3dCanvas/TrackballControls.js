@@ -21,8 +21,8 @@ THREE.TrackballControls = function ( object, domElement, viewerId ) {
 
 	this.screen = { left: 0, top: 0, width: 0, height: 0 };
 
-	this.rotateSpeed = 2.5;
-	this.zoomSpeed = 0.1;
+	this.rotateSpeed = 0.5;
+	this.zoomSpeed = 0.02;
 	this.panSpeed = 0.3;
 
 	this.noRotate = false;

@@ -38,7 +38,8 @@ public enum InboundMessages {
 	SET_EXPERIMENT_VIEW("set_experiment_view"),
 	
 	LINK_DROPBOX("link_dropbox"),
-	UNLINK_DROPBOX("unlink_drobpox"),
+	UNLINK_DROPBOX("unlink_dropbox"),
+        GET_DROPBOX_TOKEN("get_dropbox_token"),
 	UPLOAD_MODEL("upload_model"),
 	UPLOAD_RESULTS("upload_results"),
 	GET_SUPPORTED_OUTPUTS("get_supported_outputs"),

@@ -23,14 +23,14 @@ define(function (require, exports, module) {
 			});
 			GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
 				var instancesIds = []
-				for (var instanceIndex in instances){
+				for (var instanceIndex in instances) {
 					instancesIds.push(instances[instanceIndex].id)
 				}
-				_this.send({ event: GEPPETTO.Events.Instances_created, data: instancesIds});
+				_this.send({ event: GEPPETTO.Events.Instances_created, data: instancesIds });
 			});
 
 			GEPPETTO.on(GEPPETTO.Events.Send_Python_Message, function (data) {
-				_this.send({ event: 'Global_message', id: data.id, command: data.command, parameters: data.parameters});
+				_this.send({ event: 'Global_message', id: data.id, command: data.command, parameters: data.parameters });
 			});
 
 			this.on("msg:custom", this.handle_customMessage, this);
@@ -38,7 +38,7 @@ define(function (require, exports, module) {
 
 		handle_customMessage: function (msg) {
 			//The only custom message we have at the moment is an event
-			GEPPETTO.trigger(msg.event,msg.options);
+			GEPPETTO.trigger(msg.event, msg.options);
 		}
 
 	});
@@ -138,26 +138,26 @@ define(function (require, exports, module) {
 		}),
 
 		getGeometryPayload: function (geometry, visualGroups) {
-			
+
 			var indexVisualGroupElement = -1;
 			var createVisualGroupElement = true;
-			for (var visualGroupElementIndex in visualGroups[0].visualGroupElements){
+			for (var visualGroupElementIndex in visualGroups[0].visualGroupElements) {
 				indexVisualGroupElement++;
-				if (visualGroups[0].visualGroupElements[visualGroupElementIndex].id == geometry.sectionName){
+				if (visualGroups[0].visualGroupElements[visualGroupElementIndex].id == geometry.sectionName) {
 					createVisualGroupElement = false;
 					break;
 				}
 			}
-			if(createVisualGroupElement){
+			if (createVisualGroupElement) {
 				indexVisualGroupElement++;
 				visualGroups[0].visualGroupElements.push({
-							defaultColor: 0Xffcc00,
-							eClass: 'VisualGroupElement',
-							id: geometry.sectionName,
-							name: geometry.sectionName
+					defaultColor: 0Xffcc00,
+					eClass: 'VisualGroupElement',
+					id: geometry.sectionName,
+					name: geometry.sectionName
 				});
 			}
-			
+
 			var value;
 			if (geometry.name.substr(0, 4) == 'soma') {
 				value = {
@@ -169,7 +169,7 @@ define(function (require, exports, module) {
 						z: (geometry.distalZ + geometry.positionZ) / 2
 					},
 					radius: (geometry.topRadius + geometry.bottomRadius) / 2,
-					groupElements: [{$ref: "//@libraries.1/@types.1/@visualGroups.0/@visualGroupElements." + indexVisualGroupElement}]
+					groupElements: [{ $ref: "//@libraries.1/@types.1/@visualGroups.0/@visualGroupElements." + indexVisualGroupElement }]
 				}
 			}
 			else {
@@ -189,7 +189,7 @@ define(function (require, exports, module) {
 						y: geometry.positionY,
 						z: geometry.positionZ
 					},
-					groupElements: [{$ref: "//@libraries.1/@types.1/@visualGroups.0/@visualGroupElements." + indexVisualGroupElement}]
+					groupElements: [{ $ref: "//@libraries.1/@types.1/@visualGroups.0/@visualGroupElements." + indexVisualGroupElement }]
 				}
 			}
 
@@ -242,12 +242,12 @@ define(function (require, exports, module) {
 			// Force Derived State Variables to be override
 			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
 			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"), true, true);
-			var instances =  stateVariableInstances.concat(derivedStateVariableInstances);
+			var instances = stateVariableInstances.concat(derivedStateVariableInstances);
 
 			// Hack to set time series at the instance level
-			for (var instanceIndex in instances){
+			for (var instanceIndex in instances) {
 				var timeSeries = instances[instanceIndex].getVariable().getWrappedObj().timeSeries
-				instances[instanceIndex].setTimeSeries((timeSeries.length == 0)?null:timeSeries);
+				instances[instanceIndex].setTimeSeries((timeSeries.length == 0) ? null : timeSeries);
 			}
 
 			GEPPETTO.ExperimentsController.watchVariables(instances, true);
@@ -266,7 +266,7 @@ define(function (require, exports, module) {
 		loadModel: function () {
 			window.Instances = [];
 			GEPPETTO.ControlPanel.clearData();
-			GEPPETTO.SimulationHandler.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
+			GEPPETTO.Manager.loadModel({ geppetto_model_loaded: JSON.stringify(this.getPayload()) });
 
 			var instances = this.createInstanceForStateVariables();
 
@@ -277,7 +277,7 @@ define(function (require, exports, module) {
 			this.splitAllGeometries();
 		},
 
-		getStateVariablesPayload: function(geppettoVariables){
+		getStateVariablesPayload: function (geppettoVariables) {
 			// Add StateVariable
 			var geppettoStateVariables = [];
 			for (var i = 0; i < this.get('stateVariables').length; i++) {
@@ -300,7 +300,7 @@ define(function (require, exports, module) {
 			return geppettoStateVariables;
 		},
 
-		getCompositeVisualType: function(){
+		getCompositeVisualType: function () {
 			var visualGroups = [{
 				eClass: 'VisualGroups',
 				id: 'Cell_Regions',
@@ -320,7 +320,7 @@ define(function (require, exports, module) {
 			}
 		},
 
-		getModelVariableType: function(geppettoVariables){
+		getModelVariableType: function (geppettoVariables) {
 			return {
 				eClass: 'CompositeType',
 				id: this.get('id'),
@@ -330,7 +330,7 @@ define(function (require, exports, module) {
 			}
 		},
 
-		getNeuronLibrary: function(){
+		getNeuronLibrary: function () {
 			return {
 				"eClass": "GeppettoLibrary",
 				"id": "neuron",
@@ -338,7 +338,7 @@ define(function (require, exports, module) {
 				"types": []
 			}
 		},
-		
+
 
 		getPayload: function () {
 
@@ -353,8 +353,8 @@ define(function (require, exports, module) {
 			// Get Main Model Variable Type
 			var modelVariableType = this.getModelVariableType(geppettoVariables);
 			geppettoModelPayload.libraries[1].types.push(modelVariableType);
-			
-			
+
+
 			// Get Main Composite Visual Type
 			if (this.get('geometries').length > 0) {
 				geppettoModelPayload.libraries[1].types.push(this.getCompositeVisualType())
@@ -380,7 +380,7 @@ define(function (require, exports, module) {
 				if (msg.hard_reload) {
 					this.loadModel();
 				}
-				else{
+				else {
 					this.mergeModel();
 				}
 			}
@@ -405,8 +405,8 @@ define(function (require, exports, module) {
 			}
 			else if (msg.type === 'reload') {
 				// If a Geppetto extension is defining a custom behavior to load the kernel we call it
-				if(window.customJupyterModelLoad!=undefined){
-					window.customJupyterModelLoad(msg.module,msg.model);
+				if (window.customJupyterModelLoad != undefined) {
+					window.customJupyterModelLoad(msg.module, msg.model);
 				}
 			}
 		},
@@ -420,7 +420,7 @@ define(function (require, exports, module) {
 			});
 
 			this.on("change:derived_state_variables", function (model, value, options) {
-				if (this.get('derived_state_variables').length > 0){
+				if (this.get('derived_state_variables').length > 0) {
 					this.mergeModel();
 				}
 			});
@@ -455,7 +455,7 @@ define(function (require, exports, module) {
 			ExperimentSync.__super__.initialize.apply(this);
 
 			this.on("change:status", function (model, value, options) {
-				GEPPETTO.SimulationHandler.onMessage({ type: 'experiment_status', data: JSON.stringify(this.getPayload(value)) });
+				GEPPETTO.Manager.updateExperimentsStatus(value);
 			});
 		}
 	});
@@ -479,18 +479,13 @@ define(function (require, exports, module) {
 			return payload
 		},
 
-		getLoadExperimentPayload: function () {
-			return { experiment_loaded: JSON.stringify({ eClass: 'ExperimentState', experimentId: 1, recordedVariables: [] }) };
-		},
-
 		initialize: function () {
 			ProjectSync.__super__.initialize.apply(this);
 
 			// Load the project
-			GEPPETTO.SimulationHandler.loadProject({ project_loaded: JSON.stringify({ project: this.getPayload(), persisted: false }) });
-
+			GEPPETTO.Manager.loadProject(this.getPayload(), false);
 			// Load the first experiment
-			GEPPETTO.SimulationHandler.onMessage({ type: 'experiment_loaded', data: JSON.stringify(this.getLoadExperimentPayload()) });
+			GEPPETTO.Manager.loadExperiment(1, [], []);
 		}
 	}, {
 			serializers: _.extend({

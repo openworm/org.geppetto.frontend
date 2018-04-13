@@ -1238,10 +1238,10 @@ define(function (require) {
                                             this.controller.plotStateVariable(
 						Project.getId(),
 						Project.getActiveExperiment().getId(),
-						item.path,
+						item.path ? item.path : item,
 						this,
                                                 null,
-                                                item.line
+                                                item.line ? item.line : {}
 						);
 					}
 				}

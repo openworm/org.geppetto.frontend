@@ -45,7 +45,8 @@ define(function (require) {
 		functionNodeData: null,
 		hasXYData: false,
 		xyData: [],
-		hasStandardPlotData: false,
+	    hasStandardPlotData: false,
+            dependent: 'y',
         xaxisAutoRange : false,
         yaxisAutoRange : false,
         imageTypes : [],
@@ -730,7 +731,7 @@ define(function (require) {
 								//this happens when we reach the end of the width of the plot
 								//i.e. when we have already put all the points that it can contain
 							     oldDataX.splice(0, 1);
-                                                             if ($.isArray(oldDataDependent))
+                                                             if ($.isArray(oldDataDependent[0]))
                                                                  for (var i=0; i<oldDataDependent.length; ++i)
 								     oldDataDependent[i].splice(0,1);
                                                              else

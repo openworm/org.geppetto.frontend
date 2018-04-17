@@ -703,7 +703,7 @@ define(function (require) {
             var self = this;
             var active = window.Project.getActiveExperiment();
             var smallStatus = $('.small-expt-indicator').attr("data-status");
-            if (smallStatus != active.getStatus()) {
+            if (active && smallStatus != active.getStatus()) {
                 $('.small-expt-indicator').removeClass(smallStatus);
                 $('.small-expt-indicator').addClass(active.getStatus());
                 $('.small-expt-indicator').attr("data-status", active.getStatus());

@@ -2,6 +2,7 @@ language: node_js
 os: linux
 sudo: required
 dist: trusty
+bundler_args: --retry 5
 node_js:
   - "7"
 env:
@@ -30,13 +31,12 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - export SLIMERJSLAUNCHER=/home/travis/firefox-58.0/firefox/firefox
   - export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
-bundler_args: --retry 5    
 script:
   - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - echo "$TRAVIS_BRANCH"
-  - travis_retry docker build -t="geppetto" --build-arg frontendBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#development:utilities/docker/geppetto/
+  - travis_retry docker build -t="geppetto" --build-arg frontendBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#fix-virgo-download:utilities/docker/geppetto/
   - echo "Current time :$(date +"%T")"
   - travis_retry docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh

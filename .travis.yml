@@ -63,7 +63,7 @@ script:
   - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js UIComponentsTests.js --host=http://localhost:28081/ --engine=slimerjs  
   - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js GeppettoModelTests.js --host=http://localhost:28081/ --engine=slimerjs 
   - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js,NeuronalTestsLogic.js DefaultProjectsTests.js --host=http://localhost:28081/ --engine=slimerjs  
-  - travis_retry docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
+  - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 200
   - echo "Current time :$(date +"%T")"
   - docker stop $(docker ps -a -q)

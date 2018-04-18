@@ -210,7 +210,7 @@ define(function (require) {
                 		that.setState({carouselFullyLoaded : true});
                 		that.fullyLoaded = true;
                 	}
-                });
+                }, {passive: true});
             }
         },
 

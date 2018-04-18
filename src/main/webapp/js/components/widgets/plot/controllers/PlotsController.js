@@ -72,7 +72,7 @@ define(function(require) {
 
         isColorbar: function(plot) {
             return (plot.datasets[0] != undefined &&
-                    plot.datasets[0].y != undefined &&
+                    plot.datasets[0].y == undefined &&
                     plot.datasets[0].type == "heatmap");
         },
 

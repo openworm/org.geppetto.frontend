@@ -481,8 +481,71 @@ define(function (require) {
                         }
 
                         var that = this;
-                        var button = $("<div id='" + this.id + "-left-nav' class='" + disabled + "fa fa-arrow-left'></div>" +
-                            "<div id='" + this.id + "-right-nav' class='" + disabled + "fa fa-arrow-right'></div>").click(function (event) {
+                        var leftButton = $("<div id='" + this.id + "-left-nav' class='" + disabled + "fa fa-arrow-left'></div>").click(function (event) {
+                            var historyItems = that.getItems(that.controller.staticHistoryMenu, "controller.staticHistoryMenu");
+                                var item;
+                                that.lastExecutedAction = $("#" + that.id).parent().find(".ui-dialog-title").html();
+                                if (event.target.id == (that.id + "-right-nav")) {
+                                    that.executedAction = that.executedAction + 1;
+                                    if (that.executedAction >= historyItems.length) {
+                                        that.executedAction = 0;
+                                    }
+
+                                    var match = that.executedAction;
+                                    for (var i = 0; i < historyItems.length; i++) {
+                                        var currentItem = historyItems[i];
+                                        if (that.lastExecutedAction == currentItem.label) {
+                                            match = i;
+                                        }
+                                    }
+
+                                    if (that.lastExecutedAction == historyItems[that.executedAction].label) {
+                                        that.executedAction = match + 1;
+                                    }
+
+                                    if (that.executedAction <= match) {
+                                        that.executedAction = match + 1;
+                                        if (that.executedAction >= historyItems.length) {
+                                            that.executedAction = 0;
+                                        }
+                                    }
+                                }
+                                if (event.target.id == (that.id + "-left-nav")) {
+                                    that.executedAction = that.executedAction - 1;
+                                    if (that.executedAction <= -1) {
+                                        that.executedAction = historyItems.length - 1;
+                                    }
+
+                                    var match = that.executedAction;
+                                    for (var i = 0; i < historyItems.length; i++) {
+                                        var currentItem = historyItems[i];
+                                        if (that.lastExecutedAction == currentItem.label) {
+                                            match = i;
+                                        }
+                                    }
+
+                                    if ((that.lastExecutedAction == historyItems[that.executedAction].label)) {
+                                        that.executedAction = match - 1;
+                                    }
+
+                                    if (that.executedAction <= -1) {
+                                        that.executedAction = historyItems.length - 1;
+                                    }
+
+                                    if (that.executedAction > match) {
+                                        that.executedAction = match - 1;
+                                        if (that.executedAction <= -1) {
+                                            that.executedAction = historyItems.length - 1;
+                                        }
+                                    }
+                                }
+                                that.updateHistoryPosition = false;
+                                item = historyItems[that.executedAction].action[0];
+                                GEPPETTO.CommandController.execute(item, true);
+                                $("#" + that.id).parent().find(".ui-dialog-title").html(historyItems[that.executedAction].label);
+                                event.stopPropagation();
+                        });
+                        var rightButton = $("<div id='" + this.id + "-right-nav' class='" + disabled + "fa fa-arrow-right'></div>").click(function (event) {
                                 var historyItems = that.getItems(that.controller.staticHistoryMenu, "controller.staticHistoryMenu");
                                 var item;
                                 that.lastExecutedAction = $("#" + that.id).parent().find(".ui-dialog-title").html();
@@ -547,8 +610,10 @@ define(function (require) {
                                 event.stopPropagation();
                             });
 
-                        button.insertBefore(this.dialogParent.find("span.ui-dialog-title"));
-                        $(button).addClass("widget-title-bar-button");
+                        rightButton.insertBefore(this.dialogParent.find("span.ui-dialog-title"));
+                        leftButton.insertBefore(this.dialogParent.find("span.ui-dialog-title"));
+                        $(leftButton).addClass("widget-title-bar-button");
+                        $(rightButton).addClass("widget-title-bar-button");
                     }
                 } else {
                     if (leftNav.is(":visible") && rightNav.is(":visible")) {

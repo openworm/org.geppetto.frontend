@@ -322,6 +322,25 @@ function testACNET2Project(test){
     casper.then(function () {
         this.waitUntilVisible('div[id="Plot1"]', function () {
             test.assertExists('div[id="Plot1"]', "Plot1 exists");
+        });
+    });
+
+    // Plot External
+    casper.then(function () {
+        buttonClick("#stateVariablesFilterBtn");
+        buttonClick("#anyExperimentFilterBtn");
+        this.waitUntilVisible('button#acnet2_pyramidals_48_0__soma_0_v_plot_ctrlPanel_btn.btn.ctrlpanel-button.fa.fa-area-chart', function () {
+            casper.evaluate(function() {
+            $(document.evaluate("//child::td[contains(text(), 'Whole pyramidal')]", document, null, XPathResult.ANY_TYPE, null).iterateNext())
+                    .siblings(".controlpanel-controls-column").find("button#acnet2_pyramidals_48_0__soma_0_v_plot_ctrlPanel_btn").click();
+            });
+        });
+    });
+
+    casper.then(function () {
+        this.waitUntilVisible('div[id="Plot3"]', function () {
+            // check that the svg exists, not merely the plot window
+            test.assertExists('#Plot3 .plot-container .svg-container', "Plot3 content exists");
             casper.evaluate(function() {
                 $("#controlpanel").hide();
             });			

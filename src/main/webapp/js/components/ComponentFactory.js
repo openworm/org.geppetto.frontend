@@ -46,7 +46,8 @@ define(function (require) {
 				'TREE': 'interface/tree/Tree',
 				'CONSOLE': 'interface/console/Console',
 				'LINKBUTTON': 'interface/linkButton/LinkButton',
-				'BUTTONBAR': 'interface/buttonBar/ButtonBar'
+				'BUTTONBAR': 'interface/buttonBar/ButtonBar',
+				'DRAWER': 'interface/drawer/DrawerExtension'
 				// 'PLOT': 'interface/plot/Plot',
 				// 'POPUP': 'interface/popup/Popup'
 			},
@@ -224,7 +225,8 @@ define(function (require) {
 				            case 'TREE': require(['./interface/tree/Tree'],cb); break;
 				            case 'CONSOLE': require(['./interface/console/Console'],cb); break;
 				            case 'LINKBUTTON': require(['./interface/linkButton/LinkButton'],cb); break;
-				            case 'BUTTONBAR': require(['./interface/buttonBar/ButtonBar'], cb); break;
+							case 'BUTTONBAR': require(['./interface/buttonBar/ButtonBar'], cb); break;
+							case 'DRAWER': require(['./interface/drawer/DrawerExtension'], cb); break;
 	            		}
 	            		
 					});	

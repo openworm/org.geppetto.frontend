@@ -68,7 +68,7 @@ define(function (require) {
             },
 
             testing: function (event) {
-                console.log("taka");
+
             },
 
             initialize: function (options) {

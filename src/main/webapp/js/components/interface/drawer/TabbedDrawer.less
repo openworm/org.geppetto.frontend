@@ -1,0 +1,81 @@
+@import "./../../../../style/less/components/colors";
+
+@-webkit-keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
+#geppettoDrawer {
+display: inline-block;
+}
+
+#tabber {
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+  border-bottom: 0.5px solid rgb(252, 99, 32);
+  width: 100%;
+  display: block;
+  margin-top: 0px;
+  text-decoration: none;
+  left: 0;
+  bottom: 0;
+  position: absolute;
+  background: transparent;
+}
+
+#tabButton {
+  color: @primary_color;
+	margin: 0 auto;
+	margin-bottom: 26px;
+  position: relative;
+  border-color: rgb(252, 99, 32);
+  border: 0.5px;
+  border-bottom: 0px;
+	border-style: solid;
+	box-shadow: none;
+	text-shadow: none;
+	width: 140px;
+	height: 35px;
+  padding: 7px 20px;
+  text-align: center;
+  display: inline-block;
+  cursor: pointer!important;
+  background: rgba(50, 50, 53, 0.8);
+}
+
+#drawer {
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+  height: 250px;
+  width: 100%;
+  background-color: black;
+  color: white;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  display: none;
+  transition: opacity 1s ease-out;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+  background: rgba(50, 50, 53, 0.8);
+}
+
+#topLine {
+  border-top: 1px solid rgb(252, 99, 32); /* 1px for the "border" size */
+  cursor: n-resize;
+  top: 0px;
+  left: 0px;
+}

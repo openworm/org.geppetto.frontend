@@ -59,10 +59,8 @@ define(function (require) {
 		//Foreground initialization
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {dropDown : false}, document.getElementById("foreground-toolbar"));
 
-		//Experiments table initialization
-		//GEPPETTO.ComponentFactory.addComponent('EXPERIMENTSTABLE', {}, document.getElementById("experiments"));
-		GEPPETTO.ComponentFactory.addComponent('DRAWER', {children: [Console, PythonConsole, ExperimentsTable], labels: ["Console", "Dario", "Experiments Table"]}, document.getElementById("footerHeader"));
-		//GEPPETTO.ComponentFactory.addComponent('DRAWER', {}, document.getElementById("footerHeader"));
+		//Console and Experiments table initialization
+		GEPPETTO.ComponentFactory.addComponent('DRAWER', {children: [Console, ExperimentsTable], labels: ["Console", "Experiments"]}, document.getElementById("footerHeader"));
 
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));

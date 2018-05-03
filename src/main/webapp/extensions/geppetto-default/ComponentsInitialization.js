@@ -60,7 +60,7 @@ define(function (require) {
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {dropDown : false}, document.getElementById("foreground-toolbar"));
 
 		//Console and Experiments table initialization
-		GEPPETTO.ComponentFactory.addComponent('DRAWER', {children: [Console, ExperimentsTable], labels: ["Console", "Experiments"]}, document.getElementById("footerHeader"));
+		GEPPETTO.ComponentFactory.addComponent('DRAWER', {children: [Console, ExperimentsTable], labels: ["Console", "Experiments"], iconClass: ["fa fa-terminal", "fa fa-flask"]}, document.getElementById("footerHeader"));
 
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));

@@ -36,26 +36,19 @@ define(function (require) {
                 this.setState({buttonActived: false});
             if((this.state.buttonActived === false))
                 this.setState({mouseOver: false});
-            console.log("button out position page Y is " + e.pageY);
         }
 
         render() {
+            var buttonStyle = "tabButton";
             if(this.props.labelKey === this.props.buttonSelected) {
-                var buttonStyle = {background: 'rgba(252, 99, 32, 0.8)', color: 'rgba(50, 50, 53)'};
-            } else {
-                var buttonStyle = (this.state.mouseOver) ? {background: 'rgba(252, 99, 32, 0.8)', 
-                                                           color: 'rgba(50, 50, 53)'} : 
-                                                          {background: 'rgba(50, 50, 53, 0.8)',
-                                                           color: 'rgba(252, 99, 32)'};
+                buttonStyle = " tabButton buttonSelected";
             }
             return (
                 <span
-                    id="tabButton"
-                    onClick={this.activeButton} 
-                    onMouseOver={this.overButton}
-                    onMouseOut={this.outButton}
-                    style={buttonStyle}>
-                    {this.props.children}
+                    onClick={this.activeButton}
+                    className={buttonStyle}>
+                    <div className={this.props.iconClass}></div>
+                    &nbsp;{this.props.children}
                 </span>
             );
         }

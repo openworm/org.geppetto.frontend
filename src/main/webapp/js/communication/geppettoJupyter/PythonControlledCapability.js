@@ -162,7 +162,7 @@ define(function (require) {
                 handleChange(event, index, value) {
                     var that = this;
                     var targetValue = value;
-                    if (event != null) {
+                    if (event != null && event.target.value != undefined) {
                         targetValue = event.target.value;
                     }
                     this.setState({ value: targetValue });

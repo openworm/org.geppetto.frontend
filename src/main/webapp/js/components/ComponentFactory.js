@@ -23,6 +23,7 @@ define(function (require) {
 				'SPOTLIGHT': 'interface/spotlight/spotlight',
 				'MENUBUTTON': 'controls/menuButton/MenuButton',
 				'FOREGROUND': 'interface/foregroundControls/ForegroundControls',
+				'EXPERIMENTSTABLE': 'interface/experimentsTable/ExperimentsTable',
 				'HOME': 'interface/home/HomeControl',
 				'SIMULATIONCONTROLS': 'interface/simulationControls/ExperimentControls',
 				'CAMERACONTROLS': 'interface/cameraControls/CameraControls',
@@ -31,6 +32,7 @@ define(function (require) {
 				'MDMODAL': 'controls/modals/MarkDownModal',
 				'QUERY': 'interface/query/query',
 				'TUTORIAL': 'interface/tutorial/Tutorial',
+				'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
 				'CHECKBOX': 'controls/Checkbox',
 				'TEXTFIELD': 'controls/TextField',
 				'RAISEDBUTTON': 'controls/RaisedButton',
@@ -42,6 +44,7 @@ define(function (require) {
 				'CANVAS': 'interface/3dCanvas/Canvas',
 				'MOVIEPLAYER': 'interface/moviePlayer/MoviePlayer',
 				'TREE': 'interface/tree/Tree',
+				'CONSOLE': 'interface/console/Console',
 				'LINKBUTTON': 'interface/linkButton/LinkButton',
 				'BUTTONBAR': 'interface/buttonBar/ButtonBar',
 				'DRAWER': 'interface/drawer/TabbedDrawer'
@@ -198,7 +201,8 @@ define(function (require) {
 				            case 'CONTROLPANEL': require(['./interface/controlPanel/controlpanel'],cb); break;
 				            case 'SPOTLIGHT': require(['./interface/spotlight/spotlight'],cb); break;
 				            case 'MENUBUTTON': require(['./controls/menuButton/MenuButton'],cb); break;
-				            case 'FOREGROUND': require(['./interface/foregroundControls/ForegroundControls'],cb); break;
+							case 'FOREGROUND': require(['./interface/foregroundControls/ForegroundControls'],cb); break;
+							case 'EXPERIMENTSTABLE': require(['./interface/experimentsTable/ExperimentsTable'],cb); break;
 				            case 'HOME': require(['./interface/home/HomeControl'],cb); break;
 				            case 'SIMULATIONCONTROLS': require(['./interface/simulationControls/ExperimentControls'],cb); break;
 				            case 'CAMERACONTROLS': require(['./interface/cameraControls/CameraControls'],cb); break;
@@ -206,7 +210,8 @@ define(function (require) {
 				            case 'INFOMODAL': require(['./controls/modals/InfoModal'],cb); break;
 				            case 'MDMODAL': require(['./controls/modals/MarkDownModal'],cb); break;
 				            case 'QUERY': require(['./interface/query/query'],cb); break;
-				            case 'TUTORIAL': require(['./interface/tutorial/Tutorial'],cb); break;
+							case 'TUTORIAL': require(['./interface/tutorial/Tutorial'],cb); break;
+							case 'PYTHONCONSOLE': require(['./interface/pythonConsole/PythonConsole'],cb); break;
 				            case 'CHECKBOX': require(['./controls/Checkbox'],cb); break;
 				            case 'TEXTFIELD': require(['./controls/TextField'],cb); break;
 				            case 'RAISEDBUTTON': require(['./controls/RaisedButton'],cb); break;
@@ -217,7 +222,8 @@ define(function (require) {
 				            case 'CAROUSEL': require(['./interface/carousel/Carousel'],cb); break;
 				            case 'CANVAS': require(['./interface/3dCanvas/Canvas'],cb); break;
 				            case 'MOVIEPLAYER': require(['./interface/moviePlayer/MoviePlayer'],cb); break;
-				            case 'TREE': require(['./interface/tree/Tree'],cb); break;
+							case 'TREE': require(['./interface/tree/Tree'],cb); break;
+							case 'CONSOLE': require(['./interface/console/Console'],cb); break;
 				            case 'LINKBUTTON': require(['./interface/linkButton/LinkButton'],cb); break;
 							case 'BUTTONBAR': require(['./interface/buttonBar/ButtonBar'], cb); break;
 							case 'DRAWER': require(['./interface/drawer/TabbedDrawer'], cb); break;

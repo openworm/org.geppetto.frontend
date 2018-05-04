@@ -40,6 +40,44 @@ max-height : ~"calc(100% - 40px)";
   background: transparent;
 }
 
+
+.icons {
+  color: @primary_color;
+  background-color: @background_color_widget;
+  border:1px solid @primary_color;
+  position: absolute;
+  vertical-align:middle;
+  text-align: center;
+  bottom: 0;
+  height: 15px;
+  width: 15px;
+  cursor: pointer;
+  border-radius: 2px;
+  animation: fadeIn 1s;
+  -webkit-animation: fadeIn 1s;
+  transition: opacity 1s ease-out;
+}
+
+.icons:hover {
+  color: @background_color_widget;
+  background-color: @primary_color;
+  border:1px solid @primary_color;
+}
+
+.icons.closeIcons {
+  right: 0px;
+  margin-left: 5px;
+}
+
+.icons.maxIcons {
+  right: 20px;
+  margin-left: 5px;
+}
+
+.icons.minIcons {
+  right: 40px;
+}
+
 .tabButton {
   color: @background_color_widget;
   background-color: @primary_color;
@@ -76,20 +114,18 @@ max-height : ~"calc(100% - 40px)";
 }
 
 .drawer {
-  -webkit-animation: fadeIn 1s;
-  animation: fadeIn 1s;
-  height: 250px;
-  width: 100%;
-  background-color: @background_color_widget;
-  color: white;
+  display: none;
   position: absolute;
   bottom: 0px;
   left: 0px;
-  display: none;
-  transition: opacity 1s ease-out;
-  -webkit-animation: fadeIn 1s;
+  height: 250px;
+  width: 100%;
   animation: fadeIn 1s;
+  -webkit-animation: fadeIn 1s;
+  transition: opacity 1s ease-out;
+  background-color: @background_color_widget;
   background: @background_color_widget;
+  color: white;
   opacity: 0.8;
 }
 

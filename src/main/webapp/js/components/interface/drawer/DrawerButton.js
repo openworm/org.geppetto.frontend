@@ -1,3 +1,10 @@
+/**
+ * Button component used in the tabbed drawer to 
+ * select the child component to display.
+ *
+ *  @author Dario Del Piano
+ */
+
 define(function (require) {
 
     var React = require('react');
@@ -12,10 +19,11 @@ define(function (require) {
                 buttonActived: false}
 
             this.activeButton = this.activeButton.bind(this);
-            this.overButton = this.overButton.bind(this);
-            this.outButton = this.outButton.bind(this);
         }
 
+        // function called onClick, recall the parent function passed as prop to display the right child
+        // the props labelKey is passed as parameter to the TabbedDrawer component to let it known
+        // which button has been selected.
         activeButton() {
             if((this.props.labelKey === this.props.buttonSelected) && this.props.drawerOpened)
                 this.setState({buttonActived: true,
@@ -24,18 +32,6 @@ define(function (require) {
                 this.setState({buttonActived: false,
                                mouseOver: false});
             this.props.functionDrawer(this.props.labelKey);
-        }
-
-        overButton() {
-            if((this.state.buttonActived === false))
-                this.setState({mouseOver: true});
-        }
-
-        outButton(e) {
-            if(!this.props.drawerOpened)
-                this.setState({buttonActived: false});
-            if((this.state.buttonActived === false))
-                this.setState({mouseOver: false});
         }
 
         render() {

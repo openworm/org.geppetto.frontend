@@ -26,49 +26,46 @@ define(['jquery'], function () {
     THREE.ShaderPass = require('imports-loader?THREE=three!exports-loader?THREE.ShaderPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/ShaderPass');
     THREE.FilmPass = require('imports-loader?THREE=three!exports-loader?THREE.FilmPass!../../../../node_modules\/three\/examples\/js\/postprocessing\/FilmPass');
 
-    function ThreeDEngine(container, viewerId) {
-    	
-        this.container = container;
-        this.colorController = new (require('./ColorController'))(this);
-        this.viewerId = viewerId;
-
-        //Engine components
-        this.scene = new THREE.Scene();
-        this.camera = null;
-        this.controls = null;
-        this.renderer = null;
-        this.stats = null;
-        this.projector = null;
-        this.sceneCenter = new THREE.Vector3();
-        this.cameraPosition = new THREE.Vector3();
-
-        this.mouse = {x: 0, y: 0};
-
-        //The content of the scene
-        this.meshes = {};
-        this.splitMeshes = {};
-        this.connectionLines = {};
-        this.visualModelMap = {};
-        this.complexity = 0;
-
-        //Settings
-        this.linesThreshold = 2000;
-        this.aboveLinesThreshold = false;
-        this.wireframe = false;
-        this.isAnimated = false;
-        this.debugUpdate = false;
-        this.needsUpdate = false;
-        this.pickingEnabled = true; // flag to enable disable 3d picking
-        this.linesUserInput = false;
-        this.linesUserPreference = undefined;
-
-        //Initialisation
-        this.setupCamera();
-        this.setupRenderer();
-        this.setupLights();
-        this.setupControls();
-        this.setupListeners();
-        this.animate();
+    class ThreeDEngine {
+        constructor(container, viewerId) {
+            this.container = container;
+            this.colorController = new (require('./ColorController'))(this);
+            this.viewerId = viewerId;
+            //Engine components
+            this.scene = new THREE.Scene();
+            this.camera = null;
+            this.controls = null;
+            this.renderer = null;
+            this.stats = null;
+            this.projector = null;
+            this.sceneCenter = new THREE.Vector3();
+            this.cameraPosition = new THREE.Vector3();
+            this.mouse = { x: 0, y: 0 };
+            //The content of the scene
+            this.meshes = {};
+            this.splitMeshes = {};
+            this.connectionLines = {};
+            this.visualModelMap = {};
+            this.complexity = 0;
+            //Settings
+            this.linesThreshold = 2000;
+            this.aboveLinesThreshold = false;
+            this.wireframe = false;
+            this.isAnimated = false;
+            this.debugUpdate = false;
+            this.needsUpdate = false;
+            this.pickingEnabled = true; // flag to enable disable 3d picking
+            this.linesUserInput = false;
+            this.linesUserPreference = undefined;
+            this.hoverListeners = undefined;
+            //Initialisation
+            this.setupCamera();
+            this.setupRenderer();
+            this.setupLights();
+            this.setupControls();
+            this.setupListeners();
+            this.animate();
+        }
     }
 
 
@@ -122,6 +119,14 @@ define(['jquery'], function () {
             }
             this.configureRenderer();
             this.canvasCreated = true;
+        },
+
+
+        addHoverListener: function (listener) {
+            if (this.hoverListeners == undefined) {
+                this.hoverListeners = [];
+            }
+            this.hoverListeners.push(listener);
         },
 
         /**
@@ -218,9 +223,18 @@ define(['jquery'], function () {
                 }
             }, false);
 
+
             this.renderer.domElement.addEventListener('mousemove', function (event) {
                 that.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                 that.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                if (that.hoverListeners) {
+                    var intersects = that.getIntersectedObjects();
+                    for (var listener in that.hoverListeners) {
+                        if (intersects.length != 0) {
+                            that.hoverListeners[listener](intersects);
+                        }
+                    }
+                }
             }, false);
 
         },
@@ -362,38 +376,38 @@ define(['jquery'], function () {
             this.camera.position.addVectors(dir, this.controls.target);
             this.camera.updateProjectionMatrix();
         },
-        
-        
+
+
         /**
          * Receives updates from widget listener class to update moving objects on the 3d canvas
          *
          * @param {WIDGET_EVENT_TYPE} event - Event that tells widgets what to do
          */
-        update: function(event, parameters) {
+        update: function (event, parameters) {
             //reset plot's datasets
             if (event == GEPPETTO.WidgetsListener.WIDGET_EVENT_TYPE.RESET_DATA) {
 
-                
+
             }
-            else if (event == GEPPETTO.Events.Experiment_update) {                    
-            	this.scene.traverse(function (child) {
+            else if (event == GEPPETTO.Events.Experiment_update) {
+                this.scene.traverse(function (child) {
                     if (child instanceof THREE.Points) {
                         var instance = Instances.getInstance(child.instancePath);
-                        if(instance.getTimeSeries()!=undefined && instance.getTimeSeries()[parameters.step]!=undefined){
+                        if (instance.getTimeSeries() != undefined && instance.getTimeSeries()[parameters.step] != undefined) {
                             //if we have recorded this object we'll have a timeseries
-                        	var particles = instance.getTimeSeries()[parameters.step].particles;
-                        	for(var p=0;p<particles.length;p++){
-                        		child.geometry.vertices[p].x=particles[p].x;
-                        		child.geometry.vertices[p].y=particles[p].y;
-                        		child.geometry.vertices[p].z=particles[p].z;
-                        	}
-                        	child.geometry.verticesNeedUpdate = true;
+                            var particles = instance.getTimeSeries()[parameters.step].particles;
+                            for (var p = 0; p < particles.length; p++) {
+                                child.geometry.vertices[p].x = particles[p].x;
+                                child.geometry.vertices[p].y = particles[p].y;
+                                child.geometry.vertices[p].z = particles[p].z;
+                            }
+                            child.geometry.verticesNeedUpdate = true;
                         }
                     }
                 });
 
             }
-        	
+
         },
 
         /**
@@ -534,7 +548,7 @@ define(['jquery'], function () {
             return raycaster.intersectObjects(visibleChildren);
         },
 
-        getDefaultGeometryType: function() {
+        getDefaultGeometryType: function () {
             // Unless it's being forced we use a threshold to decide whether to use lines or cylinders
             if (!this.aboveLinesThreshold) {
                 //Unless we are already above the threshold...
@@ -566,7 +580,7 @@ define(['jquery'], function () {
          */
         updateSceneWithNewInstances: function (instances) {
             var traversedInstances = this.traverseInstances(instances);
-            if (traversedInstances.length > 0){
+            if (traversedInstances.length > 0) {
                 this.setAllGeometriesType(this.getDefaultGeometryType());
                 this.scene.updateMatrixWorld(true);
                 this.resetCamera();
@@ -581,21 +595,21 @@ define(['jquery'], function () {
             var that = this;
             this.scene.traverse(function (child) {
                 if (child instanceof THREE.Mesh) {
-                    if(!(child.material.nowireframe==true)){
+                    if (!(child.material.nowireframe == true)) {
                         child.material.wireframe = that.wireframe;
                     }
                 }
             });
         },
-        
+
         /**
          * Sets whether picking is enabled or not
          */
-        enablePicking: function(pickingEnabled){
-        	this.pickingEnabled=pickingEnabled;
+        enablePicking: function (pickingEnabled) {
+            this.pickingEnabled = pickingEnabled;
         },
 
-        getWireframe: function(){
+        getWireframe: function () {
             return this.wireframe;
         },
 
@@ -606,7 +620,7 @@ define(['jquery'], function () {
          *            skeleton with instances and visual entities
          */
         traverseInstances: function (instances, lines, thickness) {
-            
+
             for (var j = 0; j < instances.length; j++) {
                 var traversedInstances = this.checkVisualInstance(instances[j], lines, thickness);
             }
@@ -723,10 +737,10 @@ define(['jquery'], function () {
             var that = this;
             //TODO This can be optimised, no need to create both
             var materials =
-            {
-                "mesh": that.getMeshPhongMaterial(color),
-                "line": that.getLineMaterial(thickness, color)
-            };
+                {
+                    "mesh": that.getMeshPhongMaterial(color),
+                    "line": that.getLineMaterial(thickness, color)
+                };
             var instanceObjects = [];
             var threeDeeObjList = this.walkVisTreeGen3DObjs(instance, materials, lines);
 
@@ -778,15 +792,15 @@ define(['jquery'], function () {
                     var visualValue = visualType.getVariables()[v].getWrappedObj().initialValues[0].value;
                     threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, visualType.getVariables()[v].getId(), materials, lines);
                     if (threeDeeObj) {
-                    	threeDeeObjList.push(threeDeeObj);
+                        threeDeeObjList.push(threeDeeObj);
                     }
                 }
-            } 
-            else if (visualType.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE && visualType.getId()=="particles") {
+            }
+            else if (visualType.getMetaType() == GEPPETTO.Resources.VISUAL_TYPE_NODE && visualType.getId() == "particles") {
                 var visualValue = instance.getVariable().getWrappedObj().initialValues[0].value;
                 threeDeeObj = this.create3DObjectFromInstance(instance, visualValue, instance.getVariable().getId(), materials, lines);
                 if (threeDeeObj) {
-                	threeDeeObjList.push(threeDeeObj);
+                    threeDeeObjList.push(threeDeeObj);
                 }
             } else {
                 var visualValue = visualType.getWrappedObj().defaultValue;
@@ -993,7 +1007,7 @@ define(['jquery'], function () {
         createParticles: function (node) {
             var geometry = new THREE.Geometry();
             var threeColor = new THREE.Color();
-            var color=('0x' + Math.floor(Math.random() * 16777215).toString(16));
+            var color = ('0x' + Math.floor(Math.random() * 16777215).toString(16));
             threeColor.setHex(color);
 
             var textureLoader = new THREE.TextureLoader();
@@ -1006,15 +1020,15 @@ define(['jquery'], function () {
                     transparent: true,
                     color: threeColor
                 });
-            
-        	for(var p=0;p<node.particles.length;p++){
-        		geometry.vertices.push(new THREE.Vector3(node.particles[p].x, node.particles[p].y, node.particles[p].z));
 
-        	}
+            for (var p = 0; p < node.particles.length; p++) {
+                geometry.vertices.push(new THREE.Vector3(node.particles[p].x, node.particles[p].y, node.particles[p].z));
+
+            }
 
             material.defaultColor = color;
             material.defaultOpacity = 1;
-            var threeObject= new THREE.Points(geometry, material);
+            var threeObject = new THREE.Points(geometry, material);
             threeObject.visible = true;
             threeObject.instancePath = node.instancePath;
             threeObject.highlighted = false;
@@ -1028,8 +1042,8 @@ define(['jquery'], function () {
          * @param material
          * @returns {THREE.Line}
          */
-        create3DLineFromNode: function (node, material) { 
-        	var threeObject = null;
+        create3DLineFromNode: function (node, material) {
+            var threeObject = null;
             if (node.eClass == GEPPETTO.Resources.CYLINDER) {
                 var bottomBasePos = new THREE.Vector3(node.position.x, node.position.y, node.position.z);
                 var topBasePos = new THREE.Vector3(node.distal.x, node.distal.y, node.distal.z);
@@ -1078,7 +1092,7 @@ define(['jquery'], function () {
             // shift it so one end rests on the origin
             c.applyMatrix(new THREE.Matrix4().makeTranslation(0, axis.length() / 2, 0));
             // rotate it the right way for lookAt to work
-            c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI/2));
+            c.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
             // make a mesh with the geometry
             var threeObject = new THREE.Mesh(c, material);
             // make it point to where we want
@@ -1114,14 +1128,14 @@ define(['jquery'], function () {
             }
 
             if (typeof material == 'undefined') {
-                var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
+                var material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
                 material.nowireframe = true;
                 material.opacity = 0.6;
                 material.transparent = true;
                 material.color.setHex("0xff0000");
             }
 
-            var sphereNode = {radius: radius, position: {x: x, y: y, z: z}}
+            var sphereNode = { radius: radius, position: { x: x, y: y, z: z } }
             var mesh = this.create3DSphereFromNode(sphereNode, material)
             mesh.renderOrder = 1;
             this.scene.add(mesh);
@@ -1172,7 +1186,7 @@ define(['jquery'], function () {
             geometry.uvsNeedUpdate = true;
             geometry.dynamic = true;
 
-            var material = new THREE.MeshBasicMaterial({side: THREE.DoubleSide});
+            var material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
             material.nowireframe = true;
             if (textureURL != undefined) {
                 var loader = new THREE.TextureLoader();
@@ -1264,7 +1278,7 @@ define(['jquery'], function () {
                 color = GEPPETTO.Resources.COLORS.DEFAULT;
             }
             var material = new THREE.LineBasicMaterial(options);
-            this.setThreeColor(material.color, color); 
+            this.setThreeColor(material.color, color);
             material.defaultColor = color;
             material.defaultOpacity = GEPPETTO.Resources.OPACITY.DEFAULT;
             return material;
@@ -1826,13 +1840,13 @@ define(['jquery'], function () {
          *
          */
         hideAllInstances: function () {
-        	for (var instancePath in this.meshes) {
-        	  if (this.meshes.hasOwnProperty(instancePath)) {
-        		  this.hideInstance(instancePath);
-        	  }
-        	}
+            for (var instancePath in this.meshes) {
+                if (this.meshes.hasOwnProperty(instancePath)) {
+                    this.hideInstance(instancePath);
+                }
+            }
         },
-        
+
         /**
          * Hide instance
          *
@@ -1975,7 +1989,7 @@ define(['jquery'], function () {
                     }
                 }
             }
-            GEPPETTO.trigger(GEPPETTO.Events.Color_set, {instance: instance, color: randomColor});
+            GEPPETTO.trigger(GEPPETTO.Events.Color_set, { instance: instance, color: randomColor });
         }
 
         ,
@@ -2374,7 +2388,7 @@ define(['jquery'], function () {
                     }
                 }
 
-                var material = new THREE.LineDashedMaterial({dashSize: 3, gapSize: 1});
+                var material = new THREE.LineDashedMaterial({ dashSize: 3, gapSize: 1 });
                 this.setThreeColor(material.color, colour);
 
                 var line = new THREE.LineSegments(geometry, material);
@@ -2746,7 +2760,7 @@ define(['jquery'], function () {
                     for (var i = 0; i < groupElementsReference.length; i++) {
                         var objectGroup = GEPPETTO.ModelFactory.resolve(groupElementsReference[i].$ref).getId();
                         if (objectGroup == visualGroupElement.getId()) {
-                            elements[object.getId()] = {'color': visualGroupElement.getColor()}
+                            elements[object.getId()] = { 'color': visualGroupElement.getColor() }
                         }
                     }
                 }
@@ -2882,7 +2896,7 @@ define(['jquery'], function () {
         }
 
     }
-    ;
+        ;
 
     return ThreeDEngine;
 });

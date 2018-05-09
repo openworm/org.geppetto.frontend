@@ -519,10 +519,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		catch(IOException e)
 		{
 			error(e, "Error importing value " + path);
-		}
-		catch(GeppettoExecutionException e)
-		{
-			error(e, "Error importing value " + path);
+		} catch (GeppettoExecutionException e) {
+			e.printStackTrace();
 		}
 
 	}

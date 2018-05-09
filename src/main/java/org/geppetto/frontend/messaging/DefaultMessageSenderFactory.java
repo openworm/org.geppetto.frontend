@@ -3,7 +3,8 @@ package org.geppetto.frontend.messaging;
 
 import java.util.Set;
 
-import org.apache.catalina.websocket.WsOutbound;
+import javax.websocket.Session;
+
 import org.geppetto.frontend.messages.OutboundMessages;
 
 public class DefaultMessageSenderFactory {
@@ -15,7 +16,7 @@ public class DefaultMessageSenderFactory {
 	private int minMessageLengthForCompression = 20000;
 	private Set<OutboundMessages> queuedMessageTypes;
 
-	public DefaultMessageSender getMessageSender(WsOutbound wsOutbound, MessageSenderListener listener) {
+	public DefaultMessageSender getMessageSender(Session wsOutbound, MessageSenderListener listener) {
 
 		DefaultMessageSender messageSender = new DefaultMessageSender();
 		messageSender.addListener(listener);

@@ -17,6 +17,7 @@ import org.geppetto.core.utilities.URLReader;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.util.GeppettoModelTraversal;
 import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.simulation.manager.GeppettoManager;
 import org.geppetto.simulation.visitor.PopulateModelReferencesVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -1,17 +1,17 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.catalina.websocket.MessageInbound;
-import org.apache.catalina.websocket.WsOutbound;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.emf.common.util.BasicEList;
@@ -30,6 +30,7 @@ import org.geppetto.frontend.messaging.MessageSenderListener;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.simulation.manager.ExperimentRunManager;
+import org.geppetto.simulation.manager.GeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -43,7 +44,7 @@ import com.google.gson.reflect.TypeToken;
  * @author matteocantarelli
  *
  */
-public class WebsocketConnection extends MessageInbound implements MessageSenderListener
+public class WebsocketConnection implements MessageSenderListener
 {
 
 	private static Log logger = LogFactory.getLog(WebsocketConnection.class);
@@ -62,6 +63,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
+	private Session userSession;
+	
 	public WebsocketConnection()
 	{
 		super();
@@ -87,29 +90,23 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		this.connectionHandler = new ConnectionHandler(this, geppettoManager);
 	}
 
-	@Override
-	protected void onOpen(WsOutbound outbound)
-	{
-		messageSender = messageSenderFactory.getMessageSender(getWsOutbound(), this);
+	@OnOpen
+    public void onOpen(Session userSession) {
+		messageSender = messageSenderFactory.getMessageSender(userSession, this);
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
 
 		// User permissions are sent when socket is open
 		this.connectionHandler.checkUserPrivileges(null);
+		this.userSession = userSession;
 	}
 
-	@Override
-	protected void onClose(int status)
-	{
+	@OnClose
+    public void onClose(Session userSession) {
 		messageSender.shutdown();
 		connectionHandler.closeProject();
 	}
 
-	@Override
-	protected void onBinaryMessage(ByteBuffer message) throws IOException
-	{
-		throw new UnsupportedOperationException("Binary message not supported.");
-	}
 
 	/**
 	 * @param requestID
@@ -136,9 +133,8 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	 * 
 	 * @throws IOException
 	 */
-	@Override
-	protected void onTextMessage(CharBuffer message) throws IOException
-	{
+	@OnMessage
+    public void onMessage(String message, Session userSession) {
 		String msg = message.toString();
 
 		Map<String, String> parameters;
@@ -287,7 +283,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 					connectionHandler.sendDataSourceResults(requestID, dataSourceName, url, this);
 
 				}
-				catch(MalformedURLException e)
+				catch(IOException e)
 				{
 					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
 				}
@@ -561,6 +557,10 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	{
 		String targetVariablePath;
 		String queryPath;
+	}
+
+	public Session getSession() {
+		return this.userSession;
 	}
 
 }

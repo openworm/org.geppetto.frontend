@@ -25,7 +25,7 @@ define(function (require) {
         // the props labelKey is passed as parameter to the TabbedDrawer component to let it known
         // which button has been selected.
         activeButton() {
-            if((this.props.labelKey === this.props.buttonSelected) && this.props.drawerOpened)
+            if((this.props.labelKey === this.props.selectedTab) && this.props.drawerOpened)
                 this.setState({buttonActived: true,
                                mouseOver: false});
             else 
@@ -36,8 +36,8 @@ define(function (require) {
 
         render() {
             var buttonStyle = "tabButton";
-            if(this.props.labelKey === this.props.buttonSelected) {
-                buttonStyle = " tabButton buttonSelected";
+            if(this.props.labelKey === this.props.selectedTab) {
+                buttonStyle = " tabButton selectedTab";
             }
             return (
                 <span

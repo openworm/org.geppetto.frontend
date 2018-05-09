@@ -17,16 +17,16 @@ define(function (require) {
             super(props);
             
             // the state drawerOpened is used to keep track of the display css attribute
-            // the buttonSelected tell us what child has to be displayed
+            // the selectedTab tell us what child has to be displayed
             // the drawerHeight is used for the resizing
             this.state = {
                 drawerOpened: false,
-                buttonSelected: null,
+                selectedTab: null,
                 drawerHeight: 250
             }
             this.openDrawer = this.openDrawer.bind(this);
             this.renderMyLabels = this.renderMyLabels.bind(this);
-            this.renderMyChilds = this.renderMyChilds.bind(this);
+            this.renderMyChildren = this.renderMyChildren.bind(this);
             this.drawerResizing = this.drawerResizing.bind(this);
             this.drawerStopResizing = this.drawerStopResizing.bind(this);
             this.closeDrawer = this.closeDrawer.bind(this);
@@ -36,7 +36,12 @@ define(function (require) {
 
         // using the callback onResize of Rnd, keep tracks of the resize and animate the tabber
         drawerResizing(e) {
-            var newOffset = window.innerHeight - (e.clientY - e.layerY);
+            
+            if(e.clientY == e.layerY)
+                var newOffset = window.innerHeight - e.clientY;
+            else
+                var newOffset = window.innerHeight - (e.clientY - e.layerY);
+
             if(newOffset >= window.innerHeight)
                 newOffset = window.innerHeight - 50;
             if(newOffset < 250)
@@ -46,7 +51,11 @@ define(function (require) {
         
         // exact resize is calculated with the callback onResizeStop using also movementY
         drawerStopResizing(e) {
-            var newOffset = window.innerHeight - (e.clientY - e.layerY - e.movementY);
+            if(e.clientY == e.layerY)
+                var newOffset = window.innerHeight - e.clientY;
+            else
+                var newOffset = window.innerHeight - (e.clientY - e.layerY);
+
             if(newOffset >= window.innerHeight)
                 newOffset = window.innerHeight - 50;
             if(newOffset < 250)
@@ -62,7 +71,7 @@ define(function (require) {
                         functionDrawer={this.openDrawer}
                         labelKey={_key}
                         iconClass={this.props.iconClass[_key]}
-                        buttonSelected={this.state.buttonSelected}
+                        selectedTab={this.state.selectedTab}
                         drawerOpened={this.state.drawerOpened}>
                         {label}
                     </DrawerButton>
@@ -73,11 +82,11 @@ define(function (require) {
 
         // function to render all the childs, wrap each one of them in a div and manage with display
         // which child has to be visible.
-        renderMyChilds() {
+        renderMyChildren() {
             var renderedComponents = this.props.children.map(function(child, _key) {
                 if(this.state.drawerOpened == true) {
                     var ElementToRender = child;
-                    var MyElement = (this.state.buttonSelected != _key) ? <div className="hiddenComponent"><ElementToRender /></div> : <div><ElementToRender /></div>;
+                    var MyElement = (this.state.selectedTab != _key) ? <div className="hiddenComponent"><ElementToRender /></div> : <div><ElementToRender /></div>;
 
                 } else {
                     var ElementToRender = child;
@@ -90,13 +99,13 @@ define(function (require) {
 
         // Called by the DrawerButton to determine when the drawer has to be open or closed
         openDrawer(buttonClicked) {
-            if(this.state.drawerOpened && (buttonClicked == this.state.buttonSelected)) {
-                this.setState({buttonSelected: null,
+            if(this.state.drawerOpened && (buttonClicked == this.state.selectedTab)) {
+                this.setState({selectedTab: null,
                                drawerOpened: !this.state.drawerOpened});
-            } else if(this.state.drawerOpened && (buttonClicked != this.state.buttonSelected))  {
-                this.setState({buttonSelected: buttonClicked});
+            } else if(this.state.drawerOpened && (buttonClicked != this.state.selectedTab))  {
+                this.setState({selectedTab: buttonClicked});
             } else {
-                this.setState({buttonSelected: buttonClicked,
+                this.setState({selectedTab: buttonClicked,
                                drawerOpened: !this.state.drawerOpened});
             }
         }
@@ -108,8 +117,10 @@ define(function (require) {
         }
 
         closeDrawer() {
-            this.setState({buttonSelected: null,
-                           drawerOpened: !this.state.drawerOpened});
+            this.setState({selectedTab: null,
+                           drawerOpened: !this.state.drawerOpened,
+                           drawerHeight: 250});
+            this.rnd.updateSize({height: 250, width: '100%'});
         }
 
         minimizeDrawer() {
@@ -124,14 +135,16 @@ define(function (require) {
                 <div className="geppettoDrawer">
                     <span className="tabber" style={tabStyle}>
                         {this.renderMyLabels()}
-                        <div style={bottonsStyle} onClick={this.minimizeDrawer} 
-                             className="icons minIcons fa fa-window-minimize">
-                        </div>
-                        <div style={bottonsStyle} onClick={this.maximizeDrawer} 
-                             className="icons maxIcons fa fa-expand">
-                        </div>
-                        <div style={bottonsStyle} onClick={this.closeDrawer} 
-                             className="icons closeIcons fa fa-times">
+                        <div style={bottonsStyle} className="icons">
+                            <div onClick={this.minimizeDrawer} 
+                                 className="minIcons fa fa fa-chevron-down">
+                            </div>
+                            <div onClick={this.maximizeDrawer} 
+                                 className="maxIcons fa fa fa-chevron-up">
+                            </div>
+                            <div onClick={this.closeDrawer} 
+                                 className="closeIcons fa fa-times">
+                            </div>
                         </div>
                     </span>
                     <Rnd enableResizing={{ top:true, right:false, bottom:false, left:false, topRight:false, 
@@ -144,7 +157,7 @@ define(function (require) {
                          onResizeStop={this.drawerStopResizing} 
                          maxHeight={window.innerHeight - 50} minHeight={250}
                          ref={c => { this.rnd = c; }} >
-                            {this.renderMyChilds()}
+                            {this.renderMyChildren()}
                     </Rnd>
                 </div>
             );

@@ -49,12 +49,30 @@ define(function (require) {
             dependent: 'y',
         xaxisAutoRange : false,
         yaxisAutoRange : false,
-        imageTypes : [],
         plotElement : null,
         xVariable : null,
         firstStep : 0,
         updateLegendsState : false,
-		legendVisible : true,
+	    legendVisible : true,
+            imageMenu: [{
+                "label": "Save as PNG",
+                "method": "downloadImage",
+                "arguments": ["png"],
+            },{
+                "label": "Save as JPEG",
+                "method": "downloadImage",
+                "arguments": ["jpeg"],
+            },{
+                "label": "Save as SVG",
+                "method": "downloadImage",
+                "arguments": ["svg"]
+            }],
+            analysisMenu: [{
+                "label": "Plot average of traces",
+                "method": "plotAverage",
+                "arguments": []
+            }],
+
 
 		/**
 		 * Default options for plotly widget, used if none specified when plot
@@ -164,24 +182,28 @@ define(function (require) {
 			this.xyData = [];
 			this.plotOptions = this.defaultOptions();
 			this.labelsMap = {};
-			this.legendVisible = true;
-			//Merge passed options into existing defaultOptions object
+		    this.legendVisible = true;
+                    //Merge passed options into existing defaultOptions object
 			$.extend( this.plotOptions, options);
 			this.render();
 			this.dialog.append("<div id='" + this.id + "'></div>");
-			this.imageTypes = [];
 			this.plotDiv = document.getElementById(this.id);
 		        this.plotOptions.xaxis.range =[0,this.limit];
                         this.pinned = true; // by default, don't destroy when switching expts
 
-			var that = this;
+		    var that = this;
+
+                    this.addButtonToTitleBar($("<div class='fa fa-pie-chart' title='Analysis'></div>").on('click', function(event) {
+			that.showMenu(that.analysisMenu, "analysisMenu", event);
+                        event.stopPropagation();
+		    }));
 
 			this.addButtonToTitleBar($("<div class='fa fa-download' title='Download plot data'></div>").on('click', function(event) {
 				that.downloadPlotData();
 			}));
 
 			this.addButtonToTitleBar($("<div class='fa fa-picture-o' title='Save as image'></div>").on('click', function(event) {
-				that.showImageMenu(event);
+			    that.showMenu(that.imageMenu, "imageMenu", event);
                 event.stopPropagation();
 			}));
 
@@ -208,56 +230,47 @@ define(function (require) {
 				that.resize();
 			});
 
-			this.imageTypeMenu = new GEPPETTO.ContextMenuView();
-
-            this.imageTypes.unshift({
-                "label": "Save as PNG",
-                "method": "downloadImage",
-                "arguments": ["png"],
-            });
-
-            this.imageTypes.unshift({
-                "label": "Save as JPEG",
-                "method": "downloadImage",
-                "arguments": ["jpeg"],
-            });
-
-            this.imageTypes.unshift({
-                "label": "Save as SVG",
-                "method": "downloadImage",
-                "arguments": ["svg"],
-            });
 		},
 
 		getVariables : function(){
 			return this.variables;
 		},
 
-	    plotGeneric: function(datasets, variables) {
-                if (typeof datasets !== 'undefined' && $.isArray(datasets))
-                    this.datasets = datasets;
-                else if (typeof datasets !== 'undefined')
-                    this.datasets.push(datasets);
+            plotAverage: function() {
+                var result = [];
+                var arrays = this.datasets.map(data => data.y);
+                for (let i in arrays[0]) {
+                    let total = 0;
+                    for (let arr of arrays) {
+                        total += +arr[i]
+                    }
+                    result.push(total / arrays.length);
+                }
+                for (let i in this.datasets)
+                    this.datasets[i].opacity = 0.2;
+                this.plotGeneric({x: this.datasets[0].x, y: result, mode: "lines", name: "Average", type: "scatter"});
+            },
 
-                if (typeof variables !== 'undefined')
-                    this.variables = variables;
+		plotGeneric: function(dataset) {
+			if (dataset != undefined)
+				this.datasets.push(dataset);
 
-		if(this.plotly==null){
-		    this.plotOptions.xaxis.autorange = true;
-		    this.xaxisAutoRange = true;
-		    //Creates new plot using datasets and default options
-		    this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
-		    var that = this;
-		    this.plotDiv.on('plotly_doubleclick', function() {
-			that.resize();
-		    });
-		    this.plotDiv.on('plotly_click', function() {
-			that.resize();
-		    });
-		}else{
-		    Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
-		}
-		this.resize(false);
+			if(this.plotly==null){
+				this.plotOptions.xaxis.autorange = true;
+				this.xaxisAutoRange = true;
+				//Creates new plot using datasets and default options
+				this.plotly = Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{displayModeBar: false, doubleClick : false});
+				var that = this;
+				this.plotDiv.on('plotly_doubleclick', function() {
+					that.resize();
+				});
+				this.plotDiv.on('plotly_click', function() {
+					that.resize();
+				});
+			}else{
+				Plotly.newPlot(this.plotDiv, this.datasets, this.plotOptions,{doubleClick : false});
+			}
+			this.resize(false);
 		},
 
 
@@ -414,23 +427,24 @@ define(function (require) {
 				});
 		},
 
-		showImageMenu: function (event) {
-            var that = this;
-            if (this.imageTypes.length > 0) {
+	    showMenu: function (menu, menuName, event) {
+                var that = this;
+                var menuView = new GEPPETTO.ContextMenuView();
 
-                this.imageTypeMenu.show({
-                    top: event.pageY,
-                    left: event.pageX + 1,
-                    groups: that.getItems(that.imageTypes, "imageTypes"),
-                    data: that
-                });
-            }
+                if (menu.length > 0) {
+                    menuView.show({
+                        top: event.pageY,
+                        left: event.pageX + 1,
+                        groups: that.getItems(menu, menuName),
+                        data: that
+                    });
+                }
 
-            if (event != null) {
-                event.preventDefault();
-            }
-            return false;
-        },
+                if (event != null) {
+                    event.preventDefault();
+                }
+                return false;
+            },
 
 		/**
 		 * Downloads a screenshot of the graphing plots

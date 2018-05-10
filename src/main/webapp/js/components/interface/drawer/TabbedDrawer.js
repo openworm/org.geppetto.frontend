@@ -65,12 +65,13 @@ define(function (require) {
 
         // function to render all the buttons
         renderMyLabels() {
-            var renderedLabels = this.props.labels.map(function(label, _key) {
+            var renderedLabels = this.props.labels.map(function(label, index) {
                 return (
-                    <DrawerButton 
+                    <DrawerButton
+                        key={index}
                         functionDrawer={this.openDrawer}
-                        labelKey={_key}
-                        iconClass={this.props.iconClass[_key]}
+                        labelKey={index}
+                        iconClass={this.props.iconClass[index]}
                         selectedTab={this.state.selectedTab}
                         drawerOpened={this.state.drawerOpened}>
                         {label}
@@ -83,14 +84,14 @@ define(function (require) {
         // function to render all the childs, wrap each one of them in a div and manage with display
         // which child has to be visible.
         renderMyChildren() {
-            var renderedComponents = this.props.children.map(function(child, _key) {
+            var renderedComponents = this.props.children.map(function(child, index) {
                 if(this.state.drawerOpened == true) {
                     var ElementToRender = child;
-                    var MyElement = (this.state.selectedTab != _key) ? <div className="hiddenComponent"><ElementToRender /></div> : <div><ElementToRender /></div>;
+                    var MyElement = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><ElementToRender /></div> : <div key={index}><ElementToRender /></div>;
 
                 } else {
                     var ElementToRender = child;
-                    var MyElement = <div><ElementToRender className="hiddenComponent" /></div>;
+                    var MyElement = <div key={index}><ElementToRender className="hiddenComponent" /></div>;
                 }
                 return (MyElement);
             }, this);

@@ -233,14 +233,11 @@ define(function (require) {
 			return this.variables;
 		},
 
-	    plotGeneric: function(datasets, variables) {
-                if (typeof datasets !== 'undefined' && $.isArray(datasets))
-                    this.datasets = datasets;
-                else if (typeof datasets !== 'undefined')
-                    this.datasets.push(datasets);
-
-                if (typeof variables !== 'undefined')
-                    this.variables = variables;
+		plotGeneric: function(dataset) {
+		    if (typeof dataset !== 'undefined' && !$.isArray(dataset))
+			this.datasets.push(dataset);
+                    else if (typeof dataset !== 'undefined')
+                        this.datasets = this.datasets.concat(dataset)
 
 		if(this.plotly==null){
 		    this.plotOptions.xaxis.autorange = true;

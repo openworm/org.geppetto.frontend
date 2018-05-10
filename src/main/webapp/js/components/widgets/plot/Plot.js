@@ -252,8 +252,10 @@ define(function (require) {
             },
 
 		plotGeneric: function(dataset) {
-			if (dataset != undefined)
-				this.datasets.push(dataset);
+		    if (typeof dataset !== 'undefined' && !$.isArray(dataset))
+			this.datasets.push(dataset);
+                    else if (typeof dataset !== 'undefined')
+                        this.datasets = this.datasets.concat(dataset)
 
 			if(this.plotly==null){
 				this.plotOptions.xaxis.autorange = true;

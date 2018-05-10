@@ -174,14 +174,10 @@ define(['jquery'], function () {
             }
 
             var matchedMap = [];
-            //statevariableinstances come out of order, needs to sort into map to avoid nulls
-            for (var index in modulations) {
-                for (var i in stateVariableInstances) {
-		            matchedMap[modulations[index]] = stateVariableInstances[i];
-                }
-            }
+            modulations.map(function(e, i) {
+               matchedMap[e] = stateVariableInstances[i];
+            });
 
-            //add color listener for map of variables
             for (var index in matchedMap) {
                 this.litUpInstances.push(matchedMap[index]);
                 this.addColorListener(index, matchedMap[index], colorfn);

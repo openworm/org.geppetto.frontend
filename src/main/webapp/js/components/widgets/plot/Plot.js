@@ -11,7 +11,8 @@ define(function (require) {
 	var Widget = require('../Widget');
 	var $ = require('jquery');
 	var math = require('mathjs');
-	var Plotly = require('plotly.js/lib/core');
+    var Plotly = require('plotly.js/lib/core');
+    var AStateVariableCapability = require('../../../geppettoModel/capabilities/AStateVariableCapability');
 
 	Plotly.register([
 		require('plotly.js/lib/heatmap'),
@@ -69,6 +70,10 @@ define(function (require) {
             analysisMenu: [{
                 "label": "Plot average of traces",
                 "method": "plotAverage",
+                "arguments": []
+            },{
+                "label": "Reset plot (remove analysis)",
+                "method": "resetAnalysis",
                 "arguments": []
             }],
 
@@ -244,14 +249,27 @@ define(function (require) {
                     }
                     result.push(total / arrays.length);
                 }
-                for (let i in this.datasets)
-                    this.datasets[i].opacity = 0.2;
+                for (let dataset of this.datasets)
+                    dataset.opacity = 0.4;
+                var averageStateVar = GEPPETTO.ModelFactory.createInstance({name: "Average", id: "Average"});
+                averageStateVar.extendApi(AStateVariableCapability);
+                averageStateVar.setTimeSeries(result);
+                this.variables["Average"] = averageStateVar;
                 this.plotGeneric({x: this.datasets[0].x, y: result, mode: "lines", name: "Average", type: "scatter"});
             },
 
+            resetAnalysis: function() {
+                for (let dataset of this.datasets)
+                    dataset.opacity = 1;
+                this.removeDataSet(Plot1.variables.Average);
+                delete Plot1.variables.Average;
+            },
+
 		plotGeneric: function(dataset) {
-			if (dataset != undefined)
-				this.datasets.push(dataset);
+		    if (typeof dataset !== 'undefined' && !$.isArray(dataset))
+			this.datasets.push(dataset);
+                    else if (typeof dataset !== 'undefined')
+                        this.datasets = this.datasets.concat(dataset)
 
 			if(this.plotly==null){
 				this.plotOptions.xaxis.autorange = true;

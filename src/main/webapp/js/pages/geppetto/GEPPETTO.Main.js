@@ -178,8 +178,6 @@ define(function (require) {
 
             $("#loadingText").hide();
             // add console to placeholder
-            // NOTE: eventually this gets refactored and only extensions that want the console add it
-            GEPPETTO.ComponentFactory.addComponent('CONSOLE', {}, document.getElementById("console"));
 
             var webWorkersSupported = (typeof (Worker) !== "undefined");
 
@@ -207,48 +205,6 @@ define(function (require) {
                 });
 
                 GEPPETTO.Main.init();
-
-                // TODO: Matteo: All the code below needs to be removed creating a component for the tabbed UI
-                // TODO: Giovanni: good luck with that!
-                var visibleExperiments = false;
-                $('#experimentsButton').click(function (e) {
-                    if (!visibleExperiments) {
-                        $('#console').hide();
-                        $("#pythonConsole").hide();
-                        $('#experiments').show();
-                        $(this).tab('show');
-                        visibleExperiments = true;
-                        embeddedConsoleVisible = false;
-                    } else {
-                        $('#experiments').hide();
-                        visibleExperiments = false;
-                    }
-                });
-
-                var embeddedConsoleVisible = false;
-                $('#consoleButton').click(function (e) {
-                    if (!embeddedConsoleVisible) {
-                        $('#console').show();
-                        $('#experiments').hide();
-                        $("#pythonConsole").hide();
-                        $(this).tab('show');
-                        embeddedConsoleVisible = true;
-                        visibleExperiments = false;
-                    } else {
-                        $('#console').hide();
-                        embeddedConsoleVisible = false;
-                    }
-                });
-
-                $('#pythonConsoleButton').click(function (e) {
-                    $('#console').hide();
-                    $('#experiments').hide();
-                    $("#pythonConsole").show();
-                    $(this).tab('show');
-                    visibleExperiments = false;
-                });
-
-                $('.nav-tabs li.active').removeClass('active');
             }
         }
         );

@@ -5,7 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.geppetto.frontend.controllers.WebsocketConnection;
 
 /**
  * Simple Hello servlet.

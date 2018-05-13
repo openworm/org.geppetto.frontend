@@ -26,6 +26,7 @@ import org.geppetto.core.data.model.IUser;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.utilities.URLReader;
 import org.geppetto.frontend.tests.Test;
+import org.geppetto.simulation.manager.GeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

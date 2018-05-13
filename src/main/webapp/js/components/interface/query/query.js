@@ -210,7 +210,7 @@ define(function (require) {
                 		that.setState({carouselFullyLoaded : true});
                 		that.fullyLoaded = true;
                 	}
-                });
+                }, {passive: true});
             }
         },
 
@@ -1178,14 +1178,19 @@ define(function (require) {
             };
 
             var downloadCSV = function (args) {
-                var data, filename, link;
+                var data, filename, link, extension;
 
                 var csv = convertArrayOfObjectsToCSV({
                     data: args.data
                 });
                 if (csv == null) return;
 
+                extension = '.csv'
                 filename = args.filename || 'export.csv';
+
+                if (!filename.includes(extension)) {
+                    filename += extension
+                }
 
                 if (!csv.match(/^data:text\/csv/i)) {
                     csv = 'data:text/csv;charset=utf-8,' + csv;

@@ -72,7 +72,7 @@ define(function (require) {
                 "method": "plotAverage",
                 "arguments": []
             },{
-                "label": "Reset plot (remove analysis)",
+                "label": "Remove analysis",
                 "method": "resetAnalysis",
                 "arguments": []
             }],
@@ -196,7 +196,7 @@ define(function (require) {
 
 		    var that = this;
 
-                    this.addButtonToTitleBar($("<div class='fa fa-pie-chart' title='Analysis'></div>").on('click', function(event) {
+                    this.addButtonToTitleBar($("<div class='gpt-analysis' title='Analysis'></div>").on('click', function(event) {
 			that.showMenu(that.analysisMenu, "analysisMenu", event);
                         event.stopPropagation();
 		    }));

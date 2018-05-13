@@ -138,10 +138,10 @@ define(function (require) {
                         {this.renderMyLabels()}
                         <div style={bottonsStyle} className="icons">
                             <div onClick={this.minimizeDrawer} 
-                                 className="minIcons fa fa fa-chevron-down">
+                                 className="minIcons fa fa-chevron-down">
                             </div>
                             <div onClick={this.maximizeDrawer} 
-                                 className="maxIcons fa fa fa-chevron-up">
+                                 className="maxIcons fa fa-chevron-up">
                             </div>
                             <div onClick={this.closeDrawer} 
                                  className="closeIcons fa fa-times">

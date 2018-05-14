@@ -11,7 +11,11 @@ http://www.springframework.org/schema/context/spring-context.xsd
 http://www.springframework.org/schema/aop
 http://www.springframework.org/schema/aop/spring-aop.xsd
 http://www.springframework.org/schema/mvc
-http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+http://www.springframework.org/schema/mvc/spring-mvc.xsd
+http://www.eclipse.org/gemini/blueprint/schema/blueprint
+http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd
+http://www.eclipse.org/gemini/blueprint/schema/blueprint-compendium
+http://www.eclipse.org/gemini/blueprint/schema/blueprint-compendium/gemini-blueprint-compendium.xsd">
 
 	<mvc:annotation-driven />
 	

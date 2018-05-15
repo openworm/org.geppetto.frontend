@@ -337,15 +337,15 @@ define(function (require) {
         },
         
         clickStatus : function(e){
-        	if(this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.ERROR ||
-        			this.props.experiment.getStatus() == GEPPETTO.Resources.ExperimentStatus.DESIGN){
-        		var error = this.props.experiment.getDetails();
-        		if(error!= null || undefined){
-            		e.stopPropagation();
-            		e.nativeEvent.stopImmediatePropagation();
-            		GEPPETTO.ModalFactory.infoDialog("Experiment Failed ",  error.exception);
-        		}
-        	}
+            var details = this.props.experiment.getDetails();
+            if (typeof details != 'undefined') {
+                e.stopPropagation();
+                e.nativeEvent.stopImmediatePropagation();
+                if (details.exception !== '' && typeof details.exception !== 'undefined')
+                    GEPPETTO.ModalFactory.infoDialog("Experiment Failed ",  details.exception);
+                else if (details.message !== '' && typeof details.exception !== 'undefined')
+                    GEPPETTO.ModalFactory.infoDialog("Experiment Report ",  details.message);
+            }
         },
 
         render: function () {

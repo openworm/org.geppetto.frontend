@@ -203,6 +203,18 @@ define(function(require) {
                     inst = window.Instances.getInstance(path);
                 } catch (e) {}
 
+                // for first dataset, make line same color as instance
+                if ((typeof lineOptions == 'undefined' ||
+                    typeof lineOptions.color == 'undefined') &&
+                    plotWidget.datasets.length == 0) {
+                    var parent = inst;
+                    while (typeof parent.getColor == 'undefined' &&
+                           typeof parent.getParent != 'undefined')
+                        parent = parent.getParent();
+                    if (typeof parent.getColor != 'undefined')
+                        lineOptions.color = parent.getColor();
+                }
+
                 // check if we already have data
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data

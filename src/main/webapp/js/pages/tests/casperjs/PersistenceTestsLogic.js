@@ -630,13 +630,11 @@ function testUpload2DropBoxFeature(test,projectURL){
 
 	
 	casper.then(function () {
-		casper.evaluate(function() {
-			$("#consoleButton").click();
-		});
+		casper.clickLabel('Console', 'span');
 	});
 
 	casper.then(function(){
-		this.waitUntilVisible('div[id="Console1_console"]', function () {
+		this.waitUntilVisible('div[id="undefined_console"]', function () {
 			casper.then(function () {
 				casper.evaluate(function() {
 					G.debug(true);

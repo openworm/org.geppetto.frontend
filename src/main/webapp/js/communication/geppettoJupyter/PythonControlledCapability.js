@@ -158,14 +158,17 @@ define(function (require) {
                     this.updateTimer = setTimeout(updateMethod, 500);
                 }
 
-                // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {
                     var that = this;
                     var targetValue = value;
                     if (event != null && event.target.value != undefined) {
                         targetValue = event.target.value;
                     }
-                    this.setState({ value: targetValue });
+                    if(targetValue[targetValue.length-1] == "StateUpdated_From_AdapterComponent") {
+                        targetValue.splice(-1,1)
+                    } else {
+                        this.setState({ value: targetValue });
+                    }
                     var v = value
                     this.triggerUpdate(function () {
                         // For textfields value is retrived from the event. For dropdown value is retrieved from the value

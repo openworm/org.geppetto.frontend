@@ -206,13 +206,16 @@ define(function(require) {
                 // for first dataset, make line same color as instance
                 if ((typeof lineOptions == 'undefined' ||
                     typeof lineOptions.color == 'undefined') &&
-                    plotWidget.datasets.length == 0) {
+                    typeof plotWidget == 'undefined') {
                     var parent = inst;
                     while (typeof parent.getColor == 'undefined' &&
                            typeof parent.getParent != 'undefined')
                         parent = parent.getParent();
-                    if (typeof parent.getColor != 'undefined')
+                    if (typeof parent.getColor != 'undefined') {
+                        if (typeof lineOptions == 'undefined')
+                            lineOptions = {};
                         lineOptions.color = parent.getColor();
+                    }
                 }
 
                 // check if we already have data

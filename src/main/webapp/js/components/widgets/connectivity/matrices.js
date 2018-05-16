@@ -113,7 +113,7 @@ define(function (require) {
 	    var d3 = require("d3");
 
 	    var margin = { top: 45, right: 10, bottom: 10, left: 25 };
-	    var legendWidth = 120;
+	    var legendWidth = context.legendWidth;
 
 	    var matrixDim = (context.options.innerHeight < (context.options.innerWidth - legendWidth)) ? (context.options.innerHeight) : (context.options.innerWidth - legendWidth);
 
@@ -134,6 +134,7 @@ define(function (require) {
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             var legendDiv = context.svg.append('div').attr('class', 'legend');
+            //var legendDiv = d3.select('#' + this.id).append('div').attr('class', 'legend');
 
 	    var matrix = [];
 	    var nodes = context.dataset.nodes;
@@ -562,7 +563,7 @@ define(function (require) {
                         var cweight = links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
                         var weightStr = "";
                         if (typeof cweight !== 'undefined')
-                            weightStr = " (weight≈" + Math.round(cweight*100)/100 + ")";
+                            weightStr = " (weight≈" + Math.round(cweight*100)/100 + ", " + d.type + ")";
                         $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
                     })
 		    .on("mouseout", $.proxy(mouseoutCell));

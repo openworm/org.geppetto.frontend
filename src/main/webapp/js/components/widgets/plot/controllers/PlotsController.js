@@ -203,18 +203,21 @@ define(function(require) {
                     inst = window.Instances.getInstance(path);
                 } catch (e) {}
 
-                // for first dataset, make line same color as instance
-                if ((typeof lineOptions == 'undefined' ||
-                    typeof lineOptions.color == 'undefined') &&
-                    typeof plotWidget == 'undefined') {
+                // make line same color as instance unless already a trace with this color
+                if (typeof lineOptions == 'undefined' ||
+                    typeof lineOptions.color == 'undefined') {
                     var parent = inst;
+                    var colors = new Set();
+                    if (typeof plotWidget != 'undefined' && typeof plotWidget.datasets != 'undefined')
+                        colors = new Set(plotWidget.datasets.map(d => d.line.color));
                     while (typeof parent.getColor == 'undefined' &&
                            typeof parent.getParent != 'undefined')
                         parent = parent.getParent();
                     if (typeof parent.getColor != 'undefined') {
                         if (typeof lineOptions == 'undefined')
                             lineOptions = {};
-                        lineOptions.color = parent.getColor();
+                        if ((typeof plotWidget != 'undefined' && typeof plotWidget.datasets == 'undefined') || !colors.has(parent.getColor()))
+                            lineOptions.color = parent.getColor();
                     }
                 }
 

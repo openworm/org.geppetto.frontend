@@ -287,8 +287,10 @@ public class DefaultMessageSender implements MessageSender
 		}
 		else
 		{
-			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
-			sendBinaryMessage(compressedMessage, messageType, uncompressedMessageSize, false);
+			//TODO: Fix send binary error The remote endpoint was in state [BINARY_FULL_WRITING] which is an invalid state for called method
+//			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
+//			sendBinaryMessage(compressedMessage, messageType, uncompressedMessageSize, false);
+			sendTextMessage(message, messageType);
 		}
 	}
 
@@ -353,12 +355,20 @@ public class DefaultMessageSender implements MessageSender
 	{
 
 		long startTime = System.currentTimeMillis();
-		CharBuffer buffer = CharBuffer.wrap(message);
-		wsOutbound.getAsyncRemote().sendObject(buffer);
+		try {
+			wsOutbound.getBasicRemote().sendText(message);
+		} catch (IOException e) {
+			logger.error("Error sending text message " + e.getMessage());
+		}
 		if(messageType.equals("experiment_status"))
 		{
 			logger.info(String.format("Sent text message - %s, length: %d bytes, took: %d ms", messageType, message.length(), System.currentTimeMillis() - startTime));
 		}
+
+		long endTime = System.currentTimeMillis();
+
+		logger.info("Sending message took : "+ (endTime - startTime) + " ms");
+
 	}
 
 	private void sendBinaryMessage(byte[] message, OutboundMessages messageType, int uncompressedMessageSize, boolean fromQueue)
@@ -373,8 +383,11 @@ public class DefaultMessageSender implements MessageSender
 		buffer.put(BigInteger.valueOf(0).toByteArray());
 		buffer.put(message);
 
-		// ByteBuffer buffer = ByteBuffer.wrap(message);
-		wsOutbound.getAsyncRemote().sendBinary(buffer);
+		try {
+			wsOutbound.getAsyncRemote().sendBinary(buffer);
+		} catch (Exception e) {
+			logger.error("Failed to send binary message " + e.getMessage());
+		}
 
 		String logMessage = "Sent binary/compressed message - %s, length: %d (%d) bytes, duration: %d ms";
 		if(fromQueue)
@@ -383,6 +396,10 @@ public class DefaultMessageSender implements MessageSender
 		}
 
 		logger.info(String.format(logMessage, messageType, message.length, uncompressedMessageSize, System.currentTimeMillis() - startTime));
+
+		long endTime = System.currentTimeMillis();
+
+		logger.info("Sending message took : "+ (endTime - startTime) + " ms");
 	}
 
 	private boolean isQueuedMessageType(OutboundMessages messageType)

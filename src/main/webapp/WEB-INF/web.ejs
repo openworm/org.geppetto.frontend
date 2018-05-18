@@ -2,7 +2,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         id="WebApp_ID" version="2.5">
+         id="WebApp_ID" version="3.0">
 
     <display-name>org.geppetto.frontend</display-name>
 
@@ -15,15 +15,38 @@
         <param-value>/WEB-INF/spring/*.xml</param-value>
     </context-param>
 
-    <listener>
-		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-	</listener>
+<context-param>
+     <param-name>org.apache.tomcat.websocket.textBufferSize</param-name>
+     <param-value>32768</param-value>
+</context-param>
+<context-param>
+     <param-name>org.apache.tomcat.websocket.binaryBufferSize</param-name>
+     <param-value>32768</param-value>
+</context-param>
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
     <listener>
         <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
     </listener>
+    
+    <filter>
+		<filter-name>requestContextFilter</filter-name>
+		<filter-class>org.springframework.web.filter.RequestContextFilter</filter-class>
+	</filter>
+	
+		<filter>
+		<filter-name>commonsRequestLoggingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CommonsRequestLoggingFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>requestContextFilter</filter-name>
+		<servlet-name>appServlet</servlet-name>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+	</filter-mapping>
 
     <servlet>
         <servlet-name>springdispatcher</servlet-name>

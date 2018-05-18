@@ -11,6 +11,7 @@ import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,9 +31,7 @@ import org.geppetto.frontend.messaging.MessageSenderListener;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.simulation.manager.ExperimentRunManager;
-import org.geppetto.simulation.manager.GeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.google.gson.Gson;
@@ -44,6 +43,7 @@ import com.google.gson.reflect.TypeToken;
  * @author matteocantarelli
  *
  */
+@ServerEndpoint("/GeppettoServlet")
 public class WebsocketConnection implements MessageSenderListener
 {
 
@@ -52,8 +52,6 @@ public class WebsocketConnection implements MessageSenderListener
 	private ConnectionHandler connectionHandler;
 
 	private String connectionID;
-
-	protected ApplicationContext applicationContext;
 
 	@Autowired
 	private DefaultMessageSenderFactory messageSenderFactory;
@@ -93,12 +91,13 @@ public class WebsocketConnection implements MessageSenderListener
 	@OnOpen
     public void onOpen(Session userSession) {
 		messageSender = messageSenderFactory.getMessageSender(userSession, this);
-		connectionID = ConnectionsManager.getInstance().addConnection(this);
-		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
-
 		// User permissions are sent when socket is open
 		this.connectionHandler.checkUserPrivileges(null);
 		this.userSession = userSession;
+		connectionID = ConnectionsManager.getInstance().addConnection(this);
+		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
+		
+		System.out.println("Open Connection ...");
 	}
 
 	@OnClose
@@ -136,7 +135,7 @@ public class WebsocketConnection implements MessageSenderListener
 	@OnMessage
     public void onMessage(String message, Session userSession) {
 		String msg = message.toString();
-
+		System.out.println("Message from the client: " + msg);
 		Map<String, String> parameters;
 		long experimentId = -1;
 		long projectId = -1;

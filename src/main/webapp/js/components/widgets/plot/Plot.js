@@ -688,7 +688,7 @@ define(function (require) {
 		 * Updates the plot widget with new data
 		 */
 		updateDataSet: function (step, playAll) {
-			if(!this.isFunctionNode){
+			if(this.hasStandardPlotData){
 				/*Clears the data of the plot widget if the initialized flag
 				 *has not be set to true, which means arrays are populated but not yet plot*/
 				if(!this.initialized){
@@ -928,7 +928,7 @@ define(function (require) {
 		},
 
 		clean: function (playAll) {
-			if(!this.isFunctionNode){
+		    if(!this.isFunctionNode && this.hasStandardPlotData){
 				this.plotOptions.playAll = playAll;
 				this.plotOptions.margin.r = 10;
 				this.cleanDataSets();

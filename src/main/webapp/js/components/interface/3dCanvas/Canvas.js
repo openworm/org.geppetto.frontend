@@ -27,6 +27,7 @@ define(function (require) {
                     colorMap: {},
                     opacityMap: {},
                     geometryTypeMap: {},
+                    hoverListeners: [],
                     backgroundColor: "0x101010"
                 },
                 instances: []
@@ -167,15 +168,15 @@ define(function (require) {
             this.engine.setWireframe(wireframe);
             return this;
         }
-        
+
         /**
          * Sets whether picking is enabled or not
          * @param pickingEnabled
          * @return {Canvas}
          */
-        enablePicking(pickingEnabled){
-        	this.engine.enablePicking(pickingEnabled);
-        	return this;
+        enablePicking(pickingEnabled) {
+            this.engine.enablePicking(pickingEnabled);
+            return this;
         }
 
         /**
@@ -262,7 +263,7 @@ define(function (require) {
             this.engine.hideInstance(instancePath);
             return this;
         }
-        
+
         /**
          * Hide all instances
          *
@@ -512,6 +513,19 @@ define(function (require) {
             return this;
         }
 
+		/**
+		 * Add a listener triggered on hover
+		 *
+		 * @command addHoverListener(funct)
+		 * @param {function} funct - The listener function
+		 */
+        addHoverListener(funct) {
+            this.engine.addHoverListener(funct);
+            this.viewState.custom.hoverListeners.push(funct);
+            this.dirtyView = true;
+            return this;
+        }
+
         /**
          * Shows the visual groups associated to the passed instance
          * @param instance
@@ -697,6 +711,15 @@ define(function (require) {
                         this.setRadius(path, parseFloat(view.componentSpecific.radiusMap[path]));
                     }
                 }
+
+                if (view.componentSpecific.hoverListeners != undefined) {
+                    for (var i = 0; i < view.componentSpecific.hoverListeners.length; i++) {
+                        this.addHoverListener(
+                            eval("(" + view.componentSpecific.hoverListeners[i]+ ")")
+                        );
+                    }
+                }
+
             }
 
             // set dirty view to false
@@ -715,6 +738,13 @@ define(function (require) {
             baseView.dataType = "instances";
             baseView.data = this.viewState.instances;
             baseView.componentSpecific = this.viewState.custom;
+
+            baseView.componentSpecific.hoverListeners = this.viewState.custom.hoverListeners.map(
+                function stringify(item) {
+                    return item.toString();
+                }
+            );
+
             return baseView;
         }
 
@@ -749,10 +779,10 @@ define(function (require) {
         }
 
         render() {
-    	    var cameraControls = undefined;
-    	    if (!this.props.hideCameraControls) {
-    	    	cameraControls = <CameraControls viewer={this.props.id} />;
-    	    }
+            var cameraControls = undefined;
+            if (!this.props.hideCameraControls) {
+                cameraControls = <CameraControls viewer={this.props.id} />;
+            }
             return (
 
                 <div key={this.props.id + "_component"} id={this.props.id + "_component"} className="canvas" style={this.props.style}>

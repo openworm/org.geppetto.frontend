@@ -1211,43 +1211,61 @@ define(function (require) {
                             this.setOptions(view.options);
                         } else if (view.dataType == 'object') {
 				// if any xy data loop through it
-				if(view.xyData != undefined){
-					for(var i=0; i<view.xyData.length; i++) {
-						var yPath = view.xyData[i].dataY;
-						var xPath = view.xyData[i].dataX;
+			    if(view.xyData != undefined){
+                                var that = this;
+                                // groupBy projId,expId
+                                var data = (function(xs, key) {
+                                    return xs.reduce(function(rv, x) {
+                                        (rv[key(x)] = rv[key(x)] || []).push(x);
+                                        return rv;
+                                    }, {});
+                                })(view.xyData, d=>[d.projectId, d.experimentId])
+                                for (var key in data) {
+                                    var expId = data[key][0].experimentId;
+                                    var projId = data[key][0].projId;
+                                    var paths = Array.from(new Set(data[key].map(d=>d.dataY).concat(data[key].map(d=>d.dataX))));
+                                    var that = this;
+                                    GEPPETTO.ExperimentsController.getExperimentState(projId, expId, paths, function() {
+					for(var i=0; i<data[key].length; i++) {
+						var yPath = data[key][i].dataY;
+						var xPath = data[key][i].dataX;
 						// project and experiment id could be any project and any experiment
-						var projectId = view.xyData[i].projectId != undefined ? view.xyData[i].projectId : Project.getId();
-						var experimentId = view.xyData[i].projectId != undefined ? view.xyData[i].experimentId : Project.getActiveExperiment().getId();
-						this.controller.plotStateVariable(
+						var projectId = data[key][i].projectId != undefined ? data[key][i].projectId : Project.getId();
+						var experimentId = dataKey[i].projectId != undefined ? data[key][i].experimentId : Project.getActiveExperiment().getId();
+						that.controller.plotStateVariable(
 						    projectId,
 						    experimentId,
 						    yPath,
-						    this,
+						    that,
 						    xPath,
                                                     view.lines ? view.lines[i] : null
 						);
 					}
+                                    });
 				}
 
 				// if any data, loop through it
-				if(view.data != undefined){
+			    if(view.data != undefined){
+                                var that = this;
+                                GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), view.data, function() {
 					for (var index in view.data) {
 					    var item = view.data[index];
-                                            this.controller.plotStateVariable(
+					    that.controller.plotStateVariable(
 						Project.getId(),
 						Project.getActiveExperiment().getId(),
 						item.path ? item.path : item,
-						this,
+						that,
                                                 null,
                                                 item.line ? item.line : {}
-						);
+					    );
 					}
-				}
-			}
+				});
+                            }
 
 			// after setting view through setView, reset dirty flag
 			this.dirtyView = false;
-		}
-
+		            }
+                        }
+                }
 	});
 });

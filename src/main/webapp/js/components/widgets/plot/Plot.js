@@ -254,8 +254,10 @@ define(function (require) {
                 var averageStateVar = GEPPETTO.ModelFactory.createInstance({name: "Average", id: "Average"});
                 averageStateVar.extendApi(AStateVariableCapability);
                 averageStateVar.setTimeSeries(result);
-                this.variables["Average"] = averageStateVar;
-                this.plotGeneric({x: this.datasets[0].x, y: result, mode: "lines", name: "Average", type: "scatter"});
+                if (typeof this.variables.Average == 'undefined') {
+                    this.variables.Average = averageStateVar;
+                    this.plotGeneric({x: this.datasets[0].x, y: result, mode: "lines", name: "Average", type: "scatter"});
+                }
             },
 
             resetAnalysis: function() {

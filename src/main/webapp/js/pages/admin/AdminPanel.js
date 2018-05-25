@@ -385,8 +385,8 @@ define(function (require) {
                     {this.state.loaded ?
                         <Griddle results={this.state.data} columnMetadata={this.state.columnMeta}
                                  bodyHeight={this.props.height}
-                                 enableInfinteScroll={false} useGriddleStyles={false}
-                                 resultsPerPage={this.resultsPerPage} showPager={true}
+                                 enableInfiniteScroll={true} useGriddleStyles={false}
+                                 resultsPerPage={this.resultsPerPage} showPager={false}
                                  showFilter={true} onRowClick={this.onRowClick} initialSort={"lastLogin"}
                                  initialSortAscending={false}
                                  columns={this.state.columns}/>

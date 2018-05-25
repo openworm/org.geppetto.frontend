@@ -295,7 +295,7 @@ public class AdminServlet
 							simulation.setError(e.getDetails());
 							simulation.setProject(p.getName());
 
-							long days = this.daysAgo(e.getEndDate(), new Date());
+							long days = this.daysAgo(e.getLastModified(), new Date());
 
 							if(days <= timeFrame || (days == -1 && timeFrame > 30))
 							{

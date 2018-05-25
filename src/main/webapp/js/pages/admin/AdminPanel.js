@@ -44,8 +44,8 @@ define(function (require) {
 
     var DateDisplay = React.createClass({
         render: function () {
-            var options = {year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC', timeZoneName: 'short'};
-            var formattedDate = new Date(this.props.data).toLocaleString('en-US', options);
+            var options = {timeZoneName: 'short'};
+            var formattedDate = new Date(this.props.data).toLocaleString('en-GB', options);
             return (
                <div>{ formattedDate }</div>
             )
@@ -140,7 +140,7 @@ define(function (require) {
                 "customComponent": DateDisplay,
                 "order": 5,
                 "locked": false,
-                "displayName": "Experiment Last Time Run"
+                "displayName": "Experiment Last Modified"
             },
             {
                 "columnName": "simulator",
@@ -385,8 +385,8 @@ define(function (require) {
                     {this.state.loaded ?
                         <Griddle results={this.state.data} columnMetadata={this.state.columnMeta}
                                  bodyHeight={this.props.height}
-                                 enableInfinteScroll={true} useGriddleStyles={false}
-                                 resultsPerPage={this.resultsPerPage} showPager={false}
+                                 enableInfinteScroll={false} useGriddleStyles={false}
+                                 resultsPerPage={this.resultsPerPage} showPager={true}
                                  showFilter={true} onRowClick={this.onRowClick} initialSort={"lastLogin"}
                                  initialSortAscending={false}
                                  columns={this.state.columns}/>

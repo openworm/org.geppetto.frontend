@@ -16,7 +16,9 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.websocket.ContainerProvider;
 import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -248,20 +250,29 @@ public class DefaultMessageSender implements MessageSender
 			// - filename length (filename length is needed client side to parse the message)
 			// - filename
 			// - file content
-			int bufferSize = 1 + 1 + name.length + data.length;
+			byte[] array = BigInteger.valueOf(1).toByteArray();
+			byte[] array2 = BigInteger.valueOf(name.length).toByteArray();
+			int bufferSize = (array.length + array2.length + name.length + data.length) * 2;
 			ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-			buffer.put(BigInteger.valueOf(1).toByteArray());
-			buffer.put(BigInteger.valueOf(name.length).toByteArray());
+			buffer.put(array);
+			buffer.put(array2);
 			buffer.put(name);
 			buffer.put(data);
+			
+			buffer.flip();
 
-			// write binary message in the socket
-			wsOutbound.getAsyncRemote().sendBinary(buffer);
+			System.out.println("Last Session Binary size >> " + wsOutbound.getMaxBinaryMessageBufferSize());
+			System.out.println("Last Session Text size >> " + wsOutbound.getMaxTextMessageBufferSize());			
+			synchronized(wsOutbound) {
+				if (wsOutbound.isOpen()) {
+					wsOutbound.getBasicRemote().sendBinary(buffer);
+			    }
+			}
 
 			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a file of " + bufferSize / 1024 + "KB to the client";
 			logger.info(debug);
 		}
-		catch(IOException e)
+		catch(Exception e)
 		{
 			logger.warn("Failed to send file, " + path, e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
@@ -288,9 +299,9 @@ public class DefaultMessageSender implements MessageSender
 		else
 		{
 			//TODO: Fix send binary error The remote endpoint was in state [BINARY_FULL_WRITING] which is an invalid state for called method
-//			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
-//			sendBinaryMessage(compressedMessage, messageType, uncompressedMessageSize, false);
-			sendTextMessage(message, messageType);
+			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
+			sendBinaryMessage(compressedMessage, messageType, uncompressedMessageSize, false);
+			//sendTextMessage(message, messageType);
 		}
 	}
 
@@ -356,7 +367,9 @@ public class DefaultMessageSender implements MessageSender
 
 		long startTime = System.currentTimeMillis();
 		try {
-			wsOutbound.getBasicRemote().sendText(message);
+			synchronized(wsOutbound) {
+				wsOutbound.getBasicRemote().sendText(message);
+			}
 		} catch (IOException e) {
 			logger.error("Error sending text message " + e.getMessage());
 		}
@@ -378,13 +391,21 @@ public class DefaultMessageSender implements MessageSender
 		// add to the buffer:
 		// - type of message
 		// - message
-		int bufferSize = 1 + message.length;
+		byte[] array = BigInteger.valueOf(0).toByteArray();
+		
+		int bufferSize = (array.length + message.length) * 2;
+
 		ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-		buffer.put(BigInteger.valueOf(0).toByteArray());
+		buffer.put(array);
 		buffer.put(message);
 
+		buffer.flip();
 		try {
-			wsOutbound.getAsyncRemote().sendBinary(buffer);
+			synchronized(wsOutbound) {
+				if (wsOutbound.isOpen()) {
+					wsOutbound.getBasicRemote().sendBinary(buffer);
+			    }
+			}
 		} catch (Exception e) {
 			logger.error("Failed to send binary message " + e.getMessage());
 		}

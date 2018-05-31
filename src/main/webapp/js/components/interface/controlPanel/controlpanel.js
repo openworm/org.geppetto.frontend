@@ -428,7 +428,7 @@ define(function (require) {
                         }
                         // grab attributes to init button attributes
                         var controlConfig = that.resolveCondition(control, path, false, projectId, experimentId);
-                        var idVal = path.replace(/\./g, '_').replace(/\[/g, '_').replace(/\]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
+                        var idVal = path.replace(/[\.\[\]\$]/g, '_') + "_" + controlConfig.id + "_ctrlPanel_btn";
                         var tooltip = controlConfig.tooltip;
                         var classVal = "btn ctrlpanel-button fa " + controlConfig.icon;
                         var styleVal = {};

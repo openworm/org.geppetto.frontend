@@ -2,6 +2,8 @@ define(function(require) {
     require("./Activity.less");
     var Colorbar = require('./Colorbar');
     var RasterPlot = require('./RasterPlot');
+    var ContinuousPlot = require('./ContinuousPlot');
+    var MeanPlot = require('./MeanPlot');
     return  {
         spikeCache: {},
         groupBy: function(xs, key) {
@@ -185,17 +187,8 @@ define(function(require) {
                     // but we want to always have min=0, not an autoranged min
                     var yMax = Math.max.apply(Math, [].concat.apply([],traces.map(t => t.y))) + 2;
                     plot.setOptions({yaxis: {min: 0, max: yMax}});
-                    plot.xaxisAutoRange = false;
-                    plot.xVariable = window.time;
-                    plot.dependent = 'x';
-                    plot.setOptions({margin: {l: 50, r: 10}});
-                    plot.setOptions({showlegend: true});
-                    plot.setOptions({xaxis: {title: 'Time (s)'}});
-                    plot.setOptions({yaxis: {title: 'Firing rate  (Hz)', tickmode: 'auto', type: 'number'}});
-                    plot.limit = time[time.length-1];
-                    plot.resetAxes();
-                    plot.setName("Mean firing - " + Project.getActiveExperiment().getName());
-                    plot.isFunctionNode = true;
+                    // FIXME: should be plot.setOptions(MeanPlot.defaultOptions);
+                    MeanPlot.defaultOptions(plot);
                 }
 
                 if (typeof plot == 'undefined')
@@ -239,20 +232,21 @@ define(function(require) {
                     data.x = window.time.getTimeSeries();
                     data.z = variables.map(x => x.getTimeSeries());
                     data.y = variables.map(x => x.getPath().split('.')[1]);
-                    //data.name = FIXME
                     var min = Math.min.apply(Math, data.z.map(d => Math.min.apply(Math, d)));
                     var max = Math.max.apply(Math, data.z.map(d => Math.max.apply(Math, d)));
                     data.colorscale = Colorbar.genColorscale(min, max, 100, window.voltage_color(min, max), false);
                     var callback = function(plot, data, variables, groupId) {
                         plot.plotGeneric([data], variables);
-                        plot.xVariable = window.time;
-                        plot.dependent = 'z';
-                        plot.setOptions({margin: {l: 110, r: 10}});
-                        plot.setOptions({xaxis: {title: 'Time (s)'}});
-                        plot.setOptions({yaxis: {title: '', min: -0.5, max: data.y.length-0.5, tickmode: 'auto', type: 'category'}});
+                        plot.setOptions({
+                            margin: {l: 110, r: 10},
+                            xaxis: {title: 'Time (s)'},
+                            yaxis: {title: '', min: -0.5, max: data.y.length-0.5, tickmode: 'auto', type: 'category'}
+                        });
                         plot.setName("Continuous Activity (" + groupId + ") - " + Project.getActiveExperiment().getName());
-                        plot.resetAxes();
-                        plot.isFunctionNode = true;
+                        // FIXME: should be
+                        // plot.setOptions(ContinuousPlot.defaultOptions)
+                        // need to amend setOptions method
+                        ContinuousPlot.defaultOptions(plot);
                     }
                     if (typeof plot == 'undefined')
                         GEPPETTO.WidgetFactory.addWidget(GEPPETTO.Widgets.PLOT).then((function(data, groupId, variables) {
@@ -307,19 +301,8 @@ define(function(require) {
                             traces.push(trace);
                         }
                         plot.plotGeneric(traces, variables);
-                        plot.dataAtStep = RasterPlot.dataAtStep;
-                        plot.setOptions({showlegend: false});
-                        plot.yaxisAutoRange = true;
-                        plot.xaxisAutoRange = false;
-                        plot.xVariable = window.time;
-                        plot.dependent = 'x';
-                        plot.setOptions({xaxis: {title: 'Time (s)'}});
-                        plot.setOptions({yaxis: {title: '', tickmode: 'auto', type: 'category'}});
-                        plot.setOptions({margin: {l: 110, r: 10}});
-                        plot.limit = time[time.length-1];
-                        plot.resetAxes();
-                        plot.setName("Raster plot - " + Project.getActiveExperiment().getName());
-                        plot.isFunctionNode = true;
+                        // FIXME: should be plot.setOptions(RasterPlot.defaultOptions);
+                        RasterPlot.defaultOptions(plot);
                     }
                     if (typeof plot == 'undefined')
                         GEPPETTO.WidgetFactory.addWidget(GEPPETTO.Widgets.PLOT).then((function(variables, groupId) {

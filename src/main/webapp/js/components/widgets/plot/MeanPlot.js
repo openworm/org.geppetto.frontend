@@ -14,7 +14,7 @@ define(function (require) {
             plot.isFunctionNode = true;
         },
 
-        dataAtStep: function (plot, step) {
+        dataAtStep: function (dataset, step, plot) {
             
         }
     }

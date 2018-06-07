@@ -704,7 +704,12 @@ define(function (require) {
                     for (var dataset of this.datasets)
                         this.totalDatasets.push(Object.assign({}, dataset));
                 }
-                Plotly.animate(this.plotDiv, {data: this.dataAtStep(this, step)}, this.plotOptions);
+                var datasets = [];
+                for (var dataset of this.totalDatasets) {
+                    var newDataset = Object.assign({}, dataset);
+                    datasets.push(this.dataAtStep(newDataset, step, this));
+                }
+                Plotly.animate(this.plotDiv, {data: datasets}, this.plotOptions);
             },
 	
 		/*

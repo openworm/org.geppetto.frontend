@@ -1,25 +1,19 @@
 define(function (require) {
     return {
         // return appropriate slice of the datasets for Plotly.animate
-        dataAtStep: function (plot, step) {
+        dataAtStep: function (dataset, step, plot) {
             /*Clears the data of the plot widget if the initialized flag
 	     *has not be set to true, which means arrays are populated but not yet plot*/
 	    /*if(!this.initialized){
 	      this.clean(playAll);
 	      this.initialized = true;
 	      }*/
-
-            var dataAtStep = [];
-            for (var dataset of plot.totalDatasets) {
-                var newDataset = Object.assign({}, dataset);
-                var timeSeries = plot.getTimeSeriesData(
-                    plot.variables[plot.getLegendInstancePath(dataset.name)], plot.xVariable, step
-                );
-                newDataset.x = timeSeries.x;
-                newDataset.y = timeSeries.y;
-                dataAtStep.push(newDataset);
-            }
-            return dataAtStep;
+            var timeSeries = plot.getTimeSeriesData(
+                plot.variables[plot.getLegendInstancePath(dataset.name)], plot.xVariable, step
+            );
+            dataset.x = timeSeries.x;
+            dataset.y = timeSeries.y;
+            return dataset;
 
 	    /*var set, reIndex, newValue;
 	    var oldDataX = [];

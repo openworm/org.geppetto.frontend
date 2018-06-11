@@ -1139,6 +1139,7 @@ define(function (require) {
 					}
                                     });
 				}
+                            }
 
 				// if any data, loop through it
 			    if(view.data != undefined){
@@ -1157,11 +1158,9 @@ define(function (require) {
 					}
 				});
                             }
-
-			// after setting view through setView, reset dirty flag
-			this.dirtyView = false;
-		            }
-                        }
+		        }
+                    // after setting view through setView, reset dirty flag
+                    this.dirtyView = false;
                 }
 	});
 });

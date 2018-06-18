@@ -47,7 +47,6 @@ public class Application
 
 	private static Log logger = LogFactory.getLog(Application.class);
 
-
 	private String getGeppetto(HttpServletRequest req, String page){
 		try
 		{
@@ -163,5 +162,4 @@ public class Application
 
 		return "dashboard";
 	}
-
 }

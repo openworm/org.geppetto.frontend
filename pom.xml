@@ -122,9 +122,9 @@
 	</profiles>
 	<dependencies>
 		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
+    		<groupId>org.apache.servicemix.bundles</groupId>
+    		<artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
+    		<version>1_3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geppetto</groupId>
@@ -165,12 +165,6 @@
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-websocket</artifactId>
 			<version>8.5.31</version>
-		</dependency>
-		<dependency>
-    		<groupId>javax.websocket</groupId>
-    		<artifactId>javax.websocket-api</artifactId>
-    		<version>1.0</version>
-    		<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -234,6 +228,21 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
+    		<groupId>org.springframework</groupId>
+    		<artifactId>spring-websocket</artifactId>
+    		<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+   			<groupId>org.springframework</groupId>
+   			<artifactId>spring-messaging</artifactId>
+   			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+   			<groupId>javax.servlet</groupId>
+   			<artifactId>javax.servlet-api</artifactId>
+   			<version>3.1.0</version>
+   		</dependency>
+		<dependency>
 			<groupId>org.apache.servicemix.bundles</groupId>
 			<artifactId>org.apache.servicemix.bundles.velocity</artifactId>
 			<version>1.7_6</version>
@@ -278,6 +287,11 @@
 			<groupId>net.sourceforge.cglib</groupId>
 			<artifactId>com.springsource.net.sf.cglib</artifactId>
 			<version>2.2.0</version>
+		</dependency>
+		<dependency>
+    		<groupId>cglib</groupId>
+    		<artifactId>cglib</artifactId>
+    		<version>3.1</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -330,10 +344,13 @@
 							org.apache.shiro.authc,
 							org.apache.shiro.realm,
 							org.eclipse.emf.common.util,
+							org.springframework.cglib.core,
 							org.eclipse.virgo.web.dm;version="2.1.1.RELEASE",*
 						</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
 						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>
+						<Import-Bundle>org.springframework.core;version="${spring.version}"</Import-Bundle>
+						<Import-Bundle>org.springframework.websocket;version="${spring.version}"</Import-Bundle>
 					</instructions>
 				</configuration>
 				<executions>

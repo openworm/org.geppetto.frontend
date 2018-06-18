@@ -9,7 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.websocket.ContainerProvider;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -37,7 +40,10 @@ import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.simulation.manager.ExperimentRunManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.socket.server.standard.SpringConfigurator;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -48,7 +54,8 @@ import com.google.gson.reflect.TypeToken;
  * @author matteocantarelli
  *
  */
-@ServerEndpoint("/GeppettoServlet")
+@Component
+@ServerEndpoint(value = "/GeppettoServlet", configurator = SpringConfigurator.class)
 public class WebsocketConnection implements MessageSenderListener
 {
 
@@ -63,7 +70,7 @@ public class WebsocketConnection implements MessageSenderListener
 
 	private MessageSender messageSender;
 
-	@Autowired
+    @Inject
 	private IGeppettoManager geppettoManager;
 
 	private Session userSession;
@@ -93,6 +100,7 @@ public class WebsocketConnection implements MessageSenderListener
 		this.connectionHandler = new ConnectionHandler(this, geppettoManager);
 	}
 
+
 	@OnOpen
     public void onOpen(Session userSession) {
 		WebSocketContainer wsContainer =
@@ -113,8 +121,7 @@ public class WebsocketConnection implements MessageSenderListener
 		userSession.setMaxBinaryMessageBufferSize(9999999);
 		System.out.println("Session Binary size >> " + userSession.getMaxBinaryMessageBufferSize());
 		System.out.println("Session Text size >> " + userSession.getMaxTextMessageBufferSize());
-		
-		
+
 		messageSender = messageSenderFactory.getMessageSender(userSession, this);
 		// User permissions are sent when socket is open
 		this.connectionHandler.checkUserPrivileges(null);
@@ -599,5 +606,4 @@ public class WebsocketConnection implements MessageSenderListener
 	public Session getSession() {
 		return this.userSession;
 	}
-
 }

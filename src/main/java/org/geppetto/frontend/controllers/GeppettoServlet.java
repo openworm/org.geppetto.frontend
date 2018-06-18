@@ -1,42 +1,36 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.ServerEndpoint;
+
 import org.geppetto.frontend.controllers.WebsocketConnection;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Simple Hello servlet.
  */
-
-public final class GeppettoServlet extends HttpServlet {
-
-
-    /**
-     * Respond to a GET request for the content produced by
-     * this servlet.
-     *
-     * @param request The servlet request we are processing
-     * @param response The servlet response we are producing
-     *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
-     */
-    public void doGet(HttpServletRequest request,
-                      HttpServletResponse response)
-      throws IOException, ServletException {
-
-    }
-    
-	@Override
-	public void init() throws ServletException {
-		super.init();
-		System.out.println("Servlet " + this.getServletName() + " has started");
+@Configurable
+public final class GeppettoServlet extends HttpServlet {    
+	public GeppettoServlet() {
+		System.out.println("Servlet has started");
 	}
-	@Override
-	public void destroy() {
-		System.out.println("Servlet " + this.getServletName() + " has stopped");
-	}
+	
+	   public void init() throws ServletException {
+		   System.out.println("Servlet init has started");
+		//new WebsocketConnection();
+	   }
+
+	   public void doGet(HttpServletRequest request, HttpServletResponse response)
+	      throws ServletException, IOException {
+	   }
+
+	   public void destroy() {
+	      // do nothing.
+	   }
 } 

@@ -47,8 +47,9 @@ define(function (require) {
 				'CONSOLE': 'interface/console/Console',
 				'LINKBUTTON': 'interface/linkButton/LinkButton',
 				'BUTTONBAR': 'interface/buttonBar/ButtonBar',
-				'DRAWER': 'interface/drawer/TabbedDrawer'
-				// 'PLOT': 'interface/plot/Plot',
+			        'DRAWER': 'interface/drawer/TabbedDrawer',
+			    'PLOT': 'interface/plot/Plot',
+                            'RASTERPLOT': 'interface/plot/RasterPlot'
 				// 'POPUP': 'interface/popup/Popup'
 			},
 
@@ -226,7 +227,9 @@ define(function (require) {
 							case 'CONSOLE': require(['./interface/console/Console'],cb); break;
 				            case 'LINKBUTTON': require(['./interface/linkButton/LinkButton'],cb); break;
 							case 'BUTTONBAR': require(['./interface/buttonBar/ButtonBar'], cb); break;
-							case 'DRAWER': require(['./interface/drawer/TabbedDrawer'], cb); break;
+				case 'DRAWER': require(['./interface/drawer/TabbedDrawer'], cb); break;
+                                case 'PLOT': require(['./interface/plot/Plot'], cb); break;
+                                    case 'RASTERPLOT': require(['./interface/plot/RasterPlot'], cb); break;
 	            		}
 	            		
 					});	
@@ -255,6 +258,10 @@ define(function (require) {
 
 			addComponent: function (componentType, properties, container, callback) {
 				this._createComponent(componentType, properties, container, callback, false);
+			},
+
+                        addWidget: function (componentType, properties, container, callback) {
+				this._createComponent(componentType, properties, container, callback, true);
 			},
 
 			addWidget: function (componentType, properties, callback) {

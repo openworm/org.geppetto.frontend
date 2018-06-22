@@ -48,8 +48,37 @@ define(function (require) {
 			var currentTreeData = this.state.treeData;
 			// If node has children, we expand/collapse the node
 			if (rowInfo.node.children != undefined && rowInfo.node.children.length > 0) {
-				rowInfo.node.expanded = !rowInfo.node.expanded;
-				currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
+				//If parents can be activate, iterate over the whole tree
+				if (this.props.activateParentsNodeOnClick){
+					walk({
+						treeData: currentTreeData,
+						getNodeKey: ({ treeIndex }) => treeIndex,
+						ignoreCollapsed: true,
+						callback: (rowInfoIter) => {
+							var isActive = (rowInfoIter.treeIndex == rowInfo.treeIndex);
+							// If toggleMode just toggle to activate/inactivate selected node and expand/collapse
+							// If non toggle mode inactive all nodes but selected and expand/collapse
+							if (isActive && toggleMode) {
+								rowInfoIter.node.active = !rowInfoIter.node.active;
+								rowInfoIter.node.expanded = !rowInfoIter.node.expanded;
+								currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
+							}
+							else if (isActive && !toggleMode) {
+								rowInfoIter.node.active = isActive;
+								rowInfoIter.node.expanded = !rowInfoIter.node.expanded;
+								currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
+							}
+							else if (isActive != rowInfoIter.node.active  && !toggleMode) {
+								rowInfoIter.node.active = isActive;
+								currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
+							}
+						}
+					});
+				}
+				else{
+					rowInfo.node.expanded = !rowInfo.node.expanded;
+					currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
+				}
 			}
 			// If node has no children, we select the node
 			else if (rowInfo.node.children == undefined) {
@@ -69,10 +98,10 @@ define(function (require) {
 							rowInfoIter.node.active = isActive;
 							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
 						}
+						
 
 					}
 				});
-
 			}
 
 			// Update tree with latest changes

@@ -20,6 +20,7 @@ import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.simulation.visitor.PopulateModelReferencesVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +42,11 @@ public class GeppettoProjectsController
 			return dataManager.getGeppettoProjectsForUser(geppettoManager.getUser().getLogin());
 		}
 		return null;
+	}
+
+	@RequestMapping("/romanfillswell/{id}")
+	public @ResponseBody String romanFillsWell(@PathVariable("id") long id){
+		return new String("Hi " + id);
 	}
 
 	@RequestMapping(value = "/geppettoProjectsCompact", method = { RequestMethod.GET, RequestMethod.POST })

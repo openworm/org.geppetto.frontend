@@ -7,8 +7,8 @@
   "scripts": {
     "build": "webpack -p --progress",
     "build-dev": "webpack --devtool eval",
-    "build-dev-noTest": "webpack --devtool eval --env.noTest=true",
-    "build-dev-noTest:watch": "webpack --devtool eval --env.noTest=true --progress --watch",
+    "build-dev-noTest": "webpack --devtool source-map --env.noTest=true",
+    "build-dev-noTest:watch": "webpack --devtool source-map --env.noTest=true --progress --watch",
     "start": "node --max_old_space_size=2048 node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress  --config webpack.config.dev.js"
   },
   "devDependencies": {
@@ -40,7 +40,7 @@
     "extract-text-webpack-plugin": "3.0.0",
     "file-saver": "^1.3.3",
     "google-maps": "^3.2.1",
-    "griddle-react": "1.0.3",
+    "griddle-react": "1.5.0",
     "griddle-0.6-fork": "https://github.com/MetaCell/griddle.git#griddle-0.6-fork",
     "handlebars": "^4.0.5",
     "html-webpack-plugin": "2.30.1",

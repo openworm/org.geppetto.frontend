@@ -84,7 +84,7 @@ define(function (require) {
                         dataType == GEPPETTO.Resources.STATE_VARIABLE && experiments[j].status == GEPPETTO.Resources.ExperimentStatus.COMPLETED
                         || dataType == GEPPETTO.Resources.PARAMETER
                     ){
-                        if (experiments[j].aspectConfigurations[0] != undefined) {
+                        if (experiments[j].aspectConfigurations != null ? (experiments[j].aspectConfigurations[0] != undefined ? true : false) : false) {
                             dataSource = (dataType == GEPPETTO.Resources.STATE_VARIABLE) ?
                                 experiments[j].aspectConfigurations[0].watchedVariables :
                                 experiments[j].aspectConfigurations[0].modelParameter;

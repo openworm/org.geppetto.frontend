@@ -49,25 +49,25 @@ define(function (require) {
 			// If node has children, we expand/collapse the node
 			if (rowInfo.node.children != undefined && rowInfo.node.children.length > 0) {
 				rowInfo.node.expanded = !rowInfo.node.expanded;
-				currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
+				currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfo.path, newNode: rowInfo.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
 			}
 			// If node has no children, we select the node
 			else if (rowInfo.node.children == undefined) {
 				walk({
 					treeData: currentTreeData,
 					getNodeKey: ({ treeIndex }) => treeIndex,
-					ignoreCollapsed: false,
+					ignoreCollapsed: true,
 					callback: (rowInfoIter) => {
 						var isActive = (rowInfoIter.treeIndex == rowInfo.treeIndex);
 						// If toggleMode just toggle to activate/inactivate selected node
 						// If non toggle mode inactive all nodes but selected
 						if (isActive && toggleMode) {
 							rowInfoIter.node.active = !rowInfoIter.node.active;
-							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
+							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
 						}
 						else if (isActive != rowInfoIter.node.active  && !toggleMode) {
 							rowInfoIter.node.active = isActive;
-							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: false });
+							currentTreeData = changeNodeAtPath({ treeData: currentTreeData, path: rowInfoIter.path, newNode: rowInfoIter.node, getNodeKey: ({ treeIndex }) => treeIndex, ignoreCollapsed: true });
 						}
 
 					}

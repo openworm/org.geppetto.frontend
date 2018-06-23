@@ -140,7 +140,9 @@ define(function (require) {
                                 newValue = parseFloat(newValue)
                                 break;
                             case 'dict':
-                                newValue = JSON.parse(newValue)
+                                if (typeof newValue === 'string') {
+                                    newValue = JSON.parse(newValue)
+                                }
                             default:
                                 break;
                         }
@@ -207,7 +209,7 @@ define(function (require) {
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
 
-                    if (WrappedComponent.name != 'ListComponent') {
+                    if (WrappedComponent.name != 'ListComponent' && WrappedComponent.name != 'DictComponent')) {
                         delete wrappedComponentProps.realType;
                     }
 

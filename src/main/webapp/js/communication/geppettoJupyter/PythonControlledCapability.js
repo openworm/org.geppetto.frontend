@@ -143,6 +143,10 @@ define(function (require) {
                                 if (typeof newValue === 'string') {
                                     newValue = JSON.parse(newValue)
                                 }
+                            case 'float/str':
+                                if (!isNaN(newValue)) {
+                                  newValue = parseFloat(newValue)
+                                }
                             default:
                                 break;
                         }

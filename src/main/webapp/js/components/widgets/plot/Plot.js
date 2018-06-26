@@ -831,8 +831,9 @@ define(function (require) {
                     try {
                         var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
                     }catch (e) {
-						labelY = ""
-                    }try {
+                        labelY = ""
+                    }
+                    try {
                         var labelX = this.getUnitLabel(this.xVariable.getUnit());
                     }catch (e) {
                         labelX = ""

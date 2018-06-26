@@ -823,27 +823,35 @@ define(function (require) {
 			}
 		},
 
-		/*
-		 * Retrieves X and Y axis labels from the variables being plotted
-		 */
-		updateAxis: function (key) {
-			if (!this.labelsUpdated) {
-				var unit = this.variables[this.getLegendInstancePath(key)].getUnit();
-				if (unit != null) {
-					var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
-					var labelX = this.getUnitLabel(this.xVariable.getUnit());
-					this.labelsUpdated = true;
-					this.plotOptions.yaxis.title = labelY;
-					this.plotOptions.xaxis.title = labelX;
+        /*
+         * Retrieves X and Y axis labels from the variables being plotted
+         */
+        updateAxis: function (key) {
+            if (!this.labelsUpdated) {
+                var unit = this.variables[this.getLegendInstancePath(key)].getUnit();
+                if (unit != null) {
+                    try {
+                        var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
+                    }catch (e) {
+                        labelY = ""
+                    }
+                    try {
+                        var labelX = this.getUnitLabel(this.xVariable.getUnit());
+                    }catch (e) {
+                        labelX = ""
+                    }
+                    this.labelsUpdated = true;
+                    this.plotOptions.yaxis.title = labelY;
+                    this.plotOptions.xaxis.title = labelX;
 
-					if(labelY == null || labelY == ""){
-						this.plotOptions.margin.l = 30;
-					}
-					//update the axia labels for the plot
-					Plotly.relayout(this.plotDiv, this.plotOptions);
-				}
-			}
-		},
+                    if(labelY == null || labelY == ""){
+                        this.plotOptions.margin.l = 30;
+                    }
+                    //update the axia labels for the plot
+                    Plotly.relayout(this.plotDiv, this.plotOptions);
+                }
+            }
+        },
 
 		/**
 		 * Utility function to get unit label given raw unit symbol string

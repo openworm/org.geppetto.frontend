@@ -976,15 +976,17 @@ define(function (require) {
 
                             // NOTE: assumption we only have one datasource configured
                             var datasourceConfig = that.configuration.DataSources[Object.keys(that.configuration.DataSources)[0]];
+                            var headersDatasourceFormat = datasourceConfig.resultsFilters.getHeaders(JSON.parse(jsonResults));
                             var recordsDatasourceFormat = datasourceConfig.resultsFilters.getRecords(JSON.parse(jsonResults));
                             var formattedRecords = recordsDatasourceFormat.map(function (record) {
                                 return {
-                                    id: datasourceConfig.resultsFilters.getId(record),
-                                    name: datasourceConfig.resultsFilters.getName(record),
-                                    description: datasourceConfig.resultsFilters.getDescription(record),
-                                    type: datasourceConfig.resultsFilters.getType(record),
-                                    images: datasourceConfig.resultsFilters.getImageData(record),
-                                    controls: ''
+                                    id: datasourceConfig.resultsFilters.getItem(record, headersDatasourceFormat, "ID"),
+                                    name: datasourceConfig.resultsFilters.getItem(record, headersDatasourceFormat, "Name"),
+                                    description: datasourceConfig.resultsFilters.getItem(record, headersDatasourceFormat, "Definition"),
+                                    type: datasourceConfig.resultsFilters.getItem(record, headersDatasourceFormat, "Type"),
+                                    images: datasourceConfig.resultsFilters.getItem(record, headersDatasourceFormat, "Images"),
+                                    controls: '',
+                                    score: datasourceConfig.resultsFilters.getItem(record, headersDatasourceFormat, "Score")
                                 }
                             });
 

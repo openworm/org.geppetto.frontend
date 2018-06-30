@@ -318,11 +318,29 @@ define(function (require) {
                 }
 
                 callPythonMethod = (value) => {
-                    Utils.sendPythonMessage(this.props.method, []).then((response) => {
-                        if (Object.keys(response).length != 0) {
-                            this.setState({ pythonData: response });
-                        }
-                    });
+                    if (this.props.method != undefined && this.props.method!='') {
+                      Utils.sendPythonMessage(this.props.method, []).then((response) => {
+                          if (Object.keys(response).length != 0) {
+                              this.setState({ pythonData: response });
+                          }
+                      })
+                    }
+                    else {
+                      this.triggerUpdate(() => {
+                        var options = this.props.children.map((child) => {
+                          return child.key;
+                        })
+                        this.setState({pythonData: options})
+                      })
+                    }
+                }
+                
+                triggerUpdate(updateMethod) {
+                    //common strategy when triggering processing of a value change, delay it, every time there is a change we reset
+                    if (this.updateTimer != undefined) {
+                        clearTimeout(this.updateTimer);
+                    }
+                    this.updateTimer = setTimeout(updateMethod, 500);
                 }
 
                 componentDidUpdate(prevProps, prevState) {

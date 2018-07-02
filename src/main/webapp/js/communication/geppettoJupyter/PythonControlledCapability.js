@@ -79,7 +79,7 @@ define(function (require) {
                     this.state = $.extend(this.state, {
                         value: '',
                         searchText: '',
-                        checked: false,
+                        checked: false
                     });
 
                     // If a handleChange method is passed as a props it will overwrite the handleChange python controlled capability
@@ -130,15 +130,16 @@ define(function (require) {
                 }
 
                 setErrorAlert(value) {
+                  console.log("hahahahahaha")
                   switch (this.props.realType) {
                     case 'func':
-                      if (this.state.value!="" && this.state.value!=undefined) {
+                      if (value!="" && value!=undefined) {
                         Utils.sendPythonMessage("netpyne_geppetto.validateFunction", [value]).then((response) => {
                             if (response===false) {
-                              this.setState({errorMsg: "Not a valid function"});
+                              this.setState({errorMsg: "Not a valid function"})
                             }
                             else {
-                              this.setState({errorMsg: ""});
+                              this.setState({errorMsg: ""})
                             }
                         });
                       }
@@ -146,18 +147,17 @@ define(function (require) {
                         this.setState({errorMsg: ""})
                       }
                       break;
-                      
                     case 'float':
-                      if (isNaN(targetValue)) {
-                        this.setState({errorMsg: "Only real values"});
+                      if (isNaN(value)) {
+                        this.setState({errorMsg: "Only real values"})
                       }
                       else {
-                        this.setState({errorMsg: ""});
+                        this.setState({errorMsg: ""})
                       }
                     default:
                       break;
-                  }  
-                }
+                  };
+                };
 
                 updatePythonValue(newValue) {
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
@@ -182,7 +182,6 @@ define(function (require) {
                         this.syncValueWithPython(newValue, window.requirement);
                         
                     }
-
                     this.forceUpdate();
                 }
 
@@ -193,7 +192,6 @@ define(function (require) {
                     }
                     this.updateTimer = setTimeout(updateMethod, 500);
                 }
-
                 // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {
                     var that = this;
@@ -201,8 +199,8 @@ define(function (require) {
                     if (event != null && event.target.value != undefined) {
                         targetValue = event.target.value;
                     }
-                    this.setErrorAlert(targetValue)
                     this.setState({ value: targetValue });
+                    this.setErrorAlert(targetValue)
                     this.triggerUpdate(function () {
                         // For textfields value is retrived from the event. For dropdown value is retrieved from the value
                         that.updatePythonValue(targetValue);
@@ -261,12 +259,11 @@ define(function (require) {
                             delete wrappedComponentProps.hintText;
                             break;
                         default:
+                            if (this.props.realType=='func') {
+                              wrappedComponentProps['errorText'] = this.state.errorMsg;
+                            }
                             wrappedComponentProps['onChange'] = this.handleChange;
                             wrappedComponentProps['value'] = (typeof this.state.value === 'object' && this.state.value !== null && !Array.isArray(this.state.value)) ? JSON.stringify(this.state.value) : this.state.value;
-                            
-                            
-                            wrappedComponentProps['errorText'] = this.state.errorMsg
-                            
                             delete wrappedComponentProps.searchText;
                             delete wrappedComponentProps.dataSource;
                             break;

@@ -130,33 +130,32 @@ define(function (require) {
                 }
 
                 setErrorAlert(value) {
-                  console.log("hahahahahaha")
-                  switch (this.props.realType) {
-                    case 'func':
-                      if (value!="" && value!=undefined) {
-                        Utils.sendPythonMessage("netpyne_geppetto.validateFunction", [value]).then((response) => {
-                            if (response===false) {
-                              this.setState({errorMsg: "Not a valid function"})
+                    switch (this.props.realType) {
+                        case 'func':
+                            if (value!="" && value!=undefined) {
+                                Utils.sendPythonMessage("netpyne_geppetto.validateFunction", [value]).then((response) => {
+                                    if (response===false) {
+                                        this.setState({errorMsg: "Not a valid function"})
+                                    }
+                                    else {
+                                        this.setState({errorMsg: ""})
+                                    }
+                                });
                             }
                             else {
-                              this.setState({errorMsg: ""})
+                                this.setState({errorMsg: ""})
                             }
-                        });
-                      }
-                      else {
-                        this.setState({errorMsg: ""})
-                      }
-                      break;
-                    case 'float':
-                      if (isNaN(value)) {
-                        this.setState({errorMsg: "Only real values"})
-                      }
-                      else {
-                        this.setState({errorMsg: ""})
-                      }
-                    default:
-                      break;
-                  };
+                            break;
+                        case 'float':
+                            if (isNaN(value)) {
+                                this.setState({errorMsg: "Only real values"})
+                            }
+                            else {
+                                this.setState({errorMsg: ""})
+                            }
+                        default:
+                            break;
+                    };
                 };
 
                 updatePythonValue(newValue) {
@@ -174,7 +173,7 @@ define(function (require) {
                                 break;
                             case 'func':
                                 if (newValue=='') {
-                                  newValue = 1
+                                    newValue = 1
                                 }
                             default:
                                 break;

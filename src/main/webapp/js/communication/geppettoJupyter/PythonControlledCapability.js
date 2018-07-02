@@ -213,7 +213,7 @@ define(function (require) {
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
 
-                    if (WrappedComponent.name != 'ListComponent' && WrappedComponent.name != 'DictComponent')) {
+                    if (WrappedComponent.name != 'ListComponent')) {
                         delete wrappedComponentProps.realType;
                     }
 

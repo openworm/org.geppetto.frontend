@@ -86,7 +86,6 @@ define(function (require) {
                     this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange.bind(this);
                     this.handleUpdateInput = this.handleUpdateInput.bind(this);
                     this.handleUpdateCheckbox = this.handleUpdateCheckbox.bind(this);
-                    this.setErrorAlert = this.setErrorAlert.bind(this);
                 }
 
                 componentWillReceiveProps(nextProps) {

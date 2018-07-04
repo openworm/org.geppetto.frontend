@@ -1,7 +1,6 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
@@ -9,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
 import javax.websocket.Endpoint;
@@ -19,7 +17,6 @@ import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
-import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 import javax.websocket.server.ServerEndpoint;
@@ -54,7 +51,7 @@ import com.google.gson.reflect.TypeToken;
  * @author matteocantarelli
  *
  */
-@ServerEndpoint(value = "/GeppettoServlet", configurator = SpringConfig.class)
+@ServerEndpoint(value = "/GeppettoServlet", configurator = SpringWebsocketConfiguration.class)
 public class WebsocketConnection extends Endpoint implements MessageSenderListener
 {
 
@@ -69,7 +66,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 
 	private MessageSender messageSender;
 
-    @Inject
+    @Autowired
 	private IGeppettoManager geppettoManager;
 
 	private Session userSession;
@@ -104,24 +101,15 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 	public void onOpen(Session session, EndpointConfig config) {
 	    this.userSession = session;
 
+	    //Expanding binary message buffer size
 		WebSocketContainer wsContainer =
 				ContainerProvider.getWebSocketContainer();
-		int bs = wsContainer.getDefaultMaxBinaryMessageBufferSize();
-		System.out.println(bs);
-		int bs2 = wsContainer.getDefaultMaxTextMessageBufferSize();
-		System.out.println(bs2);
 		wsContainer.setDefaultMaxBinaryMessageBufferSize(9999999);
 		wsContainer.setDefaultMaxTextMessageBufferSize(9999999);
-
-		int bs3 = wsContainer.getDefaultMaxBinaryMessageBufferSize();
-		System.out.println(bs3);
-		int bs4 = wsContainer.getDefaultMaxTextMessageBufferSize();
-		System.out.println(bs4);
-
 		userSession.setMaxTextMessageBufferSize(9999999);
 		userSession.setMaxBinaryMessageBufferSize(9999999);
-		System.out.println("Session Binary size >> " + userSession.getMaxBinaryMessageBufferSize());
-		System.out.println("Session Text size >> " + userSession.getMaxTextMessageBufferSize());
+		logger.info("Session Binary size >> " + userSession.getMaxBinaryMessageBufferSize());
+		logger.info("Session Text size >> " + userSession.getMaxTextMessageBufferSize());
 
 		messageSender = messageSenderFactory.getMessageSender(userSession, this);
 		// User permissions are sent when socket is open
@@ -129,11 +117,9 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
 
-		System.out.println("Open Connection ..."+userSession.getId());
+		logger.info("Open Connection ..."+userSession.getId());
 		
-		MyPongHandler pongHandler = new MyPongHandler(session);
-		session.addMessageHandler(new MyMessageHandler(session, pongHandler));
-		session.addMessageHandler(pongHandler);
+		session.addMessageHandler(new WebsocketMessageHandler(session,this));
 	}
 
 	@OnClose
@@ -141,17 +127,17 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		super.onClose(session, closeReason);
 		messageSender.shutdown();
 		connectionHandler.closeProject();
-		System.out.println("Closed Connection ..."+userSession.getId());
+		logger.info("Closed Connection ..."+userSession.getId());
 	}
 	
 	@OnError
 	public void onError(Session session, Throwable thr) {
-		System.out.println("Error Connection ..."+userSession.getId()+ " error: " + thr.getMessage());
+		logger.info("Error Connection ..."+userSession.getId()+ " error: " + thr.getMessage());
 	}
 	
 	@OnMessage
 	public void broadcastSnapshot(ByteBuffer data, Session session) throws IOException {
-	    System.out.println("broadcastBinary: " + data);
+	    logger.info("broadcastBinary: " + data);
         session.getBasicRemote().sendBinary(data);
 
 	}
@@ -177,20 +163,19 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		messageSender.sendFile(path);
 	}
 	
-	class MyMessageHandler implements MessageHandler.Whole<String> {
+	class WebsocketMessageHandler implements MessageHandler.Whole<String> {
 
 		final Session session;
-		final MyPongHandler pongHandler;
+		final WebsocketConnection websocketConnection;
 		
-		public MyMessageHandler(Session session, MyPongHandler pongHandler) {
+		public WebsocketMessageHandler(Session session, WebsocketConnection websocketConnection) {
 			this.session = session;
-			this.pongHandler = pongHandler;
+			this.websocketConnection = websocketConnection;
 		}
 		
 		@Override
 		public void onMessage(String message) {
 			String msg = message.toString();
-			System.out.println("Message from the client: " + msg);
 			
 			Map<String, String> parameters;
 			long experimentId = -1;
@@ -320,7 +305,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 				case GET_SCRIPT:
 				{
 					GetScript receivedObject = new Gson().fromJson(gmsg.data, GetScript.class);
-					//connectionHandler.sendScriptData(requestID, receivedObject.projectId, receivedObject.scriptURL, this);
+					connectionHandler.sendScriptData(requestID, receivedObject.projectId, receivedObject.scriptURL, this.websocketConnection);
 					break;
 				}
 				case GET_DATA_SOURCE_RESULTS:
@@ -335,7 +320,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 						url = URLReader.getURL(parameters.get("url"));
 						dataSourceName = parameters.get("data_source_name");
 
-						//connectionHandler.sendDataSourceResults(requestID, dataSourceName, url, this);
+						connectionHandler.sendDataSourceResults(requestID, dataSourceName, url, this.websocketConnection);
 
 					}
 					catch(IOException e)
@@ -516,31 +501,6 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 				}
 			}
 		}
-	}
-	
-	class MyPongHandler implements MessageHandler.Whole<PongMessage> {
-
-		final Session session;
-		boolean isResponding = true;
-		
-		public MyPongHandler(Session session) {
-			this.session = session;
-		}
-		
-		@Override
-		public void onMessage(PongMessage message) {
-			String msg = message.toString();
-			System.out.println("Message from the client: " + msg);
-		}
-
-		public boolean isResponding() {
-			return isResponding;
-		}
-
-		public void setResponding(boolean isResponding) {
-			this.isResponding = isResponding;
-		}
-		
 	}
 
 	/**

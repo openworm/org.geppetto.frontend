@@ -15,17 +15,21 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
-public class SpringConfig extends Configurator {
+/**
+ * The bridge between Tomcat's 8 Websocket (WebsocketConnection.java) 
+ * and Spring Controller (Application.java)
+ */
+public class SpringWebsocketConfiguration extends Configurator {
 
-	private static Log logger = LogFactory.getLog(SpringConfig.class);
+	private static Log logger = LogFactory.getLog(SpringWebsocketConfiguration.class);
 
 	private static final Map<String, Map<Class<?>, String>> cache =
 			new ConcurrentHashMap<String, Map<Class<?>, String>>();
 
 	private static final String NO_VALUE = ObjectUtils.identityToString(new Object());
 
-	public SpringConfig() {
-		System.out.println("SpringConfigurator was INSTANCIATED");
+	public SpringWebsocketConfiguration() {
+		logger.info("SpringConfigurator was INSTANCIATED");
 	}
 
 	@SuppressWarnings("unchecked")

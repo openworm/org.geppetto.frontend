@@ -157,7 +157,9 @@ define(function (require) {
                                 newValue = parseFloat(newValue)
                                 break;
                             case 'dict':
-                                newValue = JSON.parse(newValue)
+                                if (typeof newValue === 'string') {
+                                    newValue = JSON.parse(newValue)
+                                }
                                 break;
                             case 'func':
                                 if (newValue == '') {

@@ -41,10 +41,10 @@ define(function (require) {
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
                 }
 
-                componentWillUnmount(){
+                componentWillUnmount() {
                     this.disconnectFromPython();
                 }
-                
+
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
@@ -125,9 +125,26 @@ define(function (require) {
                             }
                             break;
                     }
+                    this.setErrorMessage(this.state.value)
                 }
 
-
+                setErrorMessage(value) {
+                    if (this.props.realType == 'func') {
+                        if (value != "" && value != undefined) {
+                            Utils.sendPythonMessage("netpyne_geppetto.validateFunction", [value]).then((response) => {
+                                if (!response) {
+                                    this.setState({ errorMsg: "Not a valid function" })
+                                }
+                                else {
+                                    this.setState({ errorMsg: "" })
+                                }
+                            });
+                        }
+                        else {
+                            this.setState({ errorMsg: "" })
+                        }
+                    }
+                }
 
                 updatePythonValue(newValue) {
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
@@ -144,12 +161,16 @@ define(function (require) {
                                     newValue = JSON.parse(newValue)
                                 }
                                 break;
+                            case 'func':
+                                if (newValue == '') {
+                                    newValue = 1
+                                }
                             default:
                                 break;
                         }
                         this.syncValueWithPython(newValue, window.requirement);
-                    }
 
+                    }
                     this.forceUpdate();
                 }
 
@@ -160,7 +181,6 @@ define(function (require) {
                     }
                     this.updateTimer = setTimeout(updateMethod, 500);
                 }
-
                 // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {
                     var that = this;
@@ -169,7 +189,7 @@ define(function (require) {
                         targetValue = event.target.value;
                     }
                     this.setState({ value: targetValue });
-                    var v = value
+                    this.setErrorMessage(targetValue)
                     this.triggerUpdate(function () {
                         // For textfields value is retrived from the event. For dropdown value is retrieved from the value
                         that.updatePythonValue(targetValue);
@@ -210,6 +230,9 @@ define(function (require) {
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
 
+                    if (wrappedComponentProps.realType == 'func') {
+                        wrappedComponentProps['errorText'] = this.state.errorMsg;
+                    }
                     if (WrappedComponent.name != 'ListComponent') {
                         delete wrappedComponentProps.realType;
                     }

@@ -41,10 +41,10 @@ define(function (require) {
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
                 }
 
-                componentWillUnmount(){
+                componentWillUnmount() {
                     this.disconnectFromPython();
                 }
-                
+
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
@@ -125,37 +125,26 @@ define(function (require) {
                             }
                             break;
                     }
-                    this.setErrorAlert(this.state.value)
+                    this.setErrorMessage(this.state.value)
                 }
 
-                setErrorAlert(value) {
-                    switch (this.props.realType) {
-                        case 'func':
-                            if (value!="" && value!=undefined) {
-                                Utils.sendPythonMessage("netpyne_geppetto.validateFunction", [value]).then((response) => {
-                                    if (response===false) {
-                                        this.setState({errorMsg: "Not a valid function"})
-                                    }
-                                    else {
-                                        this.setState({errorMsg: ""})
-                                    }
-                                });
-                            }
-                            else {
-                                this.setState({errorMsg: ""})
-                            }
-                            break;
-                        case 'float':
-                            if (isNaN(value)) {
-                                this.setState({errorMsg: "Only real values"})
-                            }
-                            else {
-                                this.setState({errorMsg: ""})
-                            }
-                        default:
-                            break;
-                    };
-                };
+                setErrorMessage(value) {
+                    if (this.props.realType == 'func') {
+                        if (value != "" && value != undefined) {
+                            Utils.sendPythonMessage("netpyne_geppetto.validateFunction", [value]).then((response) => {
+                                if (!response) {
+                                    this.setState({ errorMsg: "Not a valid function" })
+                                }
+                                else {
+                                    this.setState({ errorMsg: "" })
+                                }
+                            });
+                        }
+                        else {
+                            this.setState({ errorMsg: "" })
+                        }
+                    }
+                }
 
                 updatePythonValue(newValue) {
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
@@ -171,14 +160,14 @@ define(function (require) {
                                 newValue = JSON.parse(newValue)
                                 break;
                             case 'func':
-                                if (newValue=='') {
+                                if (newValue == '') {
                                     newValue = 1
                                 }
                             default:
                                 break;
                         }
                         this.syncValueWithPython(newValue, window.requirement);
-                        
+
                     }
                     this.forceUpdate();
                 }
@@ -198,7 +187,7 @@ define(function (require) {
                         targetValue = event.target.value;
                     }
                     this.setState({ value: targetValue });
-                    this.setErrorAlert(targetValue)
+                    this.setErrorMessage(targetValue)
                     this.triggerUpdate(function () {
                         // For textfields value is retrived from the event. For dropdown value is retrieved from the value
                         that.updatePythonValue(targetValue);
@@ -239,6 +228,9 @@ define(function (require) {
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
 
+                    if (wrappedComponentProps.realType == 'func') {
+                        wrappedComponentProps['errorText'] = this.state.errorMsg;
+                    }
                     if (WrappedComponent.name != 'ListComponent') {
                         delete wrappedComponentProps.realType;
                     }
@@ -257,9 +249,6 @@ define(function (require) {
                             delete wrappedComponentProps.hintText;
                             break;
                         default:
-                            if (this.props.realType=='func') {
-                              wrappedComponentProps['errorText'] = this.state.errorMsg;
-                            }
                             wrappedComponentProps['onChange'] = this.handleChange;
                             wrappedComponentProps['value'] = (typeof this.state.value === 'object' && this.state.value !== null && !Array.isArray(this.state.value)) ? JSON.stringify(this.state.value) : this.state.value;
                             delete wrappedComponentProps.searchText;

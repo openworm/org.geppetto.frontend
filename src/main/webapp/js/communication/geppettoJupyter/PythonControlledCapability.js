@@ -210,6 +210,7 @@ define(function (require) {
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
                     delete wrappedComponentProps.validate;
+                    delete wrappedComponentProps.prePythonSyncProcessing;
 
                     if (wrappedComponentProps.realType == 'func' || wrappedComponentProps.realType == 'float') {
                         wrappedComponentProps['errorText'] = this.state.errorMsg;
@@ -362,6 +363,8 @@ define(function (require) {
                     delete wrappedComponentProps.model;
                     delete wrappedComponentProps.postProcessItems;
                     delete wrappedComponentProps.validate;
+                    delete wrappedComponentProps.prePythonSyncProcessing;
+                    
                     if (this.props.postProcessItems) {
                         var items = this.props.postProcessItems(this.state.pythonData, this.state.value);
                     }

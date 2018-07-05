@@ -125,50 +125,22 @@ define(function (require) {
                             }
                             break;
                     }
-                    this.setErrorMessage(this.state.value)
-                }
-
-                setErrorMessage(value) {
-                    if (this.props.realType == 'func') {
-                        if (value != "" && value != undefined) {
-                            Utils.sendPythonMessage('netpyne_geppetto.validateFunction', [value]).then((response) => {
-                                if (!response) {
-                                    this.setState({ errorMsg: 'Not a valid function' })
-                                }
-                                else {
-                                    this.setState({ errorMsg: '' })
-                                }
-                            });
-                        }
-                        else {
-                            this.setState({ errorMsg: '' })
-                        }
+                    if (this.props.validate) {
+                        this.props.validate(this.state.value).then((errorState) => {
+                            this.setState(errorState);
+                        });
                     }
-                    else if (this.props.realType == 'float') {
-                        if (isNaN(value)) {
-                            this.setState({errorMsg: 'Only float allowed'})
-                        }
-                        else {
-                            this.setState({errorMsg: ''})
-                        }
-                    }  
                 }
 
                 updatePythonValue(newValue) {
-                    if (newValue=='') {
-                        if (this.props.default!=undefined ) {
-                            newValue = this.props.default;
-                        }
-                        else if (!this.props.model.split(".")[0].startsWith('simConfig') || this.props.model.split(".")[1].startsWith('analysis') ) {
-                            Utils.execPythonCommand('del netpyne_geppetto.' + this.props.model)
-                        }
-                    }
+                    newValue = this.props.prePythonSyncProcessing(newValue);
+
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
                         switch (this.props.realType) {
                             case 'float':
-                                if (!isNaN(newValue) && newValue!='') {
+                                if (!isNaN(newValue) && newValue !== '') {
                                     newValue = parseFloat(newValue)
                                 }
                                 break;
@@ -180,12 +152,12 @@ define(function (require) {
                             default:
                                 break;
                         }
+                        if (newValue !== '') {
+                            this.syncValueWithPython(newValue, window.requirement);
+                        }
                     }
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
-                    if (newValue!='') {
-                        this.syncValueWithPython(newValue, window.requirement);
-                        this.forceUpdate();
-                    }
+                    this.forceUpdate();
                 }
 
                 triggerUpdate(updateMethod) {
@@ -197,37 +169,31 @@ define(function (require) {
                 }
                 // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {
-                    var that = this;
                     var targetValue = value;
                     if (event != null && event.target.value != undefined) {
                         targetValue = event.target.value;
                     }
                     this.setState({ value: targetValue });
-                    this.setErrorMessage(targetValue)
-                    this.triggerUpdate(function () {
-                        // For textfields value is retrived from the event. For dropdown value is retrieved from the value
-                        that.updatePythonValue(targetValue);
-                    });
+
+                    if (this.props.validate) {
+                        this.props.validate(targetValue).then((errorState) => {
+                            this.setState(errorState);
+                        });
+                    }
+
+                    // For textfields value is retrieved from the event. For dropdown value is retrieved from the value
+                    this.triggerUpdate(() => this.updatePythonValue(targetValue));
                 }
 
                 // Autocomplete handle
                 handleUpdateInput(value) {
-                    var that = this;
-                    var v = value
-                    this.triggerUpdate(function () {
-                        that.updatePythonValue(value);
-                    });
+                    this.triggerUpdate(() => this.updatePythonValue(value));
                 }
 
                 //Checkbox
                 handleUpdateCheckbox(event, isInputChecked) {
-                    var that = this;
-                    var c = isInputChecked;
-                    this.triggerUpdate(function () {
-                        that.updatePythonValue(isInputChecked);
-                    });
+                    this.triggerUpdate(() => this.updatePythonValue(isInputChecked));
                 }
-
 
                 render() {
                     const wrappedComponentProps = Object.assign({}, this.props);
@@ -243,7 +209,8 @@ define(function (require) {
                     delete wrappedComponentProps.modelName;
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
-              
+                    delete wrappedComponentProps.validate;
+
                     if (wrappedComponentProps.realType == 'func' || wrappedComponentProps.realType == 'float') {
                         wrappedComponentProps['errorText'] = this.state.errorMsg;
                     }
@@ -394,6 +361,7 @@ define(function (require) {
                     wrappedComponentProps['value'] = this.state.value;
                     delete wrappedComponentProps.model;
                     delete wrappedComponentProps.postProcessItems;
+                    delete wrappedComponentProps.validate;
                     if (this.props.postProcessItems) {
                         var items = this.props.postProcessItems(this.state.pythonData, this.state.value);
                     }

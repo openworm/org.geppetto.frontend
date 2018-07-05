@@ -131,47 +131,61 @@ define(function (require) {
                 setErrorMessage(value) {
                     if (this.props.realType == 'func') {
                         if (value != "" && value != undefined) {
-                            Utils.sendPythonMessage("netpyne_geppetto.validateFunction", [value]).then((response) => {
+                            Utils.sendPythonMessage('netpyne_geppetto.validateFunction', [value]).then((response) => {
                                 if (!response) {
-                                    this.setState({ errorMsg: "Not a valid function" })
+                                    this.setState({ errorMsg: 'Not a valid function' })
                                 }
                                 else {
-                                    this.setState({ errorMsg: "" })
+                                    this.setState({ errorMsg: '' })
                                 }
                             });
                         }
                         else {
-                            this.setState({ errorMsg: "" })
+                            this.setState({ errorMsg: '' })
                         }
                     }
+                    else if (this.props.realType == 'float') {
+                        if (isNaN(value)) {
+                            this.setState({errorMsg: 'Only float allowed'})
+                        }
+                        else {
+                            this.setState({errorMsg: ''})
+                        }
+                    }  
                 }
 
                 updatePythonValue(newValue) {
-                    this.setState({ value: newValue, searchText: newValue, checked: newValue });
-
+                    if (newValue=='') {
+                        if (this.props.default!=undefined ) {
+                            newValue = this.props.default;
+                        }
+                        else if (!this.props.model.split(".")[0].startsWith('simConfig') || this.props.model.split(".")[1].startsWith('analysis') ) {
+                            Utils.execPythonCommand('del netpyne_geppetto.' + this.props.model)
+                        }
+                    }
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
                         switch (this.props.realType) {
                             case 'float':
-                                newValue = parseFloat(newValue)
+                                if (!isNaN(newValue) && newValue!='') {
+                                    newValue = parseFloat(newValue)
+                                }
                                 break;
                             case 'dict':
                                 if (typeof newValue === 'string') {
                                     newValue = JSON.parse(newValue)
                                 }
                                 break;
-                            case 'func':
-                                if (newValue == '') {
-                                    newValue = 1
-                                }
                             default:
                                 break;
                         }
-                        this.syncValueWithPython(newValue, window.requirement);
-
                     }
-                    this.forceUpdate();
+                    this.setState({ value: newValue, searchText: newValue, checked: newValue });
+                    if (newValue!='') {
+                        this.syncValueWithPython(newValue, window.requirement);
+                        this.forceUpdate();
+                    }
                 }
 
                 triggerUpdate(updateMethod) {
@@ -229,8 +243,8 @@ define(function (require) {
                     delete wrappedComponentProps.modelName;
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
-
-                    if (wrappedComponentProps.realType == 'func') {
+              
+                    if (wrappedComponentProps.realType == 'func' || wrappedComponentProps.realType == 'float') {
                         wrappedComponentProps['errorText'] = this.state.errorMsg;
                     }
                     if (WrappedComponent.name != 'ListComponent') {

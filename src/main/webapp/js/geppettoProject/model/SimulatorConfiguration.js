@@ -143,7 +143,7 @@ define(function (require) {
         setTimeStep: function (timeStep) {
             var properties = {};
             if (typeof timeStep === 'string')
-                timeStep = parseFloat(timestep);
+                timeStep = parseFloat(timeStep);
             properties["timeStep"] = timeStep;
             properties["aspectInstancePath"] = this.aspectInstancePath;
             this.getParent().saveExperimentProperties(properties);

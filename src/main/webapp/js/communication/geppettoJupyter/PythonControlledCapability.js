@@ -166,7 +166,7 @@ define(function (require) {
                     if (this.updateTimer != undefined) {
                         clearTimeout(this.updateTimer);
                     }
-                    this.updateTimer = setTimeout(updateMethod, 500);
+                    this.updateTimer = setTimeout(updateMethod, 1000);
                 }
                 // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {

@@ -133,8 +133,9 @@ define(function (require) {
                 }
 
                 updatePythonValue(newValue) {
-                    newValue = this.props.prePythonSyncProcessing(newValue);
-
+                    if (this.props.prePythonSyncProcessing!==undefined) {
+                        newValue = this.props.prePythonSyncProcessing(newValue);
+                    }
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
@@ -165,7 +166,7 @@ define(function (require) {
                     if (this.updateTimer != undefined) {
                         clearTimeout(this.updateTimer);
                     }
-                    this.updateTimer = setTimeout(updateMethod, 500);
+                    this.updateTimer = setTimeout(updateMethod, 1000);
                 }
                 // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {

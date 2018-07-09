@@ -2432,15 +2432,16 @@ define(function (require) {
                                 }
                             }
                         } else {
-                            // TODO: no immediate matches - recurse on super type and see if any matches if any matches add this type
-                            /*if(libraryTypes[j].getSuperType() != undefined && libraryTypes[j].getSuperType() != null) {
-                             var superTypeMatches = this.getAllTypesOfType(libraryTypes[j].getSuperType());
-                             if (superTypeMatches.length > 0) {
-                             types.push(libraryTypes[j]);
-                             }
-                             }*/
+
                         }
                     }
+                                                // TODO: no immediate matches - recurse on super type and see if any matches if any matches add this type
+                            if(typeof type.getSuperType == 'function') {
+                             var superTypeMatches = this.getAllTypesOfType(type.getSuperType());
+                                if (superTypeMatches.length > 0) {
+                                    types = types.concat(superTypeMatches);
+                                }
+                            }
                 }
 
                 return types;

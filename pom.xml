@@ -320,7 +320,6 @@
 						</Import-Package>
 						<Import-Library>org.springframework.spring;version="${spring.version}"</Import-Library>
 						<Import-Bundle>org.springframework.aop;version="${spring.version}"</Import-Bundle>
-						<Import-Bundle>org.springframework.web-mvc;version="${spring.version}"</Import-Bundle>
 					</instructions>
 				</configuration>
 				<executions>

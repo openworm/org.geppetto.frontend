@@ -6,9 +6,10 @@ define(function (require) {
     var $ = require('jquery');
     var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
-    var typeahead = require("typeahead.js");
-    var Bloodhound = typeahead;
-    //var Bloodhound = require("bloodhound-js");
+    var typeahead = require("typeahead.js-browserify");
+    //var Bloodhound =  require("typeahead.js");
+    var Bloodhound = typeahead.Bloodhound;
+    typeahead.loadjQueryPlugin();
 
     var PlotController = require('./../../widgets/plot/controllers/PlotsController');
 

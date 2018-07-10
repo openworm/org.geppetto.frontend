@@ -41,10 +41,10 @@ define(function (require) {
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
                 }
 
-                componentWillUnmount(){
+                componentWillUnmount() {
                     this.disconnectFromPython();
                 }
-                
+
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
@@ -125,28 +125,38 @@ define(function (require) {
                             }
                             break;
                     }
+                    if (this.props.validate) {
+                        this.props.validate(this.state.value).then((errorState) => {
+                            this.setState(errorState);
+                        });
+                    }
                 }
 
-
-
                 updatePythonValue(newValue) {
-                    this.setState({ value: newValue, searchText: newValue, checked: newValue });
+                    newValue = this.props.prePythonSyncProcessing(newValue);
 
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
                         // this.syncValueWithPython((event.target.type == 'number') ? parseFloat(this.state.value) : this.state.value, this.props.requirement);
                         switch (this.props.realType) {
                             case 'float':
-                                newValue = parseFloat(newValue)
+                                if (!isNaN(newValue) && newValue !== '') {
+                                    newValue = parseFloat(newValue)
+                                }
                                 break;
                             case 'dict':
-                                newValue = JSON.parse(newValue)
+                                if (typeof newValue === 'string') {
+                                    newValue = JSON.parse(newValue)
+                                }
+                                break;
                             default:
                                 break;
                         }
-                        this.syncValueWithPython(newValue, window.requirement);
+                        if (newValue !== '') {
+                            this.syncValueWithPython(newValue, window.requirement);
+                        }
                     }
-
+                    this.setState({ value: newValue, searchText: newValue, checked: newValue });
                     this.forceUpdate();
                 }
 
@@ -157,40 +167,33 @@ define(function (require) {
                     }
                     this.updateTimer = setTimeout(updateMethod, 500);
                 }
-
                 // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {
-                    var that = this;
                     var targetValue = value;
                     if (event != null && event.target.value != undefined) {
                         targetValue = event.target.value;
                     }
                     this.setState({ value: targetValue });
-                    var v = value
-                    this.triggerUpdate(function () {
-                        // For textfields value is retrived from the event. For dropdown value is retrieved from the value
-                        that.updatePythonValue(targetValue);
-                    });
+
+                    if (this.props.validate) {
+                        this.props.validate(targetValue).then((errorState) => {
+                            this.setState(errorState);
+                        });
+                    }
+
+                    // For textfields value is retrieved from the event. For dropdown value is retrieved from the value
+                    this.triggerUpdate(() => this.updatePythonValue(targetValue));
                 }
 
                 // Autocomplete handle
                 handleUpdateInput(value) {
-                    var that = this;
-                    var v = value
-                    this.triggerUpdate(function () {
-                        that.updatePythonValue(value);
-                    });
+                    this.triggerUpdate(() => this.updatePythonValue(value));
                 }
 
                 //Checkbox
                 handleUpdateCheckbox(event, isInputChecked) {
-                    var that = this;
-                    var c = isInputChecked;
-                    this.triggerUpdate(function () {
-                        that.updatePythonValue(isInputChecked);
-                    });
+                    this.triggerUpdate(() => this.updatePythonValue(isInputChecked));
                 }
-
 
                 render() {
                     const wrappedComponentProps = Object.assign({}, this.props);
@@ -206,7 +209,12 @@ define(function (require) {
                     delete wrappedComponentProps.modelName;
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
+                    delete wrappedComponentProps.validate;
+                    delete wrappedComponentProps.prePythonSyncProcessing;
 
+                    if (wrappedComponentProps.realType == 'func' || wrappedComponentProps.realType == 'float') {
+                        wrappedComponentProps['errorText'] = this.state.errorMsg;
+                    }
                     if (WrappedComponent.name != 'ListComponent') {
                         delete wrappedComponentProps.realType;
                     }
@@ -354,6 +362,9 @@ define(function (require) {
                     wrappedComponentProps['value'] = this.state.value;
                     delete wrappedComponentProps.model;
                     delete wrappedComponentProps.postProcessItems;
+                    delete wrappedComponentProps.validate;
+                    delete wrappedComponentProps.prePythonSyncProcessing;
+                    
                     if (this.props.postProcessItems) {
                         var items = this.props.postProcessItems(this.state.pythonData, this.state.value);
                     }

@@ -6,8 +6,8 @@ define(function (require) {
     var $ = require('jquery');
     var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
-    var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
-    var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
+    var typeahead = require("typeahead.js");
+    var Bloodhound = require("bloodhound-js");
 
     var PlotController = require('./../../widgets/plot/controllers/PlotsController');
 

@@ -62,6 +62,7 @@ define(function (require) {
 						url: step.content_url,
 						success(responseData, textStatus, jqXHR) {
 						    step.message = responseData;
+                                                    self.forceUpdate();
                                                     self.setSize(self.size.height, self.size.width);
                                                     var tutorialScript = document.getElementById("tutorialScript");
                                                     if (tutorialScript !== null)
@@ -195,7 +196,9 @@ define(function (require) {
 
 			if (!this.getIgnoreTutorialCookie()) {
 				if (start) {
-					this.start();
+				    this.start();
+
+                    this.forceUpdate();
                     if(!this.props.closeByDefault){
                         this.open(true);
         			}

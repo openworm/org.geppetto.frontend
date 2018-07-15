@@ -89,11 +89,11 @@ define(function (require) {
          * @param variableId
          * @param datasourceId
          */
-        fetchVariable: function (variableId, datasourceId, callback) {
-            if (!window.Model.hasOwnProperty(variableId)) {
+        fetchVariables: function (variableIds, datasourceId, callback) {
+            if (!window.Model.hasOwnProperty(variableIds)) {
                 var params = {};
                 params["projectId"] = Project.getId();
-                params["variableId"] = variableId;
+                params["variableId"] = variableIds;
                 params["dataSourceId"] = datasourceId;
 
                 var requestID = GEPPETTO.MessageSocket.send("fetch_variable", params, callback);

@@ -175,7 +175,7 @@ define(function (require) {
                         targetValue = event.target.value;
                     }
                     this.setState({ value: targetValue });
-                    
+
                     if (this.props.validate) {
                         this.props.validate(targetValue).then((errorState) => {
                             this.setState(errorState);

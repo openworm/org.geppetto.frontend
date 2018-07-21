@@ -134,7 +134,7 @@ define(function (require) {
 
                 updatePythonValue(newValue) {
                     if (this.props.prePythonSyncProcessing!==undefined) {
-                      newValue = this.props.prePythonSyncProcessing(newValue);
+                       newValue = this.props.prePythonSyncProcessing(newValue);
                     }
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
@@ -180,7 +180,7 @@ define(function (require) {
                             this.setState(errorState);
                         });
                     }
-                    
+
                     // For textfields value is retrieved from the event. For dropdown value is retrieved from the value
                     if (WrappedComponent.name!='SelectField') {
                       this.triggerUpdate(() => this.updatePythonValue(targetValue));

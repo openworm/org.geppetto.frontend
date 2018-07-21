@@ -134,7 +134,7 @@ define(function (require) {
 
                 updatePythonValue(newValue) {
                     if (this.props.prePythonSyncProcessing!==undefined) {
-                        newValue = this.props.prePythonSyncProcessing(newValue);
+                      newValue = this.props.prePythonSyncProcessing(newValue);
                     }
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {
@@ -175,15 +175,23 @@ define(function (require) {
                         targetValue = event.target.value;
                     }
                     this.setState({ value: targetValue });
-
                     if (this.props.validate) {
                         this.props.validate(targetValue).then((errorState) => {
                             this.setState(errorState);
                         });
                     }
-
+                    
                     // For textfields value is retrieved from the event. For dropdown value is retrieved from the value
-                    this.triggerUpdate(() => this.updatePythonValue(targetValue));
+                    if (WrappedComponent.name!='SelectField') {
+                      this.triggerUpdate(() => this.updatePythonValue(targetValue));
+                    }
+                    else {
+                      this.updatePythonValue(targetValue)
+                    }
+                    if (this.props.letParentKnowValueChanged!=undefined) {
+                      this.props.letParentKnowValueChanged(targetValue)
+                    }
+                    
                 }
 
                 // Autocomplete handle
@@ -212,7 +220,8 @@ define(function (require) {
                     delete wrappedComponentProps.noStyle;
                     delete wrappedComponentProps.validate;
                     delete wrappedComponentProps.prePythonSyncProcessing;
-
+                    delete wrappedComponentProps.letParentKnowValueChanged;
+                    
                     if (wrappedComponentProps.realType == 'func' || wrappedComponentProps.realType == 'float') {
                         wrappedComponentProps['errorText'] = this.state.errorMsg;
                     }

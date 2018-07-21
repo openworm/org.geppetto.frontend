@@ -134,7 +134,7 @@ define(function (require) {
 
                 updatePythonValue(newValue) {
                     if (this.props.prePythonSyncProcessing!==undefined) {
-                       newValue = this.props.prePythonSyncProcessing(newValue);
+                        newValue = this.props.prePythonSyncProcessing(newValue);
                     }
                     //whenever we invoke syncValueWithPython we will propagate the Javascript value of the model to Python
                     if (this.syncValueWithPython) {

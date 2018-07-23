@@ -187,7 +187,7 @@ define(function (require) {
 		}
 
 	    loadTutorial(tutorialData, start) {
-		this.setState({tutorialData: {[tutorialData.name]: tutorialData}});
+		this.setState({tutorialData: Object.assign(this.state.tutorialData, {[tutorialData.name]: tutorialData})});
 
             if(start) {
                 this.setState({activeTutorial: tutorialData.name});

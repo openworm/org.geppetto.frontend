@@ -219,6 +219,16 @@ define(function (require) {
             $('#' + this.imageContainerId + '.slickdiv').slick('unslick').slick();
         },
 
+        buildImage: function (thumbImage, imageContainerId) {
+            var action = this.getImageClickAction(thumbImage.reference);
+            imgElement = <div id={imageContainerId} className="query-results-image collapse in">
+                <a href='' onClick={action}>
+                    <img className="query-results-image invert" src={thumbImage.data} />
+                </a>
+            </div>
+            return imgElement;
+        },
+
         buildCarousel: function () {
             var jsonImageVariable = JSON.parse(this.props.data);
             var imgElement = "";
@@ -262,30 +272,18 @@ define(function (require) {
                             {elements}
                         </div>
                     } else {
-                        var image = value.elements[0].initialValue;
-                        var action = this.getImageClickAction(image.reference);
-                        imgElement = <div id={imageContainerId} className="query-results-image collapse in">
-                            <a href='' onClick={action}>
-                                <img className="query-results-image invert" src={image.data} />
-                            </a>
-                        </div>
+                        imgElement = this.buildImage(value.elements[0].initialValue, imageContainerId);
                     }
                 }
                 else if (value.eClass == GEPPETTO.Resources.IMAGE) {
                     //otherwise we just show an image
-                    var image = value;
-                    var action = this.getImageClickAction(image.reference);
-                    imgElement = <div id={imageContainerId} className="query-results-image collapse in">
-                        <a href='' onClick={action}>
-                            <img className="query-results-image invert" src={image.data} />
-                        </a>
-                    </div>
+                    imgElement = this.buildImage(value, imageContainerId);
                 }
             }
 
             return imgElement;
         },
-
+        
 
         render: function () {
             var imgElement = "";

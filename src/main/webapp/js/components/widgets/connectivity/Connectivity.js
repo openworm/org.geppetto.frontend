@@ -170,19 +170,25 @@ define(function (require) {
 
 		                    }
 		                }
-
+                                var links = [];
 		                for(var x=0; x<connectionVariables.length; x++){
 	                        var connectionVariable = connectionVariables[x];
 
 	                        var source = connectionVariable.getA();
 	                        var target = connectionVariable.getB();
 	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
-	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
+	                            var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
-	                            this.createLink(connectionVariable, sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache));
+                                    var st = [sourceId,targetId].toString();
+                                    if (links[st] == undefined)
+                                        links[st] = [connectionVariable]
+                                    else
+                                        links[st].push(connectionVariable)
 		                }
 		            }
-
+                    for (var link in links) {
+                          this.createLink(links[link], link.split(',')[0], link.split(',')[1], this.options.linkType.bind(this)(links[link], this.linkCache));
+                    }
 		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
 		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
 		            return true;
@@ -322,9 +328,9 @@ define(function (require) {
             }
         },
 
-        createLink: function (conn, sourceId, targetId, type) {
+        createLink: function (conns, sourceId, targetId, type) {
             var linkItem = {
-		conn: conn,
+		conns: conns,
                 source: this.mapping[sourceId],
                 target: this.mapping[targetId],
                 type: type,

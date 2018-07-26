@@ -6,28 +6,32 @@ define(function (require) {
     var d3Scale = require("d3-scale");
     return {
 	weight: false,
+        filter: '',
 	linkColormaps: {},
 	projectionSummary: {},
+        projectionTypeSummary: {'projection': [], 'continuousProjection': [], 'gapJunction': []},
 	getProjectionSummary: function() {
 	    var projSummary = {};
 	    var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
 	    for (var i=0; i<projs.length; ++i) {
 		var proj = projs[i];
 		if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
-		    // too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
+		    // FIXME: too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
 		    var synapse = proj.getVariables().filter((x)=> {
 			if (typeof x.getType().getSuperType().getPath === 'function')
 			    return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
 		    })[0];
-		    // synapse undefined here => electrical projection, since currently the synapse attr is not given in the
-		    // <electricalProjection/> tag but in the <electricalConnectionInstance(W)/> tag.
-		    // in any case, we are currently ignoring electrical projections, but FIXME
 		    if (typeof synapse === 'undefined')
 			continue;
 		    else {
+                        var pairs = proj.getChildren().filter(x=> typeof x.getA === 'function').map(x => [x.getA().getElements()[0].index,x.getB().getElements()[0].index]);
 			var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
 			var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-			var data = {id: proj.getId(), synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation};
+                        // FIXME: type should not be stored in name, also hacky gapJunction detection. need to fix in model interpreter.
+                        var type = (synapse.types[0].conductance && !synapse.types[0].erev) ? "gapJunction" : proj.getName();
+                        if (this.projectionTypeSummary[type].indexOf(synapse.getId()) == -1)
+                            this.projectionTypeSummary[type].push(synapse.getId())
+			var data = {id: proj.getId(), type: type, synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, pairs: pairs};
 			if (typeof projSummary[[preId, postId]] === 'undefined')
 			    projSummary[[preId, postId]] = [data];
 			else
@@ -49,13 +53,16 @@ define(function (require) {
 	    else
 		return [];
         },
-	linkWeight: function (conn) {
+	linkWeight: function (conn, filter) {
 	    if (this.linkSynapse(conn).length > 0) {
+                var synapses = this.linkSynapse(conn);
+                if (filter)
+                    synapses = synapses.filter(x=>this.projectionTypeSummary["projection"].indexOf(x.getId())>-1);
 		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		var weight = 1;
 		if (weightIndex > -1)
 		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-		var gbases = this.linkSynapse(conn).map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : 1);
+		var gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : 1);
 		var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
 		return gbases.map((g, i) => {
 		    if (typeof g.getInitialValue === 'function')
@@ -67,9 +74,12 @@ define(function (require) {
 	    else
 		return 0;
 	},
-	linkErev: function (conn) {
+	linkErev: function (conn, filter) {
 	    if (this.linkSynapse(conn).length > 0) {
-		var erevs = this.linkSynapse(conn).map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
+                var synapses = this.linkSynapse(conn);
+                if (filter)
+                    synapses = synapses.filter(x=>this.projectionTypeSummary["projection"].indexOf(x.getId())>-1);
+		var erevs = synapses.map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
 		var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
 		return erevs.map((e, i) => {
 		    if (typeof e.getInitialValue === 'function')
@@ -81,13 +91,13 @@ define(function (require) {
 	    else
 		return 0;
 	},
-	populateWeights: function(links) {
+	populateWeights: function(links, filter) {
 	    for (var i in links) {
-		links[i].weight =  this.linkWeight(links[i].conn);
-		links[i].erev = this.linkErev(links[i].conn);
+		links[i].weight =  this.linkWeight(links[i].conns[0], filter);
+		links[i].erev = this.linkErev(links[i].conns[0], filter);
 	    }
 	},
-	weightColormaps: function(links) {
+	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
 	    var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.weight >= 0));
 	    var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.weight < 0));
@@ -141,6 +151,9 @@ define(function (require) {
 	    var root = context.dataset.root;
 	    var n = nodes.length;
 
+            //if (Object.keys(this.projectionSummary).length == 0)
+            this.projectionSummary = this.getProjectionSummary();
+                
 	    // Compute index per node.
 	    nodes.forEach(function (node, i) {
 		node.pre_count = 0;
@@ -154,16 +167,21 @@ define(function (require) {
 	    context.dataset.links.forEach((function (link) {
 		//TODO: think about zero weight lines
 		//matrix[link.source][link.target].z = link.weight ? link.type : 0;
+                var Aindex = link.conns[0].getA().getElements()[0].getIndex();
+                var Bindex = link.conns[0].getB().getElements()[0].getIndex();
+                var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
+                var projTypes = proj.filter(p => JSON.stringify(p.pairs).indexOf(JSON.stringify([Aindex,Bindex])) > -1).map(p => p.type);
 		if (this.weight) {
-		    matrix[link.source][link.target].z = link.weight;
+		    matrix[link.source][link.target].weight = link.weight;
 		    matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
 		}
 		else {
-		    matrix[link.source][link.target].z = link.type;
 		    delete matrix[link.source][link.target].type;
 		}
 		nodes[link.source].pre_count += 1;
 		nodes[link.target].post_count += 1;
+                matrix[link.source][link.target].z = link.type;
+                matrix[link.source][link.target].projTypes = projTypes;
 	    }).bind(this));
 
 	    //Sorting matrix entries.
@@ -250,10 +268,15 @@ define(function (require) {
 
             var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
 	    this.linkColormaps = (function() {
-		if (this.weight)
-		    return this.weightColormaps(context.dataset.links);
+		if (this.weight) {
+                    this.populateWeights(context.dataset.links, this.filter);
+		    return this.weightColormaps(context.dataset.links, this.filter);
+                }
 		else
-		    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
+                    if (this.filter)
+                        return d3.scaleOrdinal(d3.schemeCategory10).domain(this.projectionTypeSummary[this.filter]);
+                    else
+		        return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
 	    }).bind(this)();
 
             var postMargin = parseInt(rect.attr("width"))/pre.length;
@@ -276,7 +299,7 @@ define(function (require) {
                 .attr("transform", "translate(-20,0)")
                 .each(popIndicator("y", nodeColormap, popIndicatorSize, preMargin));
 
-	    var rowFn = row(this.linkColormaps);
+	    var rowFn = row(this.linkColormaps, this.filter, this.projectionTypeSummary);
 	    var row = container.selectAll(".row")
 		.data(matrix)
 		.enter().append("g")
@@ -500,13 +523,11 @@ define(function (require) {
 	    weightCheckbox.on("change", function (ctx, that) {
 		return function () {
 		    if (this.checked) {
-			if (Object.keys(that.projectionSummary).length == 0) {
-			    that.projectionSummary = that.getProjectionSummary();
-			    that.populateWeights(ctx.dataset.links);
-			}
+			if (typeof ctx.dataset.links[0].weight === 'undefined')
+			    that.populateWeights(ctx.dataset.links, that.filter);
                         ctx.setSize(ctx.size.height, ctx.size.width + 100);
 			that.weight = true;
-			that.linkColormaps = that.weightColormaps(ctx.dataset.links);
+			that.linkColormaps = that.weightColormaps(ctx.dataset.links, that.filter);
 		    }
 		    else {
                         ctx.setSize(ctx.size.height, ctx.size.width - 100);
@@ -518,8 +539,39 @@ define(function (require) {
 		}
 	    } (context, this));
 
+            // connection type selector
+            var typeOptions = {
+                '': 'None',
+		'projection': 'Chemical',
+		'gapJunction': 'Gap Junctions',
+		'continuousProjection': 'Continuous'
+	    };
+	    var typeContainer = $('<div/>', {
+		id: context.id + '-type',
+		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 116) + 'px;',
+		class: 'types'
+	    }).appendTo(optionsContainer);
+
+	    var typeCombo = $('<select/>');
+	    $.each(typeOptions, function (k, v) {
+		$('<option/>', { value: k, text: v }).appendTo(typeCombo);
+	    });
+            typeCombo.val(this.filter);
+	    typeContainer.append($('<span/>', {
+		id: 'type-selector',
+		class: 'type-selector-label',
+		text: 'Projection Filter:'
+	    }).append(typeCombo));
+
+	    typeCombo.on("change", function(ctx, that) {
+                return function () {
+                    that.filter = this.value; 
+                    ctx.createLayout();
+                }
+            } (context, this))
+            
 	    // Draw squares for each connection
-	    function row(linkColormaps) {
+	    function row(linkColormaps, filter, projTypesSummary) {
 		return function(row) {
 		var cell = d3.select(this).selectAll(".cell")
 		    .data(row.filter(function (d) {
@@ -536,18 +588,26 @@ define(function (require) {
 			return d.id;
 		    })
 		    //.style("fill-opacity", function(d) { return z(d.z); })
-                    .style("fill", function (d) {
-			if (typeof d.type !== 'undefined')
-			    return linkColormaps[d.type](d.z);
-			else
-			    return linkColormaps(d.z);
-		    })
-		    .style("stroke", function (d) {
-			if (typeof d.type !== 'undefined')
-			    return linkColormaps[d.type](d.z);
-			else
-			    return linkColormaps(d.z);
-		    })
+                    .style("fill", function(linkColormaps, filter, projTypes) {
+                        return function (d) {
+                            if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
+                                return "#000000";
+			    if (typeof d.type !== 'undefined')
+			        return linkColormaps[d.type](d.weight);
+			    else
+			        return linkColormaps(d.z);
+		        }
+                    } (linkColormaps, filter, projTypesSummary))
+		    .style("stroke", function(linkColormaps, filter, projTypes) {
+                        return function (d) {
+                            if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
+                                return "#000000";
+			    if (typeof d.type !== 'undefined')
+			        return linkColormaps[d.type](d.weight);
+			    else
+			        return linkColormaps(d.z);
+		        }
+                    } (linkColormaps, filter, projTypesSummary))
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();
 			//Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.

@@ -6,7 +6,7 @@ define(function (require) {
     var d3Scale = require("d3-scale");
     return {
 	weight: false,
-        filter: '',
+        filter: 'projection',
 	linkColormaps: {},
 	projectionSummary: {},
         projectionTypeSummary: {'projection': [], 'continuousProjection': [], 'gapJunction': []},
@@ -57,7 +57,7 @@ define(function (require) {
 	    if (this.linkSynapse(conn).length > 0) {
                 var synapses = this.linkSynapse(conn);
                 if (filter)
-                    synapses = synapses.filter(x=>this.projectionTypeSummary["projection"].indexOf(x.getId())>-1);
+                    synapses = synapses.filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
 		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		var weight = 1;
 		if (weightIndex > -1)
@@ -65,10 +65,7 @@ define(function (require) {
 		var gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : 1);
 		var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
 		return gbases.map((g, i) => {
-		    if (typeof g.getInitialValue === 'function')
-			return weight * scale[i] * g.getInitialValue();
-		    else
-			return weight * scale[i] * g;
+		    return weight * scale[i] * 1;
 		}).reduce((x,y) => x+y, 0);
 	    }
 	    else
@@ -78,7 +75,7 @@ define(function (require) {
 	    if (this.linkSynapse(conn).length > 0) {
                 var synapses = this.linkSynapse(conn);
                 if (filter)
-                    synapses = synapses.filter(x=>this.projectionTypeSummary["projection"].indexOf(x.getId())>-1);
+                    synapses = synapses.filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
 		var erevs = synapses.map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
 		var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
 		return erevs.map((e, i) => {
@@ -91,10 +88,35 @@ define(function (require) {
 	    else
 		return 0;
 	},
+        linkGbase: function(conn, filter) {
+            if (this.linkSynapse(conn).length > 0) {
+                var synapses = this.linkSynapse(conn);
+                if (filter)
+                    synapses = synapses.filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+                var gbases;
+                if (filter === "gapJunction")
+                    gbases = synapses.map(c => (typeof c.getType().conductance !== 'undefined') ? c.getType().conductance : [0]);
+                else
+		    gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : [0]);
+                var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
+                return gbases.map((g, i) => {
+		    return scale[i] * g.getInitialValue();
+		}).reduce((x,y) => x+y, 0);
+	    }
+	    else
+		return 0;
+        },
 	populateWeights: function(links, filter) {
 	    for (var i in links) {
-		links[i].weight =  this.linkWeight(links[i].conns[0], filter);
-		links[i].erev = this.linkErev(links[i].conns[0], filter);
+                if (links[i].type.filter(t=>this.projectionTypeSummary[filter].indexOf(t)>-1).length > 0) {
+		    links[i].weight = this.linkWeight(links[i].conns[0], filter);
+                    links[i].erev = this.linkErev(links[i].conns[0], filter);
+                    links[i].gbase = this.linkGbase(links[i].conns[0], filter);
+                } else {
+                    links[i].weight = 0;
+                    links[i].erev = 0;
+                    links[i].gbase = 0;
+		}
 	    }
 	},
 	weightColormaps: function(links, filter) {
@@ -105,7 +127,7 @@ define(function (require) {
 	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.weight >= 0) ? c.weight : -1*c.weight))).filter(x => x != 0);
 	    var colormaps = {};
 	    var baseColormap = d3.scaleLinear()
-		.range([d3.cubehelix(0, 1, 0.5), d3.cubehelix(240, 1, 0.5)])
+		.range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)])
 		.interpolate(d3.interpolateCubehelixLong);
 	    if (weights_exc.length > 0) {
 		var min_exc = Math.min.apply(null, weights_exc);
@@ -153,6 +175,7 @@ define(function (require) {
 
             //if (Object.keys(this.projectionSummary).length == 0)
             this.projectionSummary = this.getProjectionSummary();
+            this.populateWeights(context.dataset.links, this.filter);
                 
 	    // Compute index per node.
 	    nodes.forEach(function (node, i) {
@@ -266,17 +289,14 @@ define(function (require) {
                 };
             };
 
-            var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
+            var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeAccent);
 	    this.linkColormaps = (function() {
 		if (this.weight) {
                     this.populateWeights(context.dataset.links, this.filter);
 		    return this.weightColormaps(context.dataset.links, this.filter);
                 }
 		else
-                    if (this.filter)
-                        return d3.scaleOrdinal(d3.schemeCategory10).domain(this.projectionTypeSummary[this.filter]);
-                    else
-		        return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
+		    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
 	    }).bind(this)();
 
             var postMargin = parseInt(rect.attr("width"))/pre.length;
@@ -323,7 +343,55 @@ define(function (require) {
 	    column.append("line")
 		.attr("x1", -context.options.innerWidth);
 
+            function addSynapseTypesToLegend(id, colorScale, position) {
+                var colorBox = {size: 20, labelSpace: 4};
+                var padding = {x: colorBox.size, y: 2 * colorBox.size};
+
+                var legendItem = context.svg.selectAll(id)
+                    .data(colorScale.domain().slice().sort())
+                    .enter().append('g')
+                    .attr('class', 'legend-item')
+                    .attr('transform', function (d, i) {
+                        var height = colorBox.size + colorBox.labelSpace;
+                        horz = colorBox.size + position.x + padding.x;
+                        vert = i * height + position.y + padding.y;
+                        return 'translate(' + horz + ',' + vert + ')';
+                    });
+
+                // coloured squares
+                legendItem.append('rect')
+                    .attr('width', colorBox.size)
+                    .attr('height', colorBox.size)
+                    .style('fill', function (d) {
+                        return colorScale(d);
+                    })
+                    .style('stroke', function (d) {
+                        return colorScale(d);
+                    });
+
+                // labels
+                legendItem.append('text')
+                    .attr('x', colorBox.size + colorBox.labelSpace)
+                    .attr('y', colorBox.size - colorBox.labelSpace)
+                    .attr('class', 'legend-text')
+                    .text(function (d) {
+                        return d;
+                    });
+
+                // title
+                if (typeof title != 'undefined') {
+                    this.svg.append('text')
+                        .text(title)
+                        .attr('class', 'legend-title')
+                        .attr('x', position.x + 2 * padding.x)
+                        .attr('y', position.y + 0.75 * padding.y);
+                }
+            }
+
+
 	    context.createLegend('legend', nodeColormap, { x: matrixDim, y: 0 });
+            if (!this.weight)
+                addSynapseTypesToLegend('legend', this.linkColormaps, { x: matrixDim, y: nodeColormap.domain().length*24 + 10});
 	    if (this.weight) createWeightLegend(this.linkColormaps);
 
 	    function linspace(start, end, n) {
@@ -410,7 +478,7 @@ define(function (require) {
 		    else
 			legendAxis = d3.axisLeft(legendScale);
 		    // FIXME: don't hardcode number of ticks
-		    legendAxis.ticks(10).tickFormat(d3.format(".1e"));
+		    legendAxis.ticks(10).tickFormat(d3.format(".0f"));
 
 		    legend.append("g")
 			.attr('height', legendHeight)
@@ -510,7 +578,7 @@ define(function (require) {
 	    // toggle weight scheme
 	    var schemeContainer = $('<div/>', {
 		id: context.id + '-weight',
-		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 58) + 'px;',
+		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 110) + 'px;',
 		class: 'weights'
 	    }).appendTo(optionsContainer);
 
@@ -541,14 +609,13 @@ define(function (require) {
 
             // connection type selector
             var typeOptions = {
-                '': 'None',
 		'projection': 'Chemical',
 		'gapJunction': 'Gap Junctions',
 		'continuousProjection': 'Continuous'
 	    };
 	    var typeContainer = $('<div/>', {
 		id: context.id + '-type',
-		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 116) + 'px;',
+		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 75) + 'px;',
 		class: 'types'
 	    }).appendTo(optionsContainer);
 
@@ -620,10 +687,12 @@ define(function (require) {
                         var source_id = d.y;
                         var target_id = d.x;
                         var cweight = links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
+                        var gbase = links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
                         var weightStr = "";
-                        if (typeof cweight !== 'undefined')
-                            weightStr = " (weight≈" + Math.round(cweight*100)/100 + ")";
-                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
+                        if (typeof cweight !== 'undefined' && cweight > 0) {
+                            weightStr = " (weight=" + Math.round(cweight*100)/100 + ", g=" +  gbase + "nS)";
+                            $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
+                        }
                     })
 		    .on("mouseout", $.proxy(mouseoutCell));
 		}

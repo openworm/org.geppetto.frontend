@@ -41,6 +41,11 @@ define(function (require) {
 	    }
 	    return projSummary;
 	},
+        selectConn: function(conns, filter) {
+            if (filter === 'gapJunction')
+                filter = 'electricalProjection';
+            return conns.filter(x=>x.getParent().getName()===filter)[0];
+        },
 	linkSynapse: function (conn) {
 	    if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
 		this.projectionSummary = this.getProjectionSummary();
@@ -53,11 +58,10 @@ define(function (require) {
 	    else
 		return [];
         },
-	linkWeight: function (conn, filter) {
-	    if (this.linkSynapse(conn).length > 0) {
-                var synapses = this.linkSynapse(conn);
-                if (filter)
-                    synapses = synapses.filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+	linkWeight: function (conns, filter) {
+	    if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+                var conn = this.selectConn(conns, filter);
 		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		var weight = 1;
 		if (weightIndex > -1)
@@ -71,11 +75,9 @@ define(function (require) {
 	    else
 		return 0;
 	},
-	linkErev: function (conn, filter) {
-	    if (this.linkSynapse(conn).length > 0) {
-                var synapses = this.linkSynapse(conn);
-                if (filter)
-                    synapses = synapses.filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+	linkErev: function (conns, filter) {
+	    if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
 		var erevs = synapses.map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
 		var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
 		return erevs.map((e, i) => {
@@ -88,19 +90,21 @@ define(function (require) {
 	    else
 		return 0;
 	},
-        linkGbase: function(conn, filter) {
-            if (this.linkSynapse(conn).length > 0) {
-                var synapses = this.linkSynapse(conn);
-                if (filter)
-                    synapses = synapses.filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
-                var gbases;
-                if (filter === "gapJunction")
-                    gbases = synapses.map(c => (typeof c.getType().conductance !== 'undefined') ? c.getType().conductance : [0]);
-                else
-		    gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : [0]);
+        linkGbase: function(conns, filter) {
+            if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+                var gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : c.getType().conductance);
                 var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
+                var conn = this.selectConn(conns, filter);
+                var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+		var weight = 1;
+		if (weightIndex > -1)
+		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
                 return gbases.map((g, i) => {
-		    return scale[i] * g.getInitialValue();
+                    if (typeof g.getInitialValue === 'function')
+		        return weight * scale[i] * g.getInitialValue();
+                    else
+                        return weight * scale[i] * g;
 		}).reduce((x,y) => x+y, 0);
 	    }
 	    else
@@ -109,22 +113,22 @@ define(function (require) {
 	populateWeights: function(links, filter) {
 	    for (var i in links) {
                 if (links[i].type.filter(t=>this.projectionTypeSummary[filter].indexOf(t)>-1).length > 0) {
-		    links[i].weight = this.linkWeight(links[i].conns[0], filter);
-                    links[i].erev = this.linkErev(links[i].conns[0], filter);
-                    links[i].gbase = this.linkGbase(links[i].conns[0], filter);
+		    links[i].weight = this.linkWeight(links[i].conns, filter);
+                    links[i].erev = this.linkErev(links[i].conns, filter);
+                    links[i].gbase = this.linkGbase(links[i].conns, filter);
                 } else {
-                    links[i].weight = 0;
-                    links[i].erev = 0;
-                    links[i].gbase = 0;
+                    links[i].weight = undefined;
+                    links[i].erev = undefined;
+                    links[i].gbase = undefined;
 		}
 	    }
 	},
 	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
-	    var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.weight >= 0));
-	    var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.weight < 0));
-	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.weight))).filter(x => x != 0);
-	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.weight >= 0) ? c.weight : -1*c.weight))).filter(x => x != 0);
+	    var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0));
+	    var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0));
+	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.gbase))).filter(x => x != undefined);
+	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.gbase >= 0) ? c.gbase : -1*c.gbase))).filter(x => x != undefined);
 	    var colormaps = {};
 	    var baseColormap = d3.scaleLinear()
 		.range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)])
@@ -196,6 +200,7 @@ define(function (require) {
                 var projTypes = proj.filter(p => JSON.stringify(p.pairs).indexOf(JSON.stringify([Aindex,Bindex])) > -1).map(p => p.type);
 		if (this.weight) {
 		    matrix[link.source][link.target].weight = link.weight;
+                    matrix[link.source][link.target].gbase = link.gbase;
 		    matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
 		}
 		else {
@@ -295,8 +300,10 @@ define(function (require) {
                     this.populateWeights(context.dataset.links, this.filter);
 		    return this.weightColormaps(context.dataset.links, this.filter);
                 }
-		else
-		    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
+		else {
+                    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.filter].indexOf(y)>-1)).filter(x=>x.length>0));
+		    //return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
+                }
 	    }).bind(this)();
 
             var postMargin = parseInt(rect.attr("width"))/pre.length;
@@ -319,7 +326,6 @@ define(function (require) {
                 .attr("transform", "translate(-20,0)")
                 .each(popIndicator("y", nodeColormap, popIndicatorSize, preMargin));
 
-	    var rowFn = row(this.linkColormaps, this.filter, this.projectionTypeSummary);
 	    var row = container.selectAll(".row")
 		.data(matrix)
 		.enter().append("g")
@@ -327,7 +333,7 @@ define(function (require) {
 		.attr("transform", function (d, i) {
 		    return "translate(0," + x(i) + ")";
 		})
-		.each(rowFn);
+		.each(row(this.linkColormaps, this.filter, this.projectionTypeSummary));
 
 	    row.append("line")
 		.attr("x2", context.options.innerWidth);
@@ -451,7 +457,7 @@ define(function (require) {
 			colors.push(linkColormaps[type](n));
 			n += inc;
 		    }
-		    var colourPct = d3.zip(pct, colors.reverse());
+		    var colourPct = d3.zip(pct, colors);
 
 		    colourPct.forEach(function(d) {
 			gradient.append('stop')
@@ -470,7 +476,7 @@ define(function (require) {
 		    // create a scale and axis for the legend
 		    var legendScale = d3.scaleLinear()
 			.domain(linkColormaps[type].domain())
-			.range([0, 360]);
+			.range([360, 0]);
 
 		    var legendAxis;
 		    if (i == 0)
@@ -478,7 +484,7 @@ define(function (require) {
 		    else
 			legendAxis = d3.axisLeft(legendScale);
 		    // FIXME: don't hardcode number of ticks
-		    legendAxis.ticks(10).tickFormat(d3.format(".0f"));
+		    legendAxis.ticks(10).tickFormat(d3.format(".1f"));
 
 		    legend.append("g")
 			.attr('height', legendHeight)
@@ -660,9 +666,9 @@ define(function (require) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "#000000";
 			    if (typeof d.type !== 'undefined')
-			        return linkColormaps[d.type](d.weight);
+			        return linkColormaps[d.type](d.gbase);
 			    else
-			        return linkColormaps(d.z);
+			        return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
 		        }
                     } (linkColormaps, filter, projTypesSummary))
 		    .style("stroke", function(linkColormaps, filter, projTypes) {
@@ -670,9 +676,9 @@ define(function (require) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "#000000";
 			    if (typeof d.type !== 'undefined')
-			        return linkColormaps[d.type](d.weight);
+			        return linkColormaps[d.type](d.gbase);
 			    else
-			        return linkColormaps(d.z);
+			        return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
 		        }
                     } (linkColormaps, filter, projTypesSummary))
 		    .on("click", function (d) {
@@ -689,8 +695,8 @@ define(function (require) {
                         var cweight = links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
                         var gbase = links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
                         var weightStr = "";
-                        if (typeof cweight !== 'undefined' && cweight > 0) {
-                            weightStr = " (weight=" + Math.round(cweight*100)/100 + ", g=" +  gbase + "nS)";
+                        if (typeof cweight !== 'undefined') {
+                            weightStr = " (weight=" + Math.round(cweight*100)/100 + ", g=" +  Math.round(gbase*100)/100 + "nS)";
                             $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
                         }
                     })

@@ -398,7 +398,7 @@ define(function (require) {
 	    context.createLegend('legend', nodeColormap, { x: matrixDim, y: 0 });
             if (!this.weight)
                 addSynapseTypesToLegend('legend', this.linkColormaps, { x: matrixDim, y: nodeColormap.domain().length*24 + 10});
-	    if (this.weight) createWeightLegend(this.linkColormaps);
+	    if (this.weight) createWeightLegend(this.linkColormaps, this.filter);
 
 	    function linspace(start, end, n) {
 		var out = [];
@@ -414,9 +414,9 @@ define(function (require) {
 		return out;
 	    }
 
-	    function createWeightLegend(linkColormaps) {
+	    function createWeightLegend(linkColormaps, filter) {
 		var i = 0;
-		for (var type in linkColormaps) {
+		for (var type in linkColormaps){ 
 		    var legendFullHeight = 400;
 		    var legendFullWidth = 50;
 		    var legendMargin = { top: 20, bottom: 20, left: 80, right: 30 };
@@ -492,7 +492,8 @@ define(function (require) {
 			.attr("transform", "translate(" + (i==0 ? legendWidth : 0) + ", 0)")
 			.call(legendAxis);
 
-		    legend.append("text")
+                    if (filter !== 'gapJunction')
+		        legend.append("text")
 			.attr('class', 'weight-legend-label')
 			.attr('width', 20)
 			.attr('height', 20)
@@ -621,7 +622,7 @@ define(function (require) {
 	    };
 	    var typeContainer = $('<div/>', {
 		id: context.id + '-type',
-		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 75) + 'px;',
+		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 80) + 'px;',
 		class: 'types'
 	    }).appendTo(optionsContainer);
 

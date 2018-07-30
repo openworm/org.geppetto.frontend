@@ -4,6 +4,7 @@
 define(function (require) {
     var d3 = require("d3");
     var d3Scale = require("d3-scale");
+    var Widget = require('../Widget');
     return {
 	weight: false,
         filter: 'projection',
@@ -148,7 +149,7 @@ define(function (require) {
 	createMatrixLayout: function (context) {
 	    var d3 = require("d3");
 
-	    var margin = { top: 45, right: 10, bottom: 10, left: 25 };
+	    var margin = { top: 45, right: 10, bottom: 50, left: 25 };
 	    var legendWidth = 120;
 
 	    var matrixDim = (context.options.innerHeight < (context.options.innerWidth - legendWidth)) ? (context.options.innerHeight) : (context.options.innerWidth - legendWidth);
@@ -419,7 +420,7 @@ define(function (require) {
 		for (var type in linkColormaps){ 
 		    var legendFullHeight = 400;
 		    var legendFullWidth = 50;
-		    var legendMargin = { top: 20, bottom: 20, left: 80, right: 30 };
+		    var legendMargin = { top: 40, bottom: 0, left: 80, right: 30 };
 		    var legendWidth = 20;
 		    var legendHeight = legendFullHeight - legendMargin.top - legendMargin.bottom;
 
@@ -484,7 +485,7 @@ define(function (require) {
 		    else
 			legendAxis = d3.axisLeft(legendScale);
 		    // FIXME: don't hardcode number of ticks
-		    legendAxis.ticks(10).tickFormat(d3.format(".1f"));
+		    legendAxis.ticks(10).tickFormat(d3.format(".2f"));
 
 		    legend.append("g")
 			.attr('height', legendHeight)
@@ -501,11 +502,14 @@ define(function (require) {
 
                     // append unit, would be tidier to have both scalebars in a parent <g/>
                     if (i == 0) {
+			var unitPos = -18;
+			if (Object.keys(linkColormaps).length == 1)
+				unitPos = 0;
                         legend.append("text")
 			.attr('class', 'weight-legend-label')
 			.attr('width', 20)
 			.attr('height', 20)
-                        .attr('transform', 'translate(-18, 375)')
+                        .attr('transform', 'translate(' + unitPos + ', 375)')
 			.text("nS");
                     }
 
@@ -517,13 +521,46 @@ define(function (require) {
 	    //Sorting matrix entries by criteria specified via combobox
 	    var optionsContainer = $('<div/>', {
 		id: context.id + "-options",
-		style: 'width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 32) + 'px;',
+		style: 'width:' + (matrixDim - margin.left - 20) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
 		class: 'connectivity-options'
 	    }).appendTo(context.connectivityContainer);
+
+	    // toggle weight scheme
+	    var schemeContainer = $('<div/>', {
+		id: context.id + '-weight',
+		style: 'float: right;',
+		class: 'weights'
+	    }).appendTo(optionsContainer);
+
+	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight">');
+	    if (this.weight)
+		weightCheckbox.attr("checked", "checked");
+	    schemeContainer.append(weightCheckbox);
+	    schemeContainer.append($('<label for="weightScheme" class="weight-label">Show weights</label>'));
+	    
+	    weightCheckbox.on("change", function (ctx, that) {
+		return function () {
+		    if (this.checked) {
+			if (typeof ctx.dataset.links[0].weight === 'undefined')
+			    that.populateWeights(ctx.dataset.links, that.filter);
+                        ctx.setSize(ctx.size.height, ctx.size.width + 100);
+			that.weight = true;
+			that.linkColormaps = that.weightColormaps(ctx.dataset.links, that.filter);
+		    }
+		    else {
+                        ctx.setSize(ctx.size.height, ctx.size.width - 100);
+			that.weight = false;
+			ctx.nodeColormap = ctx.defaultColorMapFunction();
+		    }
+		    $('#' + ctx.id + "-weight").remove();
+		    ctx.createLayout();
+		}
+	    } (context, this));
+            
 	    var orderContainer = $('<div/>', {
 		id: context.id + '-ordering',
-		style: 'width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 32) + 'px;',
-		class: 'connectivity-ordering'
+		style: 'width:' + legendWidth + 'px;float: left;',
+		class: 'connectivity-orderby'
 	    }).appendTo(optionsContainer);
 
 	    var orderCombo = $('<select/>');
@@ -532,6 +569,7 @@ define(function (require) {
 	    });
 	    orderContainer.append($('<span/>', {
 		id: 'matrix-sorter',
+                style: 'float: left; width:' + legendWidth + 'px; width: 130px;',
 		class: 'connectivity-ordering-label',
 		text: 'Order by:'
 	    }).append(orderCombo));
@@ -582,38 +620,6 @@ define(function (require) {
 		}
 	    } (context.svg));
 
-	    // toggle weight scheme
-	    var schemeContainer = $('<div/>', {
-		id: context.id + '-weight',
-		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 110) + 'px;',
-		class: 'weights'
-	    }).appendTo(optionsContainer);
-
-	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight">');
-	    if (this.weight)
-		weightCheckbox.attr("checked", "checked");
-	    schemeContainer.append(weightCheckbox);
-	    schemeContainer.append($('<label for="weightScheme" class="weight-label">Show weights</label>'));
-	    
-	    weightCheckbox.on("change", function (ctx, that) {
-		return function () {
-		    if (this.checked) {
-			if (typeof ctx.dataset.links[0].weight === 'undefined')
-			    that.populateWeights(ctx.dataset.links, that.filter);
-                        ctx.setSize(ctx.size.height, ctx.size.width + 100);
-			that.weight = true;
-			that.linkColormaps = that.weightColormaps(ctx.dataset.links, that.filter);
-		    }
-		    else {
-                        ctx.setSize(ctx.size.height, ctx.size.width - 100);
-			that.weight = false;
-			ctx.nodeColormap = ctx.defaultColorMapFunction();
-		    }
-		    $('#' + ctx.id + "-weight").remove();
-		    ctx.createLayout();
-		}
-	    } (context, this));
-
             // connection type selector
             var typeOptions = {
 		'projection': 'Chemical',
@@ -622,7 +628,8 @@ define(function (require) {
 	    };
 	    var typeContainer = $('<div/>', {
 		id: context.id + '-type',
-		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 80) + 'px;',
+                style: 'float: left; width: 130px;',
+		//style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 80) + 'px;',
 		class: 'types'
 	    }).appendTo(optionsContainer);
 

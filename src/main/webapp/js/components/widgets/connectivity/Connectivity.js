@@ -79,7 +79,7 @@ define(function (require) {
             if (this.svg != null) {
                 //TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
                 var width = this.size.width - 20;
-                var height = this.size.height - 20;
+                var height = this.size.height + 50;
                 if (this.options.layout == 'matrix') {
                     $('#' + this.id + '-ordering').remove();
                 }
@@ -227,6 +227,7 @@ define(function (require) {
         createLayout: function () {
             $('#' + this.id + " svg").remove();
 	    $('#' + this.id + '-options').remove();
+            $('#' + this.id).css('margin-bottom', '50px');
 
             this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
             this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;

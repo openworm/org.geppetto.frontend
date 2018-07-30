@@ -180,5 +180,10 @@ define(function (require) {
             );
         }
     }
+    TabbedDrawer.defaultProps = {
+        childrenProp: [],
+        labels: [],
+        iconClass: []
+    };
     return TabbedDrawer;
 });

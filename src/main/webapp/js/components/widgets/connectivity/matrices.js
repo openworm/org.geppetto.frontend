@@ -67,11 +67,7 @@ define(function (require) {
 		var weight = 1;
 		if (weightIndex > -1)
 		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-		var gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : 1);
-		var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
-		return gbases.map((g, i) => {
-		    return weight * scale[i] * 1;
-		}).reduce((x,y) => x+y, 0);
+                return weight;
 	    }
 	    else
 		return 0;
@@ -95,7 +91,7 @@ define(function (require) {
             if (this.linkSynapse(conns[0]).length > 0) {
                 var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
                 var gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : c.getType().conductance);
-                var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
+                var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else if (typeof g.getUnit === 'function' && g.getUnit() === 'mS') { return 1e6; } else { return 1; } });
                 var conn = this.selectConn(conns, filter);
                 var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		var weight = 1;
@@ -626,6 +622,10 @@ define(function (require) {
 		'gapJunction': 'Gap Junctions',
 		'continuousProjection': 'Continuous'
 	    };
+            // filter available types
+            /*for (var type in typeOptions)
+                if (this.projectionTypeSummary[type].length == 0)
+	            delete typeOptions[type]*/
 	    var typeContainer = $('<div/>', {
 		id: context.id + '-type',
                 style: 'float: left; width: 130px;',
@@ -634,10 +634,10 @@ define(function (require) {
 	    }).appendTo(optionsContainer);
 
 	    var typeCombo = $('<select/>');
-	    $.each(typeOptions, function (k, v) {
-		$('<option/>', { value: k, text: v }).appendTo(typeCombo);
-	    });
-            typeCombo.val(this.filter);
+	    $.each(typeOptions, (function (k, v) {
+		$('<option/>', { value: k, text: v, disabled: (this.projectionTypeSummary[k].length == 0) }).appendTo(typeCombo);
+	    }).bind(this));
+            //typeCombo.val(this.filter);
 	    typeContainer.append($('<span/>', {
 		id: 'type-selector',
 		class: 'type-selector-label',

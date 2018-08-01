@@ -227,7 +227,7 @@ define(function (require) {
         createLayout: function () {
             $('#' + this.id + " svg").remove();
 	    $('#' + this.id + '-options').remove();
-            $('#' + this.id).css('margin-bottom', '50px');
+            $('#' + this.id).css('margin-bottom', '30px');
 
             this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
             this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;

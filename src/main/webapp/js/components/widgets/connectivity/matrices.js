@@ -4,7 +4,6 @@
 define(function (require) {
     var d3 = require("d3");
     var d3Scale = require("d3-scale");
-    var Widget = require('../Widget');
     return {
 	weight: false,
         filter: 'projection',
@@ -517,7 +516,7 @@ define(function (require) {
 	    //Sorting matrix entries by criteria specified via combobox
 	    var optionsContainer = $('<div/>', {
 		id: context.id + "-options",
-		style: 'width:' + (matrixDim - margin.left - 20) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
+		style: 'width:' + (matrixDim - margin.left + 60) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
 		class: 'connectivity-options'
 	    }).appendTo(context.connectivityContainer);
 
@@ -555,17 +554,19 @@ define(function (require) {
             
 	    var orderContainer = $('<div/>', {
 		id: context.id + '-ordering',
-		style: 'width:' + legendWidth + 'px;float: left;',
+		style: 'float: left;',
 		class: 'connectivity-orderby'
 	    }).appendTo(optionsContainer);
 
-	    var orderCombo = $('<select/>');
+	    var orderCombo = $('<select/>', {
+                style: 'margin-left: 0.5em;'
+            });
 	    $.each(sortOptions, function (k, v) {
 		$('<option/>', { value: k, text: v }).appendTo(orderCombo);
 	    });
 	    orderContainer.append($('<span/>', {
 		id: 'matrix-sorter',
-                style: 'float: left; width:' + legendWidth + 'px; width: 130px;',
+                style: 'float: left;',
 		class: 'connectivity-ordering-label',
 		text: 'Order by:'
 	    }).append(orderCombo));
@@ -628,16 +629,18 @@ define(function (require) {
 	            delete typeOptions[type]*/
 	    var typeContainer = $('<div/>', {
 		id: context.id + '-type',
-                style: 'float: left; width: 130px;',
+                style: 'float: left; margin-left: 1.6em',
 		//style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 80) + 'px;',
 		class: 'types'
 	    }).appendTo(optionsContainer);
 
-	    var typeCombo = $('<select/>');
+	    var typeCombo = $('<select/>', {
+                style: 'margin-left: 0.5em;'
+            });
 	    $.each(typeOptions, (function (k, v) {
 		$('<option/>', { value: k, text: v, disabled: (this.projectionTypeSummary[k].length == 0) }).appendTo(typeCombo);
 	    }).bind(this));
-            //typeCombo.val(this.filter);
+            typeCombo.val(this.filter);
 	    typeContainer.append($('<span/>', {
 		id: 'type-selector',
 		class: 'type-selector-label',

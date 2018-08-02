@@ -224,7 +224,7 @@ define(function (require) {
             }
         },
 
-        createLayout: function () {
+        createLayout: function (state) {
             $('#' + this.id + " svg").remove();
 	    $('#' + this.id + '-options').remove();
             $('#' + this.id).css('margin-bottom', '30px');
@@ -239,7 +239,7 @@ define(function (require) {
 
             switch (this.options.layout) {
                 case 'matrix':
-                    matrices.createMatrixLayout(this);
+                matrices.createMatrixLayout(this, state);
                     break;
                 case 'force':
                     forces.createForceLayout(this);

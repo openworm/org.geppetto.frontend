@@ -5,10 +5,9 @@ define(function (require) {
     var d3 = require("d3");
     var d3Scale = require("d3-scale");
     return {
-	weight: false,
-        filter: 'projection',
 	linkColormaps: {},
 	projectionSummary: {},
+        state: {filter: 'projection', weight: false, order: 'id'},
         projectionTypeSummary: {'projection': [], 'continuousProjection': [], 'gapJunction': []},
 	getProjectionSummary: function() {
 	    var projSummary = {};
@@ -90,7 +89,19 @@ define(function (require) {
             if (this.linkSynapse(conns[0]).length > 0) {
                 var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
                 var gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : c.getType().conductance);
-                var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else if (typeof g.getUnit === 'function' && g.getUnit() === 'mS') { return 1e6; } else { return 1; } });
+                var scaleFn = function(unit) {
+                    switch(unit) {
+                    case 'S':
+                        return 1; break;
+                    case 'mS':
+                        return 1e-3; break;
+                    case 'nS':
+                        return 1e-9; break;
+                    case 'pS':
+                        return 1e-12;
+                    }
+                };
+                var scale = gbases.map(g => { if (typeof g.getUnit === 'function') { return scaleFn(g.getUnit()) } });
                 var conn = this.selectConn(conns, filter);
                 var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		var weight = 1;
@@ -141,7 +152,9 @@ define(function (require) {
 	    }
 	    return colormaps;
 	},
-	createMatrixLayout: function (context) {
+	createMatrixLayout: function (context, state) {
+            if (typeof state !== 'undefined')
+                this.state = state;
 	    var d3 = require("d3");
 
 	    var margin = { top: 45, right: 10, bottom: 50, left: 25 };
@@ -175,12 +188,12 @@ define(function (require) {
 
             //if (Object.keys(this.projectionSummary).length == 0)
             this.projectionSummary = this.getProjectionSummary();
-            this.populateWeights(context.dataset.links, this.filter);
+            this.populateWeights(context.dataset.links, this.state.filter);
                 
 	    // Compute index per node.
 	    nodes.forEach(function (node, i) {
-		node.pre_count = 0;
-		node.post_count = 0;
+		node.pre_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
+                node.post_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
 		matrix[i] = d3.range(n).map(function (j) {
 		    return { x: j, y: i, z: 0 };
 		});
@@ -194,7 +207,7 @@ define(function (require) {
                 var Bindex = link.conns[0].getB().getElements()[0].getIndex();
                 var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
                 var projTypes = proj.filter(p => JSON.stringify(p.pairs).indexOf(JSON.stringify([Aindex,Bindex])) > -1).map(p => p.type);
-		if (this.weight) {
+		if (this.state.weight) {
 		    matrix[link.source][link.target].weight = link.weight;
                     matrix[link.source][link.target].gbase = link.gbase;
 		    matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
@@ -202,8 +215,10 @@ define(function (require) {
 		else {
 		    delete matrix[link.source][link.target].type;
 		}
-		nodes[link.source].pre_count += 1;
-		nodes[link.target].post_count += 1;
+                for (var type of projTypes) {
+		    nodes[link.source].pre_count[type] += 1;
+		    nodes[link.target].post_count[type] += 1;
+                }
                 matrix[link.source][link.target].z = link.type;
                 matrix[link.source][link.target].projTypes = projTypes;
 	    }).bind(this));
@@ -220,16 +235,16 @@ define(function (require) {
 		id: d3.range(n).sort(function (a, b) {
 		    return d3.ascending(nodes[a].id, nodes[b].id);
 		}),
-		pre_count: d3.range(n).sort(function (a, b) {
-		    return nodes[b].pre_count - nodes[a].pre_count;
-		}),
-		post_count: d3.range(n).sort(function (a, b) {
-		    return nodes[b].post_count - nodes[a].post_count;
-		}),
+		pre_count: d3.range(n).sort((function (a, b) {
+		    return nodes[b].pre_count[this.state.filter] - nodes[a].pre_count[this.state.filter];
+		}).bind(this)),
+		post_count: d3.range(n).sort((function (a, b) {
+		    return nodes[b].post_count[this.state.filter] - nodes[a].post_count[this.state.filter];
+		}).bind(this)),
 		//community: d3.range(n).sort(function(a, b) { return nodes[b].community - nodes[a].community; }),
 	    };
 	    // Default sort order.
-	    x.domain(orders.id);
+	    x.domain(orders[this.state.order]);
 
 	    var rect = container
 		.append("rect")
@@ -292,13 +307,12 @@ define(function (require) {
 
             var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeAccent);
 	    this.linkColormaps = (function() {
-		if (this.weight) {
-                    this.populateWeights(context.dataset.links, this.filter);
-		    return this.weightColormaps(context.dataset.links, this.filter);
+		if (this.state.weight) {
+                    this.populateWeights(context.dataset.links, this.state.filter);
+		    return this.weightColormaps(context.dataset.links, this.state.filter);
                 }
 		else {
-                    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.filter].indexOf(y)>-1)).filter(x=>x.length>0));
-		    //return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
+                    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
                 }
 	    }).bind(this)();
 
@@ -329,7 +343,7 @@ define(function (require) {
 		.attr("transform", function (d, i) {
 		    return "translate(0," + x(i) + ")";
 		})
-		.each(row(this.linkColormaps, this.filter, this.projectionTypeSummary));
+		.each(row(this.linkColormaps, this.state.filter, this.projectionTypeSummary));
 
 	    row.append("line")
 		.attr("x2", context.options.innerWidth);
@@ -392,9 +406,9 @@ define(function (require) {
 
 
 	    context.createLegend('legend', nodeColormap, { x: matrixDim, y: 0 });
-            if (!this.weight)
+            if (!this.state.weight)
                 addSynapseTypesToLegend('legend', this.linkColormaps, { x: matrixDim, y: nodeColormap.domain().length*24 + 10});
-	    if (this.weight) createWeightLegend(this.linkColormaps, this.filter);
+	    if (this.state.weight) createWeightLegend(this.linkColormaps, this.state.filter);
 
 	    function linspace(start, end, n) {
 		var out = [];
@@ -480,7 +494,7 @@ define(function (require) {
 		    else
 			legendAxis = d3.axisLeft(legendScale);
 		    // FIXME: don't hardcode number of ticks
-		    legendAxis.ticks(10).tickFormat(d3.format(".2f"));
+		    legendAxis.ticks(10).tickFormat(d3.format(".2s"));
 
 		    legend.append("g")
 			.attr('height', legendHeight)
@@ -499,13 +513,13 @@ define(function (require) {
                     if (i == 0) {
 			var unitPos = -18;
 			if (Object.keys(linkColormaps).length == 1)
-				unitPos = 0;
+				unitPos = 18;
                         legend.append("text")
 			.attr('class', 'weight-legend-label')
 			.attr('width', 20)
 			.attr('height', 20)
                         .attr('transform', 'translate(' + unitPos + ', 375)')
-			.text("nS");
+			.text("S");
                     }
 
 		    i+=0.5;
@@ -520,38 +534,6 @@ define(function (require) {
 		class: 'connectivity-options'
 	    }).appendTo(context.connectivityContainer);
 
-	    // toggle weight scheme
-	    var schemeContainer = $('<div/>', {
-		id: context.id + '-weight',
-		style: 'float: right;',
-		class: 'weights'
-	    }).appendTo(optionsContainer);
-
-	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight">');
-	    if (this.weight)
-		weightCheckbox.attr("checked", "checked");
-	    schemeContainer.append(weightCheckbox);
-	    schemeContainer.append($('<label for="weightScheme" class="weight-label">Show weights</label>'));
-	    
-	    weightCheckbox.on("change", function (ctx, that) {
-		return function () {
-		    if (this.checked) {
-			if (typeof ctx.dataset.links[0].weight === 'undefined')
-			    that.populateWeights(ctx.dataset.links, that.filter);
-                        ctx.setSize(ctx.size.height, ctx.size.width + 100);
-			that.weight = true;
-			that.linkColormaps = that.weightColormaps(ctx.dataset.links, that.filter);
-		    }
-		    else {
-                        ctx.setSize(ctx.size.height, ctx.size.width - 100);
-			that.weight = false;
-			ctx.nodeColormap = ctx.defaultColorMapFunction();
-		    }
-		    $('#' + ctx.id + "-weight").remove();
-		    ctx.createLayout();
-		}
-	    } (context, this));
-            
 	    var orderContainer = $('<div/>', {
 		id: context.id + '-ordering',
 		style: 'float: left;',
@@ -570,9 +552,10 @@ define(function (require) {
 		class: 'connectivity-ordering-label',
 		text: 'Order by:'
 	    }).append(orderCombo));
-
-	    orderCombo.on("change", function (svg) {
+            orderCombo.val(this.state.order);
+	    orderCombo.on("change", function (svg, that) {
 		return function () {
+                    that.state.order = this.value;
 		    x.domain(orders[this.value]);
 
 		    var t = svg.transition().duration(2500);
@@ -615,7 +598,7 @@ define(function (require) {
 			    return "translate(" + x(i) + ")rotate(-90)";
 			});
 		}
-	    } (context.svg));
+	    } (context.svg, this));
 
             // connection type selector
             var typeOptions = {
@@ -623,10 +606,7 @@ define(function (require) {
 		'gapJunction': 'Gap Junctions',
 		'continuousProjection': 'Continuous'
 	    };
-            // filter available types
-            /*for (var type in typeOptions)
-                if (this.projectionTypeSummary[type].length == 0)
-	            delete typeOptions[type]*/
+
 	    var typeContainer = $('<div/>', {
 		id: context.id + '-type',
                 style: 'float: left; margin-left: 1.6em',
@@ -640,7 +620,9 @@ define(function (require) {
 	    $.each(typeOptions, (function (k, v) {
 		$('<option/>', { value: k, text: v, disabled: (this.projectionTypeSummary[k].length == 0) }).appendTo(typeCombo);
 	    }).bind(this));
-            typeCombo.val(this.filter);
+            typeCombo.val(this.projectionTypeSummary[this.state.filter].length > 0 ?
+                          this.state.filter :
+                          Object.keys(typeOptions).filter(x => this.projectionTypeSummary[x].length > 0)[0]);
 	    typeContainer.append($('<span/>', {
 		id: 'type-selector',
 		class: 'type-selector-label',
@@ -649,10 +631,42 @@ define(function (require) {
 
 	    typeCombo.on("change", function(ctx, that) {
                 return function () {
-                    that.filter = this.value; 
-                    ctx.createLayout();
+                    that.state.filter = this.value;
+                    ctx.createLayout(that.state);
                 }
-            } (context, this))
+            } (context, this));
+
+            	    // toggle weight scheme
+	    var weightContainer = $('<div/>', {
+		id: context.id + '-weight',
+		style: 'float: left; margin-left: 1.6em',
+		class: 'weights'
+	    }).appendTo(optionsContainer);
+
+	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight">');
+	    if (this.state.weight)
+		weightCheckbox.attr("checked", "checked");
+	    weightContainer.append(weightCheckbox);
+	    weightContainer.append($('<label for="weightScheme" class="weight-label">Show weights</label>'));
+	    
+	    weightCheckbox.on("change", function (ctx, that) {
+		return function () {
+		    if (this.checked) {
+			if (typeof ctx.dataset.links[0].weight === 'undefined')
+			    that.populateWeights(ctx.dataset.links, that.state.filter);
+                        ctx.setSize(ctx.size.height, ctx.size.width + 100);
+			that.state.weight = true;
+			that.linkColormaps = that.weightColormaps(ctx.dataset.links, that.state.filter);
+		    }
+		    else {
+                        ctx.setSize(ctx.size.height, ctx.size.width - 100);
+			that.state.weight = false;
+			ctx.nodeColormap = ctx.defaultColorMapFunction();
+		    }
+		    $('#' + ctx.id + "-weight").remove();
+		    ctx.createLayout();
+		}
+	    } (context, this));
             
 	    // Draw squares for each connection
 	    function row(linkColormaps, filter, projTypesSummary) {
@@ -675,7 +689,7 @@ define(function (require) {
                     .style("fill", function(linkColormaps, filter, projTypes) {
                         return function (d) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
-                                return "#000000";
+                                return "none";
 			    if (typeof d.type !== 'undefined')
 			        return linkColormaps[d.type](d.gbase);
 			    else
@@ -685,7 +699,7 @@ define(function (require) {
 		    .style("stroke", function(linkColormaps, filter, projTypes) {
                         return function (d) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
-                                return "#000000";
+                                return "none";
 			    if (typeof d.type !== 'undefined')
 			        return linkColormaps[d.type](d.gbase);
 			    else
@@ -707,7 +721,7 @@ define(function (require) {
                         var gbase = links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
                         var weightStr = "";
                         if (typeof cweight !== 'undefined') {
-                            weightStr = " (weight=" + Math.round(cweight*100)/100 + ", g=" +  Math.round(gbase*100)/100 + "nS)";
+                            weightStr = " (weight=" + cweight + ", g=" +  Number(gbase).toPrecision(2) + "S)";
                             $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
                         }
                     })

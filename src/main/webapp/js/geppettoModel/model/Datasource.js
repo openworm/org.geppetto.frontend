@@ -120,8 +120,11 @@ define(function (require) {
      *
      * @param variableId
      */
-    Datasource.prototype.fetchVariable = function (variableId, callback) {
-        GEPPETTO.Manager.fetchVariable(variableId, this.getId(), callback);
+    Datasource.prototype.fetchVariable = function (variableIds, callback) {
+        if (typeof(variableIds) == "string"){
+            variableIds = [variableIds];   
+        }
+        GEPPETTO.Manager.fetchVariables(variableIds, this.getId(), callback);
     };
 
     return Datasource;

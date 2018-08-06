@@ -40,7 +40,7 @@ define(function (require) {
                 }
             },
             linkType: function (conn) {
-                return 1;
+                return [];
             },
             library: "GEPPETTO.ModelFactory.geppettoModel.common"
         },

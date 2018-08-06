@@ -186,8 +186,10 @@ define(function (require) {
 	    var root = context.dataset.root;
 	    var n = nodes.length;
 
-            //if (Object.keys(this.projectionSummary).length == 0)
             this.projectionSummary = this.getProjectionSummary();
+            this.state.filter = this.projectionTypeSummary[this.state.filter].length > 0 ?
+                this.state.filter :
+                Object.keys(this.projectionTypeSummary).filter(x => this.projectionTypeSummary[x].length > 0)[0];
             this.populateWeights(context.dataset.links, this.state.filter);
                 
 	    // Compute index per node.
@@ -620,9 +622,7 @@ define(function (require) {
 	    $.each(typeOptions, (function (k, v) {
 		$('<option/>', { value: k, text: v, disabled: (this.projectionTypeSummary[k].length == 0) }).appendTo(typeCombo);
 	    }).bind(this));
-            typeCombo.val(this.projectionTypeSummary[this.state.filter].length > 0 ?
-                          this.state.filter :
-                          Object.keys(typeOptions).filter(x => this.projectionTypeSummary[x].length > 0)[0]);
+            typeCombo.val(this.state.filter);
 	    typeContainer.append($('<span/>', {
 		id: 'type-selector',
 		class: 'type-selector-label',

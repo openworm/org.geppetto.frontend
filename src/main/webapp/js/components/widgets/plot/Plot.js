@@ -379,7 +379,7 @@ define(function (require) {
 					name: legendName,
 					line: $.extend({
 					    dash: 'solid',
-					    width: 2
+					    width: '2'
 					}, lineOptions),
 					hoverinfo : 'all',
 					type : 'scatter'
@@ -1113,7 +1113,7 @@ define(function (require) {
 					name: options.legendText,
 					line: {
 						dash: 'solid',
-						width: 2
+						width: '2'
 					}
 			};
 
@@ -1173,7 +1173,7 @@ define(function (require) {
 					name: legendName,
 			    line: $.extend({
                                 dash: 'solid',
-				width: 2
+				width: '2',
 			    }, lineOptions),
 					hoverinfo : 'alle'
 			};

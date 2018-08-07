@@ -1293,7 +1293,7 @@ define(function (require) {
 				// if any data, loop through it
 			    if(view.data != undefined){
                                 var that = this;
-                                GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), view.data, function() {
+                                GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), view.data.map(d => d.path), function() {
 					for (var index in view.data) {
 					    var item = view.data[index];
 					    that.controller.plotStateVariable(

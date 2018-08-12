@@ -420,10 +420,6 @@ define(function (require, exports, module) {
 				this.loadModel();
 			});
 
-			this.on("change:name", function (model, value, options) {
-				console.log("pakor")
-			});
-
 			this.on("change:derived_state_variables", function (model, value, options) {
 				if (this.get('derived_state_variables').length > 0) {
 					this.mergeModel();
@@ -473,7 +469,7 @@ define(function (require, exports, module) {
 
 			id: '',
 			name: '',
-			// experiments: []
+			experiments: []
 		}),
 
 		getPayload: function () {

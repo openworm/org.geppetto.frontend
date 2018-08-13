@@ -26,7 +26,6 @@ define(function (require) {
             }
             this.openDrawer = this.openDrawer.bind(this);
             this.renderMyLabels = this.renderMyLabels.bind(this);
-            this.renderMyChildren = this.renderMyChildren.bind(this);
             this.drawerResizing = this.drawerResizing.bind(this);
             this.drawerStopResizing = this.drawerStopResizing.bind(this);
             this.closeDrawer = this.closeDrawer.bind(this);
@@ -47,7 +46,7 @@ define(function (require) {
             if (newOffset < 250)
                 newOffset = 250;
             this.setState({ drawerHeight: newOffset });
-        }
+        };
 
         // exact resize is calculated with the callback onResizeStop using also movementY
         drawerStopResizing(e) {
@@ -61,7 +60,7 @@ define(function (require) {
             if (newOffset < 250)
                 newOffset = 250;
             this.setState({ drawerHeight: newOffset });
-        }
+        };
 
         // function to render all the buttons
         renderMyLabels() {
@@ -79,32 +78,38 @@ define(function (require) {
                 );
             }, this);
             return renderedLabels;
-        }
+        };
 
         // function to render all the childs, wrap each one of them in a div and manage with display
         // which child has to be visible.
-        renderMyChildren() {
+        renderMyChildren = () => {
             var paddingChildren = 45;
-            var renderedComponents = this.props.children.map(function (child, index) {
-                if (this.state.drawerOpened == true) {
-                    var ElementToRender = child;
-                    if ((this.props.childrenProp[index] != null) && (this.props.childrenProp[index] != undefined)) {
-                        var MyElement = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProp[index]} /></div> : <div key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProp[index]} /></div>;
+            if (this.props.children != undefined) {
+                var renderedComponents = this.props.children.map(function (child, index) {
+                    var ElementToRender = undefined;
+                    var MyElement = undefined;
+                    if(child.type != undefined) {
+                        var ElementToRender = child.type;
+                        if (this.state.drawerOpened == true) {
+                            MyElement = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...child.props} /></div> : <div key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...child.props} /></div>;
+                        } else {
+                            MyElement = <div key={index}><ElementToRender className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...child.props} /></div>;
+                        }
                     } else {
-                        var MyElement = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} /></div> : <div key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} /></div>;
+                        var ElementToRender = child;
+                        if (this.state.drawerOpened == true) {
+                            MyElement = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProps[index]} /></div> : <div key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProps[index]} /></div>;
+                        } else {
+                            MyElement = <div key={index}><ElementToRender className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProps[index]} /></div>;
+                        }
                     }
-                } else {
-                    var ElementToRender = child;
-                    if ((this.props.childrenProp[index] != null) && (this.props.childrenProp[index] != undefined)){
-                        var MyElement = <div key={index}><ElementToRender className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProp[index]} /></div>;
-                    } else {
-                        var MyElement = <div key={index}><ElementToRender className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} /></div>;
-                    }
-                }
-                return (MyElement);
-            }, this);
-            return renderedComponents;
-        }
+                    return (MyElement);
+                }, this);
+                return renderedComponents;
+            } else {
+                return undefined;
+            }
+        };
 
         // Called by the DrawerButton to determine when the drawer has to be open or closed
         openDrawer(buttonClicked) {
@@ -121,13 +126,13 @@ define(function (require) {
                     drawerOpened: !this.state.drawerOpened
                 });
             }
-        }
+        };
 
         maximizeDrawer() {
             var newOffset = (this.state.drawerHeight >= window.innerHeight - 50) ? 250 : window.innerHeight - 50;
             this.rnd.updateSize({ height: newOffset, width: '100%' });
             this.setState({ drawerHeight: newOffset });
-        }
+        };
 
         closeDrawer() {
             this.setState({
@@ -136,11 +141,11 @@ define(function (require) {
                 drawerHeight: 250
             });
             this.rnd.updateSize({ height: 250, width: '100%' });
-        }
+        };
 
         minimizeDrawer() {
             this.setState({ drawerOpened: !this.state.drawerOpened });
-        }
+        };
 
         render() {
             const drawerStyle = this.state.drawerOpened ? { top: null, bottom: 0, display: 'block' } : { display: 'none' };

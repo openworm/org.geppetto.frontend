@@ -403,7 +403,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param dataSourceId
 	 * @param variableId
 	 */
-	public void fetchVariable(String requestID, Long projectId, String dataSourceId, String variableId)
+	public void fetchVariable(String requestID, Long projectId, String dataSourceId, String[] variableId)
 	{
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		try

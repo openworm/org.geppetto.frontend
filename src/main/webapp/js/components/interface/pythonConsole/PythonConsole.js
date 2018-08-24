@@ -2,20 +2,16 @@
  * React component for displaying a Python console.
  *
  * @author Adrian Quintana (adrian@metacell.us)
+ * @author Dario Del Piano
  */
 define(function (require) {
   
-    var React = require('react'), $ = require('jquery');
-    var GEPPETTO = require('geppetto');
-
+    var React = require('react');
+    require('./PythonConsole.less');
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
-    require('./PythonConsole.less');
 
-    /**
-     * Creates a table html component used to dipslay the experiments
-     */
-    var pythonConsole = React.createClass({
+    return React.createClass({
         render: function () {
 
             return (
@@ -30,6 +26,4 @@ define(function (require) {
             );
         }
     });
-
-    return pythonConsole;
 });

@@ -25,13 +25,11 @@ define(function (require) {
                 drawerHeight: 250
             }
             this.openDrawer = this.openDrawer.bind(this);
-            this.renderMyLabels = this.renderMyLabels.bind(this);
             this.drawerResizing = this.drawerResizing.bind(this);
             this.drawerStopResizing = this.drawerStopResizing.bind(this);
             this.closeDrawer = this.closeDrawer.bind(this);
             this.maximizeDrawer = this.maximizeDrawer.bind(this);
             this.minimizeDrawer = this.minimizeDrawer.bind(this);
-            this.renderMyChildren = this.renderMyChildren.bind(this);
         }
 
         // using the callback onResize of Rnd, keep tracks of the resize and animate the tabber
@@ -97,13 +95,8 @@ define(function (require) {
                     if(child.type != undefined) {
                         var DrawerChild = child.type;
                         var properties = child.props;
-                        if (this.state.drawerOpened == true) {
-                            ComponentToRender = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div> : <div key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
-                        } else {
-                            ComponentToRender = <div key={index}><DrawerChild className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
-                        }
                     // If child.type is undefined we are in the scope of the componentFactory, this already
-                    // provides us the type directly, so we we can reassign this to DrawerChild and declare
+                    // provides us the type directly, so we can reassign this to DrawerChild and declare
                     // the child component we need into the tabbedDrawer.
                     } else {
                         var DrawerChild = child;
@@ -111,11 +104,11 @@ define(function (require) {
                         // we extract the properties for the specific child component based on the order
                         // these have been declared.
                         var properties = this.props.childrenProps[index];
-                        if (this.state.drawerOpened == true) {
-                            ComponentToRender = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div> : <div key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
-                        } else {
-                            ComponentToRender = <div key={index}><DrawerChild className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
-                        }
+                    }
+                    if (this.state.drawerOpened == true) {
+                        ComponentToRender = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div> : <div key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
+                    } else {
+                        ComponentToRender = <div key={index}><DrawerChild className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
                     }
                     return (ComponentToRender);
                 }, this);

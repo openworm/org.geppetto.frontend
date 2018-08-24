@@ -31,6 +31,7 @@ define(function (require) {
             this.closeDrawer = this.closeDrawer.bind(this);
             this.maximizeDrawer = this.maximizeDrawer.bind(this);
             this.minimizeDrawer = this.minimizeDrawer.bind(this);
+            this.renderMyChildren = this.renderMyChildren.bind(this);
         }
 
         // using the callback onResize of Rnd, keep tracks of the resize and animate the tabber
@@ -82,28 +83,41 @@ define(function (require) {
 
         // function to render all the childs, wrap each one of them in a div and manage with display
         // which child has to be visible.
-        renderMyChildren = () => {
+        renderMyChildren() {
             var paddingChildren = 45;
+            // Check for children since react will complain if we try to iterate an undefined object.
             if (this.props.children != undefined) {
                 var renderedComponents = this.props.children.map(function (child, index) {
-                    var ElementToRender = undefined;
-                    var MyElement = undefined;
+                    var DrawerChild = undefined;
+                    var ComponentToRender = undefined;
+                    // I am relying on the type to distinguish between componentFactory usage in the
+                    // ComponentInitialization and the reacty way to use the TabbedDrawer.
+                    // If type is defined we are in the reacty way to use the component, for that reason I
+                    // need to take the type to redefine the component, since what I have as child is an object.
                     if(child.type != undefined) {
-                        var ElementToRender = child.type;
+                        var DrawerChild = child.type;
+                        var properties = child.props;
                         if (this.state.drawerOpened == true) {
-                            MyElement = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...child.props} /></div> : <div key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...child.props} /></div>;
+                            ComponentToRender = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div> : <div key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
                         } else {
-                            MyElement = <div key={index}><ElementToRender className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...child.props} /></div>;
+                            ComponentToRender = <div key={index}><DrawerChild className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
                         }
+                    // If child.type is undefined we are in the scope of the componentFactory, this already
+                    // provides us the type directly, so we we can reassign this to DrawerChild and declare
+                    // the child component we need into the tabbedDrawer.
                     } else {
-                        var ElementToRender = child;
+                        var DrawerChild = child;
+                        // properties passed through the componentFactory method to declare the component
+                        // we extract the properties for the specific child component based on the order
+                        // these have been declared.
+                        var properties = this.props.childrenProps[index];
                         if (this.state.drawerOpened == true) {
-                            MyElement = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProps[index]} /></div> : <div key={index}><ElementToRender iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProps[index]} /></div>;
+                            ComponentToRender = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div> : <div key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
                         } else {
-                            MyElement = <div key={index}><ElementToRender className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...this.props.childrenProps[index]} /></div>;
+                            ComponentToRender = <div key={index}><DrawerChild className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
                         }
                     }
-                    return (MyElement);
+                    return (ComponentToRender);
                 }, this);
                 return renderedComponents;
             } else {
@@ -189,6 +203,6 @@ define(function (require) {
     TabbedDrawer.defaultProps = {
         childrenProps: []
     };
-    
+
     return TabbedDrawer;
 });

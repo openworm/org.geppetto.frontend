@@ -90,25 +90,27 @@ define(function (require) {
                     var ComponentToRender = undefined;
                     // I am relying on the type to distinguish between componentFactory usage in the
                     // ComponentInitialization and the reacty way to use the TabbedDrawer.
-                    // If type is defined we are in the reacty way to use the component, for that reason I
-                    // need to take the type to redefine the component, since what I have as child is an object.
-                    if(child.type != undefined) {
-                        var DrawerChild = child.type;
-                        var properties = child.props;
-                    // If child.type is undefined we are in the scope of the componentFactory, this already
-                    // provides us the type directly, so we can reassign this to DrawerChild and declare
-                    // the child component we need into the tabbedDrawer.
+                    // If type is defined we are in the reacty way to use the component, in this case we need
+                    // to append the additional props that the Drawer defines, reason because we are cloning
+                    // the child to do so.
+                    if (child.type != undefined) {
+                        // React declarative way.
+                        var DrawerChild = React.cloneElement(child, {
+                            iframeHeight: (this.state.drawerHeight - paddingChildren)
+                        });
+                        if (this.state.drawerOpened == true) {
+                            ComponentToRender = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}> {DrawerChild} </div> : <div key={index}> {DrawerChild} </div>;
+                        } else {
+                            ComponentToRender = <div key={index}> {DrawerChild} </div>;
+                        }
                     } else {
+                        // Component Factory way.
                         var DrawerChild = child;
-                        // properties passed through the componentFactory method to declare the component
-                        // we extract the properties for the specific child component based on the order
-                        // these have been declared.
-                        var properties = this.props.childrenProps[index];
-                    }
-                    if (this.state.drawerOpened == true) {
-                        ComponentToRender = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div> : <div key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
-                    } else {
-                        ComponentToRender = <div key={index}><DrawerChild className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} {...properties} /></div>;
+                        if (this.state.drawerOpened == true) {
+                            ComponentToRender = (this.state.selectedTab != index) ? <div className="hiddenComponent" key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} /></div> : <div key={index}><DrawerChild iframeHeight={this.state.drawerHeight - paddingChildren} /></div>;
+                        } else {
+                            ComponentToRender = <div key={index}><DrawerChild className="hiddenComponent" iframeHeight={this.state.drawerHeight - paddingChildren} /></div>;
+                        }
                     }
                     return (ComponentToRender);
                 }, this);

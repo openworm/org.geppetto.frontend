@@ -34,6 +34,7 @@ before_script:
 script:
   - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
+  - docker --version
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - echo "$TRAVIS_BRANCH"
   - travis_retry docker build -t="geppetto" --build-arg mainBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#update-virgo:utilities/docker/geppetto/

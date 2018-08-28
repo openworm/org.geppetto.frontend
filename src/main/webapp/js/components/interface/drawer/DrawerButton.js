@@ -16,7 +16,7 @@ define(function (require) {
             super(props);
             this.state = {
                 mouseOver: false,
-                buttonActived: false
+                buttonAlive: false
             }
 
             this.activeButton = this.activeButton.bind(this);
@@ -28,12 +28,12 @@ define(function (require) {
         activeButton() {
             if ((this.props.labelKey === this.props.selectedTab) && this.props.drawerOpened)
                 this.setState({
-                    buttonActived: true,
+                    buttonAlive: true,
                     mouseOver: false
                 });
             else
                 this.setState({
-                    buttonActived: false,
+                    buttonAlive: false,
                     mouseOver: false
                 });
             this.props.functionDrawer(this.props.labelKey);

@@ -1,5 +1,5 @@
 /**
- * Button component used in the tabbed drawer to 
+ * Button component used in the tabbed drawer to
  * select the child component to display.
  *
  *  @author Dario Del Piano
@@ -16,7 +16,7 @@ define(function (require) {
             super(props);
             this.state = {
                 mouseOver: false,
-                buttonAlive: false
+                activeButton: false
             }
 
             this.activeButton = this.activeButton.bind(this);
@@ -28,12 +28,12 @@ define(function (require) {
         activeButton() {
             if ((this.props.labelKey === this.props.selectedTab) && this.props.drawerOpened)
                 this.setState({
-                    buttonAlive: true,
+                    activeButton: true,
                     mouseOver: false
                 });
             else
                 this.setState({
-                    buttonAlive: false,
+                    activeButton: false,
                     mouseOver: false
                 });
             this.props.functionDrawer(this.props.labelKey);

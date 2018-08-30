@@ -195,9 +195,5 @@ define(function (require) {
         }
     }
 
-    TabbedDrawer.defaultProps = {
-        childrenProps: []
-    };
-
     return TabbedDrawer;
 });

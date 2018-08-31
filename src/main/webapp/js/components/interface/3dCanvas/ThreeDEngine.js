@@ -507,7 +507,7 @@ define(['jquery'], function () {
             // To use enter the axis length
             if (show) {
                 if (!this.axis) {
-                    this.axis = new THREE.AxisHelper(200);
+                    this.axis = new THREE.AxesHelper(200);
                     this.scene.add(this.axis);
                 }
             } else

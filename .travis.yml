@@ -33,6 +33,7 @@ before_script:
   - export SLIMERJSLAUNCHER=/home/travis/firefox-58.0/firefox/firefox
   - export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
 script:
+  - docker network inspect bridge
   - netstat -nr
   - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
@@ -71,6 +72,7 @@ script:
   - docker inspect geppetto_container;
   - netstat -nr
   - netstat -tulpn
+  - docker network inspect bridge
   - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 200
   - echo "Current time :$(date +"%T")"

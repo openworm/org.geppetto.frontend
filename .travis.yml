@@ -36,8 +36,6 @@ before_script:
 script:
   - docker network inspect bridge
   - netstat -nr
-  - ip addr
-  - sudo ip addr show lo | sudo grep -q inet6 || sudo ip addr add ::1/128 dev lo
   - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
   - docker --version

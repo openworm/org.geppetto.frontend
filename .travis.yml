@@ -2,6 +2,7 @@ language: node_js
 os: linux
 sudo: required
 dist: trusty
+group: deprecated-2017Q4
 bundler_args: --retry 5
 node_js:
   - "7"
@@ -35,6 +36,7 @@ before_script:
 script:
   - docker network inspect bridge
   - netstat -nr
+  - ip addr
   - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
   - docker --version

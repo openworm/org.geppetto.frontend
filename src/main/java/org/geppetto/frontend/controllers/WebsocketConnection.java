@@ -553,7 +553,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		String dataSourceId;
 		List<String> paths;
 		String path;
-		String variableId;
+		String[] variableId;
 		List<RunnableQueryDT> runnableQueries;
 	}
 

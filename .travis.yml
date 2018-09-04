@@ -28,6 +28,7 @@ addons:
     - libglapi-mesa
     - libosmesa6
     - net-tools
+    - lsof
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
@@ -36,6 +37,7 @@ before_script:
 script:
   - docker network inspect bridge
   - netstat -nr
+  - lsof -n -i TCP
   - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
   - docker --version
@@ -73,6 +75,7 @@ script:
   - docker inspect geppetto_container;
   - netstat -nr
   - netstat -tulpn
+  - lsof -n -i TCP
   - docker network inspect bridge
   - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 200

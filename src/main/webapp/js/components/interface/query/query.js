@@ -50,7 +50,7 @@ define(function (require) {
         },
 
         // add query item to model
-        addItem: function(item, callback){
+        addItem: function (item, callback) {
             this.items.push(item);
 
             // get count triggers notify change once results are fetched
@@ -65,7 +65,7 @@ define(function (require) {
                 }
             }
 
-            if(this.items.length >0) {
+            if (this.items.length > 0) {
                 // get count triggers notify change once results are fetched
                 this.getCount(callback);
             } else {
@@ -75,44 +75,44 @@ define(function (require) {
         },
 
         // clear all query items from model
-        clearItems: function(){
+        clearItems: function () {
             this.items = [];
             this.count = 0;
             this.notifyChange();
         },
 
         // Asynchronous call to the server to get the results count for the given query items
-        getCount: function(callback){
+        getCount: function (callback) {
             var queryDTOs = [];
 
-            for(var i=0; i<this.items.length; i++){
+            for (var i = 0; i < this.items.length; i++) {
                 var selection = this.items[i].selection;
-                if(selection != -1){
+                if (selection != -1) {
                     var queryDTO = {
                         target: this.items[i].target,
-                        query: this.items[i].options[selection+1].queryObj
+                        query: this.items[i].options[selection + 1].queryObj
                     };
 
                     queryDTOs.push(queryDTO);
                 }
             }
 
-            var getCountDoneCallback = function(count){
+            var getCountDoneCallback = function (count) {
                 this.setCount(count, callback);
             };
 
             GEPPETTO.QueriesController.getQueriesCount(queryDTOs, getCountDoneCallback.bind(this));
         },
 
-        setCount: function(count, callback){
+        setCount: function (count, callback) {
             this.count = count;
             callback();
             this.notifyChange();
         },
 
-        addResults: function(results){
+        addResults: function (results) {
             // loop results and unselect all
-            for(var i=0; i<this.results.length; i++){
+            for (var i = 0; i < this.results.length; i++) {
                 this.results[i].selected = false;
             }
 
@@ -121,7 +121,7 @@ define(function (require) {
             this.notifyChange();
         },
 
-        deleteResults: function(results) {
+        deleteResults: function (results) {
             GEPPETTO.CommandController.log("delete results", true);
             for (var i = 0; i < this.results.length; i++) {
                 if (results.id == this.results[i].id) {
@@ -132,10 +132,10 @@ define(function (require) {
             this.notifyChange();
         },
 
-        resultSelectionChanged: function(resultsSetId){
+        resultSelectionChanged: function (resultsSetId) {
             // loop results and change selection
-            for(var i=0; i<this.results.length; i++){
-                if(this.results[i].id == resultsSetId) {
+            for (var i = 0; i < this.results.length; i++) {
+                if (this.results[i].id == resultsSetId) {
                     this.results[i].selected = true;
                     // move selected at the top of the list to simulate history
                     var match = this.results[i];
@@ -176,9 +176,9 @@ define(function (require) {
         isCarousel: false,
 
         imageContainerId: '',
-        fullyLoaded : false,
+        fullyLoaded: false,
 
-        getImageClickAction: function(path){
+        getImageClickAction: function (path) {
             var that = this;
 
             var action = function (e) {
@@ -193,33 +193,43 @@ define(function (require) {
 
         getInitialState: function () {
             return {
-                carouselFullyLoaded : false,
+                carouselFullyLoaded: false,
             };
         },
 
-        componentDidMount: function(){
+        componentDidMount: function () {
             // apply carousel
-            if(this.isCarousel) {
+            if (this.isCarousel) {
                 var slickDivElement = $('#' + this.imageContainerId + '.slickdiv');
                 slickDivElement.slick();
                 var that = this;
 
                 //reload slick carousel if it's first time clicking on arrow in any direction
-                slickDivElement.find(".slick-arrow").on("click", function(){
-                	if(!that.fullyLoaded){
-                		that.setState({carouselFullyLoaded : true});
-                		that.fullyLoaded = true;
-                	}
-                }, {passive: true});
+                slickDivElement.find(".slick-arrow").on("click", function () {
+                    if (!that.fullyLoaded) {
+                        that.setState({ carouselFullyLoaded: true });
+                        that.fullyLoaded = true;
+                    }
+                }, { passive: true });
             }
         },
 
-        componentDidUpdate : function() {
-        	//on component refresh, update slick carousel
+        componentDidUpdate: function () {
+            //on component refresh, update slick carousel
             $('#' + this.imageContainerId + '.slickdiv').slick('unslick').slick();
         },
 
-        buildCarousel : function(){
+        buildImage: function (thumbImage, imageContainerId) {
+            var action = this.getImageClickAction(thumbImage.reference);
+            imgElement = <div id={imageContainerId} className="query-results-image collapse in">
+                <a href='' onClick={action}>
+                    <img className="query-results-image invert" src={thumbImage.data} />
+                </a>
+            </div>
+            return imgElement;
+        },
+
+        buildCarousel: function () {
             var jsonImageVariable = JSON.parse(this.props.data);
             var imgElement = "";
 
@@ -229,58 +239,56 @@ define(function (require) {
 
                 var value = jsonImageVariable.initialValues[0].value;
                 if (value.eClass == GEPPETTO.Resources.ARRAY_VALUE) {
-                    this.isCarousel = true;
-                    var imagesToLoad = 2;
-                    if(this.state.carouselFullyLoaded){
-                    	imagesToLoad = value.elements.length;
+                    if (value.elements.length > 1) {
+                        this.isCarousel = true;
+                        var imagesToLoad = 2;
+                        if (this.state.carouselFullyLoaded) {
+                            imagesToLoad = value.elements.length;
+                        }
+
+                        //set flag to fully loaded if total length of images to render is less or equal to 2
+                        if (value.elements.length <= 2) {
+                            this.fullyLoaded = true;
+                        }
+
+                        var that = this;
+                        //if it's an array, create a carousel (relies on slick)
+                        var elements = value.elements.map(function (item, key) {
+                            if (key < imagesToLoad) {
+                                var image = item.initialValue;
+                                var action = that.getImageClickAction(image.reference);
+                                return <div key={key} className="query-results-slick-image"> {image.name}
+                                    <a href='' onClick={action}>
+                                        <img className="popup-image invert" src={image.data} />
+                                    </a>
+                                </div>
+                            }
+                        });
+
+                        elements = elements.slice(0, imagesToLoad);
+
+                        imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
+                            data-slick={JSON.stringify({ fade: true, centerMode: true, slidesToShow: 1, slidesToScroll: 1 })}>
+                            {elements}
+                        </div>
+                    } else {
+                        imgElement = this.buildImage(value.elements[0].initialValue, imageContainerId);
                     }
-
-                    //set flag to fully loaded if total length of images to render is less or equal to 2
-                    if(value.elements.length<=2){
-                    	this.fullyLoaded = true;
-                    }
-
-                    var that = this;
-                    //if it's an array, create a carousel (relies on slick)
-                    var elements = value.elements.map(function (item, key) {
-                    	if(key<imagesToLoad){
-                    		var image = item.initialValue;
-                            var action = that.getImageClickAction(image.reference);
-                    		return <div key={key} className="query-results-slick-image"> {image.name}
-                                <a href='' onClick={action}>
-                                    <img className="popup-image invert" src={image.data}/>
-                                </a>
-                    		</div>
-                    	}
-                    });
-
-                    elements = elements.slice(0,imagesToLoad);
-
-                    imgElement = <div id={imageContainerId} className="slickdiv query-results-slick collapse in"
-                                      data-slick={JSON.stringify({fade: true, centerMode: true, slidesToShow: 1, slidesToScroll: 1})}>
-                        {elements}
-                    </div>
                 }
                 else if (value.eClass == GEPPETTO.Resources.IMAGE) {
                     //otherwise we just show an image
-                    var image = value;
-                    var action = this.getImageClickAction(image.reference);
-                    imgElement = <div id={imageContainerId} className="query-results-image collapse in">
-                        <a href='' onClick={action}>
-                            <img className="query-results-image invert" src={image.data}/>
-                        </a>
-                    </div>
+                    imgElement = this.buildImage(value, imageContainerId);
                 }
             }
 
             return imgElement;
         },
-
+        
 
         render: function () {
             var imgElement = "";
-            if(this.props.data != "" && this.props.data != undefined) {
-            	imgElement = this.buildCarousel();
+            if (this.props.data != "" && this.props.data != undefined) {
+                imgElement = this.buildCarousel();
             }
 
             return (
@@ -293,7 +301,7 @@ define(function (require) {
 
     GEPPETTO.QueryResultsControlsComponent = React.createClass({
 
-        replaceTokensWithPath: function(inputStr, path){
+        replaceTokensWithPath: function (inputStr, path) {
             return inputStr.replace(/\$ID\$/gi, path);
         },
 
@@ -340,12 +348,12 @@ define(function (require) {
                 var add = true;
 
                 // check show condition
-                if(config.Common[control].showCondition != undefined){
+                if (config.Common[control].showCondition != undefined) {
                     var condition = this.replaceTokensWithPath(config.Common[control].showCondition, resultItemId);
                     add = eval(condition);
                 }
 
-                if(add) {
+                if (add) {
                     ctrlButtons.push(config.Common[control]);
                 }
             }
@@ -378,7 +386,7 @@ define(function (require) {
                             if (actionStr != '' && actionStr != undefined) {
                                 GEPPETTO.CommandController.execute(actionStr);
                                 // check custom action to run after configured command
-                                if(that.props.metadata.action != '' && that.props.metadata.action != undefined) {
+                                if (that.props.metadata.action != '' && that.props.metadata.action != undefined) {
                                     // straight up eval as we don't want this to show on the geppetto console
                                     eval(that.props.metadata.action.replace(/\$ID\$/gi, resultItemId));
                                 }
@@ -396,10 +404,10 @@ define(function (require) {
                         return (
                             <span key={id}>
                                 <button id={idVal}
-                                        className={classVal}
-                                        style={styleVal}
-                                        title={tooltip}
-                                        onClick={actionFn}>
+                                    className={classVal}
+                                    style={styleVal}
+                                    title={tooltip}
+                                    onClick={actionFn}>
                                 </button>
                             </span>
                         )
@@ -433,7 +441,7 @@ define(function (require) {
             };
 
             var that = this;
-            var onSelection = function(e){
+            var onSelection = function (e) {
                 var val = parseInt(e.target.value);
                 that.props.onSelectOption(that.props.item, val);
             };
@@ -476,8 +484,8 @@ define(function (require) {
     var QueryBuilder = React.createClass({
         displayName: 'QueryBuilder',
         dataSourceResults: {},
-        updateResults : false,
-        initTypeAheadCreated : false,
+        updateResults: false,
+        initTypeAheadCreated: false,
         configuration: { DataSources: {} },
         mixins: [
             require('../../controls/mixins/bootstrap/modal.js')
@@ -515,16 +523,16 @@ define(function (require) {
             GEPPETTO.QueryBuilder = this;
         },
 
-        switchView: function(resultsView, clearQueryItems) {
-            if(clearQueryItems == true){
+        switchView: function (resultsView, clearQueryItems) {
+            if (clearQueryItems == true) {
                 this.clearAllQueryItems();
             }
 
-            this.setState({ resultsView: resultsView});
+            this.setState({ resultsView: resultsView });
         },
 
-        showBrentSpiner: function(spin) {
-            this.setState({ showSpinner: spin});
+        showBrentSpiner: function (spin) {
+            this.setState({ showSpinner: spin });
         },
 
         open: function () {
@@ -537,89 +545,89 @@ define(function (require) {
             $("#querybuilder").hide();
         },
 
-        setResultsControlsConfig: function(controlsConfig){
-            this.setState({resultsControlsConfig: controlsConfig});
+        setResultsControlsConfig: function (controlsConfig) {
+            this.setState({ resultsControlsConfig: controlsConfig });
         },
 
-        setResultsColumns: function(columns){
-            this.setState({resultsColumns: columns});
+        setResultsColumns: function (columns) {
+            this.setState({ resultsColumns: columns });
         },
 
-        setResultsColumnMeta: function(colMeta){
-            this.setState({resultsColumnMeta: colMeta});
+        setResultsColumnMeta: function (colMeta) {
+            this.setState({ resultsColumnMeta: colMeta });
         },
 
         initTypeahead: function () {
-        	if(!this.initTypeAheadCreated){
-        		var that = this;
+            if (!this.initTypeAheadCreated) {
+                var that = this;
 
-        		$("#query-typeahead").unbind('keydown');
-        		$("#query-typeahead").keydown(this, function (e) {
-        			if (e.which == 9 || e.keyCode == 9) {
-        				e.preventDefault();
-        			}
-        		});
+                $("#query-typeahead").unbind('keydown');
+                $("#query-typeahead").keydown(this, function (e) {
+                    if (e.which == 9 || e.keyCode == 9) {
+                        e.preventDefault();
+                    }
+                });
 
                 var queryTypeAheadElem = $("#query-typeahead");
 
                 queryTypeAheadElem.unbind('keydown');
                 queryTypeAheadElem.keydown(this, function (e) {
-        			if (e.which == 9 || e.keyCode == 9) {
-        				e.preventDefault();
-        			}
-        		});
+                    if (e.which == 9 || e.keyCode == 9) {
+                        e.preventDefault();
+                    }
+                });
 
                 queryTypeAheadElem.unbind('keypress');
                 queryTypeAheadElem.keypress(this, function (e) {
-        			if (e.which == 13 || e.keyCode == 13) {
-        				that.confirmed($("#query-typeahead").val());
-        			}
-        			if (this.searchTimeOut !== null) {
-        				clearTimeout(this.searchTimeOut);
-        			}
-        			this.searchTimeOut = setTimeout(function () {
-        				for (var key in that.configuration.DataSources) {
-        					if (that.configuration.DataSources.hasOwnProperty(key)) {
-        						var dataSource = that.configuration.DataSources[key];
-        						var searchQuery = $("#query-typeahead").val();
-        						var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
-        						that.updateResults = true;
-        						that.requestDataSourceResults(key, url, dataSource.crossDomain);
-        					}
-        				}
-        			}, 150);
-        		});
+                    if (e.which == 13 || e.keyCode == 13) {
+                        that.confirmed($("#query-typeahead").val());
+                    }
+                    if (this.searchTimeOut !== null) {
+                        clearTimeout(this.searchTimeOut);
+                    }
+                    this.searchTimeOut = setTimeout(function () {
+                        for (var key in that.configuration.DataSources) {
+                            if (that.configuration.DataSources.hasOwnProperty(key)) {
+                                var dataSource = that.configuration.DataSources[key];
+                                var searchQuery = $("#query-typeahead").val();
+                                var url = dataSource.url.replace("$SEARCH_TERM$", searchQuery);
+                                that.updateResults = true;
+                                that.requestDataSourceResults(key, url, dataSource.crossDomain);
+                            }
+                        }
+                    }, 150);
+                });
 
-        		//fire key event on paste
+                //fire key event on paste
                 queryTypeAheadElem.off("paste");
-                queryTypeAheadElem.on("paste", function(){
-                    $(this).trigger("keypress",{ keyCode: 13 });
+                queryTypeAheadElem.on("paste", function () {
+                    $(this).trigger("keypress", { keyCode: 13 });
                 });
 
                 queryTypeAheadElem.unbind('typeahead:selected');
                 queryTypeAheadElem.bind('typeahead:selected', function (obj, datum, name) {
-        			if (datum.hasOwnProperty("label")) {
-        				that.confirmed(datum.label);
-        			}
-        		});
+                    if (datum.hasOwnProperty("label")) {
+                        that.confirmed(datum.label);
+                    }
+                });
 
                 queryTypeAheadElem.typeahead({
-        			hint: true,
-        			highlight: true,
-        			minLength: 1
-        		},
-        		{
-        			name: 'dataSourceResults',
-        			source: this.defaultDataSources,
-        			limit: 50,
-        			display: 'label',
-        			templates: {
-        				suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
-        			}
-        		}
-        		);
-        		that.initTypeAheadCreated = true;
-        	}
+                    hint: true,
+                    highlight: true,
+                    minLength: 1
+                },
+                    {
+                        name: 'dataSourceResults',
+                        source: this.defaultDataSources,
+                        limit: 50,
+                        display: 'label',
+                        templates: {
+                            suggestion: Handlebars.compile('<div>{{geticon icon}} {{label}}</div>')
+                        }
+                    }
+                );
+                that.initTypeAheadCreated = true;
+            }
         },
 
         componentDidMount: function () {
@@ -642,8 +650,8 @@ define(function (require) {
                 }
             });
 
-            $("#querybuilder").click(function(e){
-                if (e.target==e.delegateTarget){
+            $("#querybuilder").click(function (e) {
+                if (e.target == e.delegateTarget) {
                     //we want this only to happen if we clicked on the div directly and not on anything therein contained
                     that.close();
                     GEPPETTO.trigger("query_closed");
@@ -662,22 +670,22 @@ define(function (require) {
 
             this.initTypeahead();
 
-            if(GEPPETTO.ForegroundControls != undefined){
+            if (GEPPETTO.ForegroundControls != undefined) {
                 GEPPETTO.ForegroundControls.refresh();
             }
         },
 
-        componentDidUpdate: function(){
-            if(!this.state.resultsView){
+        componentDidUpdate: function () {
+            if (!this.state.resultsView) {
                 // re-init the search box on query builder
                 this.initTypeahead();
             }
         },
 
-        initDataSourceResults: function(datumToken, queryToken, sorter){
+        initDataSourceResults: function (datumToken, queryToken, sorter) {
             this.dataSourceResults = new Bloodhound({
                 datumTokenizer: (datumToken != undefined) ? datumToken : Bloodhound.tokenizers.obj.whitespace('label'),
-                queryTokenizer: (queryToken != undefined) ? queryToken :Bloodhound.tokenizers.whitespace,
+                queryTokenizer: (queryToken != undefined) ? queryToken : Bloodhound.tokenizers.whitespace,
                 identify: function (obj) {
                     return obj.label;
                 },
@@ -689,7 +697,7 @@ define(function (require) {
          * Requests external data sources.
          *
          */
-        addDataSource : function(sources){
+        addDataSource: function (sources) {
             try {
                 for (var key in sources) {
                     if (sources.hasOwnProperty(key)) {
@@ -697,7 +705,7 @@ define(function (require) {
                         var key = this.generateDataSourceKey(key, 0);
                         this.configuration.DataSources[key] = obj;
 
-                        if(obj.bloodhoundConfig) {
+                        if (obj.bloodhoundConfig) {
                             this.initDataSourceResults(
                                 obj.bloodhoundConfig.datumTokenizer,
                                 obj.bloodhoundConfig.queryTokenizer,
@@ -715,9 +723,9 @@ define(function (require) {
         /**
          * Figure out if data source of same name is already in there. If it is create a new key for it.
          */
-        generateDataSourceKey : function(key, index){
+        generateDataSourceKey: function (key, index) {
             var dataSource = this.configuration.DataSources[key]
-            if(dataSource!=null || dataSource !=undefined){
+            if (dataSource != null || dataSource != undefined) {
                 key = key.concat(index);
                 this.generateDataSourceKey(key, index++);
             }
@@ -732,15 +740,15 @@ define(function (require) {
          * @param data_source_url : URL used to request data source results
          * @param crossDomain : URL allows cross domain
          */
-        requestDataSourceResults : function(data_source_name, data_source_url, crossDomain){
+        requestDataSourceResults: function (data_source_name, data_source_url, crossDomain) {
             var that = this;
             //not cross domain, get results via java servlet code
-            if(!crossDomain){
+            if (!crossDomain) {
                 var parameters = {};
                 parameters["data_source_name"] = data_source_name;
                 parameters["url"] = data_source_url;
                 GEPPETTO.MessageSocket.send("get_data_source_results", parameters);
-            }else{
+            } else {
                 //cross domain, do ajax query for results
                 $.ajax({
                     type: 'GET',
@@ -762,15 +770,15 @@ define(function (require) {
          * @param data_source_name
          * @param results
          */
-        updateDataSourceResults : function(data_source_name, results){
+        updateDataSourceResults: function (data_source_name, results) {
             var that = this;
             var responses = results.response.docs;
-            responses.forEach(function(response) {
+            responses.forEach(function (response) {
                 that.formatDataSourceResult(data_source_name, response);
             });
 
             //If it's an update request to show the drop down menu, this for it to show updated results
-            if(this.updateResults){
+            if (this.updateResults) {
                 var queryTypeAheadElem = $("#query-typeahead");
                 var value = queryTypeAheadElem.val();
                 queryTypeAheadElem.typeahead('val', "init"); //this is required to make sure the query changes otherwise typeahead won't update
@@ -781,7 +789,7 @@ define(function (require) {
         /**
          * Format incoming data source results into specified format in configuration script
          */
-        formatDataSourceResult : function(data_source_name,response){
+        formatDataSourceResult: function (data_source_name, response) {
             //create searchable result for main label
             var labelTerm = this.configuration.DataSources[data_source_name].label.field;
             var idTerm = this.configuration.DataSources[data_source_name].id;
@@ -794,7 +802,7 @@ define(function (require) {
             this.createDataSourceResult(data_source_name, response, formattedLabel, id);
 
             var explodeFields = this.configuration.DataSources[data_source_name].explode_fields;
-            for(var i =0; i<explodeFields.length; i++){
+            for (var i = 0; i < explodeFields.length; i++) {
                 //create searchable result using id as label
                 var idsTerm = explodeFields[i].field;
                 var idLabel = response[idsTerm];
@@ -806,13 +814,13 @@ define(function (require) {
             }
 
             var explodeArrays = this.configuration.DataSources[data_source_name].explode_arrays;
-            for(var i =0; i<explodeArrays.length; i++){
+            for (var i = 0; i < explodeArrays.length; i++) {
                 labelFormatting = explodeArrays[i].formatting;
                 //create searchable results using synonyms as labels
                 var searchTerm = explodeArrays[i].field;
                 var results = response[searchTerm];
-                if(results!=null || undefined){
-                    for(var i =0; i<results.length; i++){
+                if (results != null || undefined) {
+                    for (var i = 0; i < results.length; i++) {
                         var result = results[i];
                         formattedLabel = labelFormatting.replace('$VALUE$', result);
                         formattedLabel = formattedLabel.replace('$LABEL$', mainLabel);
@@ -827,7 +835,7 @@ define(function (require) {
         /**
          * Creates a searchable result from external data source response
          */
-        createDataSourceResult : function(data_source_name, response, formattedLabel, id){
+        createDataSourceResult: function (data_source_name, response, formattedLabel, id) {
             var typeName = response.type;
 
             var obj = {};
@@ -836,7 +844,7 @@ define(function (require) {
             //replace $ID$ with one returned from server for actions
             var actions = this.configuration.DataSources[data_source_name].type[typeName].actions;
             var newActions = actions.slice(0);
-            for(var i=0; i < actions.length; i++) {
+            for (var i = 0; i < actions.length; i++) {
                 newActions[i] = newActions[i].replace(/\$ID\$/g, obj["id"]);
                 newActions[i] = newActions[i].replace(/\$LABEL\$/gi, obj["label"]);
             }
@@ -860,15 +868,15 @@ define(function (require) {
             }
         },
 
-        queryOptionSelected: function(item, value, cb){
+        queryOptionSelected: function (item, value, cb) {
             this.clearErrorMessage();
 
             var that = this;
-            var callback = function(){
+            var callback = function () {
                 that.showBrentSpiner(false);
 
                 // cascading callback from parameters
-                if(typeof cb === "function"){
+                if (typeof cb === "function") {
                     cb();
                 }
             };
@@ -880,10 +888,10 @@ define(function (require) {
             this.props.model.itemSelectionChanged(item, value, callback.bind(this));
         },
 
-        queryItemDeleted: function(item){
+        queryItemDeleted: function (item) {
             this.clearErrorMessage();
 
-            var callback = function(){
+            var callback = function () {
                 this.showBrentSpiner(false);
             };
 
@@ -896,32 +904,32 @@ define(function (require) {
         /**
          * Clears all query items from the query builder
          */
-        clearAllQueryItems: function(){
+        clearAllQueryItems: function () {
             this.clearErrorMessage();
             this.props.model.clearItems();
         },
 
-        queryResultDeleted: function(resultsItem){
+        queryResultDeleted: function (resultsItem) {
             this.props.model.deleteResults(resultsItem);
         },
 
-        getCompoundQueryId: function(queryItems){
+        getCompoundQueryId: function (queryItems) {
             var id = "";
 
-            for(var i=0; i<queryItems.length; i++){
-                id+=queryItems[i].term + queryItems[i].selection;
+            for (var i = 0; i < queryItems.length; i++) {
+                id += queryItems[i].term + queryItems[i].selection;
             }
 
             return id;
         },
 
-        runQuery: function(){
+        runQuery: function () {
             this.clearErrorMessage();
-            if(this.props.model.items.length > 0) {
+            if (this.props.model.items.length > 0) {
 
                 var allSelected = true;
-                for(var i=0; i<this.props.model.items.length; i++){
-                    if(this.props.model.items[i].selection == -1){
+                for (var i = 0; i < this.props.model.items.length; i++) {
+                    if (this.props.model.items[i].selection == -1) {
                         allSelected = false;
                         break;
                     }
@@ -969,9 +977,9 @@ define(function (require) {
                                 queryLabel += ((i != 0) ? "/" : "")
                                     + that.props.model.items[i].term;
                                 verboseLabel += ((i != 0) ? "<span> AND </span>" : "")
-                                    + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
+                                    + that.props.model.items[i].options[that.props.model.items[i].selection + 1].name;
                                 verboseLabelPlain += ((i != 0) ? " AND " : "")
-                                    + that.props.model.items[i].options[that.props.model.items[i].selection+1].name;
+                                    + that.props.model.items[i].options[that.props.model.items[i].selection + 1].name;
                             }
 
                             // NOTE: assumption we only have one datasource configured
@@ -995,7 +1003,7 @@ define(function (require) {
                                 items: that.props.model.items.slice(0),
                                 label: queryLabel,
                                 verboseLabel: '<span>' + formattedRecords.length.toString() + '</span> ' + verboseLabel,
-                                verboseLabelPLain: formattedRecords.length.toString() + ' ' +verboseLabelPlain,
+                                verboseLabelPLain: formattedRecords.length.toString() + ' ' + verboseLabelPlain,
                                 records: formattedRecords,
                                 selected: true
                             });
@@ -1042,7 +1050,7 @@ define(function (require) {
          * @param queryItem - Object with term and variable id properties
          * @param cb - optional callback function
          */
-        addQueryItem: function(queryItemParam, cb){
+        addQueryItem: function (queryItemParam, cb) {
             this.clearErrorMessage();
 
             // grab datasource configuration (assumption we only have one datasource)
@@ -1055,9 +1063,9 @@ define(function (require) {
 
             // do we have any query items already? If so grab result type and match on that too
             var resultType = undefined;
-            for(var h=0; h<this.props.model.items.length > 0; h++){
+            for (var h = 0; h < this.props.model.items.length > 0; h++) {
                 var sel = this.props.model.items[h].selection;
-                if(sel != -1 && this.props.model.items[h].options[sel].value != -1){
+                if (sel != -1 && this.props.model.items[h].options[sel].value != -1) {
                     // grab the first for which we have a selection if any
                     resultType = this.props.model.items[h].options[sel].queryObj.getResultType();
                 }
@@ -1066,7 +1074,7 @@ define(function (require) {
             // retrieve matching queries for variable type
             var matchingQueries = GEPPETTO.ModelFactory.getMatchingQueries(variable.getType(), resultType);
 
-            if(matchingQueries.length > 0) {
+            if (matchingQueries.length > 0) {
                 // build item in model-friendly format
                 var queryItem = {
                     term: term,
@@ -1078,12 +1086,12 @@ define(function (require) {
                 for (var i = 0; i < matchingQueries.length; i++) {
                     var regx = new RegExp('\\' + queryNameToken, "g");
                     queryItem.options.push({
-                            id: matchingQueries[i].getId(),
-                            name: matchingQueries[i].getDescription().replace(regx, term),
-                            datasource: matchingQueries[i].getParent().getId(),
-                            value: i,
-                            queryObj: matchingQueries[i]
-                        }
+                        id: matchingQueries[i].getId(),
+                        name: matchingQueries[i].getDescription().replace(regx, term),
+                        datasource: matchingQueries[i].getParent().getId(),
+                        value: i,
+                        queryObj: matchingQueries[i]
+                    }
                     );
                 }
 
@@ -1100,9 +1108,9 @@ define(function (require) {
                 // add default selection
                 queryItem.selection = -1;
                 // add default option
-                queryItem.options.splice(0, 0, {name: 'Select query for ' + term, value: -1});
+                queryItem.options.splice(0, 0, { name: 'Select query for ' + term, value: -1 });
 
-                var callback = function(){
+                var callback = function () {
                     this.showBrentSpiner(false);
                 };
 
@@ -1113,16 +1121,16 @@ define(function (require) {
                 this.props.model.addItem(queryItem, callback.bind(this));
 
                 // check if we have a queryObj parameter and set it as the selected item
-                if(queryItemParam.queryObj != undefined){
+                if (queryItemParam.queryObj != undefined) {
                     // figure out which option it matches to and trigger selection
                     var val = -1;
-                    for(var h=0; h<queryItem.options.length; h++){
-                        if(queryItem.options[h].value != -1 && queryItem.options[h].id == queryItemParam.queryObj.getId()){
+                    for (var h = 0; h < queryItem.options.length; h++) {
+                        if (queryItem.options[h].value != -1 && queryItem.options[h].id == queryItemParam.queryObj.getId()) {
                             val = queryItem.options[h].value;
                         }
                     }
 
-                    if(val != -1){
+                    if (val != -1) {
                         this.queryOptionSelected(queryItem, val, cb);
                     }
                 }
@@ -1135,15 +1143,15 @@ define(function (require) {
             this.dataSourceResults.clear();
         },
 
-        setErrorMessage: function(message){
-            this.setState({errorMsg : message});
+        setErrorMessage: function (message) {
+            this.setState({ errorMsg: message });
         },
 
-        clearErrorMessage: function(){
+        clearErrorMessage: function () {
             this.setErrorMessage('');
         },
 
-        resultSetSelectionChange: function(val){
+        resultSetSelectionChange: function (val) {
             this.props.model.resultSelectionChanged(val);
         },
 
@@ -1208,12 +1216,12 @@ define(function (require) {
             downloadCSV({
                 filename: 'query-results',
                 data: resultsItem.records.map(function (record) {
-                        return {
-                            id: record.id,
-                            name: record.name,
-                            description: record.description.replace(/,/g, ' ')
-                        }
+                    return {
+                        id: record.id,
+                        name: record.name,
+                        description: record.description.replace(/,/g, ' ')
                     }
+                }
                 )
             });
         },
@@ -1221,18 +1229,18 @@ define(function (require) {
         render: function () {
             var markup = null;
             // once off figure out if we are to use infinite scrolling for results and store in state
-            if(this.state.infiniteScroll===undefined) {
+            if (this.state.infiniteScroll === undefined) {
                 this.state.infiniteScroll = !(this.props.enablePagination != undefined && this.props.enablePagination === true);
                 this.state.resultsPerPage = this.props.resultsPerPage;
             }
 
             // figure out if we are in results view or query builder view
-            if(this.state.resultsView && this.props.model.results.length > 0){
+            if (this.state.resultsView && this.props.model.results.length > 0) {
                 // if results view, build results markup based on results in the model
                 // figure out focus tab index (1 based index)
                 var focusTabIndex = 1;
-                for(var i=0; i<this.props.model.results.length; i++){
-                    if(this.props.model.results[i].selected){
+                for (var i = 0; i < this.props.model.results.length; i++) {
+                    if (this.props.model.results[i].selected) {
                         focusTabIndex = i + 1;
                     }
                 }
@@ -1240,8 +1248,8 @@ define(function (require) {
                 // set data for each tab based on results from the model
                 // for each tab put a Griddle configured with appropriate column meta
                 var tabs = this.props.model.results.map(function (resultsItem) {
-                    var getVerboseLabelMarkup = function() {
-                          return {__html: resultsItem.verboseLabel};
+                    var getVerboseLabelMarkup = function () {
+                        return { __html: resultsItem.verboseLabel };
                     };
 
                     return (
@@ -1249,66 +1257,66 @@ define(function (require) {
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
-                            showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={(window.innerHeight-280)}
-                            useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
+                                showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={(window.innerHeight - 280)}
+                                useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
                         </Tabs.Panel>
                     );
                 }, this);
 
-        		var loadHandler = function(self){
-        			GEPPETTO.on("query_closed", function(){
-        				if(self.state.open){
-        					self.toggleMenu();
-        				}
-        			});
-        		};
+                var loadHandler = function (self) {
+                    GEPPETTO.on("query_closed", function () {
+                        if (self.state.open) {
+                            self.toggleMenu();
+                        }
+                    });
+                };
 
-        		var configuration = {
-        				id : "queryResultsButton",
-        				openByDefault : false,
-        				closeOnClick : true,
-        				label: "",
-        				iconOn : 'fa fa-history fa-2x' ,
-        				iconOff : 'fa fa-history fa-2x',
-        				menuPosition : null,
-        				menuSize : {height : "auto", width : 750},
-        				menuCSS : "queryButtonMenu",
-        				autoFormatMenu : true,
-                        onClickHandler : this.resultSetSelectionChange,
-                        onLoadHandler : loadHandler,
-        				menuItems : []
-        		};
+                var configuration = {
+                    id: "queryResultsButton",
+                    openByDefault: false,
+                    closeOnClick: true,
+                    label: "",
+                    iconOn: 'fa fa-history fa-2x',
+                    iconOff: 'fa fa-history fa-2x',
+                    menuPosition: null,
+                    menuSize: { height: "auto", width: 750 },
+                    menuCSS: "queryButtonMenu",
+                    autoFormatMenu: true,
+                    onClickHandler: this.resultSetSelectionChange,
+                    onLoadHandler: loadHandler,
+                    menuItems: []
+                };
 
-        		var menuItems = this.props.model.results.map(function (resultItem) {
-        			return {label : resultItem.verboseLabelPLain, value : resultItem.id, icon: "fa-cogs"};
+                var menuItems = this.props.model.results.map(function (resultItem) {
+                    return { label: resultItem.verboseLabelPLain, value: resultItem.id, icon: "fa-cogs" };
                 });
 
-        		configuration["menuItems"] = menuItems;
+                configuration["menuItems"] = menuItems;
 
-        		this.initTypeAheadCreated = false;
+                this.initTypeAheadCreated = false;
 
                 markup = (
                     <div id="query-results-container" className="center-content">
-                        <MenuButton configuration={configuration}/>
+                        <MenuButton configuration={configuration} />
                         <Tabs tabActive={focusTabIndex}>
                             {tabs}
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
-                                title="Back to query" onClick={this.switchView.bind(null, false, false)}>
-                                <div className="querybuilder-button-label">Refine query</div>
+                            title="Back to query" onClick={this.switchView.bind(null, false, false)}>
+                            <div className="querybuilder-button-label">Refine query</div>
                         </button>
                         <button id="switch-view-clear-btn" className="fa fa-cog querybuilder-button"
-                                title="Start new query" onClick={this.switchView.bind(null, false, true)}>
-                                <div className="querybuilder-button-label">New query</div>
+                            title="Start new query" onClick={this.switchView.bind(null, false, true)}>
+                            <div className="querybuilder-button-label">New query</div>
                         </button>
                         <button id="delete-result-btn" className="fa fa-trash-o querybuilder-button"
-                                title="Delete results"
-                                onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex -1])}>
+                            title="Delete results"
+                            onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex - 1])}>
                             <div className="querybuilder-button-label">Delete results</div>
                         </button>
                         <button id="download-result-btn" className="fa fa-download querybuilder-button"
-                                title="Download results"
-                                onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex -1])}>
+                            title="Download results"
+                            onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex - 1])}>
                             <div className="querybuilder-button-label">Download results (CSV)</div>
                         </button>
                     </div>
@@ -1354,7 +1362,7 @@ define(function (require) {
         }
     });
 
-    var renderQueryComponent = function(){
+    var renderQueryComponent = function () {
         ReactDOM.render(
             <QueryBuilder />,
             document.getElementById("querybuilder")

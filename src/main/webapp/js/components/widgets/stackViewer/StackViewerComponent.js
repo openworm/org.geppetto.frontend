@@ -168,17 +168,19 @@ define(function (require) {
                 url: image + '&obj=Wlz-distance-range',
                 type: 'POST',
                 success: function (data) {
-                    var result = data.trim().split(':')[1].split(' ');
-                    var min = Number(result[0]);
-                    var max = Number(result[1]);
-                    this.setState({minDst: min, maxDst: max});
-                    var extent = {minDst: min, maxDst: max};
-                    this.props.setExtent(extent);
-                    this.bufferStack(extent);
-                    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
-                        this.state.buffer[-1].text = '';
-                    }
-                    this.callPlaneEdges();
+			if (data.indexOf('html') < 0){
+			    var result = data.trim().split(':')[1].split(' ');
+			    var min = Number(result[0]);
+			    var max = Number(result[1]);
+			    this.setState({minDst: min, maxDst: max});
+			    var extent = {minDst: min, maxDst: max};
+			    this.props.setExtent(extent);
+			    this.bufferStack(extent);
+			    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
+				this.state.buffer[-1].text = '';
+			    }
+			    this.callPlaneEdges();
+			}
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error("Calling Dst Range", status + " - " + xhr.progress().state(), err.toString());
@@ -193,15 +195,17 @@ define(function (require) {
                 url: image + '&obj=Tile-size',
                 type: 'POST',
                 success: function (data) {
-                    var result = data.trim().split(':')[1].split(' ');
-                    var tileX = Number(result[0]);
-                    var tileY = Number(result[1]);
-                    this.setState({tileX: tileX, tileY: tileY});
+			if (data.indexOf('html') < 0){
+			    var result = data.trim().split(':')[1].split(' ');
+			    var tileX = Number(result[0]);
+			    var tileY = Number(result[1]);
+			    this.setState({tileX: tileX, tileY: tileY});
 
-                    // update slice view
-                    this.state.lastUpdate = 0;
-                    this.checkStack();
-                    this.callPlaneEdges();
+			    // update slice view
+			    this.state.lastUpdate = 0;
+			    this.checkStack();
+			    this.callPlaneEdges();
+			}
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error("Calling Tile Size", status + " - " + xhr.progress().state(), err.toString());
@@ -216,16 +220,18 @@ define(function (require) {
                 url: image + '&obj=Max-size',
                 type: 'POST',
                 success: function (data) {
-                    var result = data.trim().split(':')[1].split(' ');
-                    var imageX = Number(result[0]);
-                    var imageY = Number(result[1]);
-                    var extent = {imageX: imageX, imageY: imageY};
-                    this.setState(extent);
-                    this.props.setExtent(extent);
-                    // update slice view
-                    this.state.lastUpdate = 0;
-                    this.checkStack();
-                    this.callPlaneEdges();
+                    if (data.indexOf('html') < 0){
+			    var result = data.trim().split(':')[1].split(' ');
+			    var imageX = Number(result[0]);
+			    var imageY = Number(result[1]);
+			    var extent = {imageX: imageX, imageY: imageY};
+			    this.setState(extent);
+			    this.props.setExtent(extent);
+			    // update slice view
+			    this.state.lastUpdate = 0;
+			    this.checkStack();
+			    this.callPlaneEdges();
+		    }
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error("Calling Max Size", status + " - " + xhr.progress().state(), err.toString());

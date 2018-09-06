@@ -57,7 +57,7 @@ define(function (require) {
     	if(this.importTypes.length>0){
             GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.RESOLVING_TYPES);
             var b=[];
-            const BATCH_SIZE = 50;
+            const BATCH_SIZE = 10;
             for(var i=0;i<this.importTypes.length;i++){
                 b.push(this.importTypes[i].getPath());
             }

@@ -1,0 +1,3 @@
+fatal: ambiguous argument 'livemix': both revision and filename
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'

@@ -1,0 +1,103 @@
+define(function (require) {
+
+    var Plot = require('./Plot');
+    var React = require('react');
+    //var ReactPlotly = require('react-plotly.js');
+
+    return class StateVariablePlot extends Plot {
+        constructor(props) {
+            super(props);
+        }
+
+        layout() {
+        }
+
+        componentWillMount() {
+            this.layout();
+        }
+
+        plotStateVariable(projectId, experimentId, path, xPath, lineOptions) {
+            var self = this;
+            
+            if(
+                window.Project.getId() == projectId &&
+                window.Project.getActiveExperiment() != undefined &&
+                window.Project.getActiveExperiment().getId() == experimentId
+            ){
+                var inst = undefined;
+                try {
+                    inst = window.Instances.getInstance(path);
+                } catch (e) {}
+
+                // make line same color as instance unless already a trace with this color
+                if (typeof lineOptions == 'undefined' ||
+                    typeof lineOptions.color == 'undefined') {
+                    var parent = inst;
+                    var colors = new Set(this.state.data.map(d => d.line.color));
+                    while (typeof parent.getColor == 'undefined' &&
+                           typeof parent.getParent != 'undefined')
+                        parent = parent.getParent();
+                    if (typeof parent.getColor != 'undefined') {
+                        if (typeof lineOptions == 'undefined')
+                            lineOptions = {};
+                        if (!colors.has(parent.getColor()))
+                            lineOptions.color = parent.getColor();
+                    }
+                }
+
+                // check if we already have data
+                if (inst != undefined && inst.getTimeSeries() != undefined) {
+                    // plot, we have data
+                        this.plotData(inst, null, lineOptions);
+                        //plotWidget.updateAxis(inst.getInstancePath());
+                    } else {
+                        var widget = await G.addWidget(0);
+                        widget.plotData(inst, null, lineOptions).setName(path);
+                        widget.updateAxis(path);
+                    }
+                } else {
+                    var cb = async function(){
+                    	var i = window.Instances.getInstance(path);
+                    	if(plotWidget != undefined){
+                    	    plotWidget.plotData(i, null, lineOptions);
+                    		plotWidget.updateAxis(i.getInstancePath());
+                    	} else {
+                    		var plot = await G.addWidget(0);
+                            plot.plotData(i, null, lineOptions).setName(path);
+                            plot.updateAxis(path);
+                    	}
+                    };
+                    // trigger get experiment data with projectId, experimentId and path, and callback to plot
+                    GEPPETTO.ExperimentsController.getExperimentState(projectId, experimentId, [path], cb);
+                }
+            } else {
+                // we are dealing with external instances, define re-usable callback for plotting external instances
+                var plotExternalCallback = async function() {
+                    var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
+                    // if xPath is not specified, assume time
+                    if(xPath == undefined){ xPath = 'time(StateVariable)'; }
+                    var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, xPath);
+                    if (plotWidget != undefined) {
+                        plotWidget.plotXYData(i, t, null, lineOptions);
+                    } else {
+                    	var plot = await G.addWidget(0);
+                        plot.plotXYData(i, t, null, lineOptions).setName(path);
+                    }
+                };
+
+                var externalInstance = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
+                if (externalInstance != undefined) {
+                    // if not undefined, plot
+                    plotExternalCallback();
+                } else {
+                    // if undefined trigger get experiment state
+                    GEPPETTO.ExperimentsController.getExperimentState(projectId, experimentId, [path], plotExternalCallback);
+                }
+            }
+        }
+
+        dataAtStep(data) {
+            return 1+1;
+        }
+    }
+});

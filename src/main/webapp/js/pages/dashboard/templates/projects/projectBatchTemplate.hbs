@@ -1,0 +1,103 @@
+<div class="row">
+    <div class="project-heading">
+        <div class="col-md-10 projectnametop">{{name}}</div>
+        <a href="{{projectUrl}}" target="_blank" data-toggle="tooltip" title="Open project" class="embeddedLinks"><i class="fa fa-folder-open fa-2 icon firsticontop"></i></a>
+    	<a href="{{deleteUrl}}" onclick="return confirm('Are you sure you want to delete the project?')" data-toggle="tooltip" title="Delete project" class="delete-project"><i class="fa fa-trash-o fa-2 icon secondicontop"></i></a>
+    </div>
+	<br><br>
+    <div role="tabpanel">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <!--<li role="presentation" ><a href="#details" aria-controls="details" role="tab" data-toggle="tab">Details</a></li>-->
+            <li role="presentation" class="active"><a href="#experiments" aria-controls="experiments" role="tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-flask"/> Experiments</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content experiments">
+            <div role="tabpanel" class="tab-pane" id="details">
+                <dl class="dl-horizontal">
+
+
+                </dl>
+            </div>
+
+
+            <div role="tabpanel" class="tab-pane active" id="experiments">
+                <div class="panel-group collapse-striped" id="accordion" role="tablist" aria-multiselectable="true">
+                {{#each experiments}}
+                    <div class="panel panel-default experiment-panel-heading">
+                        <div class="panel-heading" role="tab" id="heading-{{@index}}">
+                            <h4 class="panel-title">
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <div class="circle {{status}}" id="status" title="{{status}}" data-id="{{details}}"></div>
+                                    </div>
+                                    <div class="col-md-11">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#experiment-{{@index}}" aria-expanded="true" aria-controls="experiment-{{@index}}">
+                                        {{name}}
+                                        </a>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <a href="{{url}}" target="_blank" data-toggle="tooltip" title="Open experiment" class="embeddedLinks"><i class="fa fa-folder-open fa-1 icon firsticon"></i></a>
+                                        <a href="{{downloadResultsUrl}}" data-toggle="tooltip" title="Download all experiment results" class="download-results"><i class="fa fa-cloud-download fa-1 icon secondicon"></i></a>
+                                    </div>
+                                </div>
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div id="experiment-{{@index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{@index}}">
+                        <div class="panel-body">
+                            <dl class="dl-horizontal">
+                            	<div class="row">
+		                            <div class="menuHeader col-md-4" title="Date this experiment was created on">Created on</div>
+	   		                        <div class="instance-path col-md-8" title={{creationDate}}>{{printTime creationDate}}</div>
+   		                        </div>
+   		                        <div class="row">
+	                            	<div class="menuHeader col-md-4" title="Date this experiment was last modified">Last modified</div>
+   		                        	<div class="instance-path col-md-8" title={{lastModified}}>{{printTime lastModified}}</div>
+	                        	</div>
+	                        	<div class="row">
+		                            <div class="menuHeader col-md-4" title="Experiment description">Description</div>
+	 		                        <div class="instance-path col-md-8">{{{description}}}</div>
+ 		                        </div>
+                                {{#each aspectConfigurations}}
+	                                <div class="row menuHeader col-md-12" title="These are the parameters that have been changed for this experiment">Model parameters</div>
+	                                {{#each modelParameter}}
+	                                <div class="row">
+   		                                <div class="instance-path col-md-10" title={{variable}}>{{shorten variable}}</div>
+       	        	                    <div class="paramvalue col-md-2">{{value}}</div>
+       	        	                </div>
+                    	            {{/each}}
+                    	            <div class="row menuHeader col-md-12" title="These are the variables recorded for this experiment">Recorded Variables</div>
+                                    {{#each watchedVariables}}
+                                        <div class="row instance-path col-md-12" title={{this}}>{{shorten this}}</div>
+                                    {{/each}}
+                    	            <div class="row menuHeader col-md-12" title="These are the simulations of the experiment">Simulations</div>
+
+                                    <div class="row menuOrange col-md-12" title={{instance}}>{{instance}}</div>
+									<div class="row">
+		                            	<div class="menuHeader col-md-4">Simulator</div>
+	   		                        	<div class="instance-path col-md-8">{{simulatorConfiguration.simulatorId}}</div>
+	                        		</div>
+									<div class="row">
+		                            	<div class="menuHeader col-md-4">Conversion service (optional)</div>
+	   		                        	<div class="instance-path col-md-8">{{simulatorConfiguration.conversionServiceId}}</div>
+	                        		</div>
+									<div class="row">
+		                            	<div class="menuHeader col-md-4">Timestep</div>
+	   		                        	<div class="instance-path col-md-8">{{simulatorConfiguration.timestep}}s</div>
+	                        		</div>
+									<div class="row">
+		                            	<div class="menuHeader col-md-4">Length</div>
+	   		                        	<div class="instance-path col-md-8">{{simulatorConfiguration.length}}s</div>
+	                        		</div>
+                                {{/each}}
+	                           </dl>
+                        	</div>
+                    </div>
+                {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

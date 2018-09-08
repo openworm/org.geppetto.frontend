@@ -35,6 +35,8 @@ define(function (require, exports, module) {
 			});
 
 			this.on("msg:custom", this.handle_customMessage, this);
+
+			GEPPETTO.trigger(GEPPETTO.Events.PythonChannelReady);
 		},
 
 		handle_customMessage: function (msg) {
@@ -487,7 +489,9 @@ define(function (require, exports, module) {
 			// Load the project
 			GEPPETTO.Manager.loadProject(this.getPayload(), false);
 			// Load the first experiment
-			GEPPETTO.Manager.loadExperiment(1, [], []);
+			if(this.getPayload().experiments.length>0){
+				GEPPETTO.Manager.loadExperiment(this.getPayload().experiments[0].id, [], []);
+			}
 		}
 	}, {
 			serializers: _.extend({

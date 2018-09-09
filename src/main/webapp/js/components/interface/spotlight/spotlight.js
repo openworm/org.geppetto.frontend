@@ -937,6 +937,12 @@ define(function (require) {
         },
 
         render: function () {
+            if(this.props.spotlightConfig !== undefined) {
+                this.setButtonBarConfiguration(this.props.spotlightConfig);
+            }
+            if(this.props.spotlightDataSourceConfig !== undefined) {
+                this.addDataSource(this.props.spotlightDataSourceConfig);
+            }
             return <input id = "typeahead" className = "typeahead" type = "text" placeholder = "Lightspeed Search" />
         },
 

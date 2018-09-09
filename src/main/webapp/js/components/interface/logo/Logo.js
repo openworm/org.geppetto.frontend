@@ -18,8 +18,9 @@ define(function (require) {
         },
 
         render: function () {
+            const propStyle = this.props.style
             return (
-                <div className={this.props.logo}></div>
+                <div className={this.props.logo} style={{fontSize: 30}}></div>
             );
         }
     });

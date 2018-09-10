@@ -43,7 +43,7 @@ script:
   - docker --version
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - echo "$TRAVIS_BRANCH"
-  - travis_retry docker build -t="geppetto" --build-arg https://github.com/openworm/org.geppetto.git#update-virgo:utilities/docker/geppetto/
+  - travis_retry docker build -t="geppetto" --build-arg mainBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#update-virgo:utilities/docker/geppetto/
   - echo "Current time :$(date +"%T")"
   - travis_retry docker run  -t -dit --name=geppetto_container -p 28081:8080 geppetto
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh

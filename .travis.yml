@@ -43,12 +43,12 @@ script:
   - docker --version
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - echo "$TRAVIS_BRANCH"
-  - travis_retry docker build -t="geppetto" --build-arg mainBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#update-virgo:utilities/docker/geppetto/
+  - travis_retry docker build -t="geppetto" --build-arg https://github.com/openworm/org.geppetto.git#update-virgo:utilities/docker/geppetto/
   - echo "Current time :$(date +"%T")"
-  - travis_retry docker run  -t -dit --name=geppetto_container --net=host geppetto
+  - travis_retry docker run  -t -dit --name=geppetto_container -p 28081:8080 geppetto
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh
   - sleep 30
-  - http_status=$(curl -s -I $1 http://localhost:8080/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'})
+  - http_status=$(curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'})
   - echo "$http_status"
   - while [ "$http_status" == "404" ]; do
       echo "Restart run";
@@ -59,17 +59,17 @@ script:
       sleep 10;
       docker rm $(docker ps -a -q);
       sleep 10;
-      travis_retry docker run  -t -dit --name=geppetto_container --net=host geppetto;
+      travis_retry docker run  -t -dit --name=geppetto_container -p 28081:8080 geppetto;
       bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh;
       sleep 60;
-      http_status=$(curl -s -I $1 http://localhost:8080/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'});
+      http_status=$(curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'});
       echo "Done restarting";
       echo "$http_status";
     done;
-  - "curl -s -I $1 http://localhost:8080/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'}"
-  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js UIComponentsTests.js --host=http://localhost:8080/ --engine=slimerjs  
-  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js GeppettoModelTests.js --host=http://localhost:8080/ --engine=slimerjs 
-  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js,NeuronalTestsLogic.js DefaultProjectsTests.js --host=http://localhost:8080/ --engine=slimerjs  
+  - "curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'}"
+  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js UIComponentsTests.js --host=http://localhost:28081/ --engine=slimerjs  
+  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js GeppettoModelTests.js --host=http://localhost:28081/ --engine=slimerjs 
+  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js,NeuronalTestsLogic.js DefaultProjectsTests.js --host=http://localhost:28081/ --engine=slimerjs  
   - docker ps -a;
   - docker inspect geppetto;
   - docker inspect geppetto_container;

@@ -20,7 +20,7 @@ define(function (require) {
 
 			this.state = {
 				tutorialData: {},
-				activeTutorial: undefined,
+				activeTutorial: this.props.activeTutorial,
 				currentStep: 0
 			};
 
@@ -407,7 +407,14 @@ define(function (require) {
 		}
 
 		render() {
-
+			if(this.props.tutorialsList !== undefined) {
+				if(typeof(this.props.tutorialsList) == "string") {
+					this.props.tutorialsList = [this.props.tutorialsList];
+				}
+				for(var i=0; i < this.props.tutorialsList.length; i++) {
+					this.addTutorial(this.props.tutorialsList[i]);
+				}
+			}
 			var ignoreTutorial = this.getIgnoreTutorialCookie();
 			var activeTutorial = this.getActiveTutorial();
 			if (activeTutorial != undefined) {

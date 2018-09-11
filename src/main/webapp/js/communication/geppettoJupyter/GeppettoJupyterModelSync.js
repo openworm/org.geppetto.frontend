@@ -31,7 +31,7 @@ define(function (require, exports, module) {
 			});
 
 			GEPPETTO.on(GEPPETTO.Events.Send_Python_Message, function (data) {
-				_this.send({ event: 'Global_message', id: data.id, command: data.command, parameters: data.parameters });
+				_this.send({ event: 'Global_message', id: data.id, command: data.command, parameters: data.parameters, import_statement: data.importStatement  });
 			});
 
 			this.on("msg:custom", this.handle_customMessage, this);

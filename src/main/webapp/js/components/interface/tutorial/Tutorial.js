@@ -20,7 +20,7 @@ define(function (require) {
 
 			this.state = {
 				tutorialData: {},
-				activeTutorial: this.props.activeTutorial,
+				activeTutorial: undefined,
 				currentStep: 0
 			};
 

@@ -2,7 +2,6 @@ define(function(require) {
 
 	var React = require('react');
 	var GEPPETTO = require('geppetto');
-	var Rnd = require('react-rnd').default;
 	require("./ButtonBar.less");
 
 	$.widget.bridge('uitooltip', $.ui.tooltip);
@@ -100,17 +99,9 @@ define(function(require) {
 
 		render: function () {
 			return (
-					<button 
-						className="btn btn-default btn-lg button-bar-btn" 
-						data-toogle="tooltip" 
-						onClick={this.onClick}
-						data-placement="bottom" 
-						title={this.state.tooltip} 
-						id={this.props.id}>
-						
-						<span className={this.state.icon}>
-							{this.state.label}
-						</span>
+					<button className="btn btn-default btn-lg button-bar-btn" data-toogle="tooltip" onClick={this.onClick}
+					data-placement="bottom" title={this.state.tooltip} id={this.props.id}>
+					<span className={this.state.icon}>{this.state.label}</span>
 					</button>
 			)
 		}
@@ -132,31 +123,13 @@ define(function(require) {
 			}
 
 			return (
-				<div id="widget-bar">
-					<Rnd 
-						enableResizing={{
-							top: false, right: false, bottom: false, 
-							left: false, topRight: false, bottomRight: false, 
-							bottomLeft: false, topLeft: false}}
-						default={{ 
-							x: this.props.position.x, y: this.props.position.y, 
-							height: 150, width: 350}}
-						className="new-widget"
-						style={this.props.position.style}
-						disableDragging={true}
-						maxHeight={150} minHeight={50}
-						maxWidth={350} minWidth={150}
-						ref={c => { this.rnd = c; }} >
-						<div id="button-bar-container" className="button-bar-container">
-							<div id="bar-div" className="toolbar">
-								<div className="btn-group">
-									{buttons}
-								</div>
-							</div>
-						</div>
-					</Rnd>
-				</div>
-
+					<div id="button-bar-container" className="button-bar-container">
+					<div id="bar-div" className="toolbar">
+					<div className="btn-group">
+					{buttons}
+					</div>
+					</div>
+					</div>
 			);
 		}
 	}

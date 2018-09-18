@@ -30,10 +30,20 @@ define(function (require, exports, module) {
         );
     };
 
+    function handle_output(data){
+        //data is the object passed to the callback from the kernel execution
+        if (data.msg_type == "error"){
+            GEPPETTO.CommandController.log("Error while executing a Python command:");
+            GEPPETTO.CommandController.log(JSON.stringify(data));
+        }
+        GEPPETTO.CommandController.log("Python command returned without errors:", true);
+        GEPPETTO.CommandController.log(JSON.stringify(data), true);
+    };
+    
     function execPythonCommand(command) {
-        console.log('Executing command', command);
+        GEPPETTO.CommandController.log('Executing Python command: '+ command, true);
         var kernel = IPython.notebook.kernel;
-        kernel.execute(command);
+        kernel.execute(command, {iopub : {output : handle_output}});
     };
 
 

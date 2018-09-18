@@ -31,11 +31,11 @@ define(function (require, exports, module) {
 
 		},
 
-		syncValueWithPython: function (value, requirement) {
+		syncValueWithPython: function (value, requirement, context) {
 			var jsonValue = JSON.stringify(value);
 			this.set('value', jsonValue);
 			this.save_changes();
-			this.send({ event: 'sync_value', value: jsonValue, requirement: requirement });
+			this.send({ event: 'sync_value', value: jsonValue, requirement: requirement, context: context });
 		},
 
 		getParameters: function (parameters) {

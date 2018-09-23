@@ -51,9 +51,13 @@ define(function(require) {
 
 		onClick : function(){
 			//execute all actions
-			for(var action in this.actions){
-				if((this.actions).hasOwnProperty(action)){
-					GEPPETTO.CommandController.execute(this.actions[action], true);
+			if(this.props.buttonHandler !== undefined) {
+				this.props.buttonHandler(this.props.id);
+			} else {
+				for(var action in this.actions){
+					if((this.actions).hasOwnProperty(action)){
+						GEPPETTO.CommandController.execute(this.actions[action], true);
+					}
 				}
 			}
 
@@ -119,7 +123,7 @@ define(function(require) {
 				if(id==null || id==undefined){
 					id = key;
 				}
-				buttons.push(<ButtonComponent id={id} key={key} configuration={b}/>);
+				buttons.push(<ButtonComponent id={id} key={key} configuration={b} buttonHandler={this.props.buttonBarHandler}/>);
 			}
 
 			return (

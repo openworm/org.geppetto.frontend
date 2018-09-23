@@ -1660,6 +1660,21 @@ define(function (require) {
 
         componentWillMount: function () {
             GEPPETTO.ControlPanel = this;
+            if(this.props.controlPanelColMeta !== undefined) {
+                GEPPETTO.ControlPanel.setColumnMeta(this.props.controlPanelColMeta);
+            }
+
+            if(this.props.controlPanelColumns !== undefined) {
+                GEPPETTO.ControlPanel.setColumns(this.props.controlPanelColumns);
+            }
+
+            if(this.props.controlPanelConfig !== undefined) {
+                GEPPETTO.ControlPanel.setControlsConfig(this.props.controlPanelConfig);
+            }
+
+            if(this.props.controlPanelControlConfigs !== undefined) {
+                GEPPETTO.ControlPanel.setControls(this.props.controlPanelControlConfigs);
+            }
         },
 
         componentWillUnmount: function () {

@@ -19,7 +19,7 @@ define(function (require) {
 
         render: function () {
             return (
-                <div className={this.props.logo} style={this.props.propStyle}></div>
+                <div id={this.props.id} className={this.props.logo} style={this.props.propStyle}></div>
             );
         }
     });

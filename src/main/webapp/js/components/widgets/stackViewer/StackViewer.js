@@ -229,7 +229,7 @@ define(function (require) {
         },
 	    
 	    getHelp: function(){
-       	    return this.helpInfo;
+            return this.helpInfo;
         },
 
         destroy: function () {

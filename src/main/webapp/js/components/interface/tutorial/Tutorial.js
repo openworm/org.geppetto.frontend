@@ -235,6 +235,25 @@ define(function (require) {
 			return false;
 		}
 
+		componentWillMount() {
+			if(this.props.tutorialsList !== undefined) {
+				if(typeof(this.props.tutorialsList) == "string") {
+					this.props.tutorialsList = [this.props.tutorialsList];
+				}
+				for(var i=0; i < this.props.tutorialsList.length; i++) {
+					
+					this.addTutorial(this.props.tutorialsList[i]);
+				}
+			}
+
+			if(this.props.tutorialData !== undefined) {
+				this.setState({
+					tutorialData: this.props.tutorialData
+				}, function()  {this.loadTutorial(this.props.tutorialData, true);}.bind(this));
+				
+			}
+		}
+
 		componentDidUpdate() {
 			if (this.chaptersMenu == undefined) {
 				var that = this;
@@ -407,14 +426,6 @@ define(function (require) {
 		}
 
 		render() {
-			if(this.props.tutorialsList !== undefined) {
-				if(typeof(this.props.tutorialsList) == "string") {
-					this.props.tutorialsList = [this.props.tutorialsList];
-				}
-				for(var i=0; i < this.props.tutorialsList.length; i++) {
-					this.addTutorial(this.props.tutorialsList[i]);
-				}
-			}
 			var ignoreTutorial = this.getIgnoreTutorialCookie();
 			var activeTutorial = this.getActiveTutorial();
 			if (activeTutorial != undefined) {

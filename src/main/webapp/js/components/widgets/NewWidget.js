@@ -42,35 +42,18 @@ define(function (require) {
 
         render() {
             const widgetId = this.props.id + "_widget";
+            console.log("New widget render method called");
             return (
                 <div className={widgetId} >
                     <Rnd enableResizing={{
-                        top: true, right: true, bottom: true, left: true, topRight: true,
-                        bottomRight: true, bottomLeft: true, topLeft: true
-                    }}
-                        default={{ height: 250, width: 250, x: 250, y: 250 }}
-                        disableDragging={false}
-                        maxHeight={window.innerHeight - 50} minHeight={250}
+                        top: this.props.resizable, right: this.props.resizable, bottom: this.props.resizable, 
+                        left: this.props.resizable, topRight: this.props.resizable, bottomRight: this.props.resizable, 
+                        bottomLeft: this.props.resizable, topLeft: this.props.resizable}}
+                        default={{ height: this.props.height, width: this.props.width, x: this.props.x, y: this.props.y }}
+                        disableDragging={!this.props.draggable}
+                        maxHeight={window.innerHeight - 150} minHeight={250}
+                        maxWidth={window.innerWidth - 150} minWidth={250}
                         ref={c => { this.rnd = c; }} >
-                        <div className="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix ui-draggable-handle">
-                            <div className="ui-dialog-titlebar-buttonpane">
-                                <div className="ui-dialog-titlebar-close">
-                                    <span className="fa fa-close"></span>
-                                </div>
-                                <div className="ui-dialog-titlebar-restore ui-corner-all ui-state-default">
-                                    <span className="ui-icon fa fa-compress"></span>
-                                </div>
-                                <div className="ui-dialog-titlebar-collapse ui-corner-all ui-state-default">
-                                    <span className="ui-icon fa fa-chevron-circle-up"></span>
-                                </div>
-                                <div className="ui-dialog-titlebar-maximize ui-corner-all ui-state-default">
-                                    <span className="ui-icon fa fa-expand"></span>
-                                </div>
-                                <div className="ui-dialog-titlebar-minimize ui-corner-all ui-state-default">
-                                    <span className="ui-icon fa fa-window-minimize"></span>
-                                </div>
-                            </div>
-                        </div>
                         {this.props.children}
                     </Rnd>
                 </div>

@@ -29,15 +29,11 @@ define(function (require) {
                 }
 
                 connectToPython(componentType, model) {
-                    var kernel = IPython.notebook.kernel;
-                    kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
+                    Utils.execPythonCommand('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
                 }
 
                 disconnectFromPython() {
-                    var kernel = IPython.notebook.kernel;
-                    kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
+                    Utils.execPythonCommand('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
                 }
 

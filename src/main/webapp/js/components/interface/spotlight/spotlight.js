@@ -936,13 +936,16 @@ define(function (require) {
         	$('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance, this.modifiable));
         },
 
-        render: function () {
+        componentWillMount: function () {
             if(this.props.spotlightConfig !== undefined) {
                 this.setButtonBarConfiguration(this.props.spotlightConfig);
             }
             if(this.props.spotlightDataSourceConfig !== undefined) {
                 this.addDataSource(this.props.spotlightDataSourceConfig);
             }
+        },
+
+        render: function () {
             return <input id = "typeahead" className = "typeahead" type = "text" placeholder = "Lightspeed Search" />
         },
 

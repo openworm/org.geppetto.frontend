@@ -443,7 +443,7 @@ define(function (require) {
                                                             that.state.objects.push(that.state.label[i]);
                                                         }
                                                     } else {
-                                                        if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                        if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined' && that.props.templateDomainNames[index] !== null) {
                                                             that.state.objects.push(that.props.templateDomainNames[index]);
                                                             break;
                                                         }

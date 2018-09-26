@@ -5,6 +5,7 @@ define(function (require) {
 
     var React = require('react'), $ = require('jquery');
     var ReactDOM = require('react-dom');
+    var ReactDOMServer = require('react-dom/server');
     var Griddle = require('griddle-0.6-fork');
     var Tabs = require('react-simpletabs');
     var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
@@ -13,6 +14,8 @@ define(function (require) {
     var GEPPETTO = require('geppetto');
 
     var MenuButton = require('../../controls/menuButton/MenuButton');
+
+    var resultsViewState = false;
 
     // query model object to represent component state and trigger view updates
     var queryBuilderModel = {
@@ -520,6 +523,7 @@ define(function (require) {
         },
 
         componentWillMount: function () {
+            this.clearErrorMessage();
             GEPPETTO.QueryBuilder = this;
         },
 
@@ -1051,7 +1055,7 @@ define(function (require) {
          * @param cb - optional callback function
          */
         addQueryItem: function (queryItemParam, cb) {
-            this.clearErrorMessage();
+            //this.clearErrorMessage();
 
             // grab datasource configuration (assumption we only have one datasource)
             var datasourceConfig = this.configuration.DataSources[Object.keys(this.configuration.DataSources)[0]];
@@ -1140,7 +1144,9 @@ define(function (require) {
             }
 
             // init datasource results to avoid duplicates
-            this.dataSourceResults.clear();
+            //if(typeof this.dataSourceResults.clear == 'function') {
+                this.dataSourceResults.clear();
+            //}
         },
 
         setErrorMessage: function (message) {
@@ -1238,6 +1244,7 @@ define(function (require) {
             if (this.state.resultsView && this.props.model.results.length > 0) {
                 // if results view, build results markup based on results in the model
                 // figure out focus tab index (1 based index)
+                resultsViewState = true;
                 var focusTabIndex = 1;
                 for (var i = 0; i < this.props.model.results.length; i++) {
                     if (this.props.model.results[i].selected) {
@@ -1326,6 +1333,7 @@ define(function (require) {
                 // if we ended up in query builder rendering make sure the state flag is synced up
                 // NOTE: this could happen if we were in resultsView and the user deleted all the results
                 this.state.resultsView = false;
+                resultsViewState = this.state.resultsView;
 
                 // build QueryItem list
                 var queryItems = this.props.model.items.map(function (item) {
@@ -1363,7 +1371,7 @@ define(function (require) {
     });
 
     var renderQueryComponent = function () {
-        ReactDOM.render(
+        ReactDOMServer.renderToStaticMarkup(
             <QueryBuilder />,
             document.getElementById("querybuilder")
         );

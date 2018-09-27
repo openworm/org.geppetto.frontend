@@ -510,7 +510,7 @@ define(function (require) {
         addDataSource : function(sources){
         	try {
         		for (var key in sources) {
-        			  if (sources.hasOwnProperty(key)) {
+                    if (sources.hasOwnProperty(key)) {
         			    var obj = sources[key];
                         var keysha = this.generateDataSourceKey(key, 0);
                         this.configuration.SpotlightBar.DataSources[keysha] = obj;
@@ -522,7 +522,7 @@ define(function (require) {
                                 obj.bloodhoundConfig.sorter
                             );
                         }
-        			  }
+                    }
         		}
         	}
         	catch (err) {
@@ -914,7 +914,7 @@ define(function (require) {
                 						}
                 						delete copiedObject["plot"];
                 					}
-                   					tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
+                                    tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
                 				}
                 			}
                 		}

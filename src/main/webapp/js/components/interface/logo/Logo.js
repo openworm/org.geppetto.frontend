@@ -2,10 +2,10 @@ define(function (require) {
 
     require('./Logo.less');
 
-    var React = require('react');
+    var CreateClass = require('create-react-class');
     var GEPPETTO = require('geppetto');
 
-    var logoDiv = React.createClass({
+    var logoDiv = CreateClass({
         componentDidMount: function () {
             GEPPETTO.on('spin_logo', function (label) {
             	//TODO Fix this to use state instead and not touching the dom element with jQuery

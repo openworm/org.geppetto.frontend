@@ -1,12 +1,12 @@
 define(function (require) {
 
-    var React = require('react'),
+    var CreateClass = require('create-react-class'),
         Button = require('../../controls/mixins/bootstrap/button'),
         GEPPETTO = require('geppetto');
 
     require("./HelpModal.less");
 
-    return React.createClass({
+    return CreateClass({
         mixins: [
             require('../../controls/mixins/bootstrap/modal.js')
         ],

@@ -5,7 +5,7 @@
  */
 define(function (require) {
   
-    var React = require('react'), $ = require('jquery');
+    var CreateClass = require('create-react-class'), $ = require('jquery');
     var GEPPETTO = require('geppetto');
 
     require('./ExperimentsTable.less');
@@ -16,7 +16,7 @@ define(function (require) {
      * Creates a table row html element <tr>, used to display an Experiment's
      * information (name, lastModified) and controls.
      */
-    var ExperimentRow = React.createClass({
+    var ExperimentRow = CreateClass({
 
         getDefaultProps: function () {
             return {
@@ -98,7 +98,7 @@ define(function (require) {
      * Creates a table row html element, <tr>, which can be collapsed.
      * Used to display an experiment's simulator configurations
      */
-    var ExperimentExpandableRow = React.createClass({
+    var ExperimentExpandableRow = CreateClass({
         render: function () {
             var id = "collapsable-" + this.props.experiment.getId();
             var rowNumber = this.props.rowNumber;
@@ -158,7 +158,7 @@ define(function (require) {
     /**
      * Creates table row for displaying an experiment's simulator configurations
      */
-    var SimulatorRow = React.createClass({
+    var SimulatorRow = CreateClass({
         refresh: function(){
         	if(window.Project.getActiveExperiment()){
         		if (this.props.experiment.getId() == window.Project.getActiveExperiment().getId()){
@@ -310,7 +310,7 @@ define(function (require) {
     /**
      * Creates <td> element to display the status of an experiment
      */
-    var StatusElement = React.createClass({
+    var StatusElement = CreateClass({
         attachTooltip: function(){
             $('div.circle[rel="tooltip"]').uitooltip({
                 position: { my: "left+15 center", at: "right center" },
@@ -367,7 +367,7 @@ define(function (require) {
     /**
      * Creates html element holding set of icons used for experiment controls within table
      */
-    var IconsElement = React.createClass({
+    var IconsElement = CreateClass({
         getInitialState: function () {
             return {
             	rowVisible: false,
@@ -495,7 +495,7 @@ define(function (require) {
     /**
      * Creates a table html component used to dipslay the experiments
      */
-    var ExperimentsTable = React.createClass({
+    var ExperimentsTable = CreateClass({
         componentDidMount: function () {
         	var self = this;
         	// Handles new experiment button click

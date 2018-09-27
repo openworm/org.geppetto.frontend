@@ -14,8 +14,8 @@ define(function (require) {
 
     //require('./vendor/css/bootstrap-colorpicker.min.css'); Matteo: This require is not working?!?
 
-    var React = require('react'), $ = require('jquery');
-    var Griddle = require('griddle-0.6-fork');
+    var CreateClass = require('create-react-class'), $ = require('jquery');
+    var Griddle = require('griddle-react');
     var GEPPETTO = require('geppetto');
     var MenuButton = require('./../../controls/menuButton/MenuButton');
     var ToggleButton = require('./../../controls/toggleButton/ToggleButton');
@@ -24,7 +24,7 @@ define(function (require) {
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
-    GEPPETTO.ImageComponent = React.createClass({
+    GEPPETTO.ImageComponent = CreateClass({
         attachTooltip: function () {
             $('img[rel="tooltip"]').uitooltip({
                 position: {my: "left+15 center", at: "right center"},
@@ -56,7 +56,7 @@ define(function (require) {
         }
     });
 
-    GEPPETTO.LinkComponent = React.createClass({
+    GEPPETTO.LinkComponent = CreateClass({
         render: function () {
 
             var displayText = this.props.data;
@@ -78,7 +78,7 @@ define(function (require) {
         }
     });
 
-    GEPPETTO.LinkArrayComponent = React.createClass({
+    GEPPETTO.LinkArrayComponent = CreateClass({
         render: function () {
             var that = this;
             return (
@@ -116,7 +116,7 @@ define(function (require) {
         }
     });
 
-    GEPPETTO.ArrayComponent = React.createClass({
+    GEPPETTO.ArrayComponent = CreateClass({
         render: function () {
             var that = this;
             return (
@@ -143,7 +143,7 @@ define(function (require) {
         }
     });
 
-    GEPPETTO.ParameterInputComponent = React.createClass({
+    GEPPETTO.ParameterInputComponent = CreateClass({
         refresh: function () {
             this.forceUpdate();
         },
@@ -264,7 +264,7 @@ define(function (require) {
         }
     });
 
-    GEPPETTO.ControlsComponent = React.createClass({
+    GEPPETTO.ControlsComponent = CreateClass({
         colorPickerBtnId: '',
         colorPickerActionFn: '',
 
@@ -538,7 +538,7 @@ define(function (require) {
         }
     });
 
-    var FilterComponent = React.createClass({
+    var FilterComponent = CreateClass({
 
         optionsMap: {
             VISUAL_INSTANCES: ['visualInstancesFilterBtn'],
@@ -1470,7 +1470,7 @@ define(function (require) {
         ANY_PROJECT_PARAMETERS: 'ANY_PROJECT_PARAMETERS'
     };
 
-    var ControlPanel = React.createClass({
+    var ControlPanel = CreateClass({
         displayName: 'ControlPanel',
         filterOptions: controlPanelFilterOptions,
 

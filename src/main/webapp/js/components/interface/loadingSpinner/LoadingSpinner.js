@@ -1,11 +1,11 @@
 define(function(require) {
 
-	var React = require('react');
+	var CreateClass = require('create-react-class');
 	var	GEPPETTO = require('geppetto');
 
 	require('./LoadingSpinner.less');
 	
-	return React.createClass({		
+	return CreateClass({		
 		mixins: [require('../../controls/mixins/bootstrap/modal.js')],
 		timer1:null,
 		timer2:null,

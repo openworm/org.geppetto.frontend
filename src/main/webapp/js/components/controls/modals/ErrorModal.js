@@ -4,12 +4,12 @@
  */
 define(function (require) {
 
-    var React = require('react'),
+  var CreateClass = require('create-react-class'),
         $ = require('jquery');
 
     require("./ErrorModal.less");
 
-    return React.createClass({
+    return CreateClass({
         mixins: [
             require('../mixins/bootstrap/modal.js')
         ],

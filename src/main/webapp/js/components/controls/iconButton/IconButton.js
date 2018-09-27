@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import FontIcon from 'material-ui/FontIcon';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
+
 import './IconButton.less';
 
 export default class IconButton extends React.Component {
@@ -11,12 +12,9 @@ export default class IconButton extends React.Component {
 
     render() {
         return (
-
-            <RaisedButton style={this.props.style} className={"iconButton"} onClick={this.props.onClick} id={this.props.id}>
-                <FontIcon className={"fa " + this.props.icon}></FontIcon>
-            </RaisedButton>
-
-
+            <Button variant="contained" style={this.props.style} color="primary" className={"iconButton"} onClick={this.props.onClick} id={this.props.id}>
+                <Icon className={"fa " + this.props.icon} />
+            </Button>
         );
     }
 }

@@ -14,10 +14,25 @@ define(function (require, exports, module) {
         return geppettoCommonLibrary;
     }
 
+    function processParameter(p){
+        if(p===false){
+            return "False"
+        }
+        else if(p===true){
+            return "True"
+        }
+        return JSON.stringify(p);
+    }
+    
     function sendPythonMessage(command, parameters) {
         var parametersString = "";
-        if(parameters && parameters.length>0){
-            parametersString = parameters.reduce((acc, p) => acc = acc == "(" ? acc + JSON.stringify(p) : acc + "," + JSON.stringify(p), "(") + ")";
+        if(parameters){
+            if(parameters.length>0){
+                parametersString = parameters.reduce((acc, p) => acc = acc == "(" ? acc + processParameter(p) : acc + "," + processParameter(p), "(") + ")";
+            }
+            else{
+                parametersString = '()';
+            }
         }
         return this.execPythonCommand(command + parametersString);
     };
@@ -28,10 +43,18 @@ define(function (require, exports, module) {
             case 'error':
                 GEPPETTO.CommandController.log("ERROR while executing a Python command:");
                 GEPPETTO.CommandController.log(data.content.evalue.trim());
+                GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
                 break;
             case 'execute_result':
                 GEPPETTO.CommandController.log(data.content.data['text/plain'].trim(), true);
-                GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: data.content.data['text/plain'] });
+                let content = data.content.data['text/plain'];
+                //FIXME Couldnt find a method to avoid this string manipulation.
+                content = content.replace("b'","'");
+                if(content.startsWith("'") && content.endsWith("'")){
+                    content=content.substr(1, content.length-1)
+                }
+                content = content.replace(/\\n/g, ' ').replace(/\s{2,}/g,' ').replace(/^\s+|\s+$/,'');
+                GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: content });
                 break;
             default:
                 GEPPETTO.CommandController.log(data.content.text.trim(), true);

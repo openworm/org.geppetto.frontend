@@ -4,10 +4,10 @@
  */
 define(function (require) {
 
-    var React = require('react');
+    var CreateClass = require('create-react-classes');
     var Remarkable = require('remarkable');
 
-    return React.createClass({
+    return CreateClass({
         mixins: [
             require('../mixins/bootstrap/modal.js')
         ],

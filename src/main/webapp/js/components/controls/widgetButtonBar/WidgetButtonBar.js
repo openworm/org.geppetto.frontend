@@ -1,9 +1,9 @@
 define(function (require) {
 
-    var React = require('react');
+    var createClass = require('create-react-classes');
     require("./WidgetButtonBar.less");
 
-    var WidgetButtonBar = React.createClass({
+    var WidgetButtonBar = createClass({
         getInitialState: function () {
             return {
 

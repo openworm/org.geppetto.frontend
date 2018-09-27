@@ -2,10 +2,10 @@ define(function (require) {
 
     require('./AdminPanel.less');
 
-    var React = require('react');
+    var createClass = require('create-react-classes');
     var Griddle = require('griddle-react');
 
-    var LinkComponent = React.createClass({
+    var LinkComponent = createClass({
         render: function () {
 
             var displayText = this.props.data;
@@ -28,7 +28,7 @@ define(function (require) {
         }
     });
 
-    var ButtonComponent = React.createClass({
+    var ButtonComponent = createClass({
 
         render: function () {
             var addClass = "";
@@ -42,7 +42,7 @@ define(function (require) {
         }
     });
 
-    var DateDisplay = React.createClass({
+    var DateDisplay = createClass({
         render: function () {
             var options = {year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC', timeZoneName: 'short'};
             var formattedDate = new Date(this.props.data).toLocaleString('en-US', options);
@@ -52,7 +52,7 @@ define(function (require) {
         }
     });
 
-    var adminPanelComponent = React.createClass({
+    var adminPanelComponent = createClass({
         user: "admin",
         resultsPerPage: 20,
         usersViewSelected: true,

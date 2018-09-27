@@ -1,8 +1,8 @@
 define(function (require) {
 
-    var React = require('react');
+    var createClass = require('create-react-classes');
 
-    var widgetContainer = React.createClass({
+    var widgetContainer = createClass({
         getInitialState: function () {
             return {
                 items: []

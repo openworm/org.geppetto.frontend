@@ -1,8 +1,8 @@
 define(function (require, exports, module) {
 
-	var React = require('react');
+	var CreateClass = require('create-react-classes');
 
-	var DropDown = React.createClass({
+	var DropDown = CreateClass({
 
 		getInitialState: function() {
 			return {

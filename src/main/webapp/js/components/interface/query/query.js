@@ -153,6 +153,7 @@ define(function (require) {
         }
     };
 
+    // React CLASS query Link component lines 156-177
     GEPPETTO.QueryLinkComponent = React.createClass({
         render: function () {
 
@@ -175,6 +176,7 @@ define(function (require) {
         }
     });
 
+    // React CLASS slideShowImageComponent lines 179-305
     GEPPETTO.SlideshowImageComponent = React.createClass({
         isCarousel: false,
 
@@ -302,6 +304,7 @@ define(function (require) {
         }
     });
 
+    // React CLASS Query Results Controls Component lines 307-424
     GEPPETTO.QueryResultsControlsComponent = React.createClass({
 
         replaceTokensWithPath: function (inputStr, path) {
@@ -420,6 +423,7 @@ define(function (require) {
         }
     });
 
+    // React CLASS Query Item component lines 426-468
     var QueryItem = React.createClass({
         displayName: 'QueryItem',
 
@@ -484,6 +488,7 @@ define(function (require) {
         }
     });
 
+    // React CLASS Query Builder component lines 491-1376
     var QueryBuilder = React.createClass({
         displayName: 'QueryBuilder',
         dataSourceResults: {},
@@ -513,6 +518,7 @@ define(function (require) {
                 resultsControlsConfig: null,
                 infiniteScroll: undefined,
                 resultsPerPate: undefined,
+                refreshTrigger: false,
             };
         },
 
@@ -523,7 +529,7 @@ define(function (require) {
         },
 
         componentWillMount: function () {
-            this.clearErrorMessage();
+            // this.clearErrorMessage();
             GEPPETTO.QueryBuilder = this;
         },
 
@@ -635,6 +641,8 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+            
+            queryBuilderModel.subscribe(this.refresh);
 
             var escape = 27;
             var qKey = 81;
@@ -1055,7 +1063,7 @@ define(function (require) {
          * @param cb - optional callback function
          */
         addQueryItem: function (queryItemParam, cb) {
-            //this.clearErrorMessage();
+            this.clearErrorMessage();
 
             // grab datasource configuration (assumption we only have one datasource)
             var datasourceConfig = this.configuration.DataSources[Object.keys(this.configuration.DataSources)[0]];
@@ -1232,6 +1240,12 @@ define(function (require) {
             });
         },
 
+        refresh: function () {
+            this.setState({
+                refreshTrigger: !this.state.refreshTrigger
+            });
+        },
+
         render: function () {
             var markup = null;
             // once off figure out if we are to use infinite scrolling for results and store in state
@@ -1369,15 +1383,6 @@ define(function (require) {
             return markup;
         }
     });
-
-    var renderQueryComponent = function () {
-        ReactDOMServer.renderToStaticMarkup(
-            <QueryBuilder />,
-            document.getElementById("querybuilder")
-        );
-    };
-
-    queryBuilderModel.subscribe(renderQueryComponent);
 
     return QueryBuilder;
 });

@@ -1,7 +1,7 @@
 define(function (require) {
 
 	
-	var createClass = require('create-react-classes');
+	var createClass = require('create-react-class');
 	
 	var panelChild = createClass({
 		

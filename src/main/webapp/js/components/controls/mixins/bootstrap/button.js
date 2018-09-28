@@ -1,8 +1,8 @@
 define(function (require) {
 
     var React = require('react');
-    var CreateClass = require('create-react-classes');
-    return CreateClass({
+    var createClass = require('create-react-class');
+    return createClass({
 
         mixins: [],
 

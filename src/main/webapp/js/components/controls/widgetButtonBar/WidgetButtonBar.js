@@ -1,6 +1,6 @@
 define(function (require) {
 
-    var createClass = require('create-react-classes');
+    var createClass = require('create-react-class');
     require("./WidgetButtonBar.less");
 
     var WidgetButtonBar = createClass({

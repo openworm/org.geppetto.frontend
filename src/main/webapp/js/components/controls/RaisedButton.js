@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
 
-	var createClass = require('create-react-classes');
+	var createClass = require('create-react-class');
 
     var RaisedButton = createClass({
     	render: function(){

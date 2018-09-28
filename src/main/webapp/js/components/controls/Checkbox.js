@@ -1,8 +1,8 @@
 define(function(require, exports, module) {
 
-	var CreateClass = require('create-react-classes');
+	var createClass = require('create-react-class');
 
-    var Checkbox = CreateClass({
+    var Checkbox = createClass({
     	  getInitialState: function () {
     		    return {
     		        value: (this.props.sync_value == 'true')

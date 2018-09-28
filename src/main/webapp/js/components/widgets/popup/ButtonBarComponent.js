@@ -2,7 +2,7 @@ define(function (require) {
 
 	require("./ButtonBarComponent.less");
 
-	var createClass = require('create-react-classes');
+	var createClass = require('create-react-class');
 	var colorpicker = require('./vendor/bootstrap-colorpicker.min');
 
 	var ButtonBarComponent = createClass({

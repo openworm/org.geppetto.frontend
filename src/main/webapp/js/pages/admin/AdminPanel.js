@@ -2,7 +2,7 @@ define(function (require) {
 
     require('./AdminPanel.less');
 
-    var createClass = require('create-react-classes');
+    var createClass = require('create-react-class');
     var Griddle = require('griddle-react');
 
     var LinkComponent = createClass({

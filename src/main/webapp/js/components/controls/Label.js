@@ -1,8 +1,8 @@
 define(function(require, exports, module) {
 
-	var CreateClass = require('create-react-classes');
+	var createClass = require('create-react-class');
 
-    var Label = CreateClass({
+    var Label = createClass({
 	    render: function(){
 	        return (
                 <label htmlFor={this.props.sync_value}>{this.props.name}</label>

@@ -113,6 +113,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 
 			casper.then(function () {
 				doExperimentTableTest(test);
+				//FIXME Restore after fixing console test
 				if(testConsole){
 					doConsoleTest(test);
 				}
@@ -128,9 +129,7 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 			if (persisted == false) {
 				casper.then(function () {
 					// make sure experiment panel is open
-					this.evaluate(function() {
-						$('a[href=experiments]').click();
-					});
+					// casper.clickLabel('Experiments', 'span');
 
 					//roll over the experiments row
 					this.mouse.move('tr.experimentsTableColumn:nth-child(1)');
@@ -159,10 +158,10 @@ function testProject(test, url, expect_error, persisted, spotlight_record_variab
 				casper.then(function () {
 					this.echo("Checking content of experiment row");
 					// test or wait for control panel stuff to be there
-					if(this.exists('a[href="#experiments"]')){
+					if(this.exists('span[class*="tabber"]')){
 						doExperimentsTableRowTests(test);
 					} else {
-						this.waitForSelector('a[href="#experiments"]', function(){
+						this.waitForSelector('span[class*="tabber"]', function(){
 							doExperimentsTableRowTests(test);
 						}, null, 10000);
 					}
@@ -246,27 +245,30 @@ function closeErrorMesage(test) {
 
 function doExperimentTableTest(test) {
 	casper.then(function () {
-		test.assertExists('a[aria-controls="experiments"]', "Experiments tab anchor is present");
+		test.assertExists('span[class*="tabber"]', "Experiments tab anchor is present");
 
-		test.assertExists('div#experiments', "Experiments panel is present");
+		test.assertSelectorHasText('span[class*="tabber"]', 'Experiments');
 
-		test.assertNotVisible('div#experiments', "The experiment panel is correctly closed.");
+		test.assertExists('div#experimentsOutput', "Experiments panel is present");
+
+		test.assertNotVisible('div#experimentsOutput', "The experiment panel is correctly closed.");
 	});
 
 	casper.then(function () {
 		this.echo("Opening experiment console");
-		this.evaluate(function() {
-			$("a[href='#experiments']").click();
-		});
+		casper.clickLabel('Experiments', 'span');
 
-		this.waitUntilVisible('div#experiments', function () {
-			test.assertVisible('div#experiments', "The experiment panel is correctly open.");
+		this.waitUntilVisible('div#experimentsOutput', function () {
+			test.assertVisible('div#experimentsOutput', "The experiment panel is correctly open.");
+			this.echo("Closing experiment console");
+			casper.clickLabel('Experiments', 'span');
 		}, null, 15000);
 	});
 }
 
 function doExperimentsTableRowTests(test){
 	casper.echo("Opening experiments panel");
+	casper.clickLabel('Experiments', 'span');
 
 	// open first experiment row
 	casper.echo("Opening first experiment row");
@@ -278,7 +280,9 @@ function doExperimentsTableRowTests(test){
 	// make sure panel is open
 	casper.evaluate(function() {
 		if(!$('#experimentsOutput').is(':visible')){
-			$('#experimentsButton').click();
+			//$('#experimentsButton').click();
+			//this.echo("Closing experiment console");
+			casper.clickLabel('Experiments', 'span');
 		}
 	});
 	casper.waitUntilVisible('td[name=variables]', function(){
@@ -288,19 +292,23 @@ function doExperimentsTableRowTests(test){
 }
 
 function doConsoleTest(test) {
+
 	casper.then(function () {
-		test.assertExists('a[aria-controls="console"]', "Console tab anchor is present");
+		test.assertExists('span[class*="tabber"]', "Tabber anchor is present");
 
-		test.assertExists('div#console', "Console panel is present");
+		test.assertSelectorHasText('span[class*="tabber"]', 'Console');
 
-		test.assertNotVisible('div#console', "The console panel is correctly closed.");
+		test.assertExists('div[class*="consoleContainer"]', "Console panel is present");
+
+		test.assertNotVisible('div[class*="consoleContainer"]', "The console panel is correctly closed.");
 	});
 
 	casper.then(function () {
-		this.click('a[href="#console"]', "Opening command console");
+		//this.click('a[href="#console"]', "Opening command console");
+		casper.clickLabel('Console', 'span');
 
-		this.waitUntilVisible('div#console', function () {
-			test.assertVisible('div#console', "The console panel is correctly open.");
+		this.waitUntilVisible('div.consoleContainer', function () {
+			test.assertVisible('div.consoleContainer', "The console panel is correctly open.");
 			//type into console command (getTimeSeries()) half finished for state variable
 			casper.evaluate(function() {
 				$('textarea#commandInputArea').val('hhcell.hhpop[0].v.getTi');
@@ -370,9 +378,9 @@ function doPrePersistenceExperimentsTableButtonsCheck(test) {
 function doPostPersistenceExperimentsTableButtonCheck(test) {
 	casper.waitForSelector('button.btn.SaveButton[disabled]', function () {
 		casper.wait(5000, function () {});
-		if(this.exists('a[href="#experiments"]')){
-			casper.echo("Experiments button exists");
-		}
+		
+		test.assertSelectorHasText('span[class*="tabber"]', 'Console', 'Experiments button exists');
+
 		casper.mouse.move('tr.experimentsTableColumn:nth-child(1)');
 		//Check presence of experiment console buttons AFTER persistence
 		casper.waitForSelector('a.activeIcon', function () {
@@ -622,13 +630,11 @@ function testUpload2DropBoxFeature(test,projectURL){
 
 	
 	casper.then(function () {
-		casper.evaluate(function() {
-			$("#consoleButton").click();
-		});
+		casper.clickLabel('Console', 'span');
 	});
 
 	casper.then(function(){
-		this.waitUntilVisible('div[id="Console1_console"]', function () {
+		this.waitUntilVisible('div[id="undefined_console"]', function () {
 			casper.then(function () {
 				casper.evaluate(function() {
 					G.debug(true);
@@ -841,12 +847,10 @@ function experimentConsoleToggleTests(test,rowLength){
 
 		casper.then(function () {
 			this.echo("Opening experiment console");
-			this.evaluate(function() {
-				$("a[href='#experiments']").click();
-			});
+			casper.clickLabel('Experiments', 'span');
 
-			this.waitUntilVisible('div#experiments', function () {
-				test.assertVisible('div#experiments', "The experiment panel is correctly open.");
+			this.waitUntilVisible('div#experimentsOutput', function () {
+				test.assertVisible('div#experimentsOutput', "The experiment panel is correctly open.");
 			}, null, 15000);
 		});
 		casper.then(function () {
@@ -859,13 +863,11 @@ function experimentConsoleToggleTests(test,rowLength){
 
 		casper.then(function () {
 			casper.then(function () {
-				casper.evaluate(function() {
-					$("#consoleButton").click();
-				});
+				casper.clickLabel('Console', 'span');
 			});
 
 			casper.then(function(){
-				this.waitUntilVisible('div[id="Console1_console"]', function () {
+				this.waitUntilVisible('div[id="undefined_console"]', function () {
 					casper.then(function () {
 						casper.evaluate(function() {
 							G.debug(true);

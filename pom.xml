@@ -3,7 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geppetto</groupId>
 	<artifactId>frontend</artifactId>
-	<version>0.3.9</version>
+	<version>0.4.2</version>
+	<name>Geppetto Frontend</name>
 	<packaging>war</packaging>
 	<properties>
 		<contextPath>org.geppetto.frontend</contextPath>

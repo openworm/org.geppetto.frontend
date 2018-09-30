@@ -67,8 +67,8 @@ define(function (require, exports, module) {
 			}
 			else {
 				if (this.component != undefined) {
-					if (this.component.state.value != value || this.component.state.searchText != value) {
-						this.component.setState({ value: value, searchText: value, checked: (value == "True") });
+					if (this.component.state.value !== value || this.component.state.searchText !== value) {
+						this.component.setState({ value: value, searchText: value, checked: (value || value == "True") });
 					}
 				}
 			}

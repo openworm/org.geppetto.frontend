@@ -590,7 +590,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		String dataSourceId;
 		List<String> paths;
 		String path;
-		String variableId;
+		String[] variableId;
 		List<RunnableQueryDT> runnableQueries;
 	}
 

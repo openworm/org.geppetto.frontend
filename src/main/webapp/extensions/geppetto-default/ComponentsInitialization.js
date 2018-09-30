@@ -1,5 +1,10 @@
 define(function (require) {
 	return function (GEPPETTO) {
+
+		var Console = require('../../js/components/interface/console/Console');
+		var PythonConsole = require('../../js/components/interface/pythonConsole/PythonConsole');
+		var ExperimentsTable = require('../../js/components/interface/experimentsTable/ExperimentsTable');
+
 		// Enable local storage
 		G.enableLocalStorage(false);
 		
@@ -54,8 +59,8 @@ define(function (require) {
 		//Foreground initialization
 		GEPPETTO.ComponentFactory.addComponent('FOREGROUND', {dropDown : false}, document.getElementById("foreground-toolbar"));
 
-		//Experiments table initialization
-		GEPPETTO.ComponentFactory.addComponent('EXPERIMENTSTABLE', {}, document.getElementById("experiments"));
+		//Console and Experiments table initialization
+		GEPPETTO.ComponentFactory.addComponent('DRAWER', {children: [Console, ExperimentsTable], labels: ["Console", "Experiments"], iconClass: ["fa fa-terminal", "fa fa-flask"]}, document.getElementById("footerHeader"));
 
 		//Home button initialization
 		GEPPETTO.ComponentFactory.addComponent('HOME', {}, document.getElementById("HomeButton"));

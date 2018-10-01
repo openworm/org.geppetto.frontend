@@ -88,7 +88,14 @@ define(function (require) {
         linkGbase: function(conns, filter) {
             if (this.linkSynapse(conns[0]).length > 0) {
                 var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
-                var gbases = synapses.map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : c.getType().conductance);
+                var gbases = synapses.map(function(c) {
+                    if (typeof c.getType().gbase !== 'undefined')
+                        return c.getType().gbase;
+                    else if (typeof c.getType().conductance !== 'undefined')
+                        return c.getType().conductance;
+                    else
+                        return 1;
+                });
                 var scaleFn = function(unit) {
                     switch(unit) {
                     case 'S':
@@ -101,7 +108,7 @@ define(function (require) {
                         return 1e-12;
                     }
                 };
-                var scale = gbases.map(g => { if (typeof g.getUnit === 'function') { return scaleFn(g.getUnit()) } });
+                var scale = gbases.map(g => { if (typeof g.getUnit === 'function') { return scaleFn(g.getUnit()) } else { return 1; } });
                 var conn = this.selectConn(conns, filter);
                 var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		var weight = 1;

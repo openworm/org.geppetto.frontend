@@ -29,11 +29,11 @@ define(function (require) {
                 }
 
                 connectToPython(componentType, model) {
-                    Utils.execPythonCommand('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
+                    Utils.sendPythonMessage('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
                 }
 
                 disconnectFromPython() {
-                    Utils.execPythonCommand('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
+                    Utils.sendPythonMessage('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
                 }
 

@@ -28,7 +28,8 @@ define(function (require, exports, module) {
         var parametersString = "";
         if(parameters){
             if(parameters.length>0){
-                parametersString = parameters.reduce((acc, p) => acc = acc == "(" ? acc + processParameter(p) : acc + "," + processParameter(p), "(") + ")";
+                // parametersString = parameters.reduce((acc, p) => acc = acc == "(" ? acc + processParameter(p) : acc + "," + processParameter(p), "(") + ")";
+                parametersString = "(" + parameters.map( parameter => "jsonapi.loads('" + JSON.stringify(parameter) + "')").join(",") + ")";
             }
             else{
                 parametersString = '()';
@@ -44,6 +45,7 @@ define(function (require, exports, module) {
             case 'error':
                 GEPPETTO.CommandController.log("ERROR while executing a Python command:");
                 GEPPETTO.CommandController.log(data.content.evalue.trim());
+                console.log(data.content.evalue);
                 GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
                 break;
             case 'execute_result':
@@ -60,8 +62,8 @@ define(function (require, exports, module) {
                 execPythonCommand('jsonapi.dumps(json_clean(' + content + ')).decode("utf-8")', handle_output2).then((response) => {
                     console.log(response)
                     GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: response });
-
                 });
+
                 break;
             default:
                 GEPPETTO.CommandController.log(data.content.text.trim(), true);

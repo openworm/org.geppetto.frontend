@@ -1,15 +1,5 @@
 define(function (require, exports, module) {
 
-	var React = require('react');
-	var ReactDOM = require('react-dom');
-
-	var PanelComp = require('../../components/controls/panel/Panel');
-	var CheckboxComp = require('../../components/controls/Checkbox');
-	var TextFieldComp = require('../../components/controls/TextField');
-	var RaisedButtonComp = require('../../components/controls/RaisedButton');
-	var LabelComp = require('../../components/controls/Label');
-	var DropDownComp = require('../../components/controls/DropDown');
-
 	var jupyter_widgets = require('@jupyter-widgets/base');
 	var GEPPETTO = require('geppetto');
 

@@ -44,85 +44,6 @@ define(function (require, exports, module) {
 
 	});
 
-	var StateVariableSync = jupyter_widgets.WidgetModel.extend({
-		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: 'StateVariableSync',
-			_model_module: "jupyter_geppetto",
-			_model_module_version : '~1.0.0',
-			name: '',
-			id: '',
-			units: '',
-			timeSeries: [],
-			geometries: [],
-
-			geppettoInstance: null
-		}),
-
-		getPayload: function () {
-			return {
-				eClass: 'Variable',
-				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('StateVariable') }],
-
-				initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: this.get('units') } } }],
-				id: this.get('id'),
-				name: this.get('name'),
-				timeSeries: this.get('timeSeries'),
-				geometries: this.get('geometries')
-			}
-		},
-
-		initialize: function () {
-			StateVariableSync.__super__.initialize.apply(this, arguments);
-
-			this.on("change:timeSeries", function (model, value, options) {
-				this.get('geppettoInstance').setTimeSeries(value);
-				//TODO This code is copy and paste from updateExperiment, reason why we should do this in a way we reuse all of that
-				if (value.length > GEPPETTO.ExperimentsController.maxSteps) {
-					GEPPETTO.ExperimentsController.maxSteps = value.length;
-				}
-			});
-		}
-	}
-	);
-
-	var DerivedStateVariableSync = jupyter_widgets.WidgetModel.extend({
-		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: 'DerivedStateVariableSync',
-			_model_module: "jupyter_geppetto",
-			_model_module_version : '~1.0.0',
-			name: '',
-			id: '',
-			units: '',
-			inputs: [],
-			timeSeries: [],
-			normalizationFunction: '',
-
-			geppettoInstance: null
-		}),
-
-		getInputs: function () {
-			//FIXME: We should create pointers for this
-			return this.get('inputs')
-		},
-
-		getPayload: function () {
-			return {
-				eClass: 'Variable',
-				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('DerivedStateVariable') }],
-
-				initialValues: [{ value: { eClass: 'PhysicalQuantity', unit: { unit: this.get('units') } } }],
-				id: this.get('id'),
-				name: this.get('name'),
-				inputs: this.getInputs(),
-				timeSeries: this.get('timeSeries'),
-				normalizationFunction: this.get('normalizationFunction')
-			}
-		},
-
-		initialize: function () {
-			DerivedStateVariableSync.__super__.initialize.apply(this, arguments);
-		}
-	});
 
 	var ModelSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
@@ -497,8 +418,6 @@ define(function (require, exports, module) {
 	);
 
 	module.exports = {
-		StateVariableSync: StateVariableSync,
-		DerivedStateVariableSync: DerivedStateVariableSync,
 		ModelSync: ModelSync,
 		ExperimentSync: ExperimentSync,
 		ProjectSync: ProjectSync,

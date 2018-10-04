@@ -1,28 +1,4 @@
 define(function (require, exports, module) {
-
-    var geppettoCommonLibrary = require('./GeppettoCommonLibrary.json');
-
-    function getTypeById(typeId) {
-        for (var typeIndex in geppettoCommonLibrary.types) {
-            if (geppettoCommonLibrary.types[typeIndex].id == typeId) {
-                return "types." + typeIndex;
-            }
-        }
-    }
-
-    function getGeppettoCommonLibrary() {
-        return geppettoCommonLibrary;
-    }
-
-    function processParameter(p){
-        if(p===false){
-            return "False"
-        }
-        else if(p===true){
-            return "True"
-        }
-        return JSON.stringify(p);
-    }
     
     function sendPythonMessage(command, parameters) {
         var parametersString = "";
@@ -101,8 +77,6 @@ define(function (require, exports, module) {
     };
 
     return {
-        getGeppettoCommonLibrary: getGeppettoCommonLibrary,
-        getTypeById: getTypeById,
         execPythonCommand: execPythonCommand,
         sendPythonMessage: sendPythonMessage
     };

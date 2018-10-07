@@ -33,6 +33,7 @@ define(['jquery'], function () {
             this.viewerId = viewerId;
             //Engine components
             this.scene = new THREE.Scene();
+            this.box = null;
             this.camera = null;
             this.controls = null;
             this.renderer = null;
@@ -213,6 +214,11 @@ define(['jquery'], function () {
                                     if (geometryIdentifier == undefined) {
                                         geometryIdentifier = "";
                                     }
+                                    if(that.box != null){
+                                    	that.scene.remove(that.box);
+                                    }
+                                    that.box = new THREE.BoundingBoxHelper(intersects[i].object, 0x00ff00);
+                                    that.scene.add(that.box);
                                     GEPPETTO.CommandController.execute(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
                                 }
                             }
@@ -528,24 +534,49 @@ define(['jquery'], function () {
          * @returns {Array} a list of objects intersected by the current mouse coordinates
          */
         getIntersectedObjects: function () {
-            // create a Ray with origin at the mouse position and direction into th scene (camera direction)
-            var vector = new THREE.Vector3(this.mouse.x, this.mouse.y, 1);
-            vector.unproject(this.camera);
+        	// create a Ray with origin at the mouse position and direction into th scene (camera direction)
+        	var vector = new THREE.Vector3(this.mouse.x, this.mouse.y, 1);
+        	vector.unproject(this.camera);
+        	var normalize = vector.sub(this.camera.position).normalize();
+        	var raycaster = new THREE.Raycaster(this.camera.position, normalize);
+            
+        	var visibleChildren = [];
+        	this.scene.traverse(function (child) {
+        		if (child.visible && !(child.clickThrough == true)) {
+        			if (child.geometry != null && child.geometry != undefined) {
+        				child.geometry.computeBoundingBox();
+        				visibleChildren.push(child);
+        			}
+        		}
+        	});
 
-            var raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+        	var maxVerticesLength = 0;
+        	var totalVerticesLength = 0;
+        	for(var i=0;i < visibleChildren.length; i++){
+        		var geometry = visibleChildren[i].geometry;
+        		if(geometry!=undefined){
+        			if(geometry.vertices!=undefined){
+        				if(maxVerticesLength <geometry.vertices.length){
+            				maxVerticesLength = geometry.vertices.length;
+        				}
+        				totalVerticesLength += geometry.vertices.length;
+        			}
+        		}
+        	}
 
-            var visibleChildren = [];
-            this.scene.traverse(function (child) {
-                if (child.visible && !(child.clickThrough == true)) {
-                    if (child.geometry != null && child.geometry != undefined) {
-                        child.geometry.computeBoundingBox();
-                        visibleChildren.push(child);
-                    }
-                }
-            });
+        	console.log("Max vertices length : " + maxVerticesLength);
+        	console.log("Total vertices length : " + totalVerticesLength);
 
+        	if(maxVerticesLength > 2000){
+        		raycaster.linePrecision = 100;
+        	}
+
+        	var intersected = raycaster.intersectObjects(visibleChildren);
+        	if(intersected.length > 0){
+        		console.log("jackpot "+ intersected);
+        	}
             // returns an array containing all objects in the scene with which the ray intersects
-            return raycaster.intersectObjects(visibleChildren);
+            return intersected;
         },
 
         getDefaultGeometryType: function () {

@@ -17,7 +17,7 @@ define(function (require) {
                 var that = this;
                 //We execute an asynchronous call to fetch all the projects for the current user
                 $.ajax({
-                    url: window.location.origin + window.location.pathname + "projects"
+                    url: window.location.origin + window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/")) + "geppettoprojects"
                 }).then(function(data) {
                     that.userProjects=data;
                     if(callback!=undefined){

@@ -29,11 +29,11 @@ define(function (require) {
                 }
 
                 connectToPython(componentType, model) {
-                    Utils.sendPythonMessage('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
+                    Utils.execPythonMessage('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
                 }
 
                 disconnectFromPython() {
-                    Utils.sendPythonMessage('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
+                    Utils.execPythonMessage('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
                 }
 
@@ -323,7 +323,7 @@ define(function (require) {
                 }
 
                 callPythonMethod = (value) => {
-                    Utils.sendPythonMessage(this.props.method, []).then((response) => {
+                    Utils.evalPythonMessage(this.props.method, []).then((response) => {
                         if (Object.keys(response).length != 0) {
                             this.setState({ pythonData: response });
                         }

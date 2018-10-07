@@ -1,19 +1,6 @@
 define(function (require, exports, module) {
-    
-    function sendPythonMessage(command, parameters) {
-        var parametersString = "";
-        if(parameters){
-            if(parameters.length>0){
-                // parametersString = parameters.reduce((acc, p) => acc = acc == "(" ? acc + processParameter(p) : acc + "," + processParameter(p), "(") + ")";
-                parametersString = "(" + parameters.map( parameter => "jsonapi.loads('" + JSON.stringify(parameter) + "')").join(",") + ")";
-            }
-            else{
-                parametersString = '()';
-            }
-        }
-        return this.execPythonCommand(command + parametersString, handle_output);
 
-    };
+
 
     function handle_output(data) {
         //data is the object passed to the callback from the kernel execution
@@ -29,17 +16,19 @@ define(function (require, exports, module) {
                 //FIXME Couldnt find a method to avoid this string manipulation.
                 //content = content.replace("b'","'");
                 //if(content.startsWith("'") && content.endsWith("'")){
-                    //  content=content.substr(1, content.length-1)
-                    //}
-                    //content = content.replace(/\\n/g, ' ').replace(/\s{2,}/g,' ').replace(/^\s+|\s+$/,'');
-                    //GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: content });
-                    
-                let content = data.content.data['text/plain'];
-                execPythonCommand('jsonapi.dumps(json_clean(' + content + ')).decode("utf-8")', handle_output2).then((response) => {
-                    console.log(response)
-                    GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: response });
-                });
+                //  content=content.substr(1, content.length-1)
+                //}
+                //content = content.replace(/\\n/g, ' ').replace(/\s{2,}/g,' ').replace(/^\s+|\s+$/,'');
+                //GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: content });
 
+                // let content = data.content.data['text/plain'];
+                // execPythonCommand('jsonapi.dumps(json_clean(' + content + ')).decode("utf-8")', handle_output2).then((response) => {
+                //     console.log(response)
+                //     GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: response });
+                // });
+
+
+                GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: JSON.parse(data.content.data['text/plain'].replace(/^'(.*)'$/, '$1')) });
                 break;
             case "display_data":
                 GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: data.content.data['image/png'] });
@@ -49,26 +38,26 @@ define(function (require, exports, module) {
         }
     };
 
-    function handle_output2(data) {
-        //data is the object passed to the callback from the kernel execution
-        switch (data.msg_type) {
-            case 'error':
-                GEPPETTO.CommandController.log("ERROR while serializing a Python command output:");
-                GEPPETTO.CommandController.log(data.content.evalue.trim());
-                GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
-                break;
-            case 'execute_result':
-            try {
-                var response = JSON.parse(data.content.data['text/plain'].replace(/^'(.*)'$/, '$1'));
-            } catch (error) {
-                var response = data.content.data['text/plain'].replace(/^'(.*)'$/, '$1');
-            }
-                GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: response });
-                break;
-            default:
-                GEPPETTO.CommandController.log(data.content.text.trim(), true);
-        }
-    }
+    // function handle_output2(data) {
+    //     //data is the object passed to the callback from the kernel execution
+    //     switch (data.msg_type) {
+    //         case 'error':
+    //             GEPPETTO.CommandController.log("ERROR while serializing a Python command output:");
+    //             GEPPETTO.CommandController.log(data.content.evalue.trim());
+    //             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
+    //             break;
+    //         case 'execute_result':
+    //         try {
+    //             var response = JSON.parse(data.content.data['text/plain'].replace(/^'(.*)'$/, '$1'));
+    //         } catch (error) {
+    //             var response = data.content.data['text/plain'].replace(/^'(.*)'$/, '$1');
+    //         }
+    //             GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: response });
+    //             break;
+    //         default:
+    //             GEPPETTO.CommandController.log(data.content.text.trim(), true);
+    //     }
+    // }
 
     function execPythonCommand(command, callback) {
         GEPPETTO.CommandController.log('Executing Python command: ' + command, true);
@@ -84,9 +73,40 @@ define(function (require, exports, module) {
         );
     };
 
+
+    // function sendPythonMessage(command, parameters) {
+    //     if (parameters) {
+    //         evalPythonMessage(command, parameters)
+    //     }
+    //     else{
+    //         execPythonMessage(command)
+    //     }
+    // };
+
+    function evalPythonMessage(command, parameters) {
+        var parametersString = '';
+        if (parameters) {
+            if (parameters.length > 0) {
+                // parametersString = parameters.reduce((acc, p) => acc = acc == "(" ? acc + processParameter(p) : acc + "," + processParameter(p), "(") + ")";
+                parametersString = "(" + parameters.map(parameter => "geppetto_init.converToPython('" + JSON.stringify(parameter) + "')").join(",") + ")";
+            }
+            else {
+                parametersString = '()';
+            }
+        }
+        return this.execPythonCommand('geppetto_init.convertToJS(' + command + parametersString + ')', handle_output);
+
+    };
+
+    function execPythonMessage(command) {
+        return this.execPythonCommand(command, handle_output);
+    };
+
     return {
         execPythonCommand: execPythonCommand,
-        sendPythonMessage: sendPythonMessage
+        // sendPythonMessage: sendPythonMessage,
+        execPythonMessage: execPythonMessage,
+        evalPythonMessage: evalPythonMessage
     };
 
 })

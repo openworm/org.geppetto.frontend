@@ -72,8 +72,11 @@ define(function(require) {
 			if(typeof condition === 'function'){
 				conditionResult = condition();
 			} else {
-				if(condition != ''){
+				if(condition !== ''){
 					conditionResult = eval(condition);
+					if(condition === "true" || condition === "false" || condition === true || condition === false) {
+						this.props.configuration.condition = !conditionResult;
+					}
 				}
 			}
 

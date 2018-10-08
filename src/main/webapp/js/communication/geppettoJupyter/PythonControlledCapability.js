@@ -150,7 +150,7 @@ define(function (require) {
                                 break;
                         }
                         if (newValue !== '') {
-                            this.syncValueWithPython(newValue, window.requirement, window.context);
+                            this.syncValueWithPython(newValue, window.context);
                         }
                     }
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
@@ -280,7 +280,7 @@ define(function (require) {
                 updatePythonValue(newValue) {
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
                     if (this.syncValueWithPython) {
-                        this.syncValueWithPython(newValue, window.requirement, window.context);
+                        this.syncValueWithPython(newValue, window.context);
                     }
 
                     this.forceUpdate();

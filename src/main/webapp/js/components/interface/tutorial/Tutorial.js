@@ -40,9 +40,10 @@ define(function (require) {
 		 * Initial message at launch of tutorial
 		 */
 		start() {
-			this.state.currentStep = 0;
+		    this.setState({currentStep: 0}, function() {
 			this.updateTutorialWindow();
 			this.started = true;
+                    });
 		}
 
 		getActiveTutorial() {
@@ -61,7 +62,7 @@ define(function (require) {
 						url: step.content_url,
 						success(responseData, textStatus, jqXHR) {
 						    step.message = responseData;
-						    self.forceUpdate();
+                                                    self.forceUpdate();
                                                     self.setSize(self.size.height, self.size.width);
                                                     var tutorialScript = document.getElementById("tutorialScript");
                                                     if (tutorialScript !== null)
@@ -86,7 +87,7 @@ define(function (require) {
 		}
 
 		gotToStep(currentStep) {
-			this.state.currentStep = currentStep;
+		    this.setState({currentState: currentStep}, function() {
 			if(this.getActiveTutorial()!=undefined){
 				if (this.state.currentStep <= this.getActiveTutorial().steps.length - 1) {
 					this.updateTutorialWindow();
@@ -94,12 +95,12 @@ define(function (require) {
 					this.start();
 				}
 			}
-
-			this.setDirty(true);
+                        this.setDirty(true);
+                    });
 		}
 
 		nextStep() {
-			this.state.currentStep++;
+		    this.setState({currentStep: this.state.currentStep+1}, function() {
 			if (this.state.currentStep <= this.getActiveTutorial().steps.length - 1) {
 				this.updateTutorialWindow();
 			} else {
@@ -107,13 +108,15 @@ define(function (require) {
 			}
 
 			this.setDirty(true);
+                    });
 		}
 
-		prevStep() {
-			this.state.currentStep--;
+	    prevStep() {
+                this.setState({currentStep: this.state.currentStep-1}, function() {
 			GEPPETTO.tutorialEnabled = false;
 			this.updateTutorialWindow();
-			this.setDirty(true);
+		    this.setDirty(true);
+                });
 		}
 
 		close() {
@@ -142,13 +145,13 @@ define(function (require) {
 		}
 
 		setTutorial(tutorialURL) {
-			this.state.tutorialData = {};
+		        this.setState({tutorialData: {}});
 			this.addTutorial(tutorialURL);
 			this.setDirty(true);
 		}
 
 		goToChapter(chapter) {
-			this.state.activeTutorial = chapter;
+		        this.setState({activeTutorial: chapter});
 			this.start();
 			this.setDirty(true);
 		}
@@ -183,17 +186,18 @@ define(function (require) {
 			});
 		}
 
-		loadTutorial(tutorialData, start) {
-			this.state.tutorialData[tutorialData.name] = tutorialData;
+	    loadTutorial(tutorialData, start) {
+		this.setState({tutorialData: Object.assign(this.state.tutorialData, {[tutorialData.name]: tutorialData})});
 
             if(start) {
-                this.state.activeTutorial = tutorialData.name;
-                this.state.currentStep = 0;
+                this.setState({activeTutorial: tutorialData.name});
+                this.setState({currentStep: 0});
             }
 
 			if (!this.getIgnoreTutorialCookie()) {
 				if (start) {
-					this.start();
+				    this.start();
+
                     this.forceUpdate();
                     if(!this.props.closeByDefault){
                         this.open(true);
@@ -413,7 +417,9 @@ define(function (require) {
 			if (activeTutorial != undefined) {
 
 
-				var step = activeTutorial.steps[this.state.currentStep];
+			    var step = activeTutorial.steps[this.state.currentStep];
+                            if (typeof step === 'undefined')
+                                return;
 
 				var dialog = this.dialog.parent();
 				dialog.find(".ui-dialog-title").html(step.title);

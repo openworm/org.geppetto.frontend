@@ -385,7 +385,7 @@
 
 #querybuilder .griddle table {
 	width: 100%;
-	table-layout: fixed;
+	table-layout: auto;
 }
 
 #querybuilder .img-column .tooltip-arrow {
@@ -464,7 +464,13 @@
 
 #querybuilder .query-results-images-column {
 	width: 300px;
+	max-width: 300px;
 	text-align: center !important;
+}
+
+#querybuilder .query-results-score-column {
+	width: 100px;
+    text-align: center !important;
 }
 
 #querybuilder .query-results-slick-image {
@@ -491,4 +497,8 @@
 
 #querybuilder .standard-row {
 	height: 130px;
+}
+
+#querybuilder .griddle-container{
+    background-color: fade(@background_color_widget, 70%);
 }

@@ -26,12 +26,15 @@ define(function (require, exports, module) {
                 //     console.log(response)
                 //     GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: response });
                 // });
-
-
-                GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: JSON.parse(data.content.data['text/plain'].replace(/^'(.*)'$/, '$1')) });
+                try {
+                    var response = JSON.parse(data.content.data['text/plain'].replace(/^'(.*)'$/, '$1'));
+                } catch (error) {
+                    var response = data.content.data['text/plain'].replace(/^'(.*)'$/, '$1');
+                }
+                GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: response});
                 break;
             case "display_data":
-                GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: data.content.data['image/png'] });
+            //     GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: data.content.data['image/png'] });
                 break;
             default:
                 GEPPETTO.CommandController.log(data.content.text.trim(), true);
@@ -83,7 +86,7 @@ define(function (require, exports, module) {
     //     }
     // };
 
-    function evalPythonMessage(command, parameters) {
+    function evalPythonMessage(command, parameters, parse = true) {
         var parametersString = '';
         if (parameters) {
             if (parameters.length > 0) {
@@ -94,7 +97,12 @@ define(function (require, exports, module) {
                 parametersString = '()';
             }
         }
-        return this.execPythonCommand('geppetto_init.convertToJS(' + command + parametersString + ')', handle_output);
+
+        var finalCommand = command + parametersString;
+        if (parse){
+            finalCommand = 'geppetto_init.convertToJS(' + finalCommand + ')'
+        }
+        return this.execPythonCommand(finalCommand, handle_output);
 
     };
 

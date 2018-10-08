@@ -33,10 +33,6 @@ define(function (require) {
 				'QUERY': 'interface/query/query',
 				'TUTORIAL': 'interface/tutorial/Tutorial',
 				'PYTHONCONSOLE': 'interface/pythonConsole/PythonConsole',
-				'CHECKBOX': 'controls/Checkbox',
-				'TEXTFIELD': 'controls/TextField',
-				'RAISEDBUTTON': 'controls/RaisedButton',
-				'BUTTON': 'controls/button/Button',
 				'DICOMVIEWER': 'interface/dicomViewer/DicomViewer',
 				'GOOGLEVIEWER': 'interface/googleViewer/GoogleViewer',
 				'BIGIMAGEVIEWER': 'interface/bigImageViewer/BigImageViewer',
@@ -48,13 +44,7 @@ define(function (require) {
 				'LINKBUTTON': 'interface/linkButton/LinkButton',
 				'BUTTONBAR': 'interface/buttonBar/ButtonBar',
 				'DRAWER': 'interface/drawer/TabbedDrawer'
-				// 'PLOT': 'interface/plot/Plot',
-				// 'POPUP': 'interface/popup/Popup'
 			},
-
-			// componentsShortcut : {
-			// 	"1": "POPUP"
-			// },
 
 			loadSpinner: function () {
 				//We require this synchronously to properly show spinner when loading projects
@@ -212,9 +202,6 @@ define(function (require) {
 				            case 'QUERY': require(['./interface/query/query'],cb); break;
 							case 'TUTORIAL': require(['./interface/tutorial/Tutorial'],cb); break;
 							case 'PYTHONCONSOLE': require(['./interface/pythonConsole/PythonConsole'],cb); break;
-				            case 'CHECKBOX': require(['./controls/Checkbox'],cb); break;
-				            case 'TEXTFIELD': require(['./controls/TextField'],cb); break;
-				            case 'RAISEDBUTTON': require(['./controls/RaisedButton'],cb); break;
 				            case 'BUTTON': require(['./controls/button/Button'],cb); break;
 				            case 'DICOMVIEWER': require(['./interface/dicomViewer/DicomViewer'],cb); break;
 				            case 'GOOGLEVIEWER': require(['./interface/googleViewer/GoogleViewer'],cb); break;

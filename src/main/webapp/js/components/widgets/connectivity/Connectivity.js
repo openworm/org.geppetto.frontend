@@ -40,7 +40,7 @@ define(function (require) {
                 }
             },
             linkType: function (conn) {
-                return 1;
+                return [];
             },
             library: "GEPPETTO.ModelFactory.geppettoModel.common"
         },
@@ -79,7 +79,7 @@ define(function (require) {
             if (this.svg != null) {
                 //TODO: To subtract 20px is horrible and has to be replaced but I have no idea about how to calculate it
                 var width = this.size.width - 20;
-                var height = this.size.height - 20;
+                var height = this.size.height + 50;
                 if (this.options.layout == 'matrix') {
                     $('#' + this.id + '-ordering').remove();
                 }
@@ -170,19 +170,25 @@ define(function (require) {
 
 		                    }
 		                }
-
+                                var links = [];
 		                for(var x=0; x<connectionVariables.length; x++){
 	                        var connectionVariable = connectionVariables[x];
 
 	                        var source = connectionVariable.getA();
 	                        var target = connectionVariable.getB();
 	                        var sourceId = source.getElements()[source.getElements().length - 1].getPath();
-	                        var targetId = target.getElements()[source.getElements().length - 1].getPath();
+	                            var targetId = target.getElements()[source.getElements().length - 1].getPath();
 
-	                            this.createLink(connectionVariable, sourceId, targetId, this.options.linkType.bind(this)(connectionVariable, this.linkCache));
+                                    var st = [sourceId,targetId].toString();
+                                    if (links[st] == undefined)
+                                        links[st] = [connectionVariable]
+                                    else
+                                        links[st].push(connectionVariable)
 		                }
 		            }
-
+                    for (var link in links) {
+                          this.createLink(links[link], link.split(',')[0], link.split(',')[1], this.options.linkType.bind(this)(links[link], this.linkCache));
+                    }
 		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
 		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
 		            return true;
@@ -218,9 +224,10 @@ define(function (require) {
             }
         },
 
-        createLayout: function () {
+        createLayout: function (state) {
             $('#' + this.id + " svg").remove();
 	    $('#' + this.id + '-options').remove();
+            $('#' + this.id).css('margin-bottom', '30px');
 
             this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
             this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
@@ -232,7 +239,7 @@ define(function (require) {
 
             switch (this.options.layout) {
                 case 'matrix':
-                    matrices.createMatrixLayout(this);
+                matrices.createMatrixLayout(this, state);
                     break;
                 case 'force':
                     forces.createForceLayout(this);
@@ -322,9 +329,9 @@ define(function (require) {
             }
         },
 
-        createLink: function (conn, sourceId, targetId, type) {
+        createLink: function (conns, sourceId, targetId, type) {
             var linkItem = {
-		conn: conn,
+		conns: conns,
                 source: this.mapping[sourceId],
                 target: this.mapping[targetId],
                 type: type,

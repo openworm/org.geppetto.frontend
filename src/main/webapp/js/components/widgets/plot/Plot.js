@@ -274,7 +274,6 @@ define(function (require) {
 			this.datasets.push(dataset);
                     else if (typeof dataset !== 'undefined')
                         this.datasets = this.datasets.concat(dataset)
-
 			if(this.plotly==null){
 				this.plotOptions.xaxis.autorange = true;
 				this.xaxisAutoRange = true;
@@ -379,7 +378,7 @@ define(function (require) {
 					name: legendName,
 					line: $.extend({
 					    dash: 'solid',
-					    width: 2
+					    width: '2'
 					}, lineOptions),
 					hoverinfo : 'all',
 					type : 'scatter'
@@ -1113,7 +1112,7 @@ define(function (require) {
 					name: options.legendText,
 					line: {
 						dash: 'solid',
-						width: 2
+						width: '2'
 					}
 			};
 
@@ -1173,7 +1172,7 @@ define(function (require) {
 					name: legendName,
 			    line: $.extend({
                                 dash: 'solid',
-				width: 2
+				width: '2',
 			    }, lineOptions),
 					hoverinfo : 'alle'
 			};
@@ -1293,7 +1292,10 @@ define(function (require) {
 				// if any data, loop through it
 			    if(view.data != undefined){
                                 var that = this;
-                                GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), view.data, function() {
+                                var paths = view.data;
+                                if (view.data[0].hasOwnProperty('path'))
+                                    paths = view.data.map(d => d.path);
+                                GEPPETTO.ExperimentsController.getExperimentState(Project.getId(), Project.getActiveExperiment().getId(), paths, function() {
 					for (var index in view.data) {
 					    var item = view.data[index];
 					    that.controller.plotStateVariable(
@@ -1307,9 +1309,10 @@ define(function (require) {
 					}
 				});
                             }
-		        }
-                    // after setting view through setView, reset dirty flag
-                    this.dirtyView = false;
-                }
+                        }
+
+			// after setting view through setView, reset dirty flag
+			this.dirtyView = false;
+		}
 	});
 });

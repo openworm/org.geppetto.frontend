@@ -55,23 +55,25 @@ define(function (require) {
     
     Library.prototype.resolveAllImportTypes = function (callback) {
     	if(this.importTypes.length>0){
-        	GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.RESOLVING_TYPES);
-        	var b=[];
-        	const BATCH = 50;
-        	for(var i=0;i<this.importTypes.length;i++){
-    			b.push(this.importTypes[i].getPath());
-    		} 
-        	while(b.length>BATCH){
-        		GEPPETTO.Manager.resolveImportType(b.splice(0,BATCH));
-    		}
-        	GEPPETTO.Manager.resolveImportType(b, function(){
-        		if(callback!=undefined){
-        			callback();
-        		} 
-        		GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
-        	});
+            GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.RESOLVING_TYPES);
+            var b=[];
+            const BATCH_SIZE = 50;
+            for(var i=0;i<this.importTypes.length;i++){
+                b.push(this.importTypes[i].getPath());
+            }
+            var batches = []
+            while(b.length>0) {
+                var batch = b.splice(0,BATCH_SIZE);
+                batches.push(batch);
+            }
+            for (var i=0; i<batches.length; ++i) {
+                GEPPETTO.Manager.resolveImportType(batches[i], (function(i){ return function() {
+                    if (i == batches.length-1 && callback != undefined)
+                        callback();
+                    GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
+                }})(i));
+            }
     	}
-
     };
 
     // Overriding set

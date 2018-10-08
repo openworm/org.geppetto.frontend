@@ -5,29 +5,32 @@ define(function (require) {
     var d3 = require("d3");
     var d3Scale = require("d3-scale");
     return {
-	weight: false,
 	linkColormaps: {},
 	projectionSummary: {},
+        state: {filter: 'projection', weight: false, order: 'id'},
+        projectionTypeSummary: {'projection': [], 'continuousProjection': [], 'gapJunction': []},
 	getProjectionSummary: function() {
 	    var projSummary = {};
 	    var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
 	    for (var i=0; i<projs.length; ++i) {
 		var proj = projs[i];
 		if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
-		    // too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
+		    // FIXME: too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
 		    var synapse = proj.getVariables().filter((x)=> {
 			if (typeof x.getType().getSuperType().getPath === 'function')
 			    return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
 		    })[0];
-		    // synapse undefined here => electrical projection, since currently the synapse attr is not given in the
-		    // <electricalProjection/> tag but in the <electricalConnectionInstance(W)/> tag.
-		    // in any case, we are currently ignoring electrical projections, but FIXME
 		    if (typeof synapse === 'undefined')
 			continue;
 		    else {
+                        var pairs = proj.getChildren().filter(x=> typeof x.getA === 'function').map(x => [x.getA().getElements()[0].index,x.getB().getElements()[0].index]);
 			var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
 			var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-			var data = {id: proj.getId(), synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation};
+                        // FIXME: type should not be stored in name, also hacky gapJunction detection. need to fix in model interpreter.
+                        var type = (synapse.types[0].conductance && !synapse.types[0].erev) ? "gapJunction" : proj.getName();
+                        if (this.projectionTypeSummary[type].indexOf(synapse.getId()) == -1)
+                            this.projectionTypeSummary[type].push(synapse.getId())
+			var data = {id: proj.getId(), type: type, synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, pairs: pairs};
 			if (typeof projSummary[[preId, postId]] === 'undefined')
 			    projSummary[[preId, postId]] = [data];
 			else
@@ -37,6 +40,11 @@ define(function (require) {
 	    }
 	    return projSummary;
 	},
+        selectConn: function(conns, filter) {
+            if (filter === 'gapJunction')
+                filter = 'electricalProjection';
+            return conns.filter(x=>x.getParent().getName()===filter)[0];
+        },
 	linkSynapse: function (conn) {
 	    if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
 		this.projectionSummary = this.getProjectionSummary();
@@ -49,27 +57,23 @@ define(function (require) {
 	    else
 		return [];
         },
-	linkWeight: function (conn) {
-	    if (this.linkSynapse(conn).length > 0) {
+	linkWeight: function (conns, filter) {
+	    if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+                var conn = this.selectConn(conns, filter);
 		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		var weight = 1;
 		if (weightIndex > -1)
 		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-		var gbases = this.linkSynapse(conn).map(c => (typeof c.getType().gbase !== 'undefined') ? c.getType().gbase : 1);
-		var scale = gbases.map(g => { if (typeof g.getUnit === 'function' && g.getUnit() === 'S') { return 1e9; } else { return 1; } });
-		return gbases.map((g, i) => {
-		    if (typeof g.getInitialValue === 'function')
-			return weight * scale[i] * g.getInitialValue();
-		    else
-			return weight * scale[i] * g;
-		}).reduce((x,y) => x+y, 0);
+                return weight;
 	    }
 	    else
 		return 0;
 	},
-	linkErev: function (conn) {
-	    if (this.linkSynapse(conn).length > 0) {
-		var erevs = this.linkSynapse(conn).map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
+	linkErev: function (conns, filter) {
+	    if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+		var erevs = synapses.map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
 		var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
 		return erevs.map((e, i) => {
 		    if (typeof e.getInitialValue === 'function')
@@ -81,21 +85,67 @@ define(function (require) {
 	    else
 		return 0;
 	},
-	populateWeights: function(links) {
+        linkGbase: function(conns, filter) {
+            if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+                var gbases = synapses.map(function(c) {
+                    if (typeof c.getType().gbase !== 'undefined')
+                        return c.getType().gbase;
+                    else if (typeof c.getType().conductance !== 'undefined')
+                        return c.getType().conductance;
+                    else
+                        return 1;
+                });
+                var scaleFn = function(unit) {
+                    switch(unit) {
+                    case 'S':
+                        return 1; break;
+                    case 'mS':
+                        return 1e-3; break;
+                    case 'nS':
+                        return 1e-9; break;
+                    case 'pS':
+                        return 1e-12;
+                    }
+                };
+                var scale = gbases.map(g => { if (typeof g.getUnit === 'function') { return scaleFn(g.getUnit()) } else { return 1; } });
+                var conn = this.selectConn(conns, filter);
+                var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+		var weight = 1;
+		if (weightIndex > -1)
+		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
+                return gbases.map((g, i) => {
+                    if (typeof g.getInitialValue === 'function')
+		        return weight * scale[i] * g.getInitialValue();
+                    else
+                        return weight * scale[i] * g;
+		}).reduce((x,y) => x+y, 0);
+	    }
+	    else
+		return 0;
+        },
+	populateWeights: function(links, filter) {
 	    for (var i in links) {
-		links[i].weight =  this.linkWeight(links[i].conn);
-		links[i].erev = this.linkErev(links[i].conn);
+                if (links[i].type.filter(t=>this.projectionTypeSummary[filter].indexOf(t)>-1).length > 0) {
+		    links[i].weight = this.linkWeight(links[i].conns, filter);
+                    links[i].erev = this.linkErev(links[i].conns, filter);
+                    links[i].gbase = this.linkGbase(links[i].conns, filter);
+                } else {
+                    links[i].weight = undefined;
+                    links[i].erev = undefined;
+                    links[i].gbase = undefined;
+		}
 	    }
 	},
-	weightColormaps: function(links) {
+	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
-	    var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.weight >= 0));
-	    var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.weight < 0));
-	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.weight))).filter(x => x != 0);
-	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.weight >= 0) ? c.weight : -1*c.weight))).filter(x => x != 0);
+	    var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0));
+	    var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0));
+	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.gbase))).filter(x => x != undefined);
+	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.gbase >= 0) ? c.gbase : -1*c.gbase))).filter(x => x != undefined);
 	    var colormaps = {};
 	    var baseColormap = d3.scaleLinear()
-		.range([d3.cubehelix(0, 1, 0.5), d3.cubehelix(240, 1, 0.5)])
+		.range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)])
 		.interpolate(d3.interpolateCubehelixLong);
 	    if (weights_exc.length > 0) {
 		var min_exc = Math.min.apply(null, weights_exc);
@@ -109,10 +159,12 @@ define(function (require) {
 	    }
 	    return colormaps;
 	},
-	createMatrixLayout: function (context) {
+	createMatrixLayout: function (context, state) {
+            if (typeof state !== 'undefined')
+                this.state = state;
 	    var d3 = require("d3");
 
-	    var margin = { top: 45, right: 10, bottom: 10, left: 25 };
+	    var margin = { top: 45, right: 10, bottom: 50, left: 25 };
 	    var legendWidth = 120;
 
 	    var matrixDim = (context.options.innerHeight < (context.options.innerWidth - legendWidth)) ? (context.options.innerHeight) : (context.options.innerWidth - legendWidth);
@@ -141,10 +193,16 @@ define(function (require) {
 	    var root = context.dataset.root;
 	    var n = nodes.length;
 
+            this.projectionSummary = this.getProjectionSummary();
+            this.state.filter = this.projectionTypeSummary[this.state.filter].length > 0 ?
+                this.state.filter :
+                Object.keys(this.projectionTypeSummary).filter(x => this.projectionTypeSummary[x].length > 0)[0];
+            this.populateWeights(context.dataset.links, this.state.filter);
+                
 	    // Compute index per node.
 	    nodes.forEach(function (node, i) {
-		node.pre_count = 0;
-		node.post_count = 0;
+		node.pre_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
+                node.post_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
 		matrix[i] = d3.range(n).map(function (j) {
 		    return { x: j, y: i, z: 0 };
 		});
@@ -154,16 +212,24 @@ define(function (require) {
 	    context.dataset.links.forEach((function (link) {
 		//TODO: think about zero weight lines
 		//matrix[link.source][link.target].z = link.weight ? link.type : 0;
-		if (this.weight) {
-		    matrix[link.source][link.target].z = link.weight;
+                var Aindex = link.conns[0].getA().getElements()[0].getIndex();
+                var Bindex = link.conns[0].getB().getElements()[0].getIndex();
+                var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
+                var projTypes = proj.filter(p => JSON.stringify(p.pairs).indexOf(JSON.stringify([Aindex,Bindex])) > -1).map(p => p.type);
+		if (this.state.weight) {
+		    matrix[link.source][link.target].weight = link.weight;
+                    matrix[link.source][link.target].gbase = link.gbase;
 		    matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
 		}
 		else {
-		    matrix[link.source][link.target].z = link.type;
 		    delete matrix[link.source][link.target].type;
 		}
-		nodes[link.source].pre_count += 1;
-		nodes[link.target].post_count += 1;
+                for (var type of projTypes) {
+		    nodes[link.source].pre_count[type] += 1;
+		    nodes[link.target].post_count[type] += 1;
+                }
+                matrix[link.source][link.target].z = link.type;
+                matrix[link.source][link.target].projTypes = projTypes;
 	    }).bind(this));
 
 	    //Sorting matrix entries.
@@ -178,16 +244,16 @@ define(function (require) {
 		id: d3.range(n).sort(function (a, b) {
 		    return d3.ascending(nodes[a].id, nodes[b].id);
 		}),
-		pre_count: d3.range(n).sort(function (a, b) {
-		    return nodes[b].pre_count - nodes[a].pre_count;
-		}),
-		post_count: d3.range(n).sort(function (a, b) {
-		    return nodes[b].post_count - nodes[a].post_count;
-		}),
+		pre_count: d3.range(n).sort((function (a, b) {
+		    return nodes[b].pre_count[this.state.filter] - nodes[a].pre_count[this.state.filter];
+		}).bind(this)),
+		post_count: d3.range(n).sort((function (a, b) {
+		    return nodes[b].post_count[this.state.filter] - nodes[a].post_count[this.state.filter];
+		}).bind(this)),
 		//community: d3.range(n).sort(function(a, b) { return nodes[b].community - nodes[a].community; }),
 	    };
 	    // Default sort order.
-	    x.domain(orders.id);
+	    x.domain(orders[this.state.order]);
 
 	    var rect = container
 		.append("rect")
@@ -248,12 +314,15 @@ define(function (require) {
                 };
             };
 
-            var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
+            var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeAccent);
 	    this.linkColormaps = (function() {
-		if (this.weight)
-		    return this.weightColormaps(context.dataset.links);
-		else
-		    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x => x.type))));
+		if (this.state.weight) {
+                    this.populateWeights(context.dataset.links, this.state.filter);
+		    return this.weightColormaps(context.dataset.links, this.state.filter);
+                }
+		else {
+                    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
+                }
 	    }).bind(this)();
 
             var postMargin = parseInt(rect.attr("width"))/pre.length;
@@ -276,7 +345,6 @@ define(function (require) {
                 .attr("transform", "translate(-20,0)")
                 .each(popIndicator("y", nodeColormap, popIndicatorSize, preMargin));
 
-	    var rowFn = row(this.linkColormaps);
 	    var row = container.selectAll(".row")
 		.data(matrix)
 		.enter().append("g")
@@ -284,7 +352,7 @@ define(function (require) {
 		.attr("transform", function (d, i) {
 		    return "translate(0," + x(i) + ")";
 		})
-		.each(rowFn);
+		.each(row(this.linkColormaps, this.state.filter, this.projectionTypeSummary));
 
 	    row.append("line")
 		.attr("x2", context.options.innerWidth);
@@ -300,8 +368,56 @@ define(function (require) {
 	    column.append("line")
 		.attr("x1", -context.options.innerWidth);
 
+            function addSynapseTypesToLegend(id, colorScale, position) {
+                var colorBox = {size: 20, labelSpace: 4};
+                var padding = {x: colorBox.size, y: 2 * colorBox.size};
+
+                var legendItem = context.svg.selectAll(id)
+                    .data(colorScale.domain().slice().sort())
+                    .enter().append('g')
+                    .attr('class', 'legend-item')
+                    .attr('transform', function (d, i) {
+                        var height = colorBox.size + colorBox.labelSpace;
+                        horz = colorBox.size + position.x + padding.x;
+                        vert = i * height + position.y + padding.y;
+                        return 'translate(' + horz + ',' + vert + ')';
+                    });
+
+                // coloured squares
+                legendItem.append('rect')
+                    .attr('width', colorBox.size)
+                    .attr('height', colorBox.size)
+                    .style('fill', function (d) {
+                        return colorScale(d);
+                    })
+                    .style('stroke', function (d) {
+                        return colorScale(d);
+                    });
+
+                // labels
+                legendItem.append('text')
+                    .attr('x', colorBox.size + colorBox.labelSpace)
+                    .attr('y', colorBox.size - colorBox.labelSpace)
+                    .attr('class', 'legend-text')
+                    .text(function (d) {
+                        return d;
+                    });
+
+                // title
+                if (typeof title != 'undefined') {
+                    this.svg.append('text')
+                        .text(title)
+                        .attr('class', 'legend-title')
+                        .attr('x', position.x + 2 * padding.x)
+                        .attr('y', position.y + 0.75 * padding.y);
+                }
+            }
+
+
 	    context.createLegend('legend', nodeColormap, { x: matrixDim, y: 0 });
-	    if (this.weight) createWeightLegend(this.linkColormaps);
+            if (!this.state.weight)
+                addSynapseTypesToLegend('legend', this.linkColormaps, { x: matrixDim, y: nodeColormap.domain().length*24 + 10});
+	    if (this.state.weight) createWeightLegend(this.linkColormaps, this.state.filter);
 
 	    function linspace(start, end, n) {
 		var out = [];
@@ -317,12 +433,12 @@ define(function (require) {
 		return out;
 	    }
 
-	    function createWeightLegend(linkColormaps) {
+	    function createWeightLegend(linkColormaps, filter) {
 		var i = 0;
-		for (var type in linkColormaps) {
+		for (var type in linkColormaps){ 
 		    var legendFullHeight = 400;
 		    var legendFullWidth = 50;
-		    var legendMargin = { top: 20, bottom: 20, left: 80, right: 30 };
+		    var legendMargin = { top: 40, bottom: 0, left: 80, right: 30 };
 		    var legendWidth = 20;
 		    var legendHeight = legendFullHeight - legendMargin.top - legendMargin.bottom;
 
@@ -360,7 +476,7 @@ define(function (require) {
 			colors.push(linkColormaps[type](n));
 			n += inc;
 		    }
-		    var colourPct = d3.zip(pct, colors.reverse());
+		    var colourPct = d3.zip(pct, colors);
 
 		    colourPct.forEach(function(d) {
 			gradient.append('stop')
@@ -379,7 +495,7 @@ define(function (require) {
 		    // create a scale and axis for the legend
 		    var legendScale = d3.scaleLinear()
 			.domain(linkColormaps[type].domain())
-			.range([0, 360]);
+			.range([360, 0]);
 
 		    var legendAxis;
 		    if (i == 0)
@@ -387,7 +503,7 @@ define(function (require) {
 		    else
 			legendAxis = d3.axisLeft(legendScale);
 		    // FIXME: don't hardcode number of ticks
-		    legendAxis.ticks(10).tickFormat(d3.format(".1e"));
+		    legendAxis.ticks(10).tickFormat(d3.format(".2s"));
 
 		    legend.append("g")
 			.attr('height', legendHeight)
@@ -395,7 +511,8 @@ define(function (require) {
 			.attr("transform", "translate(" + (i==0 ? legendWidth : 0) + ", 0)")
 			.call(legendAxis);
 
-		    legend.append("text")
+                    if (filter !== 'gapJunction')
+		        legend.append("text")
 			.attr('class', 'weight-legend-label')
 			.attr('width', 20)
 			.attr('height', 20)
@@ -403,12 +520,15 @@ define(function (require) {
 
                     // append unit, would be tidier to have both scalebars in a parent <g/>
                     if (i == 0) {
+			var unitPos = -18;
+			if (Object.keys(linkColormaps).length == 1)
+				unitPos = 18;
                         legend.append("text")
 			.attr('class', 'weight-legend-label')
 			.attr('width', 20)
 			.attr('height', 20)
-                        .attr('transform', 'translate(-18, 375)')
-			.text("nS");
+                        .attr('transform', 'translate(' + unitPos + ', 375)')
+			.text("S");
                     }
 
 		    i+=0.5;
@@ -419,27 +539,32 @@ define(function (require) {
 	    //Sorting matrix entries by criteria specified via combobox
 	    var optionsContainer = $('<div/>', {
 		id: context.id + "-options",
-		style: 'width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 32) + 'px;',
+		style: 'width:' + (matrixDim - margin.left + 60) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
 		class: 'connectivity-options'
 	    }).appendTo(context.connectivityContainer);
+
 	    var orderContainer = $('<div/>', {
 		id: context.id + '-ordering',
-		style: 'width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 32) + 'px;',
-		class: 'connectivity-ordering'
+		style: 'float: left;',
+		class: 'connectivity-orderby'
 	    }).appendTo(optionsContainer);
 
-	    var orderCombo = $('<select/>');
+	    var orderCombo = $('<select/>', {
+                style: 'margin-left: 0.5em;'
+            });
 	    $.each(sortOptions, function (k, v) {
 		$('<option/>', { value: k, text: v }).appendTo(orderCombo);
 	    });
 	    orderContainer.append($('<span/>', {
 		id: 'matrix-sorter',
+                style: 'float: left;',
 		class: 'connectivity-ordering-label',
 		text: 'Order by:'
 	    }).append(orderCombo));
-
-	    orderCombo.on("change", function (svg) {
+            orderCombo.val(this.state.order);
+	    orderCombo.on("change", function (svg, that) {
 		return function () {
+                    that.state.order = this.value;
 		    x.domain(orders[this.value]);
 
 		    var t = svg.transition().duration(2500);
@@ -482,44 +607,76 @@ define(function (require) {
 			    return "translate(" + x(i) + ")rotate(-90)";
 			});
 		}
-	    } (context.svg));
+	    } (context.svg, this));
 
-	    // toggle weight scheme
-	    var schemeContainer = $('<div/>', {
+            // connection type selector
+            var typeOptions = {
+		'projection': 'Chemical',
+		'gapJunction': 'Gap Junctions',
+		'continuousProjection': 'Continuous'
+	    };
+
+	    var typeContainer = $('<div/>', {
+		id: context.id + '-type',
+                style: 'float: left; margin-left: 1.6em',
+		//style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 80) + 'px;',
+		class: 'types'
+	    }).appendTo(optionsContainer);
+
+	    var typeCombo = $('<select/>', {
+                style: 'margin-left: 0.5em;'
+            });
+	    $.each(typeOptions, (function (k, v) {
+		$('<option/>', { value: k, text: v, disabled: (this.projectionTypeSummary[k].length == 0) }).appendTo(typeCombo);
+	    }).bind(this));
+            typeCombo.val(this.state.filter);
+	    typeContainer.append($('<span/>', {
+		id: 'type-selector',
+		class: 'type-selector-label',
+		text: 'Projection Filter:'
+	    }).append(typeCombo));
+
+	    typeCombo.on("change", function(ctx, that) {
+                return function () {
+                    that.state.filter = this.value;
+                    ctx.createLayout(that.state);
+                }
+            } (context, this));
+
+            	    // toggle weight scheme
+	    var weightContainer = $('<div/>', {
 		id: context.id + '-weight',
-		style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 58) + 'px;',
+		style: 'float: left; margin-left: 1.6em',
 		class: 'weights'
 	    }).appendTo(optionsContainer);
 
 	    var weightCheckbox = $('<input type="checkbox" id="weightScheme" name="weight" value="weight">');
-	    if (this.weight)
+	    if (this.state.weight)
 		weightCheckbox.attr("checked", "checked");
-	    schemeContainer.append(weightCheckbox);
-	    schemeContainer.append($('<label for="weightScheme" class="weight-label">Show weights</label>'));
+	    weightContainer.append(weightCheckbox);
+	    weightContainer.append($('<label for="weightScheme" class="weight-label">Show weights</label>'));
 	    
 	    weightCheckbox.on("change", function (ctx, that) {
 		return function () {
 		    if (this.checked) {
-			if (Object.keys(that.projectionSummary).length == 0) {
-			    that.projectionSummary = that.getProjectionSummary();
-			    that.populateWeights(ctx.dataset.links);
-			}
+			if (typeof ctx.dataset.links[0].weight === 'undefined')
+			    that.populateWeights(ctx.dataset.links, that.state.filter);
                         ctx.setSize(ctx.size.height, ctx.size.width + 100);
-			that.weight = true;
-			that.linkColormaps = that.weightColormaps(ctx.dataset.links);
+			that.state.weight = true;
+			that.linkColormaps = that.weightColormaps(ctx.dataset.links, that.state.filter);
 		    }
 		    else {
                         ctx.setSize(ctx.size.height, ctx.size.width - 100);
-			that.weight = false;
+			that.state.weight = false;
 			ctx.nodeColormap = ctx.defaultColorMapFunction();
 		    }
 		    $('#' + ctx.id + "-weight").remove();
 		    ctx.createLayout();
 		}
 	    } (context, this));
-
+            
 	    // Draw squares for each connection
-	    function row(linkColormaps) {
+	    function row(linkColormaps, filter, projTypesSummary) {
 		return function(row) {
 		var cell = d3.select(this).selectAll(".cell")
 		    .data(row.filter(function (d) {
@@ -536,18 +693,26 @@ define(function (require) {
 			return d.id;
 		    })
 		    //.style("fill-opacity", function(d) { return z(d.z); })
-                    .style("fill", function (d) {
-			if (typeof d.type !== 'undefined')
-			    return linkColormaps[d.type](d.z);
-			else
-			    return linkColormaps(d.z);
-		    })
-		    .style("stroke", function (d) {
-			if (typeof d.type !== 'undefined')
-			    return linkColormaps[d.type](d.z);
-			else
-			    return linkColormaps(d.z);
-		    })
+                    .style("fill", function(linkColormaps, filter, projTypes) {
+                        return function (d) {
+                            if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
+                                return "none";
+			    if (typeof d.type !== 'undefined')
+			        return linkColormaps[d.type](d.gbase);
+			    else
+			        return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
+		        }
+                    } (linkColormaps, filter, projTypesSummary))
+		    .style("stroke", function(linkColormaps, filter, projTypes) {
+                        return function (d) {
+                            if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
+                                return "none";
+			    if (typeof d.type !== 'undefined')
+			        return linkColormaps[d.type](d.gbase);
+			    else
+			        return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
+		        }
+                    } (linkColormaps, filter, projTypesSummary))
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();
 			//Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.
@@ -560,10 +725,12 @@ define(function (require) {
                         var source_id = d.y;
                         var target_id = d.x;
                         var cweight = links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
+                        var gbase = links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
                         var weightStr = "";
-                        if (typeof cweight !== 'undefined')
-                            weightStr = " (weight≈" + Math.round(cweight*100)/100 + ")";
-                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
+                        if (typeof cweight !== 'undefined') {
+                            weightStr = " (weight=" + cweight + ", g=" +  Number(gbase).toPrecision(2) + "S)";
+                            $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
+                        }
                     })
 		    .on("mouseout", $.proxy(mouseoutCell));
 		}

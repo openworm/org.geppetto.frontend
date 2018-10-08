@@ -2,17 +2,17 @@ define(function (require) {
 
     require('./spotlight.less');
 
-    var React = require('react'),
-        $ = require('jquery'),
-        typeahead = require("typeahead.js/dist/typeahead.jquery.min.js"),
-        Bloodhound = require("typeahead.js/dist/bloodhound.min.js"),
-        Handlebars = require('handlebars'),
-        GEPPETTO = require('geppetto');
+    var React = require('react');
+    var $ = require('jquery');
+    var Handlebars = require('handlebars');
+    var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
+    var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
+    var GEPPETTO = require('geppetto');
 
-		var PlotController = require('./../../widgets/plot/controllers/PlotsController');
+    var PlotController = require('./../../widgets/plot/controllers/PlotsController');
 
-		var Instance = require('../../../geppettoModel/model/Instance');
-		var Variable = require('../../../geppettoModel/model/Variable');
+    var Instance = require('../../../geppettoModel/model/Instance');
+    var Variable = require('../../../geppettoModel/model/Variable');
 
     var Spotlight = React.createClass({
 

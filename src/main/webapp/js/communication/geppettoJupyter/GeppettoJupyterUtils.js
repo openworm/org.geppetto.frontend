@@ -91,7 +91,7 @@ define(function (require, exports, module) {
         if (parameters) {
             if (parameters.length > 0) {
                 // parametersString = parameters.reduce((acc, p) => acc = acc == "(" ? acc + processParameter(p) : acc + "," + processParameter(p), "(") + ")";
-                parametersString = "(" + parameters.map(parameter => "geppetto_init.converToPython('" + JSON.stringify(parameter) + "')").join(",") + ")";
+                parametersString = "(" + parameters.map(parameter => "geppetto_init.convertToPython('" + JSON.stringify(parameter) + "')").join(",") + ")";
             }
             else {
                 parametersString = '()';

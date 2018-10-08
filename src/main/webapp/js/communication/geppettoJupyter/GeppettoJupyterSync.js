@@ -16,9 +16,6 @@ define(function (require, exports, module) {
 			EventsSync.__super__.initialize.apply(this, arguments);
 			_this = this;
 
-			GEPPETTO.on(GEPPETTO.Events.Select, function (instance, geometryIdentifier, point) {
-				_this.send({ event: GEPPETTO.Events.Select, data: instance.id, geometryIdentifier: geometryIdentifier, point: point });
-			});
 			GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
 				var instancesIds = []
 				for (var instanceIndex in instances) {

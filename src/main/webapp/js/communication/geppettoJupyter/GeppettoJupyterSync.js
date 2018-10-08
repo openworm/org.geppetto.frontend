@@ -1,10 +1,7 @@
 define(function (require, exports, module) {
 
 	var jupyter_widgets = require('@jupyter-widgets/base');
-
 	var GEPPETTO = require('geppetto');
-	var GeppettoJupyterUtils = require('./GeppettoJupyterUtils');
-
 	var _ = require('underscore');
 
 
@@ -59,124 +56,6 @@ define(function (require, exports, module) {
 			original_model: ''
 		}),
 
-		getGeometryPayload: function (geometry, visualGroups) {
-
-			var indexVisualGroupElement = -1;
-			var createVisualGroupElement = true;
-			for (var visualGroupElementIndex in visualGroups[0].visualGroupElements) {
-				indexVisualGroupElement++;
-				if (visualGroups[0].visualGroupElements[visualGroupElementIndex].id == geometry.sectionName) {
-					createVisualGroupElement = false;
-					break;
-				}
-			}
-			if (createVisualGroupElement) {
-				indexVisualGroupElement++;
-				visualGroups[0].visualGroupElements.push({
-					defaultColor: 0Xffcc00,
-					eClass: 'VisualGroupElement',
-					id: geometry.sectionName,
-					name: geometry.sectionName
-				});
-			}
-
-			var value;
-			if (geometry.name.substr(0, 4) == 'soma') {
-				value = {
-					eClass: 'Sphere',
-					position: {
-						eClass: "Point",
-						x: (geometry.distalX + geometry.positionX) / 2,
-						y: (geometry.distalY + geometry.positionY) / 2,
-						z: (geometry.distalZ + geometry.positionZ) / 2
-					},
-					radius: (geometry.topRadius + geometry.bottomRadius) / 2,
-					groupElements: [{ $ref: "//@libraries.1/@types.1/@visualGroups.0/@visualGroupElements." + indexVisualGroupElement }]
-				}
-			}
-			else {
-				value = {
-					eClass: 'Cylinder',
-					bottomRadius: geometry.bottomRadius,
-					topRadius: geometry.topRadius,
-					distal: {
-						eClass: "Point",
-						x: geometry.distalX,
-						y: geometry.distalY,
-						z: geometry.distalZ
-					},
-					position: {
-						eClass: "Point",
-						x: geometry.positionX,
-						y: geometry.positionY,
-						z: geometry.positionZ
-					},
-					groupElements: [{ $ref: "//@libraries.1/@types.1/@visualGroups.0/@visualGroupElements." + indexVisualGroupElement }]
-				}
-			}
-
-			return {
-				eClass: 'Variable',
-				initialValues: [{
-					key: "geppettoModel#//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual'),
-					value: value
-				}],
-				id: geometry.id,
-				name: geometry.name,
-				types: [{ $ref: "//@libraries.0/@" + GeppettoJupyterUtils.getTypeById('Visual') }],
-			}
-		},
-
-		setGeppettoInstance: function (instances) {
-			for (var i = 0; i < this.get('stateVariables').length; i++) {
-				for (var j = 0; j < instances.length; j++) {
-					//TODO Wont work for more complex nesting, we'll need the path to come from Python
-					if (instances[j].getInstancePath().includes(this.get('stateVariables')[i].get('id'))) {
-						this.get('stateVariables')[i].set('geppettoInstance', instances[j]);
-						break;
-					}
-				}
-			}
-
-			for (var i = 0; i < this.get('derived_state_variables').length; i++) {
-				for (var j = 0; j < instances.length; j++) {
-					//TODO Wont work for more complex nesting, we'll need the path to come from Python
-					if (instances[j].getInstancePath().includes(this.get('derived_state_variables')[i].get('id'))) {
-						this.get('derived_state_variables')[i].set('geppettoInstance', instances[j]);
-						break;
-					}
-				}
-			}
-		},
-
-		splitAllGeometries: function () {
-			if (this.get('geometries').length > 1) {
-				var elements = {};
-				for (var i = 0; i < this.get('geometries').length; i++) {
-					elements[this.get('geometries')[i].id] = "";
-				}
-				GEPPETTO.SceneController.splitGroups(window.Instances[0], elements);
-			}
-		},
-
-		createInstanceForStateVariables: function () {
-			// Create Instances for state variables
-			// Force Derived State Variables to be override
-			var stateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("StateVariableType"));
-			var derivedStateVariableInstances = Instances.getInstance(GEPPETTO.ModelFactory.getAllPotentialInstancesOfMetaType("DerivedStateVariableType"), true, true);
-			var instances = stateVariableInstances.concat(derivedStateVariableInstances);
-
-			// Hack to set time series at the instance level
-			for (var instanceIndex in instances) {
-				var timeSeries = instances[instanceIndex].getVariable().getWrappedObj().timeSeries
-				instances[instanceIndex].setTimeSeries((timeSeries.length == 0) ? null : timeSeries);
-			}
-
-			GEPPETTO.ExperimentsController.watchVariables(instances, true);
-			this.setGeppettoInstance(instances);
-			return instances;
-		},
-
 		mergeModel: function () {
 			GEPPETTO.ControlPanel.clearData();
 			var diffReport = GEPPETTO.ModelFactory.mergeModel(this.getPayload(), true);
@@ -199,104 +78,6 @@ define(function (require, exports, module) {
 			this.splitAllGeometries();
 		},
 
-		getStateVariablesPayload: function (geppettoVariables) {
-			// Add StateVariable
-			var geppettoStateVariables = [];
-			for (var i = 0; i < this.get('stateVariables').length; i++) {
-				// Add time as variable
-				if (this.get('stateVariables')[i].get('id') == 'time') {
-					geppettoVariables.push(this.get('stateVariables')[i].getPayload())
-				}
-				else {
-					//Create array with states variables
-					geppettoStateVariables.push(this.get('stateVariables')[i].getPayload())
-				}
-			}
-
-			// Add DerivedStateVariable
-			for (var i = 0; i < this.get('derived_state_variables').length; i++) {
-				//Create array with states variables
-				geppettoStateVariables.push(this.get('derived_state_variables')[i].getPayload())
-			}
-
-			return geppettoStateVariables;
-		},
-
-		getCompositeVisualType: function () {
-			var visualGroups = [{
-				eClass: 'VisualGroups',
-				id: 'Cell_Regions',
-				name: 'Cell Regions',
-				visualGroupElements: []
-			}];
-			var geppettoMorphologiesVariables = [];
-			for (var i = 0; i < this.get('geometries').length; i++) {
-				geppettoMorphologiesVariables.push(this.getGeometryPayload(this.get('geometries')[i], visualGroups));
-			}
-			return {
-				eClass: 'CompositeVisualType',
-				id: this.get('id') + 'VisualType',
-				name: this.get('name') + ' Visual Type',
-				variables: geppettoMorphologiesVariables,
-				visualGroups: visualGroups
-			}
-		},
-
-		getModelVariableType: function (geppettoVariables) {
-			return {
-				eClass: 'CompositeType',
-				id: this.get('id'),
-				name: this.get('name'),
-				abstract: false,
-				variables: this.getStateVariablesPayload(geppettoVariables)
-			}
-		},
-
-		getNeuronLibrary: function () {
-			return {
-				"eClass": "GeppettoLibrary",
-				"id": "neuron",
-				"name": "Geppetto Neuron Library",
-				"types": []
-			}
-		},
-
-
-		getPayload: function () {
-
-			// Create Geppetto Model Payload
-			var geppettoModelPayload = {
-				eClass: 'GeppettoModel',
-				libraries: [GeppettoJupyterUtils.getGeppettoCommonLibrary(), this.getNeuronLibrary()]
-			};
-
-			var geppettoVariables = [];
-
-			// Get Main Model Variable Type
-			var modelVariableType = this.getModelVariableType(geppettoVariables);
-			geppettoModelPayload.libraries[1].types.push(modelVariableType);
-
-
-			// Get Main Composite Visual Type
-			if (this.get('geometries').length > 0) {
-				geppettoModelPayload.libraries[1].types.push(this.getCompositeVisualType())
-				modelVariableType['visualType'] = { $ref: "//@libraries.1/@types.1" }
-			}
-
-			// Add model as variable
-			var modelVariable = {
-				eClass: 'Variable',
-				id: this.get('id'),
-				name: this.get('name'),
-				types: [{ $ref: "//@libraries.1/@types.0" }],
-			};
-			geppettoVariables.push(modelVariable)
-
-
-			geppettoModelPayload['variables'] = geppettoVariables;
-			return geppettoModelPayload;
-		},
-
 		handle_custom_messages: function (msg) {
 			if (msg.type === 'load') {
 				if (msg.hard_reload) {
@@ -305,25 +86,6 @@ define(function (require, exports, module) {
 				else {
 					this.mergeModel();
 				}
-			}
-			else if (msg.type === 'draw_sphere') {
-				var content = msg.content;
-				if (this.point_process_sphere) {
-					this.point_process_sphere = Canvas1.engine.modify3DSphere(this.point_process_sphere, content.x, content.y, content.z, content.radius);
-					this.point_process_sphere.visible = true;
-				}
-				else {
-					this.point_process_sphere = Canvas1.engine.add3DSphere(content.x, content.y, content.z, content.radius);
-				}
-			}
-			else if (msg.type === 'remove_sphere') {
-				if (this.point_process_sphere) {
-					this.point_process_sphere.visible = false;
-				}
-			}
-			else if (msg.type === 'highlight_visual_group_element') {
-				var visualType = eval(this.get('id')).getVisualType()
-				visualType["Cell_Regions"][msg.visual_group_element].show(true);
 			}
 			else if (msg.type === 'reload') {
 				// If a Geppetto extension is defining a custom behavior to load the kernel we call it
@@ -336,16 +98,6 @@ define(function (require, exports, module) {
 		initialize: function () {
 			ModelSync.__super__.initialize.apply(this, arguments);
 			this.on("msg:custom", this.handle_custom_messages, this);
-
-			this.on("change:geometries", function (model, value, options) {
-				this.loadModel();
-			});
-
-			this.on("change:derived_state_variables", function (model, value, options) {
-				if (this.get('derived_state_variables').length > 0) {
-					this.mergeModel();
-				}
-			});
 
 			this.on("change:original_model", function (model, value, options) {
 				GEPPETTO.trigger('OriginalModelLoaded', value);

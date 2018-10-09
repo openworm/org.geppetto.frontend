@@ -181,11 +181,11 @@ define(function (require, exports, module) {
 
 		},
 
-		syncValueWithPython: function (value, context) {
+		syncValueWithPython: function (value) {
 			var jsonValue = JSON.stringify(value);
 			this.set('value', jsonValue);
 			this.save_changes();
-			this.send({ event: 'sync_value', value: jsonValue, context: context });
+			this.send({ event: 'sync_value', value: jsonValue });
 		},
 
 		getParameters: function (parameters) {

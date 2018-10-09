@@ -48,6 +48,9 @@ define(['jquery'], function () {
             this.connectionLines = {};
             this.visualModelMap = {};
             this.complexity = 0;
+            this.sceneMaxRadius = 0; //maximum radius of bounding sphere in scene
+            this.linePrecisionMinRadius = 300; //Default expected minimum radius
+            this.minAllowedLinePrecision = 1; //default line precision, can't go lower than this
             //Settings
             this.linesThreshold = 2000;
             this.aboveLinesThreshold = false;
@@ -537,44 +540,21 @@ define(['jquery'], function () {
         	// create a Ray with origin at the mouse position and direction into th scene (camera direction)
         	var vector = new THREE.Vector3(this.mouse.x, this.mouse.y, 1);
         	vector.unproject(this.camera);
+        	
         	var normalize = vector.sub(this.camera.position).normalize();
         	var raycaster = new THREE.Raycaster(this.camera.position, normalize);
-            
+    		raycaster.linePrecision = this.getLinePrecision();
+
         	var visibleChildren = [];
         	this.scene.traverse(function (child) {
         		if (child.visible && !(child.clickThrough == true)) {
         			if (child.geometry != null && child.geometry != undefined) {
-        				child.geometry.computeBoundingBox();
         				visibleChildren.push(child);
         			}
         		}
         	});
 
-        	var maxVerticesLength = 0;
-        	var totalVerticesLength = 0;
-        	for(var i=0;i < visibleChildren.length; i++){
-        		var geometry = visibleChildren[i].geometry;
-        		if(geometry!=undefined){
-        			if(geometry.vertices!=undefined){
-        				if(maxVerticesLength <geometry.vertices.length){
-            				maxVerticesLength = geometry.vertices.length;
-        				}
-        				totalVerticesLength += geometry.vertices.length;
-        			}
-        		}
-        	}
-
-        	console.log("Max vertices length : " + maxVerticesLength);
-        	console.log("Total vertices length : " + totalVerticesLength);
-
-        	if(maxVerticesLength > 2000){
-        		raycaster.linePrecision = 100;
-        	}
-
         	var intersected = raycaster.intersectObjects(visibleChildren);
-        	if(intersected.length > 0){
-        		console.log("jackpot "+ intersected);
-        	}
             // returns an array containing all objects in the scene with which the ray intersects
             return intersected;
         },
@@ -738,6 +718,8 @@ define(['jquery'], function () {
                         this.splitGroups(instance, elements);
                     }
                 }
+                
+                this.calculateSceneMaxRadius(mesh);
             }
         },
 
@@ -2924,8 +2906,44 @@ define(['jquery'], function () {
         reset: function () {
             this.complexity = 0;
             this.aboveLinesThreshold = false;
-        }
+        },
+        
+        /**
+         * Traverse through THREE object to calculate that maximun radius based 
+         * on bounding sphere of visible objects
+         */
+        calculateSceneMaxRadius(object){
+        	var currentRadius = 0;
+        	if(object.children.length>0){
+        		for(var i=0;i<object.children.length; i++){
+        			if (object.children[i]!=undefined) {
+        				this.calculateSceneMaxRadius(object.children[i]);
+        			}
+        		}
+        	}else{
+        		if (object.hasOwnProperty("geometry")) {
+        			object.geometry.computeBoundingSphere();
+        			currentRadius = object.geometry.boundingSphere.radius;
+        		}
+        	}
 
+        	if(currentRadius > this.sceneMaxRadius){
+        		this.sceneMaxRadius = currentRadius;
+        	}
+        },
+
+        /**
+         * Calculates linePrecision used by raycaster when picking objects. 
+         */
+        getLinePrecision(){
+        	this.rayCasterLinePrecision = this.sceneMaxRadius/this.linePrecisionMinRadius;
+        	if(this.rayCasterLinePrecision<this.minAllowedLinePrecision){
+        		this.rayCasterLinePrecision = this.minAllowedLinePrecision;
+        	}
+        	this.rayCasterLinePrecision =  Math.round(this.rayCasterLinePrecision);
+        	
+        	return this.rayCasterLinePrecision;
+        }
     }
         ;
 

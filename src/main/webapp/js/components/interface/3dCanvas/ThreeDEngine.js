@@ -217,11 +217,6 @@ define(['jquery'], function () {
                                     if (geometryIdentifier == undefined) {
                                         geometryIdentifier = "";
                                     }
-                                    if(that.box != null){
-                                    	that.scene.remove(that.box);
-                                    }
-                                    that.box = new THREE.BoundingBoxHelper(intersects[i].object, 0x00ff00);
-                                    that.scene.add(that.box);
                                     GEPPETTO.CommandController.execute(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
                                 }
                             }

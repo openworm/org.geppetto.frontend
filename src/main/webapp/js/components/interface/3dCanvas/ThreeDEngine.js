@@ -533,7 +533,7 @@ define(['jquery'], function () {
             vector.unproject(this.camera);
 
             var raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-
+            raycaster.linePrecision = 10;
             var visibleChildren = [];
             this.scene.traverse(function (child) {
                 if (child.visible && !(child.clickThrough == true)) {

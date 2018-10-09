@@ -4,41 +4,6 @@ define(function (require, exports, module) {
 	var GEPPETTO = require('geppetto');
 	var _ = require('underscore');
 
-
-	var EventsSync = jupyter_widgets.WidgetModel.extend({
-		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
-			_model_name: 'EventsSync',
-			_model_module: "jupyter_geppetto",
-			_model_module_version : '~1.0.0',
-		}),
-
-		initialize: function () {
-			EventsSync.__super__.initialize.apply(this, arguments);
-			_this = this;
-
-			GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
-				var instancesIds = []
-				for (var instanceIndex in instances) {
-					instancesIds.push(instances[instanceIndex].id)
-				}
-				_this.send({ event: GEPPETTO.Events.Instances_created, data: instancesIds });
-			});
-
-			GEPPETTO.on(GEPPETTO.Events.Send_Python_Message, function (data) {
-				_this.send({ event: 'Global_message', id: data.id, command: data.command, parameters: data.parameters });
-			});
-
-			this.on("msg:custom", this.handle_customMessage, this);
-		},
-
-		handle_customMessage: function (msg) {
-			//The only custom message we have at the moment is an event
-			GEPPETTO.trigger(msg.event, msg.options);
-		}
-
-	});
-
-
 	var ComponentSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			value: undefined,
@@ -120,7 +85,6 @@ define(function (require, exports, module) {
 	});
 
 	module.exports = {
-		EventsSync: EventsSync,
 		ComponentSync: ComponentSync
 	};
 });

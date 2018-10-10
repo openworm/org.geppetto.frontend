@@ -1,7 +1,5 @@
 define(function (require, exports, module) {
 
-
-
     function handle_output(data) {
         //data is the object passed to the callback from the kernel execution
         switch (data.msg_type) {
@@ -41,27 +39,6 @@ define(function (require, exports, module) {
         }
     };
 
-    // function handle_output2(data) {
-    //     //data is the object passed to the callback from the kernel execution
-    //     switch (data.msg_type) {
-    //         case 'error':
-    //             GEPPETTO.CommandController.log("ERROR while serializing a Python command output:");
-    //             GEPPETTO.CommandController.log(data.content.evalue.trim());
-    //             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
-    //             break;
-    //         case 'execute_result':
-    //         try {
-    //             var response = JSON.parse(data.content.data['text/plain'].replace(/^'(.*)'$/, '$1'));
-    //         } catch (error) {
-    //             var response = data.content.data['text/plain'].replace(/^'(.*)'$/, '$1');
-    //         }
-    //             GEPPETTO.trigger(GEPPETTO.Events.Receive_Python_Message, { id: data.parent_header.msg_id, type: data.msg_type, response: response });
-    //             break;
-    //         default:
-    //             GEPPETTO.CommandController.log(data.content.text.trim(), true);
-    //     }
-    // }
-
     function execPythonCommand(command, callback) {
         GEPPETTO.CommandController.log('Executing Python command: ' + command, true);
         var kernel = IPython.notebook.kernel;
@@ -76,22 +53,12 @@ define(function (require, exports, module) {
         );
     };
 
-
-    // function sendPythonMessage(command, parameters) {
-    //     if (parameters) {
-    //         evalPythonMessage(command, parameters)
-    //     }
-    //     else{
-    //         execPythonMessage(command)
-    //     }
-    // };
-
     function evalPythonMessage(command, parameters, parse = true) {
         var parametersString = '';
         if (parameters) {
             if (parameters.length > 0) {
                 // parametersString = parameters.reduce((acc, p) => acc = acc == "(" ? acc + processParameter(p) : acc + "," + processParameter(p), "(") + ")";
-                parametersString = "(" + parameters.map(parameter => "geppetto_init.convertToPython('" + JSON.stringify(parameter) + "')").join(",") + ")";
+                parametersString = "(" + parameters.map(parameter => "utils.convertToPython('" + JSON.stringify(parameter) + "')").join(",") + ")";
             }
             else {
                 parametersString = '()';
@@ -100,7 +67,7 @@ define(function (require, exports, module) {
 
         var finalCommand = command + parametersString;
         if (parse){
-            finalCommand = 'geppetto_init.convertToJS(' + finalCommand + ')'
+            finalCommand = 'utils.convertToJS(' + finalCommand + ')'
         }
         return this.execPythonCommand(finalCommand, handle_output);
 
@@ -112,7 +79,6 @@ define(function (require, exports, module) {
 
     return {
         execPythonCommand: execPythonCommand,
-        // sendPythonMessage: sendPythonMessage,
         execPythonMessage: execPythonMessage,
         evalPythonMessage: evalPythonMessage
     };

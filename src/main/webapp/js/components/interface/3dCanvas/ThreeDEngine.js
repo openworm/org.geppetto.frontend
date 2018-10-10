@@ -33,7 +33,6 @@ define(['jquery'], function () {
             this.viewerId = viewerId;
             //Engine components
             this.scene = new THREE.Scene();
-            this.box = null;
             this.camera = null;
             this.controls = null;
             this.renderer = null;

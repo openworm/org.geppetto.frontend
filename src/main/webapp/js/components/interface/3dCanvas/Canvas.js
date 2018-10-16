@@ -777,6 +777,22 @@ define(function (require) {
             }
         }
 
+        componentWillUnmount(){
+            //FIXME: Review
+            GEPPETTO.WidgetsListener.unsubscribe(this.engine);
+            window.removeEventListener('resize', function () {
+                var [width, height] = that.setContainerDimensions();
+                that.engine.setSize(width, height);
+            });
+            $("#" + this.props.id).off("dialogresizestop resizeEnd", function (event, ui) {
+                var [width, height] = that.setContainerDimensions();
+                that.engine.setSize(width, height);
+            });
+            this.engine.removeAllFromScene()
+            GEPPETTO.SceneController.remove3DCanvas(this);
+            delete this
+        }
+
         render() {
             var cameraControls = undefined;
             if (!this.props.hideCameraControls) {

@@ -1413,6 +1413,29 @@ define(['jquery'], function () {
         },
 
         /**
+         * Remove given entity from scene
+         *
+         * @param entity
+         */
+        removeAllFromScene: function () {
+
+            for (let index = 0; index < this.meshes.length; index++) {
+                var mergedMesh = this.meshes[index];
+                if (mergedMesh) {
+                    this.scene.remove(mergedMesh);
+                    delete this.meshes[path];
+                }
+            }
+            for (let index = 0; index < this.splitMeshes.length; index++) {
+                var splitMesh = this.splitMeshes[index];
+                if (splitMesh) {
+                    this.scene.remove(splitMesh);
+                    delete this.splitMeshes[path];
+                }
+            }
+        },
+
+        /**
          * @param x
          * @param y
          */

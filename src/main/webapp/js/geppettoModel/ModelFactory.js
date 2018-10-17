@@ -1578,7 +1578,7 @@ define(function (require) {
                 for (var i = 0; i < instances.length; i++) {
                     var types = instances[i].getTypes();
                     for (var j = 0; j < types.length; j++) {
-                        if (types[j] === type || types[j].getVisualType() === type) {
+                        if (types[j] === type || types[j].getVisualType() === type || types[j].getSuperType() === type) {
                             matchingInstance.push(instances[i]);
                             break;
                         }
@@ -1586,6 +1586,21 @@ define(function (require) {
 
                     if (typeof instances[i].getChildren === "function") {
                         this.findMatchingInstancesByType(type, instances[i].getChildren(), matchingInstance);
+                    }
+                }
+            },
+
+            findMatchingInstancesBySuperType: function (superType, instances, matchingInstance) {
+                for (var i = 0; i < instances.length; i++) {
+                    var types = instances[i].getTypes();
+                    for (var j = 0; j < types.length; j++) {
+                        if (types[j].getSuperType() === superType) {
+                            matchingInstance.push(instances[i]);
+                            break;
+                        }
+                    }
+                    if (typeof instances[i].getChildren === "function") {
+                        this.findMatchingInstancesBySuperType(superType, instances[i].getChildren(), matchingInstance);
                     }
                 }
             },
@@ -2268,6 +2283,26 @@ define(function (require) {
                 // do stuff
                 var matchingInstances = [];
                 this.findMatchingInstancesByType(type, instances, matchingInstances);
+
+                return matchingInstances;
+            },
+
+            /**
+             * Get all instances given a superType
+             */
+            getAllInstancesOfSuperType: function (superType, instances) {
+                if (!(superType instanceof Type)) {
+                    // raise hell
+                    throw( "The argument " + type + " is not a Type or a valid Type path. Good luck." );
+                }
+
+                if (instances == undefined) {
+                    instances = this.instances;
+                }
+
+                // do stuff
+                var matchingInstances = [];
+                this.findMatchingInstancesBySuperType(superType, instances, matchingInstances);
 
                 return matchingInstances;
             },

@@ -370,7 +370,7 @@ define(function (require) {
                                                     }
                                                     break;
                                                 } else {
-                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined') {
+                                                    if (typeof that.props.templateDomainIds !== 'undefined' && typeof that.props.templateDomainNames !== 'undefined' && typeof that.props.templateDomainIds[index] !== 'undefined' && typeof that.props.templateDomainNames[index] !== 'undefined' && that.props.templateDomainIds[index] !== null && that.props.templateDomainNames[index] !== null) {
                                                         try {
                                                             eval(that.state.id[i][Number(result[j])]).select();
                                                             console.log(that.props.templateDomainNames[index] + ' clicked');

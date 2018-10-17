@@ -26,6 +26,8 @@ define(function (require) {
 
 			this.prevStep = this.prevStep.bind(this);
 			this.nextStep = this.nextStep.bind(this);
+
+			this.tutorialOpen = false;
 		}
 
 		/**
@@ -50,6 +52,11 @@ define(function (require) {
 			return this.state.tutorialData[this.state.activeTutorial];
 		}
 
+		manualUpdate(step) {
+			this.getActiveTutorial().steps[this.state.currentStep] = step;
+			this.forceUpdate();
+		}
+
 		updateTutorialWindow() {
 			var self = this;
 			if (this.getActiveTutorial() != undefined) {
@@ -61,12 +68,12 @@ define(function (require) {
 						dataType: 'html',
 						url: step.content_url,
 						success(responseData, textStatus, jqXHR) {
-						    step.message = responseData;
-                                                    self.forceUpdate();
-                                                    self.setSize(self.size.height, self.size.width);
-                                                    var tutorialScript = document.getElementById("tutorialScript");
-                                                    if (tutorialScript !== null)
-                                                        eval(tutorialScript.innerHTML);
+							step.message = responseData;
+                            self.manualUpdate(step);
+                            self.setSize(self.size.height, self.size.width);
+							var tutorialScript = document.getElementById("tutorialScript");
+                            if (tutorialScript !== null)
+                                eval(tutorialScript.innerHTML);
 						},
 						error(responseData, textStatus, errorThrown) {
 							throw ("Error retrieving tutorial: " + responseData + "  with error " + errorThrown);
@@ -121,9 +128,17 @@ define(function (require) {
 
 		close() {
 			this.dialog.parent().hide();
+
+			if(this.tutorialOpen == true) {
+				this.tutorialOpen = false;
+				this.props.closeHandler();
+			}
 		}
 
 		open(started) {
+			if(this.tutorialOpen == false) {
+				this.tutorialOpen = true;
+			}
 			var p = this.dialog.parent();
 			var shake = p.is(":visible");
 			p.show();
@@ -245,13 +260,6 @@ define(function (require) {
 					this.addTutorial(this.props.tutorialsList[i]);
 				}
 			}
-
-			if(this.props.tutorialData !== undefined) {
-				this.setState({
-					tutorialData: this.props.tutorialData
-				}, function()  {this.loadTutorial(this.props.tutorialData, true);}.bind(this));
-				
-			}
 		}
 
 		componentDidUpdate() {
@@ -331,6 +339,11 @@ define(function (require) {
 
 			if (GEPPETTO.ForegroundControls != undefined) {
 				GEPPETTO.ForegroundControls.refresh();
+			}
+
+			if (this.started == undefined) {
+				this.loadTutorial(this.props.tutorialData, true);
+				this.open(false);
 			}
 		}
 

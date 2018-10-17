@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
 
-	var jupyter_widgets = require('jupyter-js-widgets');
+	var jupyter_widgets = require('@jupyter-widgets/base');
 
 	var _ = require('underscore');
 

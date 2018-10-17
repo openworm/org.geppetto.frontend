@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
 
-	var jupyter_widgets = require('jupyter-js-widgets');
+	var jupyter_widgets = require('@jupyter-widgets/base');
 
 	var GEPPETTO = require('geppetto');
 	var GeppettoJupyterUtils = require('./GeppettoJupyterUtils');
@@ -11,11 +11,12 @@ define(function (require, exports, module) {
 	var EventsSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'EventsSync',
-			_model_module: "model",
+			_model_module: "jupyter_geppetto",
+			_model_module_version : '~1.0.0',
 		}),
 
 		initialize: function () {
-			EventsSync.__super__.initialize.apply(this);
+			EventsSync.__super__.initialize.apply(this, arguments);
 			_this = this;
 
 			GEPPETTO.on(GEPPETTO.Events.Select, function (instance, geometryIdentifier, point) {
@@ -46,8 +47,8 @@ define(function (require, exports, module) {
 	var StateVariableSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'StateVariableSync',
-			_model_module: "model",
-
+			_model_module: "jupyter_geppetto",
+			_model_module_version : '~1.0.0',
 			name: '',
 			id: '',
 			units: '',
@@ -71,7 +72,7 @@ define(function (require, exports, module) {
 		},
 
 		initialize: function () {
-			StateVariableSync.__super__.initialize.apply(this);
+			StateVariableSync.__super__.initialize.apply(this, arguments);
 
 			this.on("change:timeSeries", function (model, value, options) {
 				this.get('geppettoInstance').setTimeSeries(value);
@@ -87,8 +88,8 @@ define(function (require, exports, module) {
 	var DerivedStateVariableSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'DerivedStateVariableSync',
-			_model_module: "model",
-
+			_model_module: "jupyter_geppetto",
+			_model_module_version : '~1.0.0',
 			name: '',
 			id: '',
 			units: '',
@@ -119,15 +120,15 @@ define(function (require, exports, module) {
 		},
 
 		initialize: function () {
-			DerivedStateVariableSync.__super__.initialize.apply(this);
+			DerivedStateVariableSync.__super__.initialize.apply(this, arguments);
 		}
 	});
 
 	var ModelSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'ModelSync',
-			_model_module: "model",
-
+			_model_module: "jupyter_geppetto",
+			_model_module_version : '~1.0.0',
 			name: '',
 			id: '',
 			stateVariables: [],
@@ -412,7 +413,7 @@ define(function (require, exports, module) {
 		},
 
 		initialize: function () {
-			ModelSync.__super__.initialize.apply(this);
+			ModelSync.__super__.initialize.apply(this, arguments);
 			this.on("msg:custom", this.handle_custom_messages, this);
 
 			this.on("change:geometries", function (model, value, options) {
@@ -439,8 +440,8 @@ define(function (require, exports, module) {
 	var ExperimentSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'ExperimentSync',
-			_model_module: "model",
-
+			_model_module: "jupyter_geppetto",
+			_model_module_version : '~1.0.0',
 			id: '',
 			name: '',
 			lastModified: '',
@@ -452,7 +453,7 @@ define(function (require, exports, module) {
 		},
 
 		initialize: function () {
-			ExperimentSync.__super__.initialize.apply(this);
+			ExperimentSync.__super__.initialize.apply(this, arguments);
 
 			this.on("change:status", function (model, value, options) {
 				GEPPETTO.Manager.updateExperimentsStatus(value);
@@ -463,7 +464,8 @@ define(function (require, exports, module) {
 	var ProjectSync = jupyter_widgets.WidgetModel.extend({
 		defaults: _.extend({}, jupyter_widgets.WidgetModel.prototype.defaults, {
 			_model_name: 'ProjectSync',
-			_model_module: "model",
+			_model_module: "jupyter_geppetto",
+			_model_module_version : '~1.0.0',
 
 			id: '',
 			name: '',
@@ -480,7 +482,7 @@ define(function (require, exports, module) {
 		},
 
 		initialize: function () {
-			ProjectSync.__super__.initialize.apply(this);
+			ProjectSync.__super__.initialize.apply(this, arguments);
 
 			// Load the project
 			GEPPETTO.Manager.loadProject(this.getPayload(), false);
@@ -491,7 +493,8 @@ define(function (require, exports, module) {
 			serializers: _.extend({
 				experiments: { deserialize: jupyter_widgets.unpack_models },
 			}, jupyter_widgets.WidgetModel.serializers)
-		});
+		}
+	);
 
 	module.exports = {
 		StateVariableSync: StateVariableSync,

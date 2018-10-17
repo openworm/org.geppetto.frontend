@@ -10,7 +10,7 @@ define(function (require, exports, module) {
 	var LabelComp = require('../../components/controls/Label');
 	var DropDownComp = require('../../components/controls/DropDown');
 
-	var jupyter_widgets = require('jupyter-js-widgets');
+	var jupyter_widgets = require('@jupyter-widgets/base');
 	var GEPPETTO = require('geppetto');
 
 	var $ = require('jquery');

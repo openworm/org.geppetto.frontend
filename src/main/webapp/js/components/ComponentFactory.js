@@ -202,7 +202,6 @@ define(function (require) {
 				            case 'QUERY': require(['./interface/query/query'],cb); break;
 							case 'TUTORIAL': require(['./interface/tutorial/Tutorial'],cb); break;
 							case 'PYTHONCONSOLE': require(['./interface/pythonConsole/PythonConsole'],cb); break;
-				            case 'BUTTON': require(['./controls/button/Button'],cb); break;
 				            case 'DICOMVIEWER': require(['./interface/dicomViewer/DicomViewer'],cb); break;
 				            case 'GOOGLEVIEWER': require(['./interface/googleViewer/GoogleViewer'],cb); break;
 				            case 'BIGIMAGEVIEWER': require(['./interface/bigImageViewer/BigImageViewer'],cb); break;

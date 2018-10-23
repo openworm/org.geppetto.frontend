@@ -549,6 +549,8 @@ define(function (require) {
         open: function () {
             // show query builder
             $("#querybuilder").show();
+            var typeAhead = $("#query-typeahead");
+            typeAhead.focus();
         },
 
         close: function () {

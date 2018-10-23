@@ -29,15 +29,11 @@ define(function (require) {
                 }
 
                 connectToPython(componentType, model) {
-                    var kernel = IPython.notebook.kernel;
-                    kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
+                    Utils.execPythonMessage('jupyter_geppetto.ComponentSync(componentType="' + componentType + '",model="' + model + '",id="' + this.id + '").connect()');
                 }
 
                 disconnectFromPython() {
-                    var kernel = IPython.notebook.kernel;
-                    kernel.execute('from jupyter_geppetto.geppetto_comm import GeppettoJupyterGUISync');
-                    kernel.execute('GeppettoJupyterGUISync.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
+                    Utils.execPythonMessage('jupyter_geppetto.remove_component_sync(componentType="' + this.state.componentType + '",model="' + this.id + '")');
                     GEPPETTO.ComponentFactory.removeExistingComponent(this.state.componentType, this);
                 }
 
@@ -154,7 +150,7 @@ define(function (require) {
                                 break;
                         }
                         if (newValue !== '') {
-                            this.syncValueWithPython(newValue, window.requirement);
+                            this.syncValueWithPython(newValue);
                         }
                     }
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
@@ -284,7 +280,7 @@ define(function (require) {
                 updatePythonValue(newValue) {
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
                     if (this.syncValueWithPython) {
-                        this.syncValueWithPython(newValue, window.requirement);
+                        this.syncValueWithPython(newValue);
                     }
 
                     this.forceUpdate();
@@ -327,7 +323,7 @@ define(function (require) {
                 }
 
                 callPythonMethod = (value) => {
-                    Utils.sendPythonMessage(this.props.method, []).then((response) => {
+                    Utils.evalPythonMessage(this.props.method, []).then((response) => {
                         if (Object.keys(response).length != 0) {
                             this.setState({ pythonData: response });
                         }

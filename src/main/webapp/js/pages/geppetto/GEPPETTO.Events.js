@@ -62,7 +62,6 @@ define(function (require) {
             Command_log_run : "command:log_run",
             Command_clear : "command:clear",
             Command_toggle_implicit : "command:toggle_implicit",
-            Send_Python_Message: "send_python_message",
             Receive_Python_Message: "receive_python_message",
 
             listen: function () {

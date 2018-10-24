@@ -43,6 +43,7 @@
     "griddle-react": "1.5.0",
     "griddle-0.6-fork": "https://github.com/MetaCell/griddle.git#griddle-0.6-fork",
     "handlebars": "^4.0.5",
+    "html2canvas" : "1.0.0-alpha.12",
     "html-webpack-plugin": "2.30.1",
     "ignore-loader": "^0.1.2",
     "image-webpack-loader": "^2.0.0",

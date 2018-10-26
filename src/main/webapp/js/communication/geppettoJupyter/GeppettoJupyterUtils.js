@@ -4,7 +4,8 @@ const handle_output = function (data) {
         case 'error':
             GEPPETTO.CommandController.log("ERROR while executing a Python command:");
             GEPPETTO.CommandController.log(data.content.evalue.trim());
-            console.log(data.content.evalue);
+            console.error("ERROR while executing a Python command:");
+            console.error(data);
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
             break;
         case 'execute_result':

@@ -261,6 +261,7 @@ define(function (require) {
                     });
                     // If a handleChange method is passed as a props it will overwrite the handleChange python controlled capability
                     this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange.bind(this);
+                    
                     this.callPythonMethod();
                 }
 
@@ -269,6 +270,7 @@ define(function (require) {
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
                     GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this);
                     this.connectToPython(this.state.componentType, nextProps.model);
+                    this.callPythonMethod();
                 }
 
                 componentDidUpdate(prevProps, prevState) {

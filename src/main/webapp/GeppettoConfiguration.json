@@ -7,22 +7,22 @@
     "rootRedirect":"",
     "noTest": false,
     "extensions": {
-        "geppetto-default/ComponentsInitialization": true,
+        "geppetto-default/ComponentsInitialization": false,
         "geppetto-osb/ComponentsInitialization": false,
-        "geppetto-vfb/ComponentsInitialization": false,
+        "geppetto-vfb/ComponentsInitialization": true,
         "geppetto-neuron/ComponentsInitialization": false,
         "geppetto-netpyne/ComponentsInitialization": false,
         "geppetto-hm/ComponentsInitialization": false
     },
     "themes": {
-        "geppetto-default/colors": true,
+        "geppetto-default/colors": false,
         "geppetto-hm/pages/styles/colors": false,
-        "geppetto-vfb/css/colors": false,
+        "geppetto-vfb/css/colors": true,
         "geppetto-neuron/css/colors": false,
         "geppetto-netpyne/css/colors": false
     },
     "properties": {
-	    	"title" : "geppetto",
+	    	"title" : "VirtualFlyBrain",
 	    	"description": "Geppetto is an open-source platform to build web-based tools to visualize and simulate neuroscience data and models. This is a live deployment to showcase its functionalities.",
 	    	"type": "website",
 	    	"url": "http://live.geppetto.org",

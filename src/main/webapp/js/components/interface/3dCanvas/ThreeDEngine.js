@@ -14,6 +14,7 @@ define(['jquery'], function () {
     var THREE = require('three');
     require('./TrackballControls');
     require('./OBJLoader');
+    require('three-octree');
     THREE.ColladaLoader = require('imports-loader?THREE=three!exports-loader?THREE.ColladaLoader!../../../../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
     THREE.ConvolutionShader = require('imports-loader?THREE=three!exports-loader?THREE.ConvolutionShader!../../../../node_modules\/three\/examples\/js\/shaders\/ConvolutionShader');
     THREE.CopyShader = require('imports-loader?THREE=three!exports-loader?THREE.CopyShader!../../../../node_modules\/three\/examples\/js\/shaders\/CopyShader');
@@ -30,6 +31,7 @@ define(['jquery'], function () {
         constructor(container, viewerId) {
             this.container = container;
             this.colorController = new (require('./ColorController'))(this);
+            //new (require('./Octree'))(THREE);
             this.viewerId = viewerId;
             //Engine components
             this.scene = new THREE.Scene();
@@ -67,6 +69,23 @@ define(['jquery'], function () {
             this.setupLights();
             this.setupControls();
             this.setupListeners();
+            
+			this.octree = new THREE.Octree( {
+				// uncomment below to see the octree (may kill the fps)
+				//scene: scene,
+				// when undeferred = true, objects are inserted immediately
+				// instead of being deferred until next octree.update() call
+				// this may decrease performance as it forces a matrix update
+				undeferred: false,
+				// set the max depth of tree
+				depthMax: Infinity,
+				// max number of objects before nodes split or merge
+				objectsThreshold: 8,
+				// percent between 0 and 1 that nodes will overlap each other
+				// helps insert objects that lie over more than one node
+				overlapPct: 0.15
+			} );
+			
             this.animate();
         }
     }
@@ -541,6 +560,14 @@ define(['jquery'], function () {
             this.renderer.clear();
             this.composer.render(0.01);
         },
+        
+        modifyOctree: function( mesh,useFaces) {
+			// add new object to octree and scene
+			// NOTE: octree object insertion is deferred until after the next render cycle
+			this.octree.add( mesh, { useFaces: useFaces } );
+			// print full octree structure to console
+			this.octree.toConsole();
+		},
 
         /**
          * Returns intersected objects from mouse click
@@ -555,6 +582,8 @@ define(['jquery'], function () {
         	var normalize = vector.sub(this.camera.position).normalize();
         	var raycaster = new THREE.Raycaster(this.camera.position, normalize);
     		raycaster.linePrecision = this.getLinePrecision();
+    		
+    		var octreeObjects = this.octree.search( raycaster.ray.origin, raycaster.ray.far, true, raycaster.ray.direction );
 
         	var visibleChildren = [];
         	this.scene.traverse(function (child) {
@@ -565,7 +594,7 @@ define(['jquery'], function () {
         		}
         	});
 
-        	var intersected = raycaster.intersectObjects(visibleChildren);
+        	var intersected = raycaster.intersectOctreeObjects( octreeObjects );
             // returns an array containing all objects in the scene with which the ray intersects
             return intersected;
         },
@@ -729,7 +758,7 @@ define(['jquery'], function () {
                         this.splitGroups(instance, elements);
                     }
                 }
-                
+                this.modifyOctree( mesh, false);
                 this.calculateSceneMaxRadius(mesh);
             }
         },
@@ -1522,6 +1551,8 @@ define(['jquery'], function () {
             if (that.debugUpdate) {
                 GEPPETTO.log(GEPPETTO.Resources.UPDATE_FRAME_END);
             }
+            
+            this.octree.update();
         },
 
 

@@ -125,7 +125,12 @@ define(function (require) {
                         this.props.validate(this.state.value).then((errorState) => {
                             this.setState(errorState);
                         });
-                    }
+										}
+										if (this.props.callback && this.state.value != prevState.value) {
+											if (this.props.model == prevProps.model) {
+												this.props.callback(this.state.value, prevState.value)
+											}
+										}
                 }
 
                 updatePythonValue(newValue) {
@@ -207,7 +212,8 @@ define(function (require) {
                     delete wrappedComponentProps.dimensionType;
                     delete wrappedComponentProps.noStyle;
                     delete wrappedComponentProps.validate;
-                    delete wrappedComponentProps.prePythonSyncProcessing;
+										delete wrappedComponentProps.prePythonSyncProcessing;
+										delete wrappedComponentProps.callback;
 
                     if (wrappedComponentProps.realType == 'func' || wrappedComponentProps.realType == 'float') {
                         wrappedComponentProps['errorText'] = this.state.errorMsg;

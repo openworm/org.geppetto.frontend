@@ -758,7 +758,13 @@ define(['jquery'], function () {
                         this.splitGroups(instance, elements);
                     }
                 }
-                this.modifyOctree( mesh, false);
+                if(mesh.children!=undefined){
+                	for(var i=0; i<mesh.children.length; i++){
+                        this.modifyOctree( mesh.children[i], false);
+                	}
+                }else if(mesh.geometry!=undefined){
+                    this.modifyOctree( mesh, false);
+                }
                 this.calculateSceneMaxRadius(mesh);
             }
         },

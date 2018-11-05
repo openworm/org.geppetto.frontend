@@ -8,6 +8,7 @@ define(function (require) {
 
     var $ = require('jquery');
     require("./jquery.dialogextend.min");
+    require("./WidgetCapability.less");
     var React = require('react');
     var Overlay = require('../../components/interface/overlay/Overlay');
 

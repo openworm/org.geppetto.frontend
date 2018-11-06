@@ -12,6 +12,7 @@ define(function (require) {
     var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
     var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
+    var slick = require('slick-carousel');
 
     var MenuButton = require('../../controls/menuButton/MenuButton');
 

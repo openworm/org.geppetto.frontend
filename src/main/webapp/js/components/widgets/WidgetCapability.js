@@ -11,6 +11,8 @@ define(function (require) {
     require("./WidgetCapability.less");
     var React = require('react');
     var Overlay = require('../../components/interface/overlay/Overlay');
+    var heightBorder = 60;
+    var widthBorder = 30;
 
     var zIndex = {
         min: 1,
@@ -587,8 +589,8 @@ define(function (require) {
                             "beforeMaximize": function (evt, dlg) {
                                 var divheight = that.size.height;
                                 var divwidth = that.size.width;
-                                var innerHeight = that.size.height - 60;
-                                var innerWidth = that.size.width - 30;
+                                var innerHeight = that.size.height - heightBorder;
+                                var innerWidth = that.size.width - widthBorder;
                                 that.previousMaxSize = {
                                     width: divwidth,
                                     height: divheight,
@@ -607,8 +609,8 @@ define(function (require) {
                                 that.setTransparentBackground(false);
                                 var divheight = $(window).height();
                                 var divwidth = $(window).width();
-                                var innerHeight = divheight - 60;
-                                var innerWidth = divwidth - 30;
+                                var innerHeight = divheight - heightBorder;
+                                var innerWidth = divwidth - widthBorder;
 
                                 that.$el[0].setAttribute("style", that.$el[0].getAttribute("style") + "height: " + innerHeight + "px; " + "width: " + innerWidth + "px;");
                                 that.$el[0].parentElement.setAttribute("style", that.$el[0].parentElement.getAttribute("style") + "height: " + divheight + "px; " + "width: " + divwidth + "px; ");                                that.$el.parent().css("bottom", "0");
@@ -638,8 +640,8 @@ define(function (require) {
                                 $(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
                                 var divheight = that.size.height;
                                 var divwidth = that.size.width;
-                                var innerHeight = that.size.height - 60;
-                                var innerWidth = that.size.width - 30;
+                                var innerHeight = that.size.height - heightBorder;
+                                var innerWidth = that.size.width - widthBorder;
                                 var collapsedHeight = 20;
                                 that.previousMaxSize = {
                                     width: divwidth,
@@ -718,8 +720,8 @@ define(function (require) {
 
                     this.widgetElement = $("#"+this.props.id);
                     this.widgetElement.bind('dialogresizestop', function() {
-                        var newHeight = that.dialog.parent().innerHeight() - 60;
-                        var newWidth = that.dialog.parent().innerWidth() - 30;
+                        var newHeight = that.dialog.parent().innerHeight() - heightBorder;
+                        var newWidth = that.dialog.parent().innerWidth() - widthBorder;
                         that.$el[0].setAttribute("style", that.$el[0].getAttribute("style") + "height: " + newHeight + "px; " + "width: " + newWidth + "px;");
                         console.log("height is " + newHeight + "width is " + newWidth);
                     });

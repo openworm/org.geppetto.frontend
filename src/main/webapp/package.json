@@ -109,5 +109,8 @@
         "node_modules"
       ]
     }
+  },
+  "dependencies": {
+    "d3-scale-chromatic": "^1.3.3"
   }
 }

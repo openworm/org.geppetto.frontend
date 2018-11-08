@@ -4,10 +4,11 @@
 define(function (require) {
     var d3 = require("d3");
     var d3Scale = require("d3-scale");
+    var d3ScaleChromatic = require("d3-scale-chromatic");
     return {
 	linkColormaps: {},
 	projectionSummary: {},
-        state: {filter: 'projection', weight: false, order: 'id'},
+        state: {filter: 'projection', colorscale: undefined, weight: false, order: 'id'},
         projectionTypeSummary: {'projection': [], 'continuousProjection': [], 'gapJunction': []},
 	getProjectionSummary: function() {
 	    var projSummary = {};
@@ -144,9 +145,13 @@ define(function (require) {
 	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.gbase))).filter(x => x != undefined);
 	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.gbase >= 0) ? c.gbase : -1*c.gbase))).filter(x => x != undefined);
 	    var colormaps = {};
-	    var baseColormap = d3.scaleLinear()
-		.range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)])
-		.interpolate(d3.interpolateCubehelixLong);
+            if (this.state.colorScale) {
+                var baseColormap = eval(this.state.colorScale);
+            } else {
+	        var baseColormap = d3.scaleLinear()
+		    .range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)])
+		    .interpolate(d3.interpolateCubehelixLong);
+            }
 	    if (weights_exc.length > 0) {
 		var min_exc = Math.min.apply(null, weights_exc);
 		var max_exc = Math.max.apply(null, weights_exc);
@@ -191,7 +196,10 @@ define(function (require) {
 	    var nodes = context.dataset.nodes;
             var links = context.dataset.links;
 	    var root = context.dataset.root;
-	    var n = nodes.length;
+	    var n = nodes.length; //Array.from(new Set(nodes.map(x=>x.type))).length;
+
+            this.n_nodes = nodes.length;
+            this.n_new = n;
 
             this.projectionSummary = this.getProjectionSummary();
             this.state.filter = this.projectionTypeSummary[this.state.filter].length > 0 ?
@@ -539,7 +547,8 @@ define(function (require) {
 	    //Sorting matrix entries by criteria specified via combobox
 	    var optionsContainer = $('<div/>', {
 		id: context.id + "-options",
-		style: 'width:' + (matrixDim - margin.left + 60) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
+		//style: 'width:' + (matrixDim - margin.left + 60) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
+                style: 'width:' + (matrixDim - margin.left + 260) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
 		class: 'connectivity-options'
 	    }).appendTo(context.connectivityContainer);
 
@@ -674,7 +683,40 @@ define(function (require) {
 		    ctx.createLayout();
 		}
 	    } (context, this));
-            
+
+            // color scale selector
+            var colorOptions = {
+		'd3.scaleLinear().range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)]).interpolate(d3.interpolateCubehelixLong);': 'Rainbow',
+		'd3.scaleSequential(d3ScaleChromatic.interpolateYlGn)': 'Sequential'
+	    };
+
+	    var colorContainer = $('<div/>', {
+		id: context.id + '-type',
+                style: 'float: left; margin-left: 1.6em',
+		class: 'colorscales'
+	    }).appendTo(optionsContainer);
+
+	    var colorCombo = $('<select/>', {
+                style: 'margin-left: 0.5em;'
+            });
+	    $.each(colorOptions, (function (k, v) {
+		$('<option/>', { value: k, text: v }).appendTo(colorCombo);
+	    }).bind(this));
+            if (this.state.colorScale)
+                colorCombo.val(this.state.colorScale);
+	    colorContainer.append($('<span/>', {
+		id: 'color-selector',
+		class: 'color-selector-label',
+		text: 'Colorscale Type:'
+	    }).append(colorCombo));
+
+            colorCombo.on("change", function(ctx, that) {
+                return function () {
+                    that.state.colorScale = this.value;
+                    ctx.createLayout(that.state);
+                }
+            } (context, this));
+
 	    // Draw squares for each connection
 	    function row(linkColormaps, filter, projTypesSummary) {
 		return function(row) {

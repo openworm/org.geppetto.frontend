@@ -8,8 +8,11 @@ define(function (require) {
 
     var $ = require('jquery');
     require("./jquery.dialogextend.min");
+    require("./WidgetCapability.less");
     var React = require('react');
     var Overlay = require('../../components/interface/overlay/Overlay');
+    var heightBorder = 60;
+    var widthBorder = 30;
 
     var zIndex = {
         min: 1,
@@ -297,7 +300,7 @@ define(function (require) {
                 getItems(history, name) {
                     var data = [];
                     for (var i = 0; i < history.length; i++) {
-                        var action = this.getId() + "[" + this.getId() + "." + name + "[" + i + "].method].apply(" + this.getId() + ", " + this.getId() + "." + name + "[" + i + "].arguments)";
+                        var action = name + "(window.historyWidgetCapability['" + this.props.id + "'][" + i + "].arguments[0])";
                         data.push({
                             "label": history[i].label,
                             "action": [action],
@@ -310,12 +313,12 @@ define(function (require) {
 
                 showHistoryMenu(event) {
                     var that = this;
-                    if (this.controller.history.length > 0) {
+                    if ((window.historyWidgetCapability !== undefined) && (window.historyWidgetCapability[this.props.id] !== undefined) && (window.historyWidgetCapability[this.props.id].length > 0)) {
 
                         this.historyMenu.show({
                             top: event.pageY,
                             left: event.pageX + 1,
-                            groups: that.getItems(that.controller.history, "controller.history"),
+                            groups: that.getItems(window.historyWidgetCapability[that.props.id], "window.updateHistoryWidget"),
                             data: that
                         });
                     }
@@ -369,7 +372,7 @@ define(function (require) {
 
                 updateNavigationHistoryBar() {
                     var disabled = "arrow-disabled";
-                    if (this.getItems(this.controller.history, "controller.history").length <= 1) {
+                    if (this.getItems(window.historyWidgetCapability[this.props.id], "window.updateHistoryWidget").length <= 1) {
                         if (!$("#" + this.props.id + "-left-nav").hasClass(disabled)) {
                             $("#" + this.props.id + "-left-nav").addClass(disabled);
                             $("#" + this.props.id + "-right-nav").addClass(disabled);
@@ -390,14 +393,14 @@ define(function (require) {
                         if ((leftNav.length == 0) && (rightNav.length == 0)) {
 
                             var disabled = "";
-                            if (this.getItems(this.controller.history, "controller.history").length <= 1) {
+                            if (this.getItems(window.historyWidgetCapability[this.props.id], "window.updateHistoryWidget").length <= 1) {
                                 disabled = "arrow-disabled ";
                             }
 
                             var that = this;
                             var button = $("<div id='" + this.props.id + "-left-nav' class='" + disabled + "fa fa-arrow-left'></div>" +
                                 "<div id='" + this.props.id + "-right-nav' class='" + disabled + "fa fa-arrow-right'></div>").click(function (event) {
-                                    var historyItems = that.getItems(that.controller.history, "controller.history");
+                                    var historyItems = that.getItems(window.historyWidgetCapability[that.props.id], "window.updateHistoryWidget");
                                     var item;
                                     if (event.target.id == (that.props.id + "-left-nav") || (that.props.id + "-right-nav")) {
                                         that.executedAction = historyItems.length - 1;
@@ -586,7 +589,14 @@ define(function (require) {
                             "beforeMaximize": function (evt, dlg) {
                                 var divheight = that.size.height;
                                 var divwidth = that.size.width;
-                                that.previousMaxSize = { width: divwidth, height: divheight };
+                                var innerHeight = that.size.height - heightBorder;
+                                var innerWidth = that.size.width - widthBorder;
+                                that.previousMaxSize = {
+                                    width: divwidth,
+                                    height: divheight,
+                                    innerWidth: innerWidth,
+                                    innerHeight: innerHeight
+                                };
                             },
                             "minimize": function (evt, dlg) {
                                 that.$el.dialog({ title: that.name });
@@ -599,9 +609,11 @@ define(function (require) {
                                 that.setTransparentBackground(false);
                                 var divheight = $(window).height();
                                 var divwidth = $(window).width();
+                                var innerHeight = divheight - heightBorder;
+                                var innerWidth = divwidth - widthBorder;
 
-                                that.$el.dialog({ height: divheight, width: divwidth });
-                                that.$el.parent().css("bottom", "0");
+                                that.$el[0].setAttribute("style", that.$el[0].getAttribute("style") + "height: " + innerHeight + "px; " + "width: " + innerWidth + "px;");
+                                that.$el[0].parentElement.setAttribute("style", that.$el[0].parentElement.getAttribute("style") + "height: " + divheight + "px; " + "width: " + divwidth + "px; ");                                that.$el.parent().css("bottom", "0");
                                 $(".ui-dialog-titlebar-restore span").removeClass("fa-chevron-circle-down");
                                 $(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                                 $(".ui-dialog-titlebar-restore span").addClass("fa-compress");
@@ -610,21 +622,34 @@ define(function (require) {
                                 that.$el.parent().css("z-index", zIndex.max);
                             },
                             "restore": function (evt, dlg) {
-                                if (that.maximize) {
+                                if (that.maximize || that.collapsed) {
                                     that.setSize(that.previousMaxSize.height, that.previousMaxSize.width);
+                                    that.$el[0].setAttribute("style", that.$el[0].getAttribute("style") + "height: " + that.previousMaxSize.innerHeight + "px; " + "width: " + that.previousMaxSize.innerWidth + "px;");
+                                    that.$el[0].parentElement.setAttribute("style", that.$el[0].parentElement.getAttribute("style") + "height: " + that.previousMaxSize.height + "px; " + "width: " + that.previousMaxSize.width + "px; ");
                                     $(this).trigger('restored', [that.id]);
                                 }
                                 that.setTransparentBackground(that.previousMaxTransparency);
                                 $(this).trigger('resizeEnd');
                                 that.maximize = false;
                                 that.collapsed = false;
-                                GEPPETTO.trigger("widgetRestored", that.props.id);
                                 that.$el.parent().css("z-index", zIndex.restore);
                             },
                             "collapse": function (evt, dlg) {
                                 $(".ui-dialog-titlebar-restore span").removeClass("fa-compress");
                                 $(".ui-dialog-titlebar-restore span").removeClass("fa-window-restore");
                                 $(".ui-dialog-titlebar-restore span").addClass("fa-chevron-circle-down");
+                                var divheight = that.size.height;
+                                var divwidth = that.size.width;
+                                var innerHeight = that.size.height - heightBorder;
+                                var innerWidth = that.size.width - widthBorder;
+                                var collapsedHeight = 20;
+                                that.previousMaxSize = {
+                                    width: divwidth,
+                                    height: divheight,
+                                    innerWidth: innerWidth,
+                                    innerHeight: innerHeight
+                                };
+                                that.$el[0].parentElement.setAttribute("style", that.$el[0].parentElement.getAttribute("style") + "height: " + collapsedHeight + "px; " + "width: " + that.props.size.width + "px;");
                                 that.collapsed = true;
                                 that.$el.parent().css("z-index", zIndex.min);
                             }
@@ -692,6 +717,14 @@ define(function (require) {
                     if (super.componentDidMount) {
                         super.componentDidMount();
                     }
+
+                    this.widgetElement = $("#"+this.props.id);
+                    this.widgetElement.bind('dialogresizestop', function() {
+                        var newHeight = that.dialog.parent().innerHeight() - heightBorder;
+                        var newWidth = that.dialog.parent().innerWidth() - widthBorder;
+                        that.$el[0].setAttribute("style", that.$el[0].getAttribute("style") + "height: " + newHeight + "px; " + "width: " + newWidth + "px;");
+                        console.log("height is " + newHeight + "width is " + newWidth);
+                    });
                 }
 
                 /**

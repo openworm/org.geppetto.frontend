@@ -151,7 +151,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(IOException e)
 		{
-			error(e, "Could not load geppetto project");
+			error(e, "Could not load geppetto project from url: " + urlString );
 		}
 	}
 

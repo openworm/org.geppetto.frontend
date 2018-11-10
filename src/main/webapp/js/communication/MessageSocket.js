@@ -107,6 +107,7 @@ define(function (require) {
                     callbackHandler[requestID] = callback;
                 }
 
+                console.log("Send : " + command + " REquestID: " + requestID);
                 return requestID;
             },
 

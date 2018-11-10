@@ -323,7 +323,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void loadExperiment(String requestID, long experimentID, long projectId)
 	{
 		long start = System.currentTimeMillis();
-		websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADING, "");
+		//websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADING, "");
 		try
 		{
 			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
@@ -519,10 +519,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		catch(IOException e)
 		{
 			error(e, "Error importing value " + path);
-		}
-		catch(GeppettoExecutionException e)
-		{
-			error(e, "Error importing value " + path);
+		} catch (GeppettoExecutionException e) {
+			error(e, "Error importing value " + path);	
 		}
 
 	}

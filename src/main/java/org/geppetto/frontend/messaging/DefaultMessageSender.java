@@ -16,7 +16,10 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.catalina.websocket.WsOutbound;
+import javax.websocket.ContainerProvider;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.frontend.messages.GeppettoTransportMessage;
@@ -79,7 +82,7 @@ public class DefaultMessageSender implements MessageSender
 	private PausableThreadPoolExecutor preprocessorExecutor;
 	private ArrayBlockingQueue<Runnable> senderQueue;
 	private PausableThreadPoolExecutor senderExecutor;
-	private WsOutbound wsOutbound;
+	private Session wsOutbound;
 	private Set<MessageSenderListener> listeners = new HashSet<>();
 
 	private static final Log logger = LogFactory.getLog(DefaultMessageSender.class);
@@ -88,7 +91,7 @@ public class DefaultMessageSender implements MessageSender
 	{
 	}
 
-	public void initialize(WsOutbound wsOutbound)
+	public void initialize(Session wsOutbound)
 	{
 
 		logger.info(String.format("Initializing message sender - queuing: %b, compression: %b, " + "discard messages if queues full: %b", queuingEnabled, compressionEnabled,
@@ -247,20 +250,29 @@ public class DefaultMessageSender implements MessageSender
 			// - filename length (filename length is needed client side to parse the message)
 			// - filename
 			// - file content
-			int bufferSize = 1 + 1 + name.length + data.length;
+			byte[] array = BigInteger.valueOf(1).toByteArray();
+			byte[] array2 = BigInteger.valueOf(name.length).toByteArray();
+			int bufferSize = (array.length + array2.length + name.length + data.length) * 2;
 			ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-			buffer.put(BigInteger.valueOf(1).toByteArray());
-			buffer.put(BigInteger.valueOf(name.length).toByteArray());
+			buffer.put(array);
+			buffer.put(array2);
 			buffer.put(name);
 			buffer.put(data);
+			
+			buffer.flip();
 
-			// write binary message in the socket
-			wsOutbound.writeBinaryMessage(buffer);
+			System.out.println("Last Session Binary size >> " + wsOutbound.getMaxBinaryMessageBufferSize());
+			System.out.println("Last Session Text size >> " + wsOutbound.getMaxTextMessageBufferSize());			
+			synchronized(wsOutbound) {
+				if (wsOutbound.isOpen()) {
+					wsOutbound.getBasicRemote().sendBinary(buffer);
+			    }
+			}
 
 			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a file of " + bufferSize / 1024 + "KB to the client";
 			logger.info(debug);
 		}
-		catch(IOException e)
+		catch(Exception e)
 		{
 			logger.warn("Failed to send file, " + path, e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
@@ -286,8 +298,10 @@ public class DefaultMessageSender implements MessageSender
 		}
 		else
 		{
+			//TODO: Fix send binary error The remote endpoint was in state [BINARY_FULL_WRITING] which is an invalid state for called method
 			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
 			sendBinaryMessage(compressedMessage, messageType, uncompressedMessageSize, false);
+			//sendTextMessage(message, messageType);
 		}
 	}
 
@@ -351,56 +365,62 @@ public class DefaultMessageSender implements MessageSender
 	private void sendTextMessage(String message, OutboundMessages messageType)
 	{
 
-		try
-		{
-
-			long startTime = System.currentTimeMillis();
-			CharBuffer buffer = CharBuffer.wrap(message);
-			wsOutbound.writeTextMessage(buffer);
-			if(messageType.equals("experiment_status"))
-			{
-				logger.info(String.format("Sent text message - %s, length: %d bytes, took: %d ms", messageType, message.length(), System.currentTimeMillis() - startTime));
+		long startTime = System.currentTimeMillis();
+		try {
+			synchronized(wsOutbound) {
+				wsOutbound.getBasicRemote().sendText(message);
 			}
-
+		} catch (IOException e) {
+			logger.error("Error sending text message " + e.getMessage());
 		}
-		catch(IOException e)
+		if(messageType.equals("experiment_status"))
 		{
-			logger.warn("Failed to send message", e);
-			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+			logger.info(String.format("Sent text message - %s, length: %d bytes, took: %d ms", messageType, message.length(), System.currentTimeMillis() - startTime));
 		}
+
+		long endTime = System.currentTimeMillis();
+
+		logger.info("Sending message took : "+ (endTime - startTime) + " ms");
+
 	}
 
 	private void sendBinaryMessage(byte[] message, OutboundMessages messageType, int uncompressedMessageSize, boolean fromQueue)
 	{
-		try
-		{
-			long startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
 
-			// add to the buffer:
-			// - type of message
-			// - message
-			int bufferSize = 1 + message.length;
-			ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-			buffer.put(BigInteger.valueOf(0).toByteArray());
-			buffer.put(message);
+		// add to the buffer:
+		// - type of message
+		// - message
+		byte[] array = BigInteger.valueOf(0).toByteArray();
+		
+		int bufferSize = (array.length + message.length) * 2;
 
-			// ByteBuffer buffer = ByteBuffer.wrap(message);
-			wsOutbound.writeBinaryMessage(buffer);
+		ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+		buffer.put(array);
+		buffer.put(message);
 
-			String logMessage = "Sent binary/compressed message - %s, length: %d (%d) bytes, duration: %d ms";
-			if(fromQueue)
-			{
-				logMessage = "Sent binary/compressed message from queue - %s, length: %d (%d) bytes, duration: %d ms";
+		buffer.flip();
+		try {
+			synchronized(wsOutbound) {
+				if (wsOutbound.isOpen()) {
+					wsOutbound.getBasicRemote().sendBinary(buffer);
+			    }
 			}
-
-			logger.info(String.format(logMessage, messageType, message.length, uncompressedMessageSize, System.currentTimeMillis() - startTime));
-
+		} catch (Exception e) {
+			logger.error("Failed to send binary message " + e.getMessage());
 		}
-		catch(IOException e)
+
+		String logMessage = "Sent binary/compressed message - %s, length: %d (%d) bytes, duration: %d ms";
+		if(fromQueue)
 		{
-			logger.warn("Failed to send binary message", e);
-			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+			logMessage = "Sent binary/compressed message from queue - %s, length: %d (%d) bytes, duration: %d ms";
 		}
+
+		logger.info(String.format(logMessage, messageType, message.length, uncompressedMessageSize, System.currentTimeMillis() - startTime));
+
+		long endTime = System.currentTimeMillis();
+
+		logger.info("Sending message took : "+ (endTime - startTime) + " ms");
 	}
 
 	private boolean isQueuedMessageType(OutboundMessages messageType)

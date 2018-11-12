@@ -69,7 +69,7 @@ define(['jquery'], function () {
          * @param {Instance} modulation - Variable which modulates the color
          * @param {Function} colorfn - Converts time-series value to [r,g,b]
          */
-        addColorFunction: function (instances, colorfn) {
+        addColorFunction: function (instances, colorfn, trigger) {
             // Check if instance is instance + visualObjects or instance (hhcell.hhpop[0].soma or hhcell.hhpop[0])
             for (var i = 0; i < instances.length; ++i) {
                 this.litUpInstances.push(instances[i]);
@@ -115,7 +115,7 @@ define(['jquery'], function () {
 
             for (var i in Object.keys(compositeToLit)) {
                 var path = Object.keys(compositeToLit)[i];
-                this.addColorFunctionBulk(compositeToLit[path], visualObjectsToLit[path], variables[path], colorfn);
+                this.addColorFunctionBulk(compositeToLit[path], visualObjectsToLit[path], variables[path], colorfn, trigger);
             }
 
         },
@@ -153,7 +153,7 @@ define(['jquery'], function () {
          * @param {Instance} modulation - Variable which modulates the color
          * @param {Function} colorfn - Converts time-series value to [r,g,b]
          */
-        addColorFunctionBulk: function (instance, visualObjects, stateVariableInstances, colorfn) {
+        addColorFunctionBulk: function (instance, visualObjects, stateVariableInstances, colorfn, trigger) {
             var modulations = [];
             if (visualObjects != null) {
                 if (visualObjects.length > 0) {
@@ -180,7 +180,7 @@ define(['jquery'], function () {
 
             for (var index in matchedMap) {
                 this.litUpInstances.push(matchedMap[index]);
-                this.addColorListener(index, matchedMap[index], colorfn);
+                this.addColorListener(index, matchedMap[index], colorfn, trigger);
             }
 
             // update flag
@@ -193,9 +193,10 @@ define(['jquery'], function () {
          * @param modulation
          * @param colorfn
          */
-        addColorListener: function (instance, modulation, colorfn) {
+        addColorListener: function (instance, modulation, colorfn, trigger) {
             var that = this;
-            GEPPETTO.trigger(GEPPETTO.Events.Lit_entities_changed);
+            if (trigger || typeof trigger === 'undefined')
+                GEPPETTO.trigger(GEPPETTO.Events.Lit_entities_changed);
             this.addOnNodeUpdatedCallback(modulation, function (stateVariableInstance, step) {
                 if ((stateVariableInstance.getTimeSeries() != undefined) &&
                     (step < stateVariableInstance.getTimeSeries().length)) {

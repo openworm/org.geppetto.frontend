@@ -475,8 +475,8 @@ define(function (require) {
          * @param colorfn - The function to be used to modulate the color
          * @return {Canvas}
          */
-        addColorFunction(instances, colorfn) {
-            this.engine.colorController.addColorFunction(instances, colorfn);
+        addColorFunction(instances, colorfn, trigger) {
+            this.engine.colorController.addColorFunction(instances, colorfn, trigger);
             return this;
         }
 

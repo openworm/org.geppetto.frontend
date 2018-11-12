@@ -353,9 +353,9 @@ define(['jquery'], function () {
          * @param instances - The state variable instances we are listening to
          * @param colorfn - The function to be used to modulate the color
          */
-        addColorFunction: function (instances, colorfn) {
+        addColorFunction: function (instances, colorfn, trigger) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
-                this.canvasComponents[i].addColorFunction(instances, colorfn);
+                this.canvasComponents[i].addColorFunction(instances, colorfn, trigger);
             }
         },
 

@@ -22,6 +22,7 @@ define(function (require) {
                     this.state.model = props.model;
                     this.state.componentType = WrappedComponent.name;
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
+                    this._isMounted = false;
                 }
 
                 setSyncValueWithPythonHandler(handler) {
@@ -38,6 +39,7 @@ define(function (require) {
                 }
 
                 componentWillUnmount() {
+                    this._isMounted = false;
                     this.disconnectFromPython();
                 }
 
@@ -52,6 +54,7 @@ define(function (require) {
                 }
 
                 componentDidMount() {
+                    this._isMounted = true;
                     GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this, true);
                     if (this.props.model != undefined) {
                         this.connectToPython(this.state.componentType, this.props.model);
@@ -82,6 +85,29 @@ define(function (require) {
                     this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange.bind(this);
                     this.handleUpdateInput = this.handleUpdateInput.bind(this);
                     this.handleUpdateCheckbox = this.handleUpdateCheckbox.bind(this);
+                }
+
+                shouldComponentUpdate(nextProps, nextState) {
+                    switch (this.state.componentType) {
+                        case 'AutoComplete':
+                            if ((this.state.searchText != nextState.searchText) && (searchText == "")) {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        case 'Checkbox':
+                            if ((this.state.checked != nextState.checked) && (nextState.checked == false)) {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        default:
+                            if ((this.state.value != nextState.value) && (nextState.value == "")) {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                    }
                 }
 
                 componentWillReceiveProps(nextProps) {

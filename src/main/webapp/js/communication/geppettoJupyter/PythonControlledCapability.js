@@ -90,22 +90,22 @@ define(function (require) {
                 shouldComponentUpdate(nextProps, nextState) {
                     switch (this.state.componentType) {
                         case 'AutoComplete':
-                            if ((this.state.searchText != nextState.searchText) && (searchText == "")) {
-                                return false;
-                            } else {
+                            if (this.state.searchText != nextState.searchText) {
                                 return true;
+                            } else {
+                                return false;
                             }
                         case 'Checkbox':
-                            if ((this.state.checked != nextState.checked) && (nextState.checked == false)) {
-                                return false;
-                            } else {
+                            if (this.state.checked != nextState.checked) {
                                 return true;
+                            } else {
+                                return false;
                             }
                         default:
-                            if ((this.state.value != nextState.value) && (nextState.value == "")) {
-                                return false;
-                            } else {
+                            if (this.state.value != nextState.value) {
                                 return true;
+                            } else {
+                                return false;
                             }
                     }
                 }
@@ -115,17 +115,17 @@ define(function (require) {
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
                     GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this);
                     this.connectToPython(this.state.componentType, nextProps.model);
-                    if (this.state.searchText != nextProps.searchText) {
-                        this.setState({ searchText: (nextProps.searchText === undefined) ? '' : nextProps.searchText });
+                    if ((this.state.searchText != nextProps.searchText) && (nextProps.searchText != undefined)) {
+                        this.setState({ searchText: nextProps.searchText });
                     }
-                    if (this.state.checked != nextProps.checked) {
-                        this.setState({ checked: (nextProps.checked === undefined) ? false : nextProps.checked });
+                    if ((this.state.checked != nextProps.checked) && (nextProps.checked != undefined)) {
+                        this.setState({ checked: nextProps.checked });
                     }
-                    if (this.state.value != nextProps.value) {
-                        this.setState({ value: (nextProps.value === undefined) ? '' : nextProps.value });
+                    if ((this.state.value != nextProps.value) && (nextProps.value != undefined)) {
+                        this.setState({ value: nextProps.value });
                     }
-                    if (this.state.model != nextProps.model) {
-                        this.setState({ model: (nextProps.model === undefined) ? '' : nextProps.model });
+                    if ((this.state.model != nextProps.model) && (nextProps.model != undefined)) {
+                        this.setState({ model: nextProps.model });
                     }
                 }
 

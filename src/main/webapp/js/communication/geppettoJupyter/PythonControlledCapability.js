@@ -90,19 +90,19 @@ define(function (require) {
                 shouldComponentUpdate(nextProps, nextState) {
                     switch (this.state.componentType) {
                         case 'AutoComplete':
-                            if (this.state.searchText != nextState.searchText) {
+                            if (this.state.searchText !== nextState.searchText) {
                                 return true;
                             } else {
                                 return false;
                             }
                         case 'Checkbox':
-                            if (this.state.checked != nextState.checked) {
+                            if (this.state.checked !== nextState.checked) {
                                 return true;
                             } else {
                                 return false;
                             }
                         default:
-                            if (this.state.value != nextState.value) {
+                            if (this.state.value !== nextState.value) {
                                 return true;
                             } else {
                                 return false;
@@ -132,17 +132,17 @@ define(function (require) {
                 componentDidUpdate(prevProps, prevState) {
                     switch (WrappedComponent.name) {
                         case 'AutoComplete':
-                            if (this.state.searchText != prevState.searchText && this.props.onChange) {
+                            if (this.state.searchText !== prevState.searchText && this.props.onChange) {
                                 this.props.onChange(this.state.searchText);
                             }
                             break;
                         case 'Checkbox':
-                            if (this.state.checked != prevState.checked && this.props.onCheck) {
+                            if (this.state.checked !== prevState.checked && this.props.onCheck) {
                                 this.props.onCheck(null, this.state.checked);
                             }
                             break;
                         default:
-                            if (this.state.value != prevState.value && this.props.onChange) {
+                            if (this.state.value !== prevState.value && this.props.onChange) {
                                 this.props.onChange(null, null, this.state.value);
                             }
                             break;

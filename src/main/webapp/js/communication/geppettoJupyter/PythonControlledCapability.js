@@ -90,19 +90,19 @@ define(function (require) {
                 shouldComponentUpdate(nextProps, nextState) {
                     switch (this.state.componentType) {
                         case 'AutoComplete':
-                            if (this.state.searchText !== nextState.searchText) {
+                            if ((this.state.searchText !== nextState.searchText) || (this.state.model !== nextState.model)) {
                                 return true;
                             } else {
                                 return false;
                             }
                         case 'Checkbox':
-                            if (this.state.checked !== nextState.checked) {
+                            if ((this.state.checked !== nextState.checked) || (this.state.model !== nextState.model)) {
                                 return true;
                             } else {
                                 return false;
                             }
                         default:
-                            if (this.state.value !== nextState.value) {
+                            if ((this.state.value !== nextState.value) || (this.state.model !== nextState.model)) {
                                 return true;
                             } else {
                                 return false;

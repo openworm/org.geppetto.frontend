@@ -111,6 +111,7 @@
     }
   },
   "dependencies": {
+    "flexlayout-react": "^0.3.2",
     "react-collapsible": "^2.3.1"
   }
 }

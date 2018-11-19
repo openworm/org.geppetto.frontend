@@ -90,23 +90,11 @@ define(function (require) {
                 shouldComponentUpdate(nextProps, nextState) {
                     switch (this.state.componentType) {
                         case 'AutoComplete':
-                            if ((this.state.searchText !== nextState.searchText) || (this.state.model !== nextState.model)) {
-                                return true;
-                            } else {
-                                return false;
-                            }
+                            return ((this.state.searchText !== nextState.searchText) || (this.state.model !== nextState.model));
                         case 'Checkbox':
-                            if ((this.state.checked !== nextState.checked) || (this.state.model !== nextState.model)) {
-                                return true;
-                            } else {
-                                return false;
-                            }
+                            return ((this.state.checked !== nextState.checked) || (this.state.model !== nextState.model));
                         default:
-                            if ((this.state.value !== nextState.value) || (this.state.model !== nextState.model)) {
-                                return true;
-                            } else {
-                                return false;
-                            }
+                            return ((this.state.value !== nextState.value) || (this.state.model !== nextState.model));
                     }
                 }
 

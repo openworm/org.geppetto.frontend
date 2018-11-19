@@ -43,7 +43,7 @@ define(function (require) {
 		reIndexUpdate : 0,
 		updateRedraw : 3,
         isFunctionNode: false,
-		functionNodeData: null,
+		functionNodeData: [],
 		hasXYData: false,
 		xyData: [],
 	    hasStandardPlotData: false,
@@ -184,7 +184,8 @@ define(function (require) {
 			this.visible = options.visible;
 			this.datasets = [];
 			this.variables = [];
-			this.xyData = [];
+		        this.xyData = [];
+                        this.functionNodeData = [];
 			this.plotOptions = this.defaultOptions();
 			this.labelsMap = {};
 		    this.legendVisible = true;
@@ -1003,7 +1004,7 @@ define(function (require) {
             this.isFunctionNode = true;
 			this.hasStandardPlotData = false;
 			this.hasXYData = false;
-			this.functionNodeData = functionNode.getPath();
+		    this.functionNodeData.push(functionNode.getPath());
 
 			//Check there is metada information to plot
 			if (functionNode.getInitialValues()[0].value.dynamics.functionPlot != null) {
@@ -1214,17 +1215,18 @@ define(function (require) {
 
 		getView: function(){
 			var baseView = Widget.View.prototype.getView.call(this);
-
+                        baseView.legendVisible = this.legendVisible;
 			// handle case of function node, data function and x,y data
 			if(this.isFunctionNode){
 				baseView.dataType = 'function';
-				baseView.data = this.functionNodeData;
+			    baseView.data = this.functionNodeData;
+                            baseView.options = this.plotOptions;
 			} else if (this.controller.isColorbar(this)) {
                             baseView.dataType = 'colorbar';
                             baseView.options = this.plotOptions;
                             baseView.data = this.datasets[0];
                         } else {
-
+                            baseView.options = this.plotOptions;
 				if (this.hasXYData){
 				    baseView.dataType = 'object';
 				    baseView.xyData = this.xyData.slice(0);
@@ -1247,12 +1249,14 @@ define(function (require) {
 		    // set base properties
                     if (this.pinned && this.datasets.length > 0) return;
 			Widget.View.prototype.setView.call(this, view);
-			if(view.dataType == 'function'){
-				var functionNode = eval(view.data);
-				this.plotFunctionNode(functionNode);
+		    if(view.dataType == 'function'){
+                        if ($.isArray(view.data))
+                            for (var i=0; i<view.data.length; ++i)
+			        this.plotFunctionNode(eval(view.data[i]));
+                        else
+                            this.plotFunctionNode(eval(view.data));
 			} else if (view.dataType == 'colorbar') {
                             this.plotGeneric(view.data);
-                            this.setOptions(view.options);
                         } else if (view.dataType == 'object') {
 				// if any xy data loop through it
 			    if(view.xyData != undefined){
@@ -1311,6 +1315,7 @@ define(function (require) {
                             }
                         }
 
+                    this.showLegend(view.legendVisible);
 			// after setting view through setView, reset dirty flag
 			this.dirtyView = false;
 		}

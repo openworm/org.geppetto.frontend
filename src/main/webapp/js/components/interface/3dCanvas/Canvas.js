@@ -712,6 +712,9 @@ define(function (require) {
                     }
                 }
 
+                if (view.componentSpecific.highlight != undefined)
+                    eval(view.componentSpecific.highlight).show(true);
+
                 if (view.componentSpecific.hoverListeners != undefined) {
                     for (var i = 0; i < view.componentSpecific.hoverListeners.length; i++) {
                         this.addHoverListener(

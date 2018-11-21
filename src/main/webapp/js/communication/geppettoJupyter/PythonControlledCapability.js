@@ -142,7 +142,7 @@ define(function (require) {
                     }
                 }
 
-                updatePythonValue(newValue) {
+                updatePythonValue(newValue, oldValue) {
                     if (this.props.prePythonSyncProcessing!==undefined) {
                         newValue = this.props.prePythonSyncProcessing(newValue);
                     }
@@ -169,7 +169,7 @@ define(function (require) {
 
                         if (this.props.callback) {
                             //this.props.callback(this.state.value, prevState.value);
-                            this.props.callback(newValue);
+                            this.props.callback(newValue, oldValue);
                         }
                     }
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
@@ -185,6 +185,7 @@ define(function (require) {
                 }
                 // Default handle (mainly textfields and dropdowns)
                 handleChange(event, index, value) {
+                    var oldValue = this.state.value;
                     var targetValue = value;
                     if (event != null && event.target.value != undefined) {
                         targetValue = event.target.value;
@@ -198,7 +199,7 @@ define(function (require) {
                     }
 
                     // For textfields value is retrieved from the event. For dropdown value is retrieved from the value
-                    this.triggerUpdate(() => this.updatePythonValue(targetValue));
+                    this.triggerUpdate(() => this.updatePythonValue(targetValue, oldValue));
                 }
 
                 // Autocomplete handle

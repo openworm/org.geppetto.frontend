@@ -142,7 +142,7 @@ define(function (require) {
                     }
                 }
 
-                updatePythonValue(newValue, oldValue) {
+                updatePythonValue(newValue) {
                     if (this.props.prePythonSyncProcessing!==undefined) {
                         newValue = this.props.prePythonSyncProcessing(newValue);
                     }

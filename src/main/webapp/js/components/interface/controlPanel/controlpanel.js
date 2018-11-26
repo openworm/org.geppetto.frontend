@@ -1553,6 +1553,7 @@ define(function (require) {
                                     }
                                 } catch (e) {
                                     GEPPETTO.CommandController.log(GEPPETTO.Resources.CONTROL_PANEL_ERROR_RUNNING_SOURCE_SCRIPT + " " + sourceActionStr, true);
+                                    GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
                                 }
                             } else {
                                 // if no source assume the record has a property with the column name

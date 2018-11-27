@@ -131,6 +131,8 @@ define(function (require) {
                 GEPPETTO.MessageSocket.socket.close();
                 //dispose of handlers upon closing connection
                 messageHandlers = [];
+                GEPPETTO.trigger(GEPPETTO.Events.Websocket_disconnected);
+
             },
 
             /**

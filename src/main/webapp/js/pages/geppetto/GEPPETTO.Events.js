@@ -64,6 +64,7 @@ define(function (require) {
             Command_toggle_implicit : "command:toggle_implicit",
             Send_Python_Message: "send_python_message",
             Receive_Python_Message: "receive_python_message",
+            Websocket_disconnected : "websocket_disconnected",
 
             listen: function () {
                 GEPPETTO.on(this.Select, function () {

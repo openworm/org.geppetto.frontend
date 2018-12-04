@@ -1,6 +1,5 @@
 package org.geppetto.frontend.controllers;
 
-import java.io.IOException;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,15 +66,7 @@ public class ConnectionsManager
 		for(WebsocketConnection client : this.getConnections())
 		{
 			CharBuffer buffer = CharBuffer.wrap("ping");
-			try
-			{
-				client.getWsOutbound().writeTextMessage(buffer);
-			}
-			catch(IOException e)
-			{
-				_logger.error("Unable to communicate with client " + e.getMessage() + ". Removing connection.");
-				toBeRemoved.add(client);
-			}
+			client.getSession().getAsyncRemote().sendObject(buffer);
 		}
 		for(WebsocketConnection client : toBeRemoved)
 		{

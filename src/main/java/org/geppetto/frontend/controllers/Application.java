@@ -42,12 +42,10 @@ import com.google.gson.JsonParser;
 @Controller
 public class Application
 {
-
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
 	private static Log logger = LogFactory.getLog(Application.class);
-
 
 	private String getGeppetto(HttpServletRequest req, String page){
 		try
@@ -164,5 +162,4 @@ public class Application
 
 		return "dashboard";
 	}
-
 }

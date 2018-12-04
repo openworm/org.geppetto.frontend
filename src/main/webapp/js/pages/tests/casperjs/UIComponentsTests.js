@@ -243,21 +243,21 @@ function popupWidgetTest(test){
  * that it gets created, destroy and changes position/size.
  */
 function plotWidgetTest(test){
-	testWidget(test, 0, "Plot1", 350, 300);	
+	testWidget(test, 0, "Plot1", 350, 300);
 }
 
 /* Tests tree visualizer widget basic functionality:
  * that it gets created, destroy and changes position/size.
  */
 function treeVisualizerTest(test){
-	testWidget(test, 3, "TreeVisualiserDAT1", 350, 260);	
+	testWidget(test, 3, "TreeVisualiserDAT1", 350, 260);
 }
 
 /* Tests variable visualizer widget basic functionality:
  * that it gets created, destroy and changes position/size.
  */
 function variableVisualizerTest(test){
-	testWidget(test, 5, "VarVis1", 350, 120);		
+	testWidget(test, 5, "VarVis1", 350, 120);
 }
 
 /* Tests units controller functionality.
@@ -323,7 +323,7 @@ function testWidget(test, widgetType, widgetIdentifier, originalWidth, originalH
 			});
 
 			casper.then(function () {
-				testMaximizeWidget(test, widgetIdentifier,originalWidth, originalHeight);		
+				testMaximizeWidget(test, widgetIdentifier,originalWidth, originalHeight);
 			});
 
 			casper.then(function () {
@@ -367,7 +367,7 @@ function testMaximizeWidget(test, widgetIdentifier,originalWidth, originalHeight
 			},widgetIdentifier);
 
 			var expectedWidth = casper.evaluate(function(widgetIdentifier) {
-				return $(window).width()-5.2;
+				return $(window).width()-0.2;
 			},widgetIdentifier);
 
 			test.assertEquals(popupWidth, expectedWidth, widgetIdentifier+" maximize width correct");

@@ -4,8 +4,6 @@ define(function (require) {
     require("./react-simpletabs.less");
 
     var React = require('react'), $ = require('jquery');
-    var ReactDOM = require('react-dom');
-    var ReactDOMServer = require('react-dom/server');
     var Griddle = require('griddle-0.6-fork');
     var Tabs = require('react-simpletabs');
     var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");

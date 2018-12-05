@@ -636,9 +636,29 @@ define(function (require) {
 			return timeSeriesData;
 		},
 
+            arrayMin : function(arr) {
+                var len = arr.length, min = Infinity;
+                while (len--) {
+                    if (Number(arr[len]) < min) {
+                        min = Number(arr[len]);
+                    }
+                }
+                return min;
+            },
+
+            arrayMax : function (arr) {
+                var len = arr.length, max = -Infinity;
+                while (len--) {
+                    if (Number(arr[len]) > max) {
+                        max = Number(arr[len]);
+                    }
+                }
+                return max;
+            },
+
             updateXAxisRange : function(timeSeriesX) {
-                var localxmin = Math.min.apply(null, timeSeriesX);
-	        var localxmax = Math.max.apply(null, timeSeriesX);
+                var localxmin = this.arrayMin(timeSeriesX);
+	        var localxmax = this.arrayMax(timeSeriesX);
 
                 if (this.plotOptions.xaxis.min == undefined ||
                     isNaN(this.plotOptions.xaxis.min)) {
@@ -658,19 +678,19 @@ define(function (require) {
 
 
 		updateYAxisRange : function(timeSeriesX, timeSeriesY){
-			var localxmin = Math.min.apply(null, timeSeriesX);
-			var localymin = Math.min.apply(null, timeSeriesY);
-			localymin = localymin - Math.abs(localymin * 0.1);
-			var localxmax = Math.max.apply(null, timeSeriesX);
-			var localymax = Math.max.apply(null, timeSeriesY);
-			localymax = localymax + Math.abs(localymax * 0.1);
+		    var localxmin = this.arrayMin(timeSeriesX);
+		    var localymin = this.arrayMin(timeSeriesY);
+		    localymin = localymin - Math.abs(localymin * 0.1);
+		    var localxmax = this.arrayMax(timeSeriesX);
+		    var localymax = this.arrayMax(timeSeriesY);
+		    localymax = localymax + Math.abs(localymax * 0.1);
 
-			this.plotOptions.xaxis.min = Math.min(this.plotOptions.xaxis.min, localxmin);
-			this.plotOptions.yaxis.min = Math.min(this.plotOptions.yaxis.min, localymin);
-			this.plotOptions.xaxis.max = Math.max(this.limit, localxmax);
-			this.plotOptions.yaxis.max = Math.max(this.plotOptions.yaxis.max, localymax);
+		    this.plotOptions.xaxis.min = Math.min(this.plotOptions.xaxis.min, localxmin);
+		    this.plotOptions.yaxis.min = Math.min(this.plotOptions.yaxis.min, localymin);
+		    this.plotOptions.xaxis.max = Math.max(this.limit, localxmax);
+		    this.plotOptions.yaxis.max = Math.max(this.plotOptions.yaxis.max, localymax);
 
-			this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
+		    this.plotOptions.yaxis.range =[this.plotOptions.yaxis.min,this.plotOptions.yaxis.max];
 		},
 
 		/**

@@ -272,7 +272,7 @@ public class DefaultMessageSender implements MessageSender
 			String debug = ((long) System.currentTimeMillis() - startTime) + "ms were spent sending a file of " + bufferSize / 1024 + "KB to the client";
 			logger.info(debug);
 		}
-		catch(Exception e)
+		catch(IOException e)
 		{
 			logger.warn("Failed to send file, " + path, e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
@@ -298,10 +298,8 @@ public class DefaultMessageSender implements MessageSender
 		}
 		else
 		{
-			//TODO: Fix send binary error The remote endpoint was in state [BINARY_FULL_WRITING] which is an invalid state for called method
 			byte[] compressedMessage = CompressionUtils.gzipCompress(message);
 			sendBinaryMessage(compressedMessage, messageType, uncompressedMessageSize, false);
-			//sendTextMessage(message, messageType);
 		}
 	}
 

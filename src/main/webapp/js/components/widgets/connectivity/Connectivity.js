@@ -190,8 +190,28 @@ define(function (require) {
                           this.createLink(links[link], link.split(',')[0], link.split(',')[1], this.options.linkType.bind(this)(links[link], this.linkCache));
                     }
 		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
-		            this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
-		            return true;
+		    this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
+                    this.dataset.populationNodes = Array.from(new Set(this.dataset.nodes.map(x=>x.type)))
+                        .map(function(x) { return {id: x, type: x} });
+
+                    this.ns = (function (arr) {
+                        var a = [], prev;
+                        for ( var i = 0; i < arr.length; i++ ) {
+                            if ( arr[i] !== prev ) {
+                                a.push(1);
+                            } else {
+                                a[a.length-1]++;
+                            }
+                            prev = arr[i];
+                        }
+                        return a;
+                    })(this.dataset.nodes.map(x=>x.type));
+                    this.ns = this.ns.map((x,i) => x + this.ns.slice(0,i).reduce((a,b)=>a+b,0));
+                    this.dataset.links.forEach((function (link) {
+                        link.source = this.ns.indexOf(this.ns.filter(x=>link.source<x)[0]);
+                        link.target = this.ns.indexOf(this.ns.filter(x=>link.target<x)[0]);
+                    }).bind(this));
+                    return true;
                 }
 
             return false;

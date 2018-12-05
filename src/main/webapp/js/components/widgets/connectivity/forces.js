@@ -39,7 +39,7 @@ define(function (require) {
                 });
 
             var node = g.selectAll(".node")
-                .data(context.dataset.nodes)
+                .data(context.dataset.populationNodes)
                 .enter().append("circle")
                 .attr("class", "node")
                 .attr("r", 5)  // radius
@@ -89,7 +89,7 @@ define(function (require) {
             //Links
             context.createLegend('legend2', linkTypeScale, legendPosition, 'Synapse Types');
 
-            context.force.nodes(context.dataset.nodes).on("tick", function () {
+            context.force.nodes(context.dataset.populationNodes).on("tick", function () {
                 link.attr("x1", function (d) {
                     return d.source.x;
                 })
@@ -110,7 +110,7 @@ define(function (require) {
                         return d.y;
                     });
             });
-            context.force.force("link").links(context.dataset.links);
+            //context.force.force("link").links(context.dataset.links);
         }
     }
 });

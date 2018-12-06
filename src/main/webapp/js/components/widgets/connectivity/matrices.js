@@ -223,8 +223,6 @@ define(function (require) {
 	    context.dataset.links.forEach((function (link) {
 		//TODO: think about zero weight lines
 		//matrix[link.source][link.target].z = link.weight ? link.type : 0;
-                //link.source = Math.floor(link.source/(this.n_nodes/this.n_new));
-                //link.target = Math.floor(link.target/(this.n_nodes/this.n_new));
                 var Aindex = link.conns[0].getA().getElements()[0].getIndex();
                 var Bindex = link.conns[0].getB().getElements()[0].getIndex();
                 var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
@@ -243,8 +241,13 @@ define(function (require) {
                 /*for (var type of projTypes) {
 		    populationNodes[link.source].pre_count[type] += 1;
 		    populationNodes[link.target].post_count[type] += 1;
-                }*/
-                m_entry.z ? (m_entry.z.indexOf(link.type[0])>-1 ? 0 : m_entry.z.push(link.type[0])) : m_entry.z = [link.type[0]];
+                    }*/
+                for (var i=0; i<link.type.length; ++i){
+                    if (m_entry.z != 0 && m_entry.z.indexOf(link.type[i])==-1)
+                        m_entry.z.push(link.type[i]);
+                    else if (m_entry.z == 0)
+                        m_entry.z = [link.type[i]];
+                }
                 m_entry.projTypes ? m_entry.projTypes.push(projTypes) : m_entry.projTypes = [projTypes];
                 //matrix[link.source][link.target].projTypes = projTypes;
 	    }).bind(this));
@@ -338,7 +341,9 @@ define(function (require) {
 		    return this.weightColormaps(context.dataset.links, this.state.filter);
                 }
 		else {
-                    return d3.scaleOrdinal(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
+                    return d3.scaleOrdinal()
+                        .range(["#1b70fc", "#faff16", "#d50527", "#158940", "#f898fd", "#24c9d7", "#cb9b64", "#866888", "#22e67a", "#e509ae", "#9dabfa", "#437e8a", "#b21bff", "#ff7b91", "#94aa05", "#ac5906", "#82a68d", "#fe6616", "#7a7352", "#f9bc0f", "#b65d66", "#07a2e6", "#c091ae", "#8a91a7", "#88fc07", "#ea42fe", "#9e8010", "#10b437", "#c281fe", "#f92b75", "#07c99d"])
+                    .domain(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
                 }
 	    }).bind(this)();
 

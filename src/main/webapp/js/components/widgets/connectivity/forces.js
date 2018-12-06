@@ -27,8 +27,18 @@ define(function (require) {
 	    var g = context.svg.append("g")
 		.attr("class", "everything");
 
+            // only need to represent one link of each type between pops
+            var links = [];
+            for (var i=0; i<context.dataset.links.length; ++i) {
+                var matches = links.filter(x => x.source==context.dataset.links[i].source &&
+                                    x.target==context.dataset.links[i].target &&
+                                    JSON.stringify(x.type)==JSON.stringify(context.dataset.links[i].type))
+                if (matches.length==0)
+                    links.push(context.dataset.links[i])
+            }
+
             var link = g.selectAll(".link")
-                .data(context.dataset.links)
+                .data(links)
                 .enter().append("line")
                 .attr("class", "link")
                 .style("stroke", function (d) {
@@ -110,7 +120,8 @@ define(function (require) {
                         return d.y;
                     });
             });
-            //context.force.force("link").links(context.dataset.links);
+
+            context.force.force("link").links(links);
         }
     }
 });

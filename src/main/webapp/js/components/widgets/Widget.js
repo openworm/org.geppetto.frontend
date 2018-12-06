@@ -659,9 +659,6 @@ define(function (require) {
                             if (event.originalEvent &&
                                 $(event.originalEvent.target).closest(".ui-dialog-titlebar-close").length) {
                                 that.destroy();
-                                if(that.reactReference !== undefined) {
-                                    that.reactReference.closeHandler();
-                                }
                             }
                         }
                     }).dialogExtend({

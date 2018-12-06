@@ -6,6 +6,7 @@ define(function (require) {
     var d3Scale = require("d3-scale");
     var d3ScaleChromatic = require("d3-scale-chromatic");
     return {
+        matrix: [],
 	linkColormaps: {},
 	projectionSummary: {},
         state: {filter: 'projection', colorscale: undefined, weight: false, order: 'id'},
@@ -140,27 +141,35 @@ define(function (require) {
 	},
 	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
-	    var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0));
-	    var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0));
-	    var weights_exc = Array.from(new Set(exc_conns.map(c => c.gbase))).filter(x => x != undefined);
-	    var weights_inh = Array.from(new Set(inh_conns.map(c => (c.gbase >= 0) ? c.gbase : -1*c.gbase))).filter(x => x != undefined);
+	    //var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0));
+	    //var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0));
+            var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=>x.gbase)));
+            var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=>x.gbase)));
 	    var colormaps = {};
             if (this.state.colorScale) {
-                var baseColormap = eval(this.state.colorScale);
+                var baseColormap = eval('('+this.state.colorScale+')');
+                if (baseColormap.exc) {
+                    var baseColormapExc = baseColormap.exc;
+                    var baseColormapInh = baseColormap.inh;
+                } else {
+                    var baseColormapExc = baseColormap;
+                    var baseColormapInh = baseColormap;
+                }
             } else {
-	        var baseColormap = d3.scaleLinear()
-		    .range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)])
+	        var baseColormapInh = d3.scaleLinear()
+		                    .range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)])
 		    .interpolate(d3.interpolateCubehelixLong);
+                var baseColormapExc = baseColormapInh;
             }
 	    if (weights_exc.length > 0) {
 		var min_exc = Math.min.apply(null, weights_exc);
 		var max_exc = Math.max.apply(null, weights_exc);
-		colormaps.exc = baseColormap.copy().domain([min_exc, max_exc]);
+		colormaps.exc = baseColormapExc.copy().domain([min_exc, max_exc]);
 	    }
 	    if (weights_inh.length > 0) {
 		var min_inh = Math.min.apply(null, weights_inh);
 		var max_inh = Math.max.apply(null, weights_inh);
-		colormaps.inh = baseColormap.copy().domain([min_inh, max_inh]);
+		colormaps.inh = baseColormapInh.copy().domain([min_inh, max_inh]);
 	    }
 	    return colormaps;
 	},
@@ -192,7 +201,6 @@ define(function (require) {
 
             var legendDiv = context.svg.append('div').attr('class', 'legend');
 
-	    var matrix = [];
 	    var populationNodes = context.dataset.populationNodes;
             //var populationNodes = context.dataset.nodes;
             var links = context.dataset.links;
@@ -211,13 +219,13 @@ define(function (require) {
                 
 	    // Compute index per node.
 	    // Array.from(new Set(nodes.map(x=>x.type))).forEach(function (node, i) {
-            populationNodes.forEach(function (node, i) {
+            populationNodes.forEach((function (node, i) {
 		node.pre_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
                 node.post_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
-		matrix[i] = d3.range(n).map(function (j) {
+		this.matrix[i] = d3.range(n).map(function (j) {
 		    return { x: j, y: i, z: 0 };
 		});
-	    });
+	    }).bind(this));
 
 	    // Convert links to matrix; count pre / post conns.
 	    context.dataset.links.forEach((function (link) {
@@ -227,16 +235,18 @@ define(function (require) {
                 var Bindex = link.conns[0].getB().getElements()[0].getIndex();
                 var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
                 var projTypes = proj.filter(p => JSON.stringify(p.pairs).indexOf(JSON.stringify([Aindex,Bindex])) > -1).map(p => p.type);
-                var m_entry = matrix[link.source][link.target]
+                var m_entry = this.matrix[link.source][link.target]
 		if (this.state.weight) {
-                    m_entry.weight ? m_entry.weight.push(link.weight) : m_entry.weight = [link.weight];
-                    m_entry.gbase ? m_entry.gbase.push(link.gbase) : m_entry.gbase = [link.gbase];
-                    m_entry.type ? m_entry.type.push(link.type) : m_entry.type = [link.type];
+                    m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
+                    m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
+                    //m_entry.gbase ? m_entry.gbase.push(link.gbase) : m_entry.gbase = [link.gbase];
+                    //m_entry.type ? m_entry.type.push(link.type) : m_entry.type = [link.type];
+                    m_entry.type = link.erev >= -70 ? 'exc' : 'inh';
                     //matrix[link.source][link.target].gbase = link.gbase;
 		    //matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
 		}
 		else {
-		    delete matrix[link.source][link.target].type;
+		    delete this.matrix[link.source][link.target].type;
 		}
                 /*for (var type of projTypes) {
 		    populationNodes[link.source].pre_count[type] += 1;
@@ -284,12 +294,12 @@ define(function (require) {
             // we store the 'conn' key in case we want to
             // eg. conditionally colour the indicator if there
             // are actually connections in that row/column
-            var pre = populationNodes.map(function(x,i) { return {id: x.id, conn: matrix[i].filter(function(d) { return d.z; }).length > 0}});
-            var matrixT = matrix[0].map(function(col, i) {
-                return matrix.map(function(row) {
+            var pre = populationNodes.map((function(x,i) { return {id: x.id, conn: this.matrix[i].filter(function(d) { return d.z; }).length > 0}}).bind(this));
+            var matrixT = this.matrix[0].map((function(col, i) {
+                return this.matrix.map(function(row) {
                     return row[i];
                 })
-            });
+            }).bind(this));
             var post = populationNodes.map(function(x,i) { return {id: x.id, conn: matrixT[i].filter(function(d) { return d.z; }).length > 0}});
 
             var popNameFromId = function(id) {
@@ -368,7 +378,7 @@ define(function (require) {
                 .each(popIndicator("y", nodeColormap, popIndicatorSize, preMargin));
 
 	    var row = container.selectAll(".row")
-		.data(matrix)
+		.data(this.matrix)
 		.enter().append("g")
 		.attr("class", "row")
 		.attr("transform", function (d, i) {
@@ -380,7 +390,7 @@ define(function (require) {
 		.attr("x2", context.options.innerWidth);
 
 	    var column = container.selectAll(".column")
-		.data(matrix)
+		.data(this.matrix)
 		.enter().append("g")
 		.attr("class", "column")
 		.attr("transform", function (d, i) {
@@ -474,7 +484,7 @@ define(function (require) {
 
 		    var gradient = legend.append('defs')
 			.append('linearGradient')
-			.attr('id', 'gradient')
+			.attr('id', 'gradient-'+type)
 			.attr('x1', '0%')
 			.attr('y1', '100%')
 			.attr('x2', '0%')
@@ -512,7 +522,7 @@ define(function (require) {
 			.attr('y1', 0)
 			.attr('width', legendWidth)
 			.attr('height', legendHeight)
-			.style('fill', 'url(#gradient)');
+			.style('fill', 'url(#gradient-'+type+')');
 
 		    // create a scale and axis for the legend
 		    var legendScale = d3.scaleLinear()
@@ -701,7 +711,7 @@ define(function (require) {
             // color scale selector
             var colorOptions = {
 		'd3.scaleLinear().range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)]).interpolate(d3.interpolateCubehelixLong);': 'Rainbow',
-		'd3.scaleSequential(d3ScaleChromatic.interpolateYlGn)': 'Sequential'
+		'{"inh": d3.scaleSequential(d3ScaleChromatic.interpolateBlues), "exc": d3.scaleSequential(d3ScaleChromatic.interpolateReds)}': 'Sequential'
 	    };
 
 	    var colorContainer = $('<div/>', {
@@ -783,8 +793,8 @@ define(function (require) {
 		    .on("mouseover", function (d) {
                         var source_id = d.y;
                         var target_id = d.x;
-                        var cweight = links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
-                        var gbase = links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
+                        var cweight = d.weight; //links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
+                        var gbase = d.gbase; //links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
                         var weightStr = "";
                         if (typeof cweight !== 'undefined') {
                             weightStr = " (weight=" + cweight + ", g=" +  Number(gbase).toPrecision(2) + "S)";

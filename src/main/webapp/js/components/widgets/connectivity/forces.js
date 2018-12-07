@@ -73,8 +73,10 @@ define(function (require) {
                     return weightScale(d.weight)
                 });
 
+            var nodes = context.dataset.populationNodes;
+
             var node = g.selectAll(".node")
-                .data(context.dataset.populationNodes)
+                .data(nodes)
                 .enter().append("circle")
                 .attr("class", "node")
                 .attr("r", 5)  // radius
@@ -124,7 +126,7 @@ define(function (require) {
             //Links
             context.createLegend('legend2', linkTypeScale, legendPosition, 'Synapse Types');
 
-            context.force.nodes(context.dataset.populationNodes).on("tick", function () {
+            context.force.nodes(nodes).on("tick", function () {
                 link.attr("x1", function (d) {
                     return d.source.x;
                 })

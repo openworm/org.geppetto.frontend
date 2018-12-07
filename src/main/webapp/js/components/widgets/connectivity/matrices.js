@@ -201,15 +201,10 @@ define(function (require) {
 
             var legendDiv = context.svg.append('div').attr('class', 'legend');
 
-	    var populationNodes = context.dataset.populationNodes;
-            //var populationNodes = context.dataset.nodes;
+	    var nodes = context.dataset.populationNodes;
             var links = context.dataset.links;
 	    var root = context.dataset.root;
-	    var n = populationNodes.length; //Array.from(new Set(nodes.map(x=>x.type))).length;
-
-            this.n_populationNodes = populationNodes.length;
-            this.n_nodes = context.dataset.nodes.length;
-            this.n_new = n;
+	    var n = nodes.length;
 
             this.projectionSummary = this.getProjectionSummary();
             this.state.filter = this.projectionTypeSummary[this.state.filter].length > 0 ?
@@ -219,7 +214,7 @@ define(function (require) {
                 
 	    // Compute index per node.
 	    // Array.from(new Set(nodes.map(x=>x.type))).forEach(function (node, i) {
-            populationNodes.forEach((function (node, i) {
+            nodes.forEach((function (node, i) {
 		node.pre_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
                 node.post_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
 		this.matrix[i] = d3.range(n).map(function (j) {
@@ -272,13 +267,13 @@ define(function (require) {
 	    //  Precompute the orders.
 	    var orders = {
 		id: d3.range(n).sort(function (a, b) {
-		    return d3.ascending(populationNodes[a].id, populationNodes[b].id);
+		    return d3.ascending(nodes[a].id, nodes[b].id);
 		}),
 		pre_count: d3.range(n).sort((function (a, b) {
-		    return populationNodes[b].pre_count[this.state.filter] - populationNodes[a].pre_count[this.state.filter];
+		    return nodes[b].pre_count[this.state.filter] - nodes[a].pre_count[this.state.filter];
 		}).bind(this)),
 		post_count: d3.range(n).sort((function (a, b) {
-		    return populationNodes[b].post_count[this.state.filter] - populationNodes[a].post_count[this.state.filter];
+		    return nodes[b].post_count[this.state.filter] - nodes[a].post_count[this.state.filter];
 		}).bind(this)),
 		//community: d3.range(n).sort(function(a, b) { return nodes[b].community - nodes[a].community; }),
 	    };
@@ -294,13 +289,13 @@ define(function (require) {
             // we store the 'conn' key in case we want to
             // eg. conditionally colour the indicator if there
             // are actually connections in that row/column
-            var pre = populationNodes.map((function(x,i) { return {id: x.id, conn: this.matrix[i].filter(function(d) { return d.z; }).length > 0}}).bind(this));
+            var pre = nodes.map((function(x,i) { return {id: x.id, conn: this.matrix[i].filter(function(d) { return d.z; }).length > 0}}).bind(this));
             var matrixT = this.matrix[0].map((function(col, i) {
                 return this.matrix.map(function(row) {
                     return row[i];
                 })
             }).bind(this));
-            var post = populationNodes.map(function(x,i) { return {id: x.id, conn: matrixT[i].filter(function(d) { return d.z; }).length > 0}});
+            var post = nodes.map(function(x,i) { return {id: x.id, conn: matrixT[i].filter(function(d) { return d.z; }).length > 0}});
 
             var popNameFromId = function(id) {
                 return id.split('[')[0];
@@ -785,10 +780,10 @@ define(function (require) {
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();
 			//Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.
-			eval(root.getId() + "." + populationNodes[d.x].id).select();
-			eval(root.getId() + "." + populationNodes[d.x].id).showConnectionLines(false);
-			eval(root.getId() + "." + populationNodes[d.y].id).select();
-			eval(root.getId() + "." + populationNodes[d.y].id).showConnectionLines(false);
+			eval(root.getId() + "." + nodes[d.x].id).select();
+			eval(root.getId() + "." + nodes[d.x].id).showConnectionLines(false);
+			eval(root.getId() + "." + nodes[d.y].id).select();
+			eval(root.getId() + "." + nodes[d.y].id).showConnectionLines(false);
 		    })
 		    .on("mouseover", function (d) {
                         var source_id = d.y;
@@ -798,7 +793,7 @@ define(function (require) {
                         var weightStr = "";
                         if (typeof cweight !== 'undefined') {
                             weightStr = " (weight=" + cweight + ", g=" +  Number(gbase).toPrecision(2) + "S)";
-                            $.proxy(mouseoverCell, this)(populationNodes[d.y].id + " is connected to " + populationNodes[d.x].id + weightStr);
+                            $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
                         }
                     })
 		    .on("mouseout", $.proxy(mouseoutCell));

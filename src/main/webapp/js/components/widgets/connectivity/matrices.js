@@ -9,7 +9,7 @@ define(function (require) {
         matrix: [],
 	linkColormaps: {},
 	projectionSummary: {},
-        state: {filter: 'projection', colorscale: undefined, weight: false, order: 'id'},
+        state: {filter: 'projection', colorscale: undefined, weight: false, order: 'id', population: false},
         projectionTypeSummary: {'projection': [], 'continuousProjection': [], 'gapJunction': []},
 	getProjectionSummary: function() {
 	    var projSummary = {};
@@ -201,8 +201,13 @@ define(function (require) {
 
             var legendDiv = context.svg.append('div').attr('class', 'legend');
 
-	    var nodes = context.dataset.populationNodes;
-            var links = context.dataset.links;
+            if (this.state.population) {
+	        var nodes = context.dataset.populationNodes;
+                var links = context.dataset.populationLinks;
+            } else {
+                var nodes = context.dataset.nodes;
+                var links = context.dataset.links;
+            }
 	    var root = context.dataset.root;
 	    var n = nodes.length;
 
@@ -210,7 +215,7 @@ define(function (require) {
             this.state.filter = this.projectionTypeSummary[this.state.filter].length > 0 ?
                 this.state.filter :
                 Object.keys(this.projectionTypeSummary).filter(x => this.projectionTypeSummary[x].length > 0)[0];
-            this.populateWeights(context.dataset.links, this.state.filter);
+            this.populateWeights(links, this.state.filter);
                 
 	    // Compute index per node.
 	    // Array.from(new Set(nodes.map(x=>x.type))).forEach(function (node, i) {
@@ -223,7 +228,7 @@ define(function (require) {
 	    }).bind(this));
 
 	    // Convert links to matrix; count pre / post conns.
-	    context.dataset.links.forEach((function (link) {
+	    links.forEach((function (link) {
 		//TODO: think about zero weight lines
 		//matrix[link.source][link.target].z = link.weight ? link.type : 0;
                 var Aindex = link.conns[0].getA().getElements()[0].getIndex();
@@ -342,13 +347,13 @@ define(function (require) {
             var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeAccent);
 	    this.linkColormaps = (function() {
 		if (this.state.weight) {
-                    this.populateWeights(context.dataset.links, this.state.filter);
-		    return this.weightColormaps(context.dataset.links, this.state.filter);
+                    this.populateWeights(links, this.state.filter);
+		    return this.weightColormaps(links, this.state.filter);
                 }
 		else {
                     return d3.scaleOrdinal()
                         .range(context.linkColors)
-                        .domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
+                        .domain(Array.from(new Set(links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
                 }
 	    }).bind(this)();
 
@@ -702,6 +707,25 @@ define(function (require) {
 		    ctx.createLayout();
 		}
 	    } (context, this));
+
+	    var populationCheckbox = $('<input type="checkbox" id="population" name="population" value="population">');
+	    if (this.state.population)
+		populationCheckbox.attr("checked", "checked");
+	    weightContainer.append(populationCheckbox);
+	    weightContainer.append($('<label for="population" class="population-label">Show populations</label>'));
+
+	    populationCheckbox.on("change", function (ctx, that) {
+		return function () {
+		    if (this.checked) {
+                        that.state.population = true;
+		    }
+		    else {
+			that.state.population = false;
+		    }
+		    ctx.createLayout();
+		}
+	    } (context, this));
+
 
             // color scale selector
             var colorOptions = {

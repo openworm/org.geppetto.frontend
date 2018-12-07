@@ -199,6 +199,7 @@ define(function (require) {
                     this.dataset.populationNodes = Array.from(new Set(this.dataset.nodes.map(x=>x.type)))
                         .map(function(x) { return {id: x, type: x} });
 
+                    this.dataset.populationLinks = [];
                     this.ns = (function (arr) {
                         var a = [], prev;
                         for ( var i = 0; i < arr.length; i++ ) {
@@ -213,10 +214,27 @@ define(function (require) {
                     })(this.dataset.nodes.map(x=>x.type));
                     this.ns = this.ns.map((x,i) => x + this.ns.slice(0,i).reduce((a,b)=>a+b,0));
                     this.dataset.links.forEach((function (link) {
-                        link.source = this.ns.indexOf(this.ns.filter(x=>link.source<x)[0]);
-                        link.target = this.ns.indexOf(this.ns.filter(x=>link.target<x)[0]);
+                        this.dataset.populationLinks.push(
+                            {
+                                conns: link.conns,
+                                source: this.ns.indexOf(this.ns.filter(x=>link.source<x)[0]),
+                                target: this.ns.indexOf(this.ns.filter(x=>link.target<x)[0]),
+                                type: link.type
+                            }
+                        )
                     }).bind(this));
                     return true;
+
+                    var tmpLinks = [];
+                    for (var i=0; i<this.dataset.populationLinks.length; ++i) {
+                        var matches = tmpLinks
+                            .filter(x => x.source==this.dataset.populationLinks[i].source &&
+                                    x.target==this.dataset.populationLinks[i].target &&
+                                    JSON.stringify(x.type)==JSON.stringify(this.dataset.populationLinks[i].type))
+                        if (matches.length==0)
+                            tmpLinks.push(this.dataset.populationLinks[i])
+                    }
+                    this.dataset.populationLinks = tmpLinks;
                 }
 
             return false;

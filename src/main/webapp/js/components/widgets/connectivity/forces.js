@@ -50,14 +50,7 @@ define(function (require) {
 		.attr("class", "everything");
 
             // only need to represent one link of each type between pops
-            var links = [];
-            for (var i=0; i<context.dataset.links.length; ++i) {
-                var matches = links.filter(x => x.source==context.dataset.links[i].source &&
-                                    x.target==context.dataset.links[i].target &&
-                                    JSON.stringify(x.type)==JSON.stringify(context.dataset.links[i].type))
-                if (matches.length==0)
-                    links.push(context.dataset.links[i])
-            }
+            var links = context.dataset.populationLinks;
 
             var link = g.selectAll(".link")
                 .data(links)

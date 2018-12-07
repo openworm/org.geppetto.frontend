@@ -58,7 +58,7 @@ define(function (require) {
             GEPPETTO.trigger(GEPPETTO.Events.Show_spinner, GEPPETTO.Resources.RESOLVING_TYPES);
             var b=[];
             const BATCH_SIZE = 50;
-            for(var i=0;i<this.importTypes.length;i++){
+            for(var i=0;i<this.importTypes.length-1;i++){
                 b.push(this.importTypes[i].getPath());
             }
             var batches = []
@@ -66,10 +66,13 @@ define(function (require) {
                 var batch = b.splice(0,BATCH_SIZE);
                 batches.push(batch);
             }
+            // hacky but we put the last one as a singleton so the callback fires when last type imported
+            batches.push([this.importTypes[this.importTypes.length-1].getPath()]);
             for (var i=0; i<batches.length; ++i) {
                 GEPPETTO.Manager.resolveImportType(batches[i], (function(i){ return function() {
-                    if (i == batches.length-1 && callback != undefined)
+                    if (i == batches.length-1 && callback != undefined) {
                         callback();
+                    }
                     GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
                 }})(i));
             }

@@ -5,6 +5,7 @@
 
 define(function (require) {
     return {
+        state: {population: false},
         createForceLayout: function (context) {
             var d3 = require("d3");
             var _ = require('underscore');
@@ -49,8 +50,13 @@ define(function (require) {
 	    var g = context.svg.append("g")
 		.attr("class", "everything");
 
-            // only need to represent one link of each type between pops
-            var links = context.dataset.populationLinks;
+            if (this.state.population) {
+                var links = context.dataset.populationLinks;
+                var nodes = context.dataset.populationNodes;
+            } else {
+                var links = context.dataset.links;
+                var nodes = context.dataset.nodes;
+            }
 
             var link = g.selectAll(".link")
                 .data(links)
@@ -65,8 +71,6 @@ define(function (require) {
                 .style("stroke-width", function (d) {
                     return weightScale(d.weight)
                 });
-
-            var nodes = context.dataset.populationNodes;
 
             var node = g.selectAll(".node")
                 .data(nodes)
@@ -162,6 +166,37 @@ define(function (require) {
 
             context.force.on("tick", tick);
             context.force.force("link").links(links);
+
+            var optionsContainer = $('<div/>', {
+		id: context.id + "-options",
+                style: 'width:' + context.options.innerWidth + 'px;margin-left: 10px;top:' + context.options.innnerHeight-50 + 'px;',
+		class: 'connectivity-options'
+	    }).appendTo(context.connectivityContainer);
+
+            var orderContainer = $('<div/>', {
+		id: context.id + '-ordering',
+		style: 'float: left;',
+		class: 'connectivity-orderby'
+	    }).appendTo(optionsContainer);
+
+            var populationCheckbox = $('<input type="checkbox" id="population" name="population" value="population">');
+	    if (this.state.population)
+		populationCheckbox.attr("checked", "checked");
+	    orderContainer.append(populationCheckbox);
+	    orderContainer.append($('<label for="population" class="population-label">Show populations</label>'));
+
+	    populationCheckbox.on("change", function (ctx, that) {
+		return function () {
+		    if (this.checked) {
+                        that.state.population = true;
+		    }
+		    else {
+			that.state.population = false;
+		    }
+		    ctx.createLayout();
+		}
+	    } (context, this));
+
         }
     }
 });

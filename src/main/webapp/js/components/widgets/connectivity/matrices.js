@@ -174,6 +174,7 @@ define(function (require) {
 	    return colormaps;
 	},
 	createMatrixLayout: function (context, state) {
+            this.matrix = [];
             if (typeof state !== 'undefined')
                 this.state = state;
 	    var d3 = require("d3");
@@ -246,7 +247,7 @@ define(function (require) {
 		    //matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
 		}
 		else {
-		    delete this.matrix[link.source][link.target].type;
+		    //delete this.matrix[link.source][link.target].type;
 		}
                 /*for (var type of projTypes) {
 		    populationNodes[link.source].pre_count[type] += 1;
@@ -384,7 +385,7 @@ define(function (require) {
 		.attr("transform", function (d, i) {
 		    return "translate(0," + x(i) + ")";
 		})
-		.each(row(this.linkColormaps, this.state.filter, this.projectionTypeSummary));
+		.each(row(this.linkColormaps, this.state.filter, this.projectionTypeSummary, this.state.weight));
 
 	    row.append("line")
 		.attr("x2", context.options.innerWidth);
@@ -572,7 +573,7 @@ define(function (require) {
 	    var optionsContainer = $('<div/>', {
 		id: context.id + "-options",
 		//style: 'width:' + (matrixDim - margin.left + 60) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
-                style: 'width:' + (matrixDim - margin.left + 260) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
+                style: 'width:' + (context.options.innerWidth - margin.left) + 'px;margin-left: 10px;top:' + (matrixDim + 18) + 'px;',
 		class: 'connectivity-options'
 	    }).appendTo(context.connectivityContainer);
 
@@ -676,7 +677,7 @@ define(function (require) {
                 }
             } (context, this));
 
-            	    // toggle weight scheme
+            // toggle weight scheme
 	    var weightContainer = $('<div/>', {
 		id: context.id + '-weight',
 		style: 'float: left; margin-left: 1.6em',
@@ -704,15 +705,21 @@ define(function (require) {
 			ctx.nodeColormap = ctx.defaultColorMapFunction();
 		    }
 		    $('#' + ctx.id + "-weight").remove();
-		    ctx.createLayout();
+		    ctx.createLayout(that.state);
 		}
 	    } (context, this));
 
 	    var populationCheckbox = $('<input type="checkbox" id="population" name="population" value="population">');
+            var populationContainer = $('<div/>', {
+		id: context.id + '-weight',
+		style: 'float: left; margin-left: 1.6em',
+		class: 'weights'
+	    }).appendTo(optionsContainer);
+
 	    if (this.state.population)
 		populationCheckbox.attr("checked", "checked");
-	    weightContainer.append(populationCheckbox);
-	    weightContainer.append($('<label for="population" class="population-label">Show populations</label>'));
+	    populationContainer.append(populationCheckbox);
+	    populationContainer.append($('<label for="population" class="population-label">Show populations</label>'));
 
 	    populationCheckbox.on("change", function (ctx, that) {
 		return function () {
@@ -722,46 +729,50 @@ define(function (require) {
 		    else {
 			that.state.population = false;
 		    }
-		    ctx.createLayout();
+		    ctx.createLayout(that.state);
 		}
 	    } (context, this));
 
 
             // color scale selector
-            var colorOptions = {
-		'd3.scaleLinear().range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)]).interpolate(d3.interpolateCubehelixLong);': 'Rainbow',
-		'{"inh": d3.scaleSequential(d3ScaleChromatic.interpolateBlues), "exc": d3.scaleSequential(d3ScaleChromatic.interpolateReds)}': 'Sequential'
-	    };
+            if (this.state.weight) {
+                var colorOptions = {
+		    'd3.scaleLinear().range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)]).interpolate(d3.interpolateCubehelixLong);': 'Rainbow',
+		    '{"inh": d3.scaleSequential(d3ScaleChromatic.interpolateBlues), "exc": d3.scaleSequential(d3ScaleChromatic.interpolateReds)}': 'Sequential'
+	        };
 
-	    var colorContainer = $('<div/>', {
-		id: context.id + '-type',
-                style: 'float: left; margin-left: 1.6em',
-		class: 'colorscales'
-	    }).appendTo(optionsContainer);
+	        var colorContainer = $('<div/>', {
+		    id: context.id + '-type',
+                    style: 'float: right; margin-left: 1.6em',
+		    class: 'colorscales'
+	        }).appendTo(optionsContainer);
 
-	    var colorCombo = $('<select/>', {
-                style: 'margin-left: 0.5em;'
-            });
-	    $.each(colorOptions, (function (k, v) {
-		$('<option/>', { value: k, text: v }).appendTo(colorCombo);
-	    }).bind(this));
-            if (this.state.colorScale)
-                colorCombo.val(this.state.colorScale);
-	    colorContainer.append($('<span/>', {
-		id: 'color-selector',
-		class: 'color-selector-label',
-		text: 'Colorscale Type:'
-	    }).append(colorCombo));
+	        var colorCombo = $('<select/>', {
+                    style: 'margin-left: 0.5em;'
+                });
+	        $.each(colorOptions, (function (k, v) {
+		    $('<option/>', { value: k, text: v }).appendTo(colorCombo);
+	        }).bind(this));
+                if (this.state.colorScale)
+                    colorCombo.val(this.state.colorScale);
+	        colorContainer.append($('<span/>', {
+		    id: 'color-selector',
+		    class: 'color-selector-label',
+		    text: 'Colorscale Type:'
+	        }).append(colorCombo));
 
-            colorCombo.on("change", function(ctx, that) {
-                return function () {
-                    that.state.colorScale = this.value;
-                    ctx.createLayout(that.state);
-                }
-            } (context, this));
+                colorCombo.on("change", function(ctx, that) {
+                    return function () {
+                        that.state.colorScale = this.value;
+                        ctx.createLayout(that.state);
+                    }
+                } (context, this));
+            } else {
+                $('#colorscales').remove();
+            }
 
 	    // Draw squares for each connection
-	    function row(linkColormaps, filter, projTypesSummary) {
+	    function row(linkColormaps, filter, projTypesSummary, weights) {
 		return function(row) {
 		var cell = d3.select(this).selectAll(".cell")
 		    .data(row.filter(function (d) {
@@ -778,29 +789,29 @@ define(function (require) {
 			return d.id;
 		    })
 		    //.style("fill-opacity", function(d) { return z(d.z); })
-                    .style("fill", function(linkColormaps, filter, projTypes) {
+                    .style("fill", function(linkColormaps, filter, projTypes, weights) {
                         return function (d) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "none";
-			    if (typeof d.type !== 'undefined')
+			    if (typeof linkColormaps[d.type] === 'function')
 			        return linkColormaps[d.type](d.gbase);
 			    else
                                 return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
 			        //return linkColormaps(Array.from(new Set(d.z.map(JSON.stringify))).map(JSON.parse).filter(x=>projTypes[filter].indexOf(x[0])>-1));
 		        }
-                    } (linkColormaps, filter, projTypesSummary))
-		    .style("stroke", function(linkColormaps, filter, projTypes) {
+                    } (linkColormaps, filter, projTypesSummary, weights))
+		    .style("stroke", function(linkColormaps, filter, projTypes, weights) {
                         return function (d) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "none";
-			    if (typeof d.type !== 'undefined')
+			    if (typeof linkColormaps[d.type] === 'function')
 			        return linkColormaps[d.type](d.gbase);
 			    else
                                 return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
                                 //return linkColormaps(Array.from(new Set(d.z.map(JSON.stringify))).map(JSON.parse).filter(x=>projTypes[filter].indexOf(x[0])>-1));
 
 		        }
-                    } (linkColormaps, filter, projTypesSummary))
+                    } (linkColormaps, filter, projTypesSummary, weights))
 		    .on("click", function (d) {
 			GEPPETTO.SceneController.deselectAll();
 			//Ideally instead of hiding the connectivity lines we'd show only the ones connecting the two cells, also we could higlight the connection.

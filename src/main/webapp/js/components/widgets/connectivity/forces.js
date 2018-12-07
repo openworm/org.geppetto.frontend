@@ -10,13 +10,35 @@ define(function (require) {
             var _ = require('underscore');
 
             //TODO: 10/20 categories hardcoded in color scales
-            var linkTypeScale = d3.scaleOrdinal(d3.schemeCategory10)
+            var linkTypeScale = d3.scaleOrdinal(context.linkColors)
                 .domain(context.dataset.linkTypes);
-            var nodeTypeScale = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeCategory20);
+            var nodeTypeScale = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeAccent);
             var weightScale = d3.scaleLinear()
                 .domain(d3.extent(_.pluck(context.dataset.links, 'weight').map(parseFloat)))
                 //TODO: think about weight = 0 (do we draw a line?)
                 .range([0.5, 4]);
+
+            context.svg.append("svg:defs").selectAll("marker")
+                .data(linkTypeScale.domain())      // Different link/path types can be defined here
+                .enter().append("svg:marker")    // This section adds in the arrows
+                .attr("id", function(d) {
+                    return d.reduce((x,y)=>x+y, "");
+                })
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 20)
+                .attr("refY", 0)
+                .attr("stroke", function(d) {
+                    return linkTypeScale(d);
+                })
+                .attr("stroke-opacity", 1)
+                .attr("stroke-width", "3px")
+                .attr("fill", "none")
+                .attr("markerWidth", 3)
+                .attr("markerHeight", 3)
+                .attr("orient", "auto")
+                .append("svg:path")
+                .attr("d", "M0,-5L10,0L0,5");
+
 
             context.force = d3.forceSimulation()
                 .force("charge", d3.forceManyBody().strength(-250))
@@ -39,8 +61,11 @@ define(function (require) {
 
             var link = g.selectAll(".link")
                 .data(links)
-                .enter().append("line")
+                .enter().append("svg:path")
                 .attr("class", "link")
+                .attr("marker-end", function(d) {
+                    return "url(#"+d.type.reduce((x,y)=>x+y,"")+")"
+                })
                 .style("stroke", function (d) {
                     return linkTypeScale(d.type)
                 })
@@ -121,6 +146,26 @@ define(function (require) {
                     });
             });
 
+
+            function tick() {
+                link.attr("d", function(d) {
+                    var dx = d.target.x - d.source.x,
+                        dy = d.target.y - d.source.y,
+                        dr = Math.sqrt(dx * dx + dy * dy);
+                    return "M" +
+                        d.source.x + "," +
+                        d.source.y + "A" +
+                        dr + "," + dr + " 0 0,1 " +
+                        d.target.x + "," +
+                        d.target.y;
+                });
+
+                node.attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+            }
+
+            context.force.on("tick", tick);
             context.force.force("link").links(links);
         }
     }

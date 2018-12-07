@@ -352,8 +352,8 @@ define(function (require) {
                 }
 		else {
                     return d3.scaleOrdinal()
-                        .range(["#1b70fc", "#faff16", "#d50527", "#158940", "#f898fd", "#24c9d7", "#cb9b64", "#866888", "#22e67a", "#e509ae", "#9dabfa", "#437e8a", "#b21bff", "#ff7b91", "#94aa05", "#ac5906", "#82a68d", "#fe6616", "#7a7352", "#f9bc0f", "#b65d66", "#07a2e6", "#c091ae", "#8a91a7", "#88fc07", "#ea42fe", "#9e8010", "#10b437", "#c281fe", "#f92b75", "#07c99d"])
-                    .domain(d3.schemeCategory10).domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
+                        .range(context.linkColors)
+                        .domain(Array.from(new Set(context.dataset.links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
                 }
 	    }).bind(this)();
 

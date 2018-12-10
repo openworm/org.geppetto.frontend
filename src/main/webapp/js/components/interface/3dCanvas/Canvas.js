@@ -725,6 +725,7 @@ define(function (require) {
 
             }
 
+            GEPPETTO.trigger(GEPPETTO.Events.Canvas_initialised);
             // set dirty view to false
             // NOTE: this needs to be at the end after the view has actually been set
             this.setDirty(false);

@@ -435,16 +435,16 @@ define(function (require) {
 		},
 
 		showLegend: function(show){
-			this.legendVisible = (show === true);
-			Plotly.update(this.plotDiv, {showlegend: (show === true)},
-				{
-					margin: {
-						l: this.plotOptions.margin.l,
-						r: (show === true) ? this.plotOptions.margin.r - 12 : this.plotOptions.margin.r + 12,
-						b: this.plotOptions.margin.b,
-						t: this.plotOptions.margin.t,
-					}
-				});
+		    this.legendVisible = show;
+		    Plotly.update(this.plotDiv, {},
+			{ showlegend: show,
+			  margin: {
+			      l: this.plotOptions.margin.l,
+			      r: show ? this.plotOptions.margin.r - 12 : this.plotOptions.margin.r + 12,
+			      b: this.plotOptions.margin.b,
+			      t: this.plotOptions.margin.t,
+			  }
+			});
 		},
 
 	    showMenu: function (menu, menuName, event) {
@@ -1331,11 +1331,12 @@ define(function (require) {
                                                 item.line ? item.line : {}
 					    );
 					}
+                                    that.showLegend(view.legendVisible);
+                                    window.theme(true);
 				});
                             }
                         }
 
-                    this.showLegend(view.legendVisible);
 			// after setting view through setView, reset dirty flag
 			this.dirtyView = false;
 		}

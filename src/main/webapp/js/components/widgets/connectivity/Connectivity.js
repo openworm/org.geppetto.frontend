@@ -194,13 +194,8 @@ define(function (require) {
                     for (var link in links) {
                           this.createLink(links[link], link.split(',')[0], link.split(',')[1], this.options.linkType.bind(this)(links[link], this.linkCache));
                     }
-		            this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
-		    this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
-                    this.dataset.populationNodes = Array.from(new Set(this.dataset.nodes.map(x=>x.type)))
-                        .map(function(x) { return {id: x, type: x} });
 
-                    this.dataset.populationLinks = [];
-                    this.ns = (function (arr) {
+                    var count = function (arr) {
                         var a = [], prev;
                         for ( var i = 0; i < arr.length; i++ ) {
                             if ( arr[i] !== prev ) {
@@ -211,7 +206,16 @@ define(function (require) {
                             prev = arr[i];
                         }
                         return a;
-                    })(this.dataset.nodes.map(x=>x.type));
+                    }
+		    this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
+		    this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
+                    var populationSizes = count(this.dataset.nodes.map(x=>x.type))
+                    populationSizes = populationSizes.map(n=>10*(n/Math.max.apply(null, populationSizes)));
+                    this.dataset.populationNodes = Array.from(new Set(this.dataset.nodes.map(x=>x.type)))
+                        .map(function(x,i) { return {id: x, type: x, n: populationSizes[i]} });
+
+                    this.dataset.populationLinks = [];
+                    this.ns = count(this.dataset.nodes.map(x=>x.type));
                     this.ns = this.ns.map((x,i) => x + this.ns.slice(0,i).reduce((a,b)=>a+b,0));
                     this.dataset.links.forEach((function (link) {
                         this.dataset.populationLinks.push(

@@ -76,7 +76,9 @@ define(function (require) {
                 .data(nodes)
                 .enter().append("circle")
                 .attr("class", "node")
-                .attr("r", 5)  // radius
+                .attr("r", function (d) {
+                    return d.n ? d.n : 5;
+                })  // radius
                 .style("fill", function (d) {
                     return nodeTypeScale(d.type);
                 })

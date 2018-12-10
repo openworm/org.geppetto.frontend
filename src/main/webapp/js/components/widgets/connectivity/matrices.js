@@ -249,10 +249,10 @@ define(function (require) {
 		else {
 		    //delete this.matrix[link.source][link.target].type;
 		}
-                /*for (var type of projTypes) {
-		    populationNodes[link.source].pre_count[type] += 1;
-		    populationNodes[link.target].post_count[type] += 1;
-                    }*/
+                for (var type of projTypes) {
+		    nodes[link.source].pre_count[type] += 1;
+		    nodes[link.target].post_count[type] += 1;
+                }
                 for (var i=0; i<link.type.length; ++i){
                     if (m_entry.z != 0 && m_entry.z.indexOf(link.type[i])==-1)
                         m_entry.z.push(link.type[i]);

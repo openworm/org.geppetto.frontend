@@ -1,5 +1,5 @@
 define(function(require) {
-
+  var React = require('react');
 	var CreateClass = require('create-react-class');
 	var	GEPPETTO = require('geppetto');
 

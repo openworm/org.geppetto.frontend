@@ -210,7 +210,7 @@ define(function (require) {
 		    this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
 		    this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
                     var populationSizes = count(this.dataset.nodes.map(x=>x.type))
-                    populationSizes = populationSizes.map(n=>10*(n/Math.max.apply(null, populationSizes)));
+                    populationSizes = populationSizes.map(n=>5*(n/Math.max.apply(null, populationSizes)));
                     this.dataset.populationNodes = Array.from(new Set(this.dataset.nodes.map(x=>x.type)))
                         .map(function(x,i) { return {id: x, type: x, n: populationSizes[i]} });
 

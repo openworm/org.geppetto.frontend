@@ -139,7 +139,7 @@ define(function (require) {
 				},
 				margin: {
 					l: 50,
-					r: 0,
+					r: 10,
 					b: 40,
 					t: 10,
 				},
@@ -440,7 +440,7 @@ define(function (require) {
 			{ showlegend: show,
 			  margin: {
 			      l: this.plotOptions.margin.l,
-			      r: show ? this.plotOptions.margin.r - 12 : this.plotOptions.margin.r + 12,
+			      r: this.plotOptions.margin.r, //show ? this.plotOptions.margin.r - 5 : this.plotOptions.margin.r + 5,
 			      b: this.plotOptions.margin.b,
 			      t: this.plotOptions.margin.t,
 			  }

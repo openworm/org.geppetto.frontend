@@ -21,7 +21,8 @@ define(function (require) {
             return <div className="modal fade" id="help-modal">
                 <div className="modal-dialog">
                     <div className="modal-content">
-                        <div className="modal-header">
+                <div className="modal-header">
+                <a className="btn pull-left" icon="fa-file-text" onClick={(function() {Tutorial1.open() && this.hide()}).bind(this)} target="_blank">OSB Tutorial </a>
                             <a className="btn pull-right" icon="fa-file-text" href="http://docs.geppetto.org" target="_blank">Docs </a>
                             <h4 className="modal-title pagination-centered">Quick Help</h4>
                         </div>

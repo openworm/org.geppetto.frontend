@@ -597,34 +597,31 @@ define(function (require) {
                                    activeExperimentFilterVisibleArg,
                                    anyExperimentFilterVisibleArg,
                                    anyProjectFilterVisibleArg,
-                                   recordedFilterVisibleArg) {
+                                   recordedFilterVisibleArg, callback) {
 
             // manually set so it's available immediately after calling this method without waiting for next render
             // NOTE: doing set state the state is not available till the next render cycle
-            this.state.visualFilterToggled = visualFilterToggledArg;
-            this.state.stateVarsFilterToggled = stateVarsFilterToggledArg;
-            this.state.paramsFilterToggled = paramsFilterToggledArg;
-            this.state.activeExperimentFilterToggled = activeExperimentFilterToggledArg;
-            this.state.anyExperimentFilterToggled = anyExperimentFilterToggledArg;
-            this.state.anyProjectFilterToggled = anyProjectFilterToggledArg;
-            this.state.recordedFilterToggled = recordedFilterToggledArg;
-            this.state.visualFilterEnabled = visualFilterEnabledArg;
-            this.state.stateVarsFilterEnabled = stateVarsFilterEnabledArg;
-            this.state.paramsFilterEnabled = paramsFilterEnabledArg;
-            this.state.activeExperimentFilterEnabled = activeExperimentFilterEnabledArg;
-            this.state.anyExperimentFilterEnabled = anyExperimentFilterEnabledArg;
-            this.state.anyProjectFilterEnabled = anyProjectFilterEnabledArg;
-            this.state.recordedFilterEnabled = recordedFilterEnabledArg;
-            this.state.visualFilterVisible = visualFilterVisibleArg;
-            this.state.stateVarsFilterVisible = stateVarsFilterVisibleArg;
-            this.state.paramsFilterVisible = paramsFilterVisibleArg;
-            this.state.activeExperimentFilterVisible = activeExperimentFilterVisibleArg;
-            this.state.anyExperimentFilterVisible = anyExperimentFilterVisibleArg;
-            this.state.anyProjectFilterVisible = anyProjectFilterVisibleArg;
-            this.state.recordedFilterVisible = recordedFilterVisibleArg;
-
-            // force an update because we do want to re-render the filter component
-            this.forceUpdate();
+            this.setState({visualFilterToggled: visualFilterToggledArg,
+                           stateVarsFilterToggled : stateVarsFilterToggledArg,
+                           paramsFilterToggled : paramsFilterToggledArg,
+                           activeExperimentFilterToggled : activeExperimentFilterToggledArg,
+                           anyExperimentFilterToggled : anyExperimentFilterToggledArg,
+                           anyProjectFilterToggled : anyProjectFilterToggledArg,
+                           recordedFilterToggled : recordedFilterToggledArg,
+                           visualFilterEnabled : visualFilterEnabledArg,
+                           stateVarsFilterEnabled : stateVarsFilterEnabledArg,
+                           paramsFilterEnabled : paramsFilterEnabledArg,
+                           activeExperimentFilterEnabled : activeExperimentFilterEnabledArg,
+                           anyExperimentFilterEnabled : anyExperimentFilterEnabledArg,
+                           anyProjectFilterEnabled : anyProjectFilterEnabledArg,
+                           recordedFilterEnabled : recordedFilterEnabledArg,
+                           visualFilterVisible : visualFilterVisibleArg,
+                           stateVarsFilterVisible : stateVarsFilterVisibleArg,
+                           paramsFilterVisible : paramsFilterVisibleArg,
+                           activeExperimentFilterVisible : activeExperimentFilterVisibleArg,
+                           anyExperimentFilterVisible : anyExperimentFilterVisibleArg,
+                           anyProjectFilterVisible : anyProjectFilterVisibleArg,
+                           recordedFilterVisible : recordedFilterVisibleArg}, callback);
         },
 
         refreshToggleState: function(){
@@ -654,108 +651,7 @@ define(function (require) {
 
         computeResult: function (controlId) {
             // logic for disable/enable stuff here
-            switch (controlId) {
-                case 'visualInstancesFilterBtn':
-                    if (!this.state.visualFilterToggled) {
-                        this.setTogglesState(
-                            // visual instance being toggled on, untoggle everything else
-                            true, false, false, false, false, false, false,
-                            // disable itself (so cannot be untoggled), enable state vars and params, disable the rest
-                            false, true, true, false, false, false, false,
-                            // set visibility only to visual instances, state vars and params as the rest doesnt apply
-                            true, true, true, false, false, false, false
-                        );
-                    }
-                    break;
-                case 'stateVariablesFilterBtn':
-                    if (!this.state.stateVarsFilterToggled) {
-                        var activeExperimentToggleStatus = this.state.activeExperimentFilterToggled;
-                        if (!(this.state.activeExperimentFilterToggled || this.state.anyExperimentFilterToggled || this.state.anyProjectFilterToggled)) {
-                            // if state var is selected and none of the relevant sub-toggles are selected, select active experiment
-                            activeExperimentToggleStatus = true;
-                        }
-
-                        this.setTogglesState(
-                            // state variables being toggled on, untoggle visual instances and params, leave the rest untouched
-                            false, true, false, activeExperimentToggleStatus, this.state.anyExperimentFilterToggled, this.state.anyProjectFilterToggled, activeExperimentToggleStatus,
-                            // whatever is toggled is disabled
-                            true, false, true, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, activeExperimentToggleStatus,
-                            // set visibility only to buttons that apply
-                            true, true, true, true, true, true, activeExperimentToggleStatus
-                        );
-                    }
-                    break;
-                case 'parametersFilterBtn':
-                    if (!this.state.paramsFilterToggled) {
-                        var activeExperimentToggleStatus = this.state.activeExperimentFilterToggled;
-                        if (!(this.state.activeExperimentFilterToggled || this.state.anyExperimentFilterToggled || this.state.anyProjectFilterToggled)) {
-                            // if params is selected and none of the relevant sub-toggles are selected, select active experiment
-                            activeExperimentToggleStatus = true;
-                        }
-
-                        this.setTogglesState(
-                            // parameters being toggled on, untoggle visual instances and state vars, leave the rest untouched and untoggle recording
-                            false, false, true, activeExperimentToggleStatus, this.state.anyExperimentFilterToggled, this.state.anyProjectFilterToggled, false,
-                            // whatever is toggled is also disabled
-                            true, true, false, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, false,
-                            // set visibility only to buttons that apply
-                            true, true, true, true, true, true, false
-                        );
-                    }
-                    break;
-                case 'activeExperimentFilterBtn':
-                    if (!this.state.activeExperimentFilterToggled) {
-                        // recorded filter is only visible for state vars in the active experiment
-                        // NOTE: this variable assignment is verbose but more readable
-                        var recordedVisibility = this.state.stateVarsFilterToggled ? true : false;
-
-                        this.setTogglesState(
-                            // active experiment filter being toggled on, untoggle any experiment and any project, leave the rest alone
-                            false, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, true, false, false, this.state.recordedFilterToggled,
-                            // whatever is toggled needs to be disabled except recorded which is independent
-                            true, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, false, true, true, recordedVisibility,
-                            // keep visibility as is for record filter, the rest always visible
-                            true, true, true, true, true, true, recordedVisibility
-                        );
-                    }
-                    break;
-                case 'anyExperimentFilterBtn':
-                    if (!this.state.anyExperimentFilterToggled) {
-                        // auto-toggle recording if state vars filter is toggled (can only look at recorded state vars for external experiments) otherwise leave as is
-                        var recordingToggleStatus = this.state.visualFilterToggled ? true : this.state.recordedFilterToggled;
-
-                        this.setTogglesState(
-                            // any experiment filter being toggled on, untoggle active experiment and any project, leave the rest alone
-                            this.state.visualFilterToggled, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, false, true, false, recordingToggleStatus,
-                            // enable everything except recording disabled is and disable itself (it can only be untoggled by clicking something else)
-                            !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, false, true, false,
-                            // recorded never applies so hide (external stuff is always recorded)
-                            true, true, true, true, true, true, recordingToggleStatus
-                        );
-                    }
-                    break;
-                case 'anyProjectFilterBtn':
-                    if (!this.state.anyProjectFilterToggled) {
-                        // auto-toggle recording if state vars filter is toggled (can only look at recorded state vars for external projects/experiments) otherwise leave as is
-                        var recordingToggleStatus = this.state.visualFilterToggled ? true : this.state.recordedFilterToggled;
-
-                        this.setTogglesState(
-                            // any project filter being toggled on, untoggle active experiment and any experiment, leave the rest alone
-                            this.state.visualFilterToggled, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, false, false, true, recordingToggleStatus,
-                            // enable everything except recording disabled and disable itself (it can only be untoggled by clicking something else)
-                            !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, true, false, false,
-                            // recorded is visible is state vars are selected but disabled (external stuff is always recorded)
-                            true, true, true, true, true, true, recordingToggleStatus
-                        );
-                    }
-                    break;
-                case 'recordedFilterBtn':
-                    // just flip the toggle status on click, this filter is independent, if it's enabled it can toggle/untoggle itself
-                    this.state.recordedFilterToggled = !this.state.recordedFilterToggled;
-                    this.forceUpdate();
-                    break;
-            }
-
+            var callback = function() {
             // this will cause the control panel to refresh data based on injected filter handler
             var filterHandler = this.props.filterHandler;
             if (this.state.visualFilterToggled) {
@@ -778,6 +674,111 @@ define(function (require) {
                 } else if (this.state.anyProjectFilterToggled) {
                     filterHandler(controlPanelFilterOptions.ANY_PROJECT_PARAMETERS);
                 }
+            }
+            };
+            switch (controlId) {
+                case 'visualInstancesFilterBtn':
+                    if (!this.state.visualFilterToggled) {
+                        this.setTogglesState(
+                            // visual instance being toggled on, untoggle everything else
+                            true, false, false, false, false, false, false,
+                            // disable itself (so cannot be untoggled), enable state vars and params, disable the rest
+                            false, true, true, false, false, false, false,
+                            // set visibility only to visual instances, state vars and params as the rest doesnt apply
+                            true, true, true, false, false, false, false,
+                            callback
+                        );
+                    }
+                    break;
+                case 'stateVariablesFilterBtn':
+                    if (!this.state.stateVarsFilterToggled) {
+                        var activeExperimentToggleStatus = this.state.activeExperimentFilterToggled;
+                        if (!(this.state.activeExperimentFilterToggled || this.state.anyExperimentFilterToggled || this.state.anyProjectFilterToggled)) {
+                            // if state var is selected and none of the relevant sub-toggles are selected, select active experiment
+                            activeExperimentToggleStatus = true;
+                        }
+
+                        this.setTogglesState(
+                            // state variables being toggled on, untoggle visual instances and params, leave the rest untouched
+                            false, true, false, activeExperimentToggleStatus, this.state.anyExperimentFilterToggled, this.state.anyProjectFilterToggled, activeExperimentToggleStatus,
+                            // whatever is toggled is disabled
+                            true, false, true, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, activeExperimentToggleStatus,
+                            // set visibility only to buttons that apply
+                            true, true, true, true, true, true, activeExperimentToggleStatus,
+                            callback
+                        );
+                    }
+                    break;
+                case 'parametersFilterBtn':
+                    if (!this.state.paramsFilterToggled) {
+                        var activeExperimentToggleStatus = this.state.activeExperimentFilterToggled;
+                        if (!(this.state.activeExperimentFilterToggled || this.state.anyExperimentFilterToggled || this.state.anyProjectFilterToggled)) {
+                            // if params is selected and none of the relevant sub-toggles are selected, select active experiment
+                            activeExperimentToggleStatus = true;
+                        }
+
+                        this.setTogglesState(
+                            // parameters being toggled on, untoggle visual instances and state vars, leave the rest untouched and untoggle recording
+                            false, false, true, activeExperimentToggleStatus, this.state.anyExperimentFilterToggled, this.state.anyProjectFilterToggled, false,
+                            // whatever is toggled is also disabled
+                            true, true, false, !activeExperimentToggleStatus, !this.state.anyExperimentFilterToggled, !this.state.anyProjectFilterToggled, false,
+                            // set visibility only to buttons that apply
+                            true, true, true, true, true, true, false,
+                            callback
+                        );
+                    }
+                    break;
+                case 'activeExperimentFilterBtn':
+                    if (!this.state.activeExperimentFilterToggled) {
+                        // recorded filter is only visible for state vars in the active experiment
+                        // NOTE: this variable assignment is verbose but more readable
+                        var recordedVisibility = this.state.stateVarsFilterToggled ? true : false;
+
+                        this.setTogglesState(
+                            // active experiment filter being toggled on, untoggle any experiment and any project, leave the rest alone
+                            false, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, true, false, false, this.state.recordedFilterToggled,
+                            // whatever is toggled needs to be disabled except recorded which is independent
+                            true, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, false, true, true, recordedVisibility,
+                            // keep visibility as is for record filter, the rest always visible
+                            true, true, true, true, true, true, recordedVisibility,
+                            callback
+                        );
+                    }
+                    break;
+                case 'anyExperimentFilterBtn':
+                    if (!this.state.anyExperimentFilterToggled) {
+                        // auto-toggle recording if state vars filter is toggled (can only look at recorded state vars for external experiments) otherwise leave as is
+                        var recordingToggleStatus = this.state.visualFilterToggled ? true : this.state.recordedFilterToggled;
+
+                        this.setTogglesState(
+                            // any experiment filter being toggled on, untoggle active experiment and any project, leave the rest alone
+                            this.state.visualFilterToggled, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, false, true, false, recordingToggleStatus,
+                            // enable everything except recording disabled is and disable itself (it can only be untoggled by clicking something else)
+                            !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, false, true, false,
+                            // recorded never applies so hide (external stuff is always recorded)
+                            true, true, true, true, true, true, recordingToggleStatus,
+                            callback);
+                    }
+                    break;
+                case 'anyProjectFilterBtn':
+                    if (!this.state.anyProjectFilterToggled) {
+                        // auto-toggle recording if state vars filter is toggled (can only look at recorded state vars for external projects/experiments) otherwise leave as is
+                        var recordingToggleStatus = this.state.visualFilterToggled ? true : this.state.recordedFilterToggled;
+
+                        this.setTogglesState(
+                            // any project filter being toggled on, untoggle active experiment and any experiment, leave the rest alone
+                            this.state.visualFilterToggled, this.state.stateVarsFilterToggled, this.state.paramsFilterToggled, false, false, true, recordingToggleStatus,
+                            // enable everything except recording disabled and disable itself (it can only be untoggled by clicking something else)
+                            !this.state.visualFilterToggled, !this.state.stateVarsFilterToggled, !this.state.paramsFilterToggled, true, true, false, false,
+                            // recorded is visible is state vars are selected but disabled (external stuff is always recorded)
+                            true, true, true, true, true, true, recordingToggleStatus,
+                            callback);
+                    }
+                    break;
+                case 'recordedFilterBtn':
+                // just flip the toggle status on click, this filter is independent, if it's enabled it can toggle/untoggle itself
+                this.setState({recordedFilterToggled: !this.state.recordedFilterToggled}, callback);
+                break;
             }
         },
 
@@ -1666,7 +1667,7 @@ define(function (require) {
             GEPPETTO.off(null, null, this);
         },
 
-        setTab: function(filterTabOption){
+        setTab: function(filterTabOption, f){
             // only do something if builtin filters are being used
             if (this.props.useBuiltInFilters === true) {
                 // default goes to visual instances
@@ -1674,11 +1675,12 @@ define(function (require) {
                     filterTabOption = this.filterOptions.VISUAL_INSTANCES;
                 }
 
-                this.setState({filterOption: filterTabOption});
                 var that = this;
-                setTimeout(function () {
+                this.setState({filterOption: filterTabOption}, function() {
                     that.refs.filterComponent.refreshToggleState();
-                }, 25);
+                    if (typeof f !== 'undefined')
+                        return f();
+                });
             }
         },
 
@@ -1691,15 +1693,13 @@ define(function (require) {
                 filterText = '';
             }
 
-            // set state this like this to avoid double refresh, open will trigger a refresh
-            this.state.filterOption = filterTabOption;
-
             // show control panel
-            this.open();
-            this.refs.filterComponent.refreshToggleState();
-            this.setTab(filterTabOption);
-            var that = this;
-            setTimeout(function() { that.setFilter(filterText); }, 500);
+            this.setState({filterOption: filterTabOption}, function() {
+                // show control panel
+                this.open();
+                this.refs.filterComponent.refreshToggleState();
+                this.setTab(filterTabOption, (function() { this.setFilter(filterText) }).bind(this));
+            });
         },
 
         open: function () {
@@ -1728,25 +1728,23 @@ define(function (require) {
             filterElement[0].dispatchEvent(new Event('input', {bubbles: true}));
         },
 
-        resetControlPanel: function (columns, colMeta, controls, controlsConfig) {
-            // reset filter and wipe data
+        resetControlPanel: function (columns, colMeta, controls, controlsConfig, callback) {
+            // reset filter
             this.setFilter('');
-            this.clearData();
-
             // reset control panel parameters for display of tabular data
-            this.setColumns(columns);
-            this.setColumnMeta(colMeta);
-            this.setControlsConfig(controlsConfig);
-            this.setControls(controls);
+            this.setState({data: [], columns: columns,
+                           controls: controls,
+                           columnMeta: colMeta,
+                           controlsConfig: controlsConfig}, callback);
         },
 
         filterOptionsHandler: function (value) {
             // set like this to avoid triggering an extra refresh
-            this.state.filterOption = value;
+            this.setState({filterOption: value}, function() {
             switch (value) {
                 case this.filterOptions.VISUAL_INSTANCES:
                     // displays actual instances
-                    this.resetControlPanel(instancesCols, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
+                this.resetControlPanel(instancesCols, instancesColumnMeta, instancesControls, instancesControlsConfiguration, function(){
 
                     // do filtering (always the same)
                     var visualInstances = [];
@@ -1772,10 +1770,11 @@ define(function (require) {
                     setTimeout(function () {
                         that.setData(visualInstances);
                     }, 5);
+                });
                     break;
                 case this.filterOptions.ACTIVE_STATE_VARIABLES:
                     // displays potential instances
-                    this.resetControlPanel(stateVariablesCols, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
+                this.resetControlPanel(stateVariablesCols, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig, function() {
 
                     var potentialStateVarInstances = [];
                     if (window.Project.getActiveExperiment() != undefined) {
@@ -1807,10 +1806,11 @@ define(function (require) {
                     setTimeout(function () {
                         that.setData(potentialStateVarInstances);
                     }, 5);
+                });
                     break;
                 case this.filterOptions.ACTIVE_RECORDED_STATE_VARIABLES:
                     // displays actual instances
-                    this.resetControlPanel(instancesColsWithoutType, instancesColumnMeta, instancesControls, instancesControlsConfiguration);
+                this.resetControlPanel(instancesColsWithoutType, instancesColumnMeta, instancesControls, instancesControlsConfiguration, function() {
 
                     var recordedStateVars = [];
                     if (window.Project.getActiveExperiment() != undefined) {
@@ -1852,22 +1852,44 @@ define(function (require) {
                     setTimeout(function () {
                         that.setData(recordedStateVars);
                     }, 5);
+                });
                     break;
                 case this.filterOptions.ANY_EXPERIMENT_RECORDED_STATE_VARIABLES:
                     // this will display potential instances with state variables col meta / controls
-                    this.resetControlPanel(stateVariablesColsWithExperiment, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
+                this.resetControlPanel(stateVariablesColsWithExperiment, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig, function() {
 
-                    var projectStateVars = GEPPETTO.ProjectsController.getProjectStateVariables(window.Project.getId());
+                    var projectStateVars = null;
+                    if (window.Project.persisted)
+                        projectStateVars = GEPPETTO.ProjectsController.getProjectStateVariables(window.Project.getId());
+                    else {
+                        projectStateVars = [].concat(...window.Project.experiments.map(function (exp) {
+                                return exp.variables.map(function(v) {
+                                    return {
+                                        experimentName: exp.name,
+                                        path: v,
+                                        name: v,
+                                        type: ['Model.common.StateVariable'],
+                                        projectId: exp.parent.id,
+                                        experimentId: exp.id,
+                                        getPath: function () {
+                                            return this.path;
+                                        }
+                                    }
+                                })
+                            }));
+                    }
+
 
                     // set data (delay update to avoid race conditions with react dealing with new columns)
                     var that = this;
                     setTimeout(function () {
                         that.setData(projectStateVars);
                     }, 5);
+                });
                     break;
                 case this.filterOptions.ANY_PROJECT_GLOBAL_STATE_VARIABLES:
                     // this will display potential instances with state variables col meta / controls
-                    this.resetControlPanel(stateVariablesColsWithProjectAndExperiment, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig);
+                this.resetControlPanel(stateVariablesColsWithProjectAndExperiment, stateVariablesColMeta, stateVariablesControls, stateVariablesControlsConfig, function() {
 
                     var globalStateVars = GEPPETTO.ProjectsController.getGlobalStateVariables(window.Project.getId(), false);
 
@@ -1876,10 +1898,11 @@ define(function (require) {
                     setTimeout(function () {
                         that.setData(globalStateVars);
                     }, 5);
+                });
                     break;
                 case this.filterOptions.ACTIVE_PARAMETERS:
                     // displays indexed parameters / similar to potential instances
-                    this.resetControlPanel(paramsCols, parametersColMeta, parametersControls, parametersControlsConfig);
+                this.resetControlPanel(paramsCols, parametersColMeta, parametersControls, parametersControlsConfig,function() {
 
                     var potentialParamInstances = [];
                     if (window.Project.getActiveExperiment() != undefined) {
@@ -1905,10 +1928,11 @@ define(function (require) {
                     setTimeout(function () {
                         that.setData(potentialParamInstances);
                     }, 5);
+                });
                     break;
                 case this.filterOptions.ANY_EXPERIMENT_PARAMETERS:
                     // this will display potential instances with parameters col meta / controls
-                    this.resetControlPanel(paramsColsWithExperiment, parametersColMeta, parametersControls, parametersControlsConfig);
+                this.resetControlPanel(paramsColsWithExperiment, parametersColMeta, parametersControls, parametersControlsConfig, function() {
 
                     var projectEditedParameters = GEPPETTO.ProjectsController.getProjectParameters(window.Project.getId());
 
@@ -1949,10 +1973,11 @@ define(function (require) {
                     setTimeout(function () {
                         that.setData(projectEditedParameters);
                     }, 5);
+                });
                     break;
                 case this.filterOptions.ANY_PROJECT_PARAMETERS:
                     // this will display potential instances with parameters col meta / controls
-                    this.resetControlPanel(paramsColsWithProjectAndExperiment, parametersColMeta, parametersControls, parametersControlsConfig);
+                this.resetControlPanel(paramsColsWithProjectAndExperiment, parametersColMeta, parametersControls, parametersControlsConfig, function() { 
 
                     var globalEditedParameters = GEPPETTO.ProjectsController.getGlobalParameters(window.Project.getId(), false);
 
@@ -1961,8 +1986,10 @@ define(function (require) {
                     setTimeout(function () {
                         that.setData(globalEditedParameters);
                     }, 5);
+                });
                     break;
             }
+            });
         },
 
         isOpen: function () {

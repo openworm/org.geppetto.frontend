@@ -1451,7 +1451,7 @@ define(function (require) {
             var markup = '';
             if (this.state.stack.length > 0) {
                 markup = (
-                    <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
+                    <div id={displayArea} style={{position: 'absolute', top: 3, left: 3}}>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
@@ -1533,13 +1533,13 @@ define(function (require) {
                     position: 'absolute',
                         top
                 :
-                    -1,
+                    1,
                         left
                 :
-                    -1,
+                    1,
                         background
                 :
-                    'black',
+                    'transparent',
                         width
                 :
                     this.props.data.width,

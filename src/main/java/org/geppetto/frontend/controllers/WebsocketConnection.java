@@ -1,17 +1,26 @@
 package org.geppetto.frontend.controllers;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.catalina.websocket.MessageInbound;
-import org.apache.catalina.websocket.WsOutbound;
+import javax.websocket.CloseReason;
+import javax.websocket.ContainerProvider;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.MessageHandler;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
+import javax.websocket.server.ServerEndpoint;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.emf.common.util.BasicEList;
@@ -31,7 +40,6 @@ import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.simulation.manager.ExperimentRunManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.google.gson.Gson;
@@ -43,7 +51,8 @@ import com.google.gson.reflect.TypeToken;
  * @author matteocantarelli
  *
  */
-public class WebsocketConnection extends MessageInbound implements MessageSenderListener
+@ServerEndpoint(value = "/GeppettoServlet", configurator = SpringWebsocketConfiguration.class)
+public class WebsocketConnection extends Endpoint implements MessageSenderListener
 {
 
 	private static Log logger = LogFactory.getLog(WebsocketConnection.class);
@@ -52,16 +61,16 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 
 	private String connectionID;
 
-	protected ApplicationContext applicationContext;
-
 	@Autowired
 	private DefaultMessageSenderFactory messageSenderFactory;
 
 	private MessageSender messageSender;
 
-	@Autowired
+    @Autowired
 	private IGeppettoManager geppettoManager;
 
+	private Session userSession;
+	
 	public WebsocketConnection()
 	{
 		super();
@@ -87,29 +96,52 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		this.connectionHandler = new ConnectionHandler(this, geppettoManager);
 	}
 
-	@Override
-	protected void onOpen(WsOutbound outbound)
-	{
-		messageSender = messageSenderFactory.getMessageSender(getWsOutbound(), this);
+
+	@OnOpen
+	public void onOpen(Session session, EndpointConfig config) {
+	    this.userSession = session;
+
+	    //Expanding binary message buffer size
+		WebSocketContainer wsContainer =
+				ContainerProvider.getWebSocketContainer();
+		wsContainer.setDefaultMaxBinaryMessageBufferSize(9999999);
+		wsContainer.setDefaultMaxTextMessageBufferSize(9999999);
+		userSession.setMaxTextMessageBufferSize(9999999);
+		userSession.setMaxBinaryMessageBufferSize(9999999);
+		logger.info("Session Binary size >> " + userSession.getMaxBinaryMessageBufferSize());
+		logger.info("Session Text size >> " + userSession.getMaxTextMessageBufferSize());
+
+		messageSender = messageSenderFactory.getMessageSender(userSession, this);
+		// User permissions are sent when socket is open
+		this.connectionHandler.checkUserPrivileges(null);
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
 
-		// User permissions are sent when socket is open
-		this.connectionHandler.checkUserPrivileges(null);
+		logger.info("Open Connection ..."+userSession.getId());
+		
+		session.addMessageHandler(new WebsocketMessageHandler(session,this));
 	}
 
-	@Override
-	protected void onClose(int status)
-	{
+	@OnClose
+	public void onClose(Session session, CloseReason closeReason) {
+		super.onClose(session, closeReason);
 		messageSender.shutdown();
 		connectionHandler.closeProject();
+		logger.info("Closed Connection ..."+userSession.getId());
+	}
+	
+	@OnError
+	public void onError(Session session, Throwable thr) {
+		logger.info("Error Connection ..."+userSession.getId()+ " error: " + thr.getMessage());
+	}
+	
+	@OnMessage
+	public void broadcastSnapshot(ByteBuffer data, Session session) throws IOException {
+	    logger.info("broadcastBinary: " + data);
+        session.getBasicRemote().sendBinary(data);
+
 	}
 
-	@Override
-	protected void onBinaryMessage(ByteBuffer message) throws IOException
-	{
-		throw new UnsupportedOperationException("Binary message not supported.");
-	}
 
 	/**
 	 * @param requestID
@@ -130,338 +162,343 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 	{
 		messageSender.sendFile(path);
 	}
+	
+	class WebsocketMessageHandler implements MessageHandler.Whole<String> {
 
-	/**
-	 * Receives message(s) from client.
-	 * 
-	 * @throws IOException
-	 */
-	@Override
-	protected void onTextMessage(CharBuffer message) throws IOException
-	{
-		String msg = message.toString();
+		final Session session;
+		final WebsocketConnection websocketConnection;
+		
+		public WebsocketMessageHandler(Session session, WebsocketConnection websocketConnection) {
+			this.session = session;
+			this.websocketConnection = websocketConnection;
+		}
+		
+		@Override
+		public void onMessage(String message) {
+			String msg = message.toString();
+			
+			Map<String, String> parameters;
+			long experimentId = -1;
+			long projectId = -1;
+			String instancePath = null;
 
-		Map<String, String> parameters;
-		long experimentId = -1;
-		long projectId = -1;
-		String instancePath = null;
+			// de-serialize JSON
+			GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);
 
-		// de-serialize JSON
-		GeppettoTransportMessage gmsg = new Gson().fromJson(msg, GeppettoTransportMessage.class);
+			String requestID = gmsg.requestID;
 
-		String requestID = gmsg.requestID;
-
-		// switch on message type
-		// NOTE: each message handler knows how to interpret the GeppettoMessage data field
-		switch(InboundMessages.valueOf(gmsg.type.toUpperCase()))
-		{
-			case GEPPETTO_VERSION:
+			// switch on message type
+			// NOTE: each message handler knows how to interpret the GeppettoMessage data field
+			switch(InboundMessages.valueOf(gmsg.type.toUpperCase()))
 			{
-				connectionHandler.getVersionNumber(requestID);
-				break;
-			}
-			case USER_PRIVILEGES:
-			{
-				connectionHandler.checkUserPrivileges(requestID);
-				break;
-			}
-			case NEW_EXPERIMENT:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				case GEPPETTO_VERSION:
 				{
-				}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.newExperiment(requestID, projectId);
-				break;
-			}
-			case NEW_EXPERIMENT_BATCH:
-			{
-				BatchExperiment receivedObject = new Gson().fromJson(gmsg.data, BatchExperiment.class);
-				connectionHandler.newExperimentBatch(requestID, receivedObject.projectId, receivedObject);
-				break;
-			}
-			case CLONE_EXPERIMENT:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				connectionHandler.cloneExperiment(requestID, projectId, experimentId);
-				break;
-			}
-			case LOAD_PROJECT_FROM_URL:
-			{
-				connectionHandler.loadProjectFromURL(requestID, gmsg.data);
-				messageSender.reset();
-				break;
-			}
-			case LOAD_PROJECT_FROM_ID:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				if(parameters.containsKey("experimentId"))
-				{
-					experimentId = Long.parseLong(parameters.get("experimentId"));
+					connectionHandler.getVersionNumber(requestID);
+					break;
 				}
-				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.loadProjectFromId(requestID, projectId, experimentId);
-				messageSender.reset();
-				break;
-			}
-			case LOAD_PROJECT_FROM_CONTENT:
-			{
-				connectionHandler.loadProjectFromContent(requestID, gmsg.data);
-				messageSender.reset();
-				break;
-			}
-			case PERSIST_PROJECT:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+				case USER_PRIVILEGES:
 				{
-				}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.persistProject(requestID, projectId);
-				break;
-			}
-			case MAKE_PROJECT_PUBLIC:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				boolean isPublic = Boolean.parseBoolean(parameters.get("isPublic"));
-				connectionHandler.makeProjectPublic(requestID, projectId, isPublic);
-				break;
-			}
-			case DOWNLOAD_PROJECT:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.downloadProject(requestID, projectId);
-				break;
-			}
-			case SAVE_PROJECT_PROPERTIES:
-			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.saveProjectProperties(requestID, receivedObject.projectId, receivedObject.properties);
-				break;
-			}
-			case SAVE_EXPERIMENT_PROPERTIES:
-			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.saveExperimentProperties(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.properties);
-				break;
-			}
-			case LOAD_EXPERIMENT:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
-				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				connectionHandler.loadExperiment(requestID, experimentId, projectId);
-				break;
-			}
-			case GET_SCRIPT:
-			{
-				GetScript receivedObject = new Gson().fromJson(gmsg.data, GetScript.class);
-				connectionHandler.sendScriptData(requestID, receivedObject.projectId, receivedObject.scriptURL, this);
-				break;
-			}
-			case GET_DATA_SOURCE_RESULTS:
-			{
-				URL url = null;
-				String dataSourceName;
-				try
+					connectionHandler.checkUserPrivileges(requestID);
+					break;
+				}
+				case NEW_EXPERIMENT:
 				{
 					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
 					{
 					}.getType());
-					url = URLReader.getURL(parameters.get("url"));
-					dataSourceName = parameters.get("data_source_name");
+					projectId = Long.parseLong(parameters.get("projectId"));
+					connectionHandler.newExperiment(requestID, projectId);
+					break;
+				}
+				case NEW_EXPERIMENT_BATCH:
+				{
+					BatchExperiment receivedObject = new Gson().fromJson(gmsg.data, BatchExperiment.class);
+					connectionHandler.newExperimentBatch(requestID, receivedObject.projectId, receivedObject);
+					break;
+				}
+				case CLONE_EXPERIMENT:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					projectId = Long.parseLong(parameters.get("projectId"));
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+					connectionHandler.cloneExperiment(requestID, projectId, experimentId);
+					break;
+				}
+				case LOAD_PROJECT_FROM_URL:
+				{
+					connectionHandler.loadProjectFromURL(requestID, gmsg.data);
+					messageSender.reset();
+					break;
+				}
+				case LOAD_PROJECT_FROM_ID:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					if(parameters.containsKey("experimentId"))
+					{
+						experimentId = Long.parseLong(parameters.get("experimentId"));
+					}
+					projectId = Long.parseLong(parameters.get("projectId"));
+					connectionHandler.loadProjectFromId(requestID, projectId, experimentId);
+					messageSender.reset();
+					break;
+				}
+				case LOAD_PROJECT_FROM_CONTENT:
+				{
+					connectionHandler.loadProjectFromContent(requestID, gmsg.data);
+					messageSender.reset();
+					break;
+				}
+				case PERSIST_PROJECT:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					projectId = Long.parseLong(parameters.get("projectId"));
+					connectionHandler.persistProject(requestID, projectId);
+					break;
+				}
+				case MAKE_PROJECT_PUBLIC:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					projectId = Long.parseLong(parameters.get("projectId"));
+					boolean isPublic = Boolean.parseBoolean(parameters.get("isPublic"));
+					connectionHandler.makeProjectPublic(requestID, projectId, isPublic);
+					break;
+				}
+				case DOWNLOAD_PROJECT:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					projectId = Long.parseLong(parameters.get("projectId"));
+					connectionHandler.downloadProject(requestID, projectId);
+					break;
+				}
+				case SAVE_PROJECT_PROPERTIES:
+				{
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					connectionHandler.saveProjectProperties(requestID, receivedObject.projectId, receivedObject.properties);
+					break;
+				}
+				case SAVE_EXPERIMENT_PROPERTIES:
+				{
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					connectionHandler.saveExperimentProperties(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.properties);
+					break;
+				}
+				case LOAD_EXPERIMENT:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+					projectId = Long.parseLong(parameters.get("projectId"));
+					connectionHandler.loadExperiment(requestID, experimentId, projectId);
+					break;
+				}
+				case GET_SCRIPT:
+				{
+					GetScript receivedObject = new Gson().fromJson(gmsg.data, GetScript.class);
+					connectionHandler.sendScriptData(requestID, receivedObject.projectId, receivedObject.scriptURL, this.websocketConnection);
+					break;
+				}
+				case GET_DATA_SOURCE_RESULTS:
+				{
+					URL url = null;
+					String dataSourceName;
+					try
+					{
+						parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+						{
+						}.getType());
+						url = URLReader.getURL(parameters.get("url"));
+						dataSourceName = parameters.get("data_source_name");
 
-					connectionHandler.sendDataSourceResults(requestID, dataSourceName, url, this);
+						connectionHandler.sendDataSourceResults(requestID, dataSourceName, url, this.websocketConnection);
 
+					}
+					catch(IOException e)
+					{
+						sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
+					}
+					break;
 				}
-				catch(MalformedURLException e)
+				case GET_EXPERIMENT_STATE:
 				{
-					sendMessage(requestID, OutboundMessages.ERROR_READING_SCRIPT, "");
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					connectionHandler.getExperimentState(requestID, receivedObject.experimentId, receivedObject.projectId, receivedObject.variables);
+					break;
 				}
-				break;
-			}
-			case GET_EXPERIMENT_STATE:
-			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.getExperimentState(requestID, receivedObject.experimentId, receivedObject.projectId, receivedObject.variables);
-				break;
-			}
-			case DELETE_EXPERIMENT:
-			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.deleteExperiment(requestID, receivedObject.experimentId, receivedObject.projectId);
-				break;
-			}
-			case RUN_EXPERIMENT:
-			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.runExperiment(requestID, receivedObject.experimentId, receivedObject.projectId);
-				break;
-			}
-			case SET_WATCHED_VARIABLES:
-			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				try
+				case DELETE_EXPERIMENT:
 				{
-					connectionHandler.setWatchedVariables(requestID, receivedObject.variables, receivedObject.experimentId, receivedObject.projectId, receivedObject.watch);
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					connectionHandler.deleteExperiment(requestID, receivedObject.experimentId, receivedObject.projectId);
+					break;
 				}
-				catch(GeppettoExecutionException e)
+				case RUN_EXPERIMENT:
 				{
-					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					connectionHandler.runExperiment(requestID, receivedObject.experimentId, receivedObject.projectId);
+					break;
 				}
-				catch(GeppettoInitializationException e)
+				case SET_WATCHED_VARIABLES:
 				{
-					sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
-				}
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					try
+					{
+						connectionHandler.setWatchedVariables(requestID, receivedObject.variables, receivedObject.experimentId, receivedObject.projectId, receivedObject.watch);
+					}
+					catch(GeppettoExecutionException e)
+					{
+						sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
+					}
+					catch(GeppettoInitializationException e)
+					{
+						sendMessage(requestID, OutboundMessages.ERROR_SETTING_WATCHED_VARIABLES, "");
+					}
 
-				break;
-			}
-			case GET_SUPPORTED_OUTPUTS:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					break;
+				}
+				case GET_SUPPORTED_OUTPUTS:
 				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				instancePath = parameters.get("instancePath");
-				connectionHandler.getSupportedOuputs(requestID, instancePath, experimentId, projectId);
-				break;
-			}
-			case DOWNLOAD_MODEL:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+					projectId = Long.parseLong(parameters.get("projectId"));
+					instancePath = parameters.get("instancePath");
+					connectionHandler.getSupportedOuputs(requestID, instancePath, experimentId, projectId);
+					break;
+				}
+				case DOWNLOAD_MODEL:
 				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				instancePath = parameters.get("instancePath");
-				String format = parameters.get("format");
-				connectionHandler.downloadModel(requestID, instancePath, format, experimentId, projectId);
-				break;
-			}
-			case SET_PARAMETERS:
-			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.setParameters(requestID, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
-				break;
-			}
-			case SET_EXPERIMENT_VIEW:
-			{
-				ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-				connectionHandler.setExperimentView(requestID, receivedObject.view, receivedObject.projectId, receivedObject.experimentId);
-				break;
-			}
-			case LINK_DROPBOX:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+					projectId = Long.parseLong(parameters.get("projectId"));
+					instancePath = parameters.get("instancePath");
+					String format = parameters.get("format");
+					connectionHandler.downloadModel(requestID, instancePath, format, experimentId, projectId);
+					break;
+				}
+				case SET_PARAMETERS:
 				{
-				}.getType());
-				String key = parameters.get("key");
-				connectionHandler.linkDropBox(requestID, key);
-				break;
-			}
-                        case GET_DROPBOX_TOKEN:
-                        {
-                            //ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
-                                connectionHandler.getDropboxToken(requestID);
-                                break;
-                        }
-			case UNLINK_DROPBOX:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					connectionHandler.setParameters(requestID, receivedObject.modelParameters, receivedObject.projectId, receivedObject.experimentId);
+					break;
+				}
+				case SET_EXPERIMENT_VIEW:
 				{
-				}.getType());
-				String key = parameters.get("key");
-				connectionHandler.unLinkDropBox(requestID, key);
-				break;
-			}
-			case UPLOAD_MODEL:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+					connectionHandler.setExperimentView(requestID, receivedObject.view, receivedObject.projectId, receivedObject.experimentId);
+					break;
+				}
+				case LINK_DROPBOX:
 				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				String format = parameters.get("format");
-				String aspectPath = parameters.get("aspectPath");
-				connectionHandler.uploadModel(aspectPath, projectId, experimentId, format);
-				break;
-			}
-			case UPLOAD_RESULTS:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					String key = parameters.get("key");
+					connectionHandler.linkDropBox(requestID, key);
+					break;
+				}
+	                        case GET_DROPBOX_TOKEN:
+	                        {
+	                            //ReceivedObject receivedObject = new Gson().fromJson(gmsg.data, ReceivedObject.class);
+	                                connectionHandler.getDropboxToken(requestID);
+	                                break;
+	                        }
+				case UNLINK_DROPBOX:
 				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				String format = parameters.get("format");
-				String aspectPath = parameters.get("aspectPath");
-				connectionHandler.uploadResults(aspectPath, projectId, experimentId, format);
-				break;
-			}
-			case DOWNLOAD_RESULTS:
-			{
-				parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					String key = parameters.get("key");
+					connectionHandler.unLinkDropBox(requestID, key);
+					break;
+				}
+				case UPLOAD_MODEL:
 				{
-				}.getType());
-				experimentId = Long.parseLong(parameters.get("experimentId"));
-				projectId = Long.parseLong(parameters.get("projectId"));
-				String format = parameters.get("format");
-				String aspectPath = parameters.get("aspectPath");
-				connectionHandler.downloadResults(requestID, aspectPath, projectId, experimentId, format);
-				break;
-			}
-			case EXPERIMENT_STATUS:
-			{
-				connectionHandler.checkExperimentStatus(requestID, gmsg.data);
-				break;
-			}
-			case FETCH_VARIABLE:
-			{
-				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.dataSourceId, receivedObject.variableId);
-				break;
-			}
-			case RESOLVE_IMPORT_TYPE:
-			{
-				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.paths);
-				break;
-			}
-			case RESOLVE_IMPORT_VALUE:
-			{
-				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.resolveImportValue(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.path);
-				break;
-			}
-			case RUN_QUERY:
-			{
-				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.runQuery(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
-				break;
-			}
-			case RUN_QUERY_COUNT:
-			{
-				GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-				connectionHandler.runQueryCount(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
-				break;
-			}
-			default:
-			{
-				// NOTE: no other messages expected for now
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+					projectId = Long.parseLong(parameters.get("projectId"));
+					String format = parameters.get("format");
+					String aspectPath = parameters.get("aspectPath");
+					connectionHandler.uploadModel(aspectPath, projectId, experimentId, format);
+					break;
+				}
+				case UPLOAD_RESULTS:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+					projectId = Long.parseLong(parameters.get("projectId"));
+					String format = parameters.get("format");
+					String aspectPath = parameters.get("aspectPath");
+					connectionHandler.uploadResults(aspectPath, projectId, experimentId, format);
+					break;
+				}
+				case DOWNLOAD_RESULTS:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					experimentId = Long.parseLong(parameters.get("experimentId"));
+					projectId = Long.parseLong(parameters.get("projectId"));
+					String format = parameters.get("format");
+					String aspectPath = parameters.get("aspectPath");
+					connectionHandler.downloadResults(requestID, aspectPath, projectId, experimentId, format);
+					break;
+				}
+				case EXPERIMENT_STATUS:
+				{
+					connectionHandler.checkExperimentStatus(requestID, gmsg.data);
+					break;
+				}
+				case FETCH_VARIABLE:
+				{
+					GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+					connectionHandler.fetchVariable(requestID, receivedObject.projectId, receivedObject.dataSourceId, receivedObject.variableId);
+					break;
+				}
+				case RESOLVE_IMPORT_TYPE:
+				{
+					GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+					connectionHandler.resolveImportType(requestID, receivedObject.projectId, receivedObject.paths);
+					break;
+				}
+				case RESOLVE_IMPORT_VALUE:
+				{
+					GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+					connectionHandler.resolveImportValue(requestID, receivedObject.projectId, receivedObject.experimentId, receivedObject.path);
+					break;
+				}
+				case RUN_QUERY:
+				{
+					GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+					connectionHandler.runQuery(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
+					break;
+				}
+				case RUN_QUERY_COUNT:
+				{
+					GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
+					connectionHandler.runQueryCount(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
+					break;
+				}
+				default:
+				{
+					// NOTE: no other messages expected for now
+				}
 			}
 		}
 	}
@@ -563,4 +600,7 @@ public class WebsocketConnection extends MessageInbound implements MessageSender
 		String queryPath;
 	}
 
+	public Session getSession() {
+		return this.userSession;
+	}
 }

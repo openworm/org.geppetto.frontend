@@ -26,8 +26,6 @@ public class UserResource
 	@Autowired
 	private IGeppettoManager geppettoManager;
 
-
-
 	@RequestMapping("/currentuser")
 	public @ResponseBody IUser getCurrentUser()
 	{

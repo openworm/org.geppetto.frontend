@@ -3,17 +3,18 @@ define(function (require) {
     require("./query.less");
     require("./react-simpletabs.less");
 
-    var CreateClass = require('create-react-class'), $ = require('jquery');
-    var ReactDOM = require('react-dom');
-    var Tabs = require('@material-ui/core/Tabs');
-    var Tab = require('@material-ui/core/Tab');
-    var Griddle = require('griddle-react');
+    var React = require('react'), $ = require('jquery');
+    var Griddle = require('griddle-0.6-fork');
+    var Tabs = require('react-simpletabs');
     var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
     var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
     var Handlebars = require('handlebars');
     var GEPPETTO = require('geppetto');
+    var slick = require('slick-carousel');
 
     var MenuButton = require('../../controls/menuButton/MenuButton');
+
+    var resultsViewState = false;
 
     // query model object to represent component state and trigger view updates
     var queryBuilderModel = {
@@ -163,6 +164,7 @@ define(function (require) {
                 var actionStr = that.props.metadata.actions;
                 actionStr = actionStr.replace(/\$entity\$/gi, path);
                 GEPPETTO.CommandController.execute(actionStr);
+                $("#querybuilder").hide();
             };
 
             return (
@@ -511,6 +513,7 @@ define(function (require) {
                 resultsControlsConfig: null,
                 infiniteScroll: undefined,
                 resultsPerPate: undefined,
+                refreshTrigger: false,
             };
         },
 
@@ -521,6 +524,7 @@ define(function (require) {
         },
 
         componentWillMount: function () {
+            // this.clearErrorMessage();
             GEPPETTO.QueryBuilder = this;
         },
 
@@ -539,6 +543,8 @@ define(function (require) {
         open: function () {
             // show query builder
             $("#querybuilder").show();
+            var typeAhead = $("#query-typeahead");
+            typeAhead.focus();
         },
 
         close: function () {
@@ -632,6 +638,8 @@ define(function (require) {
         },
 
         componentDidMount: function () {
+            
+            queryBuilderModel.subscribe(this.refresh);
 
             var escape = 27;
             var qKey = 81;
@@ -1141,7 +1149,9 @@ define(function (require) {
             }
 
             // init datasource results to avoid duplicates
-            this.dataSourceResults.clear();
+            //if(typeof this.dataSourceResults.clear == 'function') {
+                this.dataSourceResults.clear();
+            //}
         },
 
         setErrorMessage: function (message) {
@@ -1227,6 +1237,12 @@ define(function (require) {
             });
         },
 
+        refresh: function () {
+            this.setState({
+                refreshTrigger: !this.state.refreshTrigger
+            });
+        },
+
         render: function () {
             var markup = null;
             // once off figure out if we are to use infinite scrolling for results and store in state
@@ -1239,6 +1255,7 @@ define(function (require) {
             if (this.state.resultsView && this.props.model.results.length > 0) {
                 // if results view, build results markup based on results in the model
                 // figure out focus tab index (1 based index)
+                resultsViewState = true;
                 var focusTabIndex = 1;
                 for (var i = 0; i < this.props.model.results.length; i++) {
                     if (this.props.model.results[i].selected) {
@@ -1327,6 +1344,7 @@ define(function (require) {
                 // if we ended up in query builder rendering make sure the state flag is synced up
                 // NOTE: this could happen if we were in resultsView and the user deleted all the results
                 this.state.resultsView = false;
+                resultsViewState = this.state.resultsView;
 
                 // build QueryItem list
                 var queryItems = this.props.model.items.map(function (item) {
@@ -1362,15 +1380,6 @@ define(function (require) {
             return markup;
         }
     });
-
-    var renderQueryComponent = function () {
-        ReactDOM.render(
-            <QueryBuilder />,
-            document.getElementById("querybuilder")
-        );
-    };
-
-    queryBuilderModel.subscribe(renderQueryComponent);
 
     return QueryBuilder;
 });

@@ -510,7 +510,7 @@ define(function (require) {
         addDataSource : function(sources){
         	try {
         		for (var key in sources) {
-        			  if (sources.hasOwnProperty(key)) {
+                    if (sources.hasOwnProperty(key)) {
         			    var obj = sources[key];
                         var keysha = this.generateDataSourceKey(key, 0);
                         this.configuration.SpotlightBar.DataSources[keysha] = obj;
@@ -522,7 +522,7 @@ define(function (require) {
                                 obj.bloodhoundConfig.sorter
                             );
                         }
-        			  }
+                    }
         		}
         	}
         	catch (err) {
@@ -914,7 +914,7 @@ define(function (require) {
                 						}
                 						delete copiedObject["plot"];
                 					}
-                   					tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
+                                    tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
                 				}
                 			}
                 		}
@@ -934,6 +934,15 @@ define(function (require) {
         loadToolbarFor: function (instance) {
             $(".spotlight-toolbar").remove();
         	$('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance, this.modifiable));
+        },
+
+        componentWillMount: function () {
+            if(this.props.spotlightConfig !== undefined) {
+                this.setButtonBarConfiguration(this.props.spotlightConfig);
+            }
+            if(this.props.spotlightDataSourceConfig !== undefined) {
+                this.addDataSource(this.props.spotlightDataSourceConfig);
+            }
         },
 
         render: function () {

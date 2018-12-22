@@ -9,11 +9,11 @@
  * @returns
  */
 define(function (require) {
-    var createClass = require('create-react-class');
+    var CreateClass = require('create-react-class');
     var GEPPETTO = require('geppetto');
     require("./MenuButton.less");
 
-    var ListItem = createClass({
+    var ListItem = CreateClass({
 
         updateIcon: false,
         icons: {

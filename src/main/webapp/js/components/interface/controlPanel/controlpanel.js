@@ -13,7 +13,7 @@ define(function (require) {
     loadCss("geppetto/js/components/interface/controlPanel/vendor/css/bootstrap-colorpicker.min.css");
 
     //require('./vendor/css/bootstrap-colorpicker.min.css'); Matteo: This require is not working?!?
-
+    var React = require('react');
     var CreateClass = require('create-react-class'), $ = require('jquery');
     var Griddle = require('griddle-react');
     var GEPPETTO = require('geppetto');

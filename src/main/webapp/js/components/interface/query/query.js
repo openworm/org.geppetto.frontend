@@ -3,9 +3,11 @@ define(function (require) {
     require("./query.less");
     require("./react-simpletabs.less");
 
-    var React = require('react'), $ = require('jquery');
+    var CreateClass = require('create-react-class'), $ = require('jquery');
+    var ReactDOM = require('react-dom');
+    var Tabs = require('@material-ui/core/Tabs');
+    var Tab = require('@material-ui/core/Tab');
     var Griddle = require('griddle-0.6-fork');
-    var Tabs = require('react-simpletabs');
     var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
     var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
     var Handlebars = require('handlebars');

@@ -3,7 +3,7 @@ define(function (require) {
     require('./AdminPanel.less');
 
     var createClass = require('create-react-class');
-    var Griddle = require('griddle-react');
+    var Griddle = require('griddle-0.6-fork');
 
     var LinkComponent = createClass({
         render: function () {

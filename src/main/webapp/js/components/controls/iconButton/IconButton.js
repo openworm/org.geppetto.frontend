@@ -11,9 +11,10 @@ export default class IconButton extends React.Component {
     }
 
     render() {
+        const { style, icon, className, ...others } = this.props;
         return (
-            <Button style={{backgroundColor: "white", borderRadius: 0, ...this.props.style}} className={"iconButton"} onClick={this.props.onClick} id={this.props.id}>
-                <Icon className={"fa " + this.props.icon}/>
+            <Button style={{ backgroundColor: "white", borderRadius: 0, ...style }} className={"iconButton " + className} {...others}>
+                <Icon className={"fa " + icon}/>
             </Button>
         );
     }

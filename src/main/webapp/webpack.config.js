@@ -133,7 +133,7 @@ module.exports = function(env){
 	            handlebars: 'handlebars/dist/handlebars.js'
 	
 	        },
-	        extensions: ['*', '.js', '.json'],
+	        extensions: ['*', '.js', '.json', '.jsx'],
 	    },
 	
 	    module: {

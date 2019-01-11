@@ -72,12 +72,22 @@ define(function (require) {
                     return weightScale(d.weight)
                 });
 
+            var node_max = Math.max.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
+            var node_min = Math.min.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
+
+            var node_scale = function(r) {
+                var min_out = 5; var max_out = 10;
+                var x = Math.pow(max_out/min_out, 1/(node_max-node_min));
+                var k = min_out/(x**node_min);
+                return k*x**r;
+            }
+
             var node = g.selectAll(".node")
                 .data(nodes)
                 .enter().append("circle")
                 .attr("class", "node")
                 .attr("r", function (d) {
-                    return d.n ? d.n : 5;
+                    return d.n ? node_scale(d.n) : 5;
                 })  // radius
                 .style("fill", function (d) {
                     return nodeTypeScale(d.type);

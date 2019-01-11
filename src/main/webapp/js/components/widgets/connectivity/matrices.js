@@ -216,7 +216,8 @@ define(function (require) {
             this.state.filter = this.projectionTypeSummary[this.state.filter].length > 0 ?
                 this.state.filter :
                 Object.keys(this.projectionTypeSummary).filter(x => this.projectionTypeSummary[x].length > 0)[0];
-            this.populateWeights(links, this.state.filter);
+            if (links.filter(l => !l.weight).length > 0)
+                this.populateWeights(links, this.state.filter);
                 
 	    // Compute index per node.
 	    // Array.from(new Set(nodes.map(x=>x.type))).forEach(function (node, i) {
@@ -235,7 +236,7 @@ define(function (require) {
                 var Aindex = link.conns[0].getA().getElements()[0].getIndex();
                 var Bindex = link.conns[0].getB().getElements()[0].getIndex();
                 var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
-                var projTypes = proj.filter(p => JSON.stringify(p.pairs).indexOf(JSON.stringify([Aindex,Bindex])) > -1).map(p => p.type);
+                var projTypes = proj.filter(x => x.pairs.filter(p => p[0]==Aindex && p[1]==Bindex).length>0).map(x => x.type);
                 var m_entry = this.matrix[link.source][link.target]
 		if (this.state.weight) {
                     m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
@@ -827,7 +828,7 @@ define(function (require) {
                         var gbase = d.gbase; //links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
                         var weightStr = "";
                         if (typeof cweight !== 'undefined') {
-                            weightStr = " (weight=" + cweight + ", g=" +  Number(gbase).toPrecision(2) + "S)";
+                            weightStr = " (weight=" + Number(cweight).toPrecision(2) + ", g=" +  Number(gbase).toPrecision(2) + "S)";
                             $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
                         }
                     })

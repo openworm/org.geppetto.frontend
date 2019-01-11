@@ -58,6 +58,8 @@ define(function (require) {
                 var nodes = context.dataset.nodes;
             }
 
+            context.populateWeights(links);
+
             var link = g.selectAll(".link")
                 .data(links)
                 .enter().append("svg:path")
@@ -66,16 +68,16 @@ define(function (require) {
                     return "url(#"+d.type.reduce((x,y)=>x+y,"")+")"
                 })
                 .style("stroke", function (d) {
-                    return linkTypeScale(d.type)
+                    return d.source.type ? nodeTypeScale(d.source.type) : linkTypeScale(d.type);
                 })
                 .style("stroke-width", function (d) {
-                    return weightScale(d.weight)
+                    return d.weight ? d.weight : 1;
                 });
 
             var node_max = Math.max.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var node_min = Math.min.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
 
-            var node_scale = function(r) {
+            var scale_node = function(r) {
                 var min_out = 5; var max_out = 10;
                 var x = Math.pow(max_out/min_out, 1/(node_max-node_min));
                 var k = min_out/(x**node_min);
@@ -87,7 +89,7 @@ define(function (require) {
                 .enter().append("circle")
                 .attr("class", "node")
                 .attr("r", function (d) {
-                    return d.n ? node_scale(d.n) : 5;
+                    return d.n ? scale_node(d.n) : 5;
                 })  // radius
                 .style("fill", function (d) {
                     return nodeTypeScale(d.type);

@@ -28,6 +28,7 @@ define(function (require) {
         linkCache: {},
         nodeColormap: {},
         connectivityOptions: {},
+        projectionTypeSummary: {'projection': [], 'continuousProjection': [], 'gapJunction': []},
         linkColors: ["#1b70fc", "#faff16", "#d50527", "#158940", "#f898fd", "#24c9d7", "#cb9b64",
                      "#866888", "#22e67a", "#e509ae", "#9dabfa", "#437e8a", "#b21bff", "#ff7b91",
                      "#94aa05", "#ac5906", "#82a68d", "#fe6616", "#7a7352", "#f9bc0f", "#b65d66",
@@ -78,6 +79,79 @@ define(function (require) {
                 window[that.id].setPosition(left, top);
             });
         },
+
+        getProjectionSummary: function() {
+	    var projSummary = {};
+	    var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
+	    for (var i=0; i<projs.length; ++i) {
+		var proj = projs[i];
+		if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+		    // FIXME: too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
+		    var synapse = proj.getVariables().filter((x)=> {
+			if (typeof x.getType().getSuperType().getPath === 'function')
+			    return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
+		    })[0];
+		    if (typeof synapse === 'undefined')
+			continue;
+		    else {
+                        var pairs = proj.getChildren().filter(x=> typeof x.getA === 'function').map(x => [x.getA().getElements()[0].index,x.getB().getElements()[0].index]);
+			var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
+			var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
+                        // FIXME: type should not be stored in name, also hacky gapJunction detection. need to fix in model interpreter.
+                        var type = (synapse.types[0].conductance && !synapse.types[0].erev) ? "gapJunction" : proj.getName();
+                        if (this.projectionTypeSummary[type].indexOf(synapse.getId()) == -1)
+                            this.projectionTypeSummary[type].push(synapse.getId())
+			var data = {id: proj.getId(), type: type, synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, pairs: pairs};
+			if (typeof projSummary[[preId, postId]] === 'undefined')
+			    projSummary[[preId, postId]] = [data];
+			else
+			    projSummary[[preId, postId]].push(data);
+		    }
+		}
+	    }
+	    return projSummary;
+	},
+        selectConn: function(conns) {
+            return conns[0];
+        },
+	linkSynapse: function (conn) {
+	    if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
+		this.projectionSummary = this.getProjectionSummary();
+	    var preId = conn.getA().getPath().split("[")[0];
+	    var postId = conn.getB().getPath().split("[")[0];
+	    if (typeof this.projectionSummary[[preId, postId]] !== 'undefined')
+		return this.projectionSummary[[preId, postId]]
+		.map(p => p.synapse)
+		.filter(s => typeof s !== 'undefined');
+	    else
+		return [];
+        },
+	linkWeight: function (conns) {
+	    if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]);
+                var conn = this.selectConn(conns);
+		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+		var weight = 1;
+		if (weightIndex > -1)
+		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
+                return weight;
+	    }
+	    else
+		return 0;
+	},
+        populateWeights: function(links) {
+	    for (var i in links) {
+                if (links[i].type.length > 0) {
+		    links[i].weight = this.linkWeight(links[i].conns);
+                    //links[i].erev = this.linkErev(links[i].conns, filter);
+                    //links[i].gbase = this.linkGbase(links[i].conns, filter);
+                } else {
+                    links[i].weight = undefined;
+                    //links[i].erev = undefined;
+                    //links[i].gbase = undefined;
+		}
+	    }
+	},
 
         setSize: function (h, w) {
             Widget.View.prototype.setSize.call(this, h, w);

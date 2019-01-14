@@ -1332,7 +1332,8 @@ define(function (require) {
 					    );
 					}
                                     that.showLegend(view.legendVisible);
-                                    window.theme(true);
+                                    if (Canvas1.getView().componentSpecific.backgroundColor === '#FFFFFF')
+                                        window.theme(true);
 				});
                             }
                         }

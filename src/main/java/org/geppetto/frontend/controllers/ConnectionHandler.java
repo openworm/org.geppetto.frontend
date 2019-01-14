@@ -361,38 +361,30 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		if(geppettoProject.isVolatile())
+		try
 		{
-			info(requestID, Resources.VOLATILE_PROJECT.toString());
-			return;
-		}
-		else
-		{
-			try
+			// run the matched experiment
+			if(experiment != null)
 			{
-				// run the matched experiment
-				if(experiment != null)
+				// TODO: If experiment is in ERROR state, user won't be able
+				// to run again.
+				// We reset it to DESIGN to allow user to run it for second
+				// time
+				if(experiment.getStatus() == ExperimentStatus.ERROR)
 				{
-					// TODO: If experiment is in ERROR state, user won't be able
-					// to run again.
-					// We reset it to DESIGN to allow user to run it for second
-					// time
-					if(experiment.getStatus() == ExperimentStatus.ERROR)
-					{
-						experiment.setStatus(ExperimentStatus.DESIGN);
-					}
-					geppettoManager.runExperiment(requestID, experiment);
+					experiment.setStatus(ExperimentStatus.DESIGN);
 				}
-				else
-				{
-					error(null, "Error running experiment, the experiment " + experimentID + " was not found in project " + projectId);
-				}
+				geppettoManager.runExperiment(requestID, experiment);
+			}
+			else
+			{
+				error(null, "Error running experiment, the experiment " + experimentID + " was not found in project " + projectId);
+			}
 
-			}
-			catch(GeppettoExecutionException | GeppettoAccessException e)
-			{
-				error(e, "Error running experiment");
-			}
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error running experiment");
 		}
 	}
 

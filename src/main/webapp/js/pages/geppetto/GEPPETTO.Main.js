@@ -107,7 +107,6 @@ define(function (require) {
              * Initialize web socket communication
              */
             init: function () {
-                // var host = GEPPETTO.MessageSocket.protocol + window.location.host + '/' + GEPPETTO_CONFIGURATION.contextPath + '/GeppettoServlet';
                 var host = GEPPETTO.MessageSocket.protocol + window.location.host + window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/")) + '/' + GEPPETTO_CONFIGURATION.contextPath + "/GeppettoServlet"
             	if(GEPPETTO_CONFIGURATION.contextPath=="/"){
             		host = GEPPETTO.MessageSocket.protocol + window.location.host.replace("8081","8080") + '/GeppettoServlet';

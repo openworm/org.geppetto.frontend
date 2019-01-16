@@ -70,7 +70,7 @@
     "openseadragon": "^2.2.1",
     "pako": "^1.0.3",
     "pixi.js": "4.2.3",
-    "plotly.js": "^1.30.0",
+    "plotly.js": "1.40.1",
     "qunitjs": "^2.1.1",
     "raw-loader": "^0.5.1",
     "react": "15.4.1",

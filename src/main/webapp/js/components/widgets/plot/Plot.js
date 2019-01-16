@@ -103,10 +103,12 @@ define(function (require) {
 						size : 11,
 						color: 'rgb(255, 255, 255)'
 					},
-					titlefont : {
-						family: 'Helvetica Neue, Helevtica, sans-serif',
-						size : 12,
-						color: 'rgb(255, 255, 255)'
+				        title: {
+                                          font: {
+					    family: 'Helvetica Neue, Helevtica, sans-serif',
+					    size: 12,
+					    color: 'rgb(255, 255, 255)'
+                                          }
 					},
 					ticks: 'outside',
 					max: -9999999,
@@ -129,10 +131,12 @@ define(function (require) {
 						size : 11,
 						color: 'rgb(255, 255, 255)'
 					},
-					titlefont : {
+				        title: {
+                                          font: {
 						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size : 12,
 						color: 'rgb(255, 255, 255)'
+                                          }
 					},
 					ticks: 'outside',
 				},
@@ -476,12 +480,12 @@ define(function (require) {
 			this.plotOptions.yaxis.linecolor = "rgb(0,0,0)";
 			this.plotOptions.xaxis.tickfont.color = "rgb(0,0,0)";
 			this.plotOptions.yaxis.tickfont.color = "rgb(0,0,0)";
-			this.plotOptions.yaxis.titlefont.color = "rgb(0,0,0)";
-			this.plotOptions.xaxis.titlefont.color = "rgb(0,0,0)";
+			this.plotOptions.yaxis.title.font.color = "rgb(0,0,0)";
+			this.plotOptions.xaxis.title.font.color = "rgb(0,0,0)";
 			this.plotOptions.xaxis.tickfont.size = 18;
 			this.plotOptions.yaxis.tickfont.size = 18;
-			this.plotOptions.xaxis.titlefont.size = 18;
-			this.plotOptions.yaxis.titlefont.size = 18;
+			this.plotOptions.xaxis.title.font.size = 18;
+			this.plotOptions.yaxis.title.font.size = 18;
 			this.plotOptions.legend.font.size = 18;
 			this.plotOptions.legend.font.family = 'Helvetica Neue, Helvetica, sans-serif';
 			this.plotOptions.legend.font.color = "rgb(0,0,0)";
@@ -516,12 +520,12 @@ define(function (require) {
                 self.plotOptions.yaxis.linecolor = defaultOptions.xaxis.linecolor;
                 self.plotOptions.xaxis.tickfont.color =  defaultOptions.xaxis.tickfont.color;
                 self.plotOptions.yaxis.tickfont.color =  defaultOptions.yaxis.tickfont.color;
-                self.plotOptions.yaxis.titlefont.color =  defaultOptions.yaxis.titlefont.color;
-                self.plotOptions.xaxis.titlefont.color = defaultOptions.xaxis.titlefont.color;
+                self.plotOptions.yaxis.title.font.color =  defaultOptions.yaxis.title.font.color;
+                self.plotOptions.xaxis.title.font.color = defaultOptions.xaxis.title.font.color;
                 self.plotOptions.xaxis.tickfont.size =  defaultOptions.xaxis.tickfont.size;
                 self.plotOptions.yaxis.tickfont.size =  defaultOptions.yaxis.tickfont.size;
-                self.plotOptions.xaxis.titlefont.size =  defaultOptions.xaxis.titlefont.size;
-                self.plotOptions.yaxis.titlefont.size =  defaultOptions.yaxis.titlefont.size;
+                self.plotOptions.xaxis.title.font.size =  defaultOptions.xaxis.title.font.size;
+                self.plotOptions.yaxis.title.font.size =  defaultOptions.yaxis.title.font.size;
                 self.plotOptions.legend.font.size =  defaultOptions.legend.font.size;
                 self.plotOptions.legend.font.color =  defaultOptions.legend.font.color;
                 self.plotOptions.legend.bgcolor =  defaultOptions.legend.bgcolor;
@@ -841,8 +845,8 @@ define(function (require) {
                         labelX = ""
                     }
                     this.labelsUpdated = true;
-                    this.plotOptions.yaxis.title = labelY;
-                    this.plotOptions.xaxis.title = labelX;
+                    this.plotOptions.yaxis.title.text = labelY;
+                    this.plotOptions.xaxis.title.text = labelX;
 
                     if(labelY == null || labelY == ""){
                         this.plotOptions.margin.l = 30;
@@ -1058,8 +1062,8 @@ define(function (require) {
 			    data.data["y"].push($.isArray(data_y) ? data_y[0] : data_y);
 			}
 
-			this.plotOptions.yaxis.title = options.yaxis.axisLabel;
-			this.plotOptions.xaxis.title = options.xaxis.axisLabel;
+			this.plotOptions.yaxis.title.text = options.yaxis.axisLabel;
+			this.plotOptions.xaxis.title.text = options.xaxis.axisLabel;
 			this.plotOptions.xaxis.showticklabels = true;
 			this.plotOptions.xaxis.autorange = true;
 			this.plotOptions.yaxis.autorange = true;

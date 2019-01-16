@@ -177,8 +177,8 @@ public class MappingJackson2HttpMessageConverter extends AbstractHttpMessageConv
 	 * @return the JSON encoding to use (never <code>null</code>)
 	 */
 	protected JsonEncoding getJsonEncoding(MediaType contentType) {
-		if (contentType != null && contentType.getCharSet() != null) {
-			Charset charset = contentType.getCharSet();
+		if (contentType != null && contentType.getCharset() != null) {
+			Charset charset = contentType.getCharset();
 			for (JsonEncoding encoding : JsonEncoding.values()) {
 				if (charset.name().equals(encoding.getJavaName())) {
 					return encoding;

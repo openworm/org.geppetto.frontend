@@ -114,7 +114,12 @@ define(function (require) {
                 if (this.isReady() === 1) {
                     GEPPETTO.MessageSocket.socket.send(messageTemplate);
                 }
+                else if (this.isReady() > 1){
+                    // connection is either closing (2) or already closed (3).
+                    GEPPETTO.trigger(GEPPETTO.Events.Websocket_disconnected);
+                }
                 else {
+                    // must be in connecting (0) state
                     var that = this;
                     setTimeout(function () {
                         that.waitForConnection(messageTemplate);
@@ -130,6 +135,8 @@ define(function (require) {
                 GEPPETTO.MessageSocket.socket.close();
                 //dispose of handlers upon closing connection
                 messageHandlers = [];
+                GEPPETTO.trigger(GEPPETTO.Events.Websocket_disconnected);
+
             },
 
             /**

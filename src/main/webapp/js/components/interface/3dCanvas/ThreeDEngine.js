@@ -560,6 +560,7 @@ define(['jquery'], function () {
         	this.scene.traverse(function (child) {
         		if (child.visible && !(child.clickThrough == true)) {
         			if (child.geometry != null && child.geometry != undefined) {
+        				child.geometry.computeBoundingBox(); 
         				visibleChildren.push(child);
         			}
         		}

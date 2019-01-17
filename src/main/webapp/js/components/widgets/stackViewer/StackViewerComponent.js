@@ -47,6 +47,7 @@ define(function (require) {
                 dragOffset: {},
                 dragging: false,
                 recenter: false,
+                cameraUpdate : false,
                 txtUpdated: Date.now(),
                 txtStay: 3000,
                 objects: [],
@@ -609,6 +610,20 @@ define(function (require) {
                     this.state.recenter = false;
                     this.props.setExtent({stackX: this.stack.position.x, stackY: this.stack.position.y});
                 }
+            }
+
+            //Resets camera view after width of canvas display is bigger than 100 px, which
+            //happens only after all images are loaded
+            if(this.disp.width > 100){
+            	if(!this.state.cameraUpdate){
+            		this.disp.position.x = ((this.props.width / 2) - (this.disp.width / 2));
+            		this.disp.position.y = ((this.props.height / 2) - (this.disp.height / 2));
+            		this.stack.position.x = 0;
+            		this.stack.position.y = 0;
+            		this.state.recenter = false;
+            		this.props.setCanvasLoaded();
+            		this.state.cameraUpdate = true;
+            	}
             }
 
             if (this.state.stack.length < 1) {
@@ -1257,6 +1272,7 @@ define(function (require) {
             this._isMounted = false;
             return true;
         },
+
         /**
          * Event handler for clicking zoom in. Increments the zoom level
          **/
@@ -1377,6 +1393,10 @@ define(function (require) {
         onHome: function () {
             var autoScale = Number(Math.min(this.props.data.height / this.state.imageY, this.props.data.width / this.state.imageX).toFixed(1));
             this.setState({dst: 0, stackX: -10000, stackY: -10000, text: 'Stack Centred', zoomLevel: autoScale});
+        },
+        
+        onCanvasLoaded: function () {
+            this.onHome();
         },
 
         onExtentChange: function (data) {
@@ -1513,7 +1533,7 @@ define(function (require) {
                                 fxp={this.state.fxp} pit={this.state.pit} yaw={this.state.yaw} rol={this.state.rol}
                                 stack={this.state.stack} color={this.state.color} setExtent={this.onExtentChange}
                                 statusText={this.state.text} stackX={this.state.stackX} stackY={this.state.stackY}
-                                scl={this.state.scl} orth={this.state.orth}
+                                scl={this.state.scl} orth={this.state.orth} setCanvasLoaded={this.onCanvasLoaded}
                                 label={this.state.label} id={this.state.id} height={this.props.data.height}
                                 width={this.props.data.width} voxelX={this.state.voxelX}
                                 voxelY={this.state.voxelY} voxelZ={this.state.voxelZ} displayArea={displayArea}

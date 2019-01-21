@@ -279,7 +279,19 @@ abstract class Node {
         if (style == undefined) {
             style = {};
         }
-        return this._rect.styleWithPosition(style);
+
+        let tempStyle = this._rect.styleWithPosition(style);
+        let sidesValue = this.getModel()._getAttribute("sideBorders");
+        if((sidesValue != undefined) && (sidesValue > 0)) {
+            let tempWidth = tempStyle.width.replace('px', '');
+            let tempLeft = tempStyle.left.replace('px', '');
+            if((Number(tempWidth) + Number(tempLeft)) >= window.innerWidth) {
+                tempWidth = (tempWidth - (sidesValue * 2)) + "px";
+                tempStyle.width = tempWidth;
+                return tempStyle;
+            }
+        }
+        return tempStyle;
     }
 
     /** @hidden @internal */

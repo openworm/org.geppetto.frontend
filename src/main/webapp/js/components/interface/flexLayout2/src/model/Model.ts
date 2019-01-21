@@ -152,6 +152,36 @@ class Model {
                     }
                     break;
                 }
+            case Actions.CUSTOM_ADD_NODE:
+                {
+                    const tabNode = this._idMap[action.data["tabNode"]] as (Node & IDraggable);
+                    let idChild = 0;
+                    let rightChild = 0;
+                    let model = tabNode.getModel();
+                    var rootNode = model.getRoot();
+                    var modelChildren = model.getRoot().getChildren();
+                    //const fromNode = this._idMap[action.data["fromNode"]] as (Node & IDraggable);
+                    if (tabNode instanceof TabNode || tabNode instanceof TabSetNode) {
+                        if(modelChildren.length <= 1) {
+                            let tabSet: TabSetNode | undefined ;
+                            tabSet = new TabSetNode(model, { type: "tabset" });
+                            rootNode._addChild(tabSet);
+                            tabSet.drop(tabNode, DockLocation.BOTTOM, 0);
+                        } else {
+                            for(var i=0; i <= (modelChildren.length - 1); i++) {
+                                if(modelChildren[i].getRect().getRight() > rightChild) {
+                                    rightChild = modelChildren[i].getRect().getRight();
+                                    idChild = i;
+                                }
+                            }
+                            let toNode = this._idMap[modelChildren[idChild].getId()] as (Node & IDropTarget);
+                            if (toNode instanceof TabSetNode || toNode instanceof BorderNode || toNode instanceof RowNode) {
+                                toNode.drop(tabNode, DockLocation.BOTTOM, 0);
+                            }
+                        }
+                    }
+                    break;
+                }
             case Actions.DELETE_TAB:
                 {
                     let node = this._idMap[action.data["node"]];
@@ -311,7 +341,7 @@ class Model {
         return model;
     }
 
-     getSplitterSize() {
+    getSplitterSize() {
         return this._attributes["splitterSize"] as number;
     }
 
@@ -429,6 +459,9 @@ class Model {
         attributeDefinitions.add("borderBarSize", 25);
         attributeDefinitions.add("borderEnableDrop", true).setType(Attribute.BOOLEAN);
         attributeDefinitions.add("borderClassName", undefined).setType(Attribute.STRING);
+
+        attributeDefinitions.add("sideBorders", 0).setType(Attribute.NUMBER);
+
         return attributeDefinitions;
     }
 }

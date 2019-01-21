@@ -188,9 +188,16 @@ export class Layout extends React.Component<ILayoutProps, any> {
         });
 
         // this.layoutTime = (Date.now() - this.start);
-
+        let layoutStyle = undefined;
+        let layoutSideBorders = this.model._getAttribute('sideBorders');
+        if(layoutSideBorders != undefined && layoutSideBorders > 0) {
+            layoutStyle = {
+                'borderLeft': layoutSideBorders + "px solid transparent",
+                'borderRight': layoutSideBorders + "px solid transparent"
+            };
+        }
         return (
-            <div ref={self => this.selfRef = (self===null)?undefined:self} className={this.getClassName("flexlayout__layout")}>
+            <div style={layoutStyle} ref={self => this.selfRef = (self===null)?undefined:self} className={this.getClassName("flexlayout__layout")}>
                 {tabSetComponents}
                 {this.tabIds.map(t => {
                     return tabComponents[t];

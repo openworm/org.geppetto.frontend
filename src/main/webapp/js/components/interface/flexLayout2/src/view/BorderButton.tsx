@@ -28,8 +28,11 @@ export class BorderButton extends React.Component<IBorderButtonProps, any> {
 
     onClick(event:React.MouseEvent<HTMLDivElement>) {
         const node = this.props.node;
-        //this.props.layout.doAction(Actions.selectTab(node.getId()));
-        this.props.layout.doAction(Actions.customAddNode(node.getId()));
+        if(this.props.layout.props.clickOnBordersAction !== undefined) {
+            this.props.layout.props.clickOnBordersAction(node);
+        } else { 
+            this.props.layout.doAction(Actions.selectTab(node.getId()));
+        }
     }
 
     onClose(event:React.MouseEvent<HTMLDivElement>) {

@@ -8,7 +8,6 @@ class Actions {
 
     static ADD_NODE = "FlexLayout_AddNode";
     static MOVE_NODE = "FlexLayout_MoveNode";
-    static CUSTOM_ADD_NODE = "FlexLayout_CustomAddNode";
     static DELETE_TAB = "FlexLayout_DeleteTab";
     static RENAME_TAB = "FlexLayout_RenameTab";
     static SELECT_TAB = "FlexLayout_SelectTab";
@@ -46,15 +45,6 @@ class Actions {
             location: location.getName(),
             index: index
         });
-    }
-
-    /**
-     * Selects the given tab in its parent tabset
-     * @param tabNodeId the id of the node to set selected
-     * @returns {{type: (string|string), tabNode: *}}
-     */
-    static customAddNode(tabNodeId: string): Action {
-        return new Action(Actions.CUSTOM_ADD_NODE, { tabNode: tabNodeId });
     }
 
     /**

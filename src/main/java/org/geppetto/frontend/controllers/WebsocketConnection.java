@@ -68,6 +68,9 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 
     @Autowired
 	private IGeppettoManager geppettoManager;
+    
+    @Autowired
+	private WebsocketConfig geppettoManagerConfig;
 
 	private Session userSession;
 	
@@ -93,7 +96,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		// starts running experiments, this is as likely to happen as ugly.
 		ExperimentRunManager.getInstance();
 		// End of the rant, I hope the above will sound silly and wrong in the future. Matteo
-		this.connectionHandler = new ConnectionHandler(this, geppettoManager);
+		this.connectionHandler = new ConnectionHandler(this, geppettoManager,geppettoManagerConfig.getAllowVolatileProjectsSimulation());
 	}
 
 

@@ -69,6 +69,11 @@ http://www.eclipse.org/gemini/blueprint/schema/blueprint-compendium/gemini-bluep
 		<aop:scoped-proxy />
 	</bean>
 	
+	<bean id="geppettoManagerConfig"
+		class="org.geppetto.frontend.controllers.WebsocketConfig">
+		<property name="allowVolatileProjectsSimulation" value="false" />
+	</bean>
+
 	<!-- Configuration for the default message sender. queuingEnabled: If true 
 		then use worker threads for processing and transmission. If false then do 
 		everything on calling thread. maxQueueSize: The maximum size of a processing 

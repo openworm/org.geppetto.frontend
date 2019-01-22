@@ -87,7 +87,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param websocketConnection
 	 * @param geppettoManager
 	 */
-	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager)
+	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager,boolean allowVolatileProjectsSimulation)
 	{
 		this.websocketConnection = websocketConnection;
 		// FIXME This is extremely ugly, a session based geppetto manager is
@@ -96,6 +96,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		// one is instantiated and initialised
 		this.geppettoManager = new GeppettoManager(geppettoManager);
 		this.geppettoManager.setSimulationListener(this);
+		((GeppettoManager)this.geppettoManager).setAllowVolatileProjectsSimulation(allowVolatileProjectsSimulation);
 	}
 
 	/**
@@ -374,7 +375,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				{
 					experiment.setStatus(ExperimentStatus.DESIGN);
 				}
-				geppettoManager.runExperiment(requestID, experiment);
+				geppettoManager.runExperiment(requestID, geppettoProject, experiment);
 			}
 			else
 			{

@@ -146,7 +146,7 @@ define(['jquery'], function () {
 
 
             this.renderer.domElement.addEventListener('mousemove', function (event) {
-            	that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height)) / that.renderer.domElement.height) * 2 + 1;
+            	that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height-that.renderer.domElement.offsetParent.offsetTop)) / that.renderer.domElement.height) * 2 + 1;
                 that.mouse.x = ((event.clientX - that.renderer.domElement.offsetParent.offsetLeft) / that.renderer.domElement.width) * 2 - 1;
             	if (that.hoverListeners) {
             		var intersects = that.getIntersectedObjects();
@@ -168,7 +168,7 @@ define(['jquery'], function () {
             			return;
 
 
-            		that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height)) / that.renderer.domElement.height) * 2 + 1;
+            		that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height-that.renderer.domElement.offsetParent.offsetTop)) / that.renderer.domElement.height) * 2 + 1;
                     that.mouse.x = ((event.clientX - that.renderer.domElement.offsetParent.offsetLeft) / that.renderer.domElement.width) * 2 - 1;
             		if (event.button == 0) //only for left click
             		{

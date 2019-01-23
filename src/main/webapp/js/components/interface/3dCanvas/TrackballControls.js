@@ -515,7 +515,9 @@ THREE.TrackballControls = function ( object, domElement, viewerId ) {
 		if ( _this.enabled === false ) return;
 
 		event.preventDefault();
-		event.stopPropagation();
+		// Stop propagation removed to handle eventually others listeners in the main component
+		// that is hosting the canvas.
+		//event.stopPropagation();
 
 		if ( _state === STATE.NONE ) {
 

@@ -71,7 +71,7 @@ http://www.eclipse.org/gemini/blueprint/schema/blueprint-compendium/gemini-bluep
 	
 	<bean id="geppettoManagerConfig"
 		class="org.geppetto.frontend.controllers.WebsocketConfig">
-		<property name="allowVolatileProjectsSimulation" value="false" />
+		<property name="allowVolatileProjectsSimulation" value="true" />
 	</bean>
 
 	<!-- Configuration for the default message sender. queuingEnabled: If true 

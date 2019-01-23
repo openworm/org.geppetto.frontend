@@ -66,10 +66,10 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 
 	private MessageSender messageSender;
 
-    @Autowired
+	@Autowired
 	private IGeppettoManager geppettoManager;
-    
-    @Autowired
+
+	@Autowired
 	private WebsocketConfig geppettoManagerConfig;
 
 	private Session userSession;

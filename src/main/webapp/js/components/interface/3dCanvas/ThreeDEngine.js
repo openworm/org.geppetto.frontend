@@ -140,7 +140,7 @@ define(['jquery'], function () {
             // when the mouse moves, call the given function
             this.renderer.domElement.addEventListener('mousedown', function (event) {
             	clientX = event.clientX;
-            	clientY = event.clientY;
+                clientY = event.clientY;
             }, false);
 
             // when the mouse moves, call the given function
@@ -153,7 +153,7 @@ define(['jquery'], function () {
                     if (x != clientX || y != clientY)
                         return;
 
-                    that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height)) / that.renderer.domElement.height) * 2 + 1;
+                    that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height - that.renderer.domElement.offsetParent.offsetTop)) / that.renderer.domElement.height) * 2 + 1;
                     that.mouse.x = ((event.clientX - that.renderer.domElement.offsetParent.offsetLeft) / that.renderer.domElement.width) * 2 - 1;
 
                     if (event.button == 0) //only for left click
@@ -246,8 +246,8 @@ define(['jquery'], function () {
 
 
             this.renderer.domElement.addEventListener('mousemove', function (event) {
-            	that.mouse.y = -((event.clientY -(window.innerHeight -that.renderer.domElement.height))/ that.renderer.domElement.height) * 2 + 1;
-            	that.mouse.x = ((event.clientX -that.renderer.domElement.offsetParent.offsetLeft)/ that.renderer.domElement.width) * 2 - 1;
+            	that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height - that.renderer.domElement.offsetParent.offsetTop)) / that.renderer.domElement.height) * 2 + 1;
+                that.mouse.x = ((event.clientX - that.renderer.domElement.offsetParent.offsetLeft) / that.renderer.domElement.width) * 2 - 1;
             	if (that.hoverListeners) {
             		var intersects = that.getIntersectedObjects();
             		for (var listener in that.hoverListeners) {

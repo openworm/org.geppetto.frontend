@@ -177,7 +177,6 @@ define(function (require) {
             this.matrix = [];
             if (typeof state !== 'undefined')
                 this.state = state;
-	    var d3 = require("d3");
 
 	    var margin = { top: 45, right: 10, bottom: 50, left: 25 };
 	    var legendWidth = 120;
@@ -829,8 +828,8 @@ define(function (require) {
                         var weightStr = "";
                         if (typeof cweight !== 'undefined') {
                             weightStr = " (weight=" + Number(cweight).toPrecision(2) + ", g=" +  Number(gbase).toPrecision(2) + "S)";
-                            $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
                         }
+                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
                     })
 		    .on("mouseout", $.proxy(mouseoutCell));
 		}

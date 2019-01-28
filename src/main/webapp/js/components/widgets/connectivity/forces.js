@@ -19,81 +19,115 @@ define(function (require) {
                 //TODO: think about weight = 0 (do we draw a line?)
                 .range([0.5, 4]);
 
-            context.svg.append("svg:defs").selectAll("marker")
-                .data(linkTypeScale.domain())      // Different link/path types can be defined here
-                .enter().append("svg:marker")    // This section adds in the arrows
-                .attr("id", function(d) {
-                    return d.reduce((x,y)=>x+y, "");
-                })
-                .attr("viewBox", "0 -5 10 10")
-                .attr("refX", 20)
-                .attr("refY", 0)
-                .attr("stroke", function(d) {
-                    return linkTypeScale(d);
-                })
-                .attr("stroke-opacity", 1)
-                .attr("stroke-width", "3px")
-                .attr("fill", "none")
-                .attr("markerWidth", 3)
-                .attr("markerHeight", 3)
-                .attr("orient", "auto")
-                .append("svg:path")
-                .attr("d", "M0,-5L10,0L0,5");
-
-
-            context.force = d3.forceSimulation()
-                .force("charge", d3.forceManyBody().strength(-250))
-                .force("link", d3.forceLink().id(function (d) { return d.index; }))
-                .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2));
-
 	    //add encompassing group for the zoom
 	    var g = context.svg.append("g")
 		.attr("class", "everything");
 
             if (this.state.population) {
                 var links = context.dataset.populationLinks;
+                links = context.dataset.populationLinks.filter(
+                    function(x,i) {
+                        if (i>0) {
+                            return context.dataset.populationLinks[i-1].source!=x.source && context.dataset.populationLinks[i-1].target!=x.target;
+                        } else {
+                            return 1;
+                        }
+                    });
                 var nodes = context.dataset.populationNodes;
             } else {
                 var links = context.dataset.links;
                 var nodes = context.dataset.nodes;
             }
 
-            context.populateWeights(links);
+            if (typeof links[0].weight === 'undefined')
+                context.populateWeights(links);
+            //distance(function(d) { return d.id; }).strength(function (d) { if(links[0] != 1) { return d.n } else { return 0 }; }))
+            // id(function(d) { return d.id; }).
+            context.force = d3.forceSimulation()
+                .force("charge", d3.forceManyBody().strength(-10000))
+                .force("link", d3.forceLink().strength(function(d) { if (d.weight) { if(parseInt(d.weight)<0) { return parseInt(d.weight)/-10; } else { return parseInt(d.weight)/10; }} else { return 1/10; } }))
+                .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2));
+
+            var exp_scale = function(min_out, max_out, min_in, max_in, x) {
+                if (max_in == min_in)
+                    return 5*min_out;
+                else {
+                    var n = Math.pow(max_out/min_out, 1/(max_in-min_in));
+                    var k = min_out/(n**min_in);
+                    return k*n**x;
+                }
+            };
+
+            var lin_scale = function(min_out, max_out, min_in, max_in, x) {
+                    var m = (max_out - min_out)/(max_in - min_in);
+                    return m*(x-max_in)+max_out;
+            };
+
+            var node_min = Math.min.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
+            var node_max = Math.max.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
+            var scale_node = function(x) {
+                return exp_scale(20, 45, node_min, node_max, x);
+            }
+
+            var link_min = Math.min.apply(null, links.map(l => l.weight).filter(w => typeof w != 'undefined'));
+            var link_max = Math.max.apply(null, links.map(l => l.weight).filter(w => typeof w != 'undefined'));
+            var scale_link = function(x) {
+                return exp_scale(1, 10, link_min, link_max, x);
+            }
+
+            d3.select(".everything").selectAll(".link").remove();
+
+            /*context.svg.append("svg:defs").selectAll("marker")
+                .data(links)      // Different link/path types can be defined here
+                .enter().append("svg:marker")    // This section adds in the arrows
+                .attr("id", function(d) {
+                    return d.type.reduce((x,y)=>x+y, "");
+                })
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 0)
+                .attr("refY", 0)
+                .attr("stroke", function(d) {
+                    return d.type ? nodeTypeScale(d.type) : "none"; //linkTypeScale(d.type);
+                })
+                .attr("stroke-opacity", function (d) {
+                    return d.weight ? (function(x){ return lin_scale(0, 1, link_min, link_max, x) })(d.weight) : 0;
+                })
+                .attr("stroke-width", "0px")
+                .attr("fill", "none")
+                .attr("markerWidth", 3)
+                .attr("markerHeight", 3)
+                .attr("orient", "auto")
+                .append("svg:path")
+                .attr("d", "M0,-5L10,0L0,5");*/
 
             var link = g.selectAll(".link")
                 .data(links)
                 .enter().append("svg:path")
                 .attr("class", "link")
-                .attr("marker-end", function(d) {
+                /*.attr("marker-end", function(d) {
                     return "url(#"+d.type.reduce((x,y)=>x+y,"")+")"
-                })
+                })*/
                 .style("stroke", function (d) {
-                    return d.source.type ? nodeTypeScale(d.source.type) : linkTypeScale(d.type);
+                    return d.source.type ? nodeTypeScale(d.source.type) : "none"; //linkTypeScale(d.type);
+                })
+                .style("stroke-opacity", function (d) {
+                    return d.weight ? (function(x){ return lin_scale(0, 1, link_min, link_max, x) })(d.weight) : 1;
                 })
                 .style("stroke-width", function (d) {
-                    return d.weight ? d.weight : 1;
+                    return d.weight ? scale_link(d.weight) : 1;
                 });
-
-            var node_max = Math.max.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
-            var node_min = Math.min.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
-
-            var scale_node = function(r) {
-                var min_out = 5; var max_out = 10;
-                var x = Math.pow(max_out/min_out, 1/(node_max-node_min));
-                var k = min_out/(x**node_min);
-                return k*x**r;
-            }
-
+            
             var node = g.selectAll(".node")
                 .data(nodes)
                 .enter().append("circle")
                 .attr("class", "node")
                 .attr("r", function (d) {
-                    return d.n ? scale_node(d.n) : 5;
+                    return d.n ? scale_node(d.n) : 20;
                 })  // radius
                 .style("fill", function (d) {
                     return nodeTypeScale(d.type);
                 })
+                .style("stroke", "#000000")
                 .call(d3.drag()
                     .on("start", dragstarted)
                     .on("drag", dragged)
@@ -131,11 +165,11 @@ define(function (require) {
             var legendPosition = { x: 0.75 * context.options.innerWidth, y: 0 };
 
             //Nodes
-            var legendBottom = context.createLegend('legend', nodeTypeScale, legendPosition, 'Cell Types');
+            //var legendBottom = context.createLegend('legend', nodeTypeScale, legendPosition, 'Cell Types');
 
-            legendPosition.y = legendBottom.y + 15;
+            //legendPosition.y = legendBottom.y + 15;
             //Links
-            context.createLegend('legend2', linkTypeScale, legendPosition, 'Synapse Types');
+            //context.createLegend('legend2', linkTypeScale, legendPosition, 'Synapse Types');
 
             context.force.nodes(nodes).on("tick", function () {
                 link.attr("x1", function (d) {
@@ -159,27 +193,40 @@ define(function (require) {
                     });
             });
 
+            var start = function() {
+                var ticksPerRender = 10;
+                requestAnimationFrame(function render() {
+                    for (var i = 0; i < ticksPerRender; i++) {
+                        context.force.tick();
+                    }
+                    link.attr("d", function(d) {
+                        var dx = d.target.x - d.source.x,
+                            dy = d.target.y - d.source.y,
+                            dr = Math.sqrt(dx * dx + dy * dy);
+                        return "M" +
+                            d.source.x + "," +
+                            d.source.y + "A" +
+                            dr + "," + dr + " 0 0,1 " +
+                            d.target.x + "," +
+                            d.target.y;
+                    });
+                    
+                    node.attr("cx", function (d) {
+                        return d.x;
+                    })
+                        .attr("cy", function (d) {
+                            return d.y;
+                        });
+                    
+                    if (context.force.alpha() > 0) {
+                        requestAnimationFrame(render);
+                    }
+                })
+            };
 
-            function tick() {
-                link.attr("d", function(d) {
-                    var dx = d.target.x - d.source.x,
-                        dy = d.target.y - d.source.y,
-                        dr = Math.sqrt(dx * dx + dy * dy);
-                    return "M" +
-                        d.source.x + "," +
-                        d.source.y + "A" +
-                        dr + "," + dr + " 0 0,1 " +
-                        d.target.x + "," +
-                        d.target.y;
-                });
-
-                node.attr("transform", function(d) {
-                    return "translate(" + d.x + "," + d.y + ")";
-                });
-            }
-
-            context.force.on("tick", tick);
+            //context.force.on("tick", function() { tick(node, link); });
             context.force.force("link").links(links);
+            context.force.on('tick', function() { start(node, link) });
 
             var optionsContainer = $('<div/>', {
 		id: context.id + "-options",

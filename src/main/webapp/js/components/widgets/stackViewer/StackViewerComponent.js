@@ -5,6 +5,7 @@ define(function (require) {
 
     var Canvas = React.createClass({
         _isMounted: false,
+        _initialized: false,
 
         getInitialState: function () {
             return {
@@ -179,7 +180,7 @@ define(function (require) {
 			    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
 				this.state.buffer[-1].text = '';
 			    }
-			    this.callPlaneEdges();
+                this.callPlaneEdges();
 			}
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -204,7 +205,7 @@ define(function (require) {
 			    // update slice view
 			    this.state.lastUpdate = 0;
 			    this.checkStack();
-			    this.callPlaneEdges();
+                this.callPlaneEdges();
 			}
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -230,7 +231,7 @@ define(function (require) {
 			    // update slice view
 			    this.state.lastUpdate = 0;
 			    this.checkStack();
-			    this.callPlaneEdges();
+                this.callPlaneEdges();
 		    }
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -582,11 +583,20 @@ define(function (require) {
                     if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
                         this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
                     }
+                    if(this._initialized === false && this._isMounted === true) {
+                        this.props.onHome();
+                        this._initialized = true;
+                    }
                 }
             }
 
             function setup() {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
+                    if(this._isMounted === true && this._initialized === true) {
+                        this.props.onHome();
+                        this.props.layout.forceUpdate();
+                        this._initialized = false;
+                    }
                 if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
                     this.state.buffer[-1].text = '';
                 }
@@ -1520,8 +1530,8 @@ define(function (require) {
                                 templateId={this.props.config.templateId}
                                 templateDomainIds={this.state.tempId}
                         		templateDomainTypeIds={this.state.tempType}
-                                templateDomainNames={this.state.tempName}
-                                slice={this.state.slice} />
+                                templateDomainNames={this.state.tempName} layout={this.props.layout}
+                                slice={this.state.slice} onHome={this.onHome} onZoomIn={this.onZoomIn}/>
                     </div>
                 );
             } else {

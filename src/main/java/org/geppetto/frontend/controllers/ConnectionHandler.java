@@ -375,7 +375,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 				{
 					experiment.setStatus(ExperimentStatus.DESIGN);
 				}
-				geppettoManager.runExperiment(requestID, geppettoProject, experiment);
+				geppettoManager.runExperiment(requestID, experiment);
 			}
 			else
 			{

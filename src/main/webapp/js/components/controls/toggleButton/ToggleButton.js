@@ -1,12 +1,12 @@
 define(function(require) {
 
-    var React = require('react');
+    var createClass = require('create-react-class');
     var GEPPETTO = require('geppetto');
 	require("./ToggleButton.less");
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
-    var ToggleButton = React.createClass({
+    var ToggleButton = createClass({
     	 icon : null,
     	 tooltip : null,
     	 tooltipPosition : null,

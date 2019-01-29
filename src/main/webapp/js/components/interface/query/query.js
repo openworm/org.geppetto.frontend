@@ -3,9 +3,11 @@ define(function (require) {
     require("./query.less");
     require("./react-simpletabs.less");
 
-    var React = require('react'), $ = require('jquery');
+    var CreateClass = require('create-react-class'), $ = require('jquery');
+    var ReactDOM = require('react-dom');
+    var Tabs = require('@material-ui/core/Tabs');
+    var Tab = require('@material-ui/core/Tab');
     var Griddle = require('griddle-0.6-fork');
-    var Tabs = require('react-simpletabs');
     var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
     var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
     var Handlebars = require('handlebars');
@@ -152,8 +154,7 @@ define(function (require) {
         }
     };
 
-    // React CLASS query Link component lines 156-177
-    GEPPETTO.QueryLinkComponent = React.createClass({
+    GEPPETTO.QueryLinkComponent = CreateClass({
         render: function () {
 
             var displayText = this.props.data;
@@ -176,8 +177,7 @@ define(function (require) {
         }
     });
 
-    // React CLASS slideShowImageComponent lines 179-305
-    GEPPETTO.SlideshowImageComponent = React.createClass({
+    GEPPETTO.SlideshowImageComponent = CreateClass({
         isCarousel: false,
 
         imageContainerId: '',
@@ -304,8 +304,7 @@ define(function (require) {
         }
     });
 
-    // React CLASS Query Results Controls Component lines 307-424
-    GEPPETTO.QueryResultsControlsComponent = React.createClass({
+    GEPPETTO.QueryResultsControlsComponent = CreateClass({
 
         replaceTokensWithPath: function (inputStr, path) {
             return inputStr.replace(/\$ID\$/gi, path);
@@ -423,8 +422,7 @@ define(function (require) {
         }
     });
 
-    // React CLASS Query Item component lines 426-468
-    var QueryItem = React.createClass({
+    var QueryItem = CreateClass({
         displayName: 'QueryItem',
 
         getDefaultProps: function () {
@@ -467,7 +465,7 @@ define(function (require) {
         }
     });
 
-    var QueryFooter = React.createClass({
+    var QueryFooter = CreateClass({
         displayName: 'QueryFooter',
 
         getDefaultProps: function () {
@@ -488,8 +486,7 @@ define(function (require) {
         }
     });
 
-    // React CLASS Query Builder component lines 491-1376
-    var QueryBuilder = React.createClass({
+    var QueryBuilder = CreateClass({
         displayName: 'QueryBuilder',
         dataSourceResults: {},
         updateResults: false,
@@ -1276,13 +1273,13 @@ define(function (require) {
                     };
 
                     return (
-                        <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
+                        <Tab value={resultsItem.id} label={resultsItem.label}>
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
                                 showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={(window.innerHeight - 280)}
                                 useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
-                        </Tabs.Panel>
+                        </Tab>
                     );
                 }, this);
 
@@ -1321,7 +1318,7 @@ define(function (require) {
                 markup = (
                     <div id="query-results-container" className="center-content">
                         <MenuButton configuration={configuration} />
-                        <Tabs tabActive={focusTabIndex}>
+                        <Tabs value={focusTabIndex}>
                             {tabs}
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"

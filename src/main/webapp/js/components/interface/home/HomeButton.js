@@ -1,9 +1,9 @@
 define(function (require) {
 
-    var React = require('react'),
+    var CreateClass = require('create-react-class'),
         GEPPETTO = require('geppetto');
 
-    return React.createClass({
+    return CreateClass({
         mixins: [require('../../controls/mixins/Button')],
 
         componentDidMount: function() {

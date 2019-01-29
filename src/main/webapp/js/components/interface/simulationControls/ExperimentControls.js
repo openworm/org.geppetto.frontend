@@ -1,6 +1,6 @@
 define(function (require) {
 
-    var React = require('react');
+    var CreateClass = require('create-react-class');
 
     var RunButton = require('./buttons/RunButton');
     var PlayButton = require('./buttons/PlayButton');
@@ -13,7 +13,7 @@ define(function (require) {
 
     require('./SimulationControls.less');
 
-    var SimulationControls = React.createClass({
+    var SimulationControls = CreateClass({
 
         getInitialState: function () {
             return {

@@ -1,10 +1,10 @@
 define(function (require) {
-    var React = require('react'),
+    var CreateClass = require('create-react-class'),
         GEPPETTO = require('geppetto');
 
     require('./Share.less');
 
-    var Share = React.createClass({
+    var Share = CreateClass({
 
         visible: false,
         /**

@@ -1,9 +1,9 @@
 define(function(require) {
 
-    var React = require('react');
+    var CreateClass = require('create-react-class');
     var HomeButton = require('./HomeButton');
 
-    var HomeControls = React.createClass({
+    var HomeControls = CreateClass({
 
         render: function () {
             return React.DOM.div({className:'homeButton'},

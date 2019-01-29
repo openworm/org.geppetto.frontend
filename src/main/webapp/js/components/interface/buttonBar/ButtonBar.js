@@ -1,6 +1,6 @@
 define(function(require) {
 
-	var React = require('react');
+	var CreateClass = require('create-react-class');
 	var GEPPETTO = require('geppetto');
 	require("./ButtonBar.less");
 
@@ -8,7 +8,7 @@ define(function(require) {
 
 	var AbstractComponent = require('../../AComponent');
 
-	var ButtonComponent = React.createClass({
+	var ButtonComponent = CreateClass({
 		icon : null,
 		tooltip : null,
 		label : null,

@@ -2,6 +2,7 @@
 define(function (require) {
     var React = require('react'),
         ReactDOM = require('react-dom'),
+        PropTypes = require('prop-types'),
         $ = require('jquery');
 
     return function () {
@@ -13,14 +14,14 @@ define(function (require) {
 
         return {
             propTypes: {
-                handleShow: React.PropTypes.func,
-                handleShown: React.PropTypes.func,
-                handleHide: React.PropTypes.func,
-                handleHidden: React.PropTypes.func,
-                backdrop: React.PropTypes.bool,
-                keyboard: React.PropTypes.bool,
-                show: React.PropTypes.bool,
-                remote: React.PropTypes.string
+                handleShow: PropTypes.func,
+                handleShown: PropTypes.func,
+                handleHide: PropTypes.func,
+                handleHidden: PropTypes.func,
+                backdrop: PropTypes.bool,
+                keyboard: PropTypes.bool,
+                show: PropTypes.bool,
+                remote: PropTypes.string
             },
 
             getDefaultProps: function () {

@@ -1,8 +1,8 @@
 define(function (require) {
     require('./LinkButton.less');
-    var React = require('react');
+    var CreateClass = require('create-react-class');
 
-    var linkButton = React.createClass({
+    var linkButton = CreateClass({
         render: function () {
             var customStyle ={
                 left: (this.props.left != undefined) ?  this.props.left : '41px',

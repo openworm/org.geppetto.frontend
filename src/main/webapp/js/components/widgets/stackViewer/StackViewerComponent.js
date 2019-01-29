@@ -1,9 +1,9 @@
 define(function (require) {
 
     require('pixi.js');
-    var React = require('react');
+    var createClass = require('create-react-class');
 
-    var Canvas = React.createClass({
+    var Canvas = createClass({
         _isMounted: false,
         _initialized: false,
 
@@ -1050,7 +1050,7 @@ define(function (require) {
 
     var prefix = "", _addEventListener, onwheel, support;
 
-    var StackViewerComponent = React.createClass({
+    var StackViewerComponent = createClass({
         _isMounted: false,
 
         getInitialState: function () {

@@ -594,7 +594,9 @@ define(function (require) {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
                     if(this._isMounted === true && this._initialized === true) {
                         this.props.onHome();
-                        this.props.layout.forceUpdate();
+                        if(this.props.layout !== undefined) {
+                            this.props.layout.forceUpdate();
+                        }
                         this._initialized = false;
                     }
                 if (this.state.txtUpdated < Date.now() - this.state.txtStay) {

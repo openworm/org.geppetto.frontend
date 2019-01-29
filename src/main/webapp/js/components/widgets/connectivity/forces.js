@@ -23,29 +23,81 @@ define(function (require) {
 	    var g = context.svg.append("g")
 		.attr("class", "everything");
 
+            
+            if (context.dataset.populationLinks.filter(l => !l.weight).length > 0)
+                context.populateWeights(context.dataset.populationLinks);
+
+            if (context.dataset.links.filter(l => !l.weight).length > 0)
+                context.populateWeights(context.dataset.links);
+
             if (this.state.population) {
-                var links = context.dataset.populationLinks;
-                links = context.dataset.populationLinks.filter(
+                var links = [];
+                for (link of context.dataset.populationLinks)
+                    links.push(Object.assign({}, link));
+                /*var tmpLinks = [];
+                    for (var i=0; i<context.dataset.populationLinks.length; ++i) {
+                        var matches = tmpLinks
+                            .filter(x => JSON.stringify(x.type)==JSON.stringify(context.dataset.populationLinks[i].type));
+                        if (matches.length==0)
+                            tmpLinks.push(context.dataset.populationLinks[i]);
+                    }*/
+                /*links.sort(l => l.type[0]);
+                links = links.filter(
                     function(x,i) {
                         if (i>0) {
-                            return context.dataset.populationLinks[i-1].source!=x.source && context.dataset.populationLinks[i-1].target!=x.target;
+                            return links[i-1].source!=x.source && links[i-1].target!=x.target;
                         } else {
                             return 1;
                         }
-                    });
+                        });*/
+
+                var tmpLinks = [];
+                for (key of Object.keys(context.projectionSummary)) {
+                    var prepost = key.split(',');
+                    tmpLinks.push(links.filter(function(l) {
+                        if (typeof l.target.type === 'undefined')
+                            return context.dataset.populationNodes[l.source].type + ',' + context.dataset.populationNodes[l.target].type === key;
+                        else
+                            return l.target.type === prepost[1] && l.source.type === prepost[0];
+                    })[0]);
+                }
+                tmpLinks = tmpLinks.filter(x=>x);
+                for (key of Object.keys(context.projectionSummary)) {
+                    var w = context.dataset.populationLinks.filter(function(l) {
+                        if (typeof l.target.type === 'undefined')
+                        { return context.dataset.populationNodes[l.target].type + ',' + context.dataset.populationNodes[l.source].type === key; }
+                        else
+                        { return l.target.type + ',' + l.source.type === key; } }).reduce((acc,cur)=>acc+cur.weight,0);
+                    //var w = context.dataset.links.filter(l => l.source.type+','+l.target.type === key).reduce((acc, cur) => acc + cur.weight, 0);
+                    if (tmpLinks.filter(function(l) {
+                        if (typeof l.target.type === 'undefined') {
+                            return context.dataset.populationNodes[l.target].type + ',' + context.dataset.populationNodes[l.source].type === key;
+                        } else {
+                            return l.target.type + ',' + l.source.type === key;
+                        }
+                    }).length > 0) {
+                        var index = tmpLinks.map(function(l) {
+                            if (typeof l.target.type === 'undefined') {
+                                return context.dataset.populationNodes[l.target].type + ',' + context.dataset.populationNodes[l.source].type === key;
+                            } else {
+                                return l.target.type + ',' + l.source.type === key;
+                            }
+                        }).indexOf(true);
+                        tmpLinks[index].weight = w;
+                    }
+                }
+                links = tmpLinks;
                 var nodes = context.dataset.populationNodes;
             } else {
                 var links = context.dataset.links;
                 var nodes = context.dataset.nodes;
             }
 
-            if (typeof links[0].weight === 'undefined')
-                context.populateWeights(links);
             //distance(function(d) { return d.id; }).strength(function (d) { if(links[0] != 1) { return d.n } else { return 0 }; }))
             // id(function(d) { return d.id; }).
             context.force = d3.forceSimulation()
                 .force("charge", d3.forceManyBody().strength(-10000))
-                .force("link", d3.forceLink().strength(function(d) { if (d.weight) { if(parseInt(d.weight)<0) { return parseInt(d.weight)/-10; } else { return parseInt(d.weight)/10; }} else { return 1/10; } }))
+                .force("link", d3.forceLink().strength(function(d) { if (d.weight) { if(parseInt(d.weight)<0) { return parseInt(d.weight)/-10000; } else { return parseInt(d.weight)/10000; }} else { return 1/10; } }))
                 .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2));
 
             var exp_scale = function(min_out, max_out, min_in, max_in, x) {
@@ -108,7 +160,7 @@ define(function (require) {
                     return "url(#"+d.type.reduce((x,y)=>x+y,"")+")"
                 })*/
                 .style("stroke", function (d) {
-                    return d.source.type ? nodeTypeScale(d.source.type) : "none"; //linkTypeScale(d.type);
+                    return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type); //linkTypeScale(d.type);
                 })
                 .style("stroke-opacity", function (d) {
                     return d.weight ? (function(x){ return lin_scale(0, 1, link_min, link_max, x) })(d.weight) : 1;

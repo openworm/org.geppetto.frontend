@@ -5,7 +5,9 @@
 
 define(function (require) {
     return {
-        state: {population: false},
+        attraction: 5000,
+        repulsion: -1000,
+        state: {population: true},
         createForceLayout: function (context) {
             var d3 = require("d3");
             var _ = require('underscore');
@@ -19,10 +21,16 @@ define(function (require) {
                 //TODO: think about weight = 0 (do we draw a line?)
                 .range([0.5, 4]);
 
+            //if (context.force) context.force.stop();
+
 	    //add encompassing group for the zoom
 	    var g = context.svg.append("g")
 		.attr("class", "everything");
 
+            if (!context.attraction)
+                context.attraction = 5000;
+            if (!context.repulsion)
+                context.repulsion = -1000;
             
             if (context.dataset.populationLinks.filter(l => !l.weight).length > 0)
                 context.populateWeights(context.dataset.populationLinks);
@@ -95,10 +103,7 @@ define(function (require) {
 
             //distance(function(d) { return d.id; }).strength(function (d) { if(links[0] != 1) { return d.n } else { return 0 }; }))
             // id(function(d) { return d.id; }).
-            context.force = d3.forceSimulation()
-                .force("charge", d3.forceManyBody().strength(-10000))
-                .force("link", d3.forceLink().strength(function(d) { if (d.weight) { if(parseInt(d.weight)<0) { return parseInt(d.weight)/-10000; } else { return parseInt(d.weight)/10000; }} else { return 1/10; } }))
-                .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2));
+            
 
             var exp_scale = function(min_out, max_out, min_in, max_in, x) {
                 if (max_in == min_in)
@@ -111,20 +116,22 @@ define(function (require) {
             };
 
             var lin_scale = function(min_out, max_out, min_in, max_in, x) {
-                    var m = (max_out - min_out)/(max_in - min_in);
-                    return m*(x-max_in)+max_out;
+                if (max_in == min_in)
+                    return 1;
+                var m = (max_out - min_out)/(max_in - min_in);
+                return m*(x-max_in)+max_out;
             };
 
             var node_min = Math.min.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var node_max = Math.max.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var scale_node = function(x) {
-                return exp_scale(20, 45, node_min, node_max, x);
+                return exp_scale(50, 100, node_min, node_max, x);
             }
 
-            var link_min = Math.min.apply(null, links.map(l => l.weight).filter(w => typeof w != 'undefined'));
-            var link_max = Math.max.apply(null, links.map(l => l.weight).filter(w => typeof w != 'undefined'));
+            var link_min = Math.min.apply(null, links.filter(l => l.target!==l.source).map(l => l.weight).filter(w => typeof w != 'undefined'));
+            var link_max = Math.max.apply(null, links.filter(l => l.target!==l.source).map(l => l.weight).filter(w => typeof w != 'undefined'));
             var scale_link = function(x) {
-                return exp_scale(1, 10, link_min, link_max, x);
+                return lin_scale(1, 50, link_min, link_max, x);
             }
 
             d3.select(".everything").selectAll(".link").remove();
@@ -163,7 +170,7 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type); //linkTypeScale(d.type);
                 })
                 .style("stroke-opacity", function (d) {
-                    return d.weight ? (function(x){ return lin_scale(0, 1, link_min, link_max, x) })(d.weight) : 1;
+                    return 1; // d.weight ? (function(x){ return exp_scale(0.3, 1, link_min, link_max, x) })(d.weight) : 1;
                 })
                 .style("stroke-width", function (d) {
                     return d.weight ? scale_link(d.weight) : 1;
@@ -222,8 +229,17 @@ define(function (require) {
             //legendPosition.y = legendBottom.y + 15;
             //Links
             //context.createLegend('legend2', linkTypeScale, legendPosition, 'Synapse Types');
-
-            context.force.nodes(nodes).on("tick", function () {
+            context.force = d3.forceSimulation()
+                .force("charge", (function(){
+                    return d3.forceManyBody().strength(context.repulsion);
+                }).bind(this)())
+                .force("link", d3.forceLink().strength((function(d) {
+                    if (d.weight) { if(parseInt(d.weight)<0) { return parseInt(d.weight)/(-1*context.attraction); } else { return parseInt(d.weight)/context.attraction; }} else { return 1/10; }
+                }).bind(this)))
+                .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2))
+                .nodes(nodes);
+            
+            /*context.force.on("tick", function () {
                 link.attr("x1", function (d) {
                     return d.source.x;
                 })
@@ -243,15 +259,39 @@ define(function (require) {
                     .attr("cy", function (d) {
                         return d.y;
                     });
-            });
+            });*/
 
-            var start = function() {
+            var firstCall = true;
+            /*var start = function(node, link) {
+                if (firstCall) {
+                link.attr("x1", function (d) {
+                    return d.source.x;
+                })
+                    .attr("y1", function (d) {
+                        return d.source.y;
+                    })
+                    .attr("x2", function (d) {
+                        return d.target.x;
+                    })
+                    .attr("y2", function (d) {
+                        return d.target.y;
+                    });
+
+                node.attr("cx", function (d) {
+                    return d.x;
+                })
+                    .attr("cy", function (d) {
+                        return d.y;
+                    });
+                    firstCall = false;
+                }
                 var ticksPerRender = 10;
                 requestAnimationFrame(function render() {
                     for (var i = 0; i < ticksPerRender; i++) {
                         context.force.tick();
                     }
                     link.attr("d", function(d) {
+                        //return "M0,-5L10,0L0,5";
                         var dx = d.target.x - d.source.x,
                             dy = d.target.y - d.source.y,
                             dr = Math.sqrt(dx * dx + dy * dy);
@@ -274,11 +314,30 @@ define(function (require) {
                         requestAnimationFrame(render);
                     }
                 })
-            };
+                };*/
 
-            //context.force.on("tick", function() { tick(node, link); });
+             function tick() {
+                link.attr("d", function(d) {
+                    var dx = d.target.x - d.source.x,
+                        dy = d.target.y - d.source.y,
+                        dr = Math.sqrt(dx * dx + dy * dy);
+                    return "M" +
+                        d.source.x + "," +
+                        d.source.y + "A" +
+                        dr + "," + dr + " 0 0,1 " +
+                        d.target.x + "," +
+                        d.target.y;
+                });
+
+                node.attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+            }
+
+            context.force.on("tick", tick);
             context.force.force("link").links(links);
-            context.force.on('tick', function() { start(node, link) });
+
+//            context.force.on("tick", function() { start(node, link); });
 
             var optionsContainer = $('<div/>', {
 		id: context.id + "-options",
@@ -301,12 +360,15 @@ define(function (require) {
 	    populationCheckbox.on("change", function (ctx, that) {
 		return function () {
 		    if (this.checked) {
+                        ctx.force.stop();
                         that.state.population = true;
 		    }
 		    else {
+                        ctx.force.stop();
 			that.state.population = false;
 		    }
 		    ctx.createLayout();
+                    ctx.force.restart();
 		}
 	    } (context, this));
 

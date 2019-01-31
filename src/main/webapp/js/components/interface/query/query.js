@@ -4,9 +4,9 @@ define(function (require) {
     require("./react-simpletabs.less");
 
     var CreateClass = require('create-react-class'), $ = require('jquery');
-    var ReactDOM = require('react-dom');
-    var Tabs = require('@material-ui/core/Tabs');
-    var Tab = require('@material-ui/core/Tab');
+    var React = require('react');
+    var Tabs = require('@material-ui/core/Tabs').default;
+    var Tab = require('@material-ui/core/Tab').default;
     var Griddle = require('griddle-0.6-fork');
     var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
     var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
@@ -1267,13 +1267,13 @@ define(function (require) {
 
                 // set data for each tab based on results from the model
                 // for each tab put a Griddle configured with appropriate column meta
-                var tabs = this.props.model.results.map(function (resultsItem) {
+                var tabs = this.props.model.results.map(function (resultsItem, index) {
                     var getVerboseLabelMarkup = function () {
                         return { __html: resultsItem.verboseLabel };
                     };
 
                     return (
-                        <Tab value={resultsItem.id} label={resultsItem.label}>
+                        <Tab value={index} label={resultsItem.label} key={index}>
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
@@ -1318,7 +1318,7 @@ define(function (require) {
                 markup = (
                     <div id="query-results-container" className="center-content">
                         <MenuButton configuration={configuration} />
-                        <Tabs value={focusTabIndex}>
+                        <Tabs value={0}>
                             {tabs}
                         </Tabs>
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"

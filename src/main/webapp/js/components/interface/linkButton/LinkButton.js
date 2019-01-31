@@ -1,5 +1,6 @@
 define(function (require) {
     require('./LinkButton.less');
+    var React = require('react');
     var CreateClass = require('create-react-class');
 
     var linkButton = CreateClass({

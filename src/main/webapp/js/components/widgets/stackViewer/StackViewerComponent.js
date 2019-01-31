@@ -1,6 +1,7 @@
 define(function (require) {
 
     require('pixi.js');
+    var React = require('react');
     var createClass = require('create-react-class');
 
     var Canvas = createClass({

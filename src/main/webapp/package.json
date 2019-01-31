@@ -102,7 +102,6 @@
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "react-select": "^2.1.2",
-    "react-simpletabs": "0.7.0",
     "react-slick": "^0.23.2",
     "react-sortable-tree": "^2.3.0",
     "react-tabtab": "^2.0.0",

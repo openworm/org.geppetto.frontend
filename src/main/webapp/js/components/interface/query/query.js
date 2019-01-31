@@ -5,8 +5,10 @@ define(function (require) {
 
     var CreateClass = require('create-react-class'), $ = require('jquery');
     var React = require('react');
-    var Tabs = require('@material-ui/core/Tabs').default;
+    var AppBar = require('@material-ui/core/AppBar').default;
     var Tab = require('@material-ui/core/Tab').default;
+    var Tabs = require('@material-ui/core/Tabs').default;
+    var Typography = require('@material-ui/core/Typography').default;
     var Griddle = require('griddle-0.6-fork');
     var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
     var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
@@ -516,6 +518,7 @@ define(function (require) {
                 infiniteScroll: undefined,
                 resultsPerPate: undefined,
                 refreshTrigger: false,
+                value: 0,
             };
         },
 
@@ -640,7 +643,6 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-            
             queryBuilderModel.subscribe(this.refresh);
 
             var escape = 27;
@@ -1166,6 +1168,11 @@ define(function (require) {
 
         resultSetSelectionChange: function (val) {
             this.props.model.resultSelectionChanged(val);
+            this.props.model.results.map((resultItem, index) => {
+                if(val === resultItem.label) {
+                    this.setState({value: index});
+                }
+            });
         },
 
         downloadQueryResults: function (resultsItem) {
@@ -1246,6 +1253,7 @@ define(function (require) {
         },
 
         render: function () {
+            const { value } = this.state;
             var markup = null;
             // once off figure out if we are to use infinite scrolling for results and store in state
             if (this.state.infiniteScroll === undefined) {
@@ -1258,10 +1266,10 @@ define(function (require) {
                 // if results view, build results markup based on results in the model
                 // figure out focus tab index (1 based index)
                 resultsViewState = true;
-                var focusTabIndex = 1;
+                var focusTabIndex = 0;
                 for (var i = 0; i < this.props.model.results.length; i++) {
                     if (this.props.model.results[i].selected) {
-                        focusTabIndex = i + 1;
+                        focusTabIndex = i;
                     }
                 }
 
@@ -1272,14 +1280,14 @@ define(function (require) {
                         return { __html: resultsItem.verboseLabel };
                     };
 
-                    return (
-                        <Tab value={index} label={resultsItem.label} key={index}>
+                    return (value === index &&
+                        <Typography component="div" key={index}>
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
                                 showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={(window.innerHeight - 280)}
                                 useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
-                        </Tab>
+                        </Typography>
                     );
                 }, this);
 
@@ -1318,9 +1326,7 @@ define(function (require) {
                 markup = (
                     <div id="query-results-container" className="center-content">
                         <MenuButton configuration={configuration} />
-                        <Tabs value={0}>
-                            {tabs}
-                        </Tabs>
+                        {tabs}
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
                             title="Back to query" onClick={this.switchView.bind(null, false, false)}>
                             <div className="querybuilder-button-label">Refine query</div>
@@ -1331,12 +1337,12 @@ define(function (require) {
                         </button>
                         <button id="delete-result-btn" className="fa fa-trash-o querybuilder-button"
                             title="Delete results"
-                            onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex - 1])}>
+                            onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex])}>
                             <div className="querybuilder-button-label">Delete results</div>
                         </button>
                         <button id="download-result-btn" className="fa fa-download querybuilder-button"
                             title="Download results"
-                            onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex - 1])}>
+                            onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex])}>
                             <div className="querybuilder-button-label">Download results (CSV)</div>
                         </button>
                     </div>

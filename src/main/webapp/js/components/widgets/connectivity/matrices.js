@@ -141,10 +141,10 @@ define(function (require) {
 	},
 	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
-	    //var exc_conns = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0));
-	    //var inh_conns = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0));
-            var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=>x.gbase)));
-            var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=>x.gbase)));
+	    var weights_exc = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0)).map(x => x.gbase);
+	    var weights_inh = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0)).map(x => x.gbase);
+            //var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=>x.gbase)));
+            //var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=>x.gbase)));
 	    var colormaps = {};
             if (this.state.colorScale) {
                 var baseColormap = eval('('+this.state.colorScale+')');
@@ -737,7 +737,7 @@ define(function (require) {
             // color scale selector
             if (this.state.weight) {
                 var colorOptions = {
-		    'd3.scaleLinear().range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)]).interpolate(d3.interpolateCubehelixLong);': 'Rainbow',
+		    'd3.scaleLinear().range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)]).interpolate(d3.interpolateCubehelixLong)': 'Rainbow',
 		    '{"inh": d3.scaleSequential(d3ScaleChromatic.interpolateBlues), "exc": d3.scaleSequential(d3ScaleChromatic.interpolateReds)}': 'Sequential'
 	        };
 

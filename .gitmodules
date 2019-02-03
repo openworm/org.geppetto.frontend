@@ -1,0 +1,4 @@
+[submodule "src/main/webapp"]
+	path = src/main/webapp
+	url = https://github.com/openworm/geppetto-application.git
+  branch = wip

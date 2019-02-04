@@ -141,10 +141,14 @@ define(function (require) {
 	},
 	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
-	    var weights_exc = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0)).map(x => x.gbase);
-	    var weights_inh = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0)).map(x => x.gbase);
-            //var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=>x.gbase)));
-            //var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=>x.gbase)));
+            if (this.state.population) {
+                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=> x.gbase<0 ? -1*x.gbase : x.gbase)));
+                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=> x.gbase)));
+            } else {
+	        var weights_exc = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0)).map(x => x.gbase);
+	        var weights_inh = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0)).map(x => x.gbase<0 ? -1*x.gbase : x.gbase);
+            }
+            
 	    var colormaps = {};
             if (this.state.colorScale) {
                 var baseColormap = eval('('+this.state.colorScale+')');
@@ -242,7 +246,7 @@ define(function (require) {
                     m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
                     //m_entry.gbase ? m_entry.gbase.push(link.gbase) : m_entry.gbase = [link.gbase];
                     //m_entry.type ? m_entry.type.push(link.type) : m_entry.type = [link.type];
-                    m_entry.type = link.erev >= -70 ? 'exc' : 'inh';
+                    m_entry.type = (link.erev >= -70 && (link.gbase >= 0)) ? 'exc' : 'inh';
                     //matrix[link.source][link.target].gbase = link.gbase;
 		    //matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
 		}
@@ -794,7 +798,7 @@ define(function (require) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "none";
 			    if (typeof linkColormaps[d.type] === 'function')
-			        return linkColormaps[d.type](d.gbase);
+			        return linkColormaps[d.type](d.gbase<0 ? -1*d.gbase : d.gbase);
 			    else
                                 return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
 			        //return linkColormaps(Array.from(new Set(d.z.map(JSON.stringify))).map(JSON.parse).filter(x=>projTypes[filter].indexOf(x[0])>-1));
@@ -805,7 +809,7 @@ define(function (require) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "none";
 			    if (typeof linkColormaps[d.type] === 'function')
-			        return linkColormaps[d.type](d.gbase);
+			        return linkColormaps[d.type](d.gbase<0 ? -1*d.gbase : d.gbase);
 			    else
                                 return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
                                 //return linkColormaps(Array.from(new Set(d.z.map(JSON.stringify))).map(JSON.parse).filter(x=>projTypes[filter].indexOf(x[0])>-1));

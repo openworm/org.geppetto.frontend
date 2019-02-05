@@ -111,8 +111,10 @@ define(function (require) {
 	    }
 	    return projSummary;
 	},
-        selectConn: function(conns) {
-            return conns[0];
+        selectConn: function(conns, filter) {
+            if (filter === 'gapJunction')
+                filter = 'electricalProjection';
+            return conns.filter(x=>x.getParent().getName()===filter)[0];
         },
 	linkSynapse: function (conn) {
 	    if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
@@ -126,10 +128,10 @@ define(function (require) {
 	    else
 		return [];
         },
-	linkWeight: function (conns) {
+	linkWeight: function (conns, filter) {
 	    if (this.linkSynapse(conns[0]).length > 0) {
-                var synapses = this.linkSynapse(conns[0]);
-                var conn = this.selectConn(conns);
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+                var conn = this.selectConn(conns, filter);
 		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		var weight = 1;
 		if (weightIndex > -1)
@@ -139,16 +141,70 @@ define(function (require) {
 	    else
 		return 0;
 	},
-        populateWeights: function(links) {
+	linkErev: function (conns, filter) {
+	    if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+		var erevs = synapses.map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
+		var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
+		return erevs.map((e, i) => {
+		    if (typeof e.getInitialValue === 'function')
+			return scale[i] * e.getInitialValue();
+		    else
+			return scale[i] * e;
+		}).reduce((x,y) => x+y, 0);
+	    }
+	    else
+		return 0;
+	},
+        linkGbase: function(conns, filter) {
+            if (this.linkSynapse(conns[0]).length > 0) {
+                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+                var gbases = synapses.map(function(c) {
+                    if (typeof c.getType().gbase !== 'undefined')
+                        return c.getType().gbase;
+                    else if (typeof c.getType().conductance !== 'undefined')
+                        return c.getType().conductance;
+                    else
+                        return 1;
+                });
+                var scaleFn = function(unit) {
+                    switch(unit) {
+                    case 'S':
+                        return 1; break;
+                    case 'mS':
+                        return 1e-3; break;
+                    case 'nS':
+                        return 1e-9; break;
+                    case 'pS':
+                        return 1e-12;
+                    }
+                };
+                var scale = gbases.map(g => { if (typeof g.getUnit === 'function') { return scaleFn(g.getUnit()) } else { return 1; } });
+                var conn = this.selectConn(conns, filter);
+                var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+		var weight = 1;
+		if (weightIndex > -1)
+		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
+                return gbases.map((g, i) => {
+                    if (typeof g.getInitialValue === 'function')
+		        return weight * scale[i] * g.getInitialValue();
+                    else
+                        return weight * scale[i] * g;
+		}).reduce((x,y) => x+y, 0);
+	    }
+	    else
+		return 0;
+        },
+	populateWeights: function(links, filter) {
 	    for (var i in links) {
-                if (links[i].type.length > 0) {
-		    links[i].weight = this.linkWeight(links[i].conns);
-                    //links[i].erev = this.linkErev(links[i].conns, filter);
-                    //links[i].gbase = this.linkGbase(links[i].conns, filter);
+                if (links[i].type.filter(t=>this.projectionTypeSummary[filter].indexOf(t)>-1).length > 0) {
+		    links[i].weight = this.linkWeight(links[i].conns, filter);
+                    links[i].erev = this.linkErev(links[i].conns, filter);
+                    links[i].gbase = this.linkGbase(links[i].conns, filter);
                 } else {
                     links[i].weight = undefined;
-                    //links[i].erev = undefined;
-                    //links[i].gbase = undefined;
+                    links[i].erev = undefined;
+                    links[i].gbase = undefined;
 		}
 	    }
 	},
@@ -312,6 +368,7 @@ define(function (require) {
                             tmpLinks.push(this.dataset.populationLinks[i])
                     }
                     this.dataset.populationLinks = tmpLinks;
+                    //return true;
                 }
 
             return false;

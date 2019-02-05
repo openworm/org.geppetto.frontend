@@ -21,6 +21,8 @@ define(function (require) {
                 //TODO: think about weight = 0 (do we draw a line?)
                 .range([0.5, 4]);
 
+            context.projectionSummary = context.getProjectionSummary();
+
             //if (context.force) context.force.stop();
 
 	    //add encompassing group for the zoom
@@ -33,10 +35,10 @@ define(function (require) {
                 context.repulsion = 5000;
             
             if (context.dataset.populationLinks.filter(l => !l.weight).length > 0)
-                context.populateWeights(context.dataset.populationLinks);
+                context.populateWeights(context.dataset.populationLinks, this.state.filter);
 
             if (context.dataset.links.filter(l => !l.weight).length > 0)
-                context.populateWeights(context.dataset.links);
+                context.populateWeights(context.dataset.links, this.state.filter);
 
             if (this.state.population) {
                 var links = [];
@@ -60,7 +62,18 @@ define(function (require) {
                         { return context.dataset.populationNodes[l.target].type + ',' + context.dataset.populationNodes[l.source].type === key; }
                         else
                         { return l.target.type + ',' + l.source.type === key; } }).reduce((acc,cur)=>acc+cur.weight,0);
-                    //var w = context.dataset.links.filter(l => l.source.type+','+l.target.type === key).reduce((acc, cur) => acc + cur.weight, 0);
+                    var erev = context.dataset.populationLinks.filter(function(l) {
+                        if (typeof l.target.type === 'undefined')
+                        { return context.dataset.populationNodes[l.target].type + ',' + context.dataset.populationNodes[l.source].type === key; }
+                        else
+                        { return l.target.type + ',' + l.source.type === key; } }).reduce((acc,cur)=>acc+cur.erev,0);
+
+                    var gbase = context.dataset.populationLinks.filter(function(l) {
+                        if (typeof l.target.type === 'undefined')
+                        { return context.dataset.populationNodes[l.target].type + ',' + context.dataset.populationNodes[l.source].type === key; }
+                        else
+                        { return l.target.type + ',' + l.source.type === key; } }).reduce((acc,cur)=>acc+cur.gbase,0);
+                    
                     if (tmpLinks.filter(function(l) {
                         if (typeof l.target.type === 'undefined') {
                             return context.dataset.populationNodes[l.target].type + ',' + context.dataset.populationNodes[l.source].type === key;
@@ -76,6 +89,8 @@ define(function (require) {
                             }
                         }).indexOf(true);
                         tmpLinks[index].weight = w;
+                        tmpLinks[index].gbase = gbase;
+                        tmpLinks[index].erev = erev;
                     }
                 }
                 links = tmpLinks;
@@ -131,14 +146,16 @@ define(function (require) {
                         return nodes[d.source].type + "," + nodes[d.target].type; //d.type.reduce((x,y)=>x+y, "");
                     }
                 })
-                .attr("viewBox", "0 -5 10 10")
+                .attr("viewBox", function(d) {
+                    return (d.erev>=-70 && (d.gbase>=0))
+                        ? "0 -5 10 10" //exc=arrow
+                        : "-6 -6 12 12" //inh=circle
+                })
                 .attr("refX", function(d) {
-                    return 20;
-                    //return d.target.n ? scale_node(d.target.n)/2 : scale_node(nodes[d.target].n)/2;
-                    //return d.target.n ? scale_node(d.target.n)/scale_link(links.filter(l=>l.target===d.target && l.source===d.source)[0].weight) : scale_node(nodes[d.target].n)/scale_link(links.filter(l=>l.target===d.target && l.source===d.source)[0].weight);
+                    return (d.erev>=-70 && (d.gbase>=0)) ? 20 : 18;
                 })
                 .attr("refY", function(d) {
-                    return 0; //return d.target.n ? scale_node(d.target.n) : 20;
+                    return 0;
                 })
                 .attr("stroke", function(d) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
@@ -151,16 +168,24 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
                 .attr("markerWidth", (function(d) {
-                    var w = d.weight<0 ? -1*d.weight : d.weight;
-                    return scale_link(w)>=parseFloat(this.state.linkFilter) ? scale_node(d.target.n ? d.target.n : nodes[d.target].n)-2 : 0; 
+                    if (d.target.n)
+                        return 15;
+                    else {
+                        var w = d.weight<0 ? -1*d.weight : d.weight;
+                        return scale_link(w)>=parseFloat(this.state.linkFilter) ? scale_node(d.target.n ? d.target.n : nodes[d.target].n)-2 : 0;
+                    }
                 }).bind(this))
                 .attr("markerHeight", function(d) {
-                    return scale_node(d.target.n ? d.target.n : nodes[d.target].n)-2;
+                    return d.target.n ? 15 : scale_node(nodes[d.target].n)-2;
                 })
                 .attr("orient", "auto")
                 .attr("markerUnits", "userSpaceOnUse")
                 .append("svg:path")
-                .attr("d", "M0,-5L10,0L0,5");
+                .attr("d", function(d) {
+                    return (d.erev>=-70 && (d.gbase>=0))
+                        ? "M0,-5L10,0L0,5" //exc=arrow
+                        : "M0,0 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" //inh=circle
+                });
 
             var link = g.selectAll(".link")
                 .data(links)
@@ -192,12 +217,13 @@ define(function (require) {
                 .enter().append("circle")
                 .attr("class", "node")
                 .attr("r", function (d) {
-                    return d.n ? scale_node(d.n) : 20;
+                    return d.n ? scale_node(d.n) : 250;
                 })  // radius
                 .style("fill", function (d) {
                     return nodeTypeScale(d.type);
                 })
                 .style("stroke", "#000000")
+                .style("stroke-width", "2px")
                 .call(d3.drag()
                     .on("start", dragstarted)
                     .on("drag", dragged)
@@ -355,7 +381,7 @@ define(function (require) {
             } (context, this));
 
 
-            var populationCheckbox = $('<input type="checkbox" id="population" name="population" value="population">');
+            var populationCheckbox = $('<input type="checkbox" class="connectivity-control" id="population" name="population" value="population">');
 	    if (this.state.population)
 		populationCheckbox.attr("checked", "checked");
 	    orderContainer.append(populationCheckbox);
@@ -377,7 +403,7 @@ define(function (require) {
 	    } (context, this));
 
             
-            var attractionSlide = $('<input type="range" max="0.001" min="0.00001" step="1e-9" id="attraction" name="attraction" value="0.0002">');
+            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.001" min="0.000001" step="1e-9" id="attraction" name="attraction" value="0.0002">');
 	    if (context.attraction)
 		attractionSlide.attr("value", context.attraction);
             attractionSlide.on("change", function(ctx, that) {
@@ -387,9 +413,9 @@ define(function (require) {
                 }
             } (context, this));
 	    typeContainer.append(attractionSlide);
-	    typeContainer.append($('<label for="attraction" class="attraction-label">Link Strength</label>'));
+	    typeContainer.append($('<label for="attraction" class="control-label">Link Strength</label>'));
 
-            var repulsionSlide = $('<input type="range" min="1000" max="100000" id="repulsion" name="repulsion" value="5000">');
+            var repulsionSlide = $('<input class="connectivity-control" type="range" min="1000" max="100000" id="repulsion" name="repulsion" value="5000">');
 	    if (context.repulsion)
 		repulsionSlide.attr("value", context.repulsion);
             repulsionSlide.on("change", function(ctx, that) {
@@ -399,9 +425,9 @@ define(function (require) {
                 }
             } (context, this));
 	    typeContainer.append(repulsionSlide);
-            typeContainer.append($('<label for="repulsion" class="repulsion-label">Node Repulsion</label>'));
+            typeContainer.append($('<label for="repulsion" class="control-label">Node Repulsion</label>'));
 
-            var linkSlide = $('<input type="range" min="' + (scale_link(link_min)-2) + '" max="' + (scale_link(link_max)+2) + '" id="link" name="link" value="' + (scale_link(link_min)-2) + '">');
+            var linkSlide = $('<input class="connectivity-control" type="range" min="' + (scale_link(link_min)-2) + '" max="' + (scale_link(link_max)+2) + '" id="link" name="link" value="' + (scale_link(link_min)-2) + '">');
 	    if (this.state.linkFilter)
 		linkSlide.attr("value", this.state.linkFilter);
             linkSlide.on("change", function(ctx, that) {
@@ -411,7 +437,7 @@ define(function (require) {
                 }
             } (context, this));
 	    typeContainer.append(linkSlide);
-            typeContainer.append($('<label for="link" class="link-label">Show links</label>'));
+            typeContainer.append($('<label for="link" class="control-label">Show links</label>'));
         }
     }
 });

@@ -108,10 +108,17 @@ define(function (require) {
              * Initialize web socket communication
              */
             init: function () {
-                var host = path.join(GEPPETTO.MessageSocket.protocol + window.location.host + window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/")), GEPPETTO_CONFIGURATION.contextPath, "GeppettoServlet")
             	if(GEPPETTO_CONFIGURATION.contextPath=="/"){
-            		host = path.join(GEPPETTO.MessageSocket.protocol + window.location.host.replace("8081","8080"), '/GeppettoServlet');
-            	}
+            		var host = path.join(GEPPETTO.MessageSocket.protocol + window.location.host.replace("8081","8080"), '/GeppettoServlet');
+                }
+                else{
+                    var baseHost = GEPPETTO.MessageSocket.protocol + window.location.host;
+                    var contextPath = window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/"));
+                    if (!contextPath.endsWith(GEPPETTO_CONFIGURATION.contextPath.replace(/^\/|\/$/g, ''))){
+                        contextPath = path.join(contextPath, GEPPETTO_CONFIGURATION.contextPath);
+                    }
+                    var host = path.join(baseHost, contextPath , "GeppettoServlet")
+                }
                 GEPPETTO.MessageSocket.connect(host);
                 console.log("Host for MessageSocket to connect: "+host);
                 GEPPETTO.Events.listen();

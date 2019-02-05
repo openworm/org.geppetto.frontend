@@ -584,7 +584,8 @@ define(function (require) {
                     if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
                         this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
                     }
-                    if(this._initialized === false && this._isMounted === true) {
+                    if(this._initialized === false && this._isMounted === true && (loader.progress > 1)) {
+                        //this.props.canvasRef.resetCamera();
                         this.props.onHome();
                         this._initialized = true;
                     }
@@ -594,10 +595,8 @@ define(function (require) {
             function setup() {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
                     if(this._isMounted === true && this._initialized === true) {
+                        //this.props.canvasRef.resetCamera();
                         this.props.onHome();
-                        if(this.props.layout !== undefined) {
-                            this.props.layout.forceUpdate();
-                        }
                         this._initialized = false;
                     }
                 if (this.state.txtUpdated < Date.now() - this.state.txtStay) {

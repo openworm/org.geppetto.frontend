@@ -129,7 +129,10 @@ define(function (require) {
 
         componentDidUpdate: function () {
             // console.log('Canvas update');
-            this.renderer.resize(this.props.width, this.props.height);
+            if(this.renderer.width !== this.props.width || this.renderer.height !== this.props.height) {
+                this.renderer.resize(this.props.width, this.props.height);
+                this.props.onHome();
+            }
             this.checkStack();
             this.callPlaneEdges();
         },
@@ -584,20 +587,15 @@ define(function (require) {
                     if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
                         this.state.buffer[-1].text = 'Buffering stack ' + loader.progress.toFixed(1) + "%";
                     }
-                    if(this._initialized === false && this._isMounted === true && (loader.progress > 1)) {
-                        //this.props.canvasRef.resetCamera();
-                        this.props.onHome();
-                        this._initialized = true;
-                    }
                 }
             }
 
             function setup() {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
-                    if(this._isMounted === true && this._initialized === true) {
+                    if(this._isMounted === true && this._initialized === false) {
                         //this.props.canvasRef.resetCamera();
                         this.props.onHome();
-                        this._initialized = false;
+                        this._initialized = true;
                     }
                 if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
                     this.state.buffer[-1].text = '';
@@ -1533,7 +1531,8 @@ define(function (require) {
                                 templateDomainIds={this.state.tempId}
                         		templateDomainTypeIds={this.state.tempType}
                                 templateDomainNames={this.state.tempName} layout={this.props.layout}
-                                slice={this.state.slice} onHome={this.onHome} onZoomIn={this.onZoomIn}/>
+                                slice={this.state.slice} onHome={this.onHome} onZoomIn={this.onZoomIn} 
+                                onResize={this.onResize} />
                     </div>
                 );
             } else {

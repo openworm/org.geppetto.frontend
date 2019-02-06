@@ -145,11 +145,14 @@ define(function (require) {
                         : "-6 -6 12 12" //inh=circle
                 })
                 .attr("refX", function(d) {
-                    return (d.erev>=-70 && (d.gbase>=0)) ? 24 : 22; //20 : 18;
+                    if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
+                        return 0;
+                    else
+                        return (d.erev>=-70 && (d.gbase>=0)) ? 24 : 22; //20 : 18;
                 })
                 .attr("refY", function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
-                        return -5;
+                        return -25;
                     else
                         return 0;
                 })
@@ -168,11 +171,11 @@ define(function (require) {
                     if (scale_link(w)>=parseFloat(this.state.linkFilter)) {
                         if (Object.keys(d.target).length !== 0) {
                             if (d.target.n)
-                                return scale_node(d.target.n)-100;
+                                return scale_node(d.target.n)-80;
                             else
                                 return 15;
                         } else {
-                            return scale_node(nodes[d.target].n)-102;
+                            return scale_node(nodes[d.target].n)-82;
                         }
                     } else
                         return 0;
@@ -180,11 +183,11 @@ define(function (require) {
                 .attr("markerHeight", function(d) {
                     if (Object.keys(d.target).length !== 0) {
                         if (d.target.n)
-                            return scale_node(d.target.n)-100;
+                            return scale_node(d.target.n)-80;
                         else
                             return 15;
                     } else {
-                        return scale_node(nodes[d.target].n)-102;
+                        return scale_node(nodes[d.target].n)-82;
                     }
                 })
                 .attr("orient", "auto")

@@ -113,14 +113,16 @@ define(function (require) {
                 var scale = gbases.map(g => { if (typeof g.getUnit === 'function') { return scaleFn(g.getUnit()) } else { return 1; } });
                 var conn = this.selectConn(conns, filter);
                 var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+                // get the sign of the weight so inh/exc detection works but don't factor weights into gbase values
 		var weight = 1;
 		if (weightIndex > -1)
 		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
+                var sign = Math.sign(weight);
                 return gbases.map((g, i) => {
                     if (typeof g.getInitialValue === 'function')
-		        return weight * scale[i] * g.getInitialValue();
+		        return sign * scale[i] * g.getInitialValue();
                     else
-                        return weight * scale[i] * g;
+                        return sign * scale[i] * g;
 		}).reduce((x,y) => x+y, 0);
 	    }
 	    else
@@ -142,11 +144,11 @@ define(function (require) {
 	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
             if (this.state.population) {
-                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=> x.gbase<0 ? -1*x.gbase : x.gbase)));
-                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=> x.gbase)));
+                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=> x.weight_x_gbase).map(Math.abs)));
+                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=> x.weight_x_gbase).map(Math.abs)));
             } else {
-	        var weights_exc = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0)).map(x => x.gbase);
-	        var weights_inh = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0)).map(x => x.gbase<0 ? -1*x.gbase : x.gbase);
+	        var weights_inh = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0)).map(x => x.gbase*x.weight).map(Math.abs);
+                var weights_exc = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0)).map(x => x.gbase*x.weight).map(Math.abs);
             }
             
 	    var colormaps = {};
@@ -244,6 +246,7 @@ define(function (require) {
 		if (this.state.weight) {
                     m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
                     m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
+                    m_entry.weight_x_gbase ? m_entry.weight_x_gbase+=(link.weight*link.gbase) : m_entry.weight_x_gbase = link.weight*link.gbase;
                     //m_entry.gbase ? m_entry.gbase.push(link.gbase) : m_entry.gbase = [link.gbase];
                     //m_entry.type ? m_entry.type.push(link.type) : m_entry.type = [link.type];
                     m_entry.type = (link.erev >= -70 && (link.gbase >= 0)) ? 'exc' : 'inh';
@@ -596,7 +599,7 @@ define(function (require) {
 	    orderContainer.append($('<span/>', {
 		id: 'matrix-sorter',
                 style: 'float: left;',
-		class: 'connectivity-ordering-label',
+		class: 'control-label',
 		text: 'Order by:'
 	    }).append(orderCombo));
             orderCombo.val(this.state.order);
@@ -670,7 +673,7 @@ define(function (require) {
             typeCombo.val(this.state.filter);
 	    typeContainer.append($('<span/>', {
 		id: 'type-selector',
-		class: 'type-selector-label',
+		class: 'control-label',
 		text: 'Projection Filter:'
 	    }).append(typeCombo));
 
@@ -692,7 +695,7 @@ define(function (require) {
 	    if (this.state.weight)
 		weightCheckbox.attr("checked", "checked");
 	    weightContainer.append(weightCheckbox);
-	    weightContainer.append($('<label for="weightScheme" class="weight-label">Show weights</label>'));
+	    weightContainer.append($('<label for="weightScheme" class="control-label">Show weights</label>'));
 	    
 	    weightCheckbox.on("change", function (ctx, that) {
 		return function () {
@@ -723,7 +726,7 @@ define(function (require) {
 	    if (this.state.population)
 		populationCheckbox.attr("checked", "checked");
 	    populationContainer.append(populationCheckbox);
-	    populationContainer.append($('<label for="population" class="population-label">Show populations</label>'));
+	    populationContainer.append($('<label for="population" class="control-label">Show populations</label>'));
 
 	    populationCheckbox.on("change", function (ctx, that) {
 		return function () {
@@ -761,7 +764,7 @@ define(function (require) {
                     colorCombo.val(this.state.colorScale);
 	        colorContainer.append($('<span/>', {
 		    id: 'color-selector',
-		    class: 'color-selector-label',
+		    class: 'control-label',
 		    text: 'Colorscale Type:'
 	        }).append(colorCombo));
 
@@ -831,7 +834,7 @@ define(function (require) {
                         var gbase = d.gbase; //links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
                         var weightStr = "";
                         if (typeof cweight !== 'undefined') {
-                            weightStr = " (weight=" + Number(cweight).toPrecision(2) + ", g=" +  Number(gbase).toPrecision(2) + "S)";
+                            weightStr = " (weight=" + Number(Math.abs(cweight)).toPrecision(2) + ", g=" +  Number(Math.abs(gbase)).toPrecision(2) + "S)";
                         }
                         $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
                     })

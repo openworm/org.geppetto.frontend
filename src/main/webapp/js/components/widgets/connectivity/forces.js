@@ -5,9 +5,7 @@
 
 define(function (require) {
     return {
-        attraction: 0.0002,
-        repulsion: 5000,
-        state: {filter: 'projection', population: true, linkFilter: 0},
+        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.000001},
         createForceLayout: function (context) {
             var d3 = require("d3");
             var _ = require('underscore');
@@ -29,11 +27,6 @@ define(function (require) {
 	    var g = context.svg.append("g")
 		.attr("class", "everything");
 
-            if (!context.attraction)
-                context.attraction = 0.0002;
-            if (!context.repulsion)
-                context.repulsion = 5000;
-            
             if (context.dataset.populationLinks.filter(l => !l.weight).length > 0)
                 context.populateWeights(context.dataset.populationLinks, this.state.filter);
 
@@ -125,13 +118,13 @@ define(function (require) {
             var node_min = Math.min.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var node_max = Math.max.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var scale_node = function(x) {
-                return lin_scale(50, 100, node_min, node_max, x);
+                return lin_scale(150, 350, node_min, node_max, x);
             }
 
             var link_min = Math.min.apply(null, links.map(l => l.weight<0 ? -1*l.weight : l.weight).filter(w => typeof w != 'undefined'));
             var link_max = Math.max.apply(null, links.map(l => l.weight<0 ? -1*l.weight : l.weight).filter(w => typeof w != 'undefined'));
             var scale_link = function(x) {
-                return lin_scale(10, 50, link_min, link_max, x);
+                return lin_scale(40, 150, link_min, link_max, x);
             }
 
             d3.select(".everything").selectAll(".link").remove();
@@ -152,10 +145,13 @@ define(function (require) {
                         : "-6 -6 12 12" //inh=circle
                 })
                 .attr("refX", function(d) {
-                    return (d.erev>=-70 && (d.gbase>=0)) ? 20 : 18;
+                    return (d.erev>=-70 && (d.gbase>=0)) ? 24 : 22; //20 : 18;
                 })
                 .attr("refY", function(d) {
-                    return 0;
+                    if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
+                        return -5;
+                    else
+                        return 0;
                 })
                 .attr("stroke", function(d) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
@@ -168,15 +164,28 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
                 .attr("markerWidth", (function(d) {
-                    if (d.target.n)
-                        return 15;
-                    else {
-                        var w = d.weight<0 ? -1*d.weight : d.weight;
-                        return scale_link(w)>=parseFloat(this.state.linkFilter) ? scale_node(d.target.n ? d.target.n : nodes[d.target].n)-2 : 0;
-                    }
+                    var w = d.weight<0 ? -1*d.weight : d.weight;
+                    if (scale_link(w)>=parseFloat(this.state.linkFilter)) {
+                        if (Object.keys(d.target).length !== 0) {
+                            if (d.target.n)
+                                return scale_node(d.target.n)-100;
+                            else
+                                return 15;
+                        } else {
+                            return scale_node(nodes[d.target].n)-102;
+                        }
+                    } else
+                        return 0;
                 }).bind(this))
                 .attr("markerHeight", function(d) {
-                    return d.target.n ? 15 : scale_node(nodes[d.target].n)-2;
+                    if (Object.keys(d.target).length !== 0) {
+                        if (d.target.n)
+                            return scale_node(d.target.n)-100;
+                        else
+                            return 15;
+                    } else {
+                        return scale_node(nodes[d.target].n)-102;
+                    }
                 })
                 .attr("orient", "auto")
                 .attr("markerUnits", "userSpaceOnUse")
@@ -192,8 +201,8 @@ define(function (require) {
                 .enter().append("svg:path")
                 .attr("class", "link")
                 .attr("marker-end", function(d) {
-                    if (nodes[d.source].type === nodes[d.target].type)
-                        return "none";
+                    if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
+                        return "url(#" + nodes[d.source].type + "," + nodes[d.target].type + ")";
                     else if (d.source.type)
                         return "url(#" + d.source.type + "," + d.target.type + ")";
                     else
@@ -261,17 +270,17 @@ define(function (require) {
             var legendPosition = { x: 0.75 * context.options.innerWidth, y: 0 };
 
             //Nodes
-            //var legendBottom = context.createLegend('legend', nodeTypeScale, legendPosition, 'Cell Types');
+            var legendBottom = context.createLegend('legend', nodeTypeScale, legendPosition, 'Cell Types');
 
             //legendPosition.y = legendBottom.y + 15;
             //Links
             //context.createLegend('legend2', linkTypeScale, legendPosition, 'Synapse Types');
             context.force = d3.forceSimulation()
                 .force("charge", (function(){
-                    return d3.forceManyBody().strength(-1*context.repulsion);
+                    return d3.forceManyBody().strength(-1*this.state.repulsion);
                 }).bind(this)())
                 .force("link", d3.forceLink().strength((function(d) {
-                    if (d.weight) { if(parseInt(d.weight)<0) { return parseInt(d.weight)*-1*context.attraction; } else { return parseInt(d.weight)*context.attraction; }} else { return 1/10; }
+                    if (d.weight) { if(parseInt(d.weight)<0) { return parseInt(d.weight)*-1*this.state.attraction; } else { return parseInt(d.weight)*this.state.attraction; }} else { return 1/10; }
                 }).bind(this)))
                 .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2))
                 .nodes(nodes);
@@ -304,8 +313,8 @@ define(function (require) {
 
                          // Make drx and dry different to get an ellipse
                         // instead of a circle.
-                        drx = 150;
-                        dry = 150;
+                        drx = 350;
+                        dry = 350;
 
                         // For whatever reason the arc collapses to a point if the beginning
                         // and ending points of the arc are the same, so kludge it.
@@ -403,12 +412,12 @@ define(function (require) {
 	    } (context, this));
 
             
-            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.001" min="0.000001" step="1e-9" id="attraction" name="attraction" value="0.0002">');
-	    if (context.attraction)
-		attractionSlide.attr("value", context.attraction);
+            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.001" min="0.000001" step="1e-9" id="attraction" name="attraction" value="0.000001">');
+	    if (this.state.attraction)
+		attractionSlide.attr("value", this.state.attraction);
             attractionSlide.on("change", function(ctx, that) {
                 return function() {
-                    ctx.attraction = this.value;
+                    that.state.attraction = this.value;
                     ctx.createLayout();
                 }
             } (context, this));
@@ -416,11 +425,11 @@ define(function (require) {
 	    typeContainer.append($('<label for="attraction" class="control-label">Link Strength</label>'));
 
             var repulsionSlide = $('<input class="connectivity-control" type="range" min="1000" max="100000" id="repulsion" name="repulsion" value="5000">');
-	    if (context.repulsion)
-		repulsionSlide.attr("value", context.repulsion);
+	    if (this.state.repulsion)
+		repulsionSlide.attr("value", this.state.repulsion);
             repulsionSlide.on("change", function(ctx, that) {
                 return function() {
-                    ctx.repulsion = this.value;
+                    that.state.repulsion = this.value;
                     ctx.createLayout();
                 }
             } (context, this));
@@ -437,7 +446,7 @@ define(function (require) {
                 }
             } (context, this));
 	    typeContainer.append(linkSlide);
-            typeContainer.append($('<label for="link" class="control-label">Show links</label>'));
+            typeContainer.append($('<label for="link" class="control-label">Hide links</label>'));
         }
     }
 });

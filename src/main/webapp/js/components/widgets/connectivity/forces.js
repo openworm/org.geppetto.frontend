@@ -118,27 +118,29 @@ define(function (require) {
             var node_min = Math.min.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var node_max = Math.max.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var scale_node = function(x) {
-                return lin_scale(150, 350, node_min, node_max, x);
-            }
+                return lin_scale(150*this.state.nodeSize, 350*this.state.nodeSize, node_min, node_max, x);
+            }.bind(this);
 
-            var link_min = Math.min.apply(null, links.map(l => l.weight<0 ? -1*l.weight : l.weight).filter(w => typeof w != 'undefined'));
-            var link_max = Math.max.apply(null, links.map(l => l.weight<0 ? -1*l.weight : l.weight).filter(w => typeof w != 'undefined'));
+            var link_min = Math.min.apply(null, links.map(l => Math.abs(l.weight)).filter(w => typeof w != 'undefined'));
+            var link_max = Math.max.apply(null, links.map(l => Math.abs(l.weight)).filter(w => typeof w != 'undefined'));
             var scale_link = function(x) {
-                return lin_scale(40, 150, link_min, link_max, x);
-            }
+                if (!link_min) link_min = 1;
+                if (!link_max) link_max = 1;
+                return lin_scale(30*this.state.linkSize, 200*this.state.linkSize, link_min, link_max, x);
+            }.bind(this)
 
             d3.select(".everything").selectAll(".link").remove();
 
-            var mh = function(d){
+            var mh = (function(d){
                 if (Object.keys(d.target).length !== 0) {
                     if (d.target.n)
-                        return scale_node(d.target.n)-80;
+                        return scale_node(d.target.n)/this.state.nodeSize-80;
                     else
                         return 15;
                 } else {
-                    return scale_node(nodes[d.target].n);
+                    return scale_node(nodes[d.target].n)/this.state.nodeSize;
                 }
-            };
+            }).bind(this);
             context.svg.append("svg:defs").selectAll("marker")
                 .data(links)      // Different link/path types can be defined here
                 .enter().append("svg:marker")    // This section adds in the arrows
@@ -156,14 +158,14 @@ define(function (require) {
                 })
                 .attr("refX", function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
-                        return (d.erev>=-70 && (d.gbase>=0)) ? 0 : 18; //20 : 18;
+                        return (d.erev>=-70 && (d.gbase>=0)) ? 0 : 16; //20 : 18;
                     else
-                        return (d.erev>=-70 && (d.gbase>=0)) ? 22 : 20; //20 : 18;
+                        return (d.erev>=-70 && (d.gbase>=0)) ? 18 : 16;
                 })
                 .attr("refY", function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
                         // FIXME: this is absurd…
-                        return (d.erev>=-70 && (d.gbase>=0)) ? (0.11*mh(d) - 56) : -6;
+                        return (d.erev>=-70 && (d.gbase>=0)) ? -7016.05/mh(d): -5;
                     else
                         return 0;
                 })
@@ -179,28 +181,28 @@ define(function (require) {
                 })
                 .attr("markerWidth", (function(d) {
                     var w = d.weight<0 ? -1*d.weight : d.weight;
-                    if (scale_link(w)>=parseFloat(this.state.linkFilter)) {
+                    if (scale_link(w ? w : 1)>=parseFloat(this.state.linkFilter)) {
                         if (Object.keys(d.target).length !== 0) {
                             if (d.target.n)
-                                return scale_node(d.target.n)-80;
+                                return scale_node(d.target.n)/this.state.nodeSize-80;
                             else
                                 return 15;
                         } else {
-                            return scale_node(nodes[d.target].n);
+                            return scale_node(nodes[d.target].n)/this.state.nodeSize;
                         }
                     } else
                         return 0;
                 }).bind(this))
-                .attr("markerHeight", function(d) {
+                .attr("markerHeight", (function(d) {
                     if (Object.keys(d.target).length !== 0) {
                         if (d.target.n)
-                            return scale_node(d.target.n)-80;
+                            return scale_node(d.target.n)/this.state.nodeSize-80;
                         else
                             return 15;
                     } else {
-                        return scale_node(nodes[d.target].n);
+                        return scale_node(nodes[d.target].n)/this.state.nodeSize;
                     }
-                })
+                }).bind(this))
                 .attr("orient", "auto")
                 .attr("markerUnits", "userSpaceOnUse")
                 .append("svg:path")
@@ -228,20 +230,20 @@ define(function (require) {
                 })
                 .style("stroke-opacity", (function (d) {
                     var w = d.weight<0 ? -1*d.weight : d.weight;
-                    return scale_link(w)>=parseFloat(this.state.linkFilter) ? 1 : 0; 
+                    return scale_link(w ? w : 1)>=parseFloat(this.state.linkFilter) ? 1 : 0; 
                 }).bind(this))
                 .style("stroke-width", function (d) {
                     //return 10;
-                    return d.weight ? scale_link(d.weight<0 ? -1*d.weight : d.weight) : 1;
+                    return d.weight ? scale_link(d.weight<0 ? -1*d.weight : d.weight) : 50;
                 });
             
             var node = g.selectAll(".node")
                 .data(nodes)
                 .enter().append("circle")
                 .attr("class", "node")
-                .attr("r", function (d) {
-                    return d.n ? scale_node(d.n) : 250;
-                })  // radius
+                .attr("r", (function (d) {
+                    return d.n ? scale_node(d.n) : 250*this.state.nodeSize;
+                }).bind(this))  // radius
                 .style("fill", function (d) {
                     return nodeTypeScale(d.type);
                 })
@@ -299,7 +301,8 @@ define(function (require) {
                 .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2))
                 .nodes(nodes);
             
-             function tick() {
+            var tick = function (nodeSize) {
+                return function() {
                  link.attr("d", function(d) {
                      var x1 = d.source.x,
                          y1 = d.source.y,
@@ -327,8 +330,8 @@ define(function (require) {
 
                          // Make drx and dry different to get an ellipse
                         // instead of a circle.
-                        drx = 350;
-                        dry = 350;
+                         drx = 350*nodeSize;
+                         dry = 350*nodeSize;
 
                         // For whatever reason the arc collapses to a point if the beginning
                         // and ending points of the arc are the same, so kludge it.
@@ -348,9 +351,10 @@ define(function (require) {
                 node.attr("transform", function(d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
-            }
+                }
+             };
 
-            context.force.on("tick", tick);
+            context.force.on("tick", tick(this.state.nodeSize));
             context.force.force("link").links(links);
 
 //            context.force.on("tick", function() { start(node, link); });
@@ -426,7 +430,7 @@ define(function (require) {
 	    } (context, this));
 
             
-            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.001" min="0.000001" step="1e-9" id="attraction" name="attraction" value="0.000001">');
+            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.00001" min="0.0000001" step="1e-9" id="attraction" name="attraction" value="0.000001">');
 	    if (this.state.attraction)
 		attractionSlide.attr("value", this.state.attraction);
             attractionSlide.on("change", function(ctx, that) {
@@ -450,7 +454,7 @@ define(function (require) {
 	    typeContainer.append(repulsionSlide);
             typeContainer.append($('<label for="repulsion" class="control-label">Node Repulsion</label>'));
 
-            var linkSlide = $('<input class="connectivity-control" type="range" min="' + (scale_link(link_min)-2) + '" max="' + (scale_link(link_max)+2) + '" id="link" name="link" value="' + (scale_link(link_min)-2) + '">');
+            var linkSlide = $('<input class="connectivity-control" type="range" min="' + (scale_link(link_min ? link_min : 1)-2) + '" max="' + (scale_link(link_max ? link_max : 1)+2) + '" id="link" name="link" value="' + (scale_link(link_min ? link_min : 1)-2) + '">');
 	    if (this.state.linkFilter)
 		linkSlide.attr("value", this.state.linkFilter);
             linkSlide.on("change", function(ctx, that) {
@@ -461,6 +465,32 @@ define(function (require) {
             } (context, this));
 	    typeContainer.append(linkSlide);
             typeContainer.append($('<label for="link" class="control-label">Hide links</label>'));
+
+            
+            var nodeSlide = $('<input class="connectivity-control" type="range" min="1" max="10" id="link" name="link" value="1">');
+	    if (this.state.nodeSize)
+		nodeSlide.attr("value", this.state.nodeSize);
+            nodeSlide.on("change", function(ctx, that) {
+                return function() {
+                    that.state.nodeSize = this.value;
+                    ctx.createLayout();
+                }
+            } (context, this));
+	    typeContainer.append(nodeSlide);
+            typeContainer.append($('<label for="node" class="control-label">Node size</label>'));
+
+                        
+            var linkSizeSlide = $('<input class="connectivity-control" type="range" min="1" max="10" id="link" name="link" value="1">');
+	    if (this.state.linkSize)
+		linkSizeSlide.attr("value", this.state.linkSize);
+            linkSizeSlide.on("change", function(ctx, that) {
+                return function() {
+                    that.state.linkSize = this.value;
+                    ctx.createLayout();
+                }
+            } (context, this));
+	    typeContainer.append(linkSizeSlide);
+            typeContainer.append($('<label for="link" class="control-label">Link size</label>'));
         }
     }
 });

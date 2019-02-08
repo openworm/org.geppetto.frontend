@@ -241,7 +241,6 @@ define(function (require) {
                 this.populateWeights(links, this.state.filter);
                 
 	    // Compute index per node.
-	    // Array.from(new Set(nodes.map(x=>x.type))).forEach(function (node, i) {
             nodes.forEach((function (node, i) {
 		node.pre_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};
                 node.post_count = {"gapJunction": 0, "continousProjection": 0, "projection": 0};

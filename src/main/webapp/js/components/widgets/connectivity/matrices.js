@@ -772,7 +772,7 @@ define(function (require) {
 	        colorContainer.append($('<span/>', {
 		    id: 'color-selector',
 		    class: 'control-label',
-		    text: 'Colorscale Type:'
+		    text: 'Colourscale Type:'
 	        }).append(colorCombo));
 
                 colorCombo.on("change", function(ctx, that) {
@@ -837,10 +837,11 @@ define(function (require) {
                         var cweight = d.weight;
                         var gbase = d.gbase;
                         var weightStr = "";
+                        var weightPre = " (w=";
                         if (typeof cweight !== 'undefined') {
-                            weightStr = " (weight=" + Number(Math.abs(cweight)).toPrecision(2) + ", g=" +  Number(Math.abs(gbase)).toPrecision(2) + "S)";
+                            weightStr = weightPre + parseFloat(Number(cweight)) + ", g=" +  parseFloat(Number(gbase)/Number(cweight)) + "S, w*g=" +  parseFloat(Number(gbase)) + ")";
                         }
-                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " is connected to " + nodes[d.x].id + weightStr);
+                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " -> " + nodes[d.x].id + weightStr);
                     })
 		    .on("mouseout", $.proxy(mouseoutCell));
 		}

@@ -140,7 +140,108 @@ define(['jquery'], function () {
             // when the mouse moves, call the given function
             this.renderer.domElement.addEventListener('mousedown', function (event) {
             	clientX = event.clientX;
-            	clientY = event.clientY;
+                clientY = event.clientY;
+            }, false);
+
+            // when the mouse moves, call the given function
+            this.renderer.domElement.addEventListener('mouseup', function (event) {
+                if (event.target == that.renderer.domElement) {
+                    var x = event.clientX;
+                    var y = event.clientY;
+
+                    // If the mouse moved since the mousedown then don't consider this a selection
+                    if (x != clientX || y != clientY)
+                        return;
+
+                    that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height - that.renderer.domElement.offsetParent.offsetTop)) / that.renderer.domElement.height) * 2 + 1;
+                    that.mouse.x = ((event.clientX - that.renderer.domElement.offsetParent.offsetLeft) / that.renderer.domElement.width) * 2 - 1;
+
+                    if (event.button == 0) //only for left click
+                    {
+                        if (that.pickingEnabled) {
+                            var intersects = that.getIntersectedObjects();
+
+                            if (intersects.length > 0) {
+                                var selected = "";
+                                var geometryIdentifier = "";
+
+                                // sort intersects
+                                var compare = function (a, b) {
+                                    if (a.distance < b.distance)
+                                        return -1;
+                                    if (a.distance > b.distance)
+                                        return 1;
+                                    return 0;
+                                };
+
+                                intersects.sort(compare);
+
+                                var selectedIntersect;
+                                // Iterate and get the first visible item (they are now ordered by proximity)
+                                for (var i = 0; i < intersects.length; i++) {
+                                    // figure out if the entity is visible
+                                    var instancePath = "";
+                                    if (intersects[i].object.hasOwnProperty("instancePath")) {
+                                        instancePath = intersects[i].object.instancePath;
+                                        geometryIdentifier = intersects[i].object.geometryIdentifier;
+                                    } else {
+                                        //weak assumption: if the object doesn't have an instancePath its parent will
+                                        instancePath = intersects[i].object.parent.instancePath;
+                                        geometryIdentifier = intersects[i].object.parent.geometryIdentifier;
+                                    }
+                                    if (instancePath != null || undefined) {
+                                        var visible = eval(instancePath + '.visible');
+                                        if (intersects.length == 1 || i == intersects.length) {
+                                            //if there's only one element intersected we select it regardless of its opacity
+                                            if (visible) {
+                                                selected = instancePath;
+                                                selectedIntersect = intersects[i];
+                                                break;
+                                            }
+                                        } else {
+                                            //if there are more than one element intersected and opacity of the current one is less than 1
+                                            //we skip it to realize a "pick through"
+                                            var opacity = that.meshes[instancePath].defaultOpacity;
+                                            if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
+                                                selected = instancePath;
+                                                selectedIntersect = intersects[i];
+                                                break;
+                                            } else if (visible && opacity < 1 && opacity > 0) {
+                                                //if only transparent objects intersected select first or the next down if
+                                                //one is already selected in order to enable "burrow through" sample.
+                                                if (selected == "" && !eval(instancePath + '.selected')) {
+                                                    selected = instancePath;
+                                                    selectedIntersect = intersects[i];
+                                                } else {
+                                                    if (eval(instancePath + '.selected') && i != intersects.length - 1) {
+                                                        selected = "";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+
+                                if (selected != "") {
+                                    if (that.meshes.hasOwnProperty(selected) || that.splitMeshes.hasOwnProperty(selected)) {
+                                        if (!GEPPETTO.isKeyPressed("shift")) {
+                                            that.deselectAll();
+                                        }
+
+                                        var selectedIntersectCoordinates = [selectedIntersect.point.x, selectedIntersect.point.y, selectedIntersect.point.z]
+                                        if (geometryIdentifier == undefined) {
+                                            geometryIdentifier = "";
+                                        }
+                                        GEPPETTO.CommandController.execute(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
+                                    }
+                                }
+                            } else if (GEPPETTO.isKeyPressed("ctrl")) {
+                                that.deselectAll();
+                            }
+                        }
+                    }
+                }
             }, false);
 
             // when the mouse moves, call the given function
@@ -246,8 +347,8 @@ define(['jquery'], function () {
 
 
             this.renderer.domElement.addEventListener('mousemove', function (event) {
-            	that.mouse.y = -((event.clientY -(window.innerHeight -that.renderer.domElement.height))/ that.renderer.domElement.height) * 2 + 1;
-            	that.mouse.x = ((event.clientX -that.renderer.domElement.offsetParent.offsetLeft)/ that.renderer.domElement.width) * 2 - 1;
+            	that.mouse.y = -((event.clientY - (window.innerHeight - that.renderer.domElement.height - that.renderer.domElement.offsetParent.offsetTop)) / that.renderer.domElement.height) * 2 + 1;
+              that.mouse.x = ((event.clientX - that.renderer.domElement.offsetParent.offsetLeft) / that.renderer.domElement.width) * 2 - 1;
             	if (that.hoverListeners) {
             		var intersects = that.getIntersectedObjects();
             		for (var listener in that.hoverListeners) {

@@ -4,6 +4,7 @@
  */
 define(function (require) {
 
+  var React = require('react');
   var CreateClass = require('create-react-class'),
         $ = require('jquery');
 

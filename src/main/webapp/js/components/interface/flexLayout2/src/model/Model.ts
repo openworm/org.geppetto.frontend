@@ -311,7 +311,7 @@ class Model {
         return model;
     }
 
-     getSplitterSize() {
+    getSplitterSize() {
         return this._attributes["splitterSize"] as number;
     }
 
@@ -429,6 +429,9 @@ class Model {
         attributeDefinitions.add("borderBarSize", 25);
         attributeDefinitions.add("borderEnableDrop", true).setType(Attribute.BOOLEAN);
         attributeDefinitions.add("borderClassName", undefined).setType(Attribute.STRING);
+
+        attributeDefinitions.add("sideBorders", 0).setType(Attribute.NUMBER);
+
         return attributeDefinitions;
     }
 }

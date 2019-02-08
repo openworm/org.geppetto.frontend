@@ -2,6 +2,7 @@ define(function (require) {
 
     require('./spotlight.less');
 
+    var React = require('react');
     var CreateClass = require('create-react-class'),
         $ = require('jquery'),
         typeahead = require("typeahead.js/dist/typeahead.jquery.min.js"),

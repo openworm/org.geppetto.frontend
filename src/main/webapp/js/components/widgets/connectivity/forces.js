@@ -5,7 +5,7 @@
 
 define(function (require) {
     return {
-        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.000001},
+        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.000001, nodeSize: 1, linkSize: 1},
         createForceLayout: function (context) {
             var d3 = require("d3");
             var _ = require('underscore');

@@ -839,9 +839,11 @@ define(function (require) {
                         var weightStr = "";
                         var weightPre = " (w=";
                         if (typeof cweight !== 'undefined') {
-                            weightStr = weightPre + parseFloat(Number(cweight)) + ", g=" +  parseFloat(Number(gbase)/Number(cweight)) + "S, w*g=" +  parseFloat(Number(gbase)) + ")";
+                            weightStr = weightPre + Number(Math.abs(cweight)).toPrecision(2) + ", " +
+                                "g=" +  Number(Math.abs(gbase)).toPrecision(2) + " S, " +
+                                "w*g=" +  Number(Math.abs(gbase*cweight)).toPrecision(2) + " S)";
                         }
-                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " -> " + nodes[d.x].id + weightStr);
+                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " → " + nodes[d.x].id + weightStr);
                     })
 		    .on("mouseout", $.proxy(mouseoutCell));
 		}

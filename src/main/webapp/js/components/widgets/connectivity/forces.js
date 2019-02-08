@@ -129,6 +129,16 @@ define(function (require) {
 
             d3.select(".everything").selectAll(".link").remove();
 
+            var mh = function(d){
+                if (Object.keys(d.target).length !== 0) {
+                    if (d.target.n)
+                        return scale_node(d.target.n)-80;
+                    else
+                        return 15;
+                } else {
+                    return scale_node(nodes[d.target].n);
+                }
+            };
             context.svg.append("svg:defs").selectAll("marker")
                 .data(links)      // Different link/path types can be defined here
                 .enter().append("svg:marker")    // This section adds in the arrows
@@ -146,13 +156,14 @@ define(function (require) {
                 })
                 .attr("refX", function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
-                        return 0;
+                        return (d.erev>=-70 && (d.gbase>=0)) ? 0 : 18; //20 : 18;
                     else
-                        return (d.erev>=-70 && (d.gbase>=0)) ? 24 : 22; //20 : 18;
+                        return (d.erev>=-70 && (d.gbase>=0)) ? 22 : 20; //20 : 18;
                 })
                 .attr("refY", function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
-                        return -25;
+                        // FIXME: this is absurd…
+                        return (d.erev>=-70 && (d.gbase>=0)) ? (0.11*mh(d) - 56) : -6;
                     else
                         return 0;
                 })
@@ -175,7 +186,7 @@ define(function (require) {
                             else
                                 return 15;
                         } else {
-                            return scale_node(nodes[d.target].n)-82;
+                            return scale_node(nodes[d.target].n);
                         }
                     } else
                         return 0;
@@ -187,7 +198,7 @@ define(function (require) {
                         else
                             return 15;
                     } else {
-                        return scale_node(nodes[d.target].n)-82;
+                        return scale_node(nodes[d.target].n);
                     }
                 })
                 .attr("orient", "auto")

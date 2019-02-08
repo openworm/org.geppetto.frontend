@@ -117,7 +117,7 @@ define(function (require) {
 		var weight = 1;
 		if (weightIndex > -1)
 		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-                var sign = Math.sign(weight);
+                var sign = weight===0 ? 1 : Math.sign(weight);
                 return gbases.map((g, i) => {
                     if (typeof g.getInitialValue === 'function')
 		        return sign * scale[i] * g.getInitialValue();
@@ -144,13 +144,16 @@ define(function (require) {
 	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
             if (this.state.population) {
-                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=> x.weight_x_gbase).map(Math.abs)));
-                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=> x.weight_x_gbase).map(Math.abs)));
+                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=> x.weight*x.gbase).map(Math.abs)));
+                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=> x.weight*x.gbase).map(Math.abs)));
             } else {
-	        var weights_inh = links.filter(l => (l.erev < exc_threshold) || (l.gbase < 0)).map(x => x.gbase*x.weight).map(Math.abs);
-                var weights_exc = links.filter(l => (l.erev >= exc_threshold) && (l.gbase >= 0)).map(x => x.gbase*x.weight).map(Math.abs);
+	        var weights_inh = links.filter(l => (l.erev < exc_threshold) || (l.weight < 0)).map(x => x.weight*x.gbase).map(Math.abs);
+                var weights_exc = links.filter(l => (l.erev >= exc_threshold) && (l.weight >= 0)).map(x => x.weight*x.gbase).map(Math.abs);
             }
-            
+            if (weights_inh.length === 1)
+                weights_inh.push(weights_inh[0]/2);
+            if (weights_exc.length === 1)
+                weights_exc.push(weights_exc[0]/2);
 	    var colormaps = {};
             if (this.state.colorScale) {
                 var baseColormap = eval('('+this.state.colorScale+')');
@@ -170,13 +173,26 @@ define(function (require) {
 	    if (weights_exc.length > 0) {
 		var min_exc = Math.min.apply(null, weights_exc);
 		var max_exc = Math.max.apply(null, weights_exc);
-		colormaps.exc = baseColormapExc.copy().domain([min_exc, max_exc]);
 	    }
 	    if (weights_inh.length > 0) {
 		var min_inh = Math.min.apply(null, weights_inh);
 		var max_inh = Math.max.apply(null, weights_inh);
-		colormaps.inh = baseColormapInh.copy().domain([min_inh, max_inh]);
+
 	    }
+
+            // if we don't have seperate scales then make max/min the same
+            if (this.state.colorScale && eval('('+this.state.colorScale+')').inh) {
+                colormaps.inh = baseColormapInh.copy().domain([min_inh, max_inh]);
+                colormaps.exc = baseColormapExc.copy().domain([min_exc, max_exc]);
+            } else {
+                var max = Math.max(max_exc ? max_exc : Number.MIN_SAFE_INTEGER,
+                                   max_inh ? max_inh : Number.MIN_SAFE_INTEGER);
+                var min = Math.min(min_exc ? min_exc : Number.MAX_SAFE_INTEGER,
+                                   min_inh ? min_inh : Number.MAX_SAFE_INTEGER);
+                colormaps.inh = baseColormapInh.copy().domain([min, max]);
+                colormaps.exc = baseColormapInh.copy().domain([min, max]);
+            }		
+
 	    return colormaps;
 	},
 	createMatrixLayout: function (context, state) {
@@ -235,40 +251,31 @@ define(function (require) {
 	    }).bind(this));
 
 	    // Convert links to matrix; count pre / post conns.
-	    links.forEach((function (link) {
-		//TODO: think about zero weight lines
-		//matrix[link.source][link.target].z = link.weight ? link.type : 0;
-                var Aindex = link.conns[0].getA().getElements()[0].getIndex();
-                var Bindex = link.conns[0].getB().getElements()[0].getIndex();
-                var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
-                var projTypes = proj.filter(x => x.pairs.filter(p => p[0]==Aindex && p[1]==Bindex).length>0).map(x => x.type);
-                var m_entry = this.matrix[link.source][link.target]
-		if (this.state.weight) {
-                    m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
-                    m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
-                    m_entry.weight_x_gbase ? m_entry.weight_x_gbase+=(link.weight*link.gbase) : m_entry.weight_x_gbase = link.weight*link.gbase;
-                    //m_entry.gbase ? m_entry.gbase.push(link.gbase) : m_entry.gbase = [link.gbase];
-                    //m_entry.type ? m_entry.type.push(link.type) : m_entry.type = [link.type];
-                    m_entry.type = (link.erev >= -70 && (link.gbase >= 0)) ? 'exc' : 'inh';
-                    //matrix[link.source][link.target].gbase = link.gbase;
-		    //matrix[link.source][link.target].type = link.erev >= -70 ? 'exc' : 'inh';
-		}
-		else {
-		    //delete this.matrix[link.source][link.target].type;
-		}
-                for (var type of projTypes) {
-		    nodes[link.source].pre_count[type] += 1;
-		    nodes[link.target].post_count[type] += 1;
-                }
-                for (var i=0; i<link.type.length; ++i){
-                    if (m_entry.z != 0 && m_entry.z.indexOf(link.type[i])==-1)
-                        m_entry.z.push(link.type[i]);
-                    else if (m_entry.z == 0)
-                        m_entry.z = [link.type[i]];
-                }
-                m_entry.projTypes ? m_entry.projTypes.push(projTypes) : m_entry.projTypes = [projTypes];
-                //matrix[link.source][link.target].projTypes = projTypes;
-	    }).bind(this));
+	    links.filter(l=> typeof l.weight !== 'undefined' && typeof l.gbase !== 'undefined' && typeof l.type !== 'undefined')
+                .forEach((function (link) {
+		    //TODO: think about zero weight lines
+                    var Aindex = link.conns[0].getA().getElements()[0].getIndex();
+                    var Bindex = link.conns[0].getB().getElements()[0].getIndex();
+                    var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
+                    var projTypes = proj.filter(x => x.pairs.filter(p => p[0]==Aindex && p[1]==Bindex).length>0).map(x => x.type);
+                    var m_entry = this.matrix[link.source][link.target]
+		    if (this.state.weight) {
+                        m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
+                        m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
+                        m_entry.type = (link.erev >= -70 && link.weight >= 0) ? 'exc' : 'inh';
+		    }
+                    for (var type of projTypes) {
+		        nodes[link.source].pre_count[type] += 1;
+		        nodes[link.target].post_count[type] += 1;
+                    }
+                    for (var i=0; i<link.type.length; ++i){
+                        if (m_entry.z != 0 && m_entry.z.indexOf(link.type[i])==-1)
+                            m_entry.z.push(link.type[i]);
+                        else if (m_entry.z == 0)
+                            m_entry.z = [link.type[i]];
+                    }
+                    m_entry.projTypes ? m_entry.projTypes.push(projTypes) : m_entry.projTypes = [projTypes];
+	        }).bind(this));
 
 	    //Sorting matrix entries.
 	    //TODO: runtime specified sorting criteria
@@ -801,10 +808,9 @@ define(function (require) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "none";
 			    if (typeof linkColormaps[d.type] === 'function')
-			        return linkColormaps[d.type](d.gbase<0 ? -1*d.gbase : d.gbase);
+			        return linkColormaps[d.type](Math.abs(d.gbase*d.weight));
 			    else
                                 return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
-			        //return linkColormaps(Array.from(new Set(d.z.map(JSON.stringify))).map(JSON.parse).filter(x=>projTypes[filter].indexOf(x[0])>-1));
 		        }
                     } (linkColormaps, filter, projTypesSummary, weights))
 		    .style("stroke", function(linkColormaps, filter, projTypes, weights) {
@@ -812,11 +818,9 @@ define(function (require) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "none";
 			    if (typeof linkColormaps[d.type] === 'function')
-			        return linkColormaps[d.type](d.gbase<0 ? -1*d.gbase : d.gbase);
+			        return linkColormaps[d.type](Math.abs(d.gbase*d.weight));
 			    else
                                 return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
-                                //return linkColormaps(Array.from(new Set(d.z.map(JSON.stringify))).map(JSON.parse).filter(x=>projTypes[filter].indexOf(x[0])>-1));
-
 		        }
                     } (linkColormaps, filter, projTypesSummary, weights))
 		    .on("click", function (d) {
@@ -830,8 +834,8 @@ define(function (require) {
 		    .on("mouseover", function (d) {
                         var source_id = d.y;
                         var target_id = d.x;
-                        var cweight = d.weight; //links.filter(l => l.source==source_id && l.target==target_id)[0].weight;
-                        var gbase = d.gbase; //links.filter(l => l.source==source_id && l.target==target_id)[0].gbase;
+                        var cweight = d.weight;
+                        var gbase = d.gbase;
                         var weightStr = "";
                         if (typeof cweight !== 'undefined') {
                             weightStr = " (weight=" + Number(Math.abs(cweight)).toPrecision(2) + ", g=" +  Number(Math.abs(gbase)).toPrecision(2) + "S)";

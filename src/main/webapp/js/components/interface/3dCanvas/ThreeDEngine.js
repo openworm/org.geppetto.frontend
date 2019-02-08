@@ -178,17 +178,6 @@ define(['jquery'], function () {
             					var selected = "";
             					var geometryIdentifier = "";
 
-            					// sort intersects
-            					var compare = function (a, b) {
-            						if (a.distance < b.distance)
-            							return -1;
-            						if (a.distance > b.distance)
-            							return 1;
-            						return 0;
-            					};
-
-            					intersects.sort(compare);
-
             					var selectedIntersect;
             					// Iterate and get the first visible item (they are now ordered by proximity)
             					for (var i = 0; i < intersects.length; i++) {

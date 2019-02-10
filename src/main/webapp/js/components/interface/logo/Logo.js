@@ -2,6 +2,7 @@ define(function (require) {
 
     require('./Logo.less');
 
+    var React = require('react');
     var CreateClass = require('create-react-class');
     var GEPPETTO = require('geppetto');
 

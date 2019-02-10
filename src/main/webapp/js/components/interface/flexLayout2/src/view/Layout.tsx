@@ -27,7 +27,9 @@ export interface ILayoutProps {
     onRenderTab?: (node: TabNode, renderValues: { leading: React.ReactNode, content: React.ReactNode, buttons: Array<React.ReactNode> }) => void,
     onRenderTabSet?: (tabSetNode: (TabSetNode | BorderNode), renderValues: { headerContent?: React.ReactNode, buttons: Array<React.ReactNode> }) => void,
     onModelChange?: (model: Model) => void,
-    classNameMapper?: (defaultClassName: string) => string
+    classNameMapper?: (defaultClassName: string) => string,
+    clickOnBordersAction?: (node: TabNode) => void
+
 }
 
 /**
@@ -188,9 +190,20 @@ export class Layout extends React.Component<ILayoutProps, any> {
         });
 
         // this.layoutTime = (Date.now() - this.start);
-
+        let layoutStyle = {
+            'borderLeft': "0px solid transparent",
+            'borderRight': "0px solid transparent"
+        };
+        let layoutSideBorders: number = 0;
+        layoutSideBorders = this.model!._getAttribute('sideBorders');
+        if(layoutSideBorders > 0) {
+            layoutStyle = {
+                'borderLeft': layoutSideBorders + "px solid transparent",
+                'borderRight': layoutSideBorders + "px solid transparent"
+            };
+        }
         return (
-            <div ref={self => this.selfRef = (self===null)?undefined:self} className={this.getClassName("flexlayout__layout")}>
+            <div style={layoutStyle} ref={self => this.selfRef = (self===null)?undefined:self} className={this.getClassName("flexlayout__layout")}>
                 {tabSetComponents}
                 {this.tabIds.map(t => {
                     return tabComponents[t];
@@ -543,6 +556,13 @@ export class Layout extends React.Component<ILayoutProps, any> {
     customizeTabSet(tabSetNode: (TabSetNode | BorderNode), renderValues: { headerContent?: React.ReactNode, buttons: Array<React.ReactNode> }) {
         if (this.props.onRenderTabSet) {
             this.props.onRenderTabSet(tabSetNode, renderValues);
+        }
+    }
+
+    /** @hidden @internal */
+    customizeBottomBar(tabNode: TabNode) {
+        if (this.props.clickOnBordersAction) {
+            this.props.clickOnBordersAction(tabNode);
         }
     }
 }

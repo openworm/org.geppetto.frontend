@@ -127,11 +127,19 @@ class TabSetNode extends Node implements IDraggable, IDropTarget{
         if (dragNode === this) {
             let dockLocation = DockLocation.CENTER;
             let outlineRect = this._tabHeaderRect;
+            let _sideBorders = this._model!._getAttribute('sideBorders');
+            if(_sideBorders > 0 && (outlineRect!.width + outlineRect!.x) >= window.innerWidth) {
+                outlineRect!.width = outlineRect!.width - (_sideBorders * 2);
+            }
             dropInfo = new DropInfo(this, outlineRect!, dockLocation, -1, "flexlayout__outline_rect");
         }
         else if (this._contentRect!.contains(x, y)) {
             let dockLocation = DockLocation.getLocation(this._contentRect!, x, y);
             let outlineRect = dockLocation.getDockRect(this._rect);
+            let _sideBorders = this._model!._getAttribute('sideBorders');
+            if(_sideBorders > 0 && (outlineRect.width + outlineRect.x) >= window.innerWidth) {
+                outlineRect.width = outlineRect.width - (_sideBorders * 2);
+            }
             dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect");
         }
         else if (this._children.length > 0 && this._tabHeaderRect != undefined && this._tabHeaderRect.contains(x, y)) {
@@ -148,6 +156,10 @@ class TabSetNode extends Node implements IDraggable, IDropTarget{
                 if (x >= p && x < childCenter) {
                     let dockLocation = DockLocation.CENTER;
                     let outlineRect = new Rect(r.x - 2, yy, 3, h);
+                    let _sideBorders = this._model!._getAttribute('sideBorders');
+                    if(_sideBorders > 0 && (outlineRect.width + outlineRect.x) >= window.innerWidth) {
+                        outlineRect.width = outlineRect.width - (_sideBorders * 2);
+                    }
                     dropInfo = new DropInfo(this, outlineRect, dockLocation, i, "flexlayout__outline_rect");
                     break;
                 }
@@ -156,6 +168,10 @@ class TabSetNode extends Node implements IDraggable, IDropTarget{
             if (dropInfo == undefined) {
                 let dockLocation = DockLocation.CENTER;
                 let outlineRect = new Rect(r.getRight() - 2, yy, 3, h);
+                let _sideBorders = this._model!._getAttribute('sideBorders');
+                if(_sideBorders > 0 && (outlineRect.width + outlineRect.x) >= window.innerWidth) {
+                    outlineRect.width = outlineRect.width - (_sideBorders * 2);
+                }
                 dropInfo = new DropInfo(this, outlineRect, dockLocation, this._children.length, "flexlayout__outline_rect");
             }
         }

@@ -185,10 +185,10 @@ define(function (require) {
                 colormaps.inh = baseColormapInh.copy().domain([min_inh, max_inh]);
                 colormaps.exc = baseColormapExc.copy().domain([min_exc, max_exc]);
             } else {
-                var max = Math.max(max_exc ? max_exc : Number.MIN_SAFE_INTEGER,
-                                   max_inh ? max_inh : Number.MIN_SAFE_INTEGER);
-                var min = Math.min(min_exc ? min_exc : Number.MAX_SAFE_INTEGER,
-                                   min_inh ? min_inh : Number.MAX_SAFE_INTEGER);
+                var max = Math.max(typeof max_exc !== 'undefined' ? max_exc : Number.MIN_VALUE,
+                                   typeof max_inh !== 'undefined' ? max_inh : Number.MIN_VALUE);
+                var min = Math.min(typeof min_exc !== 'undefined' ? min_exc : Number.MAX_VALUE,
+                                   typeof min_inh !== 'undefined' ? min_inh : Number.MAX_VALUE);
                 colormaps.inh = baseColormapInh.copy().domain([min, max]);
                 colormaps.exc = baseColormapInh.copy().domain([min, max]);
             }		

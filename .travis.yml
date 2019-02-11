@@ -2,6 +2,7 @@ language: node_js
 os: linux
 sudo: required
 dist: trusty
+group: deprecated-2017Q4
 bundler_args: --retry 5
 node_js:
   - "7"
@@ -9,7 +10,7 @@ env:
   global:
     secure: dn0FPQ5IG4M/3kdwnyI78ElQ308Vc3QnKAvkWfwMFb8QxDqxQdnTo7AV1qTMtbLrDNkeEWIgi4nc7jmXNtvGTwOfhAULVh6606Qs5B+ezTdwzajbbFMI8SKQx/pnTojOMu8dx7V4lMoR/YWcojR0VC1IWVC62TGbSB1k5BDGgH0=
 before_install:
-- sudo apt-get install -y xserver-xorg-dev libxext-dev libxi-dev
+- sudo apt-get install -y xserver-xorg-dev libxext-dev libxi-dev 
 install:
 - npm install --silent -g phantomjs 
 - npm install --silent -g casperjs 
@@ -28,6 +29,8 @@ addons:
     - libgl1-mesa-dri
     - libglapi-mesa
     - libosmesa6
+    - net-tools
+    - lsof
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
@@ -36,11 +39,11 @@ before_script:
 script:
   - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
+  - docker --version
   - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
   - echo "$TRAVIS_BRANCH"
-  - travis_retry docker build -t="geppetto" --build-arg frontendBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#development:utilities/docker/geppetto/
-  - echo "Current time :$(date +"%T")"
-  - travis_retry docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto
+  - travis_retry docker build -t="geppetto" --build-arg mainBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#development:utilities/docker/geppetto/
+  - travis_retry docker run  -t -dit --name=geppetto_container -p 28081:8080 geppetto
   - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh
   - sleep 30
   - http_status=$(curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'})
@@ -54,7 +57,7 @@ script:
       sleep 10;
       docker rm $(docker ps -a -q);
       sleep 10;
-      travis_retry docker run  -t -dit --name=geppetto_container -h localhost -p  28081:8080 geppetto;
+      travis_retry docker run  -t -dit --name=geppetto_container -p 28081:8080 geppetto;
       bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh;
       sleep 60;
       http_status=$(curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'});
@@ -65,8 +68,8 @@ script:
   - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js UIComponentsTests.js --host=http://localhost:28081/ --engine=slimerjs  
   - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js GeppettoModelTests.js --host=http://localhost:28081/ --engine=slimerjs 
   - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js,NeuronalTestsLogic.js DefaultProjectsTests.js --host=http://localhost:28081/ --engine=slimerjs  
+  - docker ps -a;
   - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
   - tail /etc/log.log -n 200
-  - echo "Current time :$(date +"%T")"
   - docker stop $(docker ps -a -q)
   - docker rm $(docker ps -a -q)

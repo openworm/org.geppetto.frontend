@@ -22,6 +22,7 @@ define(function (require) {
                     this.state.model = props.model;
                     this.state.componentType = WrappedComponent.name;
                     this.id = (this.props.id == undefined) ? this.props.model : this.props.id;
+                    this._isMounted = false;
                 }
 
                 setSyncValueWithPythonHandler(handler) {
@@ -38,6 +39,7 @@ define(function (require) {
                 }
 
                 componentWillUnmount() {
+                    this._isMounted = false;
                     this.disconnectFromPython();
                 }
 
@@ -52,6 +54,7 @@ define(function (require) {
                 }
 
                 componentDidMount() {
+                    this._isMounted = true;
                     GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this, true);
                     if (this.props.model != undefined) {
                         this.connectToPython(this.state.componentType, this.props.model);
@@ -84,39 +87,50 @@ define(function (require) {
                     this.handleUpdateCheckbox = this.handleUpdateCheckbox.bind(this);
                 }
 
+                shouldComponentUpdate(nextProps, nextState) {
+                    switch (this.state.componentType) {
+                        case 'AutoComplete':
+                            return ((this.state.searchText !== nextState.searchText) || (this.state.model !== nextState.model));
+                        case 'Checkbox':
+                            return ((this.state.checked !== nextState.checked) || (this.state.model !== nextState.model));
+                        default:
+                            return ((this.state.value !== nextState.value) || (this.state.model !== nextState.model));
+                    }
+                }
+
                 componentWillReceiveProps(nextProps) {
                     this.disconnectFromPython();
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
                     GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this);
                     this.connectToPython(this.state.componentType, nextProps.model);
-                    if (this.state.searchText != nextProps.searchText) {
-                        this.setState({ searchText: (nextProps.searchText === undefined) ? '' : nextProps.searchText });
+                    if ((this.state.searchText != nextProps.searchText) && (nextProps.searchText != undefined)) {
+                        this.setState({ searchText: nextProps.searchText });
                     }
-                    if (this.state.checked != nextProps.checked) {
-                        this.setState({ checked: (nextProps.checked === undefined) ? false : nextProps.checked });
+                    if ((this.state.checked != nextProps.checked) && (nextProps.checked != undefined)) {
+                        this.setState({ checked: nextProps.checked });
                     }
-                    if (this.state.value != nextProps.value) {
-                        this.setState({ value: (nextProps.value === undefined) ? '' : nextProps.value });
+                    if ((this.state.value != nextProps.value) && (nextProps.value != undefined)) {
+                        this.setState({ value: nextProps.value });
                     }
-                    if (this.state.model != nextProps.model) {
-                        this.setState({ model: (nextProps.model === undefined) ? '' : nextProps.model });
+                    if ((this.state.model != nextProps.model) && (nextProps.model != undefined)) {
+                        this.setState({ model: nextProps.model });
                     }
                 }
 
                 componentDidUpdate(prevProps, prevState) {
                     switch (WrappedComponent.name) {
                         case 'AutoComplete':
-                            if (this.state.searchText != prevState.searchText && this.props.onChange) {
+                            if (this.state.searchText !== prevState.searchText && this.props.onChange) {
                                 this.props.onChange(this.state.searchText);
                             }
                             break;
                         case 'Checkbox':
-                            if (this.state.checked != prevState.checked && this.props.onCheck) {
+                            if (this.state.checked !== prevState.checked && this.props.onCheck) {
                                 this.props.onCheck(null, this.state.checked);
                             }
                             break;
                         default:
-                            if (this.state.value != prevState.value && this.props.onChange) {
+                            if (this.state.value !== prevState.value && this.props.onChange) {
                                 this.props.onChange(null, null, this.state.value);
                             }
                             break;
@@ -151,6 +165,10 @@ define(function (require) {
                         }
                         if (newValue !== '') {
                             this.syncValueWithPython(newValue);
+                            if (this.props.callback) {
+                                this.props.callback(newValue, this.oldValue === undefined ? this.state.value : this.oldValue);
+                                this.oldValue = newValue;
+                            }
                         }
                     }
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
@@ -208,6 +226,7 @@ define(function (require) {
                     delete wrappedComponentProps.noStyle;
                     delete wrappedComponentProps.validate;
                     delete wrappedComponentProps.prePythonSyncProcessing;
+                    delete wrappedComponentProps.callback;
 
                     if (wrappedComponentProps.realType == 'func' || wrappedComponentProps.realType == 'float') {
                         wrappedComponentProps['errorText'] = this.state.errorMsg;
@@ -261,6 +280,7 @@ define(function (require) {
                     });
                     // If a handleChange method is passed as a props it will overwrite the handleChange python controlled capability
                     this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange.bind(this);
+                    
                     this.callPythonMethod();
                 }
 
@@ -269,6 +289,7 @@ define(function (require) {
                     this.id = (nextProps.id == undefined) ? nextProps.model : nextProps.id;
                     GEPPETTO.ComponentFactory.addExistingComponent(this.state.componentType, this);
                     this.connectToPython(this.state.componentType, nextProps.model);
+                    this.callPythonMethod();
                 }
 
                 componentDidUpdate(prevProps, prevState) {

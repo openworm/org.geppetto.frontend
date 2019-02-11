@@ -126,7 +126,7 @@ define(function (require) {
             var scale_link = function(x) {
                 if (!link_min) link_min = 1;
                 if (!link_max) link_max = 1;
-                return lin_scale(30*this.state.linkSize, 200*this.state.linkSize, link_min, link_max, x);
+                return lin_scale(80*this.state.linkSize, 200*this.state.linkSize, link_min, link_max, x);
             }.bind(this)
 
             d3.select(".everything").selectAll(".link").remove();
@@ -156,16 +156,16 @@ define(function (require) {
                         ? "0 -5 10 10" //exc=arrow
                         : "-6 -6 12 12" //inh=circle
                 })
-                .attr("refX", function(d) {
+                .attr("refX", (function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
                         return (d.erev>=-70 && (d.gbase>=0)) ? 0 : 16; //20 : 18;
                     else
-                        return (d.erev>=-70 && (d.gbase>=0)) ? 18 : 16;
-                })
+                        return (d.erev>=-70 && (d.gbase>=0)) ? 20 : 18; //10*this.state.nodeSize+9.2 : 10*this.state.nodeSize+7.2; //18 : 16;
+                }).bind(this))
                 .attr("refY", function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
                         // FIXME: this is absurd…
-                        return (d.erev>=-70 && (d.gbase>=0)) ? -7016.05/mh(d): -5;
+                        return (d.erev>=-70 && (d.gbase>=0)) ? -8832*Math.pow(mh(d),-1.02): -5;
                     else
                         return 0;
                 })
@@ -180,15 +180,15 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
                 .attr("markerWidth", (function(d) {
-                    var w = d.weight<0 ? -1*d.weight : d.weight;
-                    if (scale_link(w ? w : 1)>=parseFloat(this.state.linkFilter)) {
+                    var w = Math.abs(d.weight);
+                    if ((w ? w : 1)>=parseFloat(this.state.linkFilter)) {
                         if (Object.keys(d.target).length !== 0) {
                             if (d.target.n)
-                                return scale_node(d.target.n)/this.state.nodeSize-80;
+                                return scale_node(d.target.n);//this.state.nodeSize;//-80;
                             else
                                 return 15;
                         } else {
-                            return scale_node(nodes[d.target].n)/this.state.nodeSize;
+                            return scale_node(nodes[d.target].n);//this.state.nodeSize;
                         }
                     } else
                         return 0;
@@ -196,11 +196,11 @@ define(function (require) {
                 .attr("markerHeight", (function(d) {
                     if (Object.keys(d.target).length !== 0) {
                         if (d.target.n)
-                            return scale_node(d.target.n)/this.state.nodeSize-80;
+                            return scale_node(d.target.n);//this.state.nodeSize;//-80;
                         else
                             return 15;
                     } else {
-                        return scale_node(nodes[d.target].n)/this.state.nodeSize;
+                        return scale_node(nodes[d.target].n);//this.state.nodeSize;
                     }
                 }).bind(this))
                 .attr("orient", "auto")
@@ -229,12 +229,12 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type); //linkTypeScale(d.type);
                 })
                 .style("stroke-opacity", (function (d) {
-                    var w = d.weight<0 ? -1*d.weight : d.weight;
-                    return scale_link(w ? w : 1)>=parseFloat(this.state.linkFilter) ? 1 : 0; 
+                    var w = Math.abs(d.weight);
+                    return (w ? w : 1)>=parseFloat(this.state.linkFilter) ? 1 : 0; 
                 }).bind(this))
                 .style("stroke-width", function (d) {
                     //return 10;
-                    return d.weight ? scale_link(d.weight<0 ? -1*d.weight : d.weight) : 50;
+                    return d.weight ? scale_link(Math.abs(d.weight)) : 50;
                 });
             
             var node = g.selectAll(".node")
@@ -296,7 +296,7 @@ define(function (require) {
                     return d3.forceManyBody().strength(-1*this.state.repulsion);
                 }).bind(this)())
                 .force("link", d3.forceLink().strength((function(d) {
-                    if (d.weight) { if(parseInt(d.weight)<0) { return parseInt(d.weight)*-1*this.state.attraction; } else { return parseInt(d.weight)*this.state.attraction; }} else { return 1/10; }
+                    return d.weight ? Math.abs(d.weight)*this.state.attraction : 1/10;
                 }).bind(this)))
                 .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2))
                 .nodes(nodes);
@@ -330,8 +330,8 @@ define(function (require) {
 
                          // Make drx and dry different to get an ellipse
                         // instead of a circle.
-                         drx = 350*nodeSize;
-                         dry = 350*nodeSize;
+                         drx = 400*nodeSize;
+                         dry = 400*nodeSize;
 
                         // For whatever reason the arc collapses to a point if the beginning
                         // and ending points of the arc are the same, so kludge it.
@@ -340,12 +340,6 @@ define(function (require) {
                     } 
 
                      return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
-                    /*return "M" +
-                        d.source.x + "," +
-                        d.source.y + "A" +
-                        dr + "," + dr + " 0 0,1 " +
-                        d.target.x + "," +
-                        d.target.y;*/
                 });
 
                 node.attr("transform", function(d) {
@@ -357,11 +351,8 @@ define(function (require) {
             context.force.on("tick", tick(this.state.nodeSize));
             context.force.force("link").links(links);
 
-//            context.force.on("tick", function() { start(node, link); });
-
             var optionsContainer = $('<div/>', {
 		id: context.id + "-options",
-                //style: 'width:' + context.options.innerWidth + 'px;margin-left: 10px;top:' + context.options.innnerHeight-50 + 'px;',
                 style: 'margin-left: 10px;top:' + context.options.innerHeight-50 + 'px;',
 		class: 'connectivity-options'
 	    }).appendTo(context.connectivityContainer);
@@ -383,7 +374,6 @@ define(function (require) {
 	    var typeContainer = $('<div/>', {
 		id: context.id + '-type',
                 style: 'float: left; width: 70%; margin-left: 1.6em',
-		//style: 'position: absolute; width:' + legendWidth + 'px;left:' + (matrixDim + context.widgetMargin) + 'px;top:' + (matrixDim - 80) + 'px;',
 		class: 'types'
 	    }).appendTo(optionsContainer);
 
@@ -430,7 +420,7 @@ define(function (require) {
 	    } (context, this));
 
             
-            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.00001" min="0.0000001" step="1e-9" id="attraction" name="attraction" value="0.000001">');
+            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.0001" min="0.0000001" step="1e-9" id="attraction" name="attraction" value="0.000001">');
 	    if (this.state.attraction)
 		attractionSlide.attr("value", this.state.attraction);
             attractionSlide.on("change", function(ctx, that) {
@@ -454,7 +444,7 @@ define(function (require) {
 	    typeContainer.append(repulsionSlide);
             typeContainer.append($('<label for="repulsion" class="control-label">Node Repulsion</label>'));
 
-            var linkSlide = $('<input class="connectivity-control" type="range" min="' + (scale_link(link_min ? link_min : 1)-2) + '" max="' + (scale_link(link_max ? link_max : 1)+2) + '" id="link" name="link" value="' + (scale_link(link_min ? link_min : 1)-2) + '">');
+            var linkSlide = $('<input class="connectivity-control" type="range" step min="' + (link_min ? link_min : 1) + '" max="' + (link_max ? link_max : 1) + '" id="link" name="link" value="' + (link_min ? link_min : 1) + '">');
 	    if (this.state.linkFilter)
 		linkSlide.attr("value", this.state.linkFilter);
             linkSlide.on("change", function(ctx, that) {

@@ -277,10 +277,10 @@ define(function (require) {
             }
 
 	    var zoom_handler = d3.zoom()
-		.on("zoom", zoom_actions);
-	    function zoom_actions(){
-		g.attr("transform", d3.event.transform);
-	    }
+		.on("zoom", (function() {
+		    g.attr("transform", d3.event.transform);
+                    this.state.zoom = g.attr("transform");
+	        }).bind(this));
             zoom_handler(context.svg);
 
             var legendPosition = { x: 0.75 * context.options.innerWidth, y: 0 };
@@ -300,7 +300,7 @@ define(function (require) {
                 }).bind(this)))
                 .force("center", d3.forceCenter(context.options.innerWidth / 2, context.options.innerHeight / 2))
                 .nodes(nodes);
-            
+
             var tick = function (nodeSize) {
                 return function() {
                  link.attr("d", function(d) {
@@ -351,6 +351,33 @@ define(function (require) {
             context.force.on("tick", tick(this.state.nodeSize));
             context.force.force("link").links(links);
 
+            var root = g;
+            var zoomFit = function(transitionDuration) {
+                var bounds = root.node().getBBox();
+                var parent = root.node().parentElement;
+                var fullWidth = parent.clientWidth || parent.parentNode.clientWidth,
+                    fullHeight = parent.clientHeight || parent.parentNode.clientHeight;
+                var width = bounds.width,
+                    height = bounds.height;
+                var midX = bounds.x + width / 2,
+                    midY = bounds.y + height / 2;
+                if (width == 0 || height == 0) return; // nothing to fit
+                var scale = 0.85 / Math.max(width / fullWidth, height / fullHeight);
+                var translate = [fullWidth / 2 - scale * midX, fullHeight / 2 - scale * midY];
+
+                console.trace("zoomFit", translate, scale);
+                var transform = d3.zoomIdentity
+                    .translate(translate[0], translate[1])
+                    .scale(scale);
+
+                g.attr("transform", transform);
+                return transform;
+            };
+            if (this.state.zoom)
+                g.attr("transform", this.state.zoom);
+            else
+                setTimeout((function() { this.state.zoom = zoomFit(); }).bind(this), 500);
+
             var optionsContainer = $('<div/>', {
 		id: context.id + "-options",
                 style: 'margin-left: 10px;top:' + context.options.innerHeight-50 + 'px;',
@@ -386,7 +413,7 @@ define(function (require) {
             typeCombo.val(this.state.filter);
 	    typeContainer.append($('<span/>', {
 		id: 'type-selector',
-		class: 'type-selector-label',
+		class: 'control-label',
 		text: 'Projection Filter:'
 	    }).append(typeCombo));
 
@@ -402,7 +429,7 @@ define(function (require) {
 	    if (this.state.population)
 		populationCheckbox.attr("checked", "checked");
 	    orderContainer.append(populationCheckbox);
-	    orderContainer.append($('<label for="population" class="population-label">Show populations</label>'));
+	    orderContainer.append($('<label for="population" class="control-label">Show populations</label>'));
 
 	    populationCheckbox.on("change", function (ctx, that) {
 		return function () {

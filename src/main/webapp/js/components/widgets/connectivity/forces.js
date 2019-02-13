@@ -21,8 +21,6 @@ define(function (require) {
 
             context.projectionSummary = context.getProjectionSummary();
 
-            //if (context.force) context.force.stop();
-
 	    //add encompassing group for the zoom
 	    var g = context.svg.append("g")
 		.attr("class", "everything");

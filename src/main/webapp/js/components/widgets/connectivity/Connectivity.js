@@ -81,44 +81,46 @@ define(function (require) {
         },
 
         getProjectionSummary: function() {
-	    var projSummary = {};
-	    var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
-	    for (var i=0; i<projs.length; ++i) {
-		var proj = projs[i];
-		if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
-		    // FIXME: too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
-		    var synapse = proj.getVariables().filter((x)=> {
-			if (typeof x.getType().getSuperType().getPath === 'function')
-			    return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
-		    })[0];
-		    if (typeof synapse === 'undefined')
-			continue;
-		    else {
-                        var pairs = proj.getChildren().filter(x=> typeof x.getA === 'function').map(x => [x.getA().getElements()[0].index,x.getB().getElements()[0].index]);
-			var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-			var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-                        // FIXME: type should not be stored in name, also hacky gapJunction detection. need to fix in model interpreter.
-                        var type = (synapse.types[0].conductance && !synapse.types[0].erev) ? "gapJunction" : proj.getName();
-                        if (this.projectionTypeSummary[type].indexOf(synapse.getId()) == -1)
-                            this.projectionTypeSummary[type].push(synapse.getId())
-			var data = {id: proj.getId(), type: type, synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, pairs: pairs};
-			if (typeof projSummary[[preId, postId]] === 'undefined')
-			    projSummary[[preId, postId]] = [data];
-			else
-			    projSummary[[preId, postId]].push(data);
+            if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0) {
+	        var projSummary = {};
+	        var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
+	        for (var i=0; i<projs.length; ++i) {
+		    var proj = projs[i];
+		    if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
+		        // FIXME: too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
+		        var synapse = proj.getVariables().filter((x)=> {
+			    if (typeof x.getType().getSuperType().getPath === 'function')
+			        return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
+		        })[0];
+		        if (typeof synapse === 'undefined')
+			    continue;
+		        else {
+                            var pairs = proj.getChildren().filter(x=> typeof x.getA === 'function').map(x => [x.getA().getElements()[0].index,x.getB().getElements()[0].index]);
+			    var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
+			    var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
+                            // FIXME: type should not be stored in name, also hacky gapJunction detection. need to fix in model interpreter.
+                            var type = (synapse.types[0].conductance && !synapse.types[0].erev) ? "gapJunction" : proj.getName();
+                            if (this.projectionTypeSummary[type].indexOf(synapse.getId()) == -1)
+                                this.projectionTypeSummary[type].push(synapse.getId())
+			    var data = {id: proj.getId(), type: type, synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, pairs: pairs};
+			    if (typeof projSummary[[preId, postId]] === 'undefined')
+			        projSummary[[preId, postId]] = [data];
+			    else
+			        projSummary[[preId, postId]].push(data);
+		        }
 		    }
-		}
-	    }
-	    return projSummary;
+	        }
+	        return projSummary;
+            } else {
+                return this.projectionSummary;
+            }
 	},
-        selectConn: function(conns, filter) {
+        filterConns: function(conns, filter) {
             if (filter === 'gapJunction')
                 filter = 'electricalProjection';
-            return conns.filter(x=>x.getParent().getName()===filter)[0];
+            return conns.filter(x=>x.getParent().getName()===filter);
         },
 	linkSynapse: function (conn) {
-	    if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
-		this.projectionSummary = this.getProjectionSummary();
 	    var preId = conn.getA().getPath().split("[")[0];
 	    var postId = conn.getB().getPath().split("[")[0];
 	    if (typeof this.projectionSummary[[preId, postId]] !== 'undefined')
@@ -129,17 +131,17 @@ define(function (require) {
 		return [];
         },
 	linkWeight: function (conns, filter) {
-	    if (this.linkSynapse(conns[0]).length > 0) {
-                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
-                var conn = this.selectConn(conns, filter);
-		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
-		var weight = 1;
-		if (weightIndex > -1)
-		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-                return weight;
-	    }
-	    else
-		return 0;
+            var weight = 1;
+            var conns = this.filterConns(conns, filter);
+            for (var conn of conns) {
+	        if (this.linkSynapse(conn).length > 0) {
+                    var synapses = this.linkSynapse(conn).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
+		    var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+		    if (weightIndex > -1)
+		        weight += parseFloat(conn.getInitialValues()[weightIndex].value.text);
+	        }
+            }
+            return weight;
 	},
 	linkErev: function (conns, filter) {
 	    if (this.linkSynapse(conns[0]).length > 0) {
@@ -180,22 +182,26 @@ define(function (require) {
                     }
                 };
                 var scale = gbases.map(g => { if (typeof g.getUnit === 'function') { return scaleFn(g.getUnit()) } else { return 1; } });
-                var conn = this.selectConn(conns, filter);
+                // assuming (quite safely) gbase is same for all connections b/w two cells
+                var conn = this.filterConns(conns, filter)[0];
                 var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
+                // get the sign of the weight so inh/exc detection works but don't factor weights into gbase values
 		var weight = 1;
 		if (weightIndex > -1)
 		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
+                var sign = weight===0 ? 1 : Math.sign(weight);
                 return gbases.map((g, i) => {
                     if (typeof g.getInitialValue === 'function')
-		        return weight * scale[i] * g.getInitialValue();
+		        return sign * scale[i] * g.getInitialValue();
                     else
-                        return weight * scale[i] * g;
+                        return sign * scale[i] * g;
 		}).reduce((x,y) => x+y, 0);
 	    }
 	    else
 		return 0;
         },
 	populateWeights: function(links, filter) {
+            this.projectionSummary = this.getProjectionSummary();
 	    for (var i in links) {
                 if (links[i].type.filter(t=>this.projectionTypeSummary[filter].indexOf(t)>-1).length > 0) {
 		    links[i].weight = this.linkWeight(links[i].conns, filter);

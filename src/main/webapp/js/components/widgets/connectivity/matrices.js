@@ -8,139 +8,7 @@ define(function (require) {
     return {
         matrix: [],
 	linkColormaps: {},
-	projectionSummary: {},
         state: {filter: 'projection', colorscale: undefined, weight: false, order: 'id', population: false},
-        projectionTypeSummary: {'projection': [], 'continuousProjection': [], 'gapJunction': []},
-	getProjectionSummary: function() {
-	    var projSummary = {};
-	    var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
-	    for (var i=0; i<projs.length; ++i) {
-		var proj = projs[i];
-		if (proj.getMetaType() === GEPPETTO.Resources.COMPOSITE_TYPE_NODE) {
-		    // FIXME: too convoluted, could we have model interpreter return the synapse at a stable path, like post/presynapticPopulation?
-		    var synapse = proj.getVariables().filter((x)=> {
-			if (typeof x.getType().getSuperType().getPath === 'function')
-			    return x.getType().getSuperType().getPath() === "Model.neuroml.synapse"
-		    })[0];
-		    if (typeof synapse === 'undefined')
-			continue;
-		    else {
-                        var pairs = proj.getChildren().filter(x=> typeof x.getA === 'function').map(x => [x.getA().getElements()[0].index,x.getB().getElements()[0].index]);
-			var preId = proj.presynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-			var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
-                        // FIXME: type should not be stored in name, also hacky gapJunction detection. need to fix in model interpreter.
-                        var type = (synapse.types[0].conductance && !synapse.types[0].erev) ? "gapJunction" : proj.getName();
-                        if (this.projectionTypeSummary[type].indexOf(synapse.getId()) == -1)
-                            this.projectionTypeSummary[type].push(synapse.getId())
-			var data = {id: proj.getId(), type: type, synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, pairs: pairs};
-			if (typeof projSummary[[preId, postId]] === 'undefined')
-			    projSummary[[preId, postId]] = [data];
-			else
-			    projSummary[[preId, postId]].push(data);
-		    }
-		}
-	    }
-	    return projSummary;
-	},
-        selectConn: function(conns, filter) {
-            if (filter === 'gapJunction')
-                filter = 'electricalProjection';
-            return conns.filter(x=>x.getParent().getName()===filter)[0];
-        },
-	linkSynapse: function (conn) {
-	    if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0)
-		this.projectionSummary = this.getProjectionSummary();
-	    var preId = conn.getA().getPath().split("[")[0];
-	    var postId = conn.getB().getPath().split("[")[0];
-	    if (typeof this.projectionSummary[[preId, postId]] !== 'undefined')
-		return this.projectionSummary[[preId, postId]]
-		.map(p => p.synapse)
-		.filter(s => typeof s !== 'undefined');
-	    else
-		return [];
-        },
-	linkWeight: function (conns, filter) {
-	    if (this.linkSynapse(conns[0]).length > 0) {
-                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
-                var conn = this.selectConn(conns, filter);
-		var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
-		var weight = 1;
-		if (weightIndex > -1)
-		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-                return weight;
-	    }
-	    else
-		return 0;
-	},
-	linkErev: function (conns, filter) {
-	    if (this.linkSynapse(conns[0]).length > 0) {
-                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
-		var erevs = synapses.map(c => (typeof c.getType().erev !== 'undefined') ? c.getType().erev : 1);
-		var scale = erevs.map(e => { if (typeof e.getUnit === 'function' && e.getUnit() === 'V') { return 1e3; } else { return 1; } });
-		return erevs.map((e, i) => {
-		    if (typeof e.getInitialValue === 'function')
-			return scale[i] * e.getInitialValue();
-		    else
-			return scale[i] * e;
-		}).reduce((x,y) => x+y, 0);
-	    }
-	    else
-		return 0;
-	},
-        linkGbase: function(conns, filter) {
-            if (this.linkSynapse(conns[0]).length > 0) {
-                var synapses = this.linkSynapse(conns[0]).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
-                var gbases = synapses.map(function(c) {
-                    if (typeof c.getType().gbase !== 'undefined')
-                        return c.getType().gbase;
-                    else if (typeof c.getType().conductance !== 'undefined')
-                        return c.getType().conductance;
-                    else
-                        return 1;
-                });
-                var scaleFn = function(unit) {
-                    switch(unit) {
-                    case 'S':
-                        return 1; break;
-                    case 'mS':
-                        return 1e-3; break;
-                    case 'nS':
-                        return 1e-9; break;
-                    case 'pS':
-                        return 1e-12;
-                    }
-                };
-                var scale = gbases.map(g => { if (typeof g.getUnit === 'function') { return scaleFn(g.getUnit()) } else { return 1; } });
-                var conn = this.selectConn(conns, filter);
-                var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
-                // get the sign of the weight so inh/exc detection works but don't factor weights into gbase values
-		var weight = 1;
-		if (weightIndex > -1)
-		    weight = parseFloat(conn.getInitialValues()[weightIndex].value.text);
-                var sign = weight===0 ? 1 : Math.sign(weight);
-                return gbases.map((g, i) => {
-                    if (typeof g.getInitialValue === 'function')
-		        return sign * scale[i] * g.getInitialValue();
-                    else
-                        return sign * scale[i] * g;
-		}).reduce((x,y) => x+y, 0);
-	    }
-	    else
-		return 0;
-        },
-	populateWeights: function(links, filter) {
-	    for (var i in links) {
-                if (links[i].type.filter(t=>this.projectionTypeSummary[filter].indexOf(t)>-1).length > 0) {
-		    links[i].weight = this.linkWeight(links[i].conns, filter);
-                    links[i].erev = this.linkErev(links[i].conns, filter);
-                    links[i].gbase = this.linkGbase(links[i].conns, filter);
-                } else {
-                    links[i].weight = undefined;
-                    links[i].erev = undefined;
-                    links[i].gbase = undefined;
-		}
-	    }
-	},
 	weightColormaps: function(links, filter) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
             if (this.state.population) {
@@ -233,12 +101,12 @@ define(function (require) {
 	    var root = context.dataset.root;
 	    var n = nodes.length;
 
-            this.projectionSummary = this.getProjectionSummary();
-            this.state.filter = this.projectionTypeSummary[this.state.filter].length > 0 ?
+            context.projectionSummary = context.getProjectionSummary();
+            this.state.filter = context.projectionTypeSummary[this.state.filter].length > 0 ?
                 this.state.filter :
-                Object.keys(this.projectionTypeSummary).filter(x => this.projectionTypeSummary[x].length > 0)[0];
+                Object.keys(context.projectionTypeSummary).filter(x => context.projectionTypeSummary[x].length > 0)[0];
             if (links.filter(l => !l.weight).length > 0)
-                this.populateWeights(links, this.state.filter);
+                context.populateWeights(links, this.state.filter);
                 
 	    // Compute index per node.
             nodes.forEach((function (node, i) {
@@ -255,7 +123,7 @@ define(function (require) {
 		    //TODO: think about zero weight lines
                     var Aindex = link.conns[0].getA().getElements()[0].getIndex();
                     var Bindex = link.conns[0].getB().getElements()[0].getIndex();
-                    var proj = this.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
+                    var proj = context.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
                     var projTypes = proj.filter(x => x.pairs.filter(p => p[0]==Aindex && p[1]==Bindex).length>0).map(x => x.type);
                     var m_entry = this.matrix[link.source][link.target]
 		    if (this.state.weight) {
@@ -361,13 +229,13 @@ define(function (require) {
             var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeAccent);
 	    this.linkColormaps = (function() {
 		if (this.state.weight) {
-                    this.populateWeights(links, this.state.filter);
+                    context.populateWeights(links, this.state.filter);
 		    return this.weightColormaps(links, this.state.filter);
                 }
 		else {
                     return d3.scaleOrdinal()
                         .range(context.linkColors)
-                        .domain(Array.from(new Set(links.map(x=>x.type))).map(x=>x.filter(y=>this.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
+                        .domain(Array.from(new Set(links.map(x=>x.type))).map(x=>x.filter(y=>context.projectionTypeSummary[this.state.filter].indexOf(y)>-1)).filter(x=>x.length>0));
                 }
 	    }).bind(this)();
 
@@ -398,7 +266,7 @@ define(function (require) {
 		.attr("transform", function (d, i) {
 		    return "translate(0," + x(i) + ")";
 		})
-		.each(row(this.linkColormaps, this.state.filter, this.projectionTypeSummary, this.state.weight));
+		.each(row(this.linkColormaps, this.state.filter, context.projectionTypeSummary, this.state.weight));
 
 	    row.append("line")
 		.attr("x2", context.options.innerWidth);
@@ -674,7 +542,7 @@ define(function (require) {
                 style: 'margin-left: 0.5em;'
             });
 	    $.each(typeOptions, (function (k, v) {
-		$('<option/>', { value: k, text: v, disabled: (this.projectionTypeSummary[k].length == 0) }).appendTo(typeCombo);
+		$('<option/>', { value: k, text: v, disabled: (context.projectionTypeSummary[k].length == 0) }).appendTo(typeCombo);
 	    }).bind(this));
             typeCombo.val(this.state.filter);
 	    typeContainer.append($('<span/>', {
@@ -707,7 +575,7 @@ define(function (require) {
 		return function () {
 		    if (this.checked) {
 			if (typeof ctx.dataset.links[0].weight === 'undefined')
-			    that.populateWeights(ctx.dataset.links, that.state.filter);
+			    ctx.populateWeights(ctx.dataset.links, that.state.filter);
                         ctx.setSize(ctx.size.height, ctx.size.width + 100);
 			that.state.weight = true;
 			that.linkColormaps = that.weightColormaps(ctx.dataset.links, that.state.filter);

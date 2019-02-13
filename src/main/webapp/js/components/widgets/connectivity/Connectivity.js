@@ -131,7 +131,7 @@ define(function (require) {
 		return [];
         },
 	linkWeight: function (conns, filter) {
-            var weight = 1;
+            var weight = 0;
             var conns = this.filterConns(conns, filter);
             for (var conn of conns) {
 	        if (this.linkSynapse(conn).length > 0) {

@@ -47,6 +47,7 @@ import org.geppetto.model.ModelFormat;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.model.util.GeppettoModelException;
+import org.geppetto.simulation.GeppettoManagerConfiguration;
 import org.geppetto.simulation.manager.GeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -87,16 +88,15 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param websocketConnection
 	 * @param geppettoManager
 	 */
-	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager,boolean allowVolatileProjectsSimulation)
+	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager,GeppettoManagerConfiguration geppettoManagerConfiguration)
 	{
 		this.websocketConnection = websocketConnection;
 		// FIXME This is extremely ugly, a session based geppetto manager is
 		// autowired in the websocketconnection
 		// but a session bean cannot travel outside a conenction thread so a new
 		// one is instantiated and initialised
-		this.geppettoManager = new GeppettoManager(geppettoManager);
+		this.geppettoManager = new GeppettoManager(geppettoManager, geppettoManagerConfiguration);
 		this.geppettoManager.setSimulationListener(this);
-		((GeppettoManager)this.geppettoManager).setAllowVolatileProjectsSimulation(allowVolatileProjectsSimulation);
 	}
 
 	/**

@@ -69,8 +69,8 @@ http://www.eclipse.org/gemini/blueprint/schema/blueprint-compendium/gemini-bluep
 		<aop:scoped-proxy />
 	</bean>
 	
-	<bean id="geppettoManagerConfig"
-		class="org.geppetto.frontend.controllers.WebsocketConfig">
+	<bean id="geppettoManagerConfiguration"
+		class="org.geppetto.simulation.GeppettoManagerConfiguration">
 		<property name="allowVolatileProjectsSimulation" value="false" />
 	</bean>
 

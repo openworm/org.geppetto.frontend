@@ -38,6 +38,7 @@ import org.geppetto.frontend.messaging.MessageSenderEvent;
 import org.geppetto.frontend.messaging.MessageSenderListener;
 import org.geppetto.model.datasources.DatasourcesFactory;
 import org.geppetto.model.datasources.RunnableQuery;
+import org.geppetto.simulation.GeppettoManagerConfiguration;
 import org.geppetto.simulation.manager.ExperimentRunManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -70,7 +71,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 	private IGeppettoManager geppettoManager;
 
 	@Autowired
-	private WebsocketConfig geppettoManagerConfig;
+	private GeppettoManagerConfiguration geppettoManagerConfiguration;
 
 	private Session userSession;
 	
@@ -96,7 +97,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		// starts running experiments, this is as likely to happen as ugly.
 		ExperimentRunManager.getInstance();
 		// End of the rant, I hope the above will sound silly and wrong in the future. Matteo
-		this.connectionHandler = new ConnectionHandler(this, geppettoManager,geppettoManagerConfig.getAllowVolatileProjectsSimulation());
+		this.connectionHandler = new ConnectionHandler(this, geppettoManager,geppettoManagerConfiguration);
 	}
 
 

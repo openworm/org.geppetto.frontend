@@ -132,16 +132,19 @@ define(function (require) {
         },
 	linkWeight: function (conns, filter) {
             var weight = 0;
+            var noWeights = true;
             var conns = this.filterConns(conns, filter);
             for (var conn of conns) {
 	        if (this.linkSynapse(conn).length > 0) {
                     var synapses = this.linkSynapse(conn).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
 		    var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
-		    if (weightIndex > -1)
+		    if (weightIndex > -1) {
+                        noWeights = false;
 		        weight += parseFloat(conn.getInitialValues()[weightIndex].value.text);
+                    }
 	        }
             }
-            return weight;
+            return noWeights ? 1 : weight;
 	},
 	linkErev: function (conns, filter) {
 	    if (this.linkSynapse(conns[0]).length > 0) {

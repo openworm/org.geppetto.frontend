@@ -115,6 +115,9 @@ define(function (require) {
                 return this.projectionSummary;
             }
 	},
+        connectionType: function(link) {
+            return (link.erev>=-50 && link.gbase>=0 && link.weight >=0) ? 'exc' : 'inh';
+        },
         filterConns: function(conns, filter) {
             if (filter === 'gapJunction')
                 filter = 'electricalProjection';
@@ -139,12 +142,13 @@ define(function (require) {
                     var synapses = this.linkSynapse(conn).filter(x=>this.projectionTypeSummary[filter].indexOf(x.getId())>-1);
 		    var weightIndex = conn.getInitialValues().map(x => x.value.eClass).indexOf("Text");
 		    if (weightIndex > -1) {
-                        noWeights = false;
 		        weight += parseFloat(conn.getInitialValues()[weightIndex].value.text);
+                    } else {
+                        weight += 1;
                     }
 	        }
             }
-            return noWeights ? 1 : weight;
+            return weight;
 	},
 	linkErev: function (conns, filter) {
 	    if (this.linkSynapse(conns[0]).length > 0) {
@@ -206,7 +210,7 @@ define(function (require) {
 	populateWeights: function(links, filter) {
             this.projectionSummary = this.getProjectionSummary();
 	    for (var i in links) {
-                if (links[i].type.filter(t=>this.projectionTypeSummary[filter].indexOf(t)>-1).length > 0) {
+                if (links[i].type.filter(function(t) { return this.projectionTypeSummary[filter].indexOf(t)>-1 }.bind(this)).length > 0) {
 		    links[i].weight = this.linkWeight(links[i].conns, filter);
                     links[i].erev = this.linkErev(links[i].conns, filter);
                     links[i].gbase = this.linkGbase(links[i].conns, filter);

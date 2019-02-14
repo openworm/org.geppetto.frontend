@@ -9,15 +9,16 @@ define(function (require) {
         matrix: [],
 	linkColormaps: {},
         state: {filter: 'projection', colorscale: undefined, weight: false, order: 'id', population: false},
-	weightColormaps: function(links, filter) {
+	weightColormaps: function(links, nodes, filter, context) {
 	    var exc_threshold = -70; // >-70 mV => excitatory
             if (this.state.population) {
-                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(x=> x.weight*x.gbase).map(Math.abs)));
-                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(x=> x.weight*x.gbase).map(Math.abs)));
+                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(n => n.weight*n.gbase/nodes[n.x].n).map(Math.abs)));
+                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(n => n.weight*n.gbase/nodes[n.x].n).map(Math.abs)));
             } else {
-	        var weights_inh = links.filter(l => (l.erev < exc_threshold) || (l.weight < 0)).map(x => x.weight*x.gbase).map(Math.abs);
-                var weights_exc = links.filter(l => (l.erev >= exc_threshold) && (l.weight >= 0)).map(x => x.weight*x.gbase).map(Math.abs);
+	        var weights_inh = links.filter(l => context.connectionType(l) === 'inh').map(x => x.weight*x.gbase).map(Math.abs).filter(l => !Number.isNaN(l));
+                var weights_exc = links.filter(l => context.connectionType(l) === 'exc').map(x => x.weight*x.gbase).map(Math.abs).filter(l => !Number.isNaN(l));
             }
+            // add an extra value otherwise d3 interpolate just gives a black scale
             if (weights_inh.length === 1)
                 weights_inh.push(weights_inh[0]/2);
             if (weights_exc.length === 1)
@@ -105,7 +106,7 @@ define(function (require) {
             this.state.filter = context.projectionTypeSummary[this.state.filter].length > 0 ?
                 this.state.filter :
                 Object.keys(context.projectionTypeSummary).filter(x => context.projectionTypeSummary[x].length > 0)[0];
-            if (links.filter(l => !l.weight).length > 0)
+            if (links.filter(l => typeof l.weight === 'undefined').length > 0)
                 context.populateWeights(links, this.state.filter);
                 
 	    // Compute index per node.
@@ -129,7 +130,7 @@ define(function (require) {
 		    if (this.state.weight) {
                         m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
                         m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
-                        m_entry.type = (link.erev >= -70 && link.weight >= 0) ? 'exc' : 'inh';
+                        m_entry.type = context.connectionType(link);
 		    }
                     for (var type of projTypes) {
 		        nodes[link.source].pre_count[type] += 1;
@@ -154,7 +155,9 @@ define(function (require) {
 	    //  Precompute the orders.
 	    var orders = {
 		id: d3.range(n).sort(function (a, b) {
-		    return d3.ascending(nodes[a].id, nodes[b].id);
+                    var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+                    return collator.compare(nodes[a].id, nodes[b].id);
+		    //return d3.ascending(nodes[a].id, nodes[b].id);
 		}),
 		pre_count: d3.range(n).sort((function (a, b) {
 		    return nodes[b].pre_count[this.state.filter] - nodes[a].pre_count[this.state.filter];
@@ -230,7 +233,7 @@ define(function (require) {
 	    this.linkColormaps = (function() {
 		if (this.state.weight) {
                     context.populateWeights(links, this.state.filter);
-		    return this.weightColormaps(links, this.state.filter);
+		    return this.weightColormaps(links, nodes, this.state.filter, context);
                 }
 		else {
                     return d3.scaleOrdinal()
@@ -266,7 +269,7 @@ define(function (require) {
 		.attr("transform", function (d, i) {
 		    return "translate(0," + x(i) + ")";
 		})
-		.each(row(this.linkColormaps, this.state.filter, context.projectionTypeSummary, this.state.weight));
+		.each(row(this.linkColormaps, this.state.filter, context.projectionTypeSummary, this.state.weight, this.state.population));
 
 	    row.append("line")
 		.attr("x2", context.options.innerWidth);
@@ -578,7 +581,7 @@ define(function (require) {
 			    ctx.populateWeights(ctx.dataset.links, that.state.filter);
                         ctx.setSize(ctx.size.height, ctx.size.width + 100);
 			that.state.weight = true;
-			that.linkColormaps = that.weightColormaps(ctx.dataset.links, that.state.filter);
+			that.linkColormaps = that.weightColormaps(ctx.dataset.links, ctx.dataset.nodes, that.state.filter, ctx);
 		    }
 		    else {
                         ctx.setSize(ctx.size.height, ctx.size.width - 100);
@@ -653,7 +656,7 @@ define(function (require) {
             }
 
 	    // Draw squares for each connection
-	    function row(linkColormaps, filter, projTypesSummary, weights) {
+	    function row(linkColormaps, filter, projTypesSummary, weights, population) {
 		return function(row) {
 		var cell = d3.select(this).selectAll(".cell")
 		    .data(row.filter(function (d) {
@@ -670,22 +673,29 @@ define(function (require) {
 			return d.id;
 		    })
 		    //.style("fill-opacity", function(d) { return z(d.z); })
-                    .style("fill", function(linkColormaps, filter, projTypes, weights) {
+                    .style("fill", function(linkColormaps, filter, projTypes, weights, population) {
                         return function (d) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "none";
-			    if (typeof linkColormaps[d.type] === 'function')
-			        return linkColormaps[d.type](Math.abs(d.gbase*d.weight));
+			    if (typeof linkColormaps[d.type] === 'function') {
+                                if (population)
+			            return linkColormaps[d.type](Math.abs(d.gbase*d.weight)/nodes[d.x].n);
+                                else
+                                    return linkColormaps[d.type](Math.abs(d.gbase*d.weight));
+                            }
 			    else
                                 return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
 		        }
-                    } (linkColormaps, filter, projTypesSummary, weights))
+                    } (linkColormaps, filter, projTypesSummary, weights, population))
 		    .style("stroke", function(linkColormaps, filter, projTypes, weights) {
                         return function (d) {
                             if (filter && d.z.filter(type => projTypes[filter].indexOf(type)>-1).length==0)
                                 return "none";
 			    if (typeof linkColormaps[d.type] === 'function')
-			        return linkColormaps[d.type](Math.abs(d.gbase*d.weight));
+                                if (population)
+			            return linkColormaps[d.type](Math.abs(d.gbase*d.weight)/nodes[d.x].n);
+                                else
+                                    return linkColormaps[d.type](Math.abs(d.gbase*d.weight));
 			    else
                                 return linkColormaps(d.z.filter(x=>projTypes[filter].indexOf(x)>-1));
 		        }
@@ -698,20 +708,25 @@ define(function (require) {
 			eval(root.getId() + "." + nodes[d.y].id).select();
 			eval(root.getId() + "." + nodes[d.y].id).showConnectionLines(false);
 		    })
-		    .on("mouseover", function (d) {
-                        var source_id = d.y;
-                        var target_id = d.x;
-                        var cweight = d.weight;
-                        var gbase = d.gbase;
-                        var weightStr = "";
-                        var weightPre = " (w=";
-                        if (typeof cweight !== 'undefined') {
-                            weightStr = weightPre + parseFloat(Number(Math.abs(cweight))) + ", " +
-                                "g=" +  parseFloat(Number(Math.abs(gbase/1e-9))) + " nS, " +
-                                "w*g=" +  parseFloat(Number(Math.abs(gbase*cweight/1e-9))) + " nS)";
+		    .on("mouseover", function (population) {
+                        return function (d) {
+                            var source_id = d.y;
+                            var target_id = d.x;
+                            var cweight = d.weight;
+                            var gbase = d.gbase;
+                            var weightStr = "";
+                            var weightPre = " (w=";
+                            var popString = population ? ", postPop#=" + nodes[d.x].n + ", w*g/#=" + parseFloat(Math.abs(gbase*cweight))/nodes[d.x].n : "";
+                            console.log(nodes[source_id], nodes[target_id]);
+                            if (typeof cweight !== 'undefined') {
+                                weightStr = weightPre + parseFloat(Math.abs(cweight)).toPrecision(3) + ", " +
+                                    "g=" +  parseFloat(Math.abs(gbase/1e-9)) + " nS, " +
+                                    " w*g=" +  parseFloat(Math.abs(gbase*cweight/1e-9)).toPrecision(3) + " nS" +
+                                    popString + ")";
+                            }
+                            $.proxy(mouseoverCell, this)(nodes[d.y].id + " → " + nodes[d.x].id + weightStr);
                         }
-                        $.proxy(mouseoverCell, this)(nodes[d.y].id + " → " + nodes[d.x].id + weightStr);
-                    })
+                    } (population))
 		    .on("mouseout", $.proxy(mouseoutCell));
 		}
 	    }

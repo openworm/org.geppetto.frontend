@@ -131,29 +131,27 @@ define(function (require) {
                     }
                 })
                 .attr("viewBox", function(d) {
-                    return (d.erev>=-70 && (d.gbase>=0))
+                    return context.connectionType(d) === 'exc'
                         ? "0 -5 10 10" //exc=arrow
                         : "-6 -6 12 12" //inh=circle
                 })
                 .attr("refX", (function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
-                        return (d.erev>=-70 && (d.gbase>=0)) ? 0 : 16;
+                        return context.connectionType(d) === 'exc' ? 0 : 16;
                     else
-                        return (d.erev>=-70 && (d.gbase>=0)) ? 20 : 18;
+                        return context.connectionType(d) === 'exc' ? 20 : 18;
                 }).bind(this))
                 .attr("refY", function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
                         // FIXME: this is absurd…
-                        return (d.erev>=-70 && (d.gbase>=0)) ? -8832*Math.pow(markerHeight(d),-1.02): -5;
+                        return context.connectionType(d) === 'exc' ? -8832*Math.pow(markerHeight(d),-1.02) : -5;
                     else
                         return 0;
                 })
                 .attr("stroke", function(d) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
-                .attr("stroke-opacity", (function (d) {
-                    return 1;
-                }).bind(this))
+                .attr("stroke-opacity", "1")
                 .attr("stroke-width", "1px")
                 .attr("fill", function(d) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
@@ -186,7 +184,7 @@ define(function (require) {
                 .attr("markerUnits", "userSpaceOnUse")
                 .append("svg:path")
                 .attr("d", function(d) {
-                    return (d.erev>=-70 && (d.gbase>=0))
+                    return context.connectionType(d) === 'exc'
                         ? "M0,-5L10,0L0,5" //exc=arrow
                         : "M0,0 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" //inh=circle
                 });

@@ -706,9 +706,9 @@ define(function (require) {
                         var weightStr = "";
                         var weightPre = " (w=";
                         if (typeof cweight !== 'undefined') {
-                            weightStr = weightPre + Number(Math.abs(cweight)).toPrecision(2) + ", " +
-                                "g=" +  Number(Math.abs(gbase)).toPrecision(2) + " S, " +
-                                "w*g=" +  Number(Math.abs(gbase*cweight)).toPrecision(2) + " S)";
+                            weightStr = weightPre + parseFloat(Number(Math.abs(cweight))) + ", " +
+                                "g=" +  parseFloat(Number(Math.abs(gbase/1e-9))) + " nS, " +
+                                "w*g=" +  parseFloat(Number(Math.abs(gbase*cweight/1e-9))) + " nS)";
                         }
                         $.proxy(mouseoverCell, this)(nodes[d.y].id + " → " + nodes[d.x].id + weightStr);
                     })

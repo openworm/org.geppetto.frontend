@@ -8,9 +8,8 @@ define(function (require) {
     return {
         matrix: [],
 	linkColormaps: {},
-        state: {filter: 'projection', colorscale: undefined, weight: false, order: 'id', population: false},
+        state: {filter: 'projection', colorScale: undefined, weight: false, order: 'id', population: false},
 	weightColormaps: function(links, nodes, filter, context) {
-	    var exc_threshold = -70; // >-70 mV => excitatory
             if (this.state.population) {
                 var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(n => n.weight*n.gbase/nodes[n.x].n).map(Math.abs)));
                 var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(n => n.weight*n.gbase/nodes[n.x].n).map(Math.abs)));
@@ -50,7 +49,7 @@ define(function (require) {
 	    }
 
             // if we don't have seperate scales then make max/min the same
-            if (this.state.colorScale && eval('('+this.state.colorScale+')').inh) {
+            if (!this.state.equalizeScales && this.state.colorScale && eval('('+this.state.colorScale+')').inh) {
                 colormaps.inh = baseColormapInh.copy().domain([min_inh, max_inh]);
                 colormaps.exc = baseColormapExc.copy().domain([min_exc, max_exc]);
             } else {
@@ -58,10 +57,15 @@ define(function (require) {
                                    typeof max_inh !== 'undefined' ? max_inh : Number.MIN_VALUE);
                 var min = Math.min(typeof min_exc !== 'undefined' ? min_exc : Number.MAX_VALUE,
                                    typeof min_inh !== 'undefined' ? min_inh : Number.MAX_VALUE);
-                colormaps.inh = baseColormapInh.copy().domain([min, max]);
-                colormaps.exc = baseColormapInh.copy().domain([min, max]);
+                // if we have equalize and sequential, go from min=0=white
+                if (this.state.equalizeScales && this.state.colorScale && eval('('+this.state.colorScale+')').inh) {
+                    colormaps.inh = baseColormapInh.copy().domain([0, max]);
+                    colormaps.exc = baseColormapExc.copy().domain([0, max]);
+                } else {
+                    colormaps.inh = baseColormapInh.copy().domain([min, max]);
+                    colormaps.exc = baseColormapInh.copy().domain([min, max]);
+                }
             }		
-
 	    return colormaps;
 	},
 	createMatrixLayout: function (context, state) {
@@ -173,6 +177,9 @@ define(function (require) {
 	    var rect = container
 		.append("rect")
 		.attr("class", "background")
+                // white bg for sequential, black otherwise
+                .attr("fill", (typeof this.state.colorScale === 'undefined' ||
+                               typeof eval('('+this.state.colorScale+')').inh === 'undefined') ? "black" : "white")
 		.attr("width", matrixDim - margin.left - 20)
 		.attr("height", matrixDim - margin.top);
 
@@ -617,7 +624,6 @@ define(function (require) {
 		}
 	    } (context, this));
 
-
             // color scale selector
             if (this.state.weight) {
                 var colorOptions = {
@@ -651,6 +657,35 @@ define(function (require) {
                         ctx.createLayout(that.state);
                     }
                 } (context, this));
+
+                // if sequential then show equalize scales box
+                if (this.state.colorScale && eval('('+this.state.colorScale+')').inh) {
+                                    
+                    var equalize = $('<input type="checkbox" id="equalize" name="equalize" value="equalize">');
+                    if (this.state.equalizeScales)
+		        equalize.attr("checked", "checked");
+
+                    colorContainer.append($('<span/>', {
+		        id: 'equalize-selector',
+		        class: 'control-label',
+		        text: 'Equalize scales'
+	            }).append(equalize));
+
+	            equalize.on("change", function (ctx, that) {
+		        return function () {
+		            if (this.checked) {
+                                that.state.equalizeScales = true;
+		            }
+		            else {
+			        that.state.equalizeScales = false;
+		            }
+		            ctx.createLayout(that.state);
+		        }
+	            } (context, this));
+                } else {
+                    $('#equalize').remove();
+                }
+
             } else {
                 $('#colorscales').remove();
             }
@@ -732,5 +767,4 @@ define(function (require) {
 	    }
 	}
     }
-
 });

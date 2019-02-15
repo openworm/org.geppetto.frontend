@@ -37,6 +37,7 @@ export default class Menu extends React.Component {
                     button={button}
                     list={button.list}
                     menuHandler={this.menuHandler} 
+                    menuHandlerDirect={this.props.menuHandler}
                     menuClickHandler={this.menuClick}
                     menuOpen={this.state.menuOpen}
                     sectionOpened={this.state.sectionOpened}

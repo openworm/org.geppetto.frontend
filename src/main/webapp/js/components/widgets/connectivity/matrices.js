@@ -160,8 +160,9 @@ define(function (require) {
 	    var orders = {
 		id: d3.range(n).sort(function (a, b) {
                     var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
-                    return collator.compare(nodes[a].id, nodes[b].id);
-		    //return d3.ascending(nodes[a].id, nodes[b].id);
+                    return collator.compare(nodes[a].id.split('[')[1], nodes[b].id.split('[')[1]);
+                }).sort(function (a, b) {
+		    return d3.ascending(nodes[a].id.split('[')[0], nodes[b].id.split('[')[0]);
 		}),
 		pre_count: d3.range(n).sort((function (a, b) {
 		    return nodes[b].pre_count[this.state.filter] - nodes[a].pre_count[this.state.filter];

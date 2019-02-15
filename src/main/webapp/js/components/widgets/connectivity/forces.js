@@ -5,7 +5,7 @@
 
 define(function (require) {
     return {
-        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.000001, nodeSize: 1, linkSize: 1},
+        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.0000001, nodeSize: 6, linkSize: 6},
         createForceLayout: function (context) {
             var d3 = require("d3");
             var _ = require('underscore');
@@ -97,15 +97,15 @@ define(function (require) {
             var node_min = Math.min.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var node_max = Math.max.apply(null, nodes.map(n => n.n).filter(x => typeof x != 'undefined'));
             var scale_node = function(x) {
-                return lin_scale(150*parseFloat(this.state.nodeSize), 350*parseFloat(this.state.nodeSize), node_min, node_max, x);
+                return lin_scale(350*parseFloat(this.state.nodeSize), 900*parseFloat(this.state.nodeSize), node_min, node_max, x);
             }.bind(this);
 
-            var link_min = Math.min.apply(null, links.map(l => Math.abs(l.weight*l.gbase)/nodes[l.target].n).filter(w => typeof w != 'undefined'));
-            var link_max = Math.max.apply(null, links.map(l => Math.abs(l.weight*l.gbase)/nodes[l.target].n).filter(w => typeof w != 'undefined'));
+            var link_min = this.state.population ? Math.min.apply(null, links.map(l => Math.abs(l.weight*l.gbase)/nodes[l.target].n).filter(w => typeof w != 'undefined')) : 1;
+            var link_max = this.state.population ? Math.max.apply(null, links.map(l => Math.abs(l.weight*l.gbase)/nodes[l.target].n).filter(w => typeof w != 'undefined')) : 1;
             var scale_link = function(x) {
                 if (!link_min) link_min = 1;
                 if (!link_max) link_max = 1;
-                return lin_scale(50*parseFloat(this.state.linkSize), 400*parseFloat(this.state.linkSize), link_min, link_max, x);
+                return lin_scale(50*parseFloat(this.state.linkSize), 300*parseFloat(this.state.linkSize), link_min, link_max, x);
             }.bind(this)
 
             d3.select(".everything").selectAll(".link").remove();
@@ -115,7 +115,7 @@ define(function (require) {
                     if (d.source.n)
                         return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
                     else
-                        return 15;
+                        return 0;
                 } else {
                     return scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n)+1000;//*((this.state.linkSize/5)+1);
                 }
@@ -139,12 +139,12 @@ define(function (require) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
                         return context.connectionType(d) === 'exc' ? 0 : 16;
                     else
-                        return context.connectionType(d) === 'exc' ? 23 : 20;
+                        return context.connectionType(d) === 'exc' ? 27 : 24;
                 }).bind(this))
                 .attr("refY", (function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
                         // FIXME: this is absurd…
-                        return context.connectionType(d) === 'exc' ? -8542.81*this.state.nodeSize*Math.pow(markerHeight(d),-1.013) : -5;
+                        return context.connectionType(d) === 'exc' ? -15600*this.state.nodeSize*Math.pow(markerHeight(d),-1) : -5;
                     else
                         return 0;
                 }).bind(this))
@@ -163,7 +163,7 @@ define(function (require) {
                             if (d.source.n)
                                 return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
                             else
-                                return 15;
+                                return 0;
                         } else {
                             return scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n)+1000;//*((this.state.linkSize/5)+1);
                         }
@@ -175,8 +175,9 @@ define(function (require) {
                         if (d.source.n)
                             return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
                         else
-                            return 15;
+                            return 0;
                     } else {
+                        //return 0;
                         return scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n)+1000;//*((this.state.linkSize/5)+1);
                     }
                 }).bind(this))
@@ -303,8 +304,8 @@ define(function (require) {
 
                          // Make drx and dry different to get an ellipse
                         // instead of a circle.
-                         drx = 400*nodeSize;
-                         dry = 400*nodeSize;
+                         drx = 800*nodeSize;
+                         dry = 800*nodeSize;
 
                         // For whatever reason the arc collapses to a point if the beginning
                         // and ending points of the arc are the same, so kludge it.
@@ -456,7 +457,7 @@ define(function (require) {
             typeContainer.append($('<label for="link" class="control-label">Hide links</label>'));
 
             
-            var nodeSlide = $('<input class="connectivity-control" type="range" min="1" max="10" id="node" name="node" value="1">');
+            var nodeSlide = $('<input class="connectivity-control" type="range" min="1" max="10" id="node" name="node" value="6">');
 	    if (this.state.nodeSize)
 		nodeSlide.attr("value", this.state.nodeSize);
             nodeSlide.on("change", function(ctx, that) {
@@ -469,7 +470,7 @@ define(function (require) {
             typeContainer.append($('<label for="node" class="control-label">Node size</label>'));
 
                         
-            var linkSizeSlide = $('<input class="connectivity-control" type="range" min="1" max="10" id="linkSize" name="linkSize" value="1">');
+            var linkSizeSlide = $('<input class="connectivity-control" type="range" min="1" max="10" id="linkSize" name="linkSize" value="6">');
 	    if (this.state.linkSize)
 		linkSizeSlide.attr("value", this.state.linkSize);
             linkSizeSlide.on("change", function(ctx, that) {

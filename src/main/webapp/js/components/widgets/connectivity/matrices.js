@@ -134,7 +134,9 @@ define(function (require) {
 		    if (this.state.weight) {
                         m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
                         m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
+                        m_entry.weight_x_gbase ? m_entry.weight_x_gbase+=link.gbase*link.weight : m_entry.weight_x_gbase = link.gbase*link.weight;
                         m_entry.type = context.connectionType(link);
+                        m_entry.num ? m_entry.num+=1 : m_entry.num = 1;
 		    }
                     for (var type of projTypes) {
 		        nodes[link.source].pre_count[type] += 1;
@@ -749,15 +751,19 @@ define(function (require) {
                             var source_id = d.y;
                             var target_id = d.x;
                             var cweight = d.weight;
-                            var gbase = d.gbase;
+                            var gbase = Math.abs(d.gbase/1e-9);
+                            var weight_x_gbase = d.weight_x_gbase ? Number(d.weight_x_gbase/1e-9).toPrecision(3) : 0;
                             var weightStr = "";
                             var weightPre = " (w=";
-                            var popString = population ? ", postPop#=" + nodes[d.x].n + ", w*g/#=" + parseFloat(Math.abs(gbase*cweight))/nodes[d.x].n : "";
+                            var n_post = nodes[d.x].n;
+                            var g = population ? " g_avg=" + Number(gbase/d.num).toPrecision(3)+ "nS, " : " g=" + Number(gbase).toPrecision(3) + "nS, ";
+                            var popString = population ? ", postPop#=" + n_post + ", w*g/#=" + Number(weight_x_gbase/n_post).toPrecision(3) + "nS": "";//parseFloat(Math.abs(gbase*cweight))/nodes[d.x].n : "";
                             console.log(nodes[source_id], nodes[target_id]);
                             if (typeof cweight !== 'undefined') {
-                                weightStr = weightPre + parseFloat(Math.abs(cweight)).toPrecision(3) + ", " +
-                                    "g=" +  parseFloat(Math.abs(gbase/1e-9)) + " nS, " +
-                                    " w*g=" +  parseFloat(Math.abs(gbase*cweight/1e-9)).toPrecision(3) + " nS" +
+                                weightStr = weightPre + Number(Math.abs(cweight)).toPrecision(3) + ", " +
+                                    g +
+                                    " w*g=" + weight_x_gbase +
+                                    "nS" +
                                     popString + ")";
                             }
                             $.proxy(mouseoverCell, this)(nodes[d.y].id + " → " + nodes[d.x].id + weightStr);

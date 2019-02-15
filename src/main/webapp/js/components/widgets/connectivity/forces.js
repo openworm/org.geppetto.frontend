@@ -60,7 +60,7 @@ define(function (require) {
                     var gbase = filteredLinks.reduce((acc,cur)=>acc+cur.gbase,0);
                     
                     if (tmpLinks.filter(filterSourceTarget).length > 0) {
-                        var index = tmpLinks.findIndex(x=>x);
+                        var index = tmpLinks.map(filterSourceTarget).findIndex(x=>x);
                         tmpLinks[index].weight = w;
                         tmpLinks[index].gbase = gbase;
                         tmpLinks[index].erev = erev;
@@ -100,24 +100,24 @@ define(function (require) {
                 return lin_scale(150*parseFloat(this.state.nodeSize), 350*parseFloat(this.state.nodeSize), node_min, node_max, x);
             }.bind(this);
 
-            var link_min = Math.min.apply(null, links.map(l => Math.abs(l.weight)).filter(w => typeof w != 'undefined'));
-            var link_max = Math.max.apply(null, links.map(l => Math.abs(l.weight)).filter(w => typeof w != 'undefined'));
+            var link_min = Math.min.apply(null, links.map(l => Math.abs(l.weight*l.gbase)/nodes[l.target].n).filter(w => typeof w != 'undefined'));
+            var link_max = Math.max.apply(null, links.map(l => Math.abs(l.weight*l.gbase)/nodes[l.target].n).filter(w => typeof w != 'undefined'));
             var scale_link = function(x) {
                 if (!link_min) link_min = 1;
                 if (!link_max) link_max = 1;
-                return lin_scale(80*parseFloat(this.state.linkSize), 200*parseFloat(this.state.linkSize), link_min, link_max, x);
+                return lin_scale(50*parseFloat(this.state.linkSize), 400*parseFloat(this.state.linkSize), link_min, link_max, x);
             }.bind(this)
 
             d3.select(".everything").selectAll(".link").remove();
 
             var markerHeight = (function(d){
-                if (Object.keys(d.target).length !== 0) {
-                    if (d.target.n)
-                        return scale_node(d.target.n)/this.state.nodeSize-80;
+                if (Object.keys(d.source).length !== 0) {
+                    if (d.source.n)
+                        return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
                     else
                         return 15;
                 } else {
-                    return scale_node(nodes[d.target].n)/this.state.nodeSize;
+                    return scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n)+1000;//*((this.state.linkSize/5)+1);
                 }
             }).bind(this);
             context.svg.append("svg:defs").selectAll("marker")
@@ -139,15 +139,15 @@ define(function (require) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
                         return context.connectionType(d) === 'exc' ? 0 : 16;
                     else
-                        return context.connectionType(d) === 'exc' ? 20 : 18;
+                        return context.connectionType(d) === 'exc' ? 23 : 20;
                 }).bind(this))
-                .attr("refY", function(d) {
+                .attr("refY", (function(d) {
                     if (Object.keys(d.source).length===0 && nodes[d.source].type === nodes[d.target].type)
                         // FIXME: this is absurd…
-                        return context.connectionType(d) === 'exc' ? -8832*Math.pow(markerHeight(d),-1.02) : -5;
+                        return context.connectionType(d) === 'exc' ? -8542.81*this.state.nodeSize*Math.pow(markerHeight(d),-1.013) : -5;
                     else
                         return 0;
-                })
+                }).bind(this))
                 .attr("stroke", function(d) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
@@ -157,27 +157,27 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
                 .attr("markerWidth", (function(d) {
-                    var w = Math.abs(d.weight);
+                    var w = d.target.n ? Math.abs((d.weight*d.gbase)/d.target.n) : Math.abs((d.weight*d.gbase)/nodes[d.target].n);
                     if ((w ? w : 1)>=parseFloat(this.state.linkFilter)) {
-                        if (Object.keys(d.target).length !== 0) {
-                            if (d.target.n)
-                                return scale_node(d.target.n);
+                        if (Object.keys(d.source).length !== 0) {
+                            if (d.source.n)
+                                return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
                             else
                                 return 15;
                         } else {
-                            return scale_node(nodes[d.target].n);
+                            return scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n)+1000;//*((this.state.linkSize/5)+1);
                         }
                     } else
                         return 0;
                 }).bind(this))
                 .attr("markerHeight", (function(d) {
-                    if (Object.keys(d.target).length !== 0) {
-                        if (d.target.n)
-                            return scale_node(d.target.n);//this.state.nodeSize;//-80;
+                    if (Object.keys(d.source).length !== 0) {
+                        if (d.source.n)
+                            return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
                         else
                             return 15;
                     } else {
-                        return scale_node(nodes[d.target].n);//this.state.nodeSize;
+                        return scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n)+1000;//*((this.state.linkSize/5)+1);
                     }
                 }).bind(this))
                 .attr("orient", "auto")
@@ -205,11 +205,11 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
                 .style("stroke-opacity", (function (d) {
-                    var w = Math.abs(d.weight);
+                    var w = d.target.n ? Math.abs((d.weight*d.gbase)/d.target.n) : Math.abs((d.weight*d.gbase)/nodes[d.target].n);
                     return (w ? w : 1)>=parseFloat(this.state.linkFilter) ? 1 : 0; 
                 }).bind(this))
                 .style("stroke-width", function (d) {
-                    return (typeof d.weight !== 'undefined') ? scale_link(Math.abs(d.weight)) : 50;
+                    return (typeof d.weight !== 'undefined') ? scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n) : 50;
                 });
             
             var node = g.selectAll(".node")
@@ -419,7 +419,7 @@ define(function (require) {
 		}
 	    } (context, this));
 
-            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.0001" min="0.0000001" step="1e-9" id="attraction" name="attraction" value="0.000001">');
+            var attractionSlide = $('<input class="connectivity-control" type="range" max="0.0001" min="0.0000001" step="1e-9" id="attraction" name="attraction" value="0.0000001">');
 	    if (this.state.attraction)
 		attractionSlide.attr("value", this.state.attraction);
             attractionSlide.on("change", function(ctx, that) {

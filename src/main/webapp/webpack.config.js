@@ -19,7 +19,7 @@ if (geppettoConfig.contextPath == '/') {
   publicPath = path.join(geppettoConfig.contextPath, "geppetto/build/")
 }
 else {
-  pubclicPath = path.join("/", geppettoConfig.contextPath, "geppetto/build");
+  pubcliPath = path.join("/", geppettoConfig.contextPath, "geppetto/build");
 }
 
 console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath);

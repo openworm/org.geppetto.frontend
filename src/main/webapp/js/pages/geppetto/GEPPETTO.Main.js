@@ -11,6 +11,7 @@ define(function (require) {
         var $ = require('jquery');
         var React = require('react');
         var path = require('path');
+        var urljoin = require('url-join');
         var InfoModal = require('../../components/controls/modals/InfoModal');
         var ProjectNode = require('../../geppettoProject/model/ProjectNode');
         var ReactDOM = require('react-dom');
@@ -109,15 +110,15 @@ define(function (require) {
              */
             init: function () {
             	if(GEPPETTO_CONFIGURATION.contextPath=="/"){
-            		var host = path.join(GEPPETTO.MessageSocket.protocol + window.location.host.replace("8081","8080"), '/GeppettoServlet');
+            		var host = urljoin(GEPPETTO.MessageSocket.protocol + window.location.host.replace("8081","8080"), '/GeppettoServlet');
                 }
                 else{
                     var baseHost = GEPPETTO.MessageSocket.protocol + window.location.host;
                     var contextPath = window.location.pathname.substring(0,window.location.pathname.lastIndexOf("/"));
                     if (!contextPath.endsWith(GEPPETTO_CONFIGURATION.contextPath.replace(/^\/|\/$/g, ''))){
-                        contextPath = path.join(contextPath, GEPPETTO_CONFIGURATION.contextPath);
+                        contextPath = urljoin(contextPath, GEPPETTO_CONFIGURATION.contextPath);
                     }
-                    var host = path.join(baseHost, contextPath , "GeppettoServlet")
+                    var host = urljoin(baseHost, contextPath , "GeppettoServlet")
                 }
                 GEPPETTO.MessageSocket.connect(host);
                 console.log("Host for MessageSocket to connect: "+host);

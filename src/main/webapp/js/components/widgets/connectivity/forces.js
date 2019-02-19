@@ -5,10 +5,16 @@
 
 define(function (require) {
     return {
-        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.0000001, nodeSize: 6, linkSize: 6},
+        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.0000001, nodeSize: 6, linkSize: 6, zoom: d3.zoomIdentity},
         createForceLayout: function (context) {
             var d3 = require("d3");
             var _ = require('underscore');
+
+            if (context.dataset.populationLinks.filter(l => !l.weight).length > 0)
+                context.populateWeights(context.dataset.populationLinks, this.state.filter);
+
+            if (context.dataset.links.filter(l => !l.weight).length > 0)
+                context.populateWeights(context.dataset.links, this.state.filter);            
 
             //TODO: 10/20 categories hardcoded in color scales
             var linkTypeScale = d3.scaleOrdinal(context.linkColors)
@@ -24,12 +30,8 @@ define(function (require) {
 	    //add encompassing group for the zoom
 	    var g = context.svg.append("g")
 		.attr("class", "everything");
-
-            if (context.dataset.populationLinks.filter(l => !l.weight).length > 0)
-                context.populateWeights(context.dataset.populationLinks, this.state.filter);
-
-            if (context.dataset.links.filter(l => !l.weight).length > 0)
-                context.populateWeights(context.dataset.links, this.state.filter);
+                //.attr("transform", this.state.zoom ? this.state.zoom : "")
+            context.svg.call(d3.zoom().transform, this.state.zoom);
 
             if (this.state.population) {
                 var links = [];
@@ -254,10 +256,10 @@ define(function (require) {
 
 	    var zoom_handler = d3.zoom()
 		.on("zoom", (function() {
-		    g.attr("transform", d3.event.transform);
-                    this.state.zoom = g.attr("transform");
+                    g.attr("transform", d3.event.transform);
+                    this.state.zoom = d3.event.transform;
 	        }).bind(this));
-            zoom_handler(context.svg);
+            context.svg.call(zoom_handler);
 
             var legendPosition = { x: 0.75 * context.options.innerWidth, y: 0 };
 

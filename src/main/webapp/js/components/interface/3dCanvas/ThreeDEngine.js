@@ -153,8 +153,8 @@ define(['jquery'], function () {
                     if (x != clientX || y != clientY)
                         return;
 
-                    that.mouse.y = -((event.clientY - (that.renderer.domElement.getBoundingClientRect().top)) / that.renderer.domElement.height) * 2 + 1;
-                    that.mouse.x = ((event.clientX - (that.renderer.domElement.getBoundingClientRect().left)) / that.renderer.domElement.width) * 2 - 1;
+                    that.mouse.y = -((event.clientY - (that.renderer.domElement.getBoundingClientRect().top)) / that.renderer.domElement.getBoundingClientRect().height) * 2 + 1;
+                    that.mouse.x = ((event.clientX - (that.renderer.domElement.getBoundingClientRect().left)) / that.renderer.domElement.getBoundingClientRect().width) * 2 - 1;
 
                     if (event.button == 0) //only for left click
                     {

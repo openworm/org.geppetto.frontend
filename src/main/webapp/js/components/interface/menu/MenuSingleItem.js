@@ -100,7 +100,7 @@ class MenuSingleItem extends React.Component {
                         key={index}
                         onClick={(e) => {this.handleClick(e, item.action)}}
                         onMouseOver={(e) => {this.handleMouseOver(e, index)}}
-                        menuHandlerDirect={this.props.menuHandlerDirect}
+                        ContainerProps={{menuHandlerDirect: this.props.menuHandlerDirect}}
                         classes={MenuItemClass}>
                             {item.label}
                             <ArrowRightIcon style={{marginLeft: '10px'}}/>
@@ -133,7 +133,7 @@ class MenuSingleItem extends React.Component {
                         key={index}
                         onClick={(e) => {this.handleClick(e, item.action)}}
                         onMouseOver={(e) => {this.handleMouseOver(e, index)}}
-                        menuHandlerDirect={this.props.menuHandlerDirect}
+                        ContainerProps={{menuHandlerDirect: this.props.menuHandlerDirect}}
                         classes={MenuItemClass}>
                             {item.label}
                             <ArrowRightIcon style={{marginLeft: '10px'}}/>
@@ -146,7 +146,7 @@ class MenuSingleItem extends React.Component {
                         key={index}
                         onClick={(e) => {this.handleClick(e, item.action)}}
                         onMouseOver={(e) => {this.handleMouseOver(e, index)}}
-                        menuHandlerDirect={this.props.menuHandlerDirect}
+                        ContainerProps={{menuHandlerDirect: this.props.menuHandlerDirect}}
                         menuaction={item.action}
                         classes={{
                             root: classes.root1, // class name, e.g. `classes-nesting-root-x`

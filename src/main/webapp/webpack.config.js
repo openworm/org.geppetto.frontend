@@ -14,7 +14,14 @@ try {
     console.error('\nFailed to load Geppetto Configuration')
 }
 
-var publicPath = ((geppettoConfig.contextPath == '/') ? geppettoConfig.contextPath : path.join("/", geppettoConfig.contextPath, "geppetto/build/"));
+var publicPath;
+if (geppettoConfig.contextPath == '/') {
+  publicPath = path.join(geppettoConfig.contextPath, "geppetto/build/")
+}
+else {
+  publicPath = path.join("/", geppettoConfig.contextPath, "geppetto/build");
+}
+
 console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath);
 
 

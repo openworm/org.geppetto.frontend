@@ -1,6 +1,7 @@
 define(function (require) {
 
     var CreateClass = require('create-react-class'),
+        React = require('react'),
         Button = require('../../controls/mixins/bootstrap/button'),
         GEPPETTO = require('geppetto');
 

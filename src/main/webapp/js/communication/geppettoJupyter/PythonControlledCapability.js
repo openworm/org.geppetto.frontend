@@ -207,7 +207,7 @@ define(function (require) {
 
                 //Checkbox
                 handleUpdateCheckbox(event, isInputChecked) {
-                    this.triggerUpdate(() => this.updatePythonValue(isInputChecked));
+                    this.updatePythonValue(isInputChecked);
                 }
 
                 render() {
@@ -229,7 +229,7 @@ define(function (require) {
                     delete wrappedComponentProps.callback;
 
                     if (wrappedComponentProps.realType == 'func' || wrappedComponentProps.realType == 'float') {
-                        wrappedComponentProps['errorText'] = this.state.errorMsg;
+                        wrappedComponentProps['helperText'] = this.state.errorMsg;
                     }
                     if (WrappedComponent.name != 'ListComponent') {
                         delete wrappedComponentProps.realType;

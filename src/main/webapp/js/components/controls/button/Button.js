@@ -1,11 +1,12 @@
 define(function(require) {
 
 	var React = require('react');
+	var createClass = require('create-react-class');
 	var GEPPETTO = require('geppetto');
 
 	$.widget.bridge('uitooltip', $.ui.tooltip);
 
-	var button = React.createClass({
+	var button = createClass({
 		attachTooltip: function(){
 			var self = this;
 			$("#"+this.props.configuration.id).uitooltip({

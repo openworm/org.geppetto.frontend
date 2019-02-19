@@ -68,10 +68,10 @@ module.exports = function(env){
 			geppettoConfig.embedderURL=env.embedderURL;
 		}
 	}
-	
+
 	console.log('Geppetto configuration \n');
 	console.log(JSON.stringify(geppettoConfig, null, 2), '\n');
-	
+
 	var entries = {
 		    main: "./js/pages/geppetto/main.js",
 		    admin: "./js/pages/admin/admin.js"
@@ -80,12 +80,12 @@ module.exports = function(env){
 	console.log("\nThe Webpack entries are:");
 	console.log(entries);
 
-		
+
 
 
     return {
 	    entry: entries,
-	  
+
 	    output: {
 	        path: path.resolve(__dirname, 'build'),
 	        filename: '[name].bundle.js',
@@ -133,28 +133,33 @@ module.exports = function(env){
 	        }),
 	        new ExtractTextPlugin("[name].css"),
 	    ],
-	
+
 	    resolve: {
 	        alias: {
 	            geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js'),
 	            handlebars: 'handlebars/dist/handlebars.js'
-	
+
 	        },
-	        extensions: ['*', '.js', '.json'],
+	        extensions: ['*', '.js', '.ts', '.tsx', '.json', 'jsx'],
 	    },
-	
+
 	    module: {
 	        noParse: [/js\/components\/interface\/dicomViewer\/ami.min.js/],
 	        rules: [
 	            {
 	                test: /\.(js|jsx)$/,
 	                include: [path.resolve(__dirname, './js'), path.resolve(__dirname, './extensions'), path.resolve(__dirname, './style'), path.resolve(__dirname, './WEB-INF')],
-	                exclude: [/ami.min.js/], 
+	                exclude: [/ami.min.js/],
 	                loader: 'babel-loader',
 	                query: {
 	                    presets: [['babel-preset-env', { "modules": false }], 'stage-2', 'react']
 	                }
-	            },
+				},
+				// All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
+				{
+					test: /\.tsx?$/,
+					loader: "awesome-typescript-loader"
+				},
 	            {
 	                test: /\.json$/,
 	                loader: "json-loader"
@@ -172,13 +177,11 @@ module.exports = function(env){
 	                loader: 'url-loader?limit=100000'
 	            },
 	            {
-	                
 	                test: /\.css$/,
 	                use: ExtractTextPlugin.extract({
-	                  fallback: "style-loader",
-	                  use: "css-loader"
+	                fallback: "style-loader",
+	                use: "css-loader"
 	                })
-	                  
 	            },
 	            {
 	                test: /\.less$/,

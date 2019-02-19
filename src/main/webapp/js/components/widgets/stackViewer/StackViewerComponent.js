@@ -2,9 +2,11 @@ define(function (require) {
 
     require('pixi.js');
     var React = require('react');
+    var createClass = require('create-react-class');
 
-    var Canvas = React.createClass({
+    var Canvas = createClass({
         _isMounted: false,
+        _initialized: false,
 
         getInitialState: function () {
             return {
@@ -127,7 +129,10 @@ define(function (require) {
 
         componentDidUpdate: function () {
             // console.log('Canvas update');
-            this.renderer.resize(this.props.width, this.props.height);
+            if(this.renderer.width !== this.props.width || this.renderer.height !== this.props.height) {
+                this.renderer.resize(this.props.width, this.props.height);
+                this.props.onHome();
+            }
             this.checkStack();
             this.callPlaneEdges();
         },
@@ -179,7 +184,7 @@ define(function (require) {
 			    if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
 				this.state.buffer[-1].text = '';
 			    }
-			    this.callPlaneEdges();
+                this.callPlaneEdges();
 			}
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -204,7 +209,7 @@ define(function (require) {
 			    // update slice view
 			    this.state.lastUpdate = 0;
 			    this.checkStack();
-			    this.callPlaneEdges();
+                this.callPlaneEdges();
 			}
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -230,7 +235,7 @@ define(function (require) {
 			    // update slice view
 			    this.state.lastUpdate = 0;
 			    this.checkStack();
-			    this.callPlaneEdges();
+                this.callPlaneEdges();
 		    }
                 }.bind(this),
                 error: function (xhr, status, err) {
@@ -587,6 +592,11 @@ define(function (require) {
 
             function setup() {
                 // console.log('Buffered ' + (1000 - buffMax).toString() + ' tiles');
+                    if(this._isMounted === true && this._initialized === false) {
+                        //this.props.canvasRef.resetCamera();
+                        this.props.onHome();
+                        this._initialized = true;
+                    }
                 if (this.state.txtUpdated < Date.now() - this.state.txtStay) {
                     this.state.buffer[-1].text = '';
                 }
@@ -1038,7 +1048,7 @@ define(function (require) {
 
     var prefix = "", _addEventListener, onwheel, support;
 
-    var StackViewerComponent = React.createClass({
+    var StackViewerComponent = createClass({
         _isMounted: false,
 
         getInitialState: function () {
@@ -1451,7 +1461,7 @@ define(function (require) {
             var markup = '';
             if (this.state.stack.length > 0) {
                 markup = (
-                    <div id={displayArea} style={{position: 'absolute', top: -1, left: -1}}>
+                    <div id={displayArea} style={{position: 'absolute', top: 3, left: 3}}>
                         <button style={{
                             position: 'absolute',
                             left: 2.5,
@@ -1520,8 +1530,9 @@ define(function (require) {
                                 templateId={this.props.config.templateId}
                                 templateDomainIds={this.state.tempId}
                         		templateDomainTypeIds={this.state.tempType}
-                                templateDomainNames={this.state.tempName}
-                                slice={this.state.slice} />
+                                templateDomainNames={this.state.tempName} layout={this.props.layout}
+                                slice={this.state.slice} onHome={this.onHome} onZoomIn={this.onZoomIn} 
+                                onResize={this.onResize} />
                     </div>
                 );
             } else {
@@ -1533,13 +1544,13 @@ define(function (require) {
                     position: 'absolute',
                         top
                 :
-                    -1,
+                    1,
                         left
                 :
-                    -1,
+                    1,
                         background
                 :
-                    'black',
+                    'transparent',
                         width
                 :
                     this.props.data.width,

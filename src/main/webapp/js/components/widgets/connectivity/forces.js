@@ -5,7 +5,7 @@
 
 define(function (require) {
     return {
-        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.0000001, nodeSize: 6, linkSize: 6, zoom: d3.zoomIdentity},
+        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.0000001, nodeSize: 6, linkSize: 6, zoom: d3.zoomIdentity, markers: false},
         createForceLayout: function (context) {
             var d3 = require("d3");
             var _ = require('underscore');
@@ -113,6 +113,8 @@ define(function (require) {
             d3.select(".everything").selectAll(".link").remove();
 
             var markerHeight = (function(d){
+                if (!this.state.marker)
+                    return 0;
                 if (Object.keys(d.source).length !== 0) {
                     if (d.source.n)
                         return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
@@ -159,6 +161,8 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
                 .attr("markerWidth", (function(d) {
+                    if (!this.state.marker)
+                        return 0;
                     var w = d.target.n ? Math.abs((d.weight*d.gbase)/d.target.n) : Math.abs((d.weight*d.gbase)/nodes[d.target].n);
                     if ((w ? w : 1)>=parseFloat(this.state.linkFilter)) {
                         if (Object.keys(d.source).length !== 0) {
@@ -173,6 +177,8 @@ define(function (require) {
                         return 0;
                 }).bind(this))
                 .attr("markerHeight", (function(d) {
+                    if (!this.state.marker)
+                        return 0;
                     if (Object.keys(d.source).length !== 0) {
                         if (d.source.n)
                             return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
@@ -416,6 +422,27 @@ define(function (require) {
 		    else {
                         ctx.force.stop();
 			that.state.population = false;
+		    }
+		    ctx.createLayout();
+                    ctx.force.restart();
+		}
+	    } (context, this));
+
+            var markerCheckbox = $('<input type="checkbox" class="connectivity-control" id="marker" name="marker" value="marker">');
+	    if (this.state.marker)
+		markerCheckbox.attr("checked", "checked");
+	    orderContainer.append(markerCheckbox);
+	    orderContainer.append($('<label for="marker" class="control-label">Show markers</label>'));
+
+	    markerCheckbox.on("change", function (ctx, that) {
+		return function () {
+		    if (this.checked) {
+                        ctx.force.stop();
+                        that.state.marker = true;
+		    }
+		    else {
+                        ctx.force.stop();
+			that.state.marker = false;
 		    }
 		    ctx.createLayout();
                     ctx.force.restart();

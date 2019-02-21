@@ -11,8 +11,8 @@ define(function (require) {
         state: {filter: 'projection', colorScale: undefined, weight: false, order: 'id', population: false},
 	weightColormaps: function(links, nodes, filter, context) {
             if (this.state.population) {
-                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(n => n.weight*n.gbase/nodes[n.x].n).map(Math.abs)));
-                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(n => n.weight*n.gbase/nodes[n.x].n).map(Math.abs)));
+                var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(l => l.weight_x_gbase/nodes[l.x].n).map(Math.abs)));
+                var weights_exc = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='exc').map(l => l.weight_x_gbase/nodes[l.x].n).map(Math.abs)));
             } else {
 	        var weights_inh = links.filter(l => context.connectionType(l) === 'inh').map(x => x.weight*x.gbase).map(Math.abs).filter(l => !Number.isNaN(l));
                 var weights_exc = links.filter(l => context.connectionType(l) === 'exc').map(x => x.weight*x.gbase).map(Math.abs).filter(l => !Number.isNaN(l));
@@ -717,7 +717,7 @@ define(function (require) {
                                 return "none";
 			    if (typeof linkColormaps[d.type] === 'function') {
                                 if (population)
-			            return linkColormaps[d.type](Math.abs(d.gbase*d.weight)/nodes[d.x].n);
+			            return linkColormaps[d.type](Math.abs(d.weight_x_gbase)/nodes[d.x].n);
                                 else
                                     return linkColormaps[d.type](Math.abs(d.gbase*d.weight));
                             }
@@ -731,7 +731,7 @@ define(function (require) {
                                 return "none";
 			    if (typeof linkColormaps[d.type] === 'function')
                                 if (population)
-			            return linkColormaps[d.type](Math.abs(d.gbase*d.weight)/nodes[d.x].n);
+			            return linkColormaps[d.type](Math.abs(d.weight_x_gbase)/nodes[d.x].n);
                                 else
                                     return linkColormaps[d.type](Math.abs(d.gbase*d.weight));
 			    else
@@ -754,15 +754,15 @@ define(function (require) {
                             var gbase = Math.abs(d.gbase/1e-9);
                             var weight_x_gbase = d.weight_x_gbase ? Number(d.weight_x_gbase/1e-9).toPrecision(3) : 0;
                             var weightStr = "";
-                            var weightPre = " (w=";
+                            var weightPre = " (Σw=";
                             var n_post = nodes[d.x].n;
                             var g = population ? " g_avg=" + Number(gbase/d.num).toPrecision(3)+ "nS, " : " g=" + Number(gbase).toPrecision(3) + "nS, ";
-                            var popString = population ? ", postPop#=" + n_post + ", w*g/#=" + Number(weight_x_gbase/n_post).toPrecision(3) + "nS": "";//parseFloat(Math.abs(gbase*cweight))/nodes[d.x].n : "";
+                            var popString = population ? ", postPop#=" + n_post + ", Σw*g/#=" + Number(weight_x_gbase/n_post).toPrecision(3) + "nS": "";//parseFloat(Math.abs(gbase*cweight))/nodes[d.x].n : "";
                             console.log(nodes[source_id], nodes[target_id]);
                             if (typeof cweight !== 'undefined') {
                                 weightStr = weightPre + Number(Math.abs(cweight)).toPrecision(3) + ", " +
                                     g +
-                                    " w*g=" + weight_x_gbase +
+                                    " Σw*g=" + weight_x_gbase +
                                     "nS" +
                                     popString + ")";
                             }

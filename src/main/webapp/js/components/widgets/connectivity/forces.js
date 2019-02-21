@@ -59,7 +59,7 @@ define(function (require) {
                     var filteredLinks =  context.dataset.populationLinks.filter(filterSourceTarget);
                     var w = filteredLinks.reduce((acc,cur)=>acc+cur.weight,0);
                     var erev = filteredLinks.reduce((acc,cur)=>acc+cur.erev,0);
-                    var gbase = filteredLinks.reduce((acc,cur)=>acc+cur.gbase,0);
+                    var gbase = filteredLinks.reduce((acc,cur)=>acc+cur.gbase,0)/filteredLinks.length;
                     
                     if (tmpLinks.filter(filterSourceTarget).length > 0) {
                         var index = tmpLinks.map(filterSourceTarget).findIndex(x=>x);

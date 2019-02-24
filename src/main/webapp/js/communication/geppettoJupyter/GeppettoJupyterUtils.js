@@ -5,7 +5,11 @@ const handle_output = function (data) {
             GEPPETTO.CommandController.log("ERROR while executing a Python command:");
             GEPPETTO.CommandController.log(data.content.evalue.trim());
             console.error("ERROR while executing a Python command:");
+            console.group("content")
+            data.content.traceback.forEach(message => console.log(message.replace(/[(\[0;)(32m)(31m)(36m)(34m)]/g, '')))
+            console.groupEnd()
             console.error(data.content.traceback);
+            
             GEPPETTO.trigger(GEPPETTO.Events.Hide_spinner);
             break;
         case 'execute_result':

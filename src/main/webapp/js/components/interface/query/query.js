@@ -3,9 +3,13 @@ define(function (require) {
     require("./query.less");
     require("./react-simpletabs.less");
 
-    var React = require('react'), $ = require('jquery');
+    var CreateClass = require('create-react-class'), $ = require('jquery');
+    var React = require('react');
+    var AppBar = require('@material-ui/core/AppBar').default;
+    var Tab = require('@material-ui/core/Tab').default;
+    var Tabs = require('@material-ui/core/Tabs').default;
+    var Typography = require('@material-ui/core/Typography').default;
     var Griddle = require('griddle-0.6-fork');
-    var Tabs = require('react-simpletabs');
     var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
     var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
     var Handlebars = require('handlebars');
@@ -152,8 +156,7 @@ define(function (require) {
         }
     };
 
-    // React CLASS query Link component lines 156-177
-    GEPPETTO.QueryLinkComponent = React.createClass({
+    GEPPETTO.QueryLinkComponent = CreateClass({
         render: function () {
 
             var displayText = this.props.data;
@@ -176,8 +179,7 @@ define(function (require) {
         }
     });
 
-    // React CLASS slideShowImageComponent lines 179-305
-    GEPPETTO.SlideshowImageComponent = React.createClass({
+    GEPPETTO.SlideshowImageComponent = CreateClass({
         isCarousel: false,
 
         imageContainerId: '',
@@ -304,8 +306,7 @@ define(function (require) {
         }
     });
 
-    // React CLASS Query Results Controls Component lines 307-424
-    GEPPETTO.QueryResultsControlsComponent = React.createClass({
+    GEPPETTO.QueryResultsControlsComponent = CreateClass({
 
         replaceTokensWithPath: function (inputStr, path) {
             return inputStr.replace(/\$ID\$/gi, path);
@@ -423,8 +424,7 @@ define(function (require) {
         }
     });
 
-    // React CLASS Query Item component lines 426-468
-    var QueryItem = React.createClass({
+    var QueryItem = CreateClass({
         displayName: 'QueryItem',
 
         getDefaultProps: function () {
@@ -467,7 +467,7 @@ define(function (require) {
         }
     });
 
-    var QueryFooter = React.createClass({
+    var QueryFooter = CreateClass({
         displayName: 'QueryFooter',
 
         getDefaultProps: function () {
@@ -488,8 +488,7 @@ define(function (require) {
         }
     });
 
-    // React CLASS Query Builder component lines 491-1376
-    var QueryBuilder = React.createClass({
+    var QueryBuilder = CreateClass({
         displayName: 'QueryBuilder',
         dataSourceResults: {},
         updateResults: false,
@@ -519,6 +518,7 @@ define(function (require) {
                 infiniteScroll: undefined,
                 resultsPerPate: undefined,
                 refreshTrigger: false,
+                value: 0,
             };
         },
 
@@ -643,7 +643,6 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-            
             queryBuilderModel.subscribe(this.refresh);
 
             var escape = 27;
@@ -1169,6 +1168,11 @@ define(function (require) {
 
         resultSetSelectionChange: function (val) {
             this.props.model.resultSelectionChanged(val);
+            this.props.model.results.map((resultItem, index) => {
+                if(val === resultItem.label) {
+                    this.setState({value: index});
+                }
+            });
         },
 
         downloadQueryResults: function (resultsItem) {
@@ -1249,6 +1253,7 @@ define(function (require) {
         },
 
         render: function () {
+            const { value } = this.state;
             var markup = null;
             // once off figure out if we are to use infinite scrolling for results and store in state
             if (this.state.infiniteScroll === undefined) {
@@ -1261,28 +1266,28 @@ define(function (require) {
                 // if results view, build results markup based on results in the model
                 // figure out focus tab index (1 based index)
                 resultsViewState = true;
-                var focusTabIndex = 1;
+                var focusTabIndex = 0;
                 for (var i = 0; i < this.props.model.results.length; i++) {
                     if (this.props.model.results[i].selected) {
-                        focusTabIndex = i + 1;
+                        focusTabIndex = i;
                     }
                 }
 
                 // set data for each tab based on results from the model
                 // for each tab put a Griddle configured with appropriate column meta
-                var tabs = this.props.model.results.map(function (resultsItem) {
+                var tabs = this.props.model.results.map(function (resultsItem, index) {
                     var getVerboseLabelMarkup = function () {
                         return { __html: resultsItem.verboseLabel };
                     };
 
-                    return (
-                        <Tabs.Panel key={resultsItem.id} title={resultsItem.label}>
+                    return (value === index &&
+                        <Typography component="div" key={index}>
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>
                             <Griddle columns={this.state.resultsColumns} results={resultsItem.records}
                                 showFilter={true} showSettings={false} enableInfiniteScroll={this.state.infiniteScroll} resultsPerPage={this.state.resultsPerPage} bodyHeight={(window.innerHeight - 280)}
                                 useGriddleStyles={false} columnMetadata={this.state.resultsColumnMeta} />
-                        </Tabs.Panel>
+                        </Typography>
                     );
                 }, this);
 
@@ -1321,9 +1326,7 @@ define(function (require) {
                 markup = (
                     <div id="query-results-container" className="center-content">
                         <MenuButton configuration={configuration} />
-                        <Tabs tabActive={focusTabIndex}>
-                            {tabs}
-                        </Tabs>
+                        {tabs}
                         <button id="switch-view-btn" className="fa fa-angle-left querybuilder-button"
                             title="Back to query" onClick={this.switchView.bind(null, false, false)}>
                             <div className="querybuilder-button-label">Refine query</div>
@@ -1334,12 +1337,12 @@ define(function (require) {
                         </button>
                         <button id="delete-result-btn" className="fa fa-trash-o querybuilder-button"
                             title="Delete results"
-                            onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex - 1])}>
+                            onClick={this.queryResultDeleted.bind(null, this.props.model.results[focusTabIndex])}>
                             <div className="querybuilder-button-label">Delete results</div>
                         </button>
                         <button id="download-result-btn" className="fa fa-download querybuilder-button"
                             title="Download results"
-                            onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex - 1])}>
+                            onClick={this.downloadQueryResults.bind(null, this.props.model.results[focusTabIndex])}>
                             <div className="querybuilder-button-label">Download results (CSV)</div>
                         </button>
                     </div>

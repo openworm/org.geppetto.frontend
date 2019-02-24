@@ -2,7 +2,8 @@ define(function (require) {
 
     require('./spotlight.less');
 
-    var React = require('react'),
+    var React = require('react');
+    var CreateClass = require('create-react-class'),
         $ = require('jquery'),
         typeahead = require("typeahead.js/dist/typeahead.jquery.min.js"),
         Bloodhound = require("typeahead.js/dist/bloodhound.min.js"),
@@ -14,7 +15,7 @@ define(function (require) {
 		var Instance = require('../../../geppettoModel/model/Instance');
 		var Variable = require('../../../geppettoModel/model/Variable');
 
-    var Spotlight = React.createClass({
+    var Spotlight = CreateClass({
 
         potentialSuggestions: {},
         suggestions: null,

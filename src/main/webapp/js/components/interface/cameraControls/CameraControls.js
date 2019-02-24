@@ -1,11 +1,11 @@
 define(function(require) {
-
     var React = require('react');
+    var CreateClass = require('create-react-class');
     var GEPPETTO = require('geppetto');
 
     require('./CameraControls.less')
 
-    var CameraControls = React.createClass({
+    var CameraControls = CreateClass({
 
         panLeft: function() {
             GEPPETTO.CommandController.execute(this.props.viewer+'.incrementCameraPan(-0.01, 0)', true);

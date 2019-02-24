@@ -1,12 +1,14 @@
 define(function(require) {
 
     var React = require('react');
+    var DOM = require('react-dom-factories');
+    var CreateClass = require('create-react-class');
     var HomeButton = require('./HomeButton');
 
-    var HomeControls = React.createClass({
+    var HomeControls = CreateClass({
 
         render: function () {
-            return React.DOM.div({className:'homeButton'},
+            return DOM.div({className:'homeButton'},
                 React.createFactory(HomeButton)({disabled:false})
             );
         }

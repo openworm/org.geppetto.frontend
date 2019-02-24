@@ -1,6 +1,7 @@
 define(function(require) {
 
 	var React = require('react');
+	var CreateClass = require('create-react-class');
 	var GEPPETTO = require('geppetto');
 	require("./ButtonBar.less");
 
@@ -8,11 +9,12 @@ define(function(require) {
 
 	var AbstractComponent = require('../../AComponent');
 
-	var ButtonComponent = React.createClass({
+	var ButtonComponent = CreateClass({
 		icon : null,
 		tooltip : null,
 		label : null,
 		actions : null,
+		_isMounted: false,
 		attachTooltip: function(){
 			var self = this;
 			$("#"+this.props.id).uitooltip({
@@ -45,8 +47,13 @@ define(function(require) {
 		},
 
 		componentDidMount : function(){
+			this._isMounted = true;
 			this.attachTooltip();
 			this.evaluateState();
+		},
+
+		componentWillUnmount : function() {
+			this._isMounted = false;
 		},
 
 		onClick : function(){
@@ -99,7 +106,7 @@ define(function(require) {
 				this.tooltip = this.props.configuration.tooltip;
 			}
 
-			if(this.isMounted()){
+			if(this._isMounted){
 				this.setState({toggled: conditionResult, icon:this.icon, actions:this.actions, label: this.label, tooltip: this.tooltip});
 			}
 		},

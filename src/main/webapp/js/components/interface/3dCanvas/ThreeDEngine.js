@@ -10,8 +10,10 @@ define(['jquery'], function () {
     var ArrayInstance = require('../../../geppettoModel/model/ArrayInstance');
     var Type = require('../../../geppettoModel/model/Type');
     var Variable = require('../../../geppettoModel/model/Variable');
+    var Points = require('./Points');
 
     var THREE = require('three');
+
     require('./TrackballControls');
     require('./OBJLoader');
     THREE.ColladaLoader = require('imports-loader?THREE=three!exports-loader?THREE.ColladaLoader!../../../../node_modules\/three\/examples\/js\/loaders\/ColladaLoader');
@@ -61,6 +63,8 @@ define(['jquery'], function () {
             this.linesUserInput = false;
             this.linesUserPreference = undefined;
             this.hoverListeners = undefined;
+            this.THREE = THREE;
+            this.Points = Points;
             //Initialisation
             this.setupCamera();
             this.setupRenderer();

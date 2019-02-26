@@ -7,7 +7,7 @@ import ArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 
 const styles = {
     root1: {
-        background: '#444141',
+        backgroundColor: '#44414112',
         "&:hover": {
             background: "#11bffe",
             backgroundColor: "#11bffe",

@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
     root1: {
-        background: '#252323',
+        background: '#010101',
         "&:hover": {
             background: "#11bffe",
             backgroundColor: "#11bffe",
@@ -18,7 +18,7 @@ const styles = {
         color: '#ffffff',
         fontSize: '16px',
         fontFamily: 'Khand, sans-serif',
-        margin: '-5px 0px 0px 0px',
+        margin: '-10px 0px 0px 0px',
         minWidth: '44px'
     },
     root2:{
@@ -35,7 +35,7 @@ const styles = {
         color: '#ffffff',
         fontSize: '16px',
         fontFamily: 'Khand, sans-serif',
-        margin: '-5px 0px 0px 0px',
+        margin: '-10px 0px 0px 0px',
         minWidth: '44px'
     },
     label: {

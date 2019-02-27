@@ -21,12 +21,7 @@ define(function (require) {
                         GEPPETTO.CommandController.execute("Project.getActiveExperiment().resume();");
                     }
                     else {
-                        if (GEPPETTO.isKeyPressed("shift")) {
-                            GEPPETTO.Flows.onPlay("Project.getActiveExperiment().play();");
-                        }
-                        else {
-                            GEPPETTO.Flows.onPlay("Project.getActiveExperiment().playAll();");
-                        }
+                        GEPPETTO.Flows.onPlay("Project.getActiveExperiment().play();");
                     }
 
                 }

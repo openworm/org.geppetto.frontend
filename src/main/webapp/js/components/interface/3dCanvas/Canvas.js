@@ -764,6 +764,9 @@ define(function (require) {
                 var [width, height] = this.setContainerDimensions();
                 this.engine = new ThreeDEngine(this.getContainer(), this.props.id);
                 this.engine.setSize(width, height);
+                if(this.props.baseZoom !== undefined) {
+                    this.engine.setBaseZoom(this.props.baseZoom);
+                }
 
                 GEPPETTO.SceneController.add3DCanvas(this);
                 GEPPETTO.WidgetsListener.subscribe(this.engine, this.id);

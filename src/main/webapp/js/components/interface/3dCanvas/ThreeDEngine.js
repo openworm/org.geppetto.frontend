@@ -54,6 +54,7 @@ define(['jquery'], function () {
             this.minAllowedLinePrecision = 1; //default line precision, can't go lower than this
             //Settings
             this.linesThreshold = 2000;
+            this.baseZoom = 1;
             this.aboveLinesThreshold = false;
             this.wireframe = false;
             this.isAnimated = false;
@@ -277,6 +278,14 @@ define(['jquery'], function () {
 
         /**
          *
+         * @param baseZoom
+         */
+        setBaseZoom: function (baseZoom) {
+            this.baseZoom = baseZoom;
+        },
+
+        /**
+         *
          * @param shaders
          */
         configureRenderer: function (shaders) {
@@ -344,7 +353,7 @@ define(['jquery'], function () {
             var aabbMax = null;
 
             this.scene.traverse(function (child) {
-                if (child.hasOwnProperty("geometry")) {
+                if (child.hasOwnProperty("geometry") && (child.visible === true)) {
                     child.geometry.computeBoundingBox();
 
                     var bb = child.geometry.boundingBox;
@@ -391,7 +400,7 @@ define(['jquery'], function () {
             this.pointCameraTo(this.sceneCenter);
 
             // Compute offset needed to move the camera back that much needed to center AABB
-            var offset = radius / Math.sin(Math.PI / 180.0 * this.camera.fov * 0.5);
+            var offset = (radius / Math.sin(Math.PI / 180.0 * this.camera.fov * 0.5)) / this.baseZoom;
 
             var dir = this.camera.direction.clone();
             dir.multiplyScalar(offset);

@@ -8,7 +8,7 @@ define(function (require) {
     return {
         matrix: [],
 	linkColormaps: {},
-        state: {filter: 'projection', colorScale: undefined, weight: false, order: 'id', population: false},
+        state: {filter: 'projection', colorScale: undefined, weight: false, order: 'id', population: false, projTypesCache: {}},
 	weightColormaps: function(links, nodes, filter, context) {
             if (this.state.population) {
                 var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(l => l.weight_x_gbase/nodes[l.x].n).map(Math.abs)));
@@ -69,6 +69,8 @@ define(function (require) {
 	    return colormaps;
 	},
 	createMatrixLayout: function (context, state) {
+            if (context.dataset.links.length > 150000)
+                this.state.population = false;
             this.matrix = [];
             if (typeof state !== 'undefined')
                 this.state = state;
@@ -129,8 +131,28 @@ define(function (require) {
                     var Aindex = link.conns[0].getA().getElements()[0].getIndex();
                     var Bindex = link.conns[0].getB().getElements()[0].getIndex();
                     var proj = context.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
-                    var projTypes = proj.filter(x => x.pairs.filter(p => p[0]==Aindex && p[1]==Bindex).length>0).map(x => x.type);
-                    var m_entry = this.matrix[link.source][link.target]
+                    if (typeof this.state.projTypesCache[String(Aindex)] === 'undefined' || typeof this.state.projTypesCache[String(Aindex)][String(Bindex)] === 'undefined') {
+                        if (typeof this.state.projTypesCache[String(Aindex)] !== 'undefined' && typeof this.state.projTypesCache[String(Aindex)]['all'] !== 'undefined')
+                            var projTypesA = this.state.projTypesCache[String(Aindex)]['all'];
+                        else {
+                            var projTypesA = proj.filter(x => x.pairs.filter(p => p[0]==Aindex));
+                            this.state.projTypesCache[String(Aindex)] = {};
+                            this.state.projTypesCache[String(Aindex)]['all'] = projTypesA;
+                        }
+                        var projTypes = projTypesA.filter(x => x.pairs.filter(p => p[1]==Bindex).length>0).map(x => x.type);
+                        //var projTypes = proj.filter(x => x.pairs.filter(p => p[0]==Aindex).filter(p => p[1]==Bindex).length>0).map(x => x.type);
+                        if (typeof this.state.projTypesCache[String(Aindex)] !== 'undefined' && Object.keys(this.state.projTypesCache[String(Aindex)]).length > 0)
+                            this.state.projTypesCache[String(Aindex)][String(Bindex)] = projTypes;
+                        else
+                            this.state.projTypesCache[String(Aindex)] = {[String(Bindex)]: projTypes};
+                    }
+                    else {
+                        //if (typeof this.state.projTypesCache[String(Aindex)][String(Bindex)] === 'undefined')
+                            var projTypes = this.state.projTypesCache[String(Aindex)][String(Bindex)];
+                        //else
+                            //var projTypes = this.state.projTypesCache[String(Aindex)].filter(x => x.pairs.filter(p => p[1]==Bindex).length>0).map(x => x.type);
+                    }
+                    var m_entry = this.matrix[link.source][link.target];
 		    if (this.state.weight) {
                         m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
                         m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
@@ -609,6 +631,8 @@ define(function (require) {
 		style: 'float: left; margin-left: 1.6em',
 		class: 'weights'
 	    }).appendTo(optionsContainer);
+            if (context.dataset.links.length > 150000)
+                populationCheckbox.attr("disabled", "disabled");
 
 	    if (this.state.population)
 		populationCheckbox.attr("checked", "checked");

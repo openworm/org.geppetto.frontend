@@ -163,7 +163,11 @@ define(function (require) {
                 .attr("markerWidth", (function(d) {
                     if (!this.state.marker)
                         return 0;
-                    var w = d.target.n ? Math.abs((d.weight*d.gbase)/d.target.n) : Math.abs((d.weight*d.gbase)/nodes[d.target].n);
+                    var w = undefined;
+                    if (d.target.n)
+                        w = Math.abs((d.weight*d.gbase)/d.target.n);
+                    else if (Object.keys(d.target).length==0 && nodes[d.target].n)
+                        w = Math.abs((d.weight*d.gbase)/nodes[d.target].n);
                     if ((w ? w : 1)>=parseFloat(this.state.linkFilter)) {
                         if (Object.keys(d.source).length !== 0) {
                             if (d.source.n)
@@ -214,11 +218,15 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
                 .style("stroke-opacity", (function (d) {
-                    var w = d.target.n ? Math.abs((d.weight*d.gbase)/d.target.n) : Math.abs((d.weight*d.gbase)/nodes[d.target].n);
+                    var w = undefined;
+                    if (d.target.n)
+                        w = Math.abs((d.weight*d.gbase)/d.target.n);
+                    else if (Object.keys(d.target).length==0 && nodes[d.target].n)
+                        w = Math.abs((d.weight*d.gbase)/nodes[d.target].n);
                     return (w ? w : 1)>=parseFloat(this.state.linkFilter) ? 1 : 0; 
                 }).bind(this))
                 .style("stroke-width", function (d) {
-                    return (typeof d.weight !== 'undefined') ? scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n) : 50;
+                    return (typeof d.weight !== 'undefined') && typeof d.target === 'number' && nodes[d.target].n ? scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n) : 300;
                 });
             
             var node = g.selectAll(".node")
@@ -429,10 +437,12 @@ define(function (require) {
 	    } (context, this));
 
             var markerCheckbox = $('<input type="checkbox" class="connectivity-control" id="marker" name="marker" value="marker">');
-	    if (this.state.marker)
+	    if (this.state.marker && this.state.population)
 		markerCheckbox.attr("checked", "checked");
 	    orderContainer.append(markerCheckbox);
 	    orderContainer.append($('<label for="marker" class="control-label">Show markers</label>'));
+            if (!this.state.population)
+		markerCheckbox.attr("disabled", "disabled");
 
 	    markerCheckbox.on("change", function (ctx, that) {
 		return function () {

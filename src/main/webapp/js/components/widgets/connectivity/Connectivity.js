@@ -35,8 +35,8 @@ define(function (require) {
                      "#07a2e6", "#c091ae", "#8a91a7", "#88fc07", "#ea42fe", "#9e8010", "#10b437",
                      "#c281fe", "#f92b75", "#07c99d"],
         defaultConnectivityOptions: {
-            width: 900,
-            height: 500,
+            width: 1200,
+            height: 600,
             layout: "matrix", //[matrix, force, hive, chord]
             nodeType: function (node) {
                 if (node instanceof Instance) {

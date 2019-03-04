@@ -8,7 +8,8 @@ define(function (require) {
     return {
         matrix: [],
 	linkColormaps: {},
-        state: {filter: 'projection', colorScale: undefined, weight: false, order: 'id', population: false, projTypesCache: {}},
+        state: {filter: 'projection', colorScale: '{"inh": d3.scaleSequential(d3ScaleChromatic.interpolateBlues), "exc": d3.scaleSequential(d3ScaleChromatic.interpolateReds)}',
+                weight: true, order: 'id', population: true, projTypesCache: {}},
 	weightColormaps: function(links, nodes, filter, context) {
             if (this.state.population) {
                 var weights_inh = [].concat.apply([], this.matrix.map(row=>row.filter(x=>x.type=='inh').map(l => l.weight_x_gbase/nodes[l.x].n).map(Math.abs)));
@@ -33,10 +34,8 @@ define(function (require) {
                     var baseColormapInh = baseColormap;
                 }
             } else {
-	        var baseColormapInh = d3.scaleLinear()
-		                    .range([d3.cubehelix(240, 1, 0.5), d3.cubehelix(0, 1, 0.5)])
-		    .interpolate(d3.interpolateCubehelixLong);
-                var baseColormapExc = baseColormapInh;
+	        var baseColormapInh = d3.scaleSequential(d3ScaleChromatic.interpolateBlues);
+                var baseColormapExc = d3.scaleSequential(d3ScaleChromatic.interpolateReds);
             }
 	    if (weights_exc.length > 0) {
 		var min_exc = Math.min.apply(null, weights_exc);
@@ -69,8 +68,6 @@ define(function (require) {
 	    return colormaps;
 	},
 	createMatrixLayout: function (context, state) {
-            if (context.dataset.links.length > 150000)
-                this.state.population = false;
             this.matrix = [];
             if (typeof state !== 'undefined')
                 this.state = state;
@@ -631,8 +628,6 @@ define(function (require) {
 		style: 'float: left; margin-left: 1.6em',
 		class: 'weights'
 	    }).appendTo(optionsContainer);
-            if (context.dataset.links.length > 150000)
-                populationCheckbox.attr("disabled", "disabled");
 
 	    if (this.state.population)
 		populationCheckbox.attr("checked", "checked");
@@ -782,7 +777,6 @@ define(function (require) {
                             var n_post = nodes[d.x].n;
                             var g = population ? " g_avg=" + Number(gbase/d.num).toPrecision(3)+ "nS, " : " g=" + Number(gbase).toPrecision(3) + "nS, ";
                             var popString = population ? ", postPop#=" + n_post + ", Σw*g/#=" + Number(weight_x_gbase/n_post).toPrecision(3) + "nS": "";//parseFloat(Math.abs(gbase*cweight))/nodes[d.x].n : "";
-                            console.log(nodes[source_id], nodes[target_id]);
                             if (typeof cweight !== 'undefined') {
                                 weightStr = weightPre + Number(Math.abs(cweight)).toPrecision(3) + ", " +
                                     g +

@@ -5,7 +5,7 @@
 
 define(function (require) {
     return {
-        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.0000001, nodeSize: 6, linkSize: 6, zoom: d3.zoomIdentity, markers: false},
+        state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.0000001, nodeSize: 6, linkSize: 6, zoom: d3.zoomIdentity, marker: false},
         createForceLayout: function (context) {
             var d3 = require("d3");
             var _ = require('underscore');
@@ -113,15 +113,15 @@ define(function (require) {
             d3.select(".everything").selectAll(".link").remove();
 
             var markerHeight = (function(d){
-                if (!this.state.marker)
+                if (!this.state.marker || !this.state.population)
                     return 0;
                 if (Object.keys(d.source).length !== 0) {
                     if (d.source.n)
-                        return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;//*((this.state.linkSize/5)+1);
+                        return scale_link(Math.abs(d.weight*d.gbase)/d.target.n)+1000;
                     else
                         return 0;
                 } else {
-                    return scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n)+1000;//*((this.state.linkSize/5)+1);
+                    return scale_link(Math.abs(d.weight*d.gbase)/nodes[d.target].n)+1000;
                 }
             }).bind(this);
             context.svg.append("svg:defs").selectAll("marker")
@@ -161,7 +161,7 @@ define(function (require) {
                     return d.source.type ? nodeTypeScale(d.source.type) : nodeTypeScale(nodes[d.source].type);
                 })
                 .attr("markerWidth", (function(d) {
-                    if (!this.state.marker)
+                    if (!this.state.marker || !this.state.population)
                         return 0;
                     var w = undefined;
                     if (d.target.n)
@@ -425,6 +425,7 @@ define(function (require) {
 		return function () {
 		    if (this.checked) {
                         ctx.force.stop();
+                        that.state.marker = false;
                         that.state.population = true;
 		    }
 		    else {

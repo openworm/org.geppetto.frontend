@@ -458,12 +458,13 @@ define(function (require) {
                 break;
             case 'hive':
                 //TODO: ugly preprocessing here...
+                var that = this;
                 if (this.dataset.links.length > 100000) {
                     $('#connectivity-config-modal').modal('hide');
                     GEPPETTO.ModalFactory.inputDialog("Warning", "This model contains over 100,000 connections. Hive plot may be slow to load. Continue?", "OK", function() {
                         clear();
-                        this.calculateNodeDegrees(true);
-                        hives.createHiveLayout(this);
+                        that.calculateNodeDegrees(true);
+                        hives.createHiveLayout(that);
                     }, "Cancel", function() {});
                 } else {
                     clear();

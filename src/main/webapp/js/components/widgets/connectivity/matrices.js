@@ -122,53 +122,36 @@ define(function (require) {
 	    }).bind(this));
 
 	    // Convert links to matrix; count pre / post conns.
-	    links.filter(l=> typeof l.weight !== 'undefined' && typeof l.gbase !== 'undefined' && typeof l.type !== 'undefined')
-                .forEach((function (link) {
+            var parseLink = (function (link) {
 		    //TODO: think about zero weight lines
-                    var Aindex = link.conns[0].getA().getElements()[0].getIndex();
-                    var Bindex = link.conns[0].getB().getElements()[0].getIndex();
-                    var proj = context.projectionSummary[link.conns[0].getA().getPath().substr(0,link.conns[0].getA().getPath().indexOf("[")) + ',' + link.conns[0].getB().getPath().substr(0,link.conns[0].getB().getPath().indexOf("["))];
-                    if (typeof this.state.projTypesCache[String(Aindex)] === 'undefined' || typeof this.state.projTypesCache[String(Aindex)][String(Bindex)] === 'undefined') {
-                        if (typeof this.state.projTypesCache[String(Aindex)] !== 'undefined' && typeof this.state.projTypesCache[String(Aindex)]['all'] !== 'undefined')
-                            var projTypesA = this.state.projTypesCache[String(Aindex)]['all'];
-                        else {
-                            var projTypesA = proj.filter(x => x.pairs.filter(p => p[0]==Aindex));
-                            this.state.projTypesCache[String(Aindex)] = {};
-                            this.state.projTypesCache[String(Aindex)]['all'] = projTypesA;
-                        }
-                        var projTypes = projTypesA.filter(x => x.pairs.filter(p => p[1]==Bindex).length>0).map(x => x.type);
-                        //var projTypes = proj.filter(x => x.pairs.filter(p => p[0]==Aindex).filter(p => p[1]==Bindex).length>0).map(x => x.type);
-                        if (typeof this.state.projTypesCache[String(Aindex)] !== 'undefined' && Object.keys(this.state.projTypesCache[String(Aindex)]).length > 0)
-                            this.state.projTypesCache[String(Aindex)][String(Bindex)] = projTypes;
-                        else
-                            this.state.projTypesCache[String(Aindex)] = {[String(Bindex)]: projTypes};
-                    }
-                    else {
-                        //if (typeof this.state.projTypesCache[String(Aindex)][String(Bindex)] === 'undefined')
-                            var projTypes = this.state.projTypesCache[String(Aindex)][String(Bindex)];
-                        //else
-                            //var projTypes = this.state.projTypesCache[String(Aindex)].filter(x => x.pairs.filter(p => p[1]==Bindex).length>0).map(x => x.type);
-                    }
-                    var m_entry = this.matrix[link.source][link.target];
-		    if (this.state.weight) {
-                        m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
-                        m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
-                        m_entry.weight_x_gbase ? m_entry.weight_x_gbase+=link.gbase*link.weight : m_entry.weight_x_gbase = link.gbase*link.weight;
-                        m_entry.type = context.connectionType(link);
-                        m_entry.num ? m_entry.num+=1 : m_entry.num = 1;
-		    }
-                    for (var type of projTypes) {
-		        nodes[link.source].pre_count[type] += 1;
-		        nodes[link.target].post_count[type] += 1;
-                    }
-                    for (var i=0; i<link.type.length; ++i){
-                        if (m_entry.z != 0 && m_entry.z.indexOf(link.type[i])==-1)
-                            m_entry.z.push(link.type[i]);
-                        else if (m_entry.z == 0)
-                            m_entry.z = [link.type[i]];
-                    }
-                    m_entry.projTypes ? m_entry.projTypes.push(projTypes) : m_entry.projTypes = [projTypes];
-	        }).bind(this));
+                var Aindex = link.conns[0].getA().getElements()[0].getIndex();
+                var Bindex = link.conns[0].getB().getElements()[0].getIndex();
+                var projTypes = context.pairs_types[String(Aindex)][String(Bindex)];
+                var m_entry = this.matrix[link.source][link.target];
+		if (this.state.weight) {
+                    m_entry.weight ? m_entry.weight+=link.weight : m_entry.weight = link.weight;
+                    m_entry.gbase ? m_entry.gbase+=link.gbase : m_entry.gbase = link.gbase;
+                    m_entry.weight_x_gbase ? m_entry.weight_x_gbase+=link.gbase*link.weight : m_entry.weight_x_gbase = link.gbase*link.weight;
+                    m_entry.type = context.connectionType(link);
+                    m_entry.num ? m_entry.num+=1 : m_entry.num = 1;
+		}
+                for (var type of projTypes) {
+		    nodes[link.source].pre_count[type] += 1;
+		    nodes[link.target].post_count[type] += 1;
+                }
+                for (var i=0; i<link.type.length; ++i){
+                    if (m_entry.z != 0 && m_entry.z.indexOf(link.type[i])==-1)
+                        m_entry.z.push(link.type[i]);
+                    else if (m_entry.z == 0)
+                        m_entry.z = [link.type[i]];
+                }
+                m_entry.projTypes ? m_entry.projTypes.push(projTypes) : m_entry.projTypes = [projTypes];
+	    }).bind(this);
+
+	    var links_defined = links.filter(l=> typeof l.weight !== 'undefined' && typeof l.gbase !== 'undefined' && typeof l.type !== 'undefined');
+            for (var i=0; i<links_defined.length; ++i) {
+                parseLink(links_defined[i]);
+            }
 
 	    //Sorting matrix entries.
 	    //TODO: runtime specified sorting criteria
@@ -261,7 +244,8 @@ define(function (require) {
             var nodeColormap = context.nodeColormap.range ? context.nodeColormap : d3.scaleOrdinal(d3.schemeAccent);
 	    this.linkColormaps = (function() {
 		if (this.state.weight) {
-                    context.populateWeights(links, this.state.filter);
+                    if (links.filter(l => typeof l.weight === 'undefined').length > 0)
+                        context.populateWeights(links, this.state.filter);
 		    return this.weightColormaps(links, nodes, this.state.filter, context);
                 }
 		else {

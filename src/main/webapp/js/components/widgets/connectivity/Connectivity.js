@@ -83,6 +83,7 @@ define(function (require) {
         getProjectionSummary: function() {
             if (typeof this.projectionSummary === 'undefined' || Object.keys(this.projectionSummary).length === 0) {
 	        var projSummary = {};
+                this.pairs_types = {};
 	        var projs = GEPPETTO.ModelFactory.getAllTypesOfType(Model.neuroml.projection);
 	        for (var i=0; i<projs.length; ++i) {
 		    var proj = projs[i];
@@ -100,6 +101,13 @@ define(function (require) {
 			    var postId = proj.postsynapticPopulation.pointerValue.getWrappedObj().path.split('(')[0];
                             // FIXME: type should not be stored in name, also hacky gapJunction detection. need to fix in model interpreter.
                             var type = (synapse.types[0].conductance && !synapse.types[0].erev) ? "gapJunction" : proj.getName();
+                            for (var j=0; j<pairs.length; ++j) {
+                                var pair = pairs[j];
+                                if (typeof this.pairs_types[String(pair[0])] === 'undefined')
+                                    this.pairs_types[String(pair[0])] = {};
+                                this.pairs_types[String(pair[0])][String(pair[1])] = type;
+                            }
+
                             if (this.projectionTypeSummary[type].indexOf(synapse.getId()) == -1)
                                 this.projectionTypeSummary[type].push(synapse.getId())
 			    var data = {id: proj.getId(), type: type, synapse: synapse, pre: proj.presynapticPopulation, post: proj.postsynapticPopulation, pairs: pairs};
@@ -286,9 +294,9 @@ define(function (require) {
             this.setNodeColormap(nodeColormap);
             this.widgetMargin = 20;
 
-            if(this.createDataFromConnections()){
-            	this.createLayout();
-            }
+            if (Object.keys(this.dataset).length === 1)
+                this.createDataFromConnections()
+            this.createLayout();
 
             // track change in state of the widget
             this.dirtyView = true;
@@ -350,8 +358,19 @@ define(function (require) {
                         }
                         return a;
                     }
-		    this.dataset.nodeTypes = _.uniq(_.pluck(this.dataset.nodes, 'type')).sort();
-		    this.dataset.linkTypes = _.uniq(_.pluck(this.dataset.links, 'type')).sort();
+                    this.dataset.nodeTypes = new Set(this.dataset.nodes.map(n => n.type).sort());
+                    this.dataset.linkTypes = [];
+                    for (var j=0; j<this.dataset.links.length; ++j) {
+                        var link = this.dataset.links[j];
+                        if (link.type.length == 1) {
+                            if (this.dataset.linkTypes.filter(x => x[0] === link.type[0]).length == 0)
+                                this.dataset.linkTypes.push(link.type);
+                        } else {
+                            if (this.dataset.linkTypes.filter(x => JSON.stringify(x) === JSON.stringify(link.type)).length == 0)
+                                this.dataset.linkTypes.push(link.type);
+                        }
+                    }
+                    this.dataset.linkTypes.sort();
                     var populationSizes = count(this.dataset.nodes.map(x=>x.type));
                     this.dataset.populationNodes = Array.from(new Set(this.dataset.nodes.map(x=>x.type)))
                         .map(function(x,i) { return {id: x, type: x, n: populationSizes[i]} });

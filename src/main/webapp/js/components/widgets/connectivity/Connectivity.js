@@ -434,35 +434,49 @@ define(function (require) {
         },
 
         createLayout: function (state) {
-            $('#' + this.id + " svg").remove();
-	    $('#' + this.id + '-options').remove();
-            $('#' + this.id).css('margin-bottom', '30px');
+            var clear = (function () {
+                $('#' + this.id + " svg").remove();
+	        $('#' + this.id + '-options').remove();
+                $('#' + this.id).css('margin-bottom', '30px');
 
-            this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
-            this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
+                this.options.innerWidth = this.connectivityContainer.innerWidth() - this.widgetMargin;
+                this.options.innerHeight = this.connectivityContainer.innerHeight() - this.widgetMargin;
 
-            this.svg = d3.select("#" + this.id)
-                .append("svg")
-                .attr("width", this.options.innerWidth)
-                .attr("height", this.options.innerHeight);
-
+                this.svg = d3.select("#" + this.id)
+                    .append("svg")
+                    .attr("width", this.options.innerWidth)
+                    .attr("height", this.options.innerHeight);
+            }).bind(this);
             switch (this.options.layout) {
-                case 'matrix':
+            case 'matrix':
+                clear();
                 matrices.createMatrixLayout(this, state);
-                    break;
-                case 'force':
-                    forces.createForceLayout(this);
-                    break;
-                case 'hive':
-                    //TODO: ugly preprocessing here...
+                break;
+            case 'force':
+                clear();
+                forces.createForceLayout(this);
+                break;
+            case 'hive':
+                //TODO: ugly preprocessing here...
+                if (this.dataset.links.length > 100000) {
+                    $('#connectivity-config-modal').modal('hide');
+                    GEPPETTO.ModalFactory.inputDialog("Warning", "This model contains over 100,000 connections. Hive plot may be slow to load. Continue?", "OK", function() {
+                        clear();
+                        this.calculateNodeDegrees(true);
+                        hives.createHiveLayout(this);
+                    }, "Cancel", function() {});
+                } else {
+                    clear();
                     this.calculateNodeDegrees(true);
                     hives.createHiveLayout(this);
-                    break;
-                case 'chord':
-                    //TODO: ugly preprocessing here...
-                    this.calculateNodeDegrees(false);
-                    chords.createChordLayout(this);
-                    break;
+                }
+                break;
+            case 'chord':
+                //TODO: ugly preprocessing here...
+                clear();
+                this.calculateNodeDegrees(false);
+                chords.createChordLayout(this);
+                break;
             }
         },
 
@@ -634,9 +648,12 @@ define(function (require) {
         configViaGUI : function() {
             var that = this;
             var firstClick=false;
-            var modalContent=$('<div class="modal fade" id="connectivity-config-modal" tabindex="-1"></div>')
-                .append(this.createLayoutSelector()[0].outerHTML).modal({keyboard: true});
-            function handleFirstClick(event) {
+            if ($('#connectivity-config-modal').length === 0) {
+                $('<div class="modal fade" id="connectivity-config-modal" tabindex="-1"></div>').append(this.createLayoutSelector()[0].outerHTML).modal({keyboard: true});
+            }
+            else
+                $('#connectivity-config-modal').modal('show');
+            var handleFirstClick = function(event) {
                 var options = {layout: event.currentTarget.id};
                 if (typeof that.connectivityOptions !== 'undefined')
                     $.extend(options, {library: that.connectivityOptions.library,
@@ -645,18 +662,18 @@ define(function (require) {
                 firstClick=true;
             }
 
-            function clickHandler(event) {
+            var clickHandler = function(event) {
             	if(!firstClick){
             		handleFirstClick(event);
             		setTimeout(function() { firstClick=false;}, 200); //closes the window to click again (dbclick)
             	}
             	else{
-            		modalContent.modal('hide');
-            		firstClick=false;
+            	    $('#connectivity-config-modal').modal('hide');
+            	    firstClick=false;
             	}
             }
 
-            modalContent.find('.card').on('click', clickHandler);
+            setTimeout(function() { $('#connectivity-config-modal').find('.card').on('click', clickHandler); }, 200);
         },
 
         getView: function(){

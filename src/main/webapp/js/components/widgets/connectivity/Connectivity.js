@@ -358,7 +358,7 @@ define(function (require) {
                         }
                         return a;
                     }
-                    this.dataset.nodeTypes = new Set(this.dataset.nodes.map(n => n.type).sort());
+                    this.dataset.nodeTypes = Array.from(new Set(this.dataset.nodes.map(n => n.type).sort()));
                     this.dataset.linkTypes = [];
                     for (var j=0; j<this.dataset.links.length; ++j) {
                         var link = this.dataset.links[j];

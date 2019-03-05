@@ -285,7 +285,7 @@ define(function (require) {
             }
         },
 
-        setData: function (root, options, nodeColormap) {
+        setData: function (root, options, nodeColormap, fromClick) {
             this.setOptions(options);
             this.dataset = {};
             this.mapping = {};
@@ -296,7 +296,7 @@ define(function (require) {
 
             if (Object.keys(this.dataset).length === 1)
                 this.createDataFromConnections()
-            this.createLayout();
+            this.createLayout(undefined, fromClick);
 
             // track change in state of the widget
             this.dirtyView = true;
@@ -433,7 +433,7 @@ define(function (require) {
             }
         },
 
-        createLayout: function (state) {
+        createLayout: function (state, fromClick) {
             var clear = (function () {
                 $('#' + this.id + " svg").remove();
 	        $('#' + this.id + '-options').remove();
@@ -459,7 +459,7 @@ define(function (require) {
             case 'hive':
                 //TODO: ugly preprocessing here...
                 var that = this;
-                if (this.dataset.links.length > 100000) {
+                if (fromClick && this.dataset.links.length > 100000) {
                     $('#connectivity-config-modal').modal('hide');
                     GEPPETTO.ModalFactory.inputDialog("Warning", "This model contains over 100,000 connections. Hive plot may be slow to load. Continue?", "OK", function() {
                         clear();
@@ -659,7 +659,7 @@ define(function (require) {
                 if (typeof that.connectivityOptions !== 'undefined')
                     $.extend(options, {library: that.connectivityOptions.library,
                                        colorMapFunction: that.connectivityOptions.colorMapFunction});
-                that.setData(that.dataset["root"], options);
+                that.setData(that.dataset["root"], options, undefined, true);
                 firstClick=true;
             }
 

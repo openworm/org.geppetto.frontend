@@ -1226,7 +1226,7 @@ define(function (require) {
 	                        labels.push(instances[instance].parent.getName());
 	                        if (instances[instance].parent.isSelected() || (typeof instances[instance].parent[instances[instance].parent.getId() + '_obj'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_obj'].isSelected()) || (typeof instances[instance].parent[instances[instance].parent.getId() + '_swc'] != 'undefined' && instances[instance].parent[instances[instance].parent.getId() + '_swc'].isSelected())) {
 	                            colors.push('0Xffcc00'); // selected
-	                        } else {
+	                        } else if (instances[instance].parent.getColor() !== undefined){
 	                            colors.push(instances[instance].parent.getColor().replace('#', '0X'));
 	                        }
                         }

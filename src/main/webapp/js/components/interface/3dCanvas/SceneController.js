@@ -25,6 +25,15 @@ define(['jquery'], function () {
             this.canvasComponents.push(canvasComponent);
         },
 
+        /**
+         *
+         * @param canvasComponent
+         */
+        remove3DCanvas: function () {
+            if(this.canvasComponents.length > 0) {
+                this.canvasComponents.pop();
+            }
+        },
 
         /**
          *

@@ -104,15 +104,13 @@ define(function (require) {
          * @returns {Canvas}
          */
         displayAllInstances() {
-            var that = this;
             //TODO if the component is added after the events are triggered traverse all the existing instances
-            GEPPETTO.on(GEPPETTO.Events.Instances_created, function (instances) {
-                that.display(instances);
-
-            });
-            GEPPETTO.on(GEPPETTO.Events.Instance_deleted, function (instance) {
-                that.remove([instance]);
-            });
+            GEPPETTO.on(GEPPETTO.Events.Instances_created, (instances) => {
+                this.display(instances);
+            }, this);
+            GEPPETTO.on(GEPPETTO.Events.Instance_deleted, (instance) => {
+                this.remove([instance]);
+            }, this);
             return this;
         }
 
@@ -234,8 +232,8 @@ define(function (require) {
 
         /**
          * Show connection lines for instances.
-           @param instances
-           @param {boolean} mode - Show or hide connection lines
+         *  @param instances
+         *  @param {boolean} mode - Show or hide connection lines
         */
         showConnectionLines(instancePath, mode) {
             this.engine.showConnectionLines(instancePath, mode);
@@ -754,6 +752,13 @@ define(function (require) {
         componentDidUpdate() {
             var [width, height] = this.setContainerDimensions();
             this.engine.setSize(width, height);
+        }
+
+        componentWillUnmount() {
+            GEPPETTO.SceneController.remove3DCanvas();
+            GEPPETTO.WidgetsListener.unsubscribe(this.engine);
+            GEPPETTO.off(GEPPETTO.Events.Instances_created, null, this);
+            GEPPETTO.off(GEPPETTO.Events.Instance_deleted, null, this);
         }
 
         componentDidMount() {

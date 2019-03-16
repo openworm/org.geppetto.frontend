@@ -53,6 +53,33 @@ define(['jquery'], function () {
 
         /**
          *
+         * @param instance
+         * @returns {boolean}
+         */
+        isInstancePresent: function (instance) {
+            for (var i = 0; i < this.canvasComponents.length; i++) {
+                for(var j = 0; j < this.canvasComponents[i].engine.scene.children.length; j++) {
+                    if (this.canvasComponents[i].engine.scene.children[j].instancePath === instance.getInstancePath()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+
+        /**
+         *
+         * @param instance
+         * @returns {boolean}
+         */
+        display: function (instance) {
+            for (var i = 0; i < this.canvasComponents.length; i++) {
+                this.canvasComponents[i].display([instance]);
+            }
+        },
+
+        /**
+         *
          * @param variables
          * @returns {boolean}
          */
@@ -398,8 +425,8 @@ define(['jquery'], function () {
          * the state variable.
          *
          * @param {string} instancePath
-           @param modulation
-           @param colorfn
+         * @param modulation
+         * @param colorfn
          */
         addColorListener: function(instancePath, modulation, colorfn) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
@@ -409,8 +436,8 @@ define(['jquery'], function () {
 
         /**
          * Show connection lines for instances.
-           @param instances
-           @param {boolean} mode - Show or hide connection lines
+         * @param instances
+         * @param {boolean} mode - Show or hide connection lines
          */
         showConnectionLines: function(instancePath, mode) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
@@ -422,4 +449,3 @@ define(['jquery'], function () {
 
     return SceneController;
 });
-

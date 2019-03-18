@@ -12,12 +12,10 @@ const styles = {
     root: {
         top: '1px',
         backgroundColor: '#444141f2',
-        border: '5px',
         borderRadius: 0,
         color: '#ffffff',
         fontSize: '12px',
         fontFamily: 'Khand, sans-serif',
-        marginTop: '-5px',
         minWidth: '110px',
         borderLeft: '1px solid #585858',
         borderRight: '1px solid #585858',

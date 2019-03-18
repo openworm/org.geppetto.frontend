@@ -18,8 +18,9 @@ const styles = {
         color: '#ffffff',
         fontSize: '16px',
         fontFamily: 'Khand, sans-serif',
-        margin: '-10px 0px 0px 0px',
-        minWidth: '44px'
+        margin: '0px 0px 0px 0px',
+        minWidth: '44px',
+        height: '30px'
     },
     root2:{
         background: "#11bffe",
@@ -35,13 +36,15 @@ const styles = {
         color: '#ffffff',
         fontSize: '16px',
         fontFamily: 'Khand, sans-serif',
-        margin: '-10px 0px 0px 0px',
-        minWidth: '44px'
+        margin: '0px 0px 0px 0px',
+        minWidth: '44px',
+        height: '30px'
     },
     label: {
         textTransform: 'capitalize',
         textAlign: 'left',
-        justifyContent: 'start'
+        justifyContent: 'start',
+        marginTop: '1px'
     },
 };
 

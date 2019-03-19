@@ -5,7 +5,7 @@ define(function (require) {
     var React = require('react');
     var GEPPETTO = require('geppetto');
 
-    var logoDiv = React.createClass({
+    var Logo = React.createClass({
         componentDidMount: function () {
             GEPPETTO.on('spin_logo', function (label) {
             	//TODO Fix this to use state instead and not touching the dom element with jQuery
@@ -19,10 +19,10 @@ define(function (require) {
 
         render: function () {
             return (
-                <div className={this.props.logo}></div>
+                <div className={this.props.logo} id="geppettologo"></div>
             );
         }
     });
 
-    return logoDiv;
+    return Logo;
 });

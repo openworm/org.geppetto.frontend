@@ -42,7 +42,7 @@ define(function (require) {
             var tutorialBtn = GEPPETTO.Tutorial != undefined ? React.createFactory(TutorialButton)({}) : '';
 
 
-            return <div className={'foreground-controls'}>
+            return <div id="foreground-toolbar" className={'foreground-controls'}>
                 {controlPanelBtn}
                 <br/>
                 {spotlightBtn}

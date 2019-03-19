@@ -288,7 +288,7 @@ define(['jquery'], function () {
          */
         setLinesThreshold: function (threshold) {
             for (var i = 0; i < this.canvasComponents.length; i++) {
-                this.canvasComponents[i].setLinesThreshold(ithreshold);
+                this.canvasComponents[i].setLinesThreshold(threshold);
             }
         },
 

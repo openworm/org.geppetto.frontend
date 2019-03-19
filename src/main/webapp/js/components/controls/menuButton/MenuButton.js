@@ -123,8 +123,7 @@ define(function (require) {
 
         getInitialState: function () {
             return {
-                visible: this.props.configuration.openByDefault,
-                configuration: null
+                visible: this.props.configuration.openByDefault
             };
         },
 
@@ -184,8 +183,6 @@ define(function (require) {
                         this.props.configuration.menuItems.unshift(item);
                     }
                 }
-
-                this.forceUpdate();
             }
         },
 
@@ -281,39 +278,38 @@ define(function (require) {
             return {
                 icon: this.props.configuration.iconOff,
                 open: false,
-                menuItems: this.props.configuration.menuItems,
+                configuration: this.props.configuration
             };
         },
 
-        refresh: function () {
-            this.forceUpdate();
-        },
-
-        updateMenuItems: function (items) {
-            this.setState({ menuItems: items });
-        },
-
         addMenuItem: function (item) {
-            if (this.props.configuration.menuItems == null || this.props.configuration.menuItems == undefined) {
-                this.props.configuration.menuItems = new Array();
+            if (this.state.configuration.menuItems == null || this.state.configuration.menuItems == undefined) {
+                this.state.configuration.menuItems = new Array();
             }
-            this.props.configuration.menuItems.push(item);
-            this.refresh();
+            this.setState({configuration: Object.assign(this.state.configuration, {menuItems: this.state.configuration.menuItems.concat(item)})});
+        },
+
+        removeMenuItem: function(value) {
+            var i = this.state.configuration.menuItems.findIndex(x => x.value === value);
+            if (i > -1)
+                this.setState({configuration: Object.assign(this.state.configuration,
+                                                            {menuItems: [...this.state.configuration.menuItems.slice(0,i),
+                                                                         ...this.state.configuration.menuItems.slice(i+1)]})});
+          
         },
 
         //Makes the drop down menu visible
         showMenu: function () {
-            var self = this;
-            if (self.props.configuration.menuItems.length > 0) {
-                self.refs.dropDown.open();
+            if (this.state.configuration.menuItems.length > 0) {
+                this.refs.dropDown.open();
             }
-            
-            if (typeof self.props.configuration.menuItems.then === "function") {
-            	self.props.configuration.menuItems.then(
-                		function(val){
-                			self.props.configuration.menuItems=val;
-                			self.refs.dropDown.open();
-                		}
+
+            if (typeof this.state.configuration.menuItems.then === "function") {
+            	this.state.configuration.menuItems.then(
+                    function(val){
+                	this.state.configuration.menuItems=val;
+                	this.refs.dropDown.open();
+                    }.bind(this)
                 );
             }
 
@@ -339,11 +335,9 @@ define(function (require) {
 
         //Adds external load handler, gets notified when component is mounted and ready
         addExternalLoadHandler: function () {
-            var self = this;
-            self.onLoadHandler = self.props.configuration.onLoadHandler;
-            if (self.onLoadHandler != null || undefined) {
-                self.onLoadHandler(self);
-            }
+            this.onLoadHandler = this.props.configuration.onLoadHandler;
+            if (this.onLoadHandler)
+                this.onLoadHandler(this);
         },
 
         componentWillUnmount: function () {
@@ -352,27 +346,25 @@ define(function (require) {
         },
 
         componentDidMount: function () {
-            var self = this;
-
             //attach external handler for loading events
-            self.onClickHandler = self.props.configuration.onClickHandler;
+            this.onClickHandler = this.props.configuration.onClickHandler;
 
             //attach external handler for clicking events
-            self.addExternalLoadHandler();
+            this.addExternalLoadHandler();
             if (this.props.configuration.closeOnClick) {
                 var container = $('#' + this.props.configuration.id + "-container");
                 $('body').click(function (e) {
                     // if the target of the click isn't the container nor a descendant of the container
                     if (!container.is(e.target) && container.has(e.target).length === 0) {
-                        if (self.props.configuration.closeOnClick) {
-                            if (self.state.open) {
-                                if (self.isMounted()) {
-                                    self.hideMenu();
+                        if (this.props.configuration.closeOnClick) {
+                            if (this.state.open) {
+                                if (this.isMounted()) {
+                                    this.hideMenu();
                                 }
                             }
                         }
                     }
-                });
+                }.bind(this));
             }
         },
 
@@ -395,7 +387,7 @@ define(function (require) {
                         {this.props.configuration.label}
                     </button>
                     <div id={this.props.configuration.id + "-dropDown"} className="menuListContainer">
-                        <DropDownControlComp handleSelect={this.selectionChanged} ref="dropDown" configuration={this.props.configuration} parentDisabled={this.props.configuration.buttonDisabled} /></div>
+                        <DropDownControlComp handleSelect={this.selectionChanged} ref="dropDown" configuration={this.state.configuration} parentDisabled={this.props.configuration.buttonDisabled} /></div>
                 </div>
             );
         }

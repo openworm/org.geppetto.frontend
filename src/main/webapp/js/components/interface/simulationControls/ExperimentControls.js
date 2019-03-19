@@ -162,7 +162,7 @@ define(function (require) {
             }
 
             return (
-                <div className="simulation-controls">
+                <div id="sim-toolbar" className="simulation-controls">
                     <HelpButton disabled={false} hidden={this.props.hideHelp}/>
                     <StopButton disabled={this.state.disableStop} hidden={this.props.hideStop}/>
                     <PauseButton disabled={this.state.disablePause} hidden={this.props.hidePause}/>

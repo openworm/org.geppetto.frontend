@@ -2108,7 +2108,7 @@ define(function (require) {
             }
 
             return (
-                <div id="controlpanel-container">
+                <div id="controlpanel">
                     {menuButtonMarkup}
                     {filterMarkup}
                     <Griddle columns={this.state.columns} results={this.state.data}

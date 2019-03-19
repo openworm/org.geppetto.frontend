@@ -5,7 +5,7 @@ define(function(require) {
 
 	$.widget.bridge('uitooltip', $.ui.tooltip);
 
-	var button = React.createClass({
+	var Button = React.createClass({
 		attachTooltip: function(){
 			var self = this;
 			$("#"+this.props.configuration.id).uitooltip({
@@ -70,5 +70,5 @@ define(function(require) {
 			);
 		}
 	});
-	return button;
+	return Button;
 });

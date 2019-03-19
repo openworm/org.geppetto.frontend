@@ -5,7 +5,7 @@ define(function(require) {
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
 
-    var saveControlComp = React.createClass({
+    var SaveControl = React.createClass({
          attachTooltip: function(){
         	 var self = this;
              $('.SaveButton').uitooltip({
@@ -94,6 +94,6 @@ define(function(require) {
         }
     });
 
-    return saveControlComp;
+    return SaveControl;
 
 });

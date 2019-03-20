@@ -753,7 +753,12 @@ define(function (require) {
         }
 
         shouldComponentUpdate() {
-            return false;
+            return true;
+        }
+
+        componentDidUpdate() {
+            var [width, height] = this.setContainerDimensions();
+            this.engine.setSize(width, height);
         }
 
         componentDidMount() {

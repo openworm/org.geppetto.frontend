@@ -1,8 +1,8 @@
 define(function (require) {
 
     require("./ForegroundControls.less");
-
     var React = require('react');
+    var CreateClass = require('create-react-class');
 
     var SpotlightButton = require('./buttons/SpotlightButton');
     var ControlPanelButton = require('./buttons/ControlPanelButton');
@@ -11,7 +11,7 @@ define(function (require) {
 
     var GEPPETTO = require('geppetto');
 
-    var ForegroundControls = React.createClass({
+    var ForegroundControls = CreateClass({
 
     	getInitialState: function () {
             return {

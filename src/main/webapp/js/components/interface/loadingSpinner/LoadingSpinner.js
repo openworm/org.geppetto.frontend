@@ -1,11 +1,11 @@
 define(function(require) {
-
-	var React = require('react');
+  var React = require('react');
+	var CreateClass = require('create-react-class');
 	var	GEPPETTO = require('geppetto');
 
 	require('./LoadingSpinner.less');
 	
-	return React.createClass({		
+	return CreateClass({		
 		mixins: [require('../../controls/mixins/bootstrap/modal.js')],
 		timer1:null,
 		timer2:null,
@@ -23,7 +23,7 @@ define(function(require) {
 		},
 
 		hideSpinner:function(){
-			if(this.isMounted() && this.visible){
+			if(this.visible){
                 if(this.timer1!=null){
                     clearTimeout(this.timer1);
                     clearTimeout(this.timer2);
@@ -37,11 +37,9 @@ define(function(require) {
 		showSpinner:function(label){
 			var that=this;
 
-			if(that.isMounted()){
-                this.visible = true;
-				this.setState({text:label});
-				this.show();
-			}
+      this.visible = true;
+      this.setState({text:label});
+      this.show();
 			
 			if(this.timer1!=null){
 				clearTimeout(this.timer1);
@@ -49,15 +47,11 @@ define(function(require) {
 			}
 			
 			this.timer1=setTimeout((function(){
-				if(that.isMounted()){
-					that.setState({text:'Loading is taking longer than usual, either a large amount of data is being loaded or bandwidth is limited'});
-				}
+				that.setState({text:'Loading is taking longer than usual, either a large amount of data is being loaded or bandwidth is limited'});
 			}).bind(this), 20000);
 			
 			this.timer2=setTimeout((function(){
-				if(that.isMounted()){
-					that.setState({text:GEPPETTO.Resources.SPOTLIGHT_HINT});
-				}
+				that.setState({text:GEPPETTO.Resources.SPOTLIGHT_HINT});
 			}).bind(this), 5000);
 		},
 		

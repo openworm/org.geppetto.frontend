@@ -1,6 +1,7 @@
 define(function(require) {
 
 	var React = require('react');
+	var CreateClass = require('create-react-class');
 	var GEPPETTO = require('geppetto');
 	require("./ButtonBar.less");
 
@@ -8,11 +9,12 @@ define(function(require) {
 
 	var AbstractComponent = require('../../AComponent');
 
-	var ButtonComponent = React.createClass({
+	var ButtonComponent = CreateClass({
 		icon : null,
 		tooltip : null,
 		label : null,
 		actions : null,
+		_isMounted: false,
 		attachTooltip: function(){
 			var self = this;
 			$("#"+this.props.id).uitooltip({
@@ -45,15 +47,24 @@ define(function(require) {
 		},
 
 		componentDidMount : function(){
+			this._isMounted = true;
 			this.attachTooltip();
 			this.evaluateState();
 		},
 
+		componentWillUnmount : function() {
+			this._isMounted = false;
+		},
+
 		onClick : function(){
 			//execute all actions
-			for(var action in this.actions){
-				if((this.actions).hasOwnProperty(action)){
-					GEPPETTO.CommandController.execute(this.actions[action], true);
+			if(this.props.buttonHandler !== undefined) {
+				this.props.buttonHandler(this.props.id);
+			} else {
+				for(var action in this.actions){
+					if((this.actions).hasOwnProperty(action)){
+						GEPPETTO.CommandController.execute(this.actions[action], true);
+					}
 				}
 			}
 
@@ -68,8 +79,11 @@ define(function(require) {
 			if(typeof condition === 'function'){
 				conditionResult = condition();
 			} else {
-				if(condition != ''){
+				if(condition !== ''){
 					conditionResult = eval(condition);
+					if(condition === "true" || condition === "false" || condition === true || condition === false) {
+						this.props.configuration.condition = !conditionResult;
+					}
 				}
 			}
 
@@ -92,7 +106,7 @@ define(function(require) {
 				this.tooltip = this.props.configuration.tooltip;
 			}
 
-			if(this.isMounted()){
+			if(this._isMounted){
 				this.setState({toggled: conditionResult, icon:this.icon, actions:this.actions, label: this.label, tooltip: this.tooltip});
 			}
 		},
@@ -119,7 +133,7 @@ define(function(require) {
 				if(id==null || id==undefined){
 					id = key;
 				}
-				buttons.push(<ButtonComponent id={id} key={key} configuration={b}/>);
+				buttons.push(<ButtonComponent id={id} key={key} configuration={b} buttonHandler={this.props.buttonBarHandler}/>);
 			}
 
 			return (

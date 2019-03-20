@@ -13,8 +13,8 @@
 	<% var cssPaths = '/'; %>
 
 	<% if (htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath != "/") { %>
-    	<base href="/<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>/" />
-    	<% var cssPaths = ''; %>
+        <base href="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>" />
+        <% var cssPaths = ''; %>
 	<% } %>
 
     <!-- CSS -->

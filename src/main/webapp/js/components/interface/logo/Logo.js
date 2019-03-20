@@ -3,6 +3,7 @@ define(function (require) {
     require('./Logo.less');
 
     var React = require('react');
+    var CreateClass = require('create-react-class');
     var GEPPETTO = require('geppetto');
 
     var Logo = React.createClass({
@@ -19,7 +20,7 @@ define(function (require) {
 
         render: function () {
             return (
-                <div className={this.props.logo} id="geppettologo"></div>
+                <div id={this.props.id} className={this.props.logo} style={this.props.propStyle}></div>
             );
         }
     });

@@ -1,6 +1,7 @@
-define(function(require) {
+define(function (require) {
 
     var React = require('react');
+    var CreateClass = require('create-react-class');
     var GEPPETTO = require('geppetto');
 
     $.widget.bridge('uitooltip', $.ui.tooltip);
@@ -29,68 +30,70 @@ define(function(require) {
 
     	getInitialState: function() {
             return {
-            	disableSave : true,
-            	tooltipLabel : "Click here to persist this project!",
-            	icon: "fa fa-star"
+                disableSave: true,
+                tooltipLabel: "Click here to persist this project!",
+                icon: "fa fa-star"
             };
         },
 
-        componentDidMount: function() {
+        componentDidMount: function () {
 
             var self = this;
 
-            GEPPETTO.on(GEPPETTO.Events.Project_persisted, function(){
-            	self.setState({disableSave: false});
-            	// update contents of what's displayed on tooltip
-           	 	$('.SaveButton').uitooltip({content: "The project was persisted and added to your dashboard!",
-           	 		position: { my: "right center", at : "left center"}});
-            	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
-            	self.setState({disableSave: true});
+            GEPPETTO.on(GEPPETTO.Events.Project_persisted, function () {
+                self.setState({ disableSave: false });
+                // update contents of what's displayed on tooltip
+                $('.SaveButton').uitooltip({
+                    content: "The project was persisted and added to your dashboard!",
+                    position: { my: "right center", at: "left center" }
+                });
+                $(".SaveButton").mouseover().delay(2000).queue(function () { $(this).mouseout().dequeue(); });
+                self.setState({ disableSave: true });
             });
 
-            GEPPETTO.on('spin_persist', function() {
-    			self.setState({icon:"fa fa-star fa-spin"});
-    		}.bind($(".saveButton")));
+            GEPPETTO.on('spin_persist', function () {
+                self.setState({ icon: "fa fa-star fa-spin" });
+            }.bind($(".saveButton")));
 
-    		GEPPETTO.on('stop_spin_persist', function() {
-    			self.setState({icon:"fa fa-star"});
-    		}.bind($(".saveButton")));
+            GEPPETTO.on('stop_spin_persist', function () {
+                self.setState({ icon: "fa fa-star" });
+            }.bind($(".saveButton")));
 
 
-        	self.attachTooltip();
+            self.attachTooltip();
 
-			GEPPETTO.on(GEPPETTO.Events.Project_loaded, function(){
-				self.setState(self.evaluateState());
-			});
+            GEPPETTO.on(GEPPETTO.Events.Project_loaded, function () {
+                self.setState(self.evaluateState());
+            });
 
-			if(window.Project!=undefined){
-				this.setState(this.evaluateState());
-			}
+            if (window.Project != undefined) {
+                this.setState(this.evaluateState());
+            }
         },
 
-        evaluateState:function(){
-        	return {disableSave:window.Project.persisted || !GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT)};
+        evaluateState: function () {
+            return { disableSave: window.Project.persisted || !GEPPETTO.UserController.hasPermission(GEPPETTO.Resources.WRITE_PROJECT) };
         },
 
-        clickEvent : function(){
-        	var self = this;
-        	// update contents of what's displayed on tooltip
-       	 	$('.SaveButton').uitooltip({content: "The project is getting persisted..."});
-        	$(".SaveButton").mouseover().delay(2000).queue(function(){$(this).mouseout().dequeue();});
-        	self.setState({disableSave: true});
+        clickEvent: function () {
+            var self = this;
+            // update contents of what's displayed on tooltip
+            $('.SaveButton').uitooltip({ content: "The project is getting persisted..." });
+            $(".SaveButton").mouseover().delay(2000).queue(function () { $(this).mouseout().dequeue(); });
+            self.setState({ disableSave: true });
             GEPPETTO.CommandController.execute("Project.persist();");
-        	GEPPETTO.trigger("spin_persist");
+            GEPPETTO.trigger("spin_persist");
         },
 
-        render:  function () {
-        	return (
-        			<div className="saveButton">
-        				<button className="btn SaveButton pull-right" type="button" title=''
-        				rel="tooltip" onClick={this.clickEvent} disabled={this.state.disableSave}>
-        					<i className={this.state.icon}></i>
-        				</button>
-        			</div>
-        	);
+        render: function () {
+            return (
+                <div className="saveButton">
+                    <button className="btn SaveButton pull-right" type="button" title=''
+                        rel="tooltip" onClick={this.clickEvent} disabled={this.state.disableSave}>
+                        <i className={this.state.icon}></i>
+                    </button>
+                </div>
+            );
         }
     });
 

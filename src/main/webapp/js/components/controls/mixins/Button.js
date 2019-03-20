@@ -5,13 +5,14 @@ define(function (require) {
      * @mixin Button
      */
     var React = require('react');
+    var DOM = require('react-dom-factories');
 
     return {
         displayName: 'Button',
 
         render: function () {
             return (
-                React.DOM.button({
+                DOM.button({
                     type: 'button',
                     id: this.props.id,
                     className: 'btn ' + this.props.className + ((this.props.hidden === true) ? ' hiddenElement' : ''),
@@ -19,7 +20,7 @@ define(function (require) {
                     onClick: this.props.onClick,
                     disabled: this.props.disabled,
                     icon : this.props.icon
-                }, React.DOM.i({className: this.props.icon}), " " + this.props.label)
+                }, DOM.i({className: this.props.icon}), " " + this.props.label)
             );
         }
     };

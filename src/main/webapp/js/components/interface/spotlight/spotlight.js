@@ -3,18 +3,19 @@ define(function (require) {
     require('./spotlight.less');
 
     var React = require('react');
-    var $ = require('jquery');
-    var Handlebars = require('handlebars');
-    var typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
-    var Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
-    var GEPPETTO = require('geppetto');
+    var CreateClass = require('create-react-class'),
+        $ = require('jquery'),
+        typeahead = require("typeahead.js/dist/typeahead.jquery.min.js"),
+        Bloodhound = require("typeahead.js/dist/bloodhound.min.js"),
+        Handlebars = require('handlebars'),
+        GEPPETTO = require('geppetto');
 
     var PlotController = require('./../../widgets/plot/controllers/PlotsController');
 
     var Instance = require('../../../geppettoModel/model/Instance');
     var Variable = require('../../../geppettoModel/model/Variable');
 
-    var Spotlight = React.createClass({
+    var Spotlight = CreateClass({
 
         potentialSuggestions: {},
         suggestions: null,
@@ -510,7 +511,7 @@ define(function (require) {
         addDataSource : function(sources){
         	try {
         		for (var key in sources) {
-        			  if (sources.hasOwnProperty(key)) {
+                    if (sources.hasOwnProperty(key)) {
         			    var obj = sources[key];
                         var keysha = this.generateDataSourceKey(key, 0);
                         this.configuration.SpotlightBar.DataSources[keysha] = obj;
@@ -522,7 +523,7 @@ define(function (require) {
                                 obj.bloodhoundConfig.sorter
                             );
                         }
-        			  }
+                    }
         		}
         	}
         	catch (err) {
@@ -914,7 +915,7 @@ define(function (require) {
                 						}
                 						delete copiedObject["plot"];
                 					}
-                   					tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
+                                    tbar.append(that.createButtonGroup(groupName, copiedObject, instance));
                 				}
                 			}
                 		}
@@ -934,6 +935,15 @@ define(function (require) {
         loadToolbarFor: function (instance) {
             $(".spotlight-toolbar").remove();
         	$('#spotlight').append(this.BootstrapMenuMaker.generateToolbar(this.configuration.SpotlightBar, instance, this.modifiable));
+        },
+
+        componentWillMount: function () {
+            if(this.props.spotlightConfig !== undefined) {
+                this.setButtonBarConfiguration(this.props.spotlightConfig);
+            }
+            if(this.props.spotlightDataSourceConfig !== undefined) {
+                this.addDataSource(this.props.spotlightDataSourceConfig);
+            }
         },
 
         render: function () {

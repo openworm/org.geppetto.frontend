@@ -34,11 +34,11 @@ define(function (require) {
 				handlers[i].hooked = true;
 
 				// Find and iterate <a> element with an instancepath attribute
-				popupDOM.find("a[instancepath]").each(function () {
+				popupDOM.find("a[data-instancepath]").each(function () {
 					var fun = handlers[i].funct;
 					var ev = handlers[i].event;
 					var metaType = handlers[i].meta;
-					var path = $(this).attr("instancepath").replace(/\$/g, "");
+					var path = $(this).attr("data-instancepath").replace(/\$/g, "");
 					var node;
 
 					try {
@@ -264,14 +264,14 @@ define(function (require) {
 						var elements = "";
 						for (var j = 0; j < value.elements.length; j++) {
 							var image = value.elements[j].initialValue;
-							elements += "<div class='popup-slick-image'>" + image.name + "<a href='' instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
+							elements += "<div class='popup-slick-image'>" + image.name + "<a href='' data-instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
 						}
 						html += "<div id='" + id + "' class='slickdiv popup-slick collapse in' data-slick='{\"fade\": true,\"centerMode\": true, \"slidesToShow\": 1, \"slidesToScroll\": 1}' >" + elements + "</div>";
 					}
 					else if (value.eClass == GEPPETTO.Resources.IMAGE) {
 						//otherwise we just show an image
 						var image = value;
-						html += "<div id='" + id + "' class='popup-image collapse in'><a href='' instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
+						html += "<div id='" + id + "' class='popup-image collapse in'><a href='' data-instancepath='" + image.reference + "'><img  class='popup-image' src='" + image.data + "'/></a></div>";
 					}
 				}
 			}

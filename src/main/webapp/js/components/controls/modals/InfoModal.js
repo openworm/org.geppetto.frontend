@@ -5,10 +5,10 @@
 define(function (require) {
 
     var React = require('react');
-
+    var CreateClass = require('create-react-class');
     require("./InfoModal.less");
 
-    return React.createClass({
+    return CreateClass({
         mixins: [
             require('../mixins/bootstrap/modal.js')
         ],

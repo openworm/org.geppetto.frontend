@@ -2,7 +2,7 @@
  * The 3D engine used by the 3D canvas component. This class is internal, any method you
  * use from inside here might break between versions. Methods maintained are the exposed ones
  * through the 3D canvas component.
- *
+ * 
  */
 define(['jquery'], function () {
 
@@ -47,6 +47,9 @@ define(['jquery'], function () {
             this.connectionLines = {};
             this.visualModelMap = {};
             this.complexity = 0;
+            this.sceneMaxRadius = 0; //maximum radius of bounding sphere in scene
+            this.linePrecisionMinRadius = 300; //Default expected minimum radius
+            this.minAllowedLinePrecision = 1; //default line precision, can't go lower than this
             //Settings
             this.linesThreshold = 2000;
             this.aboveLinesThreshold = false;
@@ -136,88 +139,106 @@ define(['jquery'], function () {
             var that = this;
             // when the mouse moves, call the given function
             this.renderer.domElement.addEventListener('mousedown', function (event) {
-                if (event.button == 0) //only for left click
-                {
-                    if (that.pickingEnabled) {
-                        var intersects = that.getIntersectedObjects();
+            	clientX = event.clientX;
+            	clientY = event.clientY;
+            }, false);
 
-                        if (intersects.length > 0) {
-                            var selected = "";
-                            var geometryIdentifier = "";
+            // when the mouse moves, call the given function
+            this.renderer.domElement.addEventListener('mouseup', function (event) {
+                if (event.target == that.renderer.domElement) {
+                    var x = event.clientX;
+                    var y = event.clientY;
 
-                            // sort intersects
-                            var compare = function (a, b) {
-                                if (a.distance < b.distance)
-                                    return -1;
-                                if (a.distance > b.distance)
-                                    return 1;
-                                return 0;
-                            };
+                    // If the mouse moved since the mousedown then don't consider this a selection
+                    if (x != clientX || y != clientY)
+                        return;
 
-                            intersects.sort(compare);
+                    that.mouse.y = -((event.clientY - (that.renderer.domElement.getBoundingClientRect().top)) / that.renderer.domElement.getBoundingClientRect().height) * 2 + 1;
+                    that.mouse.x = ((event.clientX - (that.renderer.domElement.getBoundingClientRect().left)) / that.renderer.domElement.getBoundingClientRect().width) * 2 - 1;
 
-                            var selectedIntersect;
-                            // Iterate and get the first visible item (they are now ordered by proximity)
-                            for (var i = 0; i < intersects.length; i++) {
-                                // figure out if the entity is visible
-                                var instancePath = "";
-                                if (intersects[i].object.hasOwnProperty("instancePath")) {
-                                    instancePath = intersects[i].object.instancePath;
-                                    geometryIdentifier = intersects[i].object.geometryIdentifier;
-                                } else {
-                                    //weak assumption: if the object doesn't have an instancePath its parent will
-                                    instancePath = intersects[i].object.parent.instancePath;
-                                    geometryIdentifier = intersects[i].object.parent.geometryIdentifier;
-                                }
-                                if (instancePath != null || undefined) {
-                                    var visible = eval(instancePath + '.visible');
-                                    if (intersects.length == 1 || i == intersects.length) {
-                                        //if there's only one element intersected we select it regardless of its opacity
-                                        if (visible) {
-                                            selected = instancePath;
-                                            selectedIntersect = intersects[i];
-                                            break;
-                                        }
+                    if (event.button == 0) //only for left click
+                    {
+                        if (that.pickingEnabled) {
+                            var intersects = that.getIntersectedObjects();
+
+                            if (intersects.length > 0) {
+                                var selected = "";
+                                var geometryIdentifier = "";
+
+                                // sort intersects
+                                var compare = function (a, b) {
+                                    if (a.distance < b.distance)
+                                        return -1;
+                                    if (a.distance > b.distance)
+                                        return 1;
+                                    return 0;
+                                };
+
+                                intersects.sort(compare);
+
+                                var selectedIntersect;
+                                // Iterate and get the first visible item (they are now ordered by proximity)
+                                for (var i = 0; i < intersects.length; i++) {
+                                    // figure out if the entity is visible
+                                    var instancePath = "";
+                                    if (intersects[i].object.hasOwnProperty("instancePath")) {
+                                        instancePath = intersects[i].object.instancePath;
+                                        geometryIdentifier = intersects[i].object.geometryIdentifier;
                                     } else {
-                                        //if there are more than one element intersected and opacity of the current one is less than 1
-                                        //we skip it to realize a "pick through"
-                                        var opacity = that.meshes[instancePath].defaultOpacity;
-                                        if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
-                                            selected = instancePath;
-                                            selectedIntersect = intersects[i];
-                                            break;
-                                        } else if (visible && opacity < 1 && opacity > 0) {
-                                            //if only transparent objects intersected select first or the next down if
-                                            //one is already selected in order to enable "burrow through" sample.
-                                            if (selected == "" && !eval(instancePath + '.selected')) {
+                                        //weak assumption: if the object doesn't have an instancePath its parent will
+                                        instancePath = intersects[i].object.parent.instancePath;
+                                        geometryIdentifier = intersects[i].object.parent.geometryIdentifier;
+                                    }
+                                    if (instancePath != null || undefined) {
+                                        var visible = eval(instancePath + '.visible');
+                                        if (intersects.length == 1 || i == intersects.length) {
+                                            //if there's only one element intersected we select it regardless of its opacity
+                                            if (visible) {
                                                 selected = instancePath;
                                                 selectedIntersect = intersects[i];
-                                            } else {
-                                                if (eval(instancePath + '.selected') && i != intersects.length - 1) {
-                                                    selected = "";
+                                                break;
+                                            }
+                                        } else {
+                                            //if there are more than one element intersected and opacity of the current one is less than 1
+                                            //we skip it to realize a "pick through"
+                                            var opacity = that.meshes[instancePath].defaultOpacity;
+                                            if ((opacity == 1 && visible) || GEPPETTO.isKeyPressed("ctrl")) {
+                                                selected = instancePath;
+                                                selectedIntersect = intersects[i];
+                                                break;
+                                            } else if (visible && opacity < 1 && opacity > 0) {
+                                                //if only transparent objects intersected select first or the next down if
+                                                //one is already selected in order to enable "burrow through" sample.
+                                                if (selected == "" && !eval(instancePath + '.selected')) {
+                                                    selected = instancePath;
+                                                    selectedIntersect = intersects[i];
+                                                } else {
+                                                    if (eval(instancePath + '.selected') && i != intersects.length - 1) {
+                                                        selected = "";
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
 
 
-                            if (selected != "") {
-                                if (that.meshes.hasOwnProperty(selected) || that.splitMeshes.hasOwnProperty(selected)) {
-                                    if (!GEPPETTO.isKeyPressed("shift")) {
-                                        that.deselectAll();
+                                if (selected != "") {
+                                    if (that.meshes.hasOwnProperty(selected) || that.splitMeshes.hasOwnProperty(selected)) {
+                                        if (!GEPPETTO.isKeyPressed("shift")) {
+                                            that.deselectAll();
+                                        }
+
+                                        var selectedIntersectCoordinates = [selectedIntersect.point.x, selectedIntersect.point.y, selectedIntersect.point.z]
+                                        if (geometryIdentifier == undefined) {
+                                            geometryIdentifier = "";
+                                        }
+                                        GEPPETTO.CommandController.execute(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
                                     }
-
-                                    var selectedIntersectCoordinates = [selectedIntersect.point.x, selectedIntersect.point.y, selectedIntersect.point.z]
-                                    if (geometryIdentifier == undefined) {
-                                        geometryIdentifier = "";
-                                    }
-                                    GEPPETTO.CommandController.execute(selected + '.select(' + false + ', ' + '"' + geometryIdentifier + '", [' + selectedIntersectCoordinates + '])');
                                 }
+                            } else if (GEPPETTO.isKeyPressed("ctrl")) {
+                                that.deselectAll();
                             }
-                        } else if (GEPPETTO.isKeyPressed("ctrl")) {
-                            that.deselectAll();
                         }
                     }
                 }
@@ -225,18 +246,17 @@ define(['jquery'], function () {
 
 
             this.renderer.domElement.addEventListener('mousemove', function (event) {
-                that.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                that.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                if (that.hoverListeners) {
-                    var intersects = that.getIntersectedObjects();
-                    for (var listener in that.hoverListeners) {
-                        if (intersects.length != 0) {
-                            that.hoverListeners[listener](intersects);
-                        }
-                    }
-                }
+            	that.mouse.y = -((event.clientY - (that.renderer.domElement.getBoundingClientRect().top)) / that.renderer.domElement.height) * 2 + 1;
+                that.mouse.x = ((event.clientX - (that.renderer.domElement.getBoundingClientRect().left)) / that.renderer.domElement.width) * 2 - 1;
+            	if (that.hoverListeners) {
+            		var intersects = that.getIntersectedObjects();
+            		for (var listener in that.hoverListeners) {
+            			if (intersects.length != 0) {
+            				that.hoverListeners[listener](intersects);
+            			}
+            		}
+            	}
             }, false);
-
         },
 
         /**
@@ -533,7 +553,8 @@ define(['jquery'], function () {
             vector.unproject(this.camera);
 
             var raycaster = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
-
+            raycaster.linePrecision = this.getLinePrecision();
+            
             var visibleChildren = [];
             this.scene.traverse(function (child) {
                 if (child.visible && !(child.clickThrough == true)) {
@@ -543,9 +564,11 @@ define(['jquery'], function () {
                     }
                 }
             });
+            
+            var intersected = raycaster.intersectObjects(visibleChildren);
 
             // returns an array containing all objects in the scene with which the ray intersects
-            return raycaster.intersectObjects(visibleChildren);
+            return intersected;
         },
 
         getDefaultGeometryType: function () {
@@ -706,6 +729,8 @@ define(['jquery'], function () {
                         this.splitGroups(instance, elements);
                     }
                 }
+                
+                this.calculateSceneMaxRadius(mesh);
             }
         },
 
@@ -2916,6 +2941,44 @@ define(['jquery'], function () {
         reset: function () {
             this.complexity = 0;
             this.aboveLinesThreshold = false;
+        },
+        
+        /**
+         * Traverse through THREE object to calculate that maximun radius based 
+         * on bounding sphere of visible objects
+         */
+        calculateSceneMaxRadius(object){
+        	var currentRadius = 0;
+        	if(object.children.length>0){
+        		for(var i=0;i<object.children.length; i++){
+        			if (object.children[i]!=undefined) {
+        				this.calculateSceneMaxRadius(object.children[i]);
+        			}
+        		}
+        	}else{
+        		if (object.hasOwnProperty("geometry")) {
+        			object.geometry.computeBoundingSphere();
+        			currentRadius = object.geometry.boundingSphere.radius;
+        		}
+        	}
+
+        	if(currentRadius > this.sceneMaxRadius){
+        		this.sceneMaxRadius = currentRadius;
+        	}
+        },
+
+
+        /**
+         * Calculates linePrecision used by raycaster when picking objects. 
+         */
+        getLinePrecision(){
+        	this.rayCasterLinePrecision = this.sceneMaxRadius/this.linePrecisionMinRadius;
+        	if(this.rayCasterLinePrecision<this.minAllowedLinePrecision){
+        		this.rayCasterLinePrecision = this.minAllowedLinePrecision;
+        	}
+        	this.rayCasterLinePrecision =  Math.round(this.rayCasterLinePrecision);
+
+        	return this.rayCasterLinePrecision;
         }
 
     }
@@ -2923,4 +2986,3 @@ define(['jquery'], function () {
 
     return ThreeDEngine;
 });
-

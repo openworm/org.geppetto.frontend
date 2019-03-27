@@ -119,7 +119,6 @@ define(function (require) {
     });
 
     var DropDownControlComp = CreateClass({
-        onClickHandler: null,
         menuPosition: null,
 
         getInitialState: function () {
@@ -272,7 +271,6 @@ define(function (require) {
 
     var MenuButton = CreateClass({
         menu: null,
-        onLoadHandler: null,
         positionUpdated: false,
 
         getInitialState: function () {
@@ -296,7 +294,6 @@ define(function (require) {
                 this.setState({configuration: Object.assign(this.state.configuration,
                                                             {menuItems: [...this.state.configuration.menuItems.slice(0,i),
                                                                          ...this.state.configuration.menuItems.slice(i+1)]})});
-          
         },
 
         //Makes the drop down menu visible
@@ -326,12 +323,10 @@ define(function (require) {
 
         //Adds external handler for click events, notifies it when a drop down item is clicked
         selectionChanged: function (value) {
-            if (this.props.configuration.closeOnClick) {
+            if (this.props.configuration.closeOnClick)
                 this.toggleMenu();
-                if(this.onClickHandler != undefined && this.onClickHandler!= null){
-                    this.onClickHandler(value);
-                }
-            }
+            if(this.props.onClickHandler)
+                this.props.onClickHandler(value);
         },
 
         //Adds external load handler, gets notified when component is mounted and ready
@@ -343,13 +338,9 @@ define(function (require) {
 
         componentWillUnmount: function () {
             this.onLoadHandler = null;
-            this.onClickHandler = null;
         },
 
         componentDidMount: function () {
-            //attach external handler for loading events
-            this.onClickHandler = this.props.configuration.onClickHandler;
-
             //attach external handler for clicking events
             this.addExternalLoadHandler();
             if (this.props.configuration.closeOnClick) {

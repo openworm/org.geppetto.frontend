@@ -59,7 +59,7 @@ public class UserResource
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
-	public @ResponseBody IUser addNewUser(@RequestParam String username, @RequestParam String password, @RequestParam(required=false) Long userGroupId)
+	public @ResponseBody IUser addNewUser(@RequestParam String username, @RequestParam String password, @RequestParam(defaultValue="1", required=false) long userGroupId)
 	{
 		IGeppettoDataManager manager = DataManagerHelper.getDataManager();
 

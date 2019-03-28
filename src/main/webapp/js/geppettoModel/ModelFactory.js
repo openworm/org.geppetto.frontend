@@ -53,6 +53,14 @@ define(function (require) {
             newPathsIndexing: [],
             instanceTags: {},
 
+        /**
+         * Creates and populates Geppetto model
+         */
+        cleanModel: function () {
+            this.allPaths = [];
+            this.allStaticVarsPaths = {};
+            this.allPathsIndexing = [];
+        },
             /**
              * Creates and populates Geppetto model
              *

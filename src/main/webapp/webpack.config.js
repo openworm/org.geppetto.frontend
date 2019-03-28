@@ -14,7 +14,7 @@ try {
     console.error('\nFailed to load Geppetto Configuration')
 }
 
-var publicPath = ((geppettoConfig.contextPath == '/') ? geppettoConfig.contextPath : path.join("/", geppettoConfig.contextPath, "geppetto/build/"));
+var publicPath = ((geppettoConfig.contextPath == '/') ? geppettoConfig.contextPath : "/" + geppettoConfig.contextPath + "/") + "geppetto/build/"
 console.log("\nThe public path (used by the main bundle when including split bundles) is: " + publicPath);
 
 
@@ -61,10 +61,10 @@ module.exports = function(env){
 			geppettoConfig.embedderURL=env.embedderURL;
 		}
 	}
-	
+
 	console.log('Geppetto configuration \n');
 	console.log(JSON.stringify(geppettoConfig, null, 2), '\n');
-	
+
 	var entries = {
 		    main: "./js/pages/geppetto/main.js",
 		    admin: "./js/pages/admin/admin.js"
@@ -73,12 +73,12 @@ module.exports = function(env){
 	console.log("\nThe Webpack entries are:");
 	console.log(entries);
 
-		
+
 
 
     return {
 	    entry: entries,
-	  
+
 	    output: {
 	        path: path.resolve(__dirname, 'build'),
 	        filename: '[name].bundle.js',
@@ -126,23 +126,23 @@ module.exports = function(env){
 	        }),
 	        new ExtractTextPlugin("[name].css"),
 	    ],
-	
+
 	    resolve: {
 	        alias: {
 	            geppetto: path.resolve(__dirname, 'js/pages/geppetto/GEPPETTO.js'),
 	            handlebars: 'handlebars/dist/handlebars.js'
-	
+
 	        },
 	        extensions: ['*', '.js', '.json'],
 	    },
-	
+
 	    module: {
 	        noParse: [/js\/components\/interface\/dicomViewer\/ami.min.js/],
 	        rules: [
 	            {
 	                test: /\.(js|jsx)$/,
 	                include: [path.resolve(__dirname, './js'), path.resolve(__dirname, './extensions'), path.resolve(__dirname, './style'), path.resolve(__dirname, './WEB-INF')],
-	                exclude: [/ami.min.js/], 
+	                exclude: [/ami.min.js/],
 	                loader: 'babel-loader',
 	                query: {
 	                    presets: [['babel-preset-env', { "modules": false }], 'stage-2', 'react']
@@ -165,13 +165,13 @@ module.exports = function(env){
 	                loader: 'url-loader?limit=100000'
 	            },
 	            {
-	                
+
 	                test: /\.css$/,
 	                use: ExtractTextPlugin.extract({
 	                  fallback: "style-loader",
 	                  use: "css-loader"
 	                })
-	                  
+
 	            },
 	            {
 	                test: /\.less$/,

@@ -12,8 +12,8 @@
 
 	<% var cssPaths = '/'; %>
 
-	<% if (htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath != "/") { %>
-        <base href="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>" />
+    <% if (htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath != "/") { %>
+        <base href="/<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>/" />
         <% var cssPaths = ''; %>
 	<% } %>
 

@@ -1,8 +1,8 @@
 define(function (require) {
-    var React = require('react');
+    var CreateClass = require('create-react-class');
     require('codemirror');
 
-    return React.createClass({
+    return CreateClass({
 
         showFullscreen: function() {
             this.setFullScreen(true);

@@ -1,12 +1,13 @@
 define(function (require) {
 
     var React = require('react'),
+        CreateClass = require('create-react-class'),
         ReactDOM = require('react-dom'),
     	GEPPETTO = require('geppetto');
     	$ = require('jquery'),
         HelpModal = require('../HelpModal');
 
-    return React.createClass({
+    return CreateClass({
         mixins: [require('../../../controls/mixins/Button')],
 
         componentDidMount: function() {

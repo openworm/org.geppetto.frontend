@@ -2,14 +2,14 @@ define(function (require) {
 
     require('./Form.less')
 
-	var React = require('react');
+	var CreateClass = require('create-react-class');
 	var reactJsonSchemaForm = require('react-jsonschema-form');
 
 	var Form = reactJsonSchemaForm.default;
 
 	var uiSchema ={};
 
-	var formComponent = React.createClass({
+	var formComponent = CreateClass({
 
 		shouldComponentUpdate() {
 			return false;

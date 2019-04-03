@@ -1,19 +1,20 @@
 /**
- * Reusable drop down button React component. 
- * Takes in a configuration with properties and data, uses it 
+ * Reusable drop down button React component.
+ * Takes in a configuration with properties and data, uses it
  * to create button and drop down.
- * 
- * @author Jesus R Martinez (jesus@metacell.us) 
- * 
+ *
+ * @author Jesus R Martinez (jesus@metacell.us)
+ *
  * @param require
  * @returns
  */
 define(function (require) {
     var React = require('react');
+    var CreateClass = require('create-react-class');
     var GEPPETTO = require('geppetto');
     require("./MenuButton.less");
 
-    var ListItem = React.createClass({
+    var ListItem = CreateClass({
 
         updateIcon: false,
         icons: {
@@ -117,7 +118,7 @@ define(function (require) {
         }
     });
 
-    var DropDownControlComp = React.createClass({
+    var DropDownControlComp = CreateClass({
         onClickHandler: null,
         menuPosition: null,
 
@@ -272,7 +273,7 @@ define(function (require) {
         }
     });
 
-    var MenuButton = React.createClass({
+    var MenuButton = CreateClass({
         menu: null,
         onLoadHandler: null,
         positionUpdated: false,

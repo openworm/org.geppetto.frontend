@@ -642,6 +642,14 @@ define(function (require) {
             }
         },
 
+        shouldComponentUpdate: function() {
+            if ($("#querybuilder").is(":visible")) {
+              return true;
+            } else {
+              return false;
+            }
+        },
+
         componentDidMount: function () {
             queryBuilderModel.subscribe(this.refresh);
 

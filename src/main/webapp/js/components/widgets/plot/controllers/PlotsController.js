@@ -225,23 +225,29 @@ define(function(require) {
                 if (inst != undefined && inst.getTimeSeries() != undefined) {
                     // plot, we have data
                     if (plotWidget != undefined) {
-                        plotWidget.plotData(inst, null, lineOptions);
+                        plotWidget.plotInstance(inst, lineOptions);
                         plotWidget.updateAxis(inst.getInstancePath());
                     } else {
-                        var widget = await G.addWidget(0);
-                        widget.plotData(inst, null, lineOptions).setName(path);
-                        widget.updateAxis(path);
+                        //var widget = await G.addWidget('PLOT');
+                        G.addWidget('PLOT').then(widget => {
+                            widget.plotInstance(inst, lineOptions).setName(path);
+                            widget.updateAxis(path);
+                        });
                     }
                 } else {
                     var cb = async function(){
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
-                    	    plotWidget.plotData(i, null, lineOptions);
+                    	    plotWidget.plotInstance(i, lineOptions);
                     		plotWidget.updateAxis(i.getInstancePath());
                     	} else {
-                    		var plot = await G.addWidget(0);
-                            plot.plotData(i, null, lineOptions).setName(path);
-                            plot.updateAxis(path);
+                    	    /*var plot = await G.addWidget('PLOT');
+                            plot.plotInstance(i, lineOptions).setName(path);
+                            plot.updateAxis(path);*/
+                            G.addWidget('PLOT').then(widget => {
+                                widget.plotInstance(inst, lineOptions).setName(path);
+                                widget.updateAxis(path);
+                            });
                     	}
                     };
                     // trigger get experiment data with projectId, experimentId and path, and callback to plot
@@ -257,7 +263,7 @@ define(function(require) {
                     if (plotWidget != undefined) {
                         plotWidget.plotXYData(i, t, null, lineOptions);
                     } else {
-                    	var plot = await G.addWidget(0);
+                    	var plot = await G.addWidget('PLOT');
                         plot.plotXYData(i, t, null, lineOptions).setName(path);
                     }
                 };

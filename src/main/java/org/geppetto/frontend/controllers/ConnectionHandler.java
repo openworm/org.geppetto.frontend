@@ -47,6 +47,7 @@ import org.geppetto.model.ModelFormat;
 import org.geppetto.model.datasources.QueryResults;
 import org.geppetto.model.datasources.RunnableQuery;
 import org.geppetto.model.util.GeppettoModelException;
+import org.geppetto.simulation.GeppettoManagerConfiguration;
 import org.geppetto.simulation.manager.GeppettoManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -87,14 +88,14 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param websocketConnection
 	 * @param geppettoManager
 	 */
-	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager)
+	protected ConnectionHandler(WebsocketConnection websocketConnection, IGeppettoManager geppettoManager,GeppettoManagerConfiguration geppettoManagerConfiguration)
 	{
 		this.websocketConnection = websocketConnection;
 		// FIXME This is extremely ugly, a session based geppetto manager is
 		// autowired in the websocketconnection
 		// but a session bean cannot travel outside a conenction thread so a new
 		// one is instantiated and initialised
-		this.geppettoManager = new GeppettoManager(geppettoManager);
+		this.geppettoManager = new GeppettoManager(geppettoManager, geppettoManagerConfiguration);
 		this.geppettoManager.setSimulationListener(this);
 	}
 
@@ -361,38 +362,30 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
-		if(geppettoProject.isVolatile())
+		try
 		{
-			info(requestID, Resources.VOLATILE_PROJECT.toString());
-			return;
-		}
-		else
-		{
-			try
+			// run the matched experiment
+			if(experiment != null)
 			{
-				// run the matched experiment
-				if(experiment != null)
+				// TODO: If experiment is in ERROR state, user won't be able
+				// to run again.
+				// We reset it to DESIGN to allow user to run it for second
+				// time
+				if(experiment.getStatus() == ExperimentStatus.ERROR)
 				{
-					// TODO: If experiment is in ERROR state, user won't be able
-					// to run again.
-					// We reset it to DESIGN to allow user to run it for second
-					// time
-					if(experiment.getStatus() == ExperimentStatus.ERROR)
-					{
-						experiment.setStatus(ExperimentStatus.DESIGN);
-					}
-					geppettoManager.runExperiment(requestID, experiment);
+					experiment.setStatus(ExperimentStatus.DESIGN);
 				}
-				else
-				{
-					error(null, "Error running experiment, the experiment " + experimentID + " was not found in project " + projectId);
-				}
+				geppettoManager.runExperiment(requestID, experiment);
+			}
+			else
+			{
+				error(null, "Error running experiment, the experiment " + experimentID + " was not found in project " + projectId);
+			}
 
-			}
-			catch(GeppettoExecutionException | GeppettoAccessException e)
-			{
-				error(e, "Error running experiment");
-			}
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
+		{
+			error(e, "Error running experiment");
 		}
 	}
 

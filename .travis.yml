@@ -1,4 +1,7 @@
 language: java
+env:
+  global:
+    secure: pIH0KE7Ps4z3I8WxfQM27cbncwWq7i5hyMea/w8hanStUulnsw0NDCVC/7molPtdM9l7sDkyJFSGRRLIt+Dt3uTFfVbJCxVXyF1G22yQhqp3y5BBMqFbz/9y9DRJly/DJWxtk0QvzG7kxtouq04UTU9TDVInut4HO9+LHvFkDUI=
 install:
 - git clone https://github.com/openworm/org.geppetto.model.git
 - cd org.geppetto.model
@@ -18,6 +21,13 @@ install:
 - git status
 - mvn install
 - cd ..
-env:
-  global:
-    secure: pIH0KE7Ps4z3I8WxfQM27cbncwWq7i5hyMea/w8hanStUulnsw0NDCVC/7molPtdM9l7sDkyJFSGRRLIt+Dt3uTFfVbJCxVXyF1G22yQhqp3y5BBMqFbz/9y9DRJly/DJWxtk0QvzG7kxtouq04UTU9TDVInut4HO9+LHvFkDUI=
+
+script:
+  - echo "Current time :$(date +"%T")"
+  - cd $TRAVIS_BUILD_DIR/src/main
+  - echo "$TRAVIS_BRANCH"
+  - git clone https://github.com/openworm/geppetto-application.git webapp
+  - cd webapp
+  - if [[ `git branch -a | egrep "remotes/origin/${TRAVIS_BRANCH}"` ]]; then git checkout $TRAVIS_BRANCH ; else echo "Branch $TRAVIS_BRANCH does not exist for the dependent bundle, checking out development ..." && git checkout development; fi
+  - cd ../../..
+  - mvn install

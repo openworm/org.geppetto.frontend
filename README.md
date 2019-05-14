@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/openworm/geppetto-application.svg?branch=master)](https://travis-ci.org/openworm/geppetto-application)
+[![Build Status](https://travis-ci.org/openworm/org.geppetto.frontend.svg?branch=development)](https://travis-ci.org/openworm/org.geppetto.frontend)
 
 <p align="center">
   <img src="https://github.com/tarelli/bucket/blob/master/geppetto%20logo.png?raw=true" alt="Geppetto logo"/>

@@ -1288,7 +1288,7 @@ define(function (require) {
                         return { __html: resultsItem.verboseLabel };
                     };
 
-                    return (value === index &&
+                    return (focusTabIndex === index &&
                         <Typography component="div" key={index}>
                             <div className="result-verbose-label" dangerouslySetInnerHTML={getVerboseLabelMarkup()}></div>
                             <div className="clearer"></div>

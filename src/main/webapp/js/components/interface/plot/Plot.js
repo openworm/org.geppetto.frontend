@@ -3,41 +3,34 @@ import ReactPlotly from 'react-plotly.js';
 import WidgetCapability from '../../../../js/components/widgets/WidgetCapability';
 import update from 'immutability-helper';
 
+var $ = require('jquery');
+var math = require('mathjs');
 var Plotly = require('plotly.js/lib/core');
 var AbstractComponent = require('../../../../js/components/AComponent');
+var PlotConfig = require('./configuration/plotConfiguration');
+var ExternalInstance = require('../../../geppettoModel/model/ExternalInstance');
 
 export default class Plot extends AbstractComponent {
     constructor(props) {
         super(props);
-        this.state = { data: [], layout: {
-	    autosize: true,
-	    showgrid: false,
-	    showlegend: true,
-	    xaxis: { autorange: true, showgrid: false, showline: true, zeroline: false, mirror: true, ticklen: 0, tickcolor: 'rgb(255, 255, 255)', linecolor: 'rgb(255, 255, 255)', tickfont: { family: 'Helvetica Neue, Helvetica, sans-serif', size: 11, color: 'rgb(255, 255, 255)'}, titlefont: { family: 'Helvetica Neue, Helevtica, sans-serif', size: 12, color: 'rgb(255, 255, 255)'}, ticks: 'outside' },
-	    yaxis: { autorange: true, showgrid: false, showline: true, zeroline: false, mirror: true, ticklen: 0, tickcolor: 'rgb(255, 255, 255)', linecolor: 'rgb(255, 255, 255)', tickfont: { family: 'Helvetica Neue, Helevtica, sans-serif', size : 11, color: 'rgb(255, 255, 255)'}, titlefont: { family: 'Helvetica Neue, Helevtica, sans-serif', size: 12, color: 'rgb(255, 255, 255)'}, ticks: 'outside'},
-	    margin: { l: 50, r: 0, b: 40, t: 10 },
-	    legend : {
-	        xanchor : "auto",
-	        yanchor : "auto",
-	        font: {
-		    family: 'Helvetica Neue, Helevtica, sans-serif',
-		    size: 12,
-		    color : '#fff'
-	        },
-	        x : 1,
-	    },
-	    transition: {
-	        duration: 0
-	    },
-	    frame: {
-	        duration: 0,
-	        redraw: false
-	    },
-            paper_bgcolor: 'rgb(66, 59, 59, 0.9)',
-	    plot_bgcolor: 'transparent',
-	    playAll : false,
-	    hovermode : 'none'
-        }, frames: [], config: {}, variables: {}, revision: 0 };
+        this.state = {
+            layout: PlotConfig.defaultLayout,
+            data: [],
+            frames: [],
+            variables: {}
+        };
+    }
+
+    componentDidMount() {
+        //FIXME: this jquery should be retired
+        this.addButtonToTitleBar($("<div class='fa fa-home' title='Reset plot zoom'></div>").on('click', function(event) {
+	    this.resetAxes();
+	}.bind(this)));
+        this.dialog.dialog({
+            resize: function (event, ui) {
+                this.resize(true);
+            }.bind(this)
+        });
     }
 
     getUnitLabel(unitSymbol) {
@@ -67,123 +60,150 @@ export default class Plot extends AbstractComponent {
 		    return letter.sup();
 		}) + ")";
 	    }
-	}
 
 	return unitLabel;
-    }
-
-    updateAxis(key) {
-        var unit = this.state.variables[key].getUnit();
-        if (unit != null) {
-            try {
-                var labelY = this.inhomogeneousUnits ? "SI Units" : this.getUnitLabel(unit);
-            } catch (e) {
-                labelY = ""
-            }
-            try {
-                var labelX = this.getUnitLabel(window.time.getUnit());
-            }catch (e) {
-                labelX = ""
-            }
-
-            let newLayout = update(this.state.layout, {
-                yaxis: {title: {text: {$set: labelY}}},
-                xaxis: {title: {text: {$set: labelX}}}
-            });
-            this.setState({layout: newLayout, revision: this.state.revision+1});
-
-            /*if(labelY == null || labelY == ""){
-                this.plotOptions.margin.l = 30;
-            }*/
-            //Plotly.relayout(this.plotDiv, this.plotOptions);
         }
     }
 
-    resize(width, height) {
-        Plotly.relayout($("#" + this.refs.plotWidget.props.id + "> .js-plotly-plot")[0], {width: width, height: height});
+    resize() {
+        // pass resize trigger from WidgetCapability to plotly component
+        this.refs.plotly.resizeHandler();
     }
 
+    updateAxisTitles(xInstance, yInstance) {
+        var inhomogeneousUnits = new Set(Object.values(this.state.variables).map(v => v.getUnit())).size > 1;
+        var labelY = inhomogeneousUnits ? "SI Units" : this.getUnitLabel(yInstance.getUnit());
+        let newLayout = update(this.state.layout, {
+            yaxis: {title: {text: {$set: labelY}}},
+            xaxis: {title: {text: {$set: this.getUnitLabel(xInstance.getUnit())}}},
+            margin: {l: {$set: (labelY == null || labelY == "") ? 30 : 50}}
+        });
+        this.setState({layout: newLayout});
+    }
 
-    plotInstance(instance, lineOptions) {
-        /*
-          for (var i = 0; i < data.length; i++) {
-          this.controller.addToHistory("Plot "+data[i].getInstancePath(),"plotData",[data[i]],this.getId());
-          }
-        */
-
-	var legendName = instance.getInstancePath();
-        /*if(instance instanceof ExternalInstance){
-	    legendName = this.controller.getLegendName(
-	        instance.projectId,
-	        instance.experimentId,
-	        instance,
-	        window.Project.getId() == instance.projectId
-	    );
-        }*/
-
-	var trace = {
-	    x: window.time.getTimeSeries(), //timeSeriesData["x"],
-	    y: instance.getTimeSeries(), //timeSeriesData["y"],
-	    mode: "lines",
-	    path: instance.getInstancePath(),
-	    name: legendName,
-	    line: $.extend({
-		dash: 'solid',
-		width: '2'
-	    }, lineOptions),
-	    hoverinfo: 'all',
-	    type: 'scatter'
-	};
-
-        this.setState({variables: Object.assign(this.state.variables, {[legendName]: instance})});
-        this.addDatasetToPlot(trace);
-
-	/*if (this.datasets.length > 0) {
-            // check for inhomogeneousUnits and set flag
-            var refUnit = undefined;
-            var variable;
-            for (var i = 0; i < this.datasets.length; i++) {
-                variable = this.variables[this.getLegendInstancePath(this.datasets[i].name)];
-                if (i == 0) {
-                    refUnit = variable.getUnit();
-                } else if (refUnit != variable.getUnit()) {
-                    this.inhomogeneousUnits = true;
-                    this.labelsUpdated = false;
-                    break;
+    updateAxisRanges(xData, yData) {
+        // required to avoid stack overflow on big data
+        let arrayMin = function(arr) {
+            var len = arr.length, min = Infinity;
+            while (len--) {
+                if (Number(arr[len]) < min) {
+                    min = Number(arr[len]);
                 }
             }
-        }*/
+            return min;
+        };
 
-	/*this.xVariable = window.time;
-	if(plotable){
-	    this.plotGeneric();
-	}
+        let arrayMax = function (arr) {
+            var len = arr.length, max = -Infinity;
+            while (len--) {
+                if (Number(arr[len]) > max) {
+                    max = Number(arr[len]);
+                }
+            }
+            return max;
+        };
+        var xmin = arrayMin(xData), xmax = arrayMax(xData);
+        var ymin = arrayMin(yData), ymax = arrayMax(yData);
+        var newLayout = update(this.state.layout, {
+            xaxis: {min: {$set: xmin}, max: {$set: xmax}},
+            yaxis: {min: {$set: ymin}, max: {$set: ymax}},
+        });
+        this.setState({layout: newLayout});
+    }
 
+    getLegendName(projectId, experimentId, instance, sameProject) {
+        var legend = null;
+        //the variable's experiment belong to same project but it's not the active one
+        if (sameProject) {
+            for (var key in window.Project.getExperiments()) {
+                if (window.Project.getExperiments()[key].id == experimentId) {
+                    //create legend with experiment name
+                    legend = instance.getInstancePath() + " [" + window.Project.getExperiments()[key].name + "]";
+                }
+            }
+        }
+        //The variable's experiment and projects aren't the one that is active
+        else {
+            //get user projects
+            var projects = GEPPETTO.ProjectsController.getUserProjects();
+
+            for (var i = 0; i < projects.length; i++) {
+                //match variable project id
+                if ((projects[i].id == projectId)) {
+                    //match variable experiment id
+                    for (var key in projects[i].experiments) {
+                        if (projects[i].experiments[key].id == experimentId) {
+                            //create legend with project name and experiment
+                            legend = instance.getInstancePath() + " [" + projects[i].name + " - " + projects[i].experiments[key].name + "]";
+                        }
+                    }
+                }
+            }
+        }
+
+        return legend;
+    }
+
+    plotInstance(instanceY, lineOptions, instanceX = window.time) {
+	var legendName = instanceY.getInstancePath();
+        if(instanceY instanceof ExternalInstance){
+	    legendName = this.getLegendName(
+	        instanceY.projectId,
+	        instanceY.experimentId,
+	        instanceY,
+	        window.Project.getId() == instanceY.projectId
+	    );
+        }
+
+	var trace = update(PlotConfig.defaultTrace, {
+	    x: {$set: instanceX.getTimeSeries()},
+	    y: {$set: instanceY.getTimeSeries()},
+	    path: {$set: instanceY.getInstancePath()},
+            name: {$set: legendName},
+            line: {$merge: lineOptions ? lineOptions : {}}
+	});
+        this.addDatasetToPlot(trace);
+        
+        var newVariables = update(this.state.variables, {
+            $merge: {[legendName]: instanceY}
+        });
+        this.setState({variables: newVariables});
+
+        this.updateAxisRanges(instanceX.getTimeSeries(), instanceY.getTimeSeries());
+        this.updateAxisTitles(instanceX, instanceY);
+	
+	/*
 	// track change in state of the widget
-	this.dirtyView = true;*/
+	this.dirtyView = true;
+        */
 
 	return this;
     }
 
+    resetAxes() {
+        this.setState({layout: update(this.state.layout, {
+            xaxis: {range: {$set: [this.state.layout.xaxis.min, this.state.layout.xaxis.max]}},
+            yaxis: {range: {$set: [this.state.layout.yaxis.min, this.state.layout.yaxis.max]}},
+        })});
+    }
+
     addDatasetToPlot(dataset) {
-        // FIXME: this can't be right… but nothing else changes the data
-        this.state.data.push(dataset);
-        /*this.setState(state => {
-            //let data = state.data.concat(dataset);
-            return {data: data, revision: state.revision+1};
-        });*/
+        this.setState(state => {
+            let data = state.data.concat(dataset);
+            return {data};
+        });
     }
 
     render() {
         return (
-                <ReactPlotly
-            revision={this.state.revision}
-            data={this.state.data}
-            useResizeHandler={true}
-            style={{width: "100%", height: "100%"}}
-            onUpdate={(figure) => this.setState(figure)}
-            layout={this.state.layout}
-                />
+            <ReactPlotly
+              ref="plotly"
+              data={this.state.data}
+              layout={this.state.layout}
+              useResizeHandler={true}
+              style={{width: "100%", height: "100%"}}
+              onUpdate={(figure) => this.setState(figure)}
+              />
         )
     }
 }

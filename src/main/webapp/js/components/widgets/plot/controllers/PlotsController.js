@@ -226,12 +226,12 @@ define(function(require) {
                     // plot, we have data
                     if (plotWidget != undefined) {
                         plotWidget.plotInstance(inst, lineOptions);
-                        plotWidget.updateAxis(inst.getInstancePath());
+                        //plotWidget.updateAxis(inst.getInstancePath());
                     } else {
                         //var widget = await G.addWidget('PLOT');
                         G.addWidget('PLOT').then(widget => {
                             widget.plotInstance(inst, lineOptions).setName(path);
-                            widget.updateAxis(path);
+                            //widget.updateAxis(path);
                         });
                     }
                 } else {
@@ -239,14 +239,14 @@ define(function(require) {
                     	var i = window.Instances.getInstance(path);
                     	if(plotWidget != undefined){
                     	    plotWidget.plotInstance(i, lineOptions);
-                    		plotWidget.updateAxis(i.getInstancePath());
+                    		//plotWidget.updateAxis(i.getInstancePath());
                     	} else {
                     	    /*var plot = await G.addWidget('PLOT');
                             plot.plotInstance(i, lineOptions).setName(path);
                             plot.updateAxis(path);*/
                             G.addWidget('PLOT').then(widget => {
                                 widget.plotInstance(inst, lineOptions).setName(path);
-                                widget.updateAxis(path);
+                                //widget.updateAxis(path);
                             });
                     	}
                     };
@@ -257,14 +257,14 @@ define(function(require) {
                 // we are dealing with external instances, define re-usable callback for plotting external instances
                 var plotExternalCallback = async function() {
                     var i = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, path);
-                    // if xPath is not specified, assume time
-                    if(xPath == undefined){ xPath = 'time(StateVariable)'; }
                     var t = GEPPETTO.ExperimentsController.getExternalInstance(projectId, experimentId, xPath);
                     if (plotWidget != undefined) {
-                        plotWidget.plotXYData(i, t, null, lineOptions);
+                        plot.plotInstance(i, lineOptions, t);
+                        //plotWidget.plotXYData(i, t, null, lineOptions);
                     } else {
                     	var plot = await G.addWidget('PLOT');
-                        plot.plotXYData(i, t, null, lineOptions).setName(path);
+                        plot.plotInstance(i, lineOptions, t);
+                        //plot.plotXYData(i, t, null, lineOptions).setName(path);
                     }
                 };
 

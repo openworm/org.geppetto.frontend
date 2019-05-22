@@ -4,10 +4,10 @@
 
 
 define(function (require) {
+    var d3 = require("d3");
     return {
         state: {filter: 'projection', population: true, linkFilter: 0, repulsion: 55000, attraction: 0.0000001, nodeSize: 6, linkSize: 6, zoom: d3.zoomIdentity, marker: false},
         createForceLayout: function (context) {
-            var d3 = require("d3");
             var _ = require('underscore');
 
             if (context.dataset.populationLinks.filter(l => !l.weight).length > 0)

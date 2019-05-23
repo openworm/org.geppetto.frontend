@@ -159,7 +159,9 @@ define(function (require) {
             	}
             });
 
-            this.initDataSourceResults();
+            if (this.props.spotlightDataSourceConfig === undefined) {
+                this.initDataSourceResults();
+            }
 
             Handlebars.registerHelper('geticonFromMetaType', function (metaType) {
                 if (metaType) {

@@ -979,14 +979,14 @@ define(function (require) {
                 var currentPosition = this.renderer.plugins.interaction.mouse.getLocalPosition(this.stack);
                 currentPosition.x = Number(currentPosition.x.toFixed(0));
                 currentPosition.y = Number(currentPosition.y.toFixed(0));
-                if (this.state.hoverTime < Date.now() - 500 && !(this.state.posX == this.state.oldX && this.state.posY == this.state.oldY) && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
+                if (this.state.hoverTime < Date.now() - 250 && !(this.state.posX == this.state.oldX && this.state.posY == this.state.oldY) && this.state.posX == currentPosition.x && this.state.posY == currentPosition.y) {
                     this.state.hoverTime = Date.now();
                     this.listObjects();
                     this.state.oldX = currentPosition.x;
                     this.state.oldY = currentPosition.y;
                 } else {
                     // Timeout:
-                    if (this.state.hoverTime < Date.now() - 2500) {
+                    if (this.state.hoverTime < Date.now() - 1250) {
                         this.listObjects();
                     }
                     // Check valid value:

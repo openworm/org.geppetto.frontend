@@ -10,6 +10,9 @@
 		<contextPath>org.geppetto.frontend</contextPath>
 		<spring.version>4.3.9.RELEASE</spring.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<useSsl></useSsl>
+		<embedded></embedded>
+		<embedderURL></embedderURL>
 	</properties>
 	<profiles>
 		<profile>
@@ -112,7 +115,7 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<arguments>run build-dev -- --env.contextPath=${contextPath} --env.useSsl=${useSsl} --env.embedded=${embedded} --env.embedderURL=${embedderURL}</arguments>
+									<arguments>run build  -- --env.contextPath=${contextPath} --env.useSsl=${useSsl} --env.embedded=${embedded} --env.embedderURL=${embedderURL}</arguments>
 								</configuration>
 							</execution>
 						</executions>

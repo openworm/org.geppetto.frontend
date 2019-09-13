@@ -54,7 +54,7 @@
 									<goal>npm</goal>
 								</goals>
 								<configuration>
-									<arguments>install</arguments>
+									<arguments>install --verbose</arguments>
 									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
@@ -105,7 +105,7 @@
 									<goal>npm</goal>
 								</goals>
 								<configuration>
-									<arguments>install</arguments>
+									<arguments>install --verbose</arguments>
 								</configuration>
 							</execution>
 							<execution>

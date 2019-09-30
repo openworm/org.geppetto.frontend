@@ -9,6 +9,9 @@
 	<properties>
 		<contextPath>org.geppetto.frontend</contextPath>
 		<spring.version>4.3.9.RELEASE</spring.version>
+		<useSsl></useSsl>
+		<embedded></embedded>
+		<embedderURL></embedderURL>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<profiles>

@@ -26,6 +26,9 @@ define(function (require) {
                 .range([0.5, 4]);
 
             context.projectionSummary = context.getProjectionSummary();
+            this.state.filter = context.projectionTypeSummary[this.state.filter].length > 0 ?
+                this.state.filter :
+                Object.keys(context.projectionTypeSummary).filter(x => context.projectionTypeSummary[x].length > 0)[0];
 
 	    //add encompassing group for the zoom
 	    var g = context.svg.append("g")

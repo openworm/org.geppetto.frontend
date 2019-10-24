@@ -28,6 +28,9 @@ script:
   - echo "$TRAVIS_BRANCH"
   - git clone https://github.com/openworm/geppetto-application.git webapp
   - cd webapp
+  - git clone https://github.com/openworm/geppetto-client.git
   - if [[ `git branch -a | egrep "remotes/origin/${TRAVIS_BRANCH}"` ]]; then git checkout $TRAVIS_BRANCH ; else echo "Branch $TRAVIS_BRANCH does not exist for the dependent bundle, checking out development ..." && git checkout development; fi
-  - cd ../../..
+  - cd geppetto-client
+  - if [[ `git branch -a | egrep "remotes/origin/${TRAVIS_BRANCH}"` ]]; then git checkout $TRAVIS_BRANCH ; else echo "Branch $TRAVIS_BRANCH does not exist for the dependent bundle, checking out development ..." && git checkout development; fi
+  - cd ../../../..
   - mvn install

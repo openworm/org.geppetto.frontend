@@ -1,75 +1,36 @@
-language: node_js
-os: linux
-sudo: required
-dist: trusty
-group: deprecated-2017Q4
-bundler_args: --retry 5
-node_js:
-  - "7"
+language: java
 env:
   global:
-    secure: dn0FPQ5IG4M/3kdwnyI78ElQ308Vc3QnKAvkWfwMFb8QxDqxQdnTo7AV1qTMtbLrDNkeEWIgi4nc7jmXNtvGTwOfhAULVh6606Qs5B+ezTdwzajbbFMI8SKQx/pnTojOMu8dx7V4lMoR/YWcojR0VC1IWVC62TGbSB1k5BDGgH0=
-before_install:
-- sudo apt-get install -y xserver-xorg-dev libxext-dev libxi-dev 
+    secure: pIH0KE7Ps4z3I8WxfQM27cbncwWq7i5hyMea/w8hanStUulnsw0NDCVC/7molPtdM9l7sDkyJFSGRRLIt+Dt3uTFfVbJCxVXyF1G22yQhqp3y5BBMqFbz/9y9DRJly/DJWxtk0QvzG7kxtouq04UTU9TDVInut4HO9+LHvFkDUI=
 install:
-- npm install --silent -g phantomjs 
-- npm install --silent -g casperjs 
-- npm install --silent -g slimerjs
-- npm install --silent -g gl
-- npm config set registry http://registry.npmjs.org/
+- git clone https://github.com/openworm/org.geppetto.model.git
+- cd org.geppetto.model
+- if [[ `git branch -a | egrep "remotes/origin/${TRAVIS_BRANCH}"` ]]; then git checkout $TRAVIS_BRANCH ; else echo "Branch $TRAVIS_BRANCH does not exist for the dependent bundle, checking out development ..." && git checkout development; fi
+- git status
+- mvn install
+- cd ..
+- git clone https://github.com/openworm/org.geppetto.core.git
+- cd org.geppetto.core
+- if [[ `git branch -a | egrep "remotes/origin/${TRAVIS_BRANCH}"` ]]; then git checkout $TRAVIS_BRANCH ; else echo "Branch $TRAVIS_BRANCH does not exist for the dependent bundle, checking out development ..." && git checkout development; fi
+- git status
+- mvn install
+- cd ..
+- git clone https://github.com/openworm/org.geppetto.simulation.git
+- cd org.geppetto.simulation
+- if [[ `git branch -a | egrep "remotes/origin/${TRAVIS_BRANCH}"` ]]; then git checkout $TRAVIS_BRANCH ; else echo "Branch $TRAVIS_BRANCH does not exist for the dependent bundle, checking out development ..." && git checkout development; fi
+- git status
+- mvn install
+- cd ..
 
-services:
-  - docker
-addons:
-  firefox: "58.0"
-  apt:
-    packages:
-    - mesa-utils
-    - xvfb
-    - libgl1-mesa-dri
-    - libglapi-mesa
-    - libosmesa6
-    - net-tools
-    - lsof
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - export SLIMERJSLAUNCHER=/home/travis/firefox-58.0/firefox/firefox
-  - export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
 script:
-  - npm config set registry http://registry.npmjs.org/
   - echo "Current time :$(date +"%T")"
-  - docker --version
-  - cd $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs
+  - cd $TRAVIS_BUILD_DIR/src/main
   - echo "$TRAVIS_BRANCH"
-  - travis_retry docker build -t="geppetto" --build-arg mainBranch=$TRAVIS_BRANCH https://github.com/openworm/org.geppetto.git#development:utilities/docker/geppetto/
-  - travis_retry docker run  -t -dit --name=geppetto_container -p 28081:8080 geppetto
-  - bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh
-  - sleep 30
-  - http_status=$(curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'})
-  - echo "$http_status"
-  - while [ "$http_status" == "404" ]; do
-      echo "Restart run";
-      echo "Printing logs for debugging purposes";
-      sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc;
-      tail -n 200 /etc/log.log;
-      docker stop $(docker ps -a -q);
-      sleep 10;
-      docker rm $(docker ps -a -q);
-      sleep 10;
-      travis_retry docker run  -t -dit --name=geppetto_container -p 28081:8080 geppetto;
-      bash $TRAVIS_BUILD_DIR/src/main/webapp/js/pages/tests/casperjs/utilities/test_geppetto_server.sh;
-      sleep 60;
-      http_status=$(curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'});
-      echo "Done restarting";
-      echo "$http_status";
-    done;
-  - "curl -s -I $1 http://localhost:28081/org.geppetto.frontend | grep HTTP/1.1 | awk {'print $2'}"
-  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js UIComponentsTests.js --host=http://localhost:28081/ --engine=slimerjs  
-  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js GeppettoModelTests.js --host=http://localhost:28081/ --engine=slimerjs 
-  - travis_retry xvfb-run -a --server-args="-screen 0 1024x768x24"  casperjs test --includes=utilities/TestsUtility.js,NeuronalTestsLogic.js DefaultProjectsTests.js --host=http://localhost:28081/ --engine=slimerjs  
-  - docker ps -a;
-  - sudo docker cp geppetto_container:/home/developer/virgo/serviceability/logs/log.log /etc
-  - tail /etc/log.log -n 200
-  - docker stop $(docker ps -a -q)
-  - docker rm $(docker ps -a -q)
+  - git clone https://github.com/openworm/geppetto-application.git webapp
+  - cd webapp
+  - git clone https://github.com/openworm/geppetto-client.git
+  - if [[ `git branch -a | egrep "remotes/origin/${TRAVIS_BRANCH}"` ]]; then git checkout $TRAVIS_BRANCH ; else echo "Branch $TRAVIS_BRANCH does not exist for the dependent bundle, checking out development ..." && git checkout development; fi
+  - cd geppetto-client
+  - if [[ `git branch -a | egrep "remotes/origin/${TRAVIS_BRANCH}"` ]]; then git checkout $TRAVIS_BRANCH ; else echo "Branch $TRAVIS_BRANCH does not exist for the dependent bundle, checking out development ..." && git checkout development; fi
+  - cd ../../../..
+  - mvn install

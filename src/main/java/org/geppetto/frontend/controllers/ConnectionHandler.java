@@ -446,10 +446,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
 		try
 		{
-			for (String typePath : typePaths) {
-				GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePath, geppettoProject);
+				GeppettoModel geppettoModel = geppettoManager.resolveImportType(typePaths, geppettoProject);
 				websocketConnection.sendMessage(requestID, OutboundMessages.IMPORT_TYPE_RESOLVED, GeppettoSerializer.serializeToJSON(geppettoModel, true));
-			}
 		}
 		catch(IOException e)
 		{

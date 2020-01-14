@@ -5,8 +5,6 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 //var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-var jQuery = require('jquery');
-
 var geppettoConfig;
 try {
     geppettoConfig = require('./GeppettoConfiguration.json');
@@ -191,8 +189,7 @@ module.exports = function(env){
 	        module: 'empty'
 	    },
 	    externals: {
-	        puppeteer: 'require("puppeteer")',
-	        jQuery: 'jQuery'
+	        puppeteer: 'require("puppeteer")'
 	    }
     }
 };

@@ -187,6 +187,9 @@ module.exports = function(env){
 	        fs: 'empty',
 	        child_process: 'empty',
 	        module: 'empty'
+	    },
+	    externals: {
+	        puppeteer: 'require("puppeteer")'
 	    }
     }
 };

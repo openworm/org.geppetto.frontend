@@ -5,6 +5,7 @@
   "repository": "http://git.geppetto.org",
   "license": "MIT",
   "scripts": {
+    "test": "jest --verbose",
     "build": "webpack -p --progress",
     "build-dev": "webpack --devtool eval",
     "build-dev-noTest": "webpack --devtool source-map --env.noTest=true",
@@ -28,6 +29,7 @@
     "bloodhound-js": "^1.2.1",
     "bootstrap": "^3.3.7",
     "codemirror": "^5.19.0",
+    "connected-react-router": "4.0.0",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "0.28.7",
     "d3": "^4.2.7",
@@ -45,8 +47,8 @@
     "griddle-0.6-fork": "https://github.com/MetaCell/griddle.git#griddle-0.6-fork",
     "griddle-react": "1.5.0",
     "handlebars": "^4.0.5",
-    "html2canvas": "1.0.0-alpha.12",
     "html-webpack-plugin": "2.30.1",
+    "html2canvas": "1.0.0-alpha.12",
     "ignore-loader": "^0.1.2",
     "image-webpack-loader": "^2.0.0",
     "imports-loader": "^0.7.0",
@@ -88,12 +90,11 @@
     "react-rnd": "7.4.0",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
-    "connected-react-router": "4.0.0",
-    "redux-logger": "3.0.6",
     "react-simpletabs": "0.7.0",
     "react-slick": "0.14.11",
     "react-sortable-tree": "^0.1.19",
     "react-tap-event-plugin": "^2.0.1",
+    "redux-logger": "3.0.6",
     "remarkable": "^1.7.1",
     "slick-carousel": "^1.6.0",
     "stats.js": "^0.17.0",
@@ -106,7 +107,8 @@
     "url-loader": "^0.5.8",
     "velocity.java": "^1.3.1",
     "webpack": "3.6.0",
-    "webpack-dev-server": "2.8.2"
+    "webpack-dev-server": "2.8.2",
+    "ws": "^7.2.0"
   },
   "buildOptions": {
     "emitEntryPoint": true,
@@ -115,5 +117,13 @@
         "node_modules"
       ]
     }
+  },
+  "dependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "jest": "^24.8.0",
+    "jest-puppeteer": "^4.3.0",
+    "puppeteer": "^1.17.0",
+    "url-join": "^4.0.0"
   }
 }

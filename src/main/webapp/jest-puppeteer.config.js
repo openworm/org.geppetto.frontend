@@ -1,1 +1,1 @@
-module.exports = { launch: { headless: false } }
+module.exports = { launch: { headless: true } }

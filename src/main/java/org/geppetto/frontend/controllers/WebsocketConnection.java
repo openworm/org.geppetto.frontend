@@ -128,10 +128,28 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 
 	@OnClose
 	public void onClose(Session session, CloseReason closeReason) {
-		super.onClose(session, closeReason);
-		messageSender.shutdown();
-		connectionHandler.closeProject();
-		logger.info("Closed Connection ..."+userSession.getId());
+		String exitCode = closeReason.getCloseCode().toString();
+		if (exitCode.equals("NORMAL_CLOSURE") || exitCode.equals("GOING_AWAY")) {
+			super.onClose(session, closeReason);
+			messageSender.shutdown();
+			connectionHandler.closeProject();
+		} else {
+			try
+			{
+				ConnectionsManager.getInstance().registerHandler(connectionID, this.connectionHandler);
+				super.onClose(session, closeReason);
+				messageSender.shutdown();
+				connectionHandler.pauseProject();
+			}
+			catch(GeppettoExecutionException e)
+			{
+				super.onClose(session, closeReason);
+				messageSender.shutdown();
+				connectionHandler.closeProject();
+			}
+			logger.info("Closed Connection ..."+userSession.getId());
+			
+		}
 	}
 	
 	@OnError
@@ -203,6 +221,21 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 				case USER_PRIVILEGES:
 				{
 					connectionHandler.checkUserPrivileges(requestID);
+					break;
+				}
+				case RECONNECT:
+				{
+					parameters = new Gson().fromJson(gmsg.data, new TypeToken<HashMap<String, String>>()
+					{
+					}.getType());
+					String lostConnectionID = parameters.get("connectionID");
+					projectId = Long.parseLong(parameters.get("projectId"));
+					try {
+						connectionHandler.setGeppettoManager(ConnectionsManager.getInstance().getHandler(lostConnectionID));
+						// connectionHandler.setProjectFromId(requestID, projectId);
+					} catch (GeppettoExecutionException e) {
+						sendMessage(requestID, OutboundMessages.RECONNECTION_ERROR, "");
+					}
 					break;
 				}
 				case NEW_EXPERIMENT:

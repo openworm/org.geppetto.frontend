@@ -4,12 +4,18 @@ import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Date;
+import java.util.Calendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geppetto.core.common.GeppettoExecutionException;
+import org.geppetto.simulation.manager.GeppettoManager;
 
 /**
  * @author matteocantarelli
@@ -26,6 +32,8 @@ public class ConnectionsManager
 
 	private final ConcurrentHashMap<String, WebsocketConnection> _connections = new ConcurrentHashMap<String, WebsocketConnection>();
 
+	private final ConcurrentHashMap<String, ManagerRecord> managers = new ConcurrentHashMap<String, ManagerRecord>();
+
 	/**
 	 * @return
 	 */
@@ -37,6 +45,39 @@ public class ConnectionsManager
 		}
 		return connectionsManager;
 	}
+	
+	/**
+	 * @param String requestID
+	 * @param ConnectionHandler instance
+	 */
+	public void registerHandler(String connectionID, ConnectionHandler instance) throws GeppettoExecutionException 
+	{
+		if (!managers.containsKey(connectionID)) {
+			ManagerRecord newRecord = new ManagerRecord((GeppettoManager) instance.getGeppettoManager());
+			managers.put(connectionID, newRecord);
+		} else {
+			ManagerRecord newRecord = new ManagerRecord((GeppettoManager) instance.getGeppettoManager());
+			managers.put(connectionID, newRecord);
+			throw new GeppettoExecutionException("The GeppettoManager registered for the session " + connectionID + " has been replaced");
+		}
+	}
+	
+	/**
+	 * @param String connectionID
+	 * @return
+	 */
+	public GeppettoManager getHandler(String connectionID) throws GeppettoExecutionException 
+	{
+		if (managers.containsKey(connectionID)) {
+			GeppettoManager _manager = managers.get(connectionID).getManagerRecord();
+			managers.remove(connectionID);
+			return _manager;
+		} else {
+			throw new GeppettoExecutionException("The Geppetto Manager requested has not been registered.");
+		}
+	}
+	
+	
 
 	/**
 	 * Add new connection to list of current ones
@@ -62,15 +103,26 @@ public class ConnectionsManager
 	 */
 	private void purgeLostConnections()
 	{
-		List<WebsocketConnection> toBeRemoved = new ArrayList<WebsocketConnection>();
+		// Check all the connections registered, ping who is alive and purge the others
 		for(WebsocketConnection client : this.getConnections())
 		{
-			CharBuffer buffer = CharBuffer.wrap("ping");
-			client.getSession().getAsyncRemote().sendObject(buffer);
+			if (client.getSession().isOpen()) {
+				CharBuffer buffer = CharBuffer.wrap("ping");
+				client.getSession().getAsyncRemote().sendObject(buffer);
+			} else {
+				this.removeConnection(client);
+			}
+			
 		}
-		for(WebsocketConnection client : toBeRemoved)
-		{
-			this.removeConnection(client);
+		
+		// To avoid memory consumption we check also the map of geppetto managers stored
+		// the instances that are more than 5 minutes older gets removed
+		Long now = Calendar.getInstance().getTimeInMillis() / 1000;
+		for(String key : managers.keySet()) {
+			ManagerRecord value = managers.get(key);
+			if ((now - value.getRegistration()) > (5 * 60)) {
+				managers.remove(key);
+			}
 		}
 	}
 
@@ -125,5 +177,23 @@ public class ConnectionsManager
 	private String getNewConnectionId()
 	{
 		return "Connection" + connectionsCounter.incrementAndGet();
+	}
+	
+	private class ManagerRecord {
+		private GeppettoManager manager;
+		private Long registrationDate;
+		
+		public ManagerRecord(GeppettoManager manager) {
+			this.manager = manager;
+			this.registrationDate = Calendar.getInstance().getTimeInMillis() / 1000;
+		} 
+		
+		public Long getRegistration() {
+			return registrationDate;
+		}
+		
+		public GeppettoManager getManagerRecord() {
+			return manager;
+		}
 	}
 }

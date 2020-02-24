@@ -10,6 +10,7 @@ public enum InboundMessages {
 	NOTIFY_USER("notify_user"),
 	GET_SCRIPT("get_script"),
 	GET_DATA_SOURCE_RESULTS("get_data_source_results"),
+	RECONNECT("reconnect"),
 	
 	//PROJECT MESSAGES
 	LOAD_PROJECT_FROM_URL("load_project_from_url"), 
@@ -53,7 +54,7 @@ public enum InboundMessages {
 	
 	//QUERIES
 	RUN_QUERY("run_query"),
-	RUN_QUERY_COUNT("run_query_count"),
+	RUN_QUERY_COUNT("run_query_count"), 
 	;
 
 	

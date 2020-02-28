@@ -85,6 +85,7 @@ define(function (require) {
                     this.handleChange = (this.props.handleChange == undefined) ? this.handleChange.bind(this) : this.props.handleChange.bind(this);
                     this.handleUpdateInput = this.handleUpdateInput.bind(this);
                     this.handleUpdateCheckbox = this.handleUpdateCheckbox.bind(this);
+                    this.oldValue = ''
                 }
 
                 shouldComponentUpdate(nextProps, nextState) {
@@ -163,13 +164,18 @@ define(function (require) {
                             default:
                                 break;
                         }
+                        // Don't sync if new value is emtpy string
                         if (newValue !== '') {
-                            this.syncValueWithPython(newValue);
+                            this.syncValueWithPython(newValue, this.oldValue);
+                            
+                        }
+                        // Skip sync emtpy string with python on mount
+                        if (newValue !== '' || this.oldValue !== '') {
                             if (this.props.callback) {
-                                this.props.callback(newValue, this.oldValue === undefined ? this.state.value : this.oldValue);
-                                this.oldValue = newValue;
+                                this.props.callback(newValue, this.oldValue);
                             }
                         }
+                        this.oldValue = newValue;
                     }
                     this.setState({ value: newValue, searchText: newValue, checked: newValue });
                     this.forceUpdate();
@@ -347,6 +353,8 @@ define(function (require) {
                     Utils.evalPythonMessage(this.props.method, []).then((response) => {
                         if (Object.keys(response).length != 0) {
                             this.setState({ pythonData: response });
+                        }else {
+                            this.setState({ pythonData: [] });
                         }
                     });
                 }
@@ -382,6 +390,7 @@ define(function (require) {
                     delete wrappedComponentProps.postProcessItems;
                     delete wrappedComponentProps.validate;
                     delete wrappedComponentProps.prePythonSyncProcessing;
+                    delete wrappedComponentProps.updates;
                     
                     if (this.props.postProcessItems) {
                         var items = this.props.postProcessItems(this.state.pythonData, this.state.value);

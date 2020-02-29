@@ -13,6 +13,7 @@ define(function (require) {
         var InfoModal = require('../../components/controls/modals/InfoModal');
         var ProjectNode = require('../../geppettoProject/model/ProjectNode');
         var ReactDOM = require('react-dom');
+        var urljoin = require('url-join');
 
         /**
          * @class GEPPETTO.Main

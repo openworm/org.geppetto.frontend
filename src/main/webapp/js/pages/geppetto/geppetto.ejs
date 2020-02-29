@@ -13,7 +13,7 @@
 	<% var cssPaths = '/'; %>
 
 	<% if (htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath != "/") { %>
-    	<base href="/<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>/" />
+    	<base href="<%=htmlWebpackPlugin.options.GEPPETTO_CONFIGURATION.contextPath%>" />
     	<% var cssPaths = ''; %>
 	<% } %>
 
@@ -45,7 +45,7 @@ $content
 
 
 <div id="mainContainer">
-	<div id="loadingText" style="text-align:center; font-family: consolas; margin-top: 50px;} ">LOADING... [~3MB]</div>
+	<div id="loadingText" style="text-align:center; font-family: consolas; margin-top: 50px;">LOADING... [~3MB]</div>
     <div id="controls" class="noSelection">
 		<div id="DownloadProjectButton" class="row"></div>
         <div id="SaveButton" class="row"></div>

@@ -241,7 +241,8 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 * @param requestID
 	 * @param projectId
 	 */
-	public void setProjectFromId(String requestID, long projectId) {
+	public void setProjectFromId(String requestID, long projectId) 
+	{
 		try {
 			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
 			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
@@ -410,7 +411,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	public void reloadExperiment(String requestID, long experimentID, long projectId)
 	{
 		long start = System.currentTimeMillis();
-		// websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADING, "");
 		try
 		{
 			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
@@ -419,7 +419,6 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			if(experiment != null)
 			{
 				ExperimentState experimentState = geppettoManager.loadExperiment(requestID, experiment);
-				// websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, GeppettoSerializer.serializeToJSON(experimentState));
 				logger.info("The experiment " + experimentID + " was reloaded");
 
 			}

@@ -232,7 +232,6 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 					projectId = Long.parseLong(parameters.get("projectId"));
 					try {
 						connectionHandler.setGeppettoManager(ConnectionsManager.getInstance().getHandler(lostConnectionID));
-						// connectionHandler.setProjectFromId(requestID, projectId);
 					} catch (GeppettoExecutionException e) {
 						sendMessage(requestID, OutboundMessages.RECONNECTION_ERROR, "");
 					}

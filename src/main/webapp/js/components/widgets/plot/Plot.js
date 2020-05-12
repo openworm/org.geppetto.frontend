@@ -97,17 +97,17 @@ define(function (require) {
 					zeroline : false,
 					mirror : true,
 					ticklen : 0,
-					tickcolor : 'rgb(255, 255, 255)',
-					linecolor: 'rgb(255, 255, 255)',
+					// tickcolor : 'rgb(255, 255, 255)',
+					// linecolor: 'rgb(255, 255, 255)',
 					tickfont: {
 						family: 'Helvetica Neue, Helvetica, sans-serif',
 						size : 11,
-						color: 'rgb(255, 255, 255)'
+						// color: 'rgb(255, 255, 255)'
 					},
 					titlefont : {
 						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size : 12,
-						color: 'rgb(255, 255, 255)'
+						// color: 'rgb(255, 255, 255)'
 					},
 					ticks: 'outside',
 					max: -9999999,
@@ -123,17 +123,17 @@ define(function (require) {
 					zeroline : false,
 					mirror : true,
 					ticklen : 0,
-					tickcolor : 'rgb(255, 255, 255)',
-					linecolor: 'rgb(255, 255, 255)',
+					// tickcolor : 'rgb(255, 255, 255)',
+					// linecolor: 'rgb(255, 255, 255)',
 					tickfont: {
 						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size : 11,
-						color: 'rgb(255, 255, 255)'
+						// color: 'rgb(255, 255, 255)'
 					},
 					titlefont : {
 						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size : 12,
-						color: 'rgb(255, 255, 255)'
+						// color: 'rgb(255, 255, 255)'
 					},
 					ticks: 'outside',
 				},
@@ -149,7 +149,7 @@ define(function (require) {
 					font: {
 						family: 'Helvetica Neue, Helevtica, sans-serif',
 						size: 12,
-						color : '#fff'
+						// color : '#fff'
 					},
 					x : 1,
 

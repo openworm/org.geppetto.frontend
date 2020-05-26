@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -83,7 +84,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	// the geppetto project active for this connection
 	private IGeppettoProject geppettoProject;
-
+	
 	/**
 	 * @param websocketConnection
 	 * @param geppettoManager
@@ -98,7 +99,32 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		this.geppettoManager = new GeppettoManager(geppettoManager, geppettoManagerConfiguration);
 		this.geppettoManager.setSimulationListener(this);
 	}
-
+	
+	/**
+	 * @param instance
+	 */
+	public void setGeppettoManager(GeppettoManager instance) throws GeppettoExecutionException
+	{
+		if (instance != null) {
+			geppettoManager = instance;
+		} else {
+			throw new GeppettoExecutionException("Setting geppetto manager on reconnection not working, the instance provided is null");
+		}
+	}
+	
+	/**
+	 * @return
+	 * @throws GeppettoExecutionException 
+	 */
+	public IGeppettoManager getGeppettoManager() throws GeppettoExecutionException
+	{
+		if (geppettoManager != null) {
+			return geppettoManager;
+		} else {
+			throw new GeppettoExecutionException("This connection handler does not have an initialised geppetto manager.");
+		}
+	}
+	
 	/**
 	 * @param requestID
 	 * @param projectId
@@ -209,6 +235,29 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			error(e, "Could not load geppetto project");
 		}
 
+	}
+	
+	/**
+	 * @param requestID
+	 * @param projectId
+	 */
+	public void setProjectFromId(String requestID, long projectId) 
+	{
+		try {
+			IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
+			IGeppettoProject geppettoProject = dataManager.getGeppettoProjectById(projectId);
+
+			Gson gson = new Gson();
+			String projectJSON = gson.toJson(geppettoProject);
+			boolean persisted = geppettoProject.isVolatile();
+			String update = "{\"project\":" + projectJSON + "}";
+
+			setConnectionProject(geppettoProject);
+			reloadExperiment(requestID, geppettoProject.getActiveExperimentId(), projectId);
+			websocketConnection.sendMessage(null, OutboundMessages.PROJECT_LOADED, update);
+		} catch (GeppettoExecutionException e) {
+			error(e, "Error in retrieving the project from the ID provided");
+		}
 	}
 
 	/**
@@ -348,6 +397,38 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			error(e, "Error loading experiment");
 		}
 		catch(IOException e)
+		{
+			error(e, "Error loading experiment");
+		}
+		logger.debug("Loading experiment took " + (System.currentTimeMillis() - start) + "ms");
+	}
+	
+	/**
+	 * @param requestID
+	 * @param experimentID
+	 * @param projectId
+	 */
+	public void reloadExperiment(String requestID, long experimentID, long projectId)
+	{
+		long start = System.currentTimeMillis();
+		try
+		{
+			IGeppettoProject geppettoProject = retrieveGeppettoProject(projectId);
+			IExperiment experiment = retrieveExperiment(experimentID, geppettoProject);
+			// run the matched experiment
+			if(experiment != null)
+			{
+				ExperimentState experimentState = geppettoManager.loadExperiment(requestID, experiment);
+				logger.info("The experiment " + experimentID + " was reloaded");
+
+			}
+			else
+			{
+				error(null, "Error reloading experiment, the experiment " + experimentID + " was not found in project " + projectId);
+			}
+
+		}
+		catch(GeppettoExecutionException | GeppettoAccessException e)
 		{
 			error(e, "Error loading experiment");
 		}
@@ -1411,6 +1492,14 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 
 	}
 
+	/**
+	 * 
+	 */
+	public void pauseProject()
+	{
+		ConnectionsManager.getInstance().removeConnection(websocketConnection);
+
+	}
 	/**
 	 * @param geppettoProject
 	 * @throws GeppettoExecutionException

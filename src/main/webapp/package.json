@@ -108,6 +108,9 @@
     "webpack": "3.6.0",
     "webpack-dev-server": "2.8.2"
   },
+  "resolutions": {
+  "image-webpack-loader/imagemin-pngquant": "5.0.1"
+  },
   "buildOptions": {
     "emitEntryPoint": true,
     "compile": {

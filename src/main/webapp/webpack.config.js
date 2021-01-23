@@ -161,7 +161,7 @@ module.exports = function(env){
 	                loader: 'ignore-loader'
 	            },
 	            {
-	                test: /\.(png|eot|ttf|woff|woff2|svg)(\?[a-z0-9=.]+)?$/,
+	                test: /\.(png|eot|ttf|woff|woff2)(\?[a-z0-9=.]+)?$/,
 	                loader: 'url-loader?limit=100000'
 	            },
 	            {

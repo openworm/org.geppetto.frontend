@@ -75,5 +75,8 @@ jobs:
         
       - name : Build org.geppetto.frontend
         run : |
+          cd ..
+          ls
+          pwd
           mvn -e clean install
           cd ..

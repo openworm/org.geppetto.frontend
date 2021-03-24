@@ -1,0 +1,63 @@
+name: org.geppetto.frontend workflow
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:  
+
+jobs:
+  maven-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses : actions/checkout@v2.3.4    
+      - name: Set global bariable with current branch name
+        shell: bash
+        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+        id: git_branch
+       
+      - name : Checkout org.geppetto.model
+        uses : actions/checkout@v2.3.4
+        with : 
+          repository:  openworm/org.geppetto.model.git
+          path : ./org.geppetto.model
+          ref: development
+      - name : Build org.geppetto.model
+        run : |
+          cd ./org.geppetto.model
+          # Checkout current branch that activated the git actions workflow, if fails checkout development
+          git checkout ${{ steps.git_branch.outputs.branch }} || git checkout development
+          mvn -e clean install
+          cd ..
+          
+      - name : Checkout org.geppetto.core
+        uses : actions/checkout@v2.3.4
+        with : 
+          repository:  openworm/org.geppetto.core.git
+          path : ./org.geppetto.core
+          ref: development
+      - name : Build org.geppetto.core
+        run : |
+          cd ./org.geppetto.core
+          # Checkout current branch that activated the git actions workflow, if fails checkout development
+          git checkout ${{ steps.git_branch.outputs.branch }} || git checkout development
+          mvn -e clean install
+          cd ..
+          
+      - name : Checkout org.geppetto.simulation
+        uses : actions/checkout@v2.3.4
+        with : 
+          repository:  openworm/org.geppetto.simulation.git
+          path : ./org.geppetto.simulation
+          ref: development
+      - name : Build org.geppetto.simulation
+        run : |
+          cd ./org.geppetto.simulation
+          # Checkout current branch that activated the git actions workflow, if fails checkout development
+          git checkout ${{ steps.git_branch.outputs.branch }} || git checkout development
+          mvn -e clean install
+          cd ..
+        
+      - name : Build org.geppetto.frontend
+        run : |
+          mvn -e clean install
+          cd ..

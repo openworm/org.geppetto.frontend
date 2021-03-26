@@ -66,8 +66,6 @@ jobs:
       - name : Build geppetto-application
         run : |
           cd ./src/main/webapp
-          ls
-          pwd
           # Checkout current branch that activated the git actions workflow, if fails checkout development
           git checkout ${{ steps.git_branch.outputs.branch }} || git checkout development
           git clone https://github.com/openworm/geppetto-client.git
@@ -77,7 +75,5 @@ jobs:
         
       - name : Build org.geppetto.frontend
         run : |
-          ls
-          pwd
           mvn -e clean install
           cd ..

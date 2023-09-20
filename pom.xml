@@ -51,7 +51,7 @@
 									<goal>npm</goal>
 								</goals>
 								<configuration>
-									<arguments>install</arguments>
+									<arguments>ci</arguments>
 									<workingDirectory>src/main/webapp</workingDirectory>
 								</configuration>
 							</execution>
@@ -102,7 +102,7 @@
 									<goal>npm</goal>
 								</goals>
 								<configuration>
-									<arguments>install</arguments>
+									<arguments>ci</arguments>
 								</configuration>
 							</execution>
 							<execution>

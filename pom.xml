@@ -37,7 +37,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>npm set registry https://registry.npmjs.org/p</id>
+								<id>npm set registry https://registry.npmjs.org/</id>
 								<goals>
 									<goal>npm</goal>
 								</goals>

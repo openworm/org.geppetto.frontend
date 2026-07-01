@@ -490,19 +490,19 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		catch(GeppettoDataSourceException e)
 		{
-			error(e, "Error fetching variable " + variableId);
+			error(requestID, e, "Error fetching variable " + variableId);
 		}
 		catch(IOException e)
 		{
-			error(e, "Error fetching variable " + variableId);
+			error(requestID, e, "Error fetching variable " + variableId);
 		}
 		catch(GeppettoModelException e)
 		{
-			error(e, "Error fetching variable " + variableId);
+			error(requestID, e, "Error fetching variable " + variableId);
 		}
 		catch(GeppettoExecutionException e)
 		{
-			error(e, "Error fetching variable " + variableId);
+			error(requestID, e, "Error fetching variable " + variableId);
 		}
 
 	}
@@ -973,6 +973,21 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 	 */
 	private void error(Exception exception, String errorMessage)
 	{
+		error(null, exception, errorMessage);
+	}
+
+	/**
+	 * Error variant that echoes the originating requestID so the client can
+	 * correlate the failure with the request that caused it (e.g. a failed
+	 * fetch_variable). Without the requestID the client's stored completion
+	 * callback is never resolved and the loader stalls indefinitely.
+	 *
+	 * @param requestID
+	 * @param exception
+	 * @param errorMessage
+	 */
+	private void error(String requestID, Exception exception, String errorMessage)
+	{
 		String exceptionMessage = "";
 		if(exception != null)
 		{
@@ -980,7 +995,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 		}
 		Error error = new Error(GeppettoErrorCodes.EXCEPTION, errorMessage, exceptionMessage, 0);
 		logger.error(errorMessage, exception);
-		websocketConnection.sendMessage(null, OutboundMessages.ERROR, getGson().toJson(error));
+		websocketConnection.sendMessage(requestID, OutboundMessages.ERROR, getGson().toJson(error));
 
 	}
 

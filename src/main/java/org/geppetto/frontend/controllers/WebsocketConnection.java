@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.geppetto.core.common.GeppettoExecutionException;
+import org.geppetto.core.datasources.QueryPagingContext;
 import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.manager.IGeppettoManager;
 import org.geppetto.core.utilities.URLReader;
@@ -522,7 +523,15 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 				case RUN_QUERY:
 				{
 					GeppettoModelAPIParameters receivedObject = new Gson().fromJson(gmsg.data, GeppettoModelAPIParameters.class);
-					connectionHandler.runQuery(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
+					try
+					{
+						QueryPagingContext.set(receivedObject.offset, receivedObject.limit);
+						connectionHandler.runQuery(requestID, receivedObject.projectId, convertRunnableQueriesDataTransferModel(receivedObject.runnableQueries));
+					}
+					finally
+					{
+						QueryPagingContext.clear();
+					}
 					break;
 				}
 				case RUN_QUERY_COUNT:
@@ -628,6 +637,8 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		String path;
 		String[] variableId;
 		List<RunnableQueryDT> runnableQueries;
+		Integer offset;
+		Integer limit;
 	}
 
 	class RunnableQueryDT

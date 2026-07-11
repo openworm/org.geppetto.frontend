@@ -229,7 +229,7 @@ public class DefaultMessageSender implements MessageSender
 		long length = (System.currentTimeMillis() - start);
 		if(length > 5)
 		{
-			logger.info("Sending message to the client took " + length + "ms");
+			logger.debug("Sending message to the client took " + length + "ms");
 		}
 	}
 
@@ -378,7 +378,7 @@ public class DefaultMessageSender implements MessageSender
 
 		long endTime = System.currentTimeMillis();
 
-		logger.info("Sending message took : "+ (endTime - startTime) + " ms");
+		logger.debug("Sending message took : "+ (endTime - startTime) + " ms");
 
 	}
 
@@ -418,7 +418,7 @@ public class DefaultMessageSender implements MessageSender
 
 		long endTime = System.currentTimeMillis();
 
-		logger.info("Sending message took : "+ (endTime - startTime) + " ms");
+		logger.debug("Sending message took : "+ (endTime - startTime) + " ms");
 	}
 
 	private boolean isQueuedMessageType(OutboundMessages messageType)

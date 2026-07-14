@@ -93,7 +93,7 @@ public class ConnectionsManager
 
 		purgeLostConnections();
 
-		_logger.info("New websocket connection " + websocketConnection.getConnectionID());
+		_logger.debug("New websocket connection " + websocketConnection.getConnectionID());
 
 		return id;
 	}
@@ -157,7 +157,7 @@ public class ConnectionsManager
 					_connections.remove(toRemove);
 				}
 			}
-			_logger.info("Websocket connection removed " + websocketConnection.getConnectionID());
+			_logger.debug("Websocket connection removed " + websocketConnection.getConnectionID());
 		}
 	}
 

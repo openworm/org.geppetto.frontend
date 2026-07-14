@@ -383,7 +383,7 @@ public class ConnectionHandler implements IGeppettoManagerCallbackListener
 			{
 				ExperimentState experimentState = geppettoManager.loadExperiment(requestID, experiment);
 				websocketConnection.sendMessage(requestID, OutboundMessages.EXPERIMENT_LOADED, GeppettoSerializer.serializeToJSON(experimentState));
-				logger.info("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
+				logger.debug("The experiment " + experimentID + " was loaded and the runtime tree was sent to the client");
 
 			}
 			else

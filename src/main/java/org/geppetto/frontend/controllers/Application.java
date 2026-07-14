@@ -62,7 +62,7 @@ public class Application
 					try
 					{
 						IUser user = DefaultGeppettoDataManager.getGuestUser();
-						logger.info("There is no user set for this geppettoManager, one was created: " + user);
+						logger.debug("There is no user set for this geppettoManager, one was created: " + user);
 						geppettoManager.setUser(user);
 					}
 					catch(GeppettoExecutionException e)

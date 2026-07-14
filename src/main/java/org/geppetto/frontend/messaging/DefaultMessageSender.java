@@ -94,7 +94,7 @@ public class DefaultMessageSender implements MessageSender
 	public void initialize(Session wsOutbound)
 	{
 
-		logger.info(String.format("Initializing message sender - queuing: %b, compression: %b, " + "discard messages if queues full: %b", queuingEnabled, compressionEnabled,
+		logger.debug(String.format("Initializing message sender - queuing: %b, compression: %b, " + "discard messages if queues full: %b", queuingEnabled, compressionEnabled,
 				discardMessagesIfQueueFull));
 
 		this.wsOutbound = wsOutbound;

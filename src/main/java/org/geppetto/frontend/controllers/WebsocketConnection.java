@@ -113,8 +113,8 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		wsContainer.setDefaultMaxTextMessageBufferSize(9999999);
 		userSession.setMaxTextMessageBufferSize(9999999);
 		userSession.setMaxBinaryMessageBufferSize(9999999);
-		logger.info("Session Binary size >> " + userSession.getMaxBinaryMessageBufferSize());
-		logger.info("Session Text size >> " + userSession.getMaxTextMessageBufferSize());
+		logger.debug("Session Binary size >> " + userSession.getMaxBinaryMessageBufferSize());
+		logger.debug("Session Text size >> " + userSession.getMaxTextMessageBufferSize());
 
 		messageSender = messageSenderFactory.getMessageSender(userSession, this);
 		// User permissions are sent when socket is open
@@ -122,7 +122,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		connectionID = ConnectionsManager.getInstance().addConnection(this);
 		sendMessage(null, OutboundMessages.CLIENT_ID, connectionID);
 
-		logger.info("Open Connection ..."+userSession.getId());
+		logger.debug("Open Connection ..."+userSession.getId());
 		
 		session.addMessageHandler(new WebsocketMessageHandler(session,this));
 	}
@@ -148,7 +148,7 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 				messageSender.shutdown();
 				connectionHandler.closeProject();
 			}
-			logger.info("Closed Connection ..."+userSession.getId());
+			logger.debug("Closed Connection ..."+userSession.getId());
 			
 		}
 	}

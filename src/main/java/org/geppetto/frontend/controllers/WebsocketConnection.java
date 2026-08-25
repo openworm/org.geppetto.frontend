@@ -102,6 +102,26 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 	}
 
 
+	private static final String BLOCKING_SEND_TIMEOUT_PROPERTY = "org.apache.tomcat.websocket.BLOCKING_SEND_TIMEOUT";
+	private static final long DEFAULT_BLOCKING_SEND_TIMEOUT_MS = 300000;
+
+	/*
+	 * Kept well short of "however long it takes": the send runs on the calling
+	 * http-nio connector thread (queuedMessageTypes is not configured, so nothing is
+	 * queued), and a thread blocked here is one the connector cannot use.
+	 */
+	private static long blockingSendTimeoutMs() {
+		String configured = System.getenv("VFB_WS_SEND_TIMEOUT_MS");
+		if (configured != null && !configured.trim().isEmpty()) {
+			try {
+				return Long.parseLong(configured.trim());
+			} catch (NumberFormatException e) {
+				logger.warn("Ignoring unparseable VFB_WS_SEND_TIMEOUT_MS [" + configured + "], using " + DEFAULT_BLOCKING_SEND_TIMEOUT_MS);
+			}
+		}
+		return DEFAULT_BLOCKING_SEND_TIMEOUT_MS;
+	}
+
 	@OnOpen
 	public void onOpen(Session session, EndpointConfig config) {
 	    this.userSession = session;
@@ -113,6 +133,18 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 		wsContainer.setDefaultMaxTextMessageBufferSize(9999999);
 		userSession.setMaxTextMessageBufferSize(9999999);
 		userSession.setMaxBinaryMessageBufferSize(9999999);
+
+		/*
+		 * Tomcat's blocking send timeout defaults to 20s and is read only from the
+		 * session user properties - DEFAULT_BLOCKING_SEND_TIMEOUT is a compile-time
+		 * constant, so there is no system property to set. Large payloads (query
+		 * results, meshes) need longer than 20s on a slow connection. The value must
+		 * be a Long, and the key is written out rather than taken from
+		 * org.apache.tomcat.websocket.Constants so the bundle does not need to import
+		 * an internal Tomcat package. See VFB2 #455.
+		 */
+		userSession.getUserProperties().put(BLOCKING_SEND_TIMEOUT_PROPERTY, Long.valueOf(blockingSendTimeoutMs()));
+		logger.debug("Session send timeout >> " + blockingSendTimeoutMs() + "ms");
 		logger.debug("Session Binary size >> " + userSession.getMaxBinaryMessageBufferSize());
 		logger.debug("Session Text size >> " + userSession.getMaxTextMessageBufferSize());
 

@@ -16,6 +16,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
@@ -225,6 +226,7 @@ public class DefaultMessageSender implements MessageSender
 		{
 			logger.warn("Failed to send binary message", e);
 			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+			closeAfterSendFailure(messageType, e);
 		}
 		long length = (System.currentTimeMillis() - start);
 		if(length > 5)
@@ -360,6 +362,32 @@ public class DefaultMessageSender implements MessageSender
 		}
 	}
 
+	/*
+	 * A send that fails part-way leaves Tomcat's endpoint stuck in TEXT_FULL_WRITING or
+	 * BINARY_FULL_WRITING: sendText/sendBytes set the state before writing and only
+	 * clear it on the line after a successful write, so a throw skips the reset. The
+	 * state machine is private and there is no way to clear it from here, which means
+	 * every later message on that connection fails too - a single oversized payload
+	 * silently ends the user's session. Closing is the only recovery available, and the
+	 * client reconnects on close, so close rather than leave the session wedged.
+	 * See VFB2 #455.
+	 */
+	private void closeAfterSendFailure(OutboundMessages messageType, Throwable cause)
+	{
+		try
+		{
+			if(wsOutbound.isOpen())
+			{
+				logger.warn("Closing connection after a failed " + messageType + " send; the endpoint cannot be reused. Cause: " + cause);
+				wsOutbound.close(new CloseReason(CloseReason.CloseCodes.UNEXPECTED_CONDITION, "send failed"));
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("Failed to close the connection after a failed send: " + e.getMessage());
+		}
+	}
+
 	private void sendTextMessage(String message, OutboundMessages messageType)
 	{
 
@@ -368,8 +396,10 @@ public class DefaultMessageSender implements MessageSender
 			synchronized(wsOutbound) {
 				wsOutbound.getBasicRemote().sendText(message);
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("Error sending text message " + e.getMessage());
+			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+			closeAfterSendFailure(messageType, e);
 		}
 		if(messageType.equals("experiment_status"))
 		{
@@ -406,6 +436,8 @@ public class DefaultMessageSender implements MessageSender
 			}
 		} catch (Exception e) {
 			logger.error("Failed to send binary message " + e.getMessage());
+			notifyListeners(MessageSenderEvent.Type.MESSAGE_SEND_FAILED);
+			closeAfterSendFailure(messageType, e);
 		}
 
 		String logMessage = "Sent binary/compressed message - %s, length: %d (%d) bytes, duration: %d ms";

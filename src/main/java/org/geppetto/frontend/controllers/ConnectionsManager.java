@@ -34,6 +34,17 @@ public class ConnectionsManager
 
 	private final ConcurrentHashMap<String, ManagerRecord> managers = new ConcurrentHashMap<String, ManagerRecord>();
 
+	/*
+	 * Retention bounds for GeppettoManagers stashed on abnormal close (VFB2 #458).
+	 * Each retained manager pins its session's full Geppetto model (~8.4 MB
+	 * observed), so the map must be bounded by count as well as by age: the LB
+	 * cookie-sticky resume only works while the original container is alive, and
+	 * a reconnect churn burst (~1 abnormal close/second observed) would otherwise
+	 * pin hundreds of models inside the 5-minute window.
+	 */
+	private static final int MAX_RETAINED_MANAGERS = 32;
+	private static final long RETENTION_SECONDS = 5 * 60;
+
 	/**
 	 * @return
 	 */
@@ -52,6 +63,13 @@ public class ConnectionsManager
 	 */
 	public void registerHandler(String connectionID, ConnectionHandler instance) throws GeppettoExecutionException 
 	{
+		/*
+		 * Registration happens on every abnormal close, so this is the one place
+		 * guaranteed to run during a churn burst - purge expired records and
+		 * enforce the count bound here rather than relying on a new connection
+		 * arriving to trigger the purge.
+		 */
+		purgeRetainedManagers();
 		if (!managers.containsKey(connectionID)) {
 			ManagerRecord newRecord = new ManagerRecord((GeppettoManager) instance.getGeppettoManager());
 			managers.put(connectionID, newRecord);
@@ -116,13 +134,38 @@ public class ConnectionsManager
 		}
 		
 		// To avoid memory consumption we check also the map of geppetto managers stored
-		// the instances that are more than 5 minutes older gets removed
-		Long now = Calendar.getInstance().getTimeInMillis() / 1000;
+		purgeRetainedManagers();
+	}
+
+	/**
+	 * Drop retained managers that are past the retention window, then enforce the
+	 * count bound by evicting the oldest records first. Nothing here caches query
+	 * results - a retained manager holds the session's model so a cookie-stickied
+	 * reconnect within the window can resume; query results are never retained
+	 * beyond the request that produced them.
+	 */
+	private void purgeRetainedManagers()
+	{
+		long now = Calendar.getInstance().getTimeInMillis() / 1000;
 		for(String key : managers.keySet()) {
 			ManagerRecord value = managers.get(key);
-			if ((now - value.getRegistration()) > (5 * 60)) {
+			if (value != null && (now - value.getRegistration()) > RETENTION_SECONDS) {
 				managers.remove(key);
 			}
+		}
+		while(managers.size() > MAX_RETAINED_MANAGERS) {
+			String oldestKey = null;
+			long oldestRegistration = Long.MAX_VALUE;
+			for(Map.Entry<String, ManagerRecord> entry : managers.entrySet()) {
+				if (entry.getValue().getRegistration() < oldestRegistration) {
+					oldestRegistration = entry.getValue().getRegistration();
+					oldestKey = entry.getKey();
+				}
+			}
+			if (oldestKey == null || managers.remove(oldestKey) == null) {
+				break;
+			}
+			_logger.warn("Retained GeppettoManager evicted (count bound " + MAX_RETAINED_MANAGERS + " reached): " + oldestKey);
 		}
 	}
 

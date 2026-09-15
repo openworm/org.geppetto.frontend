@@ -265,7 +265,20 @@ public class WebsocketConnection extends Endpoint implements MessageSenderListen
 					projectId = Long.parseLong(parameters.get("projectId"));
 					try {
 						connectionHandler.setGeppettoManager(ConnectionsManager.getInstance().getHandler(lostConnectionID));
+						logger.info("Resumed session for lost connection " + lostConnectionID + " on connection " + connectionID
+								+ " (project " + projectId + ")");
 					} catch (GeppettoExecutionException e) {
+						/*
+						 * Expected whenever the manager is gone: a redeploy, an OOM restart, the
+						 * other replica behind the load balancer, or simply outside the retention
+						 * window. The client re-establishes the session on this same connection,
+						 * so this is not an error - but it must be visible in the container log,
+						 * since how often it happens is what decides whether resume is worth
+						 * keeping.
+						 */
+						logger.info("Could not resume session for lost connection " + lostConnectionID + " on connection "
+								+ connectionID + " (project " + projectId + "): " + e.getMessage()
+								+ " - client will re-establish the session on this connection");
 						sendMessage(requestID, OutboundMessages.RECONNECTION_ERROR, "");
 					}
 					break;

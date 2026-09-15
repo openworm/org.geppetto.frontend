@@ -36,7 +36,9 @@ public class GeppettoProjectsController
 	public @ResponseBody Collection<? extends IGeppettoProject> getAllGeppettoProjects()
 	{
 		IGeppettoDataManager dataManager = DataManagerHelper.getDataManager();
-		if(dataManager != null)
+		// No user on this connection means no projects to list, as in getAllGeppettoProjectsCompact below.
+		// Without this the request throws a NullPointerException on getUser() and Spring answers 500.
+		if(dataManager != null && geppettoManager.getUser() != null)
 		{
 			return dataManager.getGeppettoProjectsForUser(geppettoManager.getUser().getLogin());
 		}
